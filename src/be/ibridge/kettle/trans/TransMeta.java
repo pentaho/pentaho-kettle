@@ -66,6 +66,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
+import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
@@ -4606,7 +4607,8 @@ public class TransMeta implements XMLInterface, Comparator
     public String toString()
     {
         if (name != null) return name;
-        return getClass().getName();
+        if (filename != null) return filename;
+        return Spoon.STRING_TRANS_NO_NAME;
     }
 
     /**
@@ -4766,10 +4768,10 @@ public class TransMeta implements XMLInterface, Comparator
             for (int i=0;i<nrSteps();i++)
             {
                 StepMeta stepMeta = getStep(i);
-                stringList.add(new StringSearchResult(stepMeta.getName(), stepMeta, "Step name"));
-                if (stepMeta.getDescription()!=null) stringList.add(new StringSearchResult(stepMeta.getDescription(), stepMeta, "Step description"));
+                stringList.add(new StringSearchResult(stepMeta.getName(), stepMeta, this, "Step name"));
+                if (stepMeta.getDescription()!=null) stringList.add(new StringSearchResult(stepMeta.getDescription(), stepMeta, this, "Step description"));
                 StepMetaInterface metaInterface = stepMeta.getStepMetaInterface();
-                StringSearcher.findMetaData(metaInterface, 1, stringList, stepMeta);
+                StringSearcher.findMetaData(metaInterface, 1, stringList, stepMeta, this);
             }
         }
 
@@ -4779,11 +4781,11 @@ public class TransMeta implements XMLInterface, Comparator
             for (int i=0;i<nrDatabases();i++)
             {
                 DatabaseMeta meta = getDatabase(i);
-                stringList.add(new StringSearchResult(meta.getName(), meta, "Database connection name"));
-                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, "Database name"));
-                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, "Database Username"));
-                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, "Database type description"));
-                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, "Database port"));
+                stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
+                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
+                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
+                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
+                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
             }
         }
 
@@ -4793,7 +4795,7 @@ public class TransMeta implements XMLInterface, Comparator
             for (int i=0;i<nrNotes();i++)
             {
                 NotePadMeta meta = getNote(i);
-                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, "Notepad text"));
+                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
             }
         }
 

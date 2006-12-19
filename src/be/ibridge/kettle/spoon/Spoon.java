@@ -280,6 +280,54 @@ public class Spoon
     private TreeItem tiBlocks;
 
     private Menu mCSH;
+
+    private MenuItem miFileClose;
+
+    private MenuItem miFileSave;
+
+    private MenuItem miFileSaveAs;
+
+    private MenuItem miFilePrint;
+
+    private MenuItem miEditSelectAll;
+
+    private MenuItem miEditUnselectAll;
+
+    private MenuItem miEditCopy;
+
+    private MenuItem miEditPaste;
+
+    private MenuItem miTransRun;
+
+    private MenuItem miTransPreview;
+
+    private MenuItem miTransCheck;
+
+    private MenuItem miTransImpact;
+
+    private MenuItem miTransSQL;
+
+    private MenuItem miLastImpact;
+
+    private MenuItem miLastCheck;
+
+    private MenuItem miLastPreview;
+
+    private MenuItem miTransCopy;
+
+    private MenuItem miTransPaste;
+
+    private MenuItem miTransImage;
+
+    private MenuItem miTransDetails;
+
+    private MenuItem miWizardNewConnection;
+
+    private MenuItem miRepDisconnect;
+
+    private MenuItem miRepUser;
+
+    private MenuItem miRepExplore;
         
     public Spoon(LogWriter l, Repository rep)
     {
@@ -360,34 +408,37 @@ public class Spoon
                     boolean alt  = (( e.stateMask&SWT.ALT)!=0);
                     
                     // ESC --> Unselect All steps
-                    if (e.keyCode == SWT.ESC)   {  if (transMeta!=null) { transMeta.unselectAll(); refreshGraph(); } };
+                    if (e.keyCode == SWT.ESC && !ctrl && !alt)   {  if (transMeta!=null) { transMeta.unselectAll(); refreshGraph(); } };
 
                     // F3 --> createDatabaseWizard
-                    if (e.keyCode == SWT.F3)    { createDatabaseWizard(transMeta); }
+                    if (e.keyCode == SWT.F3 && !ctrl && !alt)    { createDatabaseWizard(transMeta); }
 
                     // F4 --> copyTableWizard
-                    if (e.keyCode == SWT.F4)    { copyTableWizard(transMeta); }
-                    
+                    if (e.keyCode == SWT.F4 && !ctrl && !alt)    { copyTableWizard(transMeta); }
+
+                    // CTRL-F4 --> close active transformation
+                    if (e.keyCode == SWT.F4 && ctrl && !alt)    { closeTransformation(transMeta); }
+
                     // F5 --> refresh
-                    if (e.keyCode == SWT.F5)    { refreshGraph(); refreshTree(); }
+                    if (e.keyCode == SWT.F5 && !ctrl && !alt)    { refreshGraph(); refreshTree(); }
                     
                     // F6 --> show last impact analyses
-                    if (e.keyCode == SWT.F6)    { showLastImpactAnalyses(transMeta); }
+                    if (e.keyCode == SWT.F6 && !ctrl && !alt)    { showLastImpactAnalyses(transMeta); }
                     
                     // F7 --> show last verify results
-                    if (e.keyCode == SWT.F7)    { showLastTransCheck(); }
+                    if (e.keyCode == SWT.F7 && !ctrl && !alt)    { showLastTransCheck(); }
                     
                     // F8 --> show last preview
-                    if (e.keyCode == SWT.F8)    { if (spoonLog!=null) { spoonLog.showPreview(); } }
+                    if (e.keyCode == SWT.F8 && !ctrl && !alt)    { if (spoonLog!=null) { spoonLog.showPreview(); } }
                     
                     // F9 --> run
-                    if (e.keyCode == SWT.F9)    { executeTransformation(transMeta, true, false, false, false, null); }
+                    if (e.keyCode == SWT.F9 && !ctrl && !alt)    { executeTransformation(transMeta, true, false, false, false, null); }
                     
                     // F10 --> preview
-                    if (e.keyCode == SWT.F10)   { executeTransformation(transMeta, true, false, false, true, null);  }
+                    if (e.keyCode == SWT.F10 && !ctrl && !alt)   { executeTransformation(transMeta, true, false, false, true, null);  }
 
                     // F11 --> Verify
-                    if (e.keyCode == SWT.F11) { checkTrans(transMeta); }
+                    if (e.keyCode == SWT.F11 && !ctrl && !alt) { checkTrans(transMeta); }
 
                     // CTRL-A --> Select All steps
                     if ((int)e.character ==  1 && ctrl && !alt) { if (transMeta!=null) { transMeta.selectAll(); refreshGraph(); } };
@@ -544,18 +595,16 @@ public class Spoon
     public void closeTransformation(TransMeta transMeta)
     {
         transformationMap.remove(makeGraphTabName(transMeta));
-        
-        // Also close associated tabs
-        // SpoonHistory spoonHistory = findSpoonHistoryOfTransformation(transMeta);
-        // if (spoonHistory!=null) spoonHistory.dispose();
-        // SpoonLog spoonLog = findSpoonLogOfTransformation(transMeta);
-        // if (spoonLog!=null) spoonLog.dispose();
-        
+
         // Close the associated tabs...
+        CTabItem graphTab = findCTabItem(makeGraphTabName(transMeta));
+        if (graphTab!=null) graphTab.dispose();
         CTabItem logTab = findCTabItem(makeLogTabName(transMeta));
         if (logTab!=null) logTab.dispose();
         CTabItem historyTab = findCTabItem(makeHistoryTabName(transMeta));
         if (historyTab!=null) historyTab.dispose();
+        
+        refreshTree();
     }
 
     
@@ -566,83 +615,93 @@ public class Spoon
      */
     public void searchMetaData()
     {
-        TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null)
+        TransMeta[] transMetas = getLoadedTransformations();
+
+        if (transMetas==null || transMetas.length==0) return;
+        
+        EnterSearchDialog esd = new EnterSearchDialog(shell);
+        if (!esd.open())
         {
-            EnterSearchDialog esd = new EnterSearchDialog(shell);
-            if (esd.open())
+            return;
+        }
+
+        ArrayList rows = new ArrayList();
+        for (int t=0;t<transMetas.length;t++)
+        {
+            TransMeta transMeta = transMetas[t];
+            String filterString = esd.getFilterString();
+            String filter = filterString;
+            if (filter!=null) filter = filter.toUpperCase();
+            
+            List stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            for (int i=0;i<stringList.size();i++)
             {
-                String filterString = esd.getFilterString();
-                String filter = filterString;
-                if (filter!=null) filter = filter.toUpperCase();
+                StringSearchResult result = (StringSearchResult) stringList.get(i);
+
+                boolean add = Const.isEmpty(filter);
+                if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getGrandParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 
-                List stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
-                ArrayList rows = new ArrayList();
-                for (int i=0;i<stringList.size();i++)
-                {
-                    StringSearchResult result = (StringSearchResult) stringList.get(i);
-    
-                    boolean add = Const.isEmpty(filter);
-                    if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
-                    if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
-                    if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
-                    
-                    if (add) rows.add(result.toRow());
-                }
-                
-                if (rows.size()!=0)
-                {
-                    PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
-                    prd.open();
-                }
-                else
-                {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.NothingFound.Message")); // Nothing found that matches your criteria
-                    mb.setText(Messages.getString("Spoon.Dialog.NothingFound.Title")); // Sorry!
-                    mb.open();
-                }
+                if (add) rows.add(result.toRow());
             }
+        }
+        
+        if (rows.size()!=0)
+        {
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
+            prd.open();
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("Spoon.Dialog.NothingFound.Message")); // Nothing found that matches your criteria
+            mb.setText(Messages.getString("Spoon.Dialog.NothingFound.Title")); // Sorry!
+            mb.open();
         }
     }
 
     public void getVariables()
     {
-        TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null)
+        TransMeta[] transMetas = getLoadedTransformations();
+
+        if (transMetas==null || transMetas.length==0) return;
+        
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        Properties sp = new Properties();
+        sp.putAll(kettleVariables.getProperties());
+        sp.putAll(System.getProperties());
+        
+        for (int t=0;t<transMetas.length;t++)
         {
-            Properties sp = new Properties();
-            KettleVariables kettleVariables = KettleVariables.getInstance();
-            sp.putAll(kettleVariables.getProperties());
-            sp.putAll(System.getProperties());
+            TransMeta transMeta = transMetas[t];
             
             List list = transMeta.getUsedVariables();
             for (int i=0;i<list.size();i++)
             {
                 String varName = (String)list.get(i);
                 String varValue = sp.getProperty(varName, "");
-                System.out.println("variable ["+varName+"] is defined as : "+varValue);
                 if (variables.searchValueIndex(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
                 {
                     variables.addValue(new Value(varName, varValue));
                 }
             }
+        }
             
-            // Now ask the use for more info on these!
-            EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
-            esd.setTitle(Messages.getString("Spoon.Dialog.SetVariables.Title"));
-            esd.setMessage(Messages.getString("Spoon.Dialog.SetVariables.Message"));
-            esd.setReadOnly(false); 
-            if (esd.open()!=null)
+        // Now ask the use for more info on these!
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+        esd.setTitle(Messages.getString("Spoon.Dialog.SetVariables.Title"));
+        esd.setMessage(Messages.getString("Spoon.Dialog.SetVariables.Message"));
+        esd.setReadOnly(false); 
+        if (esd.open()!=null)
+        {
+            for (int i=0;i<variables.size();i++)
             {
-                for (int i=0;i<variables.size();i++)
+                Value varval = variables.getValue(i);
+                if (!Const.isEmpty(varval.getString()))
                 {
-                    Value varval = variables.getValue(i);
-                    if (!Const.isEmpty(varval.getString()))
-                    {
-                        kettleVariables.setVariable(varval.getName(), varval.getString());
-                        System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"] for thread ["+Thread.currentThread()+"]");
-                    }
+                    kettleVariables.setVariable(varval.getName(), varval.getString());
                 }
             }
         }
@@ -780,204 +839,291 @@ public class Spoon
         mBar = new Menu(shell, SWT.BAR);
         shell.setMenuBar(mBar);
         
+        ////////////////////////////////////////////////////////////
+        // File
+        //
+        //
+
         // main File menu...
         MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
         //mFile.setText("&File");
         mFile.setText(Messages.getString("Spoon.Menu.File") );
         msFile = new Menu(shell, SWT.DROP_DOWN);
         mFile.setMenu(msFile);
-        MenuItem miFileNew       = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Spoon.Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
-        MenuItem miFileOpen      = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Spoon.Menu.File.Open")); //&Open \tCTRL-O
-        MenuItem miFileImport    = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText(Messages.getString("Spoon.Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
-        MenuItem miFileExport    = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
-        MenuItem miFileSave      = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
-        MenuItem miFileSaveAs    = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
+        // New
+        //
+        MenuItem miFileNew = new MenuItem(msFile, SWT.CASCADE); 
+        miFileNew.setText(Messages.getString("Spoon.Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
+        miFileNew.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { newFile(); } } );
+        // Open
+        //
+        MenuItem miFileOpen = new MenuItem(msFile, SWT.CASCADE); 
+        miFileOpen.setText(Messages.getString("Spoon.Menu.File.Open")); //&Open \tCTRL-O
+        miFileOpen.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { openFile(false); } });
+        // Import from XML
+        //
+        MenuItem miFileImport = new MenuItem(msFile, SWT.CASCADE); 
+        miFileImport.setText(Messages.getString("Spoon.Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
+        miFileImport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { openFile(true); } });
+        // Export to XML
+        //
+        MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
+        miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
+        miFileExport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveXMLFile(getActiveTransformation()); } });
+        // Save
+        //
+        miFileSave = new MenuItem(msFile, SWT.CASCADE); 
+        miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
+        miFileSave.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFile(getActiveTransformation()); } });
+        // Save as
+        //
+        miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); 
+        miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
+        miFileSaveAs.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFileAs(getActiveTransformation()); } });
+        // Close
+        //
+        miFileClose = new MenuItem(msFile, SWT.CASCADE); 
+        miFileClose.setText(Messages.getString("Spoon.Menu.File.Close")); //&Close \tCTRL-F4
+        miFileClose.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { closeTransformation(getActiveTransformation()); } });
         new MenuItem(msFile, SWT.SEPARATOR);
-        MenuItem miFilePrint     = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Spoon.Menu.File.Print")); //"&Print \tCTRL-P"
+        // Print
+        //
+        miFilePrint = new MenuItem(msFile, SWT.CASCADE); 
+        miFilePrint.setText(Messages.getString("Spoon.Menu.File.Print")); //"&Print \tCTRL-P"
+        miFilePrint.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { printFile(getActiveTransformation()); } });
         new MenuItem(msFile, SWT.SEPARATOR);
-        MenuItem miFileQuit      = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Spoon.Menu.File.Quit")); //miFileQuit.setText("&Quit");
-        miFileSep3               = new MenuItem(msFile, SWT.SEPARATOR);
+        // Quit
+        //
+        MenuItem miFileQuit = new MenuItem(msFile, SWT.CASCADE); 
+        miFileQuit.setText(Messages.getString("Spoon.Menu.File.Quit")); //miFileQuit.setText("&Quit");
+        miFileQuit.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { quitFile(); } });
+        
+        miFileSep3= new MenuItem(msFile, SWT.SEPARATOR);
+        // History
         addMenuLast();
         
-        Listener lsFileNew        = new Listener() { public void handleEvent(Event e) { newFile();          } };
-        Listener lsFileOpen       = new Listener() { public void handleEvent(Event e) { openFile(false);    } };
-        Listener lsFileImport     = new Listener() { public void handleEvent(Event e) { openFile(true);     } };
-        Listener lsFileExport     = new Listener() { public void handleEvent(Event e) { saveXMLFile(getActiveTransformation());      } };
-        Listener lsFileSave       = new Listener() { public void handleEvent(Event e) { saveFile(getActiveTransformation());         } };
-        Listener lsFileSaveAs     = new Listener() { public void handleEvent(Event e) { saveFileAs(getActiveTransformation());       } };
-        Listener lsFilePrint      = new Listener() { public void handleEvent(Event e) { printFile(getActiveTransformation());        } };
-        Listener lsFileQuit       = new Listener() { public void handleEvent(Event e) { quitFile();         } };
-        
-        miFileNew       .addListener (SWT.Selection, lsFileNew    );
-        miFileOpen      .addListener (SWT.Selection, lsFileOpen   );
-        miFileImport    .addListener (SWT.Selection, lsFileImport );
-        miFileExport    .addListener (SWT.Selection, lsFileExport );
-        miFileSave      .addListener (SWT.Selection, lsFileSave   );
-        miFileSaveAs    .addListener (SWT.Selection, lsFileSaveAs );
-        miFilePrint     .addListener (SWT.Selection, lsFilePrint  );
-        miFileQuit      .addListener (SWT.Selection, lsFileQuit   );
+        ////////////////////////////////////////////////////////////
+        // Edit
+        //
+        //
 
         // main Edit menu...
-        MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText(Messages.getString("Spoon.Menu.Edit")); //&Edit
-          Menu msEdit = new Menu(shell, SWT.DROP_DOWN);
-          mEdit.setMenu(msEdit);
-          miEditUndo                  = new MenuItem(msEdit, SWT.CASCADE);
-          miEditRedo                  = new MenuItem(msEdit, SWT.CASCADE);
-          setUndoMenu(getActiveTransformation());
-          new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditSearch       = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
-          MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Set variables \tCTRL-J
-          MenuItem miEditSVars        = new MenuItem(msEdit, SWT.CASCADE); miEditSVars.setText(Messages.getString("Spoon.Menu.Edit.ShowVariables"));  //Show variables \tCTRL-L
-          new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Spoon.Menu.Edit.ClearSelection"));  //&Clear selection \tESC
-          MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Spoon.Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
-          new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditCopy         = new MenuItem(msEdit, SWT.CASCADE); miEditCopy.setText(Messages.getString("Spoon.Menu.Edit.CopyToClipboard")); //Copy selected steps to clipboard\tCTRL-C
-          MenuItem miEditPaste        = new MenuItem(msEdit, SWT.CASCADE); miEditPaste.setText(Messages.getString("Spoon.Menu.Edit.PasteFromClipboard")); //Paste steps from clipboard\tCTRL-V
-          new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditRefresh      = new MenuItem(msEdit, SWT.CASCADE); miEditRefresh.setText(Messages.getString("Spoon.Menu.Edit.Refresh"));  //&Refresh \tF5
-          new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); miEditOptions.setText(Messages.getString("Spoon.Menu.Edit.Options"));  //&Options...
+        MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); 
+        mEdit.setText(Messages.getString("Spoon.Menu.Edit")); //&Edit
+        Menu msEdit = new Menu(shell, SWT.DROP_DOWN);
+        mEdit.setMenu(msEdit);
+        // Undo
+        //
+        miEditUndo = new MenuItem(msEdit, SWT.CASCADE);
+        miEditUndo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { undoAction(getActiveTransformation()); } });
+        // Redo
+        //
+        miEditRedo = new MenuItem(msEdit, SWT.CASCADE);
+        miEditRedo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { redoAction(getActiveTransformation()); } });
+        setUndoMenu(getActiveTransformation());
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        // Search
+        //
+        MenuItem miEditSearch = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
+        miEditSearch.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { searchMetaData(); } });
+        // Set variables
+        //
+        MenuItem miEditVars = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Set variables \tCTRL-J
+        miEditVars.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { getVariables(); } });
+        // Show variables
+        MenuItem miEditSVars = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditSVars.setText(Messages.getString("Spoon.Menu.Edit.ShowVariables"));  //Show variables \tCTRL-L
+        miEditSVars.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showVariables(); } });
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        // Clear selection
+        //
+        miEditUnselectAll = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditUnselectAll.setText(Messages.getString("Spoon.Menu.Edit.ClearSelection"));  //&Clear selection \tESC
+        miEditUnselectAll.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editUnselectAll(getActiveTransformation()); } });
+        // Select all
+        //
+        miEditSelectAll = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditSelectAll.setText(Messages.getString("Spoon.Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
+        miEditSelectAll.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editSelectAll(getActiveTransformation());   } });
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        // Copy to clipboard
+        //
+        miEditCopy         = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditCopy.setText(Messages.getString("Spoon.Menu.Edit.CopyToClipboard")); //Copy selected steps to clipboard\tCTRL-C
+        // Paste from clipboard
+        //
+        miEditPaste        = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditPaste.setText(Messages.getString("Spoon.Menu.Edit.PasteFromClipboard")); //Paste steps from clipboard\tCTRL-V
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        // Refresh
+        //
+        MenuItem miEditRefresh      = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditRefresh.setText(Messages.getString("Spoon.Menu.Edit.Refresh"));  //&Refresh \tF5
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        // Options
+        //
+        MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditOptions.setText(Messages.getString("Spoon.Menu.Edit.Options"));  //&Options...
+        miEditOptions.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editOptions(); } });
         
-        Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(getActiveTransformation()); } };
-        Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(getActiveTransformation()); } };
-        Listener lsEditSearch      = new Listener() { public void handleEvent(Event e) { searchMetaData(); } };
-        Listener lsEditVars        = new Listener() { public void handleEvent(Event e) { getVariables(); } };
-        Listener lsEditSVars       = new Listener() { public void handleEvent(Event e) { showVariables(); } };
-        Listener lsEditUnselectAll = new Listener() { public void handleEvent(Event e) { editUnselectAll(getActiveTransformation()); } };
-        Listener lsEditSelectAll   = new Listener() { public void handleEvent(Event e) { editSelectAll(getActiveTransformation());   } };
-        Listener lsEditOptions     = new Listener() { public void handleEvent(Event e) { editOptions();     } };
-
-        miEditUndo       .addListener(SWT.Selection, lsEditUndo);
-        miEditRedo       .addListener(SWT.Selection, lsEditRedo);
-        miEditSearch     .addListener(SWT.Selection, lsEditSearch);
-        miEditVars       .addListener(SWT.Selection, lsEditVars);
-        miEditSVars      .addListener(SWT.Selection, lsEditSVars);
-        miEditUnselectAll.addListener(SWT.Selection, lsEditUnselectAll);
-        miEditSelectAll  .addListener(SWT.Selection, lsEditSelectAll);
-        miEditOptions    .addListener(SWT.Selection, lsEditOptions);
+        ////////////////////////////////////////////////////////////
+        // Repository
+        //
+        //
 
         // main Repository menu...
         MenuItem mRep = new MenuItem(mBar, SWT.CASCADE); mRep.setText(Messages.getString("Spoon.Menu.Repository")); //&Repository
-          Menu msRep = new Menu(shell, SWT.DROP_DOWN);
-          mRep.setMenu(msRep);
-          MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); miRepConnect.setText(Messages.getString("Spoon.Menu.Repository.ConnectToRepository"));  //&Connect to repository \tCTRL-R
-          MenuItem miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); miRepDisconnect.setText(Messages.getString("Spoon.Menu.Repository.DisconnectRepository")); //&Disconnect repository \tCTRL-D
-          MenuItem miRepExplore    = new MenuItem(msRep, SWT.CASCADE); miRepExplore.setText(Messages.getString("Spoon.Menu.Repository.ExploreRepository"));  //&Explore repository \tCTRL-E
-          new MenuItem(msRep, SWT.SEPARATOR);
-          MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText(Messages.getString("Spoon.Menu.Repository.EditCurrentUser")); //&Edit current user\tCTRL-U
+        Menu msRep = new Menu(shell, SWT.DROP_DOWN);
+        mRep.setMenu(msRep);
+        // Connect to repository
+        //
+        MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); 
+        miRepConnect.setText(Messages.getString("Spoon.Menu.Repository.ConnectToRepository"));  //&Connect to repository \tCTRL-R
+        miRepConnect.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { openRepository(); } });
+        // Disconnect from repository
+        //
+        miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); 
+        miRepDisconnect.setText(Messages.getString("Spoon.Menu.Repository.DisconnectRepository")); //&Disconnect repository \tCTRL-D
+        miRepDisconnect.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { closeRepository(); } });
+        // Explore the repository
+        //
+        miRepExplore    = new MenuItem(msRep, SWT.CASCADE); 
+        miRepExplore.setText(Messages.getString("Spoon.Menu.Repository.ExploreRepository"));  //&Explore repository \tCTRL-E
+        miRepExplore.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { exploreRepository(); } });
+        new MenuItem(msRep, SWT.SEPARATOR);
+        // Edit current user
+        //
+        miRepUser       = new MenuItem(msRep, SWT.CASCADE); 
+        miRepUser.setText(Messages.getString("Spoon.Menu.Repository.EditCurrentUser")); //&Edit current user\tCTRL-U
+        miRepUser.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { editRepositoryUser();} });
         
-        Listener lsRepConnect     = new Listener() { public void handleEvent(Event e) { openRepository();    } };
-        Listener lsRepDisconnect  = new Listener() { public void handleEvent(Event e) { closeRepository();   } };
-        Listener lsRepExplore     = new Listener() { public void handleEvent(Event e) { exploreRepository(); } };
-        Listener lsRepUser        = new Listener() { public void handleEvent(Event e) { editRepositoryUser();} };
-        
-        miRepConnect    .addListener (SWT.Selection, lsRepConnect   );
-        miRepDisconnect .addListener (SWT.Selection, lsRepDisconnect);
-        miRepExplore    .addListener (SWT.Selection, lsRepExplore   );
-        miRepUser       .addListener (SWT.Selection, lsRepUser      );
-        
+        ////////////////////////////////////////////////////////////
+        // Transformation
+        //
+        //
+
         // main Transformation menu...
         MenuItem mTrans = new MenuItem(mBar, SWT.CASCADE); mTrans.setText(Messages.getString("Spoon.Menu.Transformation"));  //&Transformation
-          Menu msTrans = new Menu(shell, SWT.DROP_DOWN );
-          mTrans.setMenu(msTrans);
-          MenuItem miTransRun       = new MenuItem(msTrans, SWT.CASCADE); miTransRun    .setText(Messages.getString("Spoon.Menu.Transformation.Run"));//&Run \tF9
-          MenuItem miTransPreview   = new MenuItem(msTrans, SWT.CASCADE); miTransPreview.setText(Messages.getString("Spoon.Menu.Transformation.Preview"));//&Preview \tF10
-          MenuItem miTransCheck     = new MenuItem(msTrans, SWT.CASCADE); miTransCheck  .setText(Messages.getString("Spoon.Menu.Transformation.Verify"));//&Verify \tF11
-          MenuItem miTransImpact    = new MenuItem(msTrans, SWT.CASCADE); miTransImpact .setText(Messages.getString("Spoon.Menu.Transformation.Impact"));//&Impact
-          MenuItem miTransSQL       = new MenuItem(msTrans, SWT.CASCADE); miTransSQL    .setText(Messages.getString("Spoon.Menu.Transformation.GetSQL"));//&Get SQL
-          new MenuItem(msTrans, SWT.SEPARATOR);
-          MenuItem miLastImpact     = new MenuItem(msTrans, SWT.CASCADE); miLastImpact  .setText(Messages.getString("Spoon.Menu.Transformation.ShowLastImpactAnalyses"));//Show last impact analyses \tF6
-          MenuItem miLastCheck      = new MenuItem(msTrans, SWT.CASCADE); miLastCheck   .setText(Messages.getString("Spoon.Menu.Transformation.ShowLastVerifyResults"));//Show last verify results  \tF7
-          MenuItem miLastPreview    = new MenuItem(msTrans, SWT.CASCADE); miLastPreview .setText(Messages.getString("Spoon.Menu.Transformation.ShowLastPreviewResults"));//Show last preview results \tF8
-          new MenuItem(msTrans, SWT.SEPARATOR);
-          MenuItem miTransCopy      = new MenuItem(msTrans, SWT.CASCADE); miTransCopy   .setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationToClipboard"));//&Copy transformation to clipboard
-          MenuItem miTransPaste     = new MenuItem(msTrans, SWT.CASCADE); miTransPaste  .setText(Messages.getString("Spoon.Menu.Transformation.PasteTransformationFromClipboard"));//P&aste transformation from clipboard
-          MenuItem miTransImage     = new MenuItem(msTrans, SWT.CASCADE); miTransImage  .setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationImageClipboard"));//Copy the transformation image clipboard \tCTRL-ALT-I
-          new MenuItem(msTrans, SWT.SEPARATOR);
-          MenuItem miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); miTransDetails.setText(Messages.getString("Spoon.Menu.Transformation.Settings"));//&Settings... \tCTRL-T
+        Menu msTrans = new Menu(shell, SWT.DROP_DOWN );
+        mTrans.setMenu(msTrans);
 
-        Listener lsTransDetails   = new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation());   } };
-        Listener lsTransRun       = new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, false, null); } };
-        Listener lsTransPreview   = new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, true, null); } };
-        Listener lsTransCheck     = new Listener() { public void handleEvent(Event e) { checkTrans(getActiveTransformation());       } };
-        Listener lsTransImpact    = new Listener() { public void handleEvent(Event e) { analyseImpact(getActiveTransformation());    } };
-        Listener lsTransSQL       = new Listener() { public void handleEvent(Event e) { getSQL(getActiveTransformation());           } };
-        Listener lsLastPreview    = new Listener() { public void handleEvent(Event e) { SpoonLog spoonLog = getActiveSpoonLog(); if (spoonLog!=null) spoonLog.showPreview(); } };
-        Listener lsLastCheck      = new Listener() { public void handleEvent(Event e) { showLastTransCheck();      } };
-        Listener lsLastImpact     = new Listener() { public void handleEvent(Event e) { showLastImpactAnalyses(getActiveTransformation());  } };
-        Listener lsTransCopy      = new Listener() { public void handleEvent(Event e) { copyTransformation(getActiveTransformation()); } };
-        Listener lsTransImage     = new Listener() { public void handleEvent(Event e) { copyTransformationImage(getActiveTransformation()); } };
-        Listener lsTransPaste     = new Listener() { public void handleEvent(Event e) { pasteTransformation(); } };
+        // Run
+        //
+        miTransRun = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransRun.setText(Messages.getString("Spoon.Menu.Transformation.Run"));//&Run \tF9
+        miTransRun.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, false, null); } });
+        // Preview
+        //
+        miTransPreview = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransPreview.setText(Messages.getString("Spoon.Menu.Transformation.Preview"));//&Preview \tF10
+        miTransPreview.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, true, null); } });
+        // Check
+        //
+        miTransCheck = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransCheck.setText(Messages.getString("Spoon.Menu.Transformation.Verify"));//&Verify \tF11
+        miTransCheck.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { checkTrans(getActiveTransformation());} });
+        // Impact
+        //
+        miTransImpact = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransImpact.setText(Messages.getString("Spoon.Menu.Transformation.Impact"));//&Impact
+        miTransImpact.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { analyseImpact(getActiveTransformation());    } });
+        // SQL
+        //
+        miTransSQL = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransSQL.setText(Messages.getString("Spoon.Menu.Transformation.GetSQL"));//&Get SQL
+        miTransSQL.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { getSQL(getActiveTransformation());           } });
+        new MenuItem(msTrans, SWT.SEPARATOR);
+        // Show last Impact results
+        //
+        miLastImpact = new MenuItem(msTrans, SWT.CASCADE); 
+        miLastImpact.setText(Messages.getString("Spoon.Menu.Transformation.ShowLastImpactAnalyses"));//Show last impact analyses \tF6
+        miLastImpact.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showLastImpactAnalyses(getActiveTransformation());  } });
+        // Show last verify results
+        //
+        miLastCheck = new MenuItem(msTrans, SWT.CASCADE); 
+        miLastCheck.setText(Messages.getString("Spoon.Menu.Transformation.ShowLastVerifyResults"));//Show last verify results  \tF7
+        miLastCheck.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showLastTransCheck();      } });
+        // Show last preview results
+        //
+        miLastPreview = new MenuItem(msTrans, SWT.CASCADE); 
+        miLastPreview.setText(Messages.getString("Spoon.Menu.Transformation.ShowLastPreviewResults"));//Show last preview results \tF8
+        miLastPreview.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { SpoonLog spoonLog = getActiveSpoonLog(); if (spoonLog!=null) spoonLog.showPreview(); } });
+        new MenuItem(msTrans, SWT.SEPARATOR);
+        // Copy transformation to clipboard
+        //
+        miTransCopy = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransCopy.setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationToClipboard"));//&Copy transformation to clipboard
+        miTransCopy.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTransformation(getActiveTransformation()); } });
+        // Paste transformation to clipboard
+        //
+        miTransPaste = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransPaste.setText(Messages.getString("Spoon.Menu.Transformation.PasteTransformationFromClipboard"));//P&aste transformation from clipboard
+        miTransPaste.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTransformationImage(getActiveTransformation()); } });
+        // Copy image of transformation to clipboard
+        //
+        miTransImage = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransImage.setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationImageClipboard"));//Copy the transformation image clipboard \tCTRL-ALT-I
+        miTransImage.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { pasteTransformation(); } });
+        new MenuItem(msTrans, SWT.SEPARATOR);
+        // Edit transformation setttings
+        //
+        miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); 
+        miTransDetails.setText(Messages.getString("Spoon.Menu.Transformation.Settings"));//&Settings... \tCTRL-T
+        miTransDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation());   } });
         
-        miTransDetails.addListener(SWT.Selection, lsTransDetails);
-        miTransRun    .addListener(SWT.Selection, lsTransRun);
-        miTransPreview.addListener(SWT.Selection, lsTransPreview);
-        miTransCheck  .addListener(SWT.Selection, lsTransCheck);
-        miTransImpact .addListener(SWT.Selection, lsTransImpact);
-        miTransSQL    .addListener(SWT.Selection, lsTransSQL);
-        miLastPreview .addListener(SWT.Selection, lsLastPreview);
-        miLastCheck   .addListener(SWT.Selection, lsLastCheck);
-        miLastImpact  .addListener(SWT.Selection, lsLastImpact);
-        miTransCopy   .addListener(SWT.Selection, lsTransCopy);
-        miTransPaste  .addListener(SWT.Selection, lsTransPaste);
-        miTransImage  .addListener(SWT.Selection, lsTransImage);
-
+        ////////////////////////////////////////////////////////////
+        // Wizard
+        //
+        //
 
         // Wizard menu
         MenuItem mWizard = new MenuItem(mBar, SWT.CASCADE); mWizard.setText(Messages.getString("Spoon.Menu.Wizard"));  //"&Wizard"
-          Menu msWizard = new Menu(shell, SWT.DROP_DOWN );
-          mWizard.setMenu(msWizard);
+        Menu msWizard = new Menu(shell, SWT.DROP_DOWN );
+        mWizard.setMenu(msWizard);
 
-          MenuItem miWizardNewConnection = new MenuItem(msWizard, SWT.CASCADE); 
-          miWizardNewConnection.setText(Messages.getString("Spoon.Menu.Wizard.CreateDatabaseConnectionWizard"));//&Create database connection wizard...\tF3
-          miWizardNewConnection.addListener(SWT.Selection, 
-                  new Listener() 
-                  { 
-                      public void handleEvent(Event e) 
-                      { 
-                          createDatabaseWizard(getActiveTransformation());  
-                      } 
-                   }
-              );
+        // New database connection wizard
+        //
+        miWizardNewConnection = new MenuItem(msWizard, SWT.CASCADE); 
+        miWizardNewConnection.setText(Messages.getString("Spoon.Menu.Wizard.CreateDatabaseConnectionWizard"));//&Create database connection wizard...\tF3
+        miWizardNewConnection.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { createDatabaseWizard(getActiveTransformation()); }});
 
-          miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
-          miWizardCopyTable.setText(Messages.getString("Spoon.Menu.Wizard.CopyTableWizard"));//&Copy table wizard...\tF4
-          miWizardCopyTable.addListener(SWT.Selection, 
-                  new Listener() 
-                  { 
-                      public void handleEvent(Event e) 
-                      { 
-                          copyTableWizard(getActiveTransformation());  
-                      } 
-                  }
-            );
+        // Copy table wizard
+        //
+        miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
+        miWizardCopyTable.setText(Messages.getString("Spoon.Menu.Wizard.CopyTableWizard"));//&Copy table wizard...\tF4
+        miWizardCopyTable.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTableWizard(getActiveTransformation()); }});
           
+        
+        ////////////////////////////////////////////////////////////
+        // Help
+        //
+        //
         
         // main Help menu...
         MenuItem mHelp = new MenuItem(mBar, SWT.CASCADE); mHelp.setText(Messages.getString("Spoon.Menu.Help")); //"&Help"
-          Menu msHelp = new Menu(shell, SWT.DROP_DOWN );
-          mHelp.setMenu(msHelp);
-        MenuItem miHelpCredit       = new MenuItem(msHelp, SWT.CASCADE); miHelpCredit.setText(Messages.getString("Spoon.Menu.Help.Credits"));//&Credits
-        Listener lsHelpCredit = new Listener() { public void handleEvent(Event e) { ShowCreditsDialog scd = new ShowCreditsDialog(shell, props, GUIResource.getInstance().getImageCredits()); scd.open();     } };
-        miHelpCredit.addListener (SWT.Selection, lsHelpCredit  );
-        MenuItem miHelpTOTD       = new MenuItem(msHelp, SWT.CASCADE); miHelpTOTD.setText(Messages.getString("Spoon.Menu.Help.Tip"));//&Tip of the day
-        Listener lsHelpTOTD = new Listener() { public void handleEvent(Event e) 
-            { 
-                TipsDialog td = new TipsDialog(shell, props); 
-                td.open();
-            } 
-        };
-        miHelpTOTD.addListener (SWT.Selection, lsHelpTOTD  );
-
+        Menu msHelp = new Menu(shell, SWT.DROP_DOWN );
+        mHelp.setMenu(msHelp);
+        
+        // Credits
+        //
+        MenuItem miHelpCredit = new MenuItem(msHelp, SWT.CASCADE); 
+        miHelpCredit.setText(Messages.getString("Spoon.Menu.Help.Credits"));//&Credits
+        miHelpCredit.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { ShowCreditsDialog scd = new ShowCreditsDialog(shell, props, GUIResource.getInstance().getImageCredits()); scd.open(); } });
+        // Tip of the day
+        //
+        MenuItem miHelpTOTD = new MenuItem(msHelp, SWT.CASCADE); 
+        miHelpTOTD.setText(Messages.getString("Spoon.Menu.Help.Tip"));//&Tip of the day
+        miHelpTOTD.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { new TipsDialog(shell, props).open(); }});
         new MenuItem(msHelp, SWT.SEPARATOR);
-
-        MenuItem miHelpAbout       = new MenuItem(msHelp, SWT.CASCADE); miHelpAbout.setText(Messages.getString("Spoon.Menu.About"));//"&About"
-        Listener lsHelpAbout = new Listener() { public void handleEvent(Event e) { helpAbout();      } };
-        miHelpAbout.addListener (SWT.Selection, lsHelpAbout  );
-
+        // About
+        //
+        MenuItem miHelpAbout = new MenuItem(msHelp, SWT.CASCADE); 
+        miHelpAbout.setText(Messages.getString("Spoon.Menu.About"));//"&About"
+        miHelpAbout.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { helpAbout(); } });
     }
-    
+   
     private void addMenuLast()
     {
         int idx = msFile.indexOf(miFileSep3);
@@ -3642,13 +3788,46 @@ public class Spoon
         
         shell.setText(text);
         
-        enableMenus();
+        enableMenus();        
     }
     
     public void enableMenus()
     {
-        // Only enable the copy tables wizard if we have a repository
-        // miWizardCopyTable.setEnabled( rep !=null );
+        boolean enableTransMenu = getActiveTransformation()!=null;
+        boolean enableRepositoryMenu = rep!=null;
+        
+        // Only enable certain menu-items if we need to.
+        miFileSave.setEnabled(enableTransMenu);
+        miFileSaveAs.setEnabled(enableTransMenu);
+        miFileClose.setEnabled(enableTransMenu);
+        miFilePrint.setEnabled(enableTransMenu);
+
+        miEditUndo.setEnabled(enableTransMenu);
+        miEditRedo.setEnabled(enableTransMenu);
+        miEditUnselectAll.setEnabled(enableTransMenu);
+        miEditSelectAll.setEnabled(enableTransMenu);
+        miEditCopy.setEnabled(enableTransMenu);
+        miEditPaste.setEnabled(enableTransMenu);
+
+        miTransRun.setEnabled(enableTransMenu);
+        miTransPreview.setEnabled(enableTransMenu);
+        miTransCheck.setEnabled(enableTransMenu);
+        miTransImpact.setEnabled(enableTransMenu);
+        miTransSQL.setEnabled(enableTransMenu);
+        miLastImpact.setEnabled(enableTransMenu);
+        miLastCheck.setEnabled(enableTransMenu);
+        miLastPreview.setEnabled(enableTransMenu);
+        miTransCopy.setEnabled(enableTransMenu);
+        miTransPaste.setEnabled(enableTransMenu);
+        miTransImage.setEnabled(enableTransMenu);
+        miTransDetails.setEnabled(enableTransMenu);
+
+        miWizardNewConnection.setEnabled(enableTransMenu);
+        miWizardCopyTable.setEnabled(enableTransMenu);
+        
+        miRepDisconnect.setEnabled(enableRepositoryMenu);
+        miRepExplore.setEnabled(enableRepositoryMenu);
+        miRepUser.setEnabled(enableRepositoryMenu);
     }
     
     private void printFile(TransMeta transMeta)
@@ -4285,10 +4464,8 @@ public class Spoon
     {
         if (shell.isDisposed()) return;
 
-        if (transMeta==null) return;
-        
-        TransAction prev = transMeta.viewThisUndo();
-        TransAction next = transMeta.viewNextUndo();
+        TransAction prev = transMeta!=null ? transMeta.viewThisUndo() : null;
+        TransAction next = transMeta!=null ? transMeta.viewNextUndo() : null;
         
         if (prev!=null) 
         {

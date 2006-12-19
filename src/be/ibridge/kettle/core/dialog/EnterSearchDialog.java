@@ -174,9 +174,10 @@ public class EnterSearchDialog
     
     private void getData()
     {
-        wStep.setSelection(true);
-        wDB.setSelection(false);
-        wNote.setSelection(true);
+        wStep.setSelection(searchingSteps);
+        wDB.setSelection(searchingDatabases);
+        wNote.setSelection(searchingNotes);
+        wFilter.setText(Const.NVL(filterString, ""));
 
         wFilter.setFocus();
     }

@@ -10,7 +10,7 @@ import be.ibridge.kettle.core.Const;
 
 public class StringSearcher
 {
-    public static final void findMetaData(Object object, int level, List stringList, Object parentObject)
+    public static final void findMetaData(Object object, int level, List stringList, Object parentObject, Object grandParentObject)
     {
         // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
         
@@ -38,7 +38,7 @@ public class StringSearcher
                         if (obj instanceof String)
                         {
                             // OK, let's add the String
-                            stringList.add(new StringSearchResult((String)obj, parentObject, field.getName()));                       
+                            stringList.add(new StringSearchResult((String)obj, parentObject, grandParentObject, field.getName()));                       
                         }
                         else
                         if (obj instanceof String[])
@@ -48,7 +48,7 @@ public class StringSearcher
                             {
                                 if (array[x]!=null)
                                 {
-                                    stringList.add(new StringSearchResult(array[x], parentObject, field.getName()+" #"+(x+1)));
+                                    stringList.add(new StringSearchResult(array[x], parentObject, grandParentObject, field.getName()+" #"+(x+1)));
                                 }
                             }
                         }
@@ -56,22 +56,22 @@ public class StringSearcher
                         if (obj instanceof Boolean)
                         {
                             // OK, let's add the String
-                            stringList.add(new StringSearchResult(((Boolean)obj).toString(), parentObject, field.getName()+" (Boolean)"));                       
+                            stringList.add(new StringSearchResult(((Boolean)obj).toString(), parentObject, grandParentObject, field.getName()+" (Boolean)"));                       
                         }
                         else
                         if (obj instanceof Condition)
                         {
-                        	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, field.getName()+" (Condition)"));
+                        	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
                         }
                         else
                         if (obj instanceof Object)
                         {
-                            findMetaData(obj, level+1, stringList, parentObject);
+                            findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
                         }
                         else
                         if (obj instanceof Object[])
                         {
-                            for (int j=0;j<((Object[])obj).length;j++) findMetaData( ((Object[])obj)[j], level+1, stringList, parentObject);
+                            for (int j=0;j<((Object[])obj).length;j++) findMetaData( ((Object[])obj)[j], level+1, stringList, parentObject, grandParentObject);
                         }
                     }
                 }
@@ -94,7 +94,7 @@ public class StringSearcher
                             {
                                 if (string instanceof String)
                                 {
-                                    stringList.add(new StringSearchResult((String)string, parentObject, field.getName()));
+                                    stringList.add(new StringSearchResult((String)string, parentObject, grandParentObject, field.getName()));
                                     // System.out.println(Const.rightPad(" ", level)+"  "+field.getName()+" : method "+fullMethod+" --> "+((String)string));
                                 }
                                 else
@@ -105,7 +105,7 @@ public class StringSearcher
                                     {
                                         if (array[x]!=null)
                                         {
-                                            stringList.add(new StringSearchResult(array[x], parentObject, field.getName()+" #"+(x+1)));
+                                            stringList.add(new StringSearchResult(array[x], parentObject, grandParentObject, field.getName()+" #"+(x+1)));
                                             /// System.out.println(Const.rightPad(" ", level)+"  "+field.getName()+" : method "+fullMethod+" --> String #"+x+" = "+array[x]);
                                         }
                                     }
@@ -114,22 +114,22 @@ public class StringSearcher
                                 if (string instanceof Boolean)
                                 {
                                     // OK, let's add the String
-                                    stringList.add(new StringSearchResult(((Boolean)string).toString(), parentObject, field.getName()+" (Boolean)"));                       
+                                    stringList.add(new StringSearchResult(((Boolean)string).toString(), parentObject, grandParentObject, field.getName()+" (Boolean)"));                       
                                 }
                                 else
                                 if (string instanceof Condition)
                                 {
-                                	stringList.add(new StringSearchResult(((Condition)string).toString(), parentObject, field.getName()+" (Condition)"));
+                                	stringList.add(new StringSearchResult(((Condition)string).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
                                 }
                                 else
                                 if (string instanceof Object[])
                                 {
-                                    for (int j=0;j<((Object[])string).length;j++) findMetaData( ((Object[])string)[j], level+1, stringList, parentObject);
+                                    for (int j=0;j<((Object[])string).length;j++) findMetaData( ((Object[])string)[j], level+1, stringList, parentObject, grandParentObject);
                                 }
                                 else
                                 if (string instanceof Object) // OK, so it's not a string but an object: go a bit deeper into it!
                                 {
-                                    findMetaData(string, level+1, stringList, parentObject);
+                                    findMetaData(string, level+1, stringList, parentObject, grandParentObject);
                                 }
                             }
                         }

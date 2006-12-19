@@ -1633,7 +1633,8 @@ public class JobMeta implements Cloneable, XMLInterface
 
 	public String toString()
 	{
-		if (getName()!=null) return getName();
+        if (name != null) return name;
+        if (filename != null) return filename;
 		else return getClass().getName();	
 	}
 
@@ -1786,10 +1787,10 @@ public class JobMeta implements Cloneable, XMLInterface
             for (int i=0;i<nrJobEntries();i++)
             {
                 JobEntryCopy entryMeta = getJobEntry(i);
-                stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, "Job entry name"));
-                if (entryMeta.getDescription()!=null) stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, "Job entry description"));
+                stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, "Job entry name"));
+                if (entryMeta.getDescription()!=null) stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, "Job entry description"));
                 JobEntryInterface metaInterface = entryMeta.getEntry();
-                StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta);
+                StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta, this);
             }
         }
 
@@ -1799,11 +1800,11 @@ public class JobMeta implements Cloneable, XMLInterface
             for (int i=0;i<nrDatabases();i++)
             {
                 DatabaseMeta meta = getDatabase(i);
-                stringList.add(new StringSearchResult(meta.getName(), meta, "Database connection name"));
-                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, "Database name"));
-                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, "Database Username"));
-                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, "Database type description"));
-                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, "Database port"));
+                stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
+                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
+                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
+                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
+                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
             }
         }
 
@@ -1813,7 +1814,7 @@ public class JobMeta implements Cloneable, XMLInterface
             for (int i=0;i<nrNotes();i++)
             {
                 NotePadMeta meta = getNote(i);
-                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, "Notepad text"));
+                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
             }
         }
 
