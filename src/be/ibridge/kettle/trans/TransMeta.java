@@ -2779,6 +2779,7 @@ public class TransMeta implements XMLInterface, Comparator
             {
                 SlaveServer slaveServer = (SlaveServer) object;
                 addOrReplaceSlaveServer(slaveServer);
+                System.out.println("Read slave server ["+slaveServer+"]");
             }
         }
 
@@ -2810,7 +2811,6 @@ public class TransMeta implements XMLInterface, Comparator
             readPartitionSchemas(rep, true);
             readSlaves(rep, true);
             readClusters(rep, true);
-
         }
     }
 
