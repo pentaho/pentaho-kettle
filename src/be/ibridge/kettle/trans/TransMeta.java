@@ -2432,17 +2432,14 @@ public class TransMeta implements XMLInterface, Comparator
             clear();
             
             // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
-            if (rep!=null)
+            try
             {
-                try
-                {
-                    readSharedObjects(rep);
-                    clearChanged();
-                }
-                catch(KettleException e)
-                {
-                    throw new KettleXMLException(Messages.getString("TransMeta.Exception.UnableToReadSharedObjectsFromRepository.Message"), e);
-                }
+                readSharedObjects(rep);
+                clearChanged();
+            }
+            catch(KettleException e)
+            {
+                throw new KettleXMLException(Messages.getString("TransMeta.Exception.UnableToReadSharedObjectsFromRepository.Message"), e);
             }
 
             // Handle connections
