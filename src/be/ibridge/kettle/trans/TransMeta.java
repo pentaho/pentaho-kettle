@@ -2765,27 +2765,12 @@ public class TransMeta implements XMLInterface, Comparator
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
                 addOrReplaceDatabase(databaseMeta);
             }
-        }
-
-        // Then read the slave servers
-        //
-        for (Iterator iter = objects.iterator(); iter.hasNext();)
-        {
-            Object object = iter.next();
-            if (object instanceof SlaveServer)
+            else if (object instanceof SlaveServer)
             {
                 SlaveServer slaveServer = (SlaveServer) object;
                 addOrReplaceSlaveServer(slaveServer);
-                System.out.println("Read slave server ["+slaveServer+"]");
             }
-        }
-
-        // Then the rest...
-        ///
-        for (Iterator iter = objects.iterator(); iter.hasNext();)
-        {
-            Object object = iter.next();
-            if (object instanceof StepMeta)
+            else if (object instanceof StepMeta)
             {
                 StepMeta stepMeta = (StepMeta) object;
                 addOrReplaceStep(stepMeta);

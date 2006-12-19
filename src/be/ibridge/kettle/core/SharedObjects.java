@@ -86,6 +86,8 @@ public class SharedObjects
             if (sharedObjectsNode!=null)
             {
                 NodeList childNodes = sharedObjectsNode.getChildNodes();
+                // First load databases & slaves
+                //
                 for (int i=0;i<childNodes.getLength();i++)
                 {
                     Node node = childNodes.item(i);
@@ -97,7 +99,28 @@ public class SharedObjects
                     {    
                         isShared = new DatabaseMeta(node);
                     }
-                    else if (nodeName.equals(StepMeta.XML_TAG))        
+                    else if (nodeName.equals(SlaveServer.XML_TAG)) 
+                    {
+                        isShared = new SlaveServer(node);
+                    }
+
+                    if (isShared!=null)
+                    {
+                        isShared.setShared(true);
+                        storeObject(isShared);
+                    }
+                }
+
+                // Then load the other objects that might reference databases & slaves
+                //
+                for (int i=0;i<childNodes.getLength();i++)
+                {
+                    Node node = childNodes.item(i);
+                    String nodeName = node.getNodeName();
+                    
+                    SharedObjectInterface isShared = null;
+    
+                    if (nodeName.equals(StepMeta.XML_TAG))        
                     { 
                         StepMeta stepMeta = new StepMeta(node, databases, counters);
                         stepMeta.setDraw(false); // don't draw it, keep it in the tree.
@@ -106,10 +129,6 @@ public class SharedObjects
                     else if (nodeName.equals(PartitionSchema.XML_TAG)) 
                     {
                         isShared = new PartitionSchema(node);
-                    }
-                    else if (nodeName.equals(SlaveServer.XML_TAG)) 
-                    {
-                        isShared = new SlaveServer(node);
                     }
                     else if (nodeName.equals(ClusterSchema.XML_TAG)) 
                     {   
