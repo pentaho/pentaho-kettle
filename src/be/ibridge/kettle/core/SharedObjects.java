@@ -64,14 +64,9 @@ public class SharedObjects
 
     private Map objectsMap;
 
-    private ArrayList databases;
-    private Hashtable counters;
-    
-    public SharedObjects(String sharedObjectsFile, ArrayList databases, Hashtable counters, List slaveServers) throws KettleXMLException
+    public SharedObjects(String sharedObjectsFile) throws KettleXMLException
     {
         this.filename = createFilename(sharedObjectsFile);
-        this.databases = databases;
-        this.counters = counters;
         this.objectsMap = new Hashtable();
 
         // Extra information
@@ -85,6 +80,9 @@ public class SharedObjects
             Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
             if (sharedObjectsNode!=null)
             {
+                List privateSlaveServers = new ArrayList();
+                ArrayList privateDatabases = new ArrayList();
+                
                 NodeList childNodes = sharedObjectsNode.getChildNodes();
                 // First load databases & slaves
                 //
@@ -98,10 +96,12 @@ public class SharedObjects
                     if (nodeName.equals(DatabaseMeta.XML_TAG))
                     {    
                         isShared = new DatabaseMeta(node);
+                        privateDatabases.add(isShared);
                     }
                     else if (nodeName.equals(SlaveServer.XML_TAG)) 
                     {
                         isShared = new SlaveServer(node);
+                        privateSlaveServers.add(isShared);
                     }
 
                     if (isShared!=null)
@@ -122,7 +122,7 @@ public class SharedObjects
     
                     if (nodeName.equals(StepMeta.XML_TAG))        
                     { 
-                        StepMeta stepMeta = new StepMeta(node, databases, counters);
+                        StepMeta stepMeta = new StepMeta(node, privateDatabases, null);
                         stepMeta.setDraw(false); // don't draw it, keep it in the tree.
                         isShared = stepMeta;
                     }
@@ -132,7 +132,7 @@ public class SharedObjects
                     }
                     else if (nodeName.equals(ClusterSchema.XML_TAG)) 
                     {   
-                        isShared = new ClusterSchema(node, slaveServers);
+                        isShared = new ClusterSchema(node, privateSlaveServers);
                     }
                     
                     if (isShared!=null)
@@ -167,9 +167,9 @@ public class SharedObjects
         return filename;
     }
 
-    public SharedObjects(ArrayList databases, Hashtable counters, List slaveServers) throws KettleXMLException
+    public SharedObjects() throws KettleXMLException
     {
-        this(null, databases, counters, slaveServers);
+        this(null);
     }
 
     public Map getObjectsMap()
@@ -180,22 +180,6 @@ public class SharedObjects
     public void setObjectsMap(Map objects)
     {
         this.objectsMap = objects;
-    }
-
-    /**
-     * @return the counters
-     */
-    public Hashtable getCounters()
-    {
-        return counters;
-    }
-
-    /**
-     * @return the databases
-     */
-    public ArrayList getDatabases()
-    {
-        return databases;
     }
 
     /**

@@ -2750,7 +2750,7 @@ public class TransMeta implements XMLInterface, Comparator
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
         String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
-        SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters, slaveServers); 
+        SharedObjects sharedObjects = new SharedObjects(soFile); 
         Map objectsMap = sharedObjects.getObjectsMap();
         Collection objects = objectsMap.values();
         
@@ -5103,7 +5103,7 @@ public class TransMeta implements XMLInterface, Comparator
         {
             // First load all the shared objects...
             String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
-            SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters, slaveServers);
+            SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there
             List shared = new ArrayList();

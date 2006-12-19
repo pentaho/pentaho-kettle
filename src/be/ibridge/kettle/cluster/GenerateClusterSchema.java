@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.SharedObjects;
@@ -41,7 +39,7 @@ public class GenerateClusterSchema
         Properties properties = new Properties();
         properties.load(new FileInputStream(new File(args[0])));
 
-        SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable(), new ArrayList());
+        SharedObjects sharedObjects = new SharedObjects(args[1]);
         
         DatabaseMeta mysql = new DatabaseMeta("MySQL EC2", "MySQL", "JDBC", null, "test", "3306", "matt", "abcd");
         
