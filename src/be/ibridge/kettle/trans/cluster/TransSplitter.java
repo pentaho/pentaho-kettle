@@ -222,7 +222,7 @@ public class TransSplitter
         }
         else
         {
-            transMeta.setName(originalTransformation.getName());
+            transMeta.setName(originalTransformation.getName()+" (master)");
 
             NotePadMeta masterNote = new NotePadMeta("This is a generated master transformation.\nIt will be run on server: "+getMasterServer(), 0, 0, -1, -1);
             transMeta.addNote(masterNote);
