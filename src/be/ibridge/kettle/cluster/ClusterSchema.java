@@ -149,11 +149,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         {
             Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i);
             String serverName = XMLHandler.getNodeValue(serverNode);
-            // System.out.println("Found name #"+i+" : "+name);
             SlaveServer slaveServer = SlaveServer.findSlaveServer(referenceSlaveServers, serverName);
             if (slaveServer!=null) 
             {
-                System.out.println("adding server #"+i+" : "+slaveServer.toString()+" to cluster "+name);
                 slaveServers.add(slaveServer);
             }
         }
