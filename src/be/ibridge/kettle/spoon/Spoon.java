@@ -2973,7 +2973,7 @@ public class Spoon
                         
                         // Ask if we should save it before closing...
                         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-                        mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message"));//"File has changed!  Do you want to save first?"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message", makeGraphTabName(transMeta)));//"File has changed!  Do you want to save first?"
                         mb.setText(Messages.getString("Spoon.Dialog.SaveChangedFile.Title"));//"Warning!"
                         int answer = mb.open();
                     
