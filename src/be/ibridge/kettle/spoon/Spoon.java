@@ -3843,7 +3843,7 @@ public class Spoon
             TabMapEntry entry = (TabMapEntry) iter.next();
             
             boolean changed = entry.getObject().hasContentChanged();
-            if (changed)
+            if (changed && !entry.getTabItem().isDisposed())
             {
                 entry.getTabItem().setFont(GUIResource.getInstance().getFontBold());
             }
@@ -4060,7 +4060,9 @@ public class Spoon
     
     public void undoAction(TransMeta transMeta)
     {
-        // spoongraph.forceFocus();
+        if (transMeta==null) return;
+        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        spoonGraph.forceFocus();
         
         TransAction ta = transMeta.previousUndo();
         if (ta==null) return;
@@ -4119,7 +4121,31 @@ public class Spoon
                 refreshTree();
                 refreshGraph();
                 break;
+                
+            // We created a new slave : undo this...
+            case TransAction.TYPE_ACTION_NEW_SLAVE:
+                // Delete the slave at correct location:
+                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                {
+                    int idx = ta.getCurrentIndex()[i];
+                    transMeta.getSlaveServers().remove(idx);
+                }
+                refreshTree();
+                refreshGraph();
+                break;
 
+                // We created a new slave : undo this...
+            case TransAction.TYPE_ACTION_NEW_CLUSTER:
+                // Delete the slave at correct location:
+                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                {
+                    int idx = ta.getCurrentIndex()[i];
+                    transMeta.getClusterSchemas().remove(idx);
+                }
+                refreshTree();
+                refreshGraph();
+                break;
+                
             //
             // DELETE
             //
@@ -4282,7 +4308,9 @@ public class Spoon
     
     public void redoAction(TransMeta transMeta)
     {
-        // spoongraph.forceFocus();
+        if (transMeta==null) return;
+        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        spoonGraph.forceFocus();
 
         TransAction ta = transMeta.nextUndo();
         if (ta==null) return;

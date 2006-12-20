@@ -80,6 +80,18 @@ public class TransAction
 	public static final int  TYPE_ACTION_DELETE_TABLE           = 30;
 	public static final int  TYPE_ACTION_DELETE_RELATIONSHIP    = 31;
 	public static final int  TYPE_ACTION_POSITION_TABLE         = 32;
+    
+    public static final int  TYPE_ACTION_NEW_SLAVE              = 33;
+    public static final int  TYPE_ACTION_CHANGE_SLAVE           = 34;
+    public static final int  TYPE_ACTION_DELETE_SLAVE           = 35;
+    
+    public static final int  TYPE_ACTION_NEW_CLUSTER            = 36;
+    public static final int  TYPE_ACTION_CHANGE_CLUSTER         = 37;
+    public static final int  TYPE_ACTION_DELETE_CLUSTER         = 38;
+    
+    public static final int  TYPE_ACTION_NEW_PARTITION          = 39;
+    public static final int  TYPE_ACTION_CHANGE_PARTITION       = 40;
+    public static final int  TYPE_ACTION_DELETE_PARTITION       = 41;
 
 	public static final String desc_action[] = new String[]
 		{
