@@ -993,4 +993,9 @@ public class SpoonLog extends Composite implements TabItemInterface
     {
         return transMeta;
     }
+    
+    public boolean hasContentChanged()
+    {
+        return false;
+    }
 }

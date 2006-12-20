@@ -87,6 +87,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public SlaveServer(Node slaveNode)
     {
+        this();
         this.name       = XMLHandler.getTagValue(slaveNode, "name");
         this.hostname   = XMLHandler.getTagValue(slaveNode, "hostname");
         this.port       = XMLHandler.getTagValue(slaveNode, "port");
@@ -121,7 +122,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        if (rep.getSlaveID(name)<0)
+        setId(rep.getSlaveID(name));
+        
+        if (getId()<0)
         {
             setId(rep.insertSlave(this));
         }
@@ -139,7 +142,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this();
         
         Row row = rep.getSlaveServer(id_slave_server);
-        if (row==null) return;
+        if (row==null)
+        {
+            throw new KettleDatabaseException("Internal repository error: slave server with id "+id_slave_server+" could not be found!");
+        }
         
         name          = row.getString("NAME", null);
         hostname      = row.getString("HOST_NAME", null);
@@ -162,7 +168,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     public void replaceMeta(SlaveServer slaveServer)
     {
         this.name = slaveServer.name;
-        this.hostname = slaveServer.name;
+        this.hostname = slaveServer.hostname;
         this.port = slaveServer.port;
         this.username = slaveServer.username;
         this.password = slaveServer.password;
@@ -578,7 +584,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-            if (slaveServer.getName().equalsIgnoreCase(name)) return slaveServer;
+            if (slaveServer.getName()!=null && slaveServer.getName().equalsIgnoreCase(name)) return slaveServer;
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package be.ibridge.kettle.spoon;
 
+
 public interface TabItemInterface
 {
     /** 
@@ -8,6 +9,6 @@ public interface TabItemInterface
      * @return true if the tab was closed, false if it was prevented by the user. (are you sure dialog)
      */
     public boolean canBeClosed();
-    
     public Object getManagedObject();
+    public boolean hasContentChanged();
 }

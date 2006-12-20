@@ -36,6 +36,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
+import be.ibridge.kettle.core.ChangedFlagInterface;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
@@ -66,7 +67,6 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
-import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
@@ -78,7 +78,7 @@ import be.ibridge.kettle.trans.step.StepPartitioningMeta;
  * @author Matt
  *
  */
-public class TransMeta implements XMLInterface, Comparator
+public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 {
     public static final String XML_TAG = "transformation";
 
@@ -334,18 +334,6 @@ public class TransMeta implements XMLInterface, Comparator
         feedbackSize = Const.ROWS_UPDATE;
         
         usingThreadPriorityManagment = true;
-        
-        
-        // For testing purposes only, we add a single cluster schema.
-        // T O D O: remove this test-code later on.
-        /*
-        ClusterSchema clusterSchema = new ClusterSchema();
-        clusterSchema.setName("Local cluster");
-        SlaveServer localSlave = new SlaveServer("127.0.0.1", "80", null, null, null, null, null);
-        clusterSchema.getSlaveServers().add(localSlave);
-        clusterSchemas.add(clusterSchema);
-        */
-
     }
 
     public void clearUndo()
@@ -1713,7 +1701,6 @@ public class TransMeta implements XMLInterface, Comparator
                 ClusterSchema schema = (ClusterSchema) clusterSchemas.get(i);
                 schema.saveRep(rep, getID());
             }
-
             
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
@@ -1997,14 +1984,13 @@ public class TransMeta implements XMLInterface, Comparator
      */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor, boolean setInternalVariables) throws KettleException
     {
+        this();
+        
         try
         {
             String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
 
-            // Clear everything...
-            clear();
-            
-            // Also read objects from the shared XML file
+            // Read objects from the shared XML file & the repository
             readSharedObjects(rep);
             
             setName(transname);

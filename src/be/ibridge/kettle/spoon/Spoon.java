@@ -3406,7 +3406,7 @@ public class Spoon
                 DatabaseMeta databaseMeta = transMeta.getDatabase(i);
                 TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
                 tiDb.setText(databaseMeta.getName());
-                if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold().getFont());
+                if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
                 tiDb.setImage(guiResource.getImageConnection());
             }
 
@@ -3424,7 +3424,7 @@ public class Spoon
                 StepMeta stepMeta = transMeta.getStep(i);
                 TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
                 tiStep.setText(stepMeta.getName());
-                if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold().getFont());
+                if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold());
                 tiStep.setImage(guiResource.getImageBol());
             }
             
@@ -3460,7 +3460,7 @@ public class Spoon
                 TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
                 tiPartition.setText(partitionSchema.getName());
                 tiPartition.setImage(guiResource.getImageBol());
-                if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold().getFont());
+                if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold());
             }
 
             ///////////////////////////////////////////////////////
@@ -3478,7 +3478,7 @@ public class Spoon
                 TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
                 tiSlave.setText(slaveServer.getName());
                 tiSlave.setImage(guiResource.getImageBol());
-                if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold().getFont());
+                if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
             }
             
             ///////////////////////////////////////////////////////
@@ -3496,7 +3496,7 @@ public class Spoon
                 TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
                 tiCluster.setText(clusterSchema.toString());
                 tiCluster.setImage(guiResource.getImageBol());
-                if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold().getFont());
+                if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold());
             }
         }
 
@@ -3511,6 +3511,7 @@ public class Spoon
     
     public String getActiveTabText()
     {
+        if (tabfolder.getSelection()==null) return null;
         return tabfolder.getSelection().getText();
     }
     
@@ -3518,7 +3519,10 @@ public class Spoon
     {
         if (shell.isDisposed()) return;
         
-        TabMapEntry tabMapEntry = (TabMapEntry) tabMap.get(getActiveTabText());
+        String tabText = getActiveTabText();
+        if (tabText==null) return;
+        
+        TabMapEntry tabMapEntry = (TabMapEntry) tabMap.get(tabText);
         if (tabMapEntry.getObject() instanceof SpoonGraph)
         {
             SpoonGraph spoonGraph = (SpoonGraph) tabMapEntry.getObject();
@@ -3788,7 +3792,8 @@ public class Spoon
         
         shell.setText(text);
         
-        enableMenus();        
+        enableMenus();
+        markTabsChanged();
     }
     
     public void enableMenus()
@@ -3828,6 +3833,25 @@ public class Spoon
         miRepDisconnect.setEnabled(enableRepositoryMenu);
         miRepExplore.setEnabled(enableRepositoryMenu);
         miRepUser.setEnabled(enableRepositoryMenu);
+    }
+    
+    private void markTabsChanged()
+    {
+        Collection c = tabMap.values();
+        for (Iterator iter = c.iterator(); iter.hasNext();)
+        {
+            TabMapEntry entry = (TabMapEntry) iter.next();
+            
+            boolean changed = entry.getObject().hasContentChanged();
+            if (changed)
+            {
+                entry.getTabItem().setFont(GUIResource.getInstance().getFontBold());
+            }
+            else
+            {
+                entry.getTabItem().setFont(GUIResource.getInstance().getFontGraph());
+            }
+        }
     }
     
     private void printFile(TransMeta transMeta)

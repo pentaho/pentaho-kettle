@@ -134,7 +134,7 @@ public class TransSplitter
 
     private String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
-        return transName + " ("+clusterSchema+":"+slaveServer.getHostname()+")";
+        return transName + " ("+clusterSchema+":"+slaveServer.getName()+")";
     }
     
     /**

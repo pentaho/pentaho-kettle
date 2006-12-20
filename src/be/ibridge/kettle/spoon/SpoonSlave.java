@@ -509,4 +509,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
     {
         return slaveServer;
     }
+    
+    public boolean hasContentChanged()
+    {
+        return false;
+    }
 }

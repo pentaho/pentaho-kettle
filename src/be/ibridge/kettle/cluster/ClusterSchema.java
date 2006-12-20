@@ -176,6 +176,10 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            if (slaveServer.getId()<0) // oops, not yet saved!
+            {
+                slaveServer.saveRep(rep, id_transformation);
+            }
             rep.insertClusterSlave(this, slaveServer);
         }
         
@@ -201,9 +205,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             SlaveServer slaveServer = new SlaveServer(rep, pids[i]);
             SlaveServer reference = SlaveServer.findSlaveServer(slaveServers, slaveServer.getName());
             if (reference!=null) 
-                slaveServers.add(reference);
+                this.slaveServers.add(reference);
             else 
-                slaveServers.add(slaveServer);
+                this.slaveServers.add(slaveServer);
         }
     }
     

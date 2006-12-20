@@ -2244,6 +2244,11 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
     {
         return transMeta;
     }
+    
+    public boolean hasContentChanged()
+    {
+        return transMeta.hasChanged();
+    }
 
     public ArrayList getRemarks()
     {

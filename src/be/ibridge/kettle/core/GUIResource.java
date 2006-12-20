@@ -768,9 +768,9 @@ public class GUIResource
         return (String)clipboard.getContents(tran);
     }
 
-    public ManagedFont getFontBold()
+    public Font getFontBold()
     {
-        return fontBold;
+        return fontBold.getFont();
     }
 
     /**

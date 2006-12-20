@@ -424,4 +424,9 @@ public class SpoonHistory extends Composite implements TabItemInterface
     {
         return transMeta;
     }
+    
+    public boolean hasContentChanged()
+    {
+        return refreshNeeded;
+    }
 }
