@@ -661,4 +661,12 @@ public interface DatabaseInterface extends Cloneable
      * @return the required libraries (in libext) for this database connection.
      */
     public String[] getUsedLibraries();
+
+    /**
+     * @return The set of properties that allows you to set the connection pooling parameters
+     */
+    public Properties getConnectionPoolingProperties();
+
+    /** set the connection pooling properties */
+    public void setConnectionPoolingProperties(Properties properties);
 }

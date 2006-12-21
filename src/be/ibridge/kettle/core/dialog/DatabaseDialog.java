@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -49,13 +50,15 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.BaseDatabaseMeta;
-import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.database.ConnectionPoolUtil;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.database.DatabaseConnectionPoolParameter;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
+import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -152,6 +155,12 @@ public class DatabaseDialog extends Dialog
     private int margin;
     
     private long database_id;
+
+    private TableView wPoolParameters;
+
+    private Label wlPoolParameters;
+
+    private FormData fdlPoolParameters;
 
 	public DatabaseDialog(Shell par, int style, LogWriter lg, DatabaseMeta conn, Props pr)
 	{
@@ -641,6 +650,58 @@ public class DatabaseDialog extends Dialog
         fdMaxPool.left = new FormAttachment(middle, 0); // To the right of the label
         fdMaxPool.right= new FormAttachment(95, 0);
         wMaxPool.setLayoutData(fdMaxPool);
+
+        
+        // What's the maximum pool size
+        wlPoolParameters = new Label(wPoolComp, SWT.RIGHT); 
+        props.setLook(wlPoolParameters);
+        wlPoolParameters.setText(Messages.getString("DatabaseDialog.label.PoolParameters"));  //$NON-NLS-1$
+        fdlPoolParameters = new FormData();
+        fdlPoolParameters.top   = new FormAttachment(wInitPool, margin);
+        fdlPoolParameters.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlPoolParameters.right = new FormAttachment(middle, -margin);
+        wlPoolParameters.setLayoutData(fdlPoolParameters);
+
+        // options list
+        ColumnInfo[] colinfo=new ColumnInfo[]
+            {
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolParameter"), ColumnInfo.COLUMN_TYPE_TEXT,   false, false ), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolDefault"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true  ), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolValue"),     ColumnInfo.COLUMN_TYPE_TEXT,   false, false ), //$NON-NLS-1$
+            };
+        colinfo[2].setUsingVariables(true);
+        final ArrayList parameters = DatabaseConnectionPoolParameter.getRowList(
+                                    BaseDatabaseMeta.poolingParameters, 
+                                    Messages.getString("DatabaseDialog.column.PoolParameter"), 
+                                    Messages.getString("DatabaseDialog.column.PoolDefault"), 
+                                    Messages.getString("DatabaseDialog.column.PoolDescription")
+                                );
+        colinfo[0].setSelectionAdapter(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    SelectRowDialog dialog = new SelectRowDialog(shell, SWT.NONE, Messages.getString("DatabaseDialog.column.SelectPoolParameter"), parameters);
+                    Row row = dialog.open();
+                    if (row!=null)
+                    {
+                        // the parameter is the first value
+                        String parameterName = row.getValue(0).getString();
+                        String defaultValue = DatabaseConnectionPoolParameter.findParameter(parameterName, BaseDatabaseMeta.poolingParameters).getDefaultValue();
+                        wPoolParameters.setText(Const.NVL(parameterName, ""), e.x, e.y);
+                        wPoolParameters.setText(Const.NVL(defaultValue, ""), e.x+1, e.y);
+                    }
+                }
+            }
+        );
+
+        wPoolParameters = new TableView(wPoolComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
+        props.setLook(wPoolParameters);
+        fdOptions = new FormData();
+        fdOptions.left = new FormAttachment(0, 0);
+        fdOptions.right = new FormAttachment(100, 0);
+        fdOptions.top = new FormAttachment(wMaxPool, margin*2);
+        fdOptions.bottom = new FormAttachment(100, -20);
+        wPoolParameters.setLayoutData(fdOptions);
 
         
         fdPoolComp = new FormData();
@@ -1170,6 +1231,8 @@ public class DatabaseDialog extends Dialog
         
         wSQL.setText( NVL(connection.getConnectSQL(),"") ); //$NON-NLS-1$
         
+        getPoolingData();
+        
 		wConn.setFocus();
 		wConn.selectAll();
         
@@ -1228,6 +1291,28 @@ public class DatabaseDialog extends Dialog
         wOptions.setRowNums();
         wOptions.optWidth(true);
     }
+    
+    private void getPoolingData()
+    {
+        // The extra options as well...
+        Properties properties = connection.getConnectionPoolingProperties();
+        Iterator keys = properties.keySet().iterator();
+        while (keys.hasNext())
+        {
+            String parameter = (String) keys.next();
+            String value     = (String) properties.get(parameter);
+            String defValue  = DatabaseConnectionPoolParameter.findParameter(parameter, BaseDatabaseMeta.poolingParameters).getDefaultValue();
+            TableItem item = new TableItem(wPoolParameters.table, SWT.NONE);
+            
+            item.setText(1, Const.NVL(parameter, ""));
+            item.setText(2, Const.NVL(defValue, ""));
+            item.setText(3, Const.NVL(value, ""));
+        }
+        wPoolParameters.removeEmptyRows();
+        wPoolParameters.setRowNums();
+        wPoolParameters.optWidth(true);
+    }
+
 	
 	public void enableFields()
 	{
@@ -1310,6 +1395,9 @@ public class DatabaseDialog extends Dialog
         wMaxPool.setEnabled( wUsePool.getSelection());
         wlInitPool.setEnabled( wUsePool.getSelection());
         wInitPool.setEnabled( wUsePool.getSelection());
+        wlPoolParameters.setEnabled( wUsePool.getSelection());
+        wPoolParameters.setEnabled( wUsePool.getSelection());
+        wPoolParameters.table.setEnabled( wUsePool.getSelection());
         
         // How about the clustering stuff?
         wCluster.table.setEnabled(wUseCluster.getSelection());
@@ -1442,6 +1530,18 @@ public class DatabaseDialog extends Dialog
         databaseMeta.setUsingConnectionPool(wUsePool.getSelection());
         databaseMeta.setInitialPoolSize(Const.toInt( wInitPool.getText(), ConnectionPoolUtil.defaultInitialNrOfConnections) );
         databaseMeta.setMaximumPoolSize(Const.toInt( wMaxPool.getText(), ConnectionPoolUtil.defaultMaximumNrOfConnections) );
+        Properties poolProperties = new Properties();
+        for (int i=0;i<wPoolParameters.nrNonEmpty();i++)
+        {
+            TableItem item = wPoolParameters.getNonEmpty(i);
+            String parameterName = item.getText(1);
+            String value = item.getText(3);
+            if (!Const.isEmpty(parameterName) && !Const.isEmpty(value))
+            {
+                poolProperties.setProperty(parameterName, value);
+            }
+        }
+        databaseMeta.setConnectionPoolingProperties(poolProperties);
         
         // Now grab the clustering information...
         databaseMeta.setPartitioned( wUseCluster.getSelection() );

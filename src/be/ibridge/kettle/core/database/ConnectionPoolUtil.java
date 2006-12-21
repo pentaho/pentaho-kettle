@@ -70,13 +70,12 @@ public class ConnectionPoolUtil
     private static void createPool(DatabaseMeta databaseMeta, String partitionId, int initialSize, int maximumSize) throws KettleDatabaseException
     {
         GenericObjectPool gpool=new GenericObjectPool();
-        //no limit to the number of connections holded in the pool
+        
         gpool.setMaxIdle(-1);
         gpool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
         gpool.setMaxActive(maximumSize);
         
         String clazz = databaseMeta.getDriverClass();
-        //TODO:exception handle
         try
         {
             Class.forName(clazz).newInstance();
@@ -103,9 +102,10 @@ public class ConnectionPoolUtil
             password=databaseMeta.getPassword();
         }
         
+        // Set the list of properties
+        databaseMeta.getConnectionPoolingProperties();
+        
         ConnectionFactory cf=new DriverManagerConnectionFactory(url,userName,password);
-        //TODO:the last parameter:commitsize
-        /*PoolableConnectionFactory pcf=*/
         new PoolableConnectionFactory(cf, gpool, null, null, false, false);
         
         for (int i = 0; i < initialSize; i++)

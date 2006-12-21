@@ -19,6 +19,7 @@ package be.ibridge.kettle.core.database;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -104,6 +105,35 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public static final String ATTRIBUTE_CLUSTER_PASSWORD_PREFIX = "CLUSTER_PASSWORD_";
     
+    /** The pooling parameters */
+    public static final String ATTRIBUTE_POOLING_PARAMETER_PREFIX = "POOLING_";
+    
+    public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
+        {
+           new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."), 
+           new DatabaseConnectionPoolParameter("defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)"), 
+           new DatabaseConnectionPoolParameter("defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n"), 
+           new DatabaseConnectionPoolParameter("defaultCatalog", null, "The default catalog of connections created by this pool."),
+           
+           new DatabaseConnectionPoolParameter("initialSize", "0", "The initial number of connections that are created when the pool is started."), 
+           new DatabaseConnectionPoolParameter("maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit."), 
+           new DatabaseConnectionPoolParameter("maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit."), 
+           new DatabaseConnectionPoolParameter("minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none."), 
+           new DatabaseConnectionPoolParameter("maxWait", "-1", "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely."),
+           
+           new DatabaseConnectionPoolParameter("validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row."), 
+           new DatabaseConnectionPoolParameter("testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
+           new DatabaseConnectionPoolParameter("testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
+           new DatabaseConnectionPoolParameter("testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
+           new DatabaseConnectionPoolParameter("timeBetweenEvictionRunsMillis", null, "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run."),
+           
+           new DatabaseConnectionPoolParameter("poolPreparedStatements", "false", "Enable prepared statement pooling for this pool."), 
+           new DatabaseConnectionPoolParameter("maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit."), 
+           new DatabaseConnectionPoolParameter("accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection."), 
+           new DatabaseConnectionPoolParameter("removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection."), 
+           new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."), 
+           new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."), 
+        };
 
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
@@ -1039,5 +1069,50 @@ public abstract class BaseDatabaseMeta implements Cloneable
             attributes.put(ATTRIBUTE_CLUSTER_USERNAME_PREFIX+nr, Const.NVL(meta.getUsername(), ""));
             attributes.put(ATTRIBUTE_CLUSTER_PASSWORD_PREFIX+nr, Const.NVL( Encr.encryptPasswordIfNotUsingVariables(meta.getPassword()), ""));
         }
-    } 
+    }
+    
+    /**
+     * @return The set of properties (newly created object) that contains the connection pooling parameters
+     * All environment variables will be replaced here.
+     */
+    public Properties getConnectionPoolingProperties()
+    {
+        Properties properties = new Properties();
+        
+        for (Iterator iter = attributes.keySet().iterator(); iter.hasNext();)
+        {
+            String element = (String) iter.next();
+            if (element.startsWith(ATTRIBUTE_POOLING_PARAMETER_PREFIX))
+            {
+                String key = element.substring(ATTRIBUTE_POOLING_PARAMETER_PREFIX.length());
+                String value = attributes.getProperty(element);
+                properties.put(key, value);
+            }
+        }
+        
+        return properties;
+    }
+    
+    public void setConnectionPoolingProperties(Properties properties)
+    {
+        // Clear our the previous set of pool parameters
+        for (Iterator iter = attributes.keySet().iterator(); iter.hasNext();)
+        {
+            String key = (String) iter.next();
+            if (key.startsWith(ATTRIBUTE_POOLING_PARAMETER_PREFIX))
+            {
+                attributes.remove(key);
+            }
+        }
+        
+        for (Iterator iter = properties.keySet().iterator(); iter.hasNext();)
+        {
+            String element = (String) iter.next();
+            String value = properties.getProperty(element);
+            if (!Const.isEmpty(element) && !Const.isEmpty(value))
+            {
+                attributes.put(ATTRIBUTE_POOLING_PARAMETER_PREFIX+element, value);
+            }
+        }
+    }
 }

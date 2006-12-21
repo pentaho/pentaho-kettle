@@ -2139,4 +2139,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         return null;
     }
 
+    public Properties getConnectionPoolingProperties()
+    {
+        return databaseInterface.getConnectionPoolingProperties();
+    }
+
+    public void setConnectionPoolingProperties(Properties properties)
+    {
+        databaseInterface.setConnectionPoolingProperties(properties);
+    }
+
 }
