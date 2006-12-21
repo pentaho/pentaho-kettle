@@ -950,12 +950,19 @@ public class Spoon
         new MenuItem(msEdit, SWT.SEPARATOR);
         // Copy to clipboard
         //
-        miEditCopy         = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditCopy = new MenuItem(msEdit, SWT.CASCADE); 
         miEditCopy.setText(Messages.getString("Spoon.Menu.Edit.CopyToClipboard")); //Copy selected steps to clipboard\tCTRL-C
+        miEditCopy.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) 
+            { 
+                TransMeta transMeta = getActiveTransformation();
+                copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
+            }});
+        
         // Paste from clipboard
         //
-        miEditPaste        = new MenuItem(msEdit, SWT.CASCADE); 
+        miEditPaste = new MenuItem(msEdit, SWT.CASCADE); 
         miEditPaste.setText(Messages.getString("Spoon.Menu.Edit.PasteFromClipboard")); //Paste steps from clipboard\tCTRL-V
+        miEditPaste.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { pasteSteps(); } });
         new MenuItem(msEdit, SWT.SEPARATOR);
         // Refresh
         //
@@ -2353,6 +2360,7 @@ public class Spoon
                 steps[i].setName( transMeta.getAlternativeStepname(name) );
                 transMeta.addStep(steps[i]);
                 position[i] = transMeta.indexOfStep(steps[i]);
+                steps[i].setSelected(true);
             }
             
             // Add the hops too...
@@ -2374,6 +2382,7 @@ public class Spoon
                 Point p = notes[i].getLocation();
                 notes[i].setLocation(p.x+offset.x, p.y+offset.y);
                 transMeta.addNote(notes[i]);
+                notes[i].setSelected(true);
             }
             
             // Set the source and target steps ...
@@ -5989,6 +5998,24 @@ public class Spoon
     public void setTabMap(Map tabMap)
     {
         this.tabMap = tabMap;
+    }
+
+    public void pasteSteps()
+    {
+        // Is there an active SpoonGraph?
+        SpoonGraph spoonGraph = getActiveSpoonGraph();
+        if (spoonGraph==null) return;
+        TransMeta transMeta = spoonGraph.getTransMeta();
+        
+        String clipcontent = fromClipboard();
+        if (clipcontent != null)
+        {
+            Point lastMove = spoonGraph.getLastMove();
+            if (lastMove != null)
+            {
+                pasteXML(transMeta, clipcontent, lastMove);
+            }
+        }
     }
     
 }

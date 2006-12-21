@@ -859,16 +859,7 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
                 }
                 if ((int) e.character == 22) // CTRL-V
                 {
-                    String clipcontent = spoon.fromClipboard();
-                    if (clipcontent != null)
-                    {
-                        if (lastMove != null)
-                        {
-                            spoon.pasteXML(transMeta, clipcontent, lastMove);
-                        }
-                    }
-
-                    // spoon.pasteSteps( );
+                    spoon.pasteSteps();
                 }
                 if (e.keyCode == SWT.ESC)
                 {
@@ -2278,5 +2269,13 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
     public void setImpactFinished(boolean impactHasRun)
     {
         this.impactFinished = impactHasRun;
+    }
+
+    /**
+     * @return the lastMove
+     */
+    public Point getLastMove()
+    {
+        return lastMove;
     }
 }
