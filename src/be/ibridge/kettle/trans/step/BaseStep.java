@@ -85,6 +85,7 @@ import be.ibridge.kettle.trans.step.rowgenerator.RowGeneratorMeta;
 import be.ibridge.kettle.trans.step.rowsfromresult.RowsFromResultMeta;
 import be.ibridge.kettle.trans.step.rowstoresult.RowsToResultMeta;
 import be.ibridge.kettle.trans.step.scriptvalues.ScriptValuesMeta;
+import be.ibridge.kettle.trans.step.scriptvalues_mod.ScriptValuesMetaMod;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.setvariable.SetVariableMeta;
 import be.ibridge.kettle.trans.step.socketreader.SocketReaderMeta;
@@ -108,24 +109,18 @@ import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 public class BaseStep extends Thread
 {
     public static final String           CATEGORY_INPUT          = "Input";
-
     public static final String           CATEGORY_OUTPUT         = "Output";
-
     public static final String           CATEGORY_TRANSFORM      = "Transform";
-
+    public static final String           CATEGORY_SCRIPTING      = "Scripting";
     public static final String           CATEGORY_LOOKUP         = "Lookup";
-
     public static final String           CATEGORY_DATA_WAREHOUSE = "Data Warehouse";
-
     public static final String           CATEGORY_EXTRA          = "Extra";
-
     public static final String           CATEGORY_MAPPING        = "Mapping";
-
     public static final String           CATEGORY_EXPERIMENTAL   = "Experimental";
 
     protected static LocalVariables      localVariables          = LocalVariables.getInstance();
 
-    public static final StepPluginMeta[] steps                   = 
+    public static final StepPluginMeta[] steps = 
         {
             new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
@@ -162,7 +157,9 @@ public class BaseStep extends Thread
             new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages
                     .getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
             new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_TRANSFORM),
+                    .getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
+            new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages
+                    .getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
             new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages
                     .getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
             new StepPluginMeta(InsertUpdateMeta.class, "InsertUpdate", Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), Messages
@@ -218,8 +215,7 @@ public class BaseStep extends Thread
             new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages
                     .getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages
-                    .getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png",
-                    CATEGORY_TRANSFORM),
+                    .getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages
                     .getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages
@@ -252,17 +248,23 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_EXPERIMENTAL), 
         };
 
-    public static final String           category_order[]        = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM,
-            CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL };               //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    public static final String category_order[] = 
+        { 
+            CATEGORY_INPUT,  
+            CATEGORY_OUTPUT, 
+            CATEGORY_LOOKUP, 
+            CATEGORY_TRANSFORM, 
+            CATEGORY_SCRIPTING,
+            CATEGORY_DATA_WAREHOUSE, 
+            CATEGORY_EXTRA, 
+            CATEGORY_MAPPING, 
+            CATEGORY_EXPERIMENTAL 
+        };
 
     private static final int             MIN_PRIORITY            = 1;
-
     private static final int             LOW_PRIORITY            = 3;
-
     private static final int             NORMAL_PRIORITY         = 5;
-
     private static final int             HIGH_PRIORITY           = 7;
-
     private static final int             MAX_PRIORITY            = 10;
 
     public static final String[]         statusDesc              = { Messages.getString("BaseStep.status.Empty"),

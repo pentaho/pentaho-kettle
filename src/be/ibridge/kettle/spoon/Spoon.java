@@ -3841,9 +3841,10 @@ public class Spoon
         for (Iterator iter = c.iterator(); iter.hasNext();)
         {
             TabMapEntry entry = (TabMapEntry) iter.next();
+            if (entry.getTabItem().isDisposed()) continue;
             
             boolean changed = entry.getObject().hasContentChanged();
-            if (changed && !entry.getTabItem().isDisposed())
+            if (changed)
             {
                 entry.getTabItem().setFont(GUIResource.getInstance().getFontBold());
             }
