@@ -108,7 +108,7 @@ public class Database
     private int copy; 
 
     private String connectionGroup;
-
+    private boolean performRollbackAtLastDisconnect;
     private String partitionId;
     
     
@@ -129,6 +129,8 @@ public class Database
 		rowlimit=0;
 		
 		written=0;
+        
+        performRollbackAtLastDisconnect=false;
 				
 		log.logDetailed(toString(), "New database connection defined");
 	}
@@ -470,17 +472,29 @@ public class Database
                     else
                     {
                         map.removeConnection(connectionGroup, partitionId, this); // remove the trace of it.
-                        // proceed to normal close
+                        
+                        // Before we close perform commit or rollback.
+                        
+                        if (performRollbackAtLastDisconnect)
+                        {
+                            rollback(true);
+                        }
+                        else
+                        {
+                            commit(true);
+                        }
                     }
                 }
             }
-            
-            if (!isAutoCommit()) // Do we really still need this commit??
+            else
             {
-                commit();
+                if (!isAutoCommit()) // Do we really still need this commit??
+                {
+                    commit();
+                }
             }
 
-			if (connection !=null) 
+			if (connection!=null) 
             { 
                 connection.close(); 
                 if (!databaseMeta.isUsingConnectionPool()) 
@@ -552,14 +566,28 @@ public class Database
         }
 	}
 	
-	/**
-	 * Perform a commit the connection if this is supported by the database
-	 */
-	public void commit()
-		throws KettleDatabaseException
+    /**
+     * Perform a commit the connection if this is supported by the database
+     */
+    public void commit() throws KettleDatabaseException
+    {
+        commit(false);
+    }
+    
+	private void commit(boolean force) throws KettleDatabaseException
 	{
 		try
 		{
+		    // Don't do the commit, wait until the end of the transformation.  
+            // When the last database copy (opened counter) is about to be closed, we do a commit 
+            // There is one catch, we need to catch the rollback
+            // The transformation will stop everything and then we'll do the rollback.
+            // The flag is in "performRollback", private only
+            //
+            if (!Const.isEmpty(connectionGroup) && !force)
+            {
+                return; 
+            }
 			if (getDatabaseMetaData().supportsTransactions())
 			{
 				connection.commit();
@@ -575,11 +603,21 @@ public class Database
 				throw new KettleDatabaseException("Error comitting connection", e);
 		}
 	}
-	
-	public void rollback() throws KettleDatabaseException
+
+    public void rollback() throws KettleDatabaseException
+    {
+        rollback(false);
+    }
+
+	private void rollback(boolean force) throws KettleDatabaseException
 	{
 		try
 		{
+            if (!Const.isEmpty(connectionGroup) && !force)
+            {
+                performRollbackAtLastDisconnect=true;
+                return; 
+            }
             if (getDatabaseMetaData().supportsTransactions())
             {
                 if (connection!=null) connection.rollback();
@@ -3747,7 +3785,14 @@ public class Database
 	
 	public void truncateTable(String tablename) throws KettleDatabaseException
 	{
-		execStatement(databaseMeta.getTruncateTableStatement(tablename));
+        if (Const.isEmpty(connectionGroup))
+        {
+            execStatement(databaseMeta.getTruncateTableStatement(tablename));
+        }
+        else
+        {
+            execStatement("DELETE FROM "+databaseMeta.quoteField(tablename));
+        }
 	}
 
 

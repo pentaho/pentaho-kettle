@@ -232,7 +232,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
         {
             if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename())) return -1;
-            if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return  1;
+            if (!Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return  1;
             if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename()))
             {
                 return 0;
