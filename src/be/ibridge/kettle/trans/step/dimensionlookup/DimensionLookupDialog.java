@@ -67,6 +67,8 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
+
 
 /**
  *  Dialog for the Dimension Lookup/Update step. 
@@ -1057,23 +1059,26 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wUpIns.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					int idx = wKey.indexOfString(v.getName(), 2);
-					int idy = wUpIns.indexOfString(v.getName(), 2);
-					if (idx<0 && idy<0)
-					{
-						TableItem ti = new TableItem(table, SWT.NONE);
-						ti.setText(1, v.getName());
-						ti.setText(2, v.getName());
-						ti.setText(3, Messages.getString("DimensionLookupDialog.TableItem.Insert.Label")); //$NON-NLS-1$
-					}
-				}
-				wUpIns.removeEmptyRows();
-				wUpIns.setRowNums();
-				wUpIns.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wUpIns, 2, new int[] {1, 2}, new int[] {}, -1, -1, new TableItemInsertListener()
+                    {
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
+                        {
+                            tableItem.setText(3, Messages.getString("DimensionLookupDialog.TableItem.Insert.Label")); //$NON-NLS-1$
+                            
+                            int idx = wKey.indexOfString(v.getName(), 2);
+                            if ( idx<0 &&
+                                !v.getName().equalsIgnoreCase(wTk.getText()) &&
+                                !v.getName().equalsIgnoreCase(wVersion.getText()) &&
+                                !v.getName().equalsIgnoreCase(wFromdate.getText()) &&
+                                !v.getName().equalsIgnoreCase(wTodate.getText())
+                                )
+                            {
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                );
 			}
 		}
 		catch(KettleException ke)
@@ -1099,29 +1104,24 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				Row r = db.getTableFields(wTable.getText());
 				if (r!=null)
 				{
-					Table table=wUpIns.table;
-					for (int i=0;i<r.size();i++)
-					{
-						Value v = r.getValue(i);
-						int idx = wKey.indexOfString(v.getName(), 2);
-						int idy = wUpIns.indexOfString(v.getName(), 2);
-						if (idx<0 &&
-							idy<0 &&
-							!v.getName().equalsIgnoreCase(wTk.getText()) &&
-							!v.getName().equalsIgnoreCase(wVersion.getText()) &&
-							!v.getName().equalsIgnoreCase(wFromdate.getText()) &&
-							!v.getName().equalsIgnoreCase(wTodate.getText())
-							)
-						{
-							TableItem ti = new TableItem(table, SWT.NONE);
-							ti.setText(1, v.getName());
-							ti.setText(2, v.getName());
-							ti.setText(3, v.getTypeDesc());
-						}
-					}
-					wUpIns.removeEmptyRows();
-					wUpIns.setRowNums();
-					wUpIns.optWidth(true);
+                    BaseStepDialog.getFieldsFromPrevious(r, wUpIns, 2, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, new TableItemInsertListener()
+                        {
+                            public boolean tableItemInserted(TableItem tableItem, Value v)
+                            {
+                                int idx = wUpIns.indexOfString(v.getName(), 2);
+                                if ( idx<0 &&
+                                    !v.getName().equalsIgnoreCase(wTk.getText()) &&
+                                    !v.getName().equalsIgnoreCase(wVersion.getText()) &&
+                                    !v.getName().equalsIgnoreCase(wFromdate.getText()) &&
+                                    !v.getName().equalsIgnoreCase(wTodate.getText())
+                                    )
+                                {
+                                    return true;
+                                }
+                                return false;
+                            }
+                        }
+                    );
 				}
 			}
 			catch(KettleException e)
@@ -1150,6 +1150,25 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
+                BaseStepDialog.getFieldsFromPrevious(r, wKey, 2, new int[] {1, 2}, new int[] { 3 }, -1, -1, new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, Value v)
+                    {
+                        int idx = wKey.indexOfString(v.getName(), 2);
+                        if ( idx<0 &&
+                            !v.getName().equalsIgnoreCase(wTk.getText()) &&
+                            !v.getName().equalsIgnoreCase(wVersion.getText()) &&
+                            !v.getName().equalsIgnoreCase(wFromdate.getText()) &&
+                            !v.getName().equalsIgnoreCase(wTodate.getText())
+                            )
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            );
+
 				Table table=wKey.table;
 				for (int i=0;i<r.size();i++)
 				{

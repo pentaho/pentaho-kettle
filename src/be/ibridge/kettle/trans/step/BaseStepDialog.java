@@ -21,6 +21,10 @@
 
 package be.ibridge.kettle.trans.step;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -39,19 +43,25 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.TransMeta;
-
 
 public class BaseStepDialog extends Dialog
 {
@@ -434,24 +444,149 @@ public class BaseStepDialog extends Dialog
             else // Link last item to first.
             {
                 controls[i].addTraverseListener(new TraverseListener()
-                {
-                    public void keyTraversed(TraverseEvent te)
                     {
-                        te.doit=false;
-                        // set focus on the next control.
-                        // set focus on the next control.
-                        // What is the next control : 0
-                        int thisOne = 0;
-                        while (!controls[thisOne].isEnabled())
+                        public void keyTraversed(TraverseEvent te)
                         {
-                            thisOne++;
-                            if (thisOne>=controls.length) return; // already tried all others, time to quit.
+                            te.doit=false;
+                            // set focus on the next control.
+                            // set focus on the next control.
+                            // What is the next control : 0
+                            int thisOne = 0;
+                            while (!controls[thisOne].isEnabled())
+                            {
+                                thisOne++;
+                                if (thisOne>=controls.length) return; // already tried all others, time to quit.
+                            }
+                            controls[thisOne].setFocus();
                         }
-                        controls[thisOne].setFocus();
                     }
-                }
-            );            }
+                );            
+            }
         }
     }
+    
+    /**
+     * Gets unused fields from previous steps and inserts them as rows into a table view.
+     * @param r
+     * @param fields
+     * @param i
+     * @param js the column in the table view to match with the names of the fields, checks for existance if >0 
+     * @param nameColumn
+     * @param j
+     * @param lengthColumn
+     * @param listener
+     */
+    public static final void getFieldsFromPrevious(TransMeta transMeta, StepMeta stepMeta, TableView tableView, int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn, TableItemInsertListener listener)
+    {
+        try
+        {
+            Row row = transMeta.getPrevStepFields(stepMeta);
+            if (row!=null)
+            {
+                getFieldsFromPrevious(row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, listener);
+            }
+        }
+        catch(KettleException ke)
+        {
+            new ErrorDialog(tableView.getShell(), Messages.getString("BaseStepDialog.FailedToGetFields.Title"), Messages.getString("BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+    
+    /**
+     * Gets unused fields from previous steps and inserts them as rows into a table view.
+     * @param row the input fields
+     * @param tableView the table view to modify
+     * @param keyColumn the column in the table view to match with the names of the fields, checks for existance if >0 
+     * @param nameColumn the column numbers in which the name should end up in
+     * @param dataTypeColumn the target column numbers in which the data type should end up in
+     * @param lengthColumn the length column where the length should end up in (if >0)
+     * @param precisionColumn the length column where the precision should end up in (if >0)
+     * @param listener A listener that you can use to do custom modifications to the inserted table item, based on a value from the provided row
+     */
+    public static final void getFieldsFromPrevious(Row row, TableView tableView, int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn, TableItemInsertListener listener)
+    {
+        if (row==null || row.size()==0) return; // nothing to do
+        
+        Table table = tableView.table;
+        
+        // get a list of all the non-empty keys (names)
+        //
+        List keys = new ArrayList();
+        for (int i=0;i<table.getItemCount();i++)
+        {
+            TableItem tableItem = table.getItem(i);
+            String key = tableItem.getText(keyColumn);
+            if (!Const.isEmpty(key) && keys.indexOf(key)<0) keys.add(key);
+        }
+        
+        int choice = 0;
+        
+        if (keys.size()>0)
+        {
+            // Ask what we should do with the existing data in the step.
+            //
+            MessageDialog md = new MessageDialog(tableView.getShell(), 
+                    Messages.getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!" 
+                    null,
+                    Messages.getString("BaseStepDialog.GetFieldsChoice.Message", ""+keys.size(), ""+row.size()),
+                    MessageDialog.WARNING,
+                    new String[] { Messages.getString("BaseStepDialog.AddNew"), Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), Messages.getString("BaseStepDialog.Cancel"), },   
+                    0
+                );
+            int idx = md.open();
+            choice = idx&0xFF;
+        }
+        
+        if (choice==3) return; // Cancel clicked
 
+        if (choice==2)
+        {
+            tableView.clearAll(false);
+        }
+        
+        for (int i=0;i<row.size();i++)
+        {
+            Value v = row.getValue(i);
+            
+            boolean add = true;
+            
+            if (choice==0) // hang on, see if it's not yet in the table view
+            {
+                if (keys.indexOf(v.getName())>=0) add=false; 
+            }
+            
+            if (add)
+            {
+                TableItem tableItem = new TableItem(table, SWT.NONE);
+                
+                for (int c=0;c<nameColumn.length;c++)
+                {
+                    tableItem.setText(nameColumn[c], Const.NVL(v.getName(), ""));
+                }
+                for (int c=0;c<dataTypeColumn.length;c++)
+                {
+                    tableItem.setText(dataTypeColumn[c], v.getTypeDesc());
+                }
+                if (lengthColumn>0)
+                {
+                    if (v.getLength()>=0) tableItem.setText(lengthColumn, Integer.toString(v.getLength()) );
+                }
+                if (precisionColumn>0)
+                {
+                    if (v.getPrecision()>=0) tableItem.setText(precisionColumn, Integer.toString(v.getPrecision()) );
+                }
+                
+                if (listener!=null)
+                {
+                    if (!listener.tableItemInserted(tableItem, v))
+                    {
+                        tableItem.dispose(); // remove it again
+                    }
+                }
+            }
+        }
+        tableView.removeEmptyRows();
+        tableView.setRowNums();
+        tableView.optWidth(true);
+    }
 }

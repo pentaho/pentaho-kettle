@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -52,6 +51,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 
 public class SetVariableDialog extends BaseStepDialog implements StepDialogInterface
@@ -247,22 +247,16 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             Row r = transMeta.getPrevStepFields(stepname);
             if (r!=null)
             {
-                Table table = wFields.table;
-                String[] used = wFields.getItems(1); 
-                for (int i=0;i<r.size();i++)
-                {
-                    Value v = r.getValue(i);
-                    if ( Const.indexOfString(v.getName(), used)<0)
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener()
                     {
-                        TableItem ti = new TableItem(table, SWT.NONE);
-                        ti.setText(1, v.getName());
-                        ti.setText(2, v.getName().toUpperCase());
-                        ti.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_JVM));
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
+                        {
+                            tableItem.setText(2, v.getName().toUpperCase());
+                            tableItem.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_JVM));
+                            return true;
+                        }
                     }
-                }
-                wFields.removeEmptyRows();
-                wFields.setRowNums();
-                wFields.optWidth(true);
+                );
             }
         }
         catch(KettleException ke)

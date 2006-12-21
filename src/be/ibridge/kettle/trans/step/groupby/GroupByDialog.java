@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -53,7 +52,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
@@ -528,16 +526,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wGroup.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(1, v.getName());
-				}
-				wGroup.removeEmptyRows();
-				wGroup.setRowNums();
-				wGroup.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wGroup, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
 			}
 		}
 		catch(KettleException ke)
@@ -553,18 +542,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wAgg.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getName());
-					ti.setText(3, ""); //$NON-NLS-1$
-				}
-				wAgg.removeEmptyRows();
-				wAgg.setRowNums();
-				wAgg.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wAgg, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
 			}
 		}
 		catch(KettleException ke)

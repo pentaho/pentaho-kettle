@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -57,6 +56,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 
 public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogInterface
@@ -579,25 +579,18 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	{
 		try
 		{
-			int i, count;
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wKey.table;
-				count=table.getItemCount();
-				for (i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
-					ti.setText(1, v.getName());
-					ti.setText(2, "="); //$NON-NLS-1$
-					ti.setText(3, v.getName());
-					ti.setText(4, ""); //$NON-NLS-1$
-				}
-				wKey.removeEmptyRows();
-				wKey.setRowNums();
-				wKey.optWidth(true);
+                TableItemInsertListener listener = new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, Value v)
+                    {
+                        tableItem.setText(2, "=");
+                        return true;
+                    }
+                };
+                BaseStepDialog.getFieldsFromPrevious(r, wKey, 1, new int[] { 1, 3}, new int[] {}, -1, -1, listener);
 			}
 		}
 		catch(KettleException ke)
@@ -609,8 +602,6 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	
 	private void getlookup()
 	{
-		int i;
-		
 		DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 		if (ci!=null)
 		{
@@ -625,23 +616,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 					Row r = db.getTableFields(tablename);
 					if (r!=null)
 					{
-						log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundTableFields")+tablename+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
-
-                        Table table = wReturn.table;
-						int count = table.getItemCount();
-						for (i=0;i<r.size();i++)
-						{
-							Value v = r.getValue(i);
-							TableItem ti = new TableItem(table, SWT.NONE);
-							ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
-							ti.setText(1, v.getName());
-							ti.setText(2, v.getName());
-							ti.setText(3, ""); //$NON-NLS-1$
-							ti.setText(4, v.getTypeDesc());
-						}
-						wReturn.removeEmptyRows();
-						wReturn.setRowNums();
-						wReturn.optWidth(true);
+                        log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundTableFields")+tablename+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
+                        BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] { 4 }, -1, -1, null);
 					}
 					else
 					{

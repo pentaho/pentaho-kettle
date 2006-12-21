@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -527,43 +526,16 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	{
 		try
 		{
-			int tabIndex = wTabFolder.getSelectionIndex();
-			
-			TableView tv;
-			
-			switch (tabIndex)
-			{
-			case 0 : tv=wFields; break;
-			case 1 : tv=wRemove; break;
-			case 2 : tv=wMeta; break;
-			default: tv=wFields; break;
-			}
-	
-			int i, count;
-			Row r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
-			{
-				Table table = tv.table;
-				
-				count=table.getItemCount();
-				for (i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
-					ti.setText(1, v.getName());
-					
-					if (tabIndex==2)
-					{
-						ti.setText(3, Value.getTypeDesc(Value.VALUE_TYPE_NONE));
-						if (v.getLength()>=0)    ti.setText(4, ""+v.getLength() ); //$NON-NLS-1$
-						if (v.getPrecision()>=0) ti.setText(5, ""+v.getPrecision() ); //$NON-NLS-1$
-					}
-				}
-				tv.removeEmptyRows();
-				tv.setRowNums();
-				tv.optWidth(true);
-			}
+            Row r = transMeta.getPrevStepFields(stepname);
+            if (r!=null)
+            {
+    			switch (wTabFolder.getSelectionIndex())
+    			{
+    			case 0 : BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, null); break;
+                case 1 : BaseStepDialog.getFieldsFromPrevious(r, wRemove, 1, new int[] { 1 }, new int[] {}, -1, -1, null); break;
+                case 2 : BaseStepDialog.getFieldsFromPrevious(r, wMeta, 1, new int[] { 1 }, new int[] {}, 4, 5, null); break;
+    			}
+            }
 		}
 		catch(KettleException ke)
 		{

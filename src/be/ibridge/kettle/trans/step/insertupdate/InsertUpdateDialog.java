@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -59,6 +58,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -529,25 +529,18 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 	{
 		try
 		{
-			int i, count;
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r != null)
 			{
-				Table table = wKey.table;
-				count = table.getItemCount();
-				for (i = 0; i < r.size(); i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, "" + (count + i + 1)); //$NON-NLS-1$
-					ti.setText(1, v.getName());
-					ti.setText(2, "="); //$NON-NLS-1$
-					ti.setText(3, v.getName());
-					ti.setText(4, ""); //$NON-NLS-1$
-				}
-				wKey.removeEmptyRows();
-				wKey.setRowNums();
-				wKey.optWidth(true);
+                TableItemInsertListener listener = new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, Value v)
+                    {
+                        tableItem.setText(2, "=");
+                        return true;
+                    }
+                };
+                BaseStepDialog.getFieldsFromPrevious(r, wKey, 1, new int[] { 1, 3}, new int[] {}, -1, -1, listener);
 			}
 		}
 		catch (KettleException ke)
@@ -561,25 +554,18 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 	{
 		try
 		{
-			int i, count;
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r != null)
 			{
-				Table table = wReturn.table;
-				count = table.getItemCount();
-				for (i = 0; i < r.size(); i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, "" + (count + i + 1)); //$NON-NLS-1$
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getName());
-					ti.setText(3, "Y");
-
-				}
-				wReturn.removeEmptyRows();
-				wReturn.setRowNums();
-				wReturn.optWidth(true);
+                TableItemInsertListener listener = new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, Value v)
+                    {
+                        tableItem.setText(3, "Y");
+                        return true;
+                    }
+                };
+                BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] {}, -1, -1, listener);
 			}
 		}
 		catch (KettleException ke)

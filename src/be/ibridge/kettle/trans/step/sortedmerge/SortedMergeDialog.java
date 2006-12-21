@@ -42,11 +42,16 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 public class SortedMergeDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -111,10 +116,12 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wGet=new Button(shell, SWT.PUSH);
+        wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
         
         wlFields=new Label(shell, SWT.NONE);
@@ -148,11 +155,9 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         wFields.setLayoutData(fdFields);
         
 		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
+		wCancel.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { cancel(); } });
+		wGet.addListener   (SWT.Selection, new Listener() { public void handleEvent(Event e) { get();    } });
+        wOK.addListener    (SWT.Selection, new Listener() { public void handleEvent(Event e) { ok();     } });
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -221,4 +226,28 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 
 		dispose();
 	}
+    
+    private void get()
+    {
+        try
+        {
+            Row r = transMeta.getPrevStepFields(stepname);
+            if (r!=null)
+            {
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener()
+                    {
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
+                        {
+                            tableItem.setText(2, "Y"); //$NON-NLS-1$
+                            return true;
+                        }
+                    }
+                );
+            }
+        }
+        catch(KettleException ke)
+        {
+            new ErrorDialog(shell, Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
 }

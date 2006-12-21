@@ -399,20 +399,13 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
     {
         try
         {
-            StepMeta stepMeta = transMeta.findStep(input.getReferenceStepName());
+            StepMeta stepMeta = transMeta.findStep(wReference.getText());
             if (stepMeta!=null)
             {
                 Row prev = transMeta.getStepFields(stepMeta);
                 if (prev!=null)
                 {
-                    for (int i=0;i<prev.size();i++)
-                    {
-                        TableItem item = new TableItem(wKeys.table, SWT.NONE);
-                        item.setText(1, prev.getValue(i).getName());
-                    }
-                    wKeys.removeEmptyRows();
-                    wKeys.setRowNums();
-                    wKeys.optWidth(true);
+                    BaseStepDialog.getFieldsFromPrevious(prev, wKeys, 1, new int[] { 1 }, new int[] { }, -1, -1, null);
                 }
             }
         }
@@ -426,20 +419,13 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
     {
         try
         {
-            StepMeta stepMeta = transMeta.findStep(input.getReferenceStepName());
+            StepMeta stepMeta = transMeta.findStep(wReference.getText());
             if (stepMeta!=null)
             {
                 Row prev = transMeta.getStepFields(stepMeta);
                 if (prev!=null)
                 {
-                    for (int i=0;i<prev.size();i++)
-                    {
-                        TableItem item = new TableItem(wValues.table, SWT.NONE);
-                        item.setText(1, prev.getValue(i).getName());
-                    }
-                    wValues.removeEmptyRows();
-                    wValues.setRowNums();
-                    wValues.optWidth(true);
+                    BaseStepDialog.getFieldsFromPrevious(prev, wValues, 1, new int[] { 1 }, new int[] { }, -1, -1, null);
                 }
             }
         }

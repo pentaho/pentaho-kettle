@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -70,6 +69,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -931,47 +931,39 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wFields.table;
-				int count=table.getItemCount();
-				
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getTypeDesc());
-					if (v.isNumber())
-					{
-						if (v.getLength()>0)
-						{
-							int le=v.getLength();
-							int pr=v.getPrecision();
-							
-							if (v.getPrecision()<=0)
-							{
-								pr=0;
-							}
-							
-							String mask="";
-							for (int m=0;m<le-pr;m++)
-							{
-								mask+="0";
-							}
-							if (pr>0) mask+=".";
-							for (int m=0;m<pr;m++)
-							{
-								mask+="0";
-							}
-							ti.setText(3, mask);
-						}
-					}
-					ti.setText(4, ""+v.getLength());
-					ti.setText(5, ""+v.getPrecision());
-				}
-				wFields.removeEmptyRows();
-				wFields.setRowNums();
-				wFields.optWidth(true);
+                TableItemInsertListener listener = new TableItemInsertListener()
+                    {
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
+                        {
+                            if (v.isNumber())
+                            {
+                                if (v.getLength()>0)
+                                {
+                                    int le=v.getLength();
+                                    int pr=v.getPrecision();
+                                    
+                                    if (v.getPrecision()<=0)
+                                    {
+                                        pr=0;
+                                    }
+                                    
+                                    String mask="";
+                                    for (int m=0;m<le-pr;m++)
+                                    {
+                                        mask+="0";
+                                    }
+                                    if (pr>0) mask+=".";
+                                    for (int m=0;m<pr;m++)
+                                    {
+                                        mask+="0";
+                                    }
+                                    tableItem.setText(3, mask);
+                                }
+                            }
+                            return true;
+                        }
+                    };
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] { 2 }, 4, 5, listener);
 			}
 		}
 		catch(KettleException ke)

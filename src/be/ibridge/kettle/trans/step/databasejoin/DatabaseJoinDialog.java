@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -357,17 +356,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wParam.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getTypeDesc());
-				}
-				wParam.removeEmptyRows();
-				wParam.setRowNums();
-				wParam.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wParam, 1, new int[] { 1 }, new int[] { 2 }, -1, -1, null);
 			}
 		}
 		catch(KettleException ke)

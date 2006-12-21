@@ -411,14 +411,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
                 Row prev = transMeta.getStepFields(stepMeta);
                 if (prev!=null)
                 {
-                    for (int i=0;i<prev.size();i++)
-                    {
-                        TableItem item = new TableItem(wKeys1.table, SWT.NONE);
-                        item.setText(1, prev.getValue(i).getName());
-                    }
-                    wKeys1.removeEmptyRows();
-                    wKeys1.setRowNums();
-                    wKeys1.optWidth(true);
+                    BaseStepDialog.getFieldsFromPrevious(prev, wKeys1, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
                 }
             }
         }
@@ -438,14 +431,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
                 Row prev = transMeta.getStepFields(stepMeta);
                 if (prev!=null)
                 {
-                    for (int i=0;i<prev.size();i++)
-                    {
-                        TableItem item = new TableItem(wKeys2.table, SWT.NONE);
-                        item.setText(1, prev.getValue(i).getName());
-                    }
-                    wKeys2.removeEmptyRows();
-                    wKeys2.setRowNums();
-                    wKeys2.optWidth(true);
+                    BaseStepDialog.getFieldsFromPrevious(prev, wKeys2, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
                 }
             }
         }

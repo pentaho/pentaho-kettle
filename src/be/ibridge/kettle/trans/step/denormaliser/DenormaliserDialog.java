@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -57,6 +56,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 
 public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface
@@ -399,16 +399,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wGroup.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(1, v.getName());
-				}
-				wGroup.removeEmptyRows();
-				wGroup.setRowNums();
-				wGroup.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wGroup, 1, new int[] { 1 }, new int[] { }, -1, -1, null);
 			}
 		}
 		catch(KettleException ke)
@@ -421,33 +412,32 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	{
         // The grouping fields: ignore those.
         wGroup.removeEmptyRows();
-        String[] groupingFields = wGroup.getItems(0);
+        final String[] groupingFields = wGroup.getItems(0);
 		try
 		{
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-                int nr=1;
-				Table table=wTarget.table;
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-                    if (Const.indexOfString(v.getName(), groupingFields)<0) // Not a grouping field
+                BaseStepDialog.getFieldsFromPrevious(r, wTarget, 2, new int[] {}, new int[] {}, -1, -1, new TableItemInsertListener()
                     {
-                        if (!wKeyField.getText().equalsIgnoreCase(v.getName())) // Not the key field
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
                         {
-        					TableItem ti = new TableItem(table, SWT.NONE);
-        					ti.setText(1, Messages.getString("DenormaliserDialog.TargetFieldname.Label")+nr); // the target fieldname //$NON-NLS-1$
-        					ti.setText(2, v.getName());
-                            ti.setText(4, v.getTypeDesc());
-        					if (v.getLength()>=0) ti.setText(6, ""+v.getLength()); //$NON-NLS-1$
-                            if (v.getPrecision()>=0) ti.setText(7, ""+v.getPrecision()); //$NON-NLS-1$
+                            if (Const.indexOfString(v.getName(), groupingFields)<0) // Not a grouping field
+                            {
+                                if (!wKeyField.getText().equalsIgnoreCase(v.getName())) // Not the key field
+                                {
+                                    int nr = tableItem.getParent().indexOf(tableItem)+1;
+                                    tableItem.setText(1, Messages.getString("DenormaliserDialog.TargetFieldname.Label")+nr); // the target fieldname //$NON-NLS-1$
+                                    tableItem.setText(2, v.getName());
+                                    tableItem.setText(4, v.getTypeDesc());
+                                    if (v.getLength()>=0) tableItem.setText(6, ""+v.getLength()); //$NON-NLS-1$
+                                    if (v.getPrecision()>=0) tableItem.setText(7, ""+v.getPrecision()); //$NON-NLS-1$
+                                }
+                            }
+                            return true;
                         }
                     }
-				}
-				wTarget.removeEmptyRows();
-				wTarget.setRowNums();
-				wTarget.optWidth(true);
+                );
 			}
 		}
 		catch(KettleException ke)

@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -51,6 +50,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 public class MappingOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -276,26 +276,18 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
     {
         try
         {
-            TableView tv=wFields; 
- 
             Row r = transMeta.getPrevStepFields(stepname);
             if (r!=null)
             {
-                Table table = tv.table;
-                
-                for (int i=0;i<r.size();i++)
-                {
-                    Value v = r.getValue(i);
-                    TableItem ti = new TableItem(table, SWT.NONE);
-                    ti.setText(1, v.getName());
-                    ti.setText(2, v.getTypeDesc());
-                    if (v.getLength()>=0)    ti.setText(3, ""+v.getLength() ); //$NON-NLS-1$
-                    if (v.getPrecision()>=0) ti.setText(4, ""+v.getPrecision() ); //$NON-NLS-1$
-                    ti.setText(5, "Y"); //$NON-NLS-1$
-                }
-                tv.removeEmptyRows();
-                tv.setRowNums();
-                tv.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {2}, 3, 4, new TableItemInsertListener()
+                    {
+                        public boolean tableItemInserted(TableItem tableItem, Value v)
+                        {
+                            tableItem.setText(5, "Y");
+                            return true;
+                        }
+                    }
+                );
             }
         }
         catch(KettleException ke)

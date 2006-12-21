@@ -56,6 +56,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
 
 public class SortRowsDialog extends BaseStepDialog implements StepDialogInterface
@@ -393,23 +394,18 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		try
 		{
-			int i, count;
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wFields.table;
-				count=table.getItemCount();
-				for (i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
-					ti.setText(1, v.getName());
-					ti.setText(2, Messages.getString("System.Combo.Yes"));
-				}
-				wFields.removeEmptyRows();
-				wFields.setRowNums();
-				wFields.optWidth(true);
+                TableItemInsertListener insertListener = new TableItemInsertListener() 
+                    {   
+                        public boolean tableItemInserted(TableItem tableItem, Value v) 
+                        { 
+                            tableItem.setText(2, Messages.getString("System.Combo.Yes"));
+                            return true;
+                        } 
+                    };
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener);
 			}
 		}
 		catch(KettleException ke)

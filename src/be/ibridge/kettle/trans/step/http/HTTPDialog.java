@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -47,7 +46,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -305,24 +303,10 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		try
 		{
-			int i, count;
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				Table table=wFields.table;
-				count=table.getItemCount();
-				for (i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getName()); 
-					ti.setText(3, v.getTypeDesc());
-				}
-				wFields.removeEmptyRows();
-				wFields.setRowNums();
-				wFields.optWidth(true);
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null);
 			}
 		}
 		catch(KettleException ke)
