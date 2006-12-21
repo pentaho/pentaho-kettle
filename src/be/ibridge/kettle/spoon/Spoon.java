@@ -5584,15 +5584,20 @@ public class Spoon
             // First the master...
             //
             TransMeta master = transSplitter.getMaster();
-            SlaveServer masterServer = transSplitter.getMasterServer();
-            if (show) addSpoonGraph(master);
-            if (post)
+            SlaveServer masterServer = null;
+            List masterSteps = master.getTransHopSteps(false);
+            if (masterSteps.size()>0) // If there is something that needs to be done on the master...
             {
-                String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
-                WebResult webResult = WebResult.fromXMLString(masterReply);
-                if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                masterServer = transSplitter.getMasterServer();
+                if (show) addSpoonGraph(master);
+                if (post)
                 {
-                    throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
+                    String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(masterReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
+                    }
                 }
             }
             
@@ -5619,11 +5624,14 @@ public class Spoon
                 if (prepare)
                 {
                     // Prepare the master...
-                    String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-                    WebResult webResult = WebResult.fromXMLString(masterReply);
-                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
+                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(masterReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
+                        }
                     }
                     
                     // Prepare the slaves
@@ -5631,7 +5639,7 @@ public class Spoon
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                         String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                        webResult = WebResult.fromXMLString(slaveReply);
+                        WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
                             throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
@@ -5642,11 +5650,14 @@ public class Spoon
                 if (start)
                 {
                     // Start the master...
-                    String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-                    WebResult webResult = WebResult.fromXMLString(masterReply);
-                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
+                        String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(masterReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
+                        }
                     }
                     
                     // Start the slaves
@@ -5654,7 +5665,7 @@ public class Spoon
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                         String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                        webResult = WebResult.fromXMLString(slaveReply);
+                        WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
                             throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
