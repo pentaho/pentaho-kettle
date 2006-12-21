@@ -46,22 +46,36 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 {
-	public static final int TYPE_GROUP_NONE           = 0;
-	public static final int TYPE_GROUP_SUM            = 1;
-	public static final int TYPE_GROUP_AVERAGE        = 2;
-	public static final int TYPE_GROUP_MIN            = 3;
-	public static final int TYPE_GROUP_MAX            = 4;
-	public static final int TYPE_GROUP_COUNT_ALL      = 5;
-    public static final int TYPE_GROUP_CONCAT_COMMA   = 6;
+	public static final int TYPE_GROUP_NONE            =  0;
+	public static final int TYPE_GROUP_SUM             =  1;
+	public static final int TYPE_GROUP_AVERAGE         =  2;
+	public static final int TYPE_GROUP_MIN             =  3;
+	public static final int TYPE_GROUP_MAX             =  4;
+	public static final int TYPE_GROUP_COUNT_ALL       =  5;
+    public static final int TYPE_GROUP_CONCAT_COMMA    =  6;
+    public static final int TYPE_GROUP_FIRST           =  7;
+    public static final int TYPE_GROUP_LAST            =  8;
+    public static final int TYPE_GROUP_FIRST_INCL_NULL =  9;
+    public static final int TYPE_GROUP_LAST_INCL_NULL  = 10;
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
-			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", "LAST_INCL_NULL",   	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 		};
 
 	public static final String typeGroupLongDesc[] = 
 		{
-			"-", Messages.getString("GroupByMeta.TypeGroupLongDesc.SUM"), Messages.getString("GroupByMeta.TypeGroupLongDesc.AVERAGE"), Messages.getString("GroupByMeta.TypeGroupLongDesc.MIN"), Messages.getString("GroupByMeta.TypeGroupLongDesc.MAX"), Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"), Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA")	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+			"-",                                                                   //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.SUM"),               //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.AVERAGE"),           //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.MIN"),               //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.MAX"),               //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),        //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),      //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST"),             //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST"), 	           //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),   //$NON-NLS-1$ 
+            Messages.getString("GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),    //$NON-NLS-1$ 
 		};
 
 	
@@ -384,12 +398,16 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
                 
 				switch(aggregateType[i])
 				{
-					case TYPE_GROUP_SUM            : value_type = subj.getType(); break;
-					case TYPE_GROUP_AVERAGE        :
-					case TYPE_GROUP_COUNT_ALL      : value_type = Value.VALUE_TYPE_NUMBER; break;
-					case TYPE_GROUP_MIN            : 
-					case TYPE_GROUP_MAX            : value_type = subj.getType(); break;
-                    case TYPE_GROUP_CONCAT_COMMA   : value_type = Value.VALUE_TYPE_STRING; break;
+					case TYPE_GROUP_SUM             : value_type = subj.getType(); break;
+					case TYPE_GROUP_AVERAGE         :
+					case TYPE_GROUP_COUNT_ALL       : value_type = Value.VALUE_TYPE_NUMBER; break;
+                    case TYPE_GROUP_FIRST           : 
+                    case TYPE_GROUP_LAST            : 
+                    case TYPE_GROUP_FIRST_INCL_NULL : 
+                    case TYPE_GROUP_LAST_INCL_NULL  : 
+					case TYPE_GROUP_MIN             : 
+					case TYPE_GROUP_MAX             : value_type = subj.getType(); break;
+                    case TYPE_GROUP_CONCAT_COMMA    : value_type = Value.VALUE_TYPE_STRING; break;
 					default: break;
 				}
                 

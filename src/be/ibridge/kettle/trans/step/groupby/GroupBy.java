@@ -254,6 +254,18 @@ public class GroupBy extends BaseStep implements StepInterface
 				case GroupByMeta.TYPE_GROUP_MAX            : 
 					if (subj.compare(value)>0) value.setValue(subj);
 					break; 
+                case GroupByMeta.TYPE_GROUP_FIRST          :
+                    if (!subj.isNull() && value.isNull()) value.setValue(subj);
+                    break; 
+                case GroupByMeta.TYPE_GROUP_LAST           : 
+                    if (!subj.isNull()) value.setValue(subj);
+                    break; 
+                case GroupByMeta.TYPE_GROUP_FIRST_INCL_NULL:
+                    if (linesWritten==0) value.setValue(subj);
+                    break; 
+                case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL : 
+                    value.setValue(subj);
+                    break; 
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     if (!subj.isNull()) 
                     {
