@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
@@ -102,10 +103,26 @@ public class ConnectionPoolUtil
             password=databaseMeta.getPassword();
         }
         
-        // Set the list of properties
-        databaseMeta.getConnectionPoolingProperties();
+        // Get the list of pool properties
+        Properties originalProperties = databaseMeta.getConnectionPoolingProperties();
+        //Add user/pass
+        originalProperties.setProperty("username", Const.NVL(userName, ""));
+        originalProperties.setProperty("password", Const.NVL(password, ""));
         
-        ConnectionFactory cf=new DriverManagerConnectionFactory(url,userName,password);
+        // Now, replace the environment variables in there...
+        Properties properties = new Properties();
+        Iterator iterator = originalProperties.keySet().iterator();
+        while (iterator.hasNext())
+        {
+            String key = (String) iterator.next();
+            String value = originalProperties.getProperty(key);
+            properties.put(key, StringUtil.environmentSubstitute(value));
+        }
+        
+        // Create factory using these properties.
+        //
+        ConnectionFactory cf=new DriverManagerConnectionFactory(url,properties);
+        
         new PoolableConnectionFactory(cf, gpool, null, null, false, false);
         
         for (int i = 0; i < initialSize; i++)
