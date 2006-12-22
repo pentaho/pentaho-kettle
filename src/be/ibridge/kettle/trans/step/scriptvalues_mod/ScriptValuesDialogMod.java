@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -204,9 +203,14 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			imageActiveEndScript = new Image(parent.getDisplay(), 16, 16);
 		}
 		
-		Properties sysprops = System.getProperties();
-		String strActPath = sysprops.getProperty("user.dir");
-		scVHelp = new ScriptValuesHelp(strActPath + "/plugins/steps/ScriptValues_mod/jsFunctionHelp.xml");
+        try
+        {
+            scVHelp = new ScriptValuesHelp("/be/ibridge/kettle/trans/step/scriptvalues_mod/jsFunctionHelp.xml");
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+        }
 		
 	}
 
@@ -1286,28 +1290,32 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		if(wTreeClassesitem!=null){
 			wTreeClassesitem.dispose();
 		}
-		for(int i=0;i<input.getAddClasses().length;i++){
-			//System.out.println(input.getAddClasses().length);
-			
-			try{
-				Method[] methods = input.getAddClasses()[i].getAddClass().getMethods();
-				String strClassType = input.getAddClasses()[i].getAddClass().toString();
-				String strParams;
-				wTreeClassesitem = new TreeItem(wTree, SWT.NULL);
-				wTreeClassesitem.setText(input.getAddClasses()[i].getJSName());
-				for (int j=0; j<methods.length; j++){
-					String strDeclaringClass = methods[j].getDeclaringClass().toString();
-					if(strClassType.equals(strDeclaringClass)){
-						TreeItem item2 = new TreeItem(wTreeClassesitem, SWT.NULL);
-						strParams = buildAddClassFunctionName(methods[j]);
-						item2.setText(methods[j].getName() + "("+ strParams  +")");
-						String strData = input.getAddClasses()[i].getJSName() + "." +methods[j].getName() + "("+strParams+")";
-						item2.setData(strData);
-					}
-				}
-			}catch(Exception e){
-			}
-		}
+        if (input.getAddClasses()!=null)
+        {
+    		for(int i=0;i<input.getAddClasses().length;i++){
+    			//System.out.println(input.getAddClasses().length);
+    			
+    			try{
+    				Method[] methods = input.getAddClasses()[i].getAddClass().getMethods();
+    				String strClassType = input.getAddClasses()[i].getAddClass().toString();
+    				String strParams;
+    				wTreeClassesitem = new TreeItem(wTree, SWT.NULL);
+    				wTreeClassesitem.setText(input.getAddClasses()[i].getJSName());
+    				for (int j=0; j<methods.length; j++){
+    					String strDeclaringClass = methods[j].getDeclaringClass().toString();
+    					if(strClassType.equals(strDeclaringClass)){
+    						TreeItem item2 = new TreeItem(wTreeClassesitem, SWT.NULL);
+    						strParams = buildAddClassFunctionName(methods[j]);
+    						item2.setText(methods[j].getName() + "("+ strParams  +")");
+    						String strData = input.getAddClasses()[i].getJSName() + "." +methods[j].getName() + "("+strParams+")";
+    						item2.setData(strData);
+    					}
+    				}
+    			}
+                catch(Exception e){
+    			}
+    		}
+        }
 	}
 	
 	

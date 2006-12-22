@@ -24,18 +24,16 @@
  **********************************************************************/
 package be.ibridge.kettle.trans.step.scriptvalues_mod;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+
+import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class ScriptValuesHelp {
 
@@ -43,7 +41,7 @@ public class ScriptValuesHelp {
 	private static Hashtable hatFunctionsList;
 	
 	
-	public ScriptValuesHelp(String strFileName){
+	public ScriptValuesHelp(String strFileName) throws KettleXMLException {
 		super();
 		xparseXmlFile(strFileName);
 		buildFunctionList();
@@ -83,18 +81,20 @@ public class ScriptValuesHelp {
 		return sRC;
 	}
 	
-	private static void xparseXmlFile(String strFileName){
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		try {
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			dom = db.parse(strFileName);
-		}catch(ParserConfigurationException pce) {
-			pce.printStackTrace();
-		}catch(SAXException se) {
-			se.printStackTrace();
-		}catch(IOException ioe) {
-			ioe.printStackTrace();
-		}
+	private static void xparseXmlFile(String strFileName) throws KettleXMLException{
+        try
+        {
+            InputStream is = strFileName.getClass().getResourceAsStream(strFileName);
+            int c;
+            StringBuffer buffer = new StringBuffer();
+            while ( (c=is.read())!=-1 ) buffer.append((char)c);
+            is.close();
+            dom = XMLHandler.loadXMLString(buffer.toString());
+        }
+        catch(Exception e)
+        {
+            throw new KettleXMLException("Unable to read script values help file from file ["+strFileName+"]", e);
+        }
 	}
 	
 	
