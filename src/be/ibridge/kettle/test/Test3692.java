@@ -18,7 +18,7 @@ public class Test3692
         JobEntryLoader.getInstance().read();
         LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("C:\\Documents and Settings\\Matt\\Bureaublad\\test-stuff\\lostrows.ktr");
+        TransMeta transMeta = new TransMeta(args[0]);
         for (int i=0;i<1000;i++)
         {
             Trans trans = new Trans(log, transMeta);
