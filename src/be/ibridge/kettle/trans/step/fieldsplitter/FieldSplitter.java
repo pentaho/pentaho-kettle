@@ -214,7 +214,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		return retval;
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(FieldSplitterMeta)smi;
 		data=(FieldSplitterData)sdi;

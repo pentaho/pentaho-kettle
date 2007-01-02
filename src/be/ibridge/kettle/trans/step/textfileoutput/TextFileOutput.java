@@ -63,7 +63,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
     
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	public synchronized boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(TextFileOutputMeta)smi;
 		data=(TextFileOutputData)sdi;
