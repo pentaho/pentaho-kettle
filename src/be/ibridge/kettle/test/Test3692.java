@@ -12,11 +12,14 @@ public class Test3692
 {
     public static void main(String[] args) throws KettleXMLException
     {
-        if (args.length==0)
+        if (args.length!=2)
         {
             System.err.println("Usage: Test3692   <transformation file>   <nr of iterations>");
             return;
         }
+        
+        System.err.println("Executing transformation '"+args[0]+" in a loop "+args[1]+" times.");
+        
         // init...
         EnvUtil.environmentInit();
         StepLoader.getInstance().read();
