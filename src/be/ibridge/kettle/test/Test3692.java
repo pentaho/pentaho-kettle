@@ -12,6 +12,11 @@ public class Test3692
 {
     public static void main(String[] args) throws KettleXMLException
     {
+        if (args.length==0)
+        {
+            System.err.println("Usage: Test3692   <transformation file>   <nr of iterations>");
+            return;
+        }
         // init...
         EnvUtil.environmentInit();
         StepLoader.getInstance().read();
@@ -19,7 +24,9 @@ public class Test3692
         LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
         TransMeta transMeta = new TransMeta(args[0]);
-        for (int i=0;i<1000;i++)
+        
+        int iterations = Integer.parseInt(args[1]);
+        for (int i=0;i<iterations;i++)
         {
             Trans trans = new Trans(log, transMeta);
             trans.execute(null);
