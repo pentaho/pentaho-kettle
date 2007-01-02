@@ -22,6 +22,7 @@ package be.ibridge.kettle.trans.step;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -364,9 +365,8 @@ public class BaseStep extends Thread
 
     public ArrayList                     thr;
 
-    public ArrayList                     inputRowSets;
-
-    public ArrayList                     outputRowSets;
+    public List inputRowSets;
+    public List outputRowSets;
 
     public boolean                       stopped;
 
@@ -725,189 +725,186 @@ public class BaseStep extends Thread
      */
     public synchronized void putRow(Row row) throws KettleStepException
     {
-        synchronized(outputRowSets)
+        if (previewSize > 0 && previewBuffer.size() < previewSize)
         {
-            if (previewSize > 0 && previewBuffer.size() < previewSize)
-            {
-                previewBuffer.add(new Row(row));
-            }
-    
-            // call all rowlisteners...
-            for (int i = 0; i < rowListeners.size(); i++)
-            {
-                RowListener rowListener = (RowListener) rowListeners.get(i);
-                rowListener.rowWrittenEvent(row);
-            }
-    
-            // Keep adding to terminator_rows buffer...
-            if (terminator && terminator_rows != null)
-            {
-                terminator_rows.add(new Row(row));
-            }
-    
-            if (outputRowSets.size() == 0)
-            {
-                // No more output rowsets!
-                return; // we're done here!
-            }
-    
-            // Before we copy this row to output, wait for room...
-            for (int i = 0; i < outputRowSets.size(); i++) // Wait for all rowsets: keep synchronised!
-            {
-                int sleeptime = transMeta.getSleepTimeFull();
-                RowSet rs = (RowSet) outputRowSets.get(i);
-    
-                // Set the priority every 128k rows only
-                //
-                if (transMeta.isUsingThreadPriorityManagment())
-                {
-                    if (linesWritten>0 && (linesWritten & 0xFF) == 0)
-                    {
-                        rs.setPriorityFrom(calcPutPriority(rs));
-                    }
-                }
-                
-                while (rs.isFull() && !stopped)
-                {
-                    try
-                    {
-                        if (sleeptime > 0)
-                        {
-                            sleep(0, sleeptime);
-                        }
-                        else
-                        {
-                            super.notifyAll();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping") + e.toString()); //$NON-NLS-1$
-                        setErrors(1);
-                        stopAll();
-                        return;
-                    }
-                    nrPutSleeps += sleeptime;
-                    if (sleeptime < 100)
-                        sleeptime = ((int) (sleeptime * 1.2)) + 1;
-                    else
-                        sleeptime = 100;
-                }
-            }
-    
-            if (stopped)
-            {
-                if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
-                stopAll();
-                return;
-            }
-    
-            // Repartitioning happens when the current step is not partitioned, but the next one is.
-            // That means we need to look up the partitioning information in the next step..
-            // If there are multiple steps, we need to look at the first (they should be all the same)
-            // TODO: make something smart later to allow splits etc.
+            previewBuffer.add(new Row(row));
+        }
+
+        // call all rowlisteners...
+        for (int i = 0; i < rowListeners.size(); i++)
+        {
+            RowListener rowListener = (RowListener) rowListeners.get(i);
+            rowListener.rowWrittenEvent(row);
+        }
+
+        // Keep adding to terminator_rows buffer...
+        if (terminator && terminator_rows != null)
+        {
+            terminator_rows.add(new Row(row));
+        }
+
+        if (outputRowSets.size() == 0)
+        {
+            // No more output rowsets!
+            return; // we're done here!
+        }
+
+        // Before we copy this row to output, wait for room...
+        for (int i = 0; i < outputRowSets.size(); i++) // Wait for all rowsets: keep synchronised!
+        {
+            int sleeptime = transMeta.getSleepTimeFull();
+            RowSet rs = (RowSet) outputRowSets.get(i);
+
+            // Set the priority every 128k rows only
             //
-            if (repartitioning)
+            if (transMeta.isUsingThreadPriorityManagment())
             {
-                // Do some pre-processing on the first row...
-                // This is only done once and should cost very little in terms of processing time.
-                //
-                if (partitionColumnIndex < 0)
+                if (linesWritten>0 && (linesWritten & 0xFF) == 0)
                 {
-                    StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
-                    if (nextSteps == null || nextSteps.length == 0) { throw new KettleStepException(
-                            "Re-partitioning is enabled but no next steps could be found: developer error!"); }
-    
-                    // Take the partitioning logic from one of the next steps
-                    nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
-    
-                    // What's the column index of the partitioning fieldname?
-                    partitionColumnIndex = row.searchValueIndex(nextStepPartitioningMeta.getFieldName());
-                    if (partitionColumnIndex < 0) { throw new KettleStepException("Unable to find partitioning field name ["
-                            + nextStepPartitioningMeta.getFieldName() + "] in the output row : " + row); }
-    
-                    // Cache the partition IDs as well...
-                    partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-    
-                    // OK, we also want to cache the target rowset
-                    //
-                    // We know that we have to partition in N pieces
-                    // We should also have N rowsets to the next step
-                    // This is always the case, wheter the target is partitioned or not.
-                    // 
-                    // So what we do is now count the number of rowsets
-                    // And we take the steps copy nr to map.
-                    // It's simple for the time being.
-                    // 
-                    // P1 : MOD(field,N)==0
-                    // P2 : MOD(field,N)==1
-                    // ...
-                    // PN : MOD(field,N)==N-1
-                    //
-    
-                    for (int r = 0; r < outputRowSets.size(); r++)
+                    rs.setPriorityFrom(calcPutPriority(rs));
+                }
+            }
+            
+            while (rs.isFull() && !stopped)
+            {
+                try
+                {
+                    if (sleeptime > 0)
                     {
-                        RowSet rowSet = (RowSet) outputRowSets.get(r);
-                        if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
-                        {
-                            // Find the target step metadata
-                            StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
-    
-                            // What are the target partition ID's
-                            String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-    
-                            // The target partitionID:
-                            String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
-    
-                            // Save the mapping: if we want to know to which rowset belongs to a partition this is the place
-                            // to be.
-                            partitionTargets.put(targetPartitionID, rowSet);
-                        }
+                        sleep(0, sleeptime);
                     }
-                } // End of the one-time init code.
-    
-                // Here we go with the regular show
-                int partitionNr = nextStepPartitioningMeta.getPartitionNr(row.getValue(partitionColumnIndex), partitionIDs.length);
-                String targetPartition = partitionIDs[partitionNr];
-    
-                // Put the row forward to the next step according to the partition rule.
-                RowSet rs = (RowSet) partitionTargets.get(targetPartition);
+                    else
+                    {
+                        super.notifyAll();
+                    }
+                }
+                catch (Exception e)
+                {
+                    logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping") + e.toString()); //$NON-NLS-1$
+                    setErrors(1);
+                    stopAll();
+                    return;
+                }
+                nrPutSleeps += sleeptime;
+                if (sleeptime < 100)
+                    sleeptime = ((int) (sleeptime * 1.2)) + 1;
+                else
+                    sleeptime = 100;
+            }
+        }
+
+        if (stopped)
+        {
+            if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+            stopAll();
+            return;
+        }
+
+        // Repartitioning happens when the current step is not partitioned, but the next one is.
+        // That means we need to look up the partitioning information in the next step..
+        // If there are multiple steps, we need to look at the first (they should be all the same)
+        // TODO: make something smart later to allow splits etc.
+        //
+        if (repartitioning)
+        {
+            // Do some pre-processing on the first row...
+            // This is only done once and should cost very little in terms of processing time.
+            //
+            if (partitionColumnIndex < 0)
+            {
+                StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
+                if (nextSteps == null || nextSteps.length == 0) { throw new KettleStepException(
+                        "Re-partitioning is enabled but no next steps could be found: developer error!"); }
+
+                // Take the partitioning logic from one of the next steps
+                nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
+
+                // What's the column index of the partitioning fieldname?
+                partitionColumnIndex = row.searchValueIndex(nextStepPartitioningMeta.getFieldName());
+                if (partitionColumnIndex < 0) { throw new KettleStepException("Unable to find partitioning field name ["
+                        + nextStepPartitioningMeta.getFieldName() + "] in the output row : " + row); }
+
+                // Cache the partition IDs as well...
+                partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+
+                // OK, we also want to cache the target rowset
+                //
+                // We know that we have to partition in N pieces
+                // We should also have N rowsets to the next step
+                // This is always the case, wheter the target is partitioned or not.
+                // 
+                // So what we do is now count the number of rowsets
+                // And we take the steps copy nr to map.
+                // It's simple for the time being.
+                // 
+                // P1 : MOD(field,N)==0
+                // P2 : MOD(field,N)==1
+                // ...
+                // PN : MOD(field,N)==N-1
+                //
+
+                for (int r = 0; r < outputRowSets.size(); r++)
+                {
+                    RowSet rowSet = (RowSet) outputRowSets.get(r);
+                    if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
+                    {
+                        // Find the target step metadata
+                        StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
+
+                        // What are the target partition ID's
+                        String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+
+                        // The target partitionID:
+                        String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
+
+                        // Save the mapping: if we want to know to which rowset belongs to a partition this is the place
+                        // to be.
+                        partitionTargets.put(targetPartitionID, rowSet);
+                    }
+                }
+            } // End of the one-time init code.
+
+            // Here we go with the regular show
+            int partitionNr = nextStepPartitioningMeta.getPartitionNr(row.getValue(partitionColumnIndex), partitionIDs.length);
+            String targetPartition = partitionIDs[partitionNr];
+
+            // Put the row forward to the next step according to the partition rule.
+            RowSet rs = (RowSet) partitionTargets.get(targetPartition);
+            rs.putRow(row);
+            linesWritten++;
+        }
+        else
+        {
+            if (distributed)
+            {
+                // Copy the row to the "next" output rowset.
+                // We keep the next one in out_handling
+                RowSet rs = (RowSet) outputRowSets.get(out_handling);
                 rs.putRow(row);
                 linesWritten++;
+
+                // Now determine the next output rowset!
+                // Only if we have more then one output...
+                if (outputRowSets.size() > 1)
+                {
+                    out_handling++;
+                    if (out_handling >= outputRowSets.size()) out_handling = 0;
+                }
             }
             else
+            // Copy the row to all output rowsets!
             {
-                if (distributed)
+                // Copy to the row in the other output rowsets...
+                for (int i = 1; i < outputRowSets.size(); i++) // start at 1
                 {
-                    // Copy the row to the "next" output rowset.
-                    // We keep the next one in out_handling
-                    RowSet rs = (RowSet) outputRowSets.get(out_handling);
-                    rs.putRow(row);
-                    linesWritten++;
-    
-                    // Now determine the next output rowset!
-                    // Only if we have more then one output...
-                    if (outputRowSets.size() > 1)
-                    {
-                        out_handling++;
-                        if (out_handling >= outputRowSets.size()) out_handling = 0;
-                    }
+                    RowSet rs = (RowSet) outputRowSets.get(i);
+                    rs.putRow(new Row(row));
                 }
-                else
-                // Copy the row to all output rowsets!
-                {
-                    // Copy to the row in the other output rowsets...
-                    for (int i = 1; i < outputRowSets.size(); i++) // start at 1
-                    {
-                        RowSet rs = (RowSet) outputRowSets.get(i);
-                        rs.putRow(new Row(row));
-                    }
-    
-                    // set row in first output rowset
-                    RowSet rs = (RowSet) outputRowSets.get(0);
-                    rs.putRow(row);
-                    linesWritten++;
-                }
+
+                // set row in first output rowset
+                RowSet rs = (RowSet) outputRowSets.get(0);
+                rs.putRow(row);
+                linesWritten++;
             }
         }
     }
@@ -967,7 +964,6 @@ public class BaseStep extends Thread
         if (outputRowSets.size() == 0) return; // nothing to do here!
 
         RowSet rs = (RowSet) outputRowSets.get(output_rowset_nr);
-
         sleeptime = transMeta.getSleepTimeFull();
         while (rs.isFull() && !stopped)
         {
@@ -1038,93 +1034,90 @@ public class BaseStep extends Thread
         int switches;
 
         // If everything is finished, we can stop immediately!
-        synchronized (inputRowSets)
+        if (inputRowSets.size() == 0) { return null; }
+
+        // What's the current input stream?
+        RowSet in = currentInputStream();
+        switches = 0;
+        sleeptime = transMeta.getSleepTimeEmpty();
+        while (in.isEmpty() && !stopped)
         {
-            if (inputRowSets.size() == 0) { return null; }
-
-            // What's the current input stream?
-            RowSet in = currentInputStream();
-            switches = 0;
-            sleeptime = transMeta.getSleepTimeEmpty();
-            while (in.isEmpty() && !stopped)
+            // in : empty
+            if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
             {
-                // in : empty
-                if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
+                inputRowSets.remove(in_handling);
+                if (inputRowSets.size() == 0) // nothing more to be found!
+                { return null; }
+            }
+            nextInputStream();
+            in = currentInputStream();
+            switches++;
+            if (switches >= inputRowSets.size()) // every n looks, wait a bit! Don't use too much CPU!
+            {
+                switches = 0;
+                try
                 {
-                    inputRowSets.remove(in_handling);
-                    if (inputRowSets.size() == 0) // nothing more to be found!
-                    { return null; }
-                }
-                nextInputStream();
-                in = currentInputStream();
-                switches++;
-                if (switches >= inputRowSets.size()) // every n looks, wait a bit! Don't use too much CPU!
-                {
-                    switches = 0;
-                    try
+                    if (sleeptime > 0)
                     {
-                        if (sleeptime > 0)
-                        {
-                            sleep(0, sleeptime);
-                        }
-                        else
-                        {
-                            super.notifyAll();
-                        }
+                        sleep(0, sleeptime);
                     }
-                    catch (Exception e)
-                    {
-                        logError(Messages.getString("BaseStep.Log.SleepInterupted") + e.toString()); //$NON-NLS-1$
-                        setErrors(1);
-                        stopAll();
-                        return null;
-                    }
-                    if (sleeptime < 100)
-                        sleeptime = ((int) (sleeptime * 1.2)) + 1;
                     else
-                        sleeptime = 100;
-                    nrGetSleeps += sleeptime;
+                    {
+                        super.notifyAll();
+                    }
                 }
-            }
-            if (stopped)
-            {
-                if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
-                stopAll();
-                return null;
-            }
-
-            // Set the appropriate priority depending on the amount of data in the rowset:
-            // Only do this every 4096 rows...
-            // Mmm, the less we do it, the faster the tests run, let's leave this out for now ;-)
-            if (transMeta.isUsingThreadPriorityManagment())
-            {
-                if (linesRead>0 && (linesRead & 0xFF) == 0)
+                catch (Exception e)
                 {
-                    in.setPriorityTo(calcGetPriority(in));
+                    logError(Messages.getString("BaseStep.Log.SleepInterupted") + e.toString()); //$NON-NLS-1$
+                    setErrors(1);
+                    stopAll();
+                    return null;
                 }
+                if (sleeptime < 100)
+                    sleeptime = ((int) (sleeptime * 1.2)) + 1;
+                else
+                    sleeptime = 100;
+                nrGetSleeps += sleeptime;
             }
-
-            // Get this row!
-            Row row = in.getRow();
-            linesRead++;
-
-            // Notify all rowlisteners...
-            for (int i = 0; i < rowListeners.size(); i++)
-            {
-                RowListener rowListener = (RowListener) rowListeners.get(i);
-                rowListener.rowReadEvent(row);
-            }
-
-            nextInputStream(); // Look for the next input stream to get row from.
-
-            // OK, before we return the row, let's see if we need to check on mixing row compositions...
-            if (safeModeEnabled)
-            {
-                safeModeChecking(row);
-            } // Extra checking
-
-            return row;
         }
+        if (stopped)
+        {
+            if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+            stopAll();
+            return null;
+        }
+
+        // Set the appropriate priority depending on the amount of data in the rowset:
+        // Only do this every 4096 rows...
+        // Mmm, the less we do it, the faster the tests run, let's leave this out for now ;-)
+        if (transMeta.isUsingThreadPriorityManagment())
+        {
+            if (linesRead>0 && (linesRead & 0xFF) == 0)
+            {
+                in.setPriorityTo(calcGetPriority(in));
+            }
+        }
+
+        // Get this row!
+        Row row = in.getRow();
+        linesRead++;
+
+        // Notify all rowlisteners...
+        for (int i = 0; i < rowListeners.size(); i++)
+        {
+            RowListener rowListener = (RowListener) rowListeners.get(i);
+            rowListener.rowReadEvent(row);
+        }
+
+        nextInputStream(); // Look for the next input stream to get row from.
+
+        // OK, before we return the row, let's see if we need to check on mixing row compositions...
+        if (safeModeEnabled)
+        {
+            safeModeChecking(row);
+        } // Extra checking
+
+        return row;
     }
 
     protected synchronized void safeModeChecking(Row row)
@@ -1294,8 +1287,8 @@ public class BaseStep extends Thread
         int nrInput = transMeta.findNrPrevSteps(stepMeta, true);
         int nrOutput = transMeta.findNrNextSteps(stepMeta);
 
-        inputRowSets = new ArrayList(); // new RowSet[nrinput];
-        outputRowSets = new ArrayList(); // new RowSet[nroutput+out_copies];
+        inputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nrinput];
+        outputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nroutput+out_copies];
         prevSteps = new StepMeta[nrInput];
         nextSteps = new StepMeta[nrOutput];
 
