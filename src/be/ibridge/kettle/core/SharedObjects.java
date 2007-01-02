@@ -75,7 +75,7 @@ public class SharedObjects
         // If we have a shared file, load the content, otherwise, just keep this one empty
         if (file.exists()) 
         {
-            LogWriter.getInstance().logBasic("SharedObjects", "Reading the shared objects file ["+file+"]");
+            LogWriter.getInstance().logDetailed("SharedObjects", "Reading the shared objects file ["+file+"]");
             Document document = XMLHandler.loadXMLFile(file);
             Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
             if (sharedObjectsNode!=null)
