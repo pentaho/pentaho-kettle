@@ -1104,7 +1104,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		}catch(KettleException ke){
 			retval=false;
 			//new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialog.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialog.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			new ErrorDialog(shell, props, "Test failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, "Test failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}finally{
 			if (jscx!=null) Context.exit();
 		}
@@ -1223,7 +1223,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			}
 		}catch(KettleException ke){
 			//new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, "Get fields failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -1253,7 +1253,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			}
 		}catch(KettleException ke){
 			//new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, "Get fields failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
