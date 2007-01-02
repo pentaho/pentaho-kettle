@@ -1046,6 +1046,7 @@ public class BaseStep extends Thread
         while (in.isEmpty() && !stopped)
         {
             // in : empty
+            
             if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
             {
                 inputRowSets.remove(in_handling);
@@ -1053,6 +1054,7 @@ public class BaseStep extends Thread
                 {
                     if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
                     {
+                        try { Thread.sleep(1000); } catch(Exception e) {}
                         log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
                     }
 
