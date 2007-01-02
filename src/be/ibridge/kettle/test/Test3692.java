@@ -26,10 +26,11 @@ public class Test3692
         
         TransMeta transMeta = new TransMeta(args[0]);
         
-        int iterations = Const.toInt(args[1], 10000);
+        int iterations = 10000;
+        if (args.length>1) Integer.parseInt(args[1]);
+        Trans trans = new Trans(log, transMeta);
         for (int i=0;i<iterations;i++)
         {
-            Trans trans = new Trans(log, transMeta);
             trans.execute(null);
         }
     }
