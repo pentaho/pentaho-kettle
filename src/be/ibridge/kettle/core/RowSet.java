@@ -66,7 +66,7 @@ public class RowSet
 	//
 	// We always add rows to the end of the linked list
 	// 
-	public void putRow(Row r)
+	public synchronized void putRow(Row r)
 	{
 		list.add(r);
 	}
@@ -75,7 +75,7 @@ public class RowSet
 	// We always read rows from the beginning of the linked list
 	// Once we read the row, we remove it from the list
 	// 
-	public Row getRow()
+	public synchronized Row getRow()
 	{
 		Row r = (Row)list.get(0);
 		list.remove(0);
@@ -83,12 +83,12 @@ public class RowSet
 		return r;
 	}
 
-    public Row lookAtFirst()
+    public synchronized Row lookAtFirst()
     {
         return (Row) list.get(0);
     }
 
-	public boolean isEmpty()
+	public synchronized boolean isEmpty()
 	{
 		return (list.size()==0);
 	}
@@ -96,7 +96,7 @@ public class RowSet
 	// Don't let the buffer get too big, we might run out 
     // of memory if the following steps are working slower
 	//
-	public boolean isFull()
+	public synchronized boolean isFull()
 	{
 		return (list.size()>=maxsize);
 	}
@@ -114,7 +114,7 @@ public class RowSet
 	/**
      * @return Returns the originStepName.
      */
-    public String getOriginStepName()
+    public synchronized String getOriginStepName()
     {
         return originStepName;
     }
@@ -122,7 +122,7 @@ public class RowSet
     /**
      * @return Returns the originStepCopy.
      */
-    public int getOriginStepCopy()
+    public synchronized int getOriginStepCopy()
     {
         return originStepCopy;
     }
@@ -130,7 +130,7 @@ public class RowSet
     /**
      * @return Returns the destinationStepName.
      */
-    public String getDestinationStepName()
+    public synchronized String getDestinationStepName()
     {
         return destinationStepName;
     }
@@ -138,7 +138,7 @@ public class RowSet
     /**
      * @return Returns the destinationStepCopy.
      */
-    public int getDestinationStepCopy()
+    public synchronized int getDestinationStepCopy()
     {
         return destinationStepCopy;
     }
@@ -156,17 +156,17 @@ public class RowSet
 	//	name=n;
 	//}
 	
-	public String getName()
+	public synchronized String getName()
 	{
 		return toString();
 	}
 	
-	public int size()
+	public synchronized int size()
 	{
 		return list.size();
 	}
 
-	public void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
+	public synchronized void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
 	{
 		originStepName        = from;
 		originStepCopy        = from_copy;
@@ -174,13 +174,13 @@ public class RowSet
 		destinationStepCopy   = to_copy;
 	}
 	
-	public void setThreadFromTo(BaseStep from, BaseStep to)
+	public synchronized void setThreadFromTo(BaseStep from, BaseStep to)
 	{
 		thread_from = from;
 		thread_to   = to;
 	}
 	    
-	public boolean setPriorityFrom(int prior)
+	public synchronized boolean setPriorityFrom(int prior)
 	{
 		if ( thread_from == null ||
 		     thread_from.getPriority()==prior ||
@@ -198,7 +198,7 @@ public class RowSet
 		return true;
 	}
 
-	public boolean setPriorityTo(int prior)
+	public synchronized boolean setPriorityTo(int prior)
 	{
 		if ( thread_to == null ||
 			 thread_to.getPriority()==prior ||
@@ -216,7 +216,7 @@ public class RowSet
 		return true;
 	}
 		
-	public String toString()
+	public synchronized String toString()
 	{
 		return originStepName + "." + originStepCopy + 
                " - " +
