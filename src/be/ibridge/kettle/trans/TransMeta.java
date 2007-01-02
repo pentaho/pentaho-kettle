@@ -2670,7 +2670,6 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             {
                 Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
                 ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode, slaveServers);
-                System.out.println("Loaded "+clusterSchema.getSlaveServers().size()+" servers in cluster "+clusterSchema.getName());
                 
                 // Check if the object exists and if it's a shared object.
                 // If so, then we will keep the shared version, not this one.
