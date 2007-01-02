@@ -1274,10 +1274,13 @@ public class BaseStep extends Thread
     public synchronized void setOutputDone()
     {
         if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
-        for (int i = 0; i < outputRowSets.size(); i++)
+        synchronized(outputRowSets)
         {
-            RowSet rs = (RowSet) outputRowSets.get(i);
-            rs.setDone();
+            for (int i = 0; i < outputRowSets.size(); i++)
+            {
+                RowSet rs = (RowSet) outputRowSets.get(i);
+                rs.setDone();
+            }
         }
     }
 
