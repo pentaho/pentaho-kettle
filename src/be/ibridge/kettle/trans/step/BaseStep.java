@@ -1034,7 +1034,14 @@ public class BaseStep extends Thread
         int switches;
 
         // If everything is finished, we can stop immediately!
-        if (inputRowSets.size() == 0) { return null; }
+        if (inputRowSets.size() == 0) 
+        {
+            if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
+            {
+                log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
+            }
+            return null; 
+        }
 
         // What's the current input stream?
         RowSet in = currentInputStream();
