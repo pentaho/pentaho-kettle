@@ -1036,10 +1036,6 @@ public class BaseStep extends Thread
         // If everything is finished, we can stop immediately!
         if (inputRowSets.size() == 0) 
         {
-            if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
-            {
-                log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
-            }
             return null; 
         }
 
@@ -1054,7 +1050,14 @@ public class BaseStep extends Thread
             {
                 inputRowSets.remove(in_handling);
                 if (inputRowSets.size() == 0) // nothing more to be found!
-                { return null; }
+                {
+                    if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
+                    {
+                        log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
+                    }
+
+                    return null; 
+                }
             }
             nextInputStream();
             in = currentInputStream();
