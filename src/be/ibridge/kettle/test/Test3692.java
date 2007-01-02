@@ -1,5 +1,6 @@
 package be.ibridge.kettle.test;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
@@ -25,7 +26,7 @@ public class Test3692
         
         TransMeta transMeta = new TransMeta(args[0]);
         
-        int iterations = Integer.parseInt(args[1]);
+        int iterations = Const.toInt(args[1], 10000);
         for (int i=0;i<iterations;i++)
         {
             Trans trans = new Trans(log, transMeta);
