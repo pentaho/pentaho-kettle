@@ -185,7 +185,7 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 		{
 			try {
 				long sleepTime = getNextExecutionTime();
-				System.out.println("Sleeping:"+(sleepTime/1000/60)+"minutes");
+                parentJob.getLog().logDebug(parentJob.toString(), "Sleeping: " + (sleepTime/1000/60) + " minutes");
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				throw new KettleJobException(e);
