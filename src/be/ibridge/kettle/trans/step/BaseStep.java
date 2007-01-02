@@ -1038,6 +1038,13 @@ public class BaseStep extends Thread
         {
             return null; 
         }
+        
+        // Are all threads started?
+        // Are we running yet?
+        while (!trans.isRunning() && !stopped)
+        {
+            try { Thread.sleep(1); } catch (InterruptedException e) { }
+        }
 
         // What's the current input stream?
         RowSet in = currentInputStream();
@@ -1046,7 +1053,6 @@ public class BaseStep extends Thread
         while (in.isEmpty() && !stopped)
         {
             // in : empty
-            
             if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
             {
                 inputRowSets.remove(in_handling);

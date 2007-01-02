@@ -228,6 +228,7 @@ public class Trans
     {
         preparing=true;
 		startDate = null;
+        running = false;
 
 		/*
 		 * Set the arguments on the transformation...
