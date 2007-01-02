@@ -27,10 +27,11 @@ public class Test3692
         LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
         TransMeta transMeta = new TransMeta(args[0]);
+        Trans trans = new Trans(log, transMeta);
         
         int iterations = 10000;
-        if (args.length>1) Integer.parseInt(args[1]);
-        Trans trans = new Trans(log, transMeta);
+        if (args.length>1) iterations=Integer.parseInt(args[1]);
+        
         for (int i=0;i<iterations;i++)
         {
             trans.execute(null);
