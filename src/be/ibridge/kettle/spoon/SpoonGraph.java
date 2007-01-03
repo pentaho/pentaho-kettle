@@ -2194,41 +2194,26 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
         spoon.setUndoMenu(transMeta);
     }
 
-    /**
+    /*
      * Shows a 'model has changed' warning if required
      * @return true if nothing has changed or the changes are rejected by the user.
      */
-    public boolean showChangedWarning(TransMeta transMeta)
+    public int showChangedWarning()
     {
-        boolean answer = true;
-        if (transMeta.hasChanged())
-        {
-            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-            mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", spoon.makeGraphTabName(transMeta)));//"This model has changed.  Do you want to save it?"
-            mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
-            int reply = mb.open();
-            if (reply==SWT.YES)
-            {
-                answer=spoon.saveFile(transMeta);
-            }
-            else
-            {
-                if (reply==SWT.CANCEL)
-                {
-                    answer = false;
-                }
-                else
-                {
-                    answer = true;
-                }
-            }
-        }
-        return answer;
+        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+        mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", spoon.makeGraphTabName(transMeta)));//"This model has changed.  Do you want to save it?"
+        mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
+        return mb.open();
+    }
+    
+    public boolean applyChanges()
+    {
+        return spoon.saveFile(transMeta);
     }
 
     public boolean canBeClosed()
     {
-        return showChangedWarning(transMeta);
+        return !transMeta.hasChanged();
     }
     
     public Object getManagedObject()

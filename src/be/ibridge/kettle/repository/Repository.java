@@ -2362,6 +2362,57 @@ public class Repository
 
 		return transList;
 	}
+    
+    public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleDatabaseException
+    {
+        String sql = "SELECT DISTINCT ID_CLUSTER FROM R_CLUSTER_SLAVE WHERE ID_SLAVE = " + id_slave;
+
+        ArrayList list = database.getRows(sql, 100);
+        String[] transList = new String[list.size()];
+        for (int i=0;i<list.size();i++)
+        {
+            long id_cluster_schema = ((Row)list.get(i)).getInteger("ID_CLUSTER", -1L); 
+            if (id_cluster_schema > 0)
+            {
+                Row transRow =  getClusterSchema(id_cluster_schema);
+                if (transRow!=null)
+                {
+                    String clusterName = transRow.getString("NAME", "<name not found>");
+                    transList[i]=clusterName;
+                }
+            }
+            
+        }
+
+        return transList;
+    }
+
+    public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleDatabaseException
+    {
+        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave;
+
+        ArrayList list = database.getRows(sql, 100);
+        String[] transList = new String[list.size()];
+        for (int i=0;i<list.size();i++)
+        {
+            long id_transformation = ((Row)list.get(i)).getInteger("ID_TRANSFORMATION", -1L); 
+            if (id_transformation > 0)
+            {
+                Row transRow =  getTransformation(id_transformation);
+                if (transRow!=null)
+                {
+                    String transName = transRow.getString("NAME", "<name not found>");
+                    long id_directory = transRow.getInteger("ID_DIRECTORY", -1L);
+                    RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
+                    
+                    transList[i]=dir.getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
+                }
+            }
+            
+        }
+
+        return transList;
+    }
 
 	public long[] getTransHopIDs(long id_transformation) throws KettleDatabaseException
 	{
@@ -3141,6 +3192,7 @@ public class Repository
 		// If so, generate an error!!
 		// We look in table R_STEP_DATABASE to see if there are any steps using this database.
 		String[] transList = getTransformationsUsingDatabase(id_database);
+        
 		// TODO: add check for jobs too.
 		// TODO: add R_JOBENTRY_DATABASE table & lookups.
 		
@@ -3197,6 +3249,47 @@ public class Repository
 		String sql = "DELETE FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile;
 		database.execStatement(sql);
 	}
+    
+    public synchronized void delSlave(long id_slave) throws KettleDatabaseException
+    {
+        // First, see if the database connection is still used by other connections...
+        // If so, generate an error!!
+        // We look in table R_STEP_DATABASE to see if there are any steps using this database.
+        String[] transList = getTransformationsUsingSlave(id_slave);
+        String[] clustList = getClustersUsingSlave(id_slave);
+
+        if (transList.length==0 && clustList.length==0)
+        {
+            database.execStatement("DELETE FROM R_SLAVE WHERE ID_SLAVE = " + id_slave);
+            database.execStatement("DELETE FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave);
+        }
+        else
+        {
+            StringBuffer message = new StringBuffer();
+            
+            if (transList.length>0)
+            {
+                message.append("Slave used by the following transformations:").append(Const.CR);
+                for (int i = 0; i < transList.length; i++)
+                {
+                    message.append("  ").append(transList[i]).append(Const.CR);
+                }
+                message.append(Const.CR);
+            }
+            if (clustList.length>0)
+            {
+                message.append("Slave used by the following cluster schemas:").append(Const.CR);
+                for (int i = 0; i < clustList.length; i++)
+                {
+                    message.append("  ").append(clustList[i]).append(Const.CR);
+                }
+            }
+            
+            KettleDependencyException e = new KettleDependencyException(message.toString());
+            throw new KettleDependencyException("This slave server is still in use by one or more transformations ("+transList.length+") or cluster schemas ("+clustList.length+") :", e);
+        }
+    }
+   
 
 	public synchronized void delAllFromTrans(long id_transformation) throws KettleDatabaseException
 	{

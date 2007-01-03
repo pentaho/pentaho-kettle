@@ -1191,9 +1191,7 @@ public class Spoon
                             catch (KettleException ke)
                             {
                                 rep = null;
-                                new ErrorDialog(
-                                        shell,
-                                        Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+                                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                         else
@@ -2065,8 +2063,32 @@ public class Spoon
                         TabMapEntry entry = (TabMapEntry) iter.next();
                         if (event.item.equals(entry.getTabItem())) 
                         {
+                            TabItemInterface itemInterface = entry.getObject();
+                            
+                            boolean close = true;
+                            
                             // Can we close this tab?
-                            event.doit = entry.getObject().canBeClosed();
+                            if (!itemInterface.canBeClosed())
+                            {
+                                int reply = itemInterface.showChangedWarning();
+                                if (reply==SWT.YES)
+                                {
+                                    close=itemInterface.applyChanges();
+                                }
+                                else
+                                {
+                                    if (reply==SWT.CANCEL)
+                                    {
+                                        close = false;
+                                    }
+                                    else
+                                    {
+                                        close = true;
+                                    }
+                                }
+                            }
+                            
+                            event.doit=close;
                             
                             // Also clean up the log/history associated with this transformation
                             //
@@ -2966,11 +2988,33 @@ public class Spoon
         for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
+            TabItemInterface itemInterface = mapEntry.getObject();
             
-            if (!mapEntry.getObject().canBeClosed())
+            if (!itemInterface.canBeClosed())
             {
-                // Unsaved transformation?
+                // Show the tab
+                tabfolder.setSelection( mapEntry.getTabItem() );
+                
+                // Unsaved work that needs to changes to be applied?
                 //
+                int reply= itemInterface.showChangedWarning();
+                if (reply==SWT.YES)
+                {
+                    exit=itemInterface.applyChanges();
+                }
+                else
+                {
+                    if (reply==SWT.CANCEL)
+                    {
+                        exit = false;
+                    }
+                    else // SWT.NO
+                    {
+                        exit = true;
+                    }
+                }
+
+                /*
                 if (mapEntry.getObject() instanceof SpoonGraph)
                 {
                     TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
@@ -3003,14 +3047,12 @@ public class Spoon
                     SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
                     if (spoonLog.isRunning())
                     {
-                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                        mb.setMessage(Messages.getString("Spoon.Message.Warning.PromptExitWhenRunTransformation"));// There is a running transformation.  Do you want to stop it and quit Spoon?
-                        mb.setText(Messages.getString("System.Warning")); //Warning
-                        int reply = mb.open();
                         
                         if (reply==SWT.NO) exit=false; // No selected: don't exit!
                     }
                 }
+                */
+                
             }
         }
         
@@ -5532,11 +5574,22 @@ public class Spoon
 
     private void delSlaveServer(TransMeta transMeta, SlaveServer slaveServer)
     {
-        // TODO: remove from cluster schemas that use it as well.
-        //
-        int idx = transMeta.getSlaveServers().indexOf(slaveServer);
-        transMeta.getSlaveServers().remove(idx);
-        refreshTree();
+        try
+        {
+            if (rep!=null && slaveServer.getId()>0)
+            {
+                // remove the slave server from the repository too...
+                rep.delSlave(slaveServer.getId());
+            }
+            
+            int idx = transMeta.getSlaveServers().indexOf(slaveServer);
+            transMeta.getSlaveServers().remove(idx);
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingSlave.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingSlave.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
     
     

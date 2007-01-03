@@ -20,19 +20,20 @@ public class Carte
         // Trans trans = generateTestTransformation();
         // map.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
         
+        String hostname = args[0];
         int port = WebServer.PORT;
-        if (args.length>=1)
+        if (args.length>=2)
         {
             try
             {
-                port = Integer.parseInt(args[0]);
+                port = Integer.parseInt(args[1]);
             }
             catch(Exception e)
             {
                 System.out.println("Unable to parse port ["+args[0]+"], using port ["+port+"]");
             }
         }
-        new WebServer(map, port);
+        new WebServer(map, hostname, port);
     }
 
     private static void init() throws Exception

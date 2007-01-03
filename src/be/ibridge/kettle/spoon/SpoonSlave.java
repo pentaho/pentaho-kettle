@@ -260,7 +260,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
 
     public boolean canBeClosed()
     {
-        // It's OK to close this at any time too.
+        // It's OK to close this at any time.
+        // We just have to make sure we stop the timers etc.
+        //
         timerTask.cancel();
         timer.cancel();
         spoon.tabfolder.setSelection(0);
@@ -513,5 +515,15 @@ public class SpoonSlave extends Composite implements TabItemInterface
     public boolean hasContentChanged()
     {
         return false;
+    }
+
+    public boolean applyChanges()
+    {
+        return true;
+    }
+
+    public int showChangedWarning()
+    {
+        return SWT.YES;
     }
 }

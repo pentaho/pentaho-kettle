@@ -1,6 +1,7 @@
 package be.ibridge.kettle.spoon;
 
 
+
 public interface TabItemInterface
 {
     /** 
@@ -10,5 +11,8 @@ public interface TabItemInterface
      */
     public boolean canBeClosed();
     public Object getManagedObject();
-    public boolean hasContentChanged();
+    public boolean hasContentChanged();    
+    public int showChangedWarning();
+    public boolean applyChanges();
+    
 }

@@ -2,13 +2,6 @@ package be.ibridge.kettle.www;
 
 import interbase.interclient.UnknownHostException;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -34,11 +27,13 @@ public class WebServer
     
     private TransformationMap  transformationMap;
 
+    private String hostname;
     private int port;
 
-    public WebServer(TransformationMap transformationMap, int port) throws Exception
+    public WebServer(TransformationMap transformationMap, String hostname, int port) throws Exception
     {
         this.transformationMap = transformationMap;
+        this.hostname = hostname;
         this.port = port;
         
         userRealm = new HashUserRealm("Kettle", "pwd/kettle.pwd");
@@ -178,37 +173,29 @@ public class WebServer
     
     private void createListeners() throws UnknownHostException 
     {
-        try 
-        {
-            List connectors = new ArrayList();
-            
-            Enumeration e = NetworkInterface.getNetworkInterfaces();
-            while (e.hasMoreElements()) 
-            {
-                NetworkInterface nwi = (NetworkInterface) e.nextElement();
-                String nwiName = nwi.getDisplayName();
+        SocketConnector connector = new SocketConnector();
+        connector.setPort(port);
+        connector.setHost(hostname);
+        connector.setName("Kettle HTTP listener for ["+hostname+"]");
+        log.logBasic(toString(), "Created listener for webserver @ address : " + hostname+":"+port);
 
-                Enumeration ip = nwi.getInetAddresses();
-                while (ip.hasMoreElements())
-                {
-                    InetAddress inetAddress = (InetAddress) ip.nextElement();
-            
-                    SocketConnector connector = new SocketConnector();
-                    connector.setPort(port);
-                    connector.setHost(inetAddress.getHostAddress());
-                    connector.setName("Kettle HTTP listener for ["+inetAddress.getHostAddress()+"]");
-                    log.logBasic(toString(), "Created listener for webserver @ address : " + inetAddress.getHostAddress() + " on " + nwiName);
+        server.setConnectors( new Connector[] { connector });
+    }
 
-                    connectors.add(connector);
-                }
-            }
-            
-            server.setConnectors( (Connector[])connectors.toArray(new Connector[connectors.size()]) );
-        } 
-        catch (SocketException e) 
-        {
-            throw new RuntimeException("Unable to determine IP address of network interface", e);
-        }
+    /**
+     * @return the hostname
+     */
+    public String getHostname()
+    {
+        return hostname;
+    }
+
+    /**
+     * @param hostname the hostname to set
+     */
+    public void setHostname(String hostname)
+    {
+        this.hostname = hostname;
     }
 
 }

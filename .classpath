@@ -34,7 +34,6 @@
 	<classpathentry kind="lib" path="libext/pentaho-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/simple-jndi-0.11.1.jar"/>
 	<classpathentry kind="lib" path="libext/h2.jar"/>
-	<classpathentry kind="lib" path="libext/commons-logging.jar"/>
 	<classpathentry kind="lib" path="libext/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons-lang-2.2.jar"/>
 	<classpathentry kind="lib" path="libext/commons-dbcp-1.2.1.jar"/>
@@ -51,10 +50,13 @@
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
 	<classpathentry kind="lib" path="libswt/commands.jar"/>
 	<classpathentry kind="lib" path="libswt/common.jar"/>
+	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.14-bin.jar"/>
+	<classpathentry kind="lib" path="libext/jaybird-full-2.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/jetty-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/jetty-util-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/servlet-api-2.5-6.0.2.jar"/>
-	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.14-bin.jar"/>
-	<classpathentry kind="lib" path="libext/jaybird-full-2.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/commons-net-1.4.1.jar"/>
+	<classpathentry kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

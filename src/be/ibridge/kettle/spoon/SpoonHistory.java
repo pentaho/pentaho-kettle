@@ -419,6 +419,16 @@ public class SpoonHistory extends Composite implements TabItemInterface
     {
         return true; // You can close this one at any time.
     }
+    
+    public boolean applyChanges()
+    {
+        return true;
+    }
+
+    public int showChangedWarning()
+    {
+        return SWT.NONE;
+    }
 
     public Object getManagedObject()
     {
