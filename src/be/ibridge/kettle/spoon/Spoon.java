@@ -2929,9 +2929,7 @@ public class Spoon
     public void newFile()
     {
         TransMeta transMeta = new TransMeta();
-        
         loadRepositoryObjects(transMeta);
-        
         addSpoonGraph(transMeta);
         refreshTree();
     }

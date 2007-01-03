@@ -1435,7 +1435,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				{
                     newTrans = new TransMeta(sp.rep, exactTransname, entry.getDirectory());
 				}
-                sp.addTransformation( newTrans );
+                sp.addSpoonGraph(newTrans);
 				newTrans.clearChanged();
 				sp.open();
 			}
@@ -1469,7 +1469,7 @@ public class ChefGraph extends Canvas implements Redrawable
                 
 				launchTransMeta.clearChanged();
                 launchTransMeta.setFilename( exactFilename );
-                spoon.addTransformation( launchTransMeta );
+                spoon.addSpoonGraph( launchTransMeta );
 				spoon.open();
 			}
 			catch(Throwable xe)
