@@ -725,6 +725,13 @@ public class BaseStep extends Thread
      */
     public synchronized void putRow(Row row) throws KettleStepException
     {
+        // Have all threads started?
+        // Are we running yet?  If not, wait a bit until all threads have been started.
+        while (!trans.isRunning() && !stopped)
+        {
+            try { Thread.sleep(1); } catch (InterruptedException e) { }
+        }
+
         if (previewSize > 0 && previewBuffer.size() < previewSize)
         {
             previewBuffer.add(new Row(row));
@@ -1033,17 +1040,17 @@ public class BaseStep extends Thread
         int sleeptime;
         int switches;
 
+        // Have all threads started?
+        // Are we running yet?  If not, wait a bit until all threads have been started.
+        while (!trans.isRunning() && !stopped)
+        {
+            try { Thread.sleep(1); } catch (InterruptedException e) { }
+        }
+
         // If everything is finished, we can stop immediately!
         if (inputRowSets.size() == 0) 
         {
             return null; 
-        }
-        
-        // Are all threads started?
-        // Are we running yet?
-        while (!trans.isRunning() && !stopped)
-        {
-            try { Thread.sleep(1); } catch (InterruptedException e) { }
         }
 
         // What's the current input stream?
@@ -1053,18 +1060,21 @@ public class BaseStep extends Thread
         while (in.isEmpty() && !stopped)
         {
             // in : empty
-            if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
+            synchronized(in)
             {
-                inputRowSets.remove(in_handling);
-                if (inputRowSets.size() == 0) // nothing more to be found!
+                if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
                 {
-                    if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
+                    inputRowSets.remove(in_handling);
+                    if (inputRowSets.size() == 0) // nothing more to be found!
                     {
-                        try { Thread.sleep(1000); } catch(Exception e) {}
-                        log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
+                        if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
+                        {
+                            try { Thread.sleep(1000); } catch(Exception e) {}
+                            log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
+                        }
+    
+                        return null; 
                     }
-
-                    return null; 
                 }
             }
             nextInputStream();
