@@ -45,8 +45,7 @@ public class JobPlugin
     private String          icon_filename;
 
     private String          classname;
-
-
+    
     public JobPlugin(int type, String id, String description, String tooltip, String directory, String jarfiles[], String icon_filename,
             String classname)
     {

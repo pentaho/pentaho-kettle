@@ -161,8 +161,6 @@ public class Props implements Cloneable
 	public static final int TYPE_PROPERTIES_KITCHEN = 4;
 	public static final int TYPE_PROPERTIES_MENU    = 5;
 	public static final int TYPE_PROPERTIES_PLATE   = 6;
-
-    
     
     public static final int WIDGET_STYLE_DEFAULT = 0;
     public static final int WIDGET_STYLE_FIXED   = 1;
@@ -493,6 +491,7 @@ public class Props implements Cloneable
 		{
             LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
             
+            properties.setProperty("filetype"+(i+1), Const.NVL(lastUsedFile.getFileType(), LastUsedFile.FILE_TYPE_TRANSFORMATION));
 			properties.setProperty("lastfile"+(i+1), Const.NVL(lastUsedFile.getFilename(), ""));
 			properties.setProperty("lastdir"+(i+1),  Const.NVL(lastUsedFile.getDirectory(), ""));
 			properties.setProperty("lasttype"+(i+1), lastUsedFile.isSourceRepository()?"Y":"N");
@@ -502,16 +501,15 @@ public class Props implements Cloneable
 	
 	/**
 	 * Add a last opened file to the top of the recently used list.
+     * @param fileType the type of file to use @see LastUsedFile
 	 * @param filename The name of the file or transformation
 	 * @param directory The repository directory path, null in case lf is an XML file  
 	 * @param sourceRepository True if the file was loaded from repository, false if ld is an XML file.
 	 * @param repositoryName The name of the repository the file was loaded from or save to.
 	 */
-	public void addLastFile(int propType, String filename, String directory, boolean sourceRepository, String repositoryName)
+	public void addLastFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName)
 	{
-		if (propType!=getType()) return;
-		
-		LastUsedFile lastUsedFile = new LastUsedFile(filename, directory, sourceRepository, repositoryName);
+		LastUsedFile lastUsedFile = new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName);
         
         int idx = lastUsedFiles.indexOf(lastUsedFile);
         if (idx>=0)
@@ -534,12 +532,13 @@ public class Props implements Cloneable
         int nr = Const.toInt(properties.getProperty("lastfiles"), 0);
         for (int i=0;i<nr;i++)
         {
+            String fileType = properties.getProperty("filetype"+(i+1), LastUsedFile.FILE_TYPE_TRANSFORMATION); // default: transformation
             String filename = properties.getProperty("lastfile"+(i+1), "");
             String directory = properties.getProperty("lastdir"+(i+1), "");
             boolean sourceRepository = "Y".equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), "N"));
             String repositoryName = properties.getProperty("lastrepo"+(i+1));
             
-            lastUsedFiles.add(new LastUsedFile(filename, directory, sourceRepository, repositoryName));
+            lastUsedFiles.add(new LastUsedFile(fileType, filename, directory, sourceRepository, repositoryName));
         }
     }
     
@@ -551,6 +550,17 @@ public class Props implements Cloneable
     public void setLastUsedFiles(List lastUsedFiles)
     {
         this.lastUsedFiles = lastUsedFiles;
+    }
+    
+    public String[] getLastFileTypes()
+    {
+        String retval[] = new String[lastUsedFiles.size()];
+        for (int i=0;i<retval.length;i++)
+        {
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            retval[i]=lastUsedFile.getFileType();
+        }
+        return retval;
     }
     
 	public String[] getLastFiles()

@@ -68,6 +68,7 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.spoon.Spoon;
+import be.ibridge.kettle.spoon.TabItemInterface;
 import be.ibridge.kettle.trans.TransMeta;
 
 
@@ -79,13 +80,14 @@ import be.ibridge.kettle.trans.TransMeta;
  *
  */
 
-public class ChefGraph extends Canvas implements Redrawable
+public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 {
 	private static final int HOP_SEL_MARGIN = 9;
 
 	private Shell shell;
 	private ChefGraph canvas;
 	private LogWriter log;
+    private JobMeta jobMeta;
     
 	private int iconsize;
 	private int linewidth;
@@ -100,7 +102,7 @@ public class ChefGraph extends Canvas implements Redrawable
 
 	private JobHopMeta     hop_candidate;
 	private Point drop_candidate;
-	private Chef chef;
+	private Spoon spoon;
 
 	private Point offset, iconoffset, noteoffset;
 	private ScrollBar hori;
@@ -119,19 +121,14 @@ public class ChefGraph extends Canvas implements Redrawable
 
     private Menu mPop;
 
-    /** @deprecated */
-    public ChefGraph(Composite par, int style, LogWriter l, Chef je) 
-    {
-        this(par, style, je);
-    }
-
-	public ChefGraph(Composite par, int style, Chef je) 
+	public ChefGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
-		super(par, style);
+		super(par,  SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 		shell = par.getShell();
-		log = LogWriter.getInstance();
-		chef = je;
-		canvas = this;
+		this.log = LogWriter.getInstance();
+		this.spoon = spoon;
+		this.canvas = this;
+        this.jobMeta = jobMeta;
         
 		newProps();
 		
@@ -197,7 +194,7 @@ public class ChefGraph extends Canvas implements Redrawable
 
 				Point real = screen2real(e.x, e.y);
 				
-				JobEntryCopy jobentry = chef.jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+				JobEntryCopy jobentry = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
 				if (jobentry != null) 
 				{
 					if (e.button==1) 
@@ -219,7 +216,7 @@ public class ChefGraph extends Canvas implements Redrawable
 					}
 					else
 					{
-						NotePadMeta ni = chef.jobMeta.getNote(real.x, real.y);
+						NotePadMeta ni = jobMeta.getNote(real.x, real.y);
 						if (ni!=null)
 						{
 							editNote(ni);
@@ -244,15 +241,15 @@ public class ChefGraph extends Canvas implements Redrawable
 				// Set the pop-up menu
 				setMenu(real.x, real.y);
 				
-				JobEntryCopy je = chef.jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+				JobEntryCopy je = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
 				if (je != null) 
 				{
-					selected_entries = chef.jobMeta.getSelectedEntries();
+					selected_entries = jobMeta.getSelectedEntries();
 					selected_icon = je;
 					// make sure this is correct!!!
 					// When an icon is moved that is not selected, it gets selected too late.
 					// It is not captured here, but in the mouseMoveListener...
-					prev_locations = chef.jobMeta.getSelectedLocations();
+					prev_locations = jobMeta.getSelectedLocations();
 
 					Point p = je.getLocation();
 					iconoffset = new Point(real.x - p.x, real.y - p.y);
@@ -260,7 +257,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				else 
 				{
 					// Dit we hit a note?
-					NotePadMeta ni = chef.jobMeta.getNote(real.x, real.y);
+					NotePadMeta ni = jobMeta.getNote(real.x, real.y);
 					if (ni!=null && last_button == 1)
 					{
 						selected_note = ni;
@@ -291,7 +288,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				if (hop_candidate != null) 
 				{
 					// hop doesn't already exist
-					if (chef.jobMeta.findJobHop(hop_candidate.from_entry, hop_candidate.to_entry) == null) 
+					if (jobMeta.findJobHop(hop_candidate.from_entry, hop_candidate.to_entry) == null) 
 					{
 						if (!hop_candidate.from_entry.evaluates() && hop_candidate.from_entry.isUnconditional())
 						{
@@ -300,13 +297,13 @@ public class ChefGraph extends Canvas implements Redrawable
 						else
 						{
 							hop_candidate.setConditional();
-							int nr = chef.jobMeta.findNrNextChefGraphEntries(hop_candidate.from_entry);
+							int nr = jobMeta.findNrNextChefGraphEntries(hop_candidate.from_entry);
 	
 							// If there is one green link: make this one red! (or vice-versa)
 							if (nr == 1) 
 							{
-								JobEntryCopy jge = chef.jobMeta.findNextChefGraphEntry(hop_candidate.from_entry, 0);
-								JobHopMeta other = chef.jobMeta.findJobHop(hop_candidate.from_entry, jge);
+								JobEntryCopy jge = jobMeta.findNextChefGraphEntry(hop_candidate.from_entry, 0);
+								JobHopMeta other = jobMeta.findJobHop(hop_candidate.from_entry, jge);
 								if (other != null) 
 								{
 									hop_candidate.setEvaluation(!other.getEvaluation());
@@ -314,9 +311,9 @@ public class ChefGraph extends Canvas implements Redrawable
 							}
 						}
 						
-						chef.jobMeta.addJobHop(hop_candidate);
-						chef.addUndoNew(new JobHopMeta[] { hop_candidate }, new int[] { chef.jobMeta.indexOfJobHop(hop_candidate) } );
-						chef.refreshTree();
+						jobMeta.addJobHop(hop_candidate);
+						spoon.addUndoNew(jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta.indexOfJobHop(hop_candidate) } );
+						spoon.refreshTree();
 					}
 					hop_candidate = null;
 					selected_entries = null;
@@ -330,8 +327,8 @@ public class ChefGraph extends Canvas implements Redrawable
 					selrect.width  = real.x - selrect.x;
 					selrect.height = real.y - selrect.y;
 
-					chef.jobMeta.unselectAll();
-					chef.jobMeta.selectInRect(selrect);
+					jobMeta.unselectAll();
+					jobMeta.selectInRect(selrect);
 					selrect = null;
 					redraw();
 				}
@@ -352,15 +349,15 @@ public class ChefGraph extends Canvas implements Redrawable
 							else
 							{
 								// Otherwise, select only the icon clicked on!
-								chef.jobMeta.unselectAll();
+								jobMeta.unselectAll();
 								selected_icon.setSelected(true);
 							}
 						}
 						else // We moved around some items: store undo info...
 						if (selected_entries != null && prev_locations != null)
 						{
-							int indexes[] = chef.jobMeta.getEntryIndexes(selected_entries); 
-							chef.addUndoPosition(selected_entries, indexes, prev_locations, chef.jobMeta.getSelectedLocations());
+							int indexes[] = jobMeta.getEntryIndexes(selected_entries); 
+							spoon.addUndoPosition(jobMeta, selected_entries, indexes, prev_locations, jobMeta.getSelectedLocations());
 						}
 					}
 
@@ -372,35 +369,35 @@ public class ChefGraph extends Canvas implements Redrawable
 						if (hi != null)
 						{
 							int id = 0;
-							if (!chef.props.getAutoSplit())
+							if (!spoon.props.getAutoSplit())
 							{
 								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																						 Messages.getString("ChefGraph.Dialog.SplitHop.Title"),  //$NON-NLS-1$
-																						 null,
-																						 Messages.getString("ChefGraph.Dialog.SplitHop.Message")+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(), //$NON-NLS-1$ //$NON-NLS-2$
-																						 MessageDialog.QUESTION,
-																						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-																						 0,
-																						 Messages.getString("ChefGraph.Dialog.SplitHop.Toggle"), //$NON-NLS-1$
-																						 chef.props.getAutoSplit()
-																						 );
+            						 Messages.getString("ChefGraph.Dialog.SplitHop.Title"),  //$NON-NLS-1$
+            						 null,
+            						 Messages.getString("ChefGraph.Dialog.SplitHop.Message")+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(), //$NON-NLS-1$ //$NON-NLS-2$
+            						 MessageDialog.QUESTION,
+            						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+            						 0,
+            						 Messages.getString("ChefGraph.Dialog.SplitHop.Toggle"), //$NON-NLS-1$
+            						 spoon.props.getAutoSplit()
+            						 );
 								id = md.open();
-								chef.props.setAutoSplit(md.getToggleState());
+								spoon.props.setAutoSplit(md.getToggleState());
 							}
 							
 							if ( (id&0xFF) == 0)
 							{
 								JobHopMeta newhop1 = new JobHopMeta(hi.from_entry, selected_icon);
-								chef.jobMeta.addJobHop(newhop1);
+								jobMeta.addJobHop(newhop1);
 								JobHopMeta newhop2 = new JobHopMeta(selected_icon, hi.to_entry);
-								chef.jobMeta.addJobHop(newhop2);
+								jobMeta.addJobHop(newhop2);
 								if (!selected_icon.evaluates()) newhop2.setUnconditional();
 
-								chef.addUndoNew(new JobHopMeta[] { (JobHopMeta)newhop1.clone(), (JobHopMeta)newhop2.clone() }, new int[] { chef.jobMeta.indexOfJobHop(newhop1), chef.jobMeta.indexOfJobHop(newhop2)});
-								int idx = chef.jobMeta.indexOfJobHop(hi);
-								chef.addUndoDelete(new JobHopMeta[] { (JobHopMeta)hi.clone() }, new int[] { idx });
-								chef.jobMeta.removeJobHop(idx);
-								chef.refreshTree();
+								spoon.addUndoNew(jobMeta, new JobHopMeta[] { (JobHopMeta)newhop1.clone(), (JobHopMeta)newhop2.clone() }, new int[] { jobMeta.indexOfJobHop(newhop1), jobMeta.indexOfJobHop(newhop2)});
+								int idx = jobMeta.indexOfJobHop(hi);
+								spoon.addUndoDelete(jobMeta, new JobHopMeta[] { (JobHopMeta)hi.clone() }, new int[] { idx });
+								jobMeta.removeJobHop(idx);
+								spoon.refreshTree();
 
 							}
 						}
@@ -419,8 +416,8 @@ public class ChefGraph extends Canvas implements Redrawable
 					{
 						if (lastclick.x != real.x || lastclick.y != real.y)
 						{
-							int indexes[] = new int[] { chef.jobMeta.indexOfNote(selected_note) };
-							chef.addUndoPosition(new NotePadMeta[] { selected_note }, indexes, new Point[] { previous_note_location }, new Point[] { note });
+							int indexes[] = new int[] { jobMeta.indexOfNote(selected_note) };
+							spoon.addUndoPosition(jobMeta, new NotePadMeta[] { selected_note }, indexes, new Point[] { previous_note_location }, new Point[] { note });
 						}
 					}
 					selected_note = null;
@@ -446,7 +443,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				// selected and move only the one icon
 				if (selected_icon != null && !selected_icon.isSelected())
 				{
-					chef.jobMeta.unselectAll();
+					jobMeta.unselectAll();
 					selected_icon.setSelected(true);
 					selected_entries = new JobEntryCopy[] { selected_icon };
 					prev_locations = new Point[] { selected_icon.getLocation()};
@@ -479,7 +476,7 @@ public class ChefGraph extends Canvas implements Redrawable
 						if (hi != null) 
 						{
 							//log.logBasic("MouseMove", "Split hop candidate B!");
-							if (!chef.jobMeta.isEntryUsedInHops(selected_icon)) 
+							if (!jobMeta.isEntryUsedInHops(selected_icon)) 
 							{
 								//log.logBasic("MouseMove", "Split hop candidate A!");
 								split_hop = true;
@@ -500,9 +497,9 @@ public class ChefGraph extends Canvas implements Redrawable
 						//
 						// One or more job entries are being moved around!
 						//
-						for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++) 
+						for (int i = 0; i < jobMeta.nrJobEntries(); i++) 
 						{
-							JobEntryCopy je = chef.jobMeta.getJobEntry(i);
+							JobEntryCopy je = jobMeta.getJobEntry(i);
 							if (je.isSelected()) 
 							{
 								je.setLocation(je.getLocation().x + dx, je.getLocation().y + dy);
@@ -517,7 +514,7 @@ public class ChefGraph extends Canvas implements Redrawable
                     //	The middle button perhaps?
 					if (last_button == 2 || (last_button == 1 && shift))	
 					{
-						JobEntryCopy si = chef.jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+						JobEntryCopy si = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
 						if (si != null && !selected_icon.equals(si)) 
 						{
 							if (hop_candidate == null) 
@@ -544,7 +541,7 @@ public class ChefGraph extends Canvas implements Redrawable
 					{
 						Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 						selected_note.setLocation(note.x, note.y);
-						chef.refreshGraph();
+						spoon.refreshGraph();
 					}
 				}
 			}
@@ -598,7 +595,7 @@ public class ChefGraph extends Canvas implements Redrawable
                     {
                     case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: // Create a new Job Entry on the canvas
                         {
-                            JobEntryCopy jge = chef.newChefGraphEntry(entry, false);
+                            JobEntryCopy jge = spoon.newChefGraphEntry(jobMeta, entry, false);
                             if (jge != null) 
                             {
                                 jge.setLocation(p.x, p.y);
@@ -609,7 +606,7 @@ public class ChefGraph extends Canvas implements Redrawable
                         break;
                     case DragAndDropContainer.TYPE_JOB_ENTRY: // Drag existing one onto the canvas
                         {
-                            JobEntryCopy jge = chef.jobMeta.findJobEntry(entry, 0, true);
+                            JobEntryCopy jge = jobMeta.findJobEntry(entry, 0, true);
                             if (jge != null)  // Create duplicate of existing entry 
                             {
                                 // There can be only 1 start!
@@ -637,10 +634,10 @@ public class ChefGraph extends Canvas implements Redrawable
                                         // newjge.setEntry(jge.getEntry());
                                         log.logDebug(toString(), "entry aft = "+((Object)jge.getEntry()).toString()); //$NON-NLS-1$
                                         
-                                        newjge.setNr(chef.jobMeta.findUnusedNr(newjge.getName()));
+                                        newjge.setNr(jobMeta.findUnusedNr(newjge.getName()));
                                         
-                                        chef.jobMeta.addJobEntry(newjge);
-                                        chef.addUndoNew(new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)} );
+                                        jobMeta.addJobEntry(newjge);
+                                        spoon.addUndoNew(jobMeta, new JobEntryCopy[] {newjge}, new int[] { jobMeta.indexOfJobEntry(newjge)} );
                                     }
                                     else
                                     {
@@ -656,10 +653,10 @@ public class ChefGraph extends Canvas implements Redrawable
                                 newjge.setDrawn();
                                 if (jge_changed)
                                 {
-                                    chef.addUndoChange(new JobEntryCopy[] { before }, new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)});
+                                    spoon.addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] {newjge}, new int[] { jobMeta.indexOfJobEntry(newjge)});
                                 }
                                 redraw();
-                                chef.refreshTree();
+                                spoon.refreshTree();
                                 log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             } 
                             else
@@ -690,21 +687,21 @@ public class ChefGraph extends Canvas implements Redrawable
 			{
 				if ((int) e.character == 1) // CTRL-A
 				{
-					chef.jobMeta.selectAll();
+					jobMeta.selectAll();
 					redraw();
 				}
                 if ((int) e.character == 3) // CTRL-C
                 {
-                    chef.copyJobEntries(chef.jobMeta.getSelectedEntries());
+                    spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
                 }
                 if ((int) e.character == 22) // CTRL-V
                 {
-                    String clipcontent = chef.fromClipboard();
+                    String clipcontent = spoon.fromClipboard();
                     if (clipcontent != null)
                     {
                         if (lastMove != null)
                         {
-                            chef.pasteXML(clipcontent, lastMove);
+                            spoon.pasteXML(jobMeta, clipcontent, lastMove);
                         }
                     }
 
@@ -712,13 +709,13 @@ public class ChefGraph extends Canvas implements Redrawable
                 }
 				if (e.keyCode == SWT.ESC) 
 				{
-					chef.jobMeta.unselectAll();
+					jobMeta.unselectAll();
 					redraw();
 				}
                 // Delete
                 if (e.keyCode == SWT.DEL)
                 {
-                    JobEntryCopy copies[] = chef.getJobMeta().getSelectedEntries();
+                    JobEntryCopy copies[] = jobMeta.getSelectedEntries();
                     if (copies != null && copies.length > 0)
                     {
                         delSelected();
@@ -762,14 +759,14 @@ public class ChefGraph extends Canvas implements Redrawable
 			}
 		});
 
-		addKeyListener(chef.defKeys);
+		addKeyListener(spoon.defKeys);
 
 		setBackground(GUIResource.getInstance().getColorBackground());
 	}
 	
 	public void delSelected()
     {
-        JobEntryCopy[] copies = chef.getJobMeta().getSelectedEntries();
+        JobEntryCopy[] copies = jobMeta.getSelectedEntries();
         int nrsels = copies.length;
         
         if (nrsels==0) return;
@@ -783,10 +780,10 @@ public class ChefGraph extends Canvas implements Redrawable
         {
             for (int i=0;i<copies.length;i++)
             {
-                chef.deleteChefGraphEntry(copies[i].getName());
+                spoon.deleteChefGraphEntry(jobMeta, copies[i].getName());
             }
-            chef.refreshTree(true);
-            chef.refreshGraph();
+            spoon.refreshTree();
+            spoon.refreshGraph();
         }
     }
 
@@ -800,8 +797,8 @@ public class ChefGraph extends Canvas implements Redrawable
 		last_hop_split = null;
 		last_button = 0;
 		iconoffset = null;
-		for (int i = 0; i < chef.jobMeta.nrJobHops(); i++)
-			chef.jobMeta.getJobHop(i).setSplit(false);
+		for (int i = 0; i < jobMeta.nrJobHops(); i++)
+			jobMeta.getJobHop(i).setSplit(false);
 	}
 
 
@@ -853,9 +850,9 @@ public class ChefGraph extends Canvas implements Redrawable
 	{
 		int i;
 		JobHopMeta online = null;
-		for (i = 0; i < chef.jobMeta.nrJobHops(); i++) 
+		for (i = 0; i < jobMeta.nrJobHops(); i++) 
 		{
-			JobHopMeta hi = chef.jobMeta.getJobHop(i);
+			JobHopMeta hi = jobMeta.getJobHop(i);
 
 			int line[] = getLine(hi.from_entry, hi.to_entry);
 
@@ -897,12 +894,12 @@ public class ChefGraph extends Canvas implements Redrawable
             for (int i=0;i<children.length;i++) children[i].dispose();
         }
         
-		final JobEntryCopy je = chef.jobMeta.getChefGraphEntry(x, y, iconsize);
+		final JobEntryCopy je = jobMeta.getChefGraphEntry(x, y, iconsize);
 		if (je != null) // We clicked on a Job Entry!
 		{
 			MenuItem miNewHop = null;
 
-			int sels = chef.jobMeta.nrSelected();
+			int sels = jobMeta.nrSelected();
 			if (sels == 2) 
 			{
 				miNewHop = new MenuItem(mPop, SWT.CASCADE);
@@ -1076,18 +1073,18 @@ public class ChefGraph extends Canvas implements Redrawable
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					chef.dupeChefGraphEntry(je.getName());
+					spoon.dupeChefGraphEntry(jobMeta, je.getName());
 				}
 			});
 			miCopy.addSelectionListener(new SelectionAdapter() 
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-				    chef.copyJobEntries(chef.jobMeta.getSelectedEntries());
+				    spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
 				}
 			});
 
-			if (chef.jobMeta.isEntryUsedInHops(je))
+			if (jobMeta.isEntryUsedInHops(je))
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miDetach = new MenuItem(mPop, SWT.CASCADE);
@@ -1097,11 +1094,11 @@ public class ChefGraph extends Canvas implements Redrawable
 					public void widgetSelected(SelectionEvent e)
 					{
 						detach(je);
-						chef.jobMeta.unselectAll();
+						jobMeta.unselectAll();
 					}
 				});
 			}
-			if (je.isDrawn() && !chef.jobMeta.isEntryUsedInHops(je)) 
+			if (je.isDrawn() && !jobMeta.isEntryUsedInHops(je)) 
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miHide = new MenuItem(mPop, SWT.CASCADE);
@@ -1114,9 +1111,9 @@ public class ChefGraph extends Canvas implements Redrawable
 						// nr > 1: delete
 						if (je.getNr() > 0) 
 						{
-							int ind = chef.jobMeta.indexOfJobEntry(je);
-							chef.jobMeta.removeJobEntry(ind);
-							chef.addUndoDelete(new JobEntryCopy[] {je}, new int[] {ind});
+							int ind = jobMeta.indexOfJobEntry(je);
+							jobMeta.removeJobEntry(ind);
+							spoon.addUndoDelete(jobMeta, new JobEntryCopy[] {je}, new int[] {ind});
 						}
 						redraw();
 					}
@@ -1130,7 +1127,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				{
 					public void widgetSelected(SelectionEvent e) 
 					{
-						chef.deleteChefGraphEntry(je.getName());
+						spoon.deleteChefGraphEntry(jobMeta, je.getName());
 						redraw();
 					}
 				});
@@ -1149,15 +1146,15 @@ public class ChefGraph extends Canvas implements Redrawable
 				Menu mPopAD = new Menu(miPopEval);
 				MenuItem miPopEvalUncond = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
 				miPopEvalUncond.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.Unconditional")); //$NON-NLS-1$
-				miPopEvalUncond.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setUnconditional(); chef.refreshGraph();}} );
+				miPopEvalUncond.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setUnconditional(); spoon.refreshGraph();}} );
 				
 				MenuItem miPopEvalTrue = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
 				miPopEvalTrue.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenOK")); //$NON-NLS-1$
-				miPopEvalTrue.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(true); chef.refreshGraph(); }} );
+				miPopEvalTrue.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(true); spoon.refreshGraph(); }} );
 				
 				MenuItem miPopEvalFalse = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
 				miPopEvalFalse.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed")); //$NON-NLS-1$
-				miPopEvalFalse.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(false); chef.refreshGraph(); }} );
+				miPopEvalFalse.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(false); spoon.refreshGraph(); }} );
 
 				if (hi.isUnconditional())
 				{
@@ -1212,9 +1209,9 @@ public class ChefGraph extends Canvas implements Redrawable
 							hi.from_entry = hi.to_entry;
 							hi.to_entry = dummy;
 	
-							if (chef.jobMeta.hasLoop(hi.from_entry)) 
+							if (jobMeta.hasLoop(hi.from_entry)) 
 							{
-								chef.refreshGraph();
+								spoon.refreshGraph();
 								MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
 								mb.setMessage(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Message")); //$NON-NLS-1$
 								mb.setText(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Title")); //$NON-NLS-1$
@@ -1223,14 +1220,14 @@ public class ChefGraph extends Canvas implements Redrawable
 								dummy = hi.from_entry;
 								hi.from_entry = hi.to_entry;
 								hi.to_entry = dummy;
-								chef.refreshGraph();
+								spoon.refreshGraph();
 							} 
 							else 
 							{
 								hi.setChanged();
-								chef.refreshGraph();
-								chef.refreshTree();
-								chef.setShellText();
+								spoon.refreshGraph();
+								spoon.refreshTree();
+								spoon.setShellText();
 							}
 						}
 					}
@@ -1241,8 +1238,8 @@ public class ChefGraph extends Canvas implements Redrawable
 						{
 							selrect = null;
 							hi.setEnabled(!hi.isEnabled());
-							chef.refreshGraph();
-							chef.refreshTree();
+							spoon.refreshGraph();
+							spoon.refreshTree();
 						}
 					}
 				);
@@ -1251,10 +1248,10 @@ public class ChefGraph extends Canvas implements Redrawable
 						public void widgetSelected(SelectionEvent e) 
 						{
 							selrect = null;
-							int idx = chef.jobMeta.indexOfJobHop(hi);
-							chef.jobMeta.removeJobHop(idx);
-							chef.refreshTree();
-							chef.refreshGraph();
+							int idx = jobMeta.indexOfJobHop(hi);
+							jobMeta.removeJobHop(idx);
+							spoon.refreshTree();
+							spoon.refreshGraph();
 						}
 					}
 				);
@@ -1263,7 +1260,7 @@ public class ChefGraph extends Canvas implements Redrawable
 			else 
 			{
 				// Clicked on the background: maybe we hit a note?
-				final NotePadMeta ni = chef.jobMeta.getNote(x, y);
+				final NotePadMeta ni = jobMeta.getNote(x, y);
 				if (ni!=null)
 				{
 					// Delete note
@@ -1287,11 +1284,11 @@ public class ChefGraph extends Canvas implements Redrawable
 							public void widgetSelected(SelectionEvent e) 
 							{ 
 								selrect=null; 
-								int idx = chef.jobMeta.indexOfNote(ni);
+								int idx = jobMeta.indexOfNote(ni);
 								if (idx>=0) 
 								{
-									chef.jobMeta.removeNote(idx);
-									chef.addUndoDelete(new NotePadMeta[] {ni}, new int[] {idx} );
+									jobMeta.removeNote(idx);
+									spoon.addUndoDelete(jobMeta, new NotePadMeta[] {ni}, new int[] {idx} );
 								} 
 								redraw();
 							} 
@@ -1319,8 +1316,8 @@ public class ChefGraph extends Canvas implements Redrawable
 								if (n!=null) 
 								{
 									NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
-									chef.jobMeta.addNote(npi);
-									chef.addUndoNew(new NotePadMeta[] {npi}, new int[] { chef.jobMeta.indexOfNote(npi)} );
+									jobMeta.addNote(npi);
+									spoon.addUndoNew(jobMeta, new NotePadMeta[] {npi}, new int[] { jobMeta.indexOfNote(npi)} );
 									redraw();
 								} 
 							} 
@@ -1330,7 +1327,7 @@ public class ChefGraph extends Canvas implements Redrawable
                     MenuItem miPasteStep = new MenuItem(mPop, SWT.CASCADE);
                     miPasteStep.setText(Messages.getString("ChefGraph.PopupMenu.PasteStepFromClipboard")); //$NON-NLS-1$
 
-                    final String clipcontent = chef.fromClipboard();
+                    final String clipcontent = spoon.fromClipboard();
                     if (clipcontent == null) miPasteStep.setEnabled(false);
                     // Past steps on the clipboard to the transformation...
                     miPasteStep.addSelectionListener(new SelectionAdapter()
@@ -1338,7 +1335,7 @@ public class ChefGraph extends Canvas implements Redrawable
                         public void widgetSelected(SelectionEvent e)
                         {
                             Point loc = new Point(mousex, mousey);
-                            chef.pasteXML(clipcontent, loc);
+                            spoon.pasteXML(jobMeta, clipcontent, loc);
                         }
                     });
 
@@ -1352,7 +1349,7 @@ public class ChefGraph extends Canvas implements Redrawable
 	{
         String newTip=null;
         
-		final JobEntryCopy je = chef.jobMeta.getChefGraphEntry(x, y, iconsize);
+		final JobEntryCopy je = jobMeta.getChefGraphEntry(x, y, iconsize);
 		if (je != null && je.isDrawn()) // We hover above a Step!
 		{
 			// Set the tooltip!
@@ -1392,8 +1389,8 @@ public class ChefGraph extends Canvas implements Redrawable
 		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_JOB)
 		{
 			final JobEntryJob entry = (JobEntryJob)jobentry.getEntry();
-			if ( ( entry!=null && entry.getFilename()!=null && chef.rep==null) ||
-			     ( entry!=null && entry.getName()!=null && chef.rep!=null)
+			if ( ( entry!=null && entry.getFilename()!=null && spoon.rep==null) ||
+			     ( entry!=null && entry.getName()!=null && spoon.rep!=null)
 			   )
 			{
 				launchChef(entry);
@@ -1403,8 +1400,8 @@ public class ChefGraph extends Canvas implements Redrawable
 		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION)
 		{
 			final JobEntryTrans entry = (JobEntryTrans)jobentry.getEntry();
-			if ( ( entry!=null && entry.getFilename()!=null && chef.rep==null) ||
-			     ( entry!=null && entry.getName()!=null && chef.rep!=null)
+			if ( ( entry!=null && entry.getFilename()!=null && spoon.rep==null) ||
+			     ( entry!=null && entry.getName()!=null && spoon.rep!=null)
 			   )
 			{
 				launchSpoon(entry);
@@ -1422,10 +1419,9 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-				Spoon sp = new Spoon(log, chef.disp, chef.rep);
 				// New transformation?
 				//
-				long id = sp.rep.getTransformationID(exactTransname, entry.getDirectory().getID());
+				long id = spoon.rep.getTransformationID(exactTransname, entry.getDirectory().getID());
                 TransMeta newTrans;
 				if (id<0) // New
 				{
@@ -1433,11 +1429,11 @@ public class ChefGraph extends Canvas implements Redrawable
 				}
 				else
 				{
-                    newTrans = new TransMeta(sp.rep, exactTransname, entry.getDirectory());
+                    newTrans = new TransMeta(spoon.rep, exactTransname, entry.getDirectory());
 				}
-                sp.addSpoonGraph(newTrans);
+                spoon.addSpoonGraph(newTrans);
 				newTrans.clearChanged();
-				sp.open();
+				spoon.open();
 			}
 			catch(Throwable ke)
 			{
@@ -1451,9 +1447,6 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-				// Read from file...
-				Spoon spoon = new Spoon(log, chef.disp, null);
-
                 // only try to load if the file exists...
                 
                 File file = new File(exactFilename);
@@ -1493,11 +1486,9 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-				Chef ch = new Chef(log, chef.disp, chef.rep);
-				ch.jobMeta = new JobMeta(log, ch.rep, exactJobname, entry.getDirectory());
-	
-				ch.jobMeta.clearChanged();
-				ch.open();
+				JobMeta newJobMeta = new JobMeta(log, spoon.rep, exactJobname, entry.getDirectory());
+				newJobMeta.clearChanged();
+				spoon.addChefGraph(jobMeta);
 			}
 			catch(Throwable e)
 			{
@@ -1511,24 +1502,21 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-                Chef ch = new Chef(log, chef.disp, null);
-
                 File file = new File(exactFilename);
                 
+                JobMeta newJobMeta;
                 if (file.exists())
                 {
-                    ch.jobMeta = new JobMeta(log, exactFilename, chef.rep);
+                    newJobMeta = new JobMeta(log, exactFilename, spoon.rep);
                 }
                 else
                 {
-                    ch.jobMeta = new JobMeta(log);
+                    newJobMeta = new JobMeta(log);
                 }
                 
-				ch.jobMeta.setFilename( exactFilename );
-				ch.jobMeta.clearChanged();
-				ch.refreshTree();
-				ch.refreshGraph();
-				ch.open();
+				newJobMeta.setFilename( exactFilename );
+                newJobMeta.clearChanged();
+                spoon.addChefGraph(jobMeta);
 			}
 			catch(Throwable e)
 			{
@@ -1555,19 +1543,19 @@ public class ChefGraph extends Canvas implements Redrawable
 		gc.dispose();
 		img.dispose();
 
-		chef.setShellText();
+		spoon.setShellText();
 	}
     
 	public void drawJob(GC gc) 
 	{
-        if (chef.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
+        if (spoon.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
         
-		shadowsize = chef.props.getShadowSize();
+		shadowsize = spoon.props.getShadowSize();
 
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 
 		Point area = getArea();
-		Point max = chef.jobMeta.getMaximum();
+		Point max = jobMeta.getMaximum();
 		Point thumb = getThumb(area, max);
 		offset = getOffset(thumb, area);
 
@@ -1577,25 +1565,25 @@ public class ChefGraph extends Canvas implements Redrawable
 		// First draw the notes...
         gc.setFont(GUIResource.getInstance().getFontNote());
 
-        for (int i = 0; i < chef.jobMeta.nrNotes(); i++) 
+        for (int i = 0; i < jobMeta.nrNotes(); i++) 
 		{
-			NotePadMeta ni = chef.jobMeta.getNote(i);
+			NotePadMeta ni = jobMeta.getNote(i);
 			drawNote(gc, ni);
 		}
         
         gc.setFont(GUIResource.getInstance().getFontGraph());
 		
 		if (shadowsize>0)
-		for (int j = 0; j < chef.jobMeta.nrJobEntries(); j++)
+		for (int j = 0; j < jobMeta.nrJobEntries(); j++)
 		{
-			JobEntryCopy cge = chef.jobMeta.getJobEntry(j);
+			JobEntryCopy cge = jobMeta.getJobEntry(j);
 			drawChefGraphEntryShadow(gc, cge);
 		}
 
 		// ... and then the rest on top of it...
-		for (int i = 0; i < chef.jobMeta.nrJobHops(); i++) 
+		for (int i = 0; i < jobMeta.nrJobHops(); i++) 
 		{
-			JobHopMeta hi = chef.jobMeta.getJobHop(i);
+			JobHopMeta hi = jobMeta.getJobHop(i);
 			drawJobHop(gc, hi, false);
 		}
 
@@ -1604,9 +1592,9 @@ public class ChefGraph extends Canvas implements Redrawable
 			drawJobHop(gc, hop_candidate, true);
 		}
 
-		for (int j = 0; j < chef.jobMeta.nrJobEntries(); j++) 
+		for (int j = 0; j < jobMeta.nrJobEntries(); j++) 
 		{
-			JobEntryCopy je = chef.jobMeta.getJobEntry(j);
+			JobEntryCopy je = jobMeta.getJobEntry(j);
 			drawChefGraphEntry(gc, je);
 		}
 
@@ -1745,7 +1733,7 @@ public class ChefGraph extends Canvas implements Redrawable
 			note.x + width, note.y + height + 2 * margin, // bottom right 2
 			note.x, note.y + height + 2 * margin // bottom left
 		};
-		int s = chef.props.getShadowSize();
+		int s = spoon.props.getShadowSize();
 		int shadow[] = new int[] { note.x+s, note.y+s, // Top left
 			note.x + width + 2 * margin+s, note.y+s, // Top right
 			note.x + width + 2 * margin+s, note.y + height+s, // bottom right 1
@@ -1852,7 +1840,7 @@ public class ChefGraph extends Canvas implements Redrawable
 	private Point getOffset() 
 	{
 		Point area = getArea();
-		Point max = chef.jobMeta.getMaximum();
+		Point max = jobMeta.getMaximum();
 		Point thumb = getThumb(area, max);
 		Point offset = getOffset(thumb, area);
 
@@ -1880,14 +1868,14 @@ public class ChefGraph extends Canvas implements Redrawable
 
 	private void newHop() 
 	{
-		JobEntryCopy fr = chef.jobMeta.getSelected(0);
-		JobEntryCopy to = chef.jobMeta.getSelected(1);
-		chef.newJobHop(fr, to);
+		JobEntryCopy fr = jobMeta.getSelected(0);
+		JobEntryCopy to = jobMeta.getSelected(1);
+		spoon.newJobHop(jobMeta, fr, to);
 	}
 
 	private void editEntry(JobEntryCopy je) 
 	{
-		chef.editChefGraphEntry(je);
+		spoon.editChefGraphEntry(jobMeta, je);
 	}
 	
 	private void editNote(NotePadMeta ni)
@@ -1899,7 +1887,7 @@ public class ChefGraph extends Canvas implements Redrawable
 		String n = dd.open();
 		if (n!=null) 
 		{
-			chef.addUndoChange(new NotePadMeta[] {before}, new NotePadMeta[] {ni}, new int[] {chef.jobMeta.indexOfNote(ni)});
+			spoon.addUndoChange(jobMeta, new NotePadMeta[] {before}, new NotePadMeta[] {ni}, new int[] {jobMeta.indexOfNote(ni)});
 			ni.setChanged();
 			ni.setNote( n );
 			ni.width = Const.NOTE_MIN_SIZE;
@@ -2004,10 +1992,10 @@ public class ChefGraph extends Canvas implements Redrawable
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List elements = chef.getJobMeta().getSelectedDrawnJobEntryList();
-        int[] indices = chef.getJobMeta().getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
+        List elements = jobMeta.getSelectedDrawnJobEntryList();
+        int[] indices = jobMeta.getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
 
-        return new SnapAllignDistribute(elements, indices, chef, this);
+        return new SnapAllignDistribute(jobMeta, elements, indices, spoon, this);
     }
 
     private void snaptogrid(int size)
@@ -2058,44 +2046,44 @@ public class ChefGraph extends Canvas implements Redrawable
 
 	private void detach(JobEntryCopy je)
 	{
-		JobHopMeta hfrom = chef.jobMeta.findJobHopTo(je);
-		JobHopMeta hto   = chef.jobMeta.findJobHopFrom(je);
+		JobHopMeta hfrom = jobMeta.findJobHopTo(je);
+		JobHopMeta hto   = jobMeta.findJobHopFrom(je);
 
 		if (hfrom != null && hto != null)
 		{
-			if (chef.jobMeta.findJobHop(hfrom.from_entry, hto.to_entry) == null)
+			if (jobMeta.findJobHop(hfrom.from_entry, hto.to_entry) == null)
 			{
 				JobHopMeta hnew = new JobHopMeta(hfrom.from_entry, hto.to_entry);
-				chef.jobMeta.addJobHop(hnew);
-				chef.addUndoNew(new JobHopMeta[] { (JobHopMeta)hnew.clone() }, new int[] { chef.jobMeta.indexOfJobHop(hnew)});
+				jobMeta.addJobHop(hnew);
+				spoon.addUndoNew(jobMeta, new JobHopMeta[] { (JobHopMeta)hnew.clone() }, new int[] { jobMeta.indexOfJobHop(hnew)});
 			}
 		}
 		if (hfrom != null)
 		{
-			int fromidx = chef.jobMeta.indexOfJobHop(hfrom);
+			int fromidx = jobMeta.indexOfJobHop(hfrom);
 			if (fromidx >= 0)
 			{
-				chef.jobMeta.removeJobHop(fromidx);
-				chef.addUndoDelete(new JobHopMeta[] {hfrom}, new int[] {fromidx} );
+				jobMeta.removeJobHop(fromidx);
+				spoon.addUndoDelete(jobMeta, new JobHopMeta[] {hfrom}, new int[] {fromidx} );
 			}
 		}
 		if (hto != null)
 		{
-			int toidx = chef.jobMeta.indexOfJobHop(hto);
+			int toidx = jobMeta.indexOfJobHop(hto);
 			if (toidx >= 0)
 			{
-				chef.jobMeta.removeJobHop(toidx);
-				chef.addUndoDelete(new JobHopMeta[] {hto}, new int[] {toidx} );
+				jobMeta.removeJobHop(toidx);
+				spoon.addUndoDelete(jobMeta, new JobHopMeta[] {hto}, new int[] {toidx} );
 			}
 		}
-		chef.refreshTree();
+		spoon.refreshTree();
 		redraw();
 	}
 
 	public void newProps()
 	{
-		iconsize = chef.props.getIconSize();
-		linewidth = chef.props.getLineWidth();
+		iconsize = spoon.props.getIconSize();
+		linewidth = spoon.props.getLineWidth();
 	}
 	
 	public String toString()
@@ -2103,4 +2091,48 @@ public class ChefGraph extends Canvas implements Redrawable
 		return Chef.APP_NAME;
 	}
 
+    /**
+     * @return the jobMeta
+     */
+    public JobMeta getJobMeta()
+    {
+        return jobMeta;
+    }
+
+    /**
+     * @param jobMeta the jobMeta to set
+     */
+    public void setJobMeta(JobMeta jobMeta)
+    {
+        this.jobMeta = jobMeta;
+    }
+
+    public boolean applyChanges()
+    {
+        return spoon.saveJobFile(jobMeta);
+    }
+
+    public boolean canBeClosed()
+    {
+        return !jobMeta.hasChanged();
+    }
+
+    public Object getManagedObject()
+    {
+        return jobMeta;
+    }
+
+    public boolean hasContentChanged()
+    {
+        return jobMeta.hasChanged();
+    }
+
+    public int showChangedWarning()
+    {
+        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+        mb.setMessage(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Message", spoon.makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
+        mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title"));
+        return mb.open();
+    }
+    
 }

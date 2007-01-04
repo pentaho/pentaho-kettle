@@ -15,10 +15,7 @@
  
 package be.ibridge.kettle.chef;
 import java.sql.ResultSet;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -39,15 +36,15 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.value.ValueDate;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.spoon.Spoon;
+import be.ibridge.kettle.spoon.TabItemInterface;
 
 
 
@@ -60,7 +57,7 @@ import be.ibridge.kettle.job.JobMeta;
  * @author Matt
  * @since  16-mar-2006
  */
-public class ChefHistory extends Composite 
+public class ChefHistory extends Composite implements TabItemInterface
 {
 	private ColumnInfo[] colinf;	
 	
@@ -70,24 +67,24 @@ public class ChefHistory extends Composite
     
 	private FormData fdText, fdSash, fdRefresh, fdReplay; 
 	
-	private Chef chef;
+	private Spoon spoon;
 
     private ArrayList rowList;
-
-	private final ChefLog chefLog;
 
 	private final Shell shell;
 
 	private boolean refreshNeeded = true;
 	
 	private Object refreshNeededLock = new Object();
+
+    private JobMeta jobMeta;
 	
-	public ChefHistory(Composite parent, int style, Chef ch, LogWriter l, String fname, ChefLog chefLog, Shell shell)
+	public ChefHistory(Composite parent, Spoon spoon, JobMeta jobMeta)
 	{
-		super(parent, style);
-		chef = ch;
-		this.chefLog = chefLog;
-		this.shell = shell;
+		super(parent, SWT.NONE);
+		this.spoon = spoon;
+		this.shell = parent.getShell();
+        this.jobMeta = jobMeta;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -96,10 +93,10 @@ public class ChefHistory extends Composite
 		setLayout(formLayout);
 		
 		setVisible(true);
-        chef.props.setLook(this);
+        spoon.props.setLook(this);
 		
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
-		chef.props.setLook(sash);
+		spoon.props.setLook(sash);
 		
 		sash.setLayout(new FillLayout());
 
@@ -129,11 +126,11 @@ public class ChefHistory extends Composite
 							  FieldsRows,  
 							  true, // readonly!
 							  null,
-							  chef.props
+							  spoon.props
 							  );
 		
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
-		chef.props.setLook(wText);
+		spoon.props.setLook(wText);
 		wText.setVisible(true);
 		
 		wRefresh = new Button(this, SWT.PUSH);
@@ -210,8 +207,7 @@ public class ChefHistory extends Composite
 	private void setupReplayListener() {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
-			final SimpleDateFormat df = new SimpleDateFormat(
-					ValueDate.DATE_FORMAT);
+			// final SimpleDateFormat df = new SimpleDateFormat(ValueDate.DATE_FORMAT);
 
 			public void widgetSelected(SelectionEvent e) {
 				int idx = wFields.getSelectionIndex();
@@ -228,15 +224,15 @@ public class ChefHistory extends Composite
 						mb.open();
 						return;
 					}
-					try {
-						Date date = df.parse(dateString);
-						chef.tabfolder.setSelection(1);
-						chefLog.startJob(date);
-					} catch (ParseException e1) {
-						new ErrorDialog(shell, 
-								Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
-								Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-					}
+//					try {
+//						Date date = df.parse(dateString);
+//						chef.tabfolder.setSelection(1);
+//						chefLog.startJob(date); // TODO: add replay stuff too
+//					} catch (ParseException e1) {
+//						new ErrorDialog(shell, 
+//								Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
+//								Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+//					}
 				}
 			}
 		};
@@ -249,8 +245,7 @@ public class ChefHistory extends Composite
      */
 	public void refreshHistory()
 	{
-        // See if there is a transformation loaded that has a connection table specified.
-        JobMeta jobMeta = chef.getJobMeta();
+        // See if there is a job loaded that has a connection table specified.
         if (jobMeta!=null && !Const.isEmpty(jobMeta.getName()))
         {
             if (jobMeta.getLogConnection()!=null)
@@ -389,5 +384,67 @@ public class ChefHistory extends Composite
 			refreshNeeded = true;
 		}
 	}
+
+    /**
+     * @return the jobMeta
+     */
+    public JobMeta getJobMeta()
+    {
+        return jobMeta;
+    }
+
+    /**
+     * @param jobMeta the jobMeta to set
+     */
+    public void setJobMeta(JobMeta jobMeta)
+    {
+        this.jobMeta = jobMeta;
+    }
+
+    public boolean applyChanges()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canBeClosed()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public Object getManagedObject()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean hasContentChanged()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public int showChangedWarning()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /**
+     * @return the spoon
+     */
+    public Spoon getSpoon()
+    {
+        return spoon;
+    }
+
+    /**
+     * @param spoon the spoon to set
+     */
+    public void setSpoon(Spoon spoon)
+    {
+        this.spoon = spoon;
+    }
 
 }

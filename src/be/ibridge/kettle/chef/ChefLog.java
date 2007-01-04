@@ -58,7 +58,11 @@ import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
+import be.ibridge.kettle.spoon.Messages;
+import be.ibridge.kettle.spoon.Spoon;
+import be.ibridge.kettle.spoon.TabItemInterface;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
 
 /*** 
@@ -68,7 +72,7 @@ import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
  * @since 17-05-2003
  *
  */
-public class ChefLog extends Composite
+public class ChefLog extends Composite implements TabItemInterface
 {
 	// public final static String START_TEXT = 
 	// public final static String STOP_TEXT  = 
@@ -77,7 +81,8 @@ public class ChefLog extends Composite
 	private Shell shell;
 	private Display display;
 	private LogWriter log;
-	private Chef chef;
+	private Spoon spoon;
+    private JobMeta jobMeta;
 	
 	private Tree wTree;
 	
@@ -101,22 +106,16 @@ public class ChefLog extends Composite
     private JobTracker jobTracker;
     private ChefHistoryRefresher chefHistoryRefresher;
 
-    /** @deprecated */
-    public ChefLog(Composite parent, int style, LogWriter log, Chef chef)
-    {
-        this(parent, style, chef);
-    }
-
-    private static final String STRING_CHEF_LOG_TREE_NAME = "Chef Log Tree";
+    private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
     
-	public ChefLog(Composite parent, int style, Chef chef)
+	public ChefLog(Composite parent, final Spoon spoon, final JobMeta jobMeta)
 	{
-		super(parent, style);
+		super(parent, SWT.NONE);
 		
 		shell=parent.getShell();
 		this.log=LogWriter.getInstance();
 		display=shell.getDisplay();
-		this.chef=chef;
+		this.spoon=spoon;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -337,13 +336,13 @@ public class ChefLog extends Composite
 		if (job==null) // Not running, start the transformation...
 		{
 			// Auto save feature...
-			if (chef.jobMeta.hasChanged())
+			if (jobMeta.hasChanged())
 			{
-				if (chef.props.getAutoSave()) 
+				if (spoon.props.getAutoSave()) 
 				{
 					log.logDetailed(toString(), Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
 					System.out.println(Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
-					chef.saveFile();
+					spoon.saveJobFile(jobMeta);
 				}
 				else
 				{
@@ -355,20 +354,20 @@ public class ChefLog extends Composite
 																			 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
 																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
-																			 chef.props.getAutoSave()
+																			 spoon.props.getAutoSave()
 																			 );
 					int answer = md.open();
 					if ( (answer&0xFF) == 0)
 					{
-						chef.saveFile();
+						spoon.saveJobFile(jobMeta);
 					}
-					chef.props.setAutoSave(md.getToggleState());
+					spoon.props.setAutoSave(md.getToggleState());
 				}
 			}
 			
-            if ( ((chef.jobMeta.getName()!=null && chef.rep!=null) ||     // Repository available & name set
-			      (chef.jobMeta.getFilename()!=null && chef.rep==null )   // No repository & filename set
-			      ) && !chef.jobMeta.hasChanged()                             // Didn't change
+            if ( ((jobMeta.getName()!=null && spoon.rep!=null) ||     // Repository available & name set
+			      (jobMeta.getFilename()!=null && spoon.rep==null )   // No repository & filename set
+			      ) && !jobMeta.hasChanged()                             // Didn't change
 			   )
 			{
 				if (job==null || (job!=null && job.isActive()) )
@@ -377,9 +376,9 @@ public class ChefLog extends Composite
 					{
                         // TODO: clean up this awfull mess...
                         //
-                        job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
-						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
-                        job.getJobMeta().setArguments(chef.jobMeta.getArguments());
+                        job = new Job(log, jobMeta.getName(), jobMeta.getFilename(), null);
+						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath());
+                        job.getJobMeta().setArguments(jobMeta.getArguments());
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
@@ -403,7 +402,7 @@ public class ChefLog extends Composite
 			}
 			else
 			{
-				if (chef.jobMeta.hasChanged())
+				if (jobMeta.hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText(Messages.getString("ChefLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
@@ -411,7 +410,7 @@ public class ChefLog extends Composite
 					m.open();
 				}
 				else
-				if (chef.rep!=null && chef.jobMeta.getName()==null)
+				if (spoon.rep!=null && jobMeta.getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText(Messages.getString("ChefLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
@@ -462,7 +461,7 @@ public class ChefLog extends Composite
     {
         wStart.setEnabled(!isRunning);
         wStop.setEnabled(isRunning);
-        chef.tiFileRun.setEnabled(!isRunning);
+        // spoon.tiFileRun.setEnabled(!isRunning); TODO: make spoons menu's smarter
     }
 
     public void readLog()
@@ -625,7 +624,7 @@ public class ChefLog extends Composite
 	
 	private void setLog()
 	{
-		LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, log, chef.props);
+		LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, log, spoon.props);
 		lsd.open();
 	}
 	
@@ -682,12 +681,12 @@ public class ChefLog extends Composite
 			line = esd.open();
 			if (line!=null)
 			{
-				for (i=0;i<chef.getJobMeta().nrJobEntries();i++)
+				for (i=0;i<jobMeta.nrJobEntries();i++)
 				{
-					JobEntryCopy entryCopy = chef.getJobMeta().getJobEntry(i);
+					JobEntryCopy entryCopy = jobMeta.getJobEntry(i);
 					if (line.indexOf( entryCopy.getName() ) >=0 )
 					{
-						chef.editChefGraphEntry( entryCopy );
+						spoon.editChefGraphEntry(jobMeta, entryCopy );
 					}
 				}
 				// System.out.println("Error line selected: "+line);
@@ -699,5 +698,50 @@ public class ChefLog extends Composite
     public void setChefHistoryRefresher(ChefHistoryRefresher chefHistoryRefresher)
     {
         this.chefHistoryRefresher = chefHistoryRefresher;
+    }
+
+    /**
+     * @return the jobMeta
+     */
+    public JobMeta getJobMeta()
+    {
+        return jobMeta;
+    }
+
+    /**
+     * @param jobMeta the jobMeta to set
+     */
+    public void setJobMeta(JobMeta jobMeta)
+    {
+        this.jobMeta = jobMeta;
+    }
+
+    public boolean applyChanges()
+    {
+        return true;
+    }
+
+    public boolean canBeClosed()
+    {
+        return !isRunning;
+    }
+
+    public Object getManagedObject()
+    {
+        return jobMeta;
+    }
+
+    public boolean hasContentChanged()
+    {
+        return false;
+    }
+
+    public int showChangedWarning()
+    {
+        // show running error.
+        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.CANCEL | SWT.ICON_QUESTION);
+        mb.setMessage(Messages.getString("ChefLog.Message.Warning.PromptExitWhenRunJob"));// There is a running transformation.  Do you want to stop it and quit Spoon?
+        mb.setText(Messages.getString("System.Warning")); //Warning
+        return mb.open();
     }
 }

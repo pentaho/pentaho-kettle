@@ -398,7 +398,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     {
         try
         {
-            SelectObjectDialog sod = new SelectObjectDialog(shell, props, repository, true, false, false);
+            SelectObjectDialog sod = new SelectObjectDialog(shell, repository);
             String transName = sod.open();
             RepositoryDirectory repdir = sod.getDirectory();
             if (transName!=null && repdir!=null)

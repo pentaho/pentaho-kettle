@@ -59,7 +59,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
@@ -93,7 +92,7 @@ import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
  * 
  */
 
-public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInterface, TabItemInterface
+public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 {
     private static final LogWriter log = LogWriter.getInstance();
     private static final int HOP_SEL_MARGIN = 9;
@@ -2045,7 +2044,7 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
         List elements = transMeta.getSelectedDrawnStepsList();
         int[] indices = transMeta.getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
 
-        return new SnapAllignDistribute(elements, indices, this, this);
+        return new SnapAllignDistribute(transMeta, elements, indices, spoon, this);
     }
     
     private void snaptogrid(int size)
@@ -2208,7 +2207,7 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
     
     public boolean applyChanges()
     {
-        return spoon.saveFile(transMeta);
+        return spoon.saveTransFile(transMeta);
     }
 
     public boolean canBeClosed()

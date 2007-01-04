@@ -67,6 +67,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
+import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
@@ -78,7 +79,7 @@ import be.ibridge.kettle.trans.step.StepPartitioningMeta;
  * @author Matt
  *
  */
-public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
+public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface, UndoInterface, HasDatabasesInterface
 {
     public static final String XML_TAG = "transformation";
 
@@ -342,39 +343,32 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         undo_position = -1;
     }
 
-    /**
-     * Get an ArrayList of defined DatabaseInfo objects.
-     *
-     * @return an ArrayList of defined DatabaseInfo objects.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#getDatabases()
      */
     public ArrayList getDatabases()
     {
         return databases;
     }
 
-    /**
-     * @param databases The databases to set.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
      */
     public void setDatabases(ArrayList databases)
     {
         this.databases = databases;
     }
 
-    /**
-     * Add a database connection to the transformation.
-     *
-     * @param databaseMeta The database connection information.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addDatabase(DatabaseMeta databaseMeta)
     {
         databases.add(databaseMeta);
     }
     
-    /**
-     * Add a database connection to the transformation if that connection didn't exists yet.
-     * Otherwise, replace the connection in the transformation
-     *
-     * @param databaseMeta The database connection information.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
     {
@@ -456,11 +450,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         dependencies.add(td);
     }
 
-    /**
-     * Add a database connection to the transformation on a certain location.
-     *
-     * @param p The location
-     * @param ci The database connection information.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addDatabase(int, be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addDatabase(int p, DatabaseMeta ci)
     {
@@ -514,11 +505,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         dependencies.add(p, td);
     }
 
-    /**
-     * Retrieves a database connection information a a certain location.
-     *
-     * @param i The database number.
-     * @return The database connection information.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#getDatabase(int)
      */
     public DatabaseMeta getDatabase(int i)
     {
@@ -579,10 +567,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         return (TransDependency) dependencies.get(i);
     }
 
-    /**
-     * Removes a database from the transformation on a certain location.
-     *
-     * @param i The location
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#removeDatabase(int)
      */
     public void removeDatabase(int i)
     {
@@ -647,10 +633,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         dependencies.clear();
     }
 
-    /**
-     * Count the nr of databases in the transformation.
-     *
-     * @return The nr of databases
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#nrDatabases()
      */
     public int nrDatabases()
     {
@@ -756,11 +740,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         return null;
     }
 
-    /**
-     * Searches the list of databases for a database with a certain name
-     *
-     * @param name The name of the database connection
-     * @return The database connection information or null if nothing was found.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#findDatabase(java.lang.String)
      */
     public DatabaseMeta findDatabase(String name)
     {
@@ -1740,11 +1721,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
     }
 
-    /**
-     * Read the database connections in the repository and add them to this transformation if they are not yet present.
-     *
-     * @param rep The repository to load the database connections from.
-     * @param overWriteShared if an object with the same name exists, overwrite
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
      */
     public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
@@ -2156,11 +2134,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         return steps.indexOf(stepMeta);
     }
 
-    /**
-     * Find the location of database
-     *
-     * @param ci The database queried
-     * @return The location of the database, -1 if nothing was found.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#indexOfDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public int indexOfDatabase(DatabaseMeta ci)
     {
@@ -2403,7 +2378,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @throws KettleXMLException
      */
-    private void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
+    public void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
         Props props = null;
         if (Props.isInitialized())
@@ -2932,10 +2907,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
     }
 
-    /**
-     * Checks whether or not the connections have changed.
-     *
-     * @return True if the connections have been changed.
+    /* (non-Javadoc)
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#haveConnectionsChanged()
      */
     public boolean haveConnectionsChanged()
     {

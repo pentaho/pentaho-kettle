@@ -4,22 +4,25 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 
 public class LastUsedFile
 {
+    public static final String FILE_TYPE_TRANSFORMATION = "Trans";
+    public static final String FILE_TYPE_JOB            = "Job";
+    
+    private String  fileType;
     private String  filename;
-
     private String  directory;
-
     private boolean sourceRepository;
-
     private String  repositoryName;
 
     /**
+     * @param fileType The type of file to use (FILE_TYPE_TRANSFORMATION, FILE_TYPE_JOB, ...)
      * @param filename
      * @param directory
      * @param sourceRepository
      * @param repositoryName
      */
-    public LastUsedFile(String filename, String directory, boolean sourceRepository, String repositoryName)
+    public LastUsedFile(String fileType, String filename, String directory, boolean sourceRepository, String repositoryName)
     {
+        this.fileType = fileType;
         this.filename = filename;
         this.directory = directory;
         this.sourceRepository = sourceRepository;
@@ -124,5 +127,31 @@ public class LastUsedFile
     public void setSourceRepository(boolean sourceRepository)
     {
         this.sourceRepository = sourceRepository;
+    }
+
+    /**
+     * @return the fileType
+     */
+    public String getFileType()
+    {
+        return fileType;
+    }
+
+    /**
+     * @param fileType the fileType to set
+     */
+    public void setFileType(String fileType)
+    {
+        this.fileType = fileType;
+    }
+    
+    public boolean isTransformation()
+    {
+        return FILE_TYPE_TRANSFORMATION.equalsIgnoreCase(fileType);
+    }
+
+    public boolean isJob()
+    {
+        return FILE_TYPE_JOB.equalsIgnoreCase(fileType);
     }
 }

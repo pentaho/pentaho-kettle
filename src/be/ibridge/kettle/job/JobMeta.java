@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -12,7 +12,6 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
 
 package be.ibridge.kettle.job;
 
@@ -28,6 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.ChangedFlagInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
 import be.ibridge.kettle.core.KettleVariables;
@@ -56,233 +56,271 @@ import be.ibridge.kettle.job.entry.eval.JobEntryEval;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
-
+import be.ibridge.kettle.spoon.UndoInterface;
+import be.ibridge.kettle.trans.HasDatabasesInterface;
+import be.ibridge.kettle.trans.Messages;
 
 /**
  * Defines a Job and provides methods to load, save, verify, etc.
  * 
  * @author Matt
  * @since 11-08-2003
- *
+ * 
  */
 
-public class JobMeta implements Cloneable, XMLInterface
+public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
 {
-	public LogWriter log;
-	
+    public static final String  XML_TAG              = "job";
+
+    public LogWriter            log;
+
     private static final String STRING_MODIFIED_DATE = "MODIFIED_DATE";
-    
-	private long id;
-	
-	private String     name;
-	private String     filename;
 
-	public  ArrayList  jobentries;
-	public  ArrayList  jobcopies;
-	public  ArrayList  jobhops;
-	public  ArrayList  notes;
-	public  ArrayList  databases;
+    private long                id;
 
-	private  RepositoryDirectory directory;
-	
-	private  String     arguments[];
-	
-	private  boolean        changed, changed_entries, changed_hops, changed_notes;
-	private  DatabaseMeta   logconnection;
-	private  String         logTable;
+    private String              name;
 
-	public  DBCache dbcache;
+    private String              filename;
 
-	private ArrayList undo;
-	private int max_undo;
-	private int undo_position;
+    public ArrayList            jobentries;
 
-	public static final int TYPE_UNDO_CHANGE   = 1;
-	public static final int TYPE_UNDO_NEW      = 2;
-	public static final int TYPE_UNDO_DELETE   = 3;
-	public static final int TYPE_UNDO_POSITION = 4;
+    public ArrayList            jobcopies;
 
-	public  static final String STRING_SPECIAL_START = "START";
-	public  static final String STRING_SPECIAL_DUMMY = "DUMMY";
+    public ArrayList            jobhops;
 
-	// Remember the size and position of the different windows...
-	public  boolean    max[]  = new boolean[1];
-	public  Rectangle  size[] = new Rectangle[1];
-	
-	public  String  created_user, modifiedUser;
-	public  Value   created_date, modifiedDate;
-    
+    public ArrayList            notes;
+
+    public ArrayList            databases;
+
+    private RepositoryDirectory directory;
+
+    private String              arguments[];
+
+    private boolean             changed, changed_entries, changed_hops, changed_notes, changed_databases;
+
+    private DatabaseMeta        logconnection;
+
+    private String              logTable;
+
+    public DBCache              dbcache;
+
+    private ArrayList           undo;
+
+    private int                 max_undo;
+
+    private int                 undo_position;
+
+    public static final int     TYPE_UNDO_CHANGE     = 1;
+
+    public static final int     TYPE_UNDO_NEW        = 2;
+
+    public static final int     TYPE_UNDO_DELETE     = 3;
+
+    public static final int     TYPE_UNDO_POSITION   = 4;
+
+    public static final String  STRING_SPECIAL_START = "START";
+
+    public static final String  STRING_SPECIAL_DUMMY = "DUMMY";
+
+    // Remember the size and position of the different windows...
+    public boolean              max[]                = new boolean[1];
+
+    public Rectangle            size[]               = new Rectangle[1];
+
+    public String               created_user, modifiedUser;
+
+    public Value                created_date, modifiedDate;
+
     private boolean             useBatchId;
 
     private boolean             batchIdPassed;
 
     private boolean             logfieldUsed;
 
-    private String string;
+    private String              string;
 
-	public JobMeta(LogWriter l)
-	{
-		log=l;
-		clear();
-	}
-    
-	public long getID()
-	{
-		return id;
-	}
-	
-	public void setID(long id)
-	{
-		this.id = id;
-	}
+    public JobMeta(LogWriter l)
+    {
+        log = l;
+        clear();
+    }
 
-	public void clear()
-	{
-		name = null;
-		jobcopies  = new ArrayList();
-		jobentries = new ArrayList();
-		jobhops    = new ArrayList();
-		notes      = new ArrayList();
-		databases  = new ArrayList();
-		logconnection = null;
-		logTable = null;
-		arguments = null;
+    public long getID()
+    {
+        return id;
+    }
 
-		max_undo = Const.MAX_UNDO;
+    public void setID(long id)
+    {
+        this.id = id;
+    }
 
-		dbcache = DBCache.getInstance();
+    public void clear()
+    {
+        name = null;
+        jobcopies = new ArrayList();
+        jobentries = new ArrayList();
+        jobhops = new ArrayList();
+        notes = new ArrayList();
+        databases = new ArrayList();
+        logconnection = null;
+        logTable = null;
+        arguments = null;
 
-		undo = new ArrayList();
-		undo_position=-1;
-        
-		addDefaults();
-		setChanged(false);
+        max_undo = Const.MAX_UNDO;
 
-		modifiedUser = "-";
+        dbcache = DBCache.getInstance();
+
+        undo = new ArrayList();
+        undo_position = -1;
+
+        addDefaults();
+        setChanged(false);
+
+        modifiedUser = "-";
 
         modifiedDate = new Value(string, Value.VALUE_TYPE_DATE).sysdate();
-		
-		directory = new RepositoryDirectory();
-        
-        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruines the previews etc.
-	}
-	
-	public void addDefaults()
-	{
-		addStart(); // Add starting point!
-		addDummy(); // Add dummy!
-		addOK();  // errors == 0 evaluation
-		addError(); // errors != 0 evaluation
-				
-		clearChanged();
-	}
-	
-	private void addStart()
-	{
-		JobEntrySpecial je = new JobEntrySpecial(STRING_SPECIAL_START, true, false);
-		JobEntryCopy jge = new JobEntryCopy(log);
-		jge.setID(-1L);
-		jge.setEntry(je);
-		jge.setLocation(50,50);
-		jge.setDrawn(false);
-		jge.setDescription("A job starts to process here.");
-		addJobEntry(jge);
 
-	}
-	
-	private void addDummy()
-	{
-		JobEntrySpecial dummy = new JobEntrySpecial(STRING_SPECIAL_DUMMY, false, true);
-		JobEntryCopy dummyge = new JobEntryCopy(log);
-		dummyge.setID(-1L);
-		dummyge.setEntry(dummy);
-		dummyge.setLocation(50,50);
-		dummyge.setDrawn(false);
-		dummyge.setDescription("A dummy entry.");
-		addJobEntry(dummyge);
-	}
-	
-	public void addOK()
-	{
-		JobEntryEval ok = new JobEntryEval("OK", "errors == 0");
-		JobEntryCopy jgok = new JobEntryCopy(log);
-		jgok.setEntry(ok);
-		jgok.setLocation(0,0);
-		jgok.setDrawn(false);
-		jgok.setDescription("This comparisson is true when no errors have occured.");
-		addJobEntry(jgok);
-	}
-	
-	public void addError()
-	{
-		JobEntryEval err = new JobEntryEval("ERROR", "errors != 0");
-		JobEntryCopy jgerr = new JobEntryCopy(log);
-		jgerr.setEntry(err);
-		jgerr.setLocation(0,0);
-		jgerr.setDrawn(false);
-		jgerr.setDescription("This comparisson is true when one or more errors have occured.");
-		addJobEntry(jgerr);
-	}
+        directory = new RepositoryDirectory();
 
+        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruines the previews
+        // etc.
+    }
 
-	public JobEntryCopy getStart()
-	{
-		for (int i=0;i<nrJobEntries();i++) 
-		{
-			JobEntryCopy cge = getJobEntry(i); 
-			if (cge.isStart()) return cge;
-		}
-		return null;
-	}
+    public void addDefaults()
+    {
+        addStart(); // Add starting point!
+        addDummy(); // Add dummy!
+        addOK(); // errors == 0 evaluation
+        addError(); // errors != 0 evaluation
 
-	public JobEntryCopy getDummy()
-	{
-		for (int i=0;i<nrJobEntries();i++) 
-		{
-			JobEntryCopy cge = getJobEntry(i); 
-			if (cge.isDummy()) return cge;
-		}
-		return null;
-	}
+        clearChanged();
+    }
 
+    private void addStart()
+    {
+        JobEntrySpecial je = new JobEntrySpecial(STRING_SPECIAL_START, true, false);
+        JobEntryCopy jge = new JobEntryCopy(log);
+        jge.setID(-1L);
+        jge.setEntry(je);
+        jge.setLocation(50, 50);
+        jge.setDrawn(false);
+        jge.setDescription("A job starts to process here.");
+        addJobEntry(jge);
 
-	public boolean equals(Object obj)
-	{
-		return name.equalsIgnoreCase(((JobMeta)obj).name);
-	}
-	
-	public Object clone()
-	{
-		try
-		{
-			Object retval = super.clone();
-			return retval;
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-	}
+    }
 
-	public String getName()
-	{
-		return name;
-	}
+    private void addDummy()
+    {
+        JobEntrySpecial dummy = new JobEntrySpecial(STRING_SPECIAL_DUMMY, false, true);
+        JobEntryCopy dummyge = new JobEntryCopy(log);
+        dummyge.setID(-1L);
+        dummyge.setEntry(dummy);
+        dummyge.setLocation(50, 50);
+        dummyge.setDrawn(false);
+        dummyge.setDescription("A dummy entry.");
+        addJobEntry(dummyge);
+    }
 
-	public void setName(String name)
-	{
-		this.name=name;
+    public void addOK()
+    {
+        JobEntryEval ok = new JobEntryEval("OK", "errors == 0");
+        JobEntryCopy jgok = new JobEntryCopy(log);
+        jgok.setEntry(ok);
+        jgok.setLocation(0, 0);
+        jgok.setDrawn(false);
+        jgok.setDescription("This comparisson is true when no errors have occured.");
+        addJobEntry(jgok);
+    }
+
+    public void addError()
+    {
+        JobEntryEval err = new JobEntryEval("ERROR", "errors != 0");
+        JobEntryCopy jgerr = new JobEntryCopy(log);
+        jgerr.setEntry(err);
+        jgerr.setLocation(0, 0);
+        jgerr.setDrawn(false);
+        jgerr.setDescription("This comparisson is true when one or more errors have occured.");
+        addJobEntry(jgerr);
+    }
+
+    public JobEntryCopy getStart()
+    {
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy cge = getJobEntry(i);
+            if (cge.isStart()) return cge;
+        }
+        return null;
+    }
+
+    public JobEntryCopy getDummy()
+    {
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy cge = getJobEntry(i);
+            if (cge.isDummy()) return cge;
+        }
+        return null;
+    }
+
+    /**
+     * Compares two transformation on name, filename
+     */
+    public int compare(Object o1, Object o2)
+    {
+        JobMeta t1 = (JobMeta) o1;
+        JobMeta t2 = (JobMeta) o2;
+
+        if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
+        if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return 1;
+        if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
+        {
+            if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename())) return -1;
+            if (!Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return 1;
+            if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) { return 0; }
+            return t1.getFilename().compareTo(t2.getFilename());
+        }
+        return t1.getName().compareTo(t2.getName());
+    }
+
+    public boolean equals(Object obj)
+    {
+        return compare(this, obj) == 0;
+    }
+
+    public Object clone()
+    {
+        try
+        {
+            Object retval = super.clone();
+            return retval;
+        }
+        catch (CloneNotSupportedException e)
+        {
+            return null;
+        }
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
         setInternalKettleVariables();
-	}
-	
-	/**
+    }
+
+    /**
      * @return Returns the directory.
      */
     public RepositoryDirectory getDirectory()
     {
         return directory;
     }
-    
+
     /**
      * @param directory The directory to set.
      */
@@ -292,269 +330,258 @@ public class JobMeta implements Cloneable, XMLInterface
         setInternalKettleVariables();
     }
 
-	public String getFilename()
-	{
-		return filename;
-	}
+    public String getFilename()
+    {
+        return filename;
+    }
 
-	public void setFilename(String filename)
-	{
-		this.filename=filename;
+    public void setFilename(String filename)
+    {
+        this.filename = filename;
         setInternalKettleVariables();
-	}
+    }
 
-	public DatabaseMeta getLogConnection()
-	{
-		return logconnection;
-	}
+    public DatabaseMeta getLogConnection()
+    {
+        return logconnection;
+    }
 
-	public void setLogConnection(DatabaseMeta ci)
-	{
-		logconnection=ci;
-	}
+    public void setLogConnection(DatabaseMeta ci)
+    {
+        logconnection = ci;
+    }
 
-	/**
-	 * @return Returns the databases.
-	 */
-	public ArrayList getDatabases()
-	{
-		return databases;
-	}
-	
-	/**
-	 * @param databases The databases to set.
-	 */
-	public void setDatabases(ArrayList databases)
-	{
-		this.databases = databases;
-	}
-	
-	public void setChanged()
-	{
-		setChanged(true);
-	}
+    /**
+     * @return Returns the databases.
+     */
+    public ArrayList getDatabases()
+    {
+        return databases;
+    }
 
-	public void setChanged(boolean ch)
-	{
-		changed=ch;
-	}
-	
-	public void clearChanged()
-	{
+    /**
+     * @param databases The databases to set.
+     */
+    public void setDatabases(ArrayList databases)
+    {
+        this.databases = databases;
+    }
+
+    public void setChanged()
+    {
+        setChanged(true);
+    }
+
+    public void setChanged(boolean ch)
+    {
+        changed = ch;
+    }
+
+    public void clearChanged()
+    {
         changed_entries = false;
-        changed_hops    = false;
-        changed_notes   = false;
+        changed_hops = false;
+        changed_notes = false;
+        changed_databases = false;
+
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy entry = getJobEntry(i);
+            entry.setChanged(false);
+        }
+        for (int i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hop = getJobHop(i);
+            hop.setChanged(false);
+        }
+        for (int i = 0; i < nrDatabases(); i++)
+        {
+            DatabaseMeta db = getDatabase(i);
+            db.setChanged(false);
+        }
+        changed = false;
+    }
+
+    public boolean hasChanged()
+    {
+        if (changed) return true;
         
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy entry = getJobEntry(i);
-			entry.setChanged(false);
-		}
-		for (int i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hop = getJobHop(i);
-			hop.setChanged(false);
-		}
-		changed=false;
-	}
+        if (haveJobEntriesChanged()) return true;
+        if (haveJobHopsChanged()) return true;
+        if (haveConnectionsChanged()) return true;
+        if (haveNotesChanged()) return true;
+        
+        return false;
+    }
 
-	public boolean hasChanged()
-	{
-		if (changed || changed_notes || changed_entries || changed_hops) return true;
-		
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy entry = getJobEntry(i);
-			if (entry.hasChanged()) return true;
-		}
-		for (int i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hop = getJobHop(i);
-			if (hop.hasChanged()) return true;
-		}
-		return false;
-	}
-	
- 	private void saveRepJob(Repository rep)
- 		throws KettleException
-	{
- 		try
-		{
-			// The ID has to be assigned, even when it's a new item...
-			rep.insertJob(
-			    getID(),
-				directory.getID(),
-				getName(),
-				logconnection==null?-1:logconnection.getID(),
-				logTable,
-				modifiedUser,
-				modifiedDate,
-                useBatchId,
-                batchIdPassed,
-                logfieldUsed
-			);
-		}
- 		catch(KettleDatabaseException dbe)
-		{
- 			throw new KettleException("Unable to save job info to repository", dbe);
-		}
-	}
+    private void saveRepJob(Repository rep) throws KettleException
+    {
+        try
+        {
+            // The ID has to be assigned, even when it's a new item...
+            rep.insertJob(getID(), directory.getID(), getName(), logconnection == null ? -1 : logconnection.getID(), logTable, modifiedUser,
+                    modifiedDate, useBatchId, batchIdPassed, logfieldUsed);
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException("Unable to save job info to repository", dbe);
+        }
+    }
 
-	public boolean showReplaceWarning(Repository rep)
-	{
-		if (getID()<0)
-		{
-			try
-			{
-				if ( rep.getJobID( getName(), directory.getID() )>0 ) return true;
-			}
-			catch(KettleDatabaseException dbe)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    public boolean showReplaceWarning(Repository rep)
+    {
+        if (getID() < 0)
+        {
+            try
+            {
+                if (rep.getJobID(getName(), directory.getID()) > 0) return true;
+            }
+            catch (KettleDatabaseException dbe)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public String getXML()
-	{
-		DatabaseMeta ci = getLogConnection(); 
+    public String getXML()
+    {
+        DatabaseMeta ci = getLogConnection();
         StringBuffer retval = new StringBuffer();
-		
-		retval.append("<job>"+Const.CR);
-		retval.append("  "+XMLHandler.addTagValue("name", getName()));
-		retval.append("  "+XMLHandler.addTagValue("directory", directory.getPath()));
-        retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
-        retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
-        
-		for (int i=0;i<nrDatabases();i++)
-		{
-			DatabaseMeta dbinfo = getDatabase(i);
-			retval.append(dbinfo.getXML());
-		}
 
-		retval.append("  "+XMLHandler.addTagValue("logconnection", ci==null?"":ci.getName()));
-		retval.append("  "+XMLHandler.addTagValue("logtable", logTable));
+        retval.append("<job>" + Const.CR);
+        retval.append("  " + XMLHandler.addTagValue("name", getName()));
+        retval.append("  " + XMLHandler.addTagValue("directory", directory.getPath()));
+        retval.append("  " + XMLHandler.addTagValue("modified_user", modifiedUser));
+        retval.append("  " + XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : ""));
 
-        retval.append( "   " + XMLHandler.addTagValue("use_batchid", useBatchId));
-        retval.append( "   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed));
-        retval.append( "   " + XMLHandler.addTagValue("use_logfield", logfieldUsed));
+        for (int i = 0; i < nrDatabases(); i++)
+        {
+            DatabaseMeta dbinfo = getDatabase(i);
+            retval.append(dbinfo.getXML());
+        }
 
-		retval.append("  <entries>"+Const.CR);
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy jge = getJobEntry(i);
-			retval.append(jge.getXML());
-		}
-		retval.append("    </entries>"+Const.CR);
+        retval.append("  " + XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName()));
+        retval.append("  " + XMLHandler.addTagValue("logtable", logTable));
 
-		retval.append("  <hops>"+Const.CR);
-		for (int i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i);
-			retval.append(hi.getXML());
-		}
-		retval.append("    </hops>"+Const.CR);
+        retval.append("   " + XMLHandler.addTagValue("use_batchid", useBatchId));
+        retval.append("   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed));
+        retval.append("   " + XMLHandler.addTagValue("use_logfield", logfieldUsed));
 
-		retval.append("  <notepads>"+Const.CR);
-		for (int i=0;i<nrNotes();i++)
-		{
-			NotePadMeta ni= getNote(i);
-			retval.append(ni.getXML());
-		}
-		retval.append("    </notepads>"+Const.CR);
+        retval.append("  <entries>" + Const.CR);
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy jge = getJobEntry(i);
+            retval.append(jge.getXML());
+        }
+        retval.append("    </entries>" + Const.CR);
 
+        retval.append("  <hops>" + Const.CR);
+        for (int i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            retval.append(hi.getXML());
+        }
+        retval.append("    </hops>" + Const.CR);
 
-		retval.append("  </job>"+Const.CR);
-		
-		return retval.toString();
-	}
+        retval.append("  <notepads>" + Const.CR);
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta ni = getNote(i);
+            retval.append(ni.getXML());
+        }
+        retval.append("    </notepads>" + Const.CR);
 
-	/**
-	 * Load the job from the XML file specified.
-	 * @param log the logging channel
-	 * @param fname The filename to load as a job
-	 * @param rep The repository to bind againt, null if there is no repository available.
-	 * @throws KettleXMLException
-	 */
-	public JobMeta(LogWriter log, String fname, Repository rep) throws KettleXMLException
-	{
-		this.log = log;
-		try
-		{
-			Document doc = XMLHandler.loadXMLFile(fname);
-			if (doc!=null)
-			{
-				// Clear the job
-				clear();
-			
-				// The jobnode
-				Node jobnode = XMLHandler.getSubNode(doc, "job");
-				
-				loadXML(jobnode, rep);
-                
+        retval.append("  </job>" + Const.CR);
+
+        return retval.toString();
+    }
+
+    /**
+     * Load the job from the XML file specified.
+     * 
+     * @param log the logging channel
+     * @param fname The filename to load as a job
+     * @param rep The repository to bind againt, null if there is no repository available.
+     * @throws KettleXMLException
+     */
+    public JobMeta(LogWriter log, String fname, Repository rep) throws KettleXMLException
+    {
+        this.log = log;
+        try
+        {
+            Document doc = XMLHandler.loadXMLFile(fname);
+            if (doc != null)
+            {
+                // Clear the job
+                clear();
+
+                // The jobnode
+                Node jobnode = XMLHandler.getSubNode(doc, XML_TAG);
+
+                loadXML(jobnode, rep);
+
                 // Do this at the end
                 setFilename(fname);
-			}
-			else
-			{
-				throw new KettleXMLException("Error reading/validating information from XML file: "+fname);
-			}
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException("Unable to load the job from XML file ["+fname+"]", e);
-		}
-	}
-	
-	public JobMeta(LogWriter log, Node jobnode, Repository rep)
-		throws KettleXMLException
-	{
-		this.log = log;
-		
-		loadXML(jobnode, rep);
-	}
+            }
+            else
+            {
+                throw new KettleXMLException("Error reading/validating information from XML file: " + fname);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new KettleXMLException("Unable to load the job from XML file [" + fname + "]", e);
+        }
+    }
 
-	public void loadXML(Node jobnode, Repository rep) throws KettleXMLException
-	{
+    public JobMeta(LogWriter log, Node jobnode, Repository rep) throws KettleXMLException
+    {
+        this.log = log;
+
+        loadXML(jobnode, rep);
+    }
+
+    public void loadXML(Node jobnode, Repository rep) throws KettleXMLException
+    {
         Props props = null;
-        if (Props.isInitialized()) props=Props.getInstance();
+        if (Props.isInitialized()) props = Props.getInstance();
 
-		try
-		{		
+        try
+        {
             // clear the jobs;
             clear();
-            
-			//
-			// get job info:
-			//
-			name = XMLHandler.getTagValue(jobnode, "name");
+
+            //
+            // get job info:
+            //
+            name = XMLHandler.getTagValue(jobnode, "name");
 
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user");
             String modDate = XMLHandler.getTagValue(jobnode, "modified_date");
-            if (modDate!=null)
+            if (modDate != null)
             {
                 modifiedDate = new Value(STRING_MODIFIED_DATE, modDate);
                 modifiedDate.setType(Value.VALUE_TYPE_DATE);
             }
 
             // Load the default list of databases
-            if (rep!=null)
+            if (rep != null)
             {
                 readDatabases(rep);
                 clearChanged();
             }
-            
-			// 
-			// Read the database connections
-			//
-			int nr = XMLHandler.countNodes(jobnode, "connection");
-			for (int i=0;i<nr;i++)
-			{
-				Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i);
-				DatabaseMeta dbcon = new DatabaseMeta(dbnode);
-                
+
+            // 
+            // Read the database connections
+            //
+            int nr = XMLHandler.countNodes(jobnode, "connection");
+            for (int i = 0; i < nr; i++)
+            {
+                Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i);
+                DatabaseMeta dbcon = new DatabaseMeta(dbnode);
+
                 DatabaseMeta exist = findDatabase(dbcon.getName());
                 if (exist == null)
                 {
@@ -567,23 +594,17 @@ public class JobMeta implements Cloneable, XMLInterface
                     if (askOverwrite)
                     {
                         // That means that we have a Display variable set in Props...
-                        if (props.getDisplay()!=null)
+                        if (props.getDisplay() != null)
                         {
                             Shell shell = props.getDisplay().getActiveShell();
-                            
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                "Warning",  
-                                null,
-                                "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
-                                MessageDialog.WARNING,
-                                new String[] { "Yes", "No" },//"Yes", "No" 
-                                1,
-                                "Please, don't show this warning anymore.",
-                                !props.askAboutReplacingDatabaseConnections()
-                           );
-                           int idx = md.open();
-                           props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
-                           overwrite = ( (idx&0xFF)==0); // Yes means: overwrite
+
+                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Warning", null, "Connection [" + dbcon.getName()
+                                    + "] already exists, do you want to overwrite this database connection?", MessageDialog.WARNING, new String[] {
+                                    "Yes", "No" },// "Yes", "No"
+                                    1, "Please, don't show this warning anymore.", !props.askAboutReplacingDatabaseConnections());
+                            int idx = md.open();
+                            props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
+                            overwrite = ((idx & 0xFF) == 0); // Yes means: overwrite
                         }
                     }
 
@@ -594,1049 +615,1109 @@ public class JobMeta implements Cloneable, XMLInterface
                         addDatabase(idx, dbcon);
                     }
                 }
-			}
-			
-			/*
-			 * Get the log database connection & log table
-			 */
-			String logcon        = XMLHandler.getTagValue(jobnode, "logconnection");
-			logconnection        = findDatabase(logcon);
-			logTable             = XMLHandler.getTagValue(jobnode, "logtable");
-            
-            useBatchId           = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid"));
-            batchIdPassed        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));
-            logfieldUsed         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield"));
-			
-			/*
-			 * read the job entries...
-			 */
-			Node entriesnode = XMLHandler.getSubNode(jobnode, "entries");
-			int tr = XMLHandler.countNodes(entriesnode, "entry");
-			for (int i=0;i<tr;i++) 
-			{
-				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
-				//System.out.println("Reading entry:\n"+entrynode);
-				
-				JobEntryCopy je = new JobEntryCopy(entrynode, databases, rep);
-				JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
-				if (prev!=null)
-				{
-					if (je.getNr()==0) // See if the #0 already exists!
-					{
-						// Replace previous version with this one: remove it first
-						int idx = indexOfJobEntry(prev);
-						removeJobEntry(idx);
-					}
-					else
-					if (je.getNr()>0) // Use previously defined JobEntry info!
-					{
-						je.setEntry(prev.getEntry());
-						
-						// See if entry.5 already exists...
-						prev = findJobEntry(je.getName(), je.getNr(), true);
-						if (prev!=null) // remove the old one!
-						{
-							int idx = indexOfJobEntry(prev);
-							removeJobEntry(idx);
-						}
-					}
-				}
-				// Add the JobEntryCopy...
-				addJobEntry(je);
-			}
+            }
 
-			Node hopsnode = XMLHandler.getSubNode(jobnode, "hops");
-			int ho = XMLHandler.countNodes(hopsnode, "hop");
-			for (int i=0;i<ho;i++) 
-			{
-				Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i);
-				JobHopMeta hi = new JobHopMeta(hopnode, this);
-				jobhops.add(hi);
-			}
+            /*
+             * Get the log database connection & log table
+             */
+            String logcon = XMLHandler.getTagValue(jobnode, "logconnection");
+            logconnection = findDatabase(logcon);
+            logTable = XMLHandler.getTagValue(jobnode, "logtable");
 
-			// Read the notes...
-			Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads");
-			int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad");
-			for (int i=0;i<nrnotes;i++)
-			{
-				Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i); 
-				NotePadMeta ni = new NotePadMeta(notepadnode);
-				notes.add(ni);
-			}
+            useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid"));
+            batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));
+            logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield"));
 
-			// Do we have the special entries?
-			if (findJobEntry(STRING_SPECIAL_START, 0, true)==null) addStart();
-			if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true)==null) addDummy();
-            
-            clearChanged();
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException("Unable to load job info from XML node", e);
-		}
-        finally
-        {
-            setInternalKettleVariables();
-        }
-	}
+            /*
+             * read the job entries...
+             */
+            Node entriesnode = XMLHandler.getSubNode(jobnode, "entries");
+            int tr = XMLHandler.countNodes(entriesnode, "entry");
+            for (int i = 0; i < tr; i++)
+            {
+                Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
+                // System.out.println("Reading entry:\n"+entrynode);
 
-	/**
-	 * Read the database connections in the repository and add them to this job 
-	 * if they are not yet present.
-	 * 
-	 * @param rep The repository to load the database connections from.
-	 */
-	public void readDatabases(Repository rep)
-	{
-		try
-		{
-			long dbids[] = rep.getDatabaseIDs();
-			for (int i=0;i<dbids.length;i++)
-			{
-				DatabaseMeta ci = new DatabaseMeta(rep, dbids[i]);
-				if (indexOfDatabase(ci)<0) 
-				{
-					addDatabase(ci);
-					ci.setChanged(false);
-				} 
-			}
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			log.logError(toString(), "Error reading databases from repository:"+Const.CR+dbe.getMessage());
-		}
-		catch(KettleException ke)
-		{
-			log.logError(toString(), "Error reading databases from repository:"+Const.CR+ke.getMessage());
-		}
-
-		setChanged(false);
-	}
-
-	/**
-	 * Find a database connection by it's name
-	 * @param name The database name to look for
-	 * @return The database connection or null if nothing was found.
-	 */
-	public DatabaseMeta findDatabase(String name)
-	{
-		for (int i=0;i<nrDatabases();i++)
-		{
-			DatabaseMeta ci = getDatabase(i); 
-			if (ci.getName().equalsIgnoreCase(name))
-			{
-				return ci; 
-			}
-		}
-		return null;
-	}
-
-	public void saveRep(Repository rep)
-		throws KettleException
-	{
-		saveRep(rep, null);
-	}
-
-	public void saveRep(Repository rep, IProgressMonitor monitor)
-		throws KettleException
-	{
-		try
-		{
-			int nrWorks = 2+nrDatabases()+nrNotes()+nrJobEntries()+nrJobHops();
-			if (monitor!=null) monitor.beginTask("Saving transformation "+directory+Const.FILE_SEPARATOR+getName(), nrWorks);
-			
-			// Before we start, make sure we have a valid job ID!
-			// Two possibilities: 
-			// 1) We have a ID: keep it
-			// 2) We don't have an ID: look it up.
-			//    If we find a transformation with the same name: ask! 
-			//
-			if (monitor!=null) monitor.subTask("Handling previous version of job...");
-			setID( rep.getJobID(getName(), directory.getID()) );
-			
-			// If no valid id is available in the database, assign one...
-			if (getID()<=0)
-			{
-				setID( rep.getNextJobID() );
-			}
-			else
-			{
-				// If we have a valid ID, we need to make sure everything is cleared out 
-				// of the database for this id_job, before we put it back in...
-				rep.delAllFromJob(getID());
-			}
-			if (monitor!=null) monitor.worked(1);
-
-			
-			
-			// Now, save the job entry in R_JOB
-			// Note, we save this first so that we have an ID in the database.
-			// Everything else depends on this ID, including recursive job entries to the save job. (retry)
-			if (monitor!=null) monitor.subTask("Saving job details...");
-			log.logDetailed(toString(), "Saving job info to repository...");
-			saveRepJob(rep);
-			if (monitor!=null) monitor.worked(1);
-
-			
-			
-			//
-			// Save the notes
-			//
-			log.logDetailed(toString(), "Saving notes to repository...");
-			for (int i=0;i<nrNotes();i++)
-			{
-				if (monitor!=null) monitor.subTask("Saving note #"+(i+1)+"/"+nrNotes());
-				NotePadMeta ni = getNote(i);
-				ni.saveRep(rep, getID());
-				if (ni.getID()>0) 
-				{
-					rep.insertJobNote(getID(), ni.getID());
-				}
-				if (monitor!=null) monitor.worked(1);
-			}
-			
-			//
-			// Save the job entries
-			//
-			log.logDetailed(toString(), "Saving "+nrJobEntries()+" ChefGraphEntries to repository...");
-			for (int i=0;i<nrJobEntries();i++)
-			{
-				if (monitor!=null) monitor.subTask("Saving job entry #"+(i+1)+"/"+nrJobEntries());
-				JobEntryCopy cge = getJobEntry(i);
-				cge.saveRep(rep, getID());
-				if (monitor!=null) monitor.worked(1);
-			}
-			
-			log.logDetailed(toString(), "Saving job hops to repository...");
-			for (int i=0;i<nrJobHops();i++)
-			{
-				if (monitor!=null) monitor.subTask("Saving job hop #"+(i+1)+"/"+nrJobHops());
-				JobHopMeta hi = getJobHop(i);
-				hi.saveRep(rep, getID());
-				if (monitor!=null) monitor.worked(1);
-			}
-						
-			// Commit this transaction!!
-			rep.commit();
-			
-			clearChanged();
-			if (monitor!=null) monitor.done();
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			rep.rollback();
-			throw new KettleException("Unable to save Job in repository, database rollback performed.", dbe);
-		}
-	}
-
-	/**
-	 * Load a job in a directory
-	 * @param log the logging channel
-	 * @param rep The Repository
-	 * @param jobname The name of the job
-	 * @param repdir The directory in which the job resides.
-	 * @throws KettleException
-	 */
-	public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir)
-		throws KettleException
-	{
-		this(log, rep, jobname, repdir, null);
-	}
-
-	/**
-	 * Load a job in a directory
-	 * @param log the logging channel
-	 * @param rep The Repository
-	 * @param jobname The name of the job
-	 * @param repdir The directory in which the job resides.
-	 * @throws KettleException
-	 */
-	public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
-	{
-		this.log = log;
-		
-		try
-		{
-			// Clear everything...
-			clear();
-			
-			directory = repdir;
-			
-			// Get the transformation id
-			setID( rep.getJobID(jobname, repdir.getID()) );
-		
-			// If no valid id is available in the database, then give error...
-			if (getID()>0)
-			{
-				// Load the notes...
-				long noteids[] = rep.getJobNoteIDs(getID());
-				long jecids[] = rep.getJobEntryCopyIDs(getID());
-				long hopid[] = rep.getJobHopIDs(getID());
-
-				int nrWork = 2+noteids.length+jecids.length+hopid.length;
-				if (monitor!=null) monitor.beginTask("Loading job "+repdir+Const.FILE_SEPARATOR+jobname, nrWork);
-
-				// 
-				// Load the common database connections
-				//
-				if (monitor!=null) monitor.subTask("Reading the available database from the repository");
-				readDatabases(rep);
-				if (monitor!=null) monitor.worked(1);
-				
-				//
-				// get job info:
-				//
-				if (monitor!=null) monitor.subTask("Reading the job information");
-				Row jobrow = rep.getJob(getID());
-				
-				name                 = jobrow.searchValue("NAME").getString();
-				logTable             = jobrow.searchValue("TABLE_NAME_LOG").getString();
-				
-				long id_logdb        = jobrow.searchValue("ID_DATABASE_LOG").getInteger();
-				if (id_logdb>0)
-				{
-					// Get the logconnection
-					logconnection = new DatabaseMeta(rep, id_logdb);
-				}
-                useBatchId    = jobrow.getBoolean("USE_BATCH_ID", false);
-                batchIdPassed = jobrow.getBoolean("PASS_BATCH_ID", false);
-                logfieldUsed  = jobrow.getBoolean("USE_LOGFIELD", false);
-
-				if (monitor!=null) monitor.worked(1);
-	
-				log.logDetailed(toString(), "Loading "+noteids.length+" notes");
-				for (int i=0;i<noteids.length;i++)
-				{
-					if (monitor!=null) monitor.subTask("Reading note #"+(i+1)+"/"+noteids.length);
-					NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
-					if (indexOfNote(ni)<0) addNote(ni);
-					if (monitor!=null) monitor.worked(1);
-				}
-				
-				// Load the job entries...
-				log.logDetailed(toString(), "Loading "+jecids.length+" job entries");
-				for (int i=0;i<jecids.length;i++)
-				{
-					if (monitor!=null) monitor.subTask("Reading job entry #"+(i+1)+"/"+(jecids.length));
-					
-					JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
-					int idx = indexOfJobEntry(jec);
-					if (idx < 0) 
-					{
-						if (jec.getName()!=null && jec.getName().length()>0) addJobEntry(jec);
-					}
-					else
-					{
-						setJobEntry(idx, jec); // replace it!
-					}
-					if (monitor!=null) monitor.worked(1);
-				}
-
-				// Load the hops...
-				log.logDetailed(toString(), "Loading "+hopid.length+" job hops");
-				for (int i=0;i<hopid.length;i++) 
-				{
-					if (monitor!=null) monitor.subTask("Reading job hop #"+(i+1)+"/"+(jecids.length));
-					JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
-					jobhops.add(hi);
-					if (monitor!=null) monitor.worked(1);
-				}
-				
-				// Finally, clear the changed flags...
-				clearChanged();
-				if (monitor!=null) monitor.subTask("Finishing load");
-				if (monitor!=null) monitor.done();
-			}
-			else
-			{
-				throw new KettleException("Can't find job : "+jobname);
-			}
-		}
-		catch(KettleException dbe)
-		{
-			throw new KettleException("An error occurred reading job ["+jobname+"] from the repository", dbe);
-		}
-        finally
-        {
-            setInternalKettleVariables();
-        }
-	}
-
-	public JobEntryCopy getChefGraphEntry(int x, int y, int iconsize)
-	{
-		int i, s;
-		s = nrJobEntries();
-		for (i=s-1;i>=0;i--)  // Back to front because drawing goes from start to end
-		{
-			JobEntryCopy je = getJobEntry(i);
-			Point p = je.getLocation();
-			if (p!=null)
-			{
-				if (   x >= p.x && x <= p.x+iconsize
-					&& y >= p.y && y <= p.y+iconsize           
-				   )
-				{
-					return je;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public int nrJobEntries() { return jobcopies.size();  }
-	public int nrJobHops()    { return jobhops.size();    }
-	public int nrNotes()      { return notes.size();      }
-	public int nrDatabases()  { return databases.size();  }
-
-	public JobHopMeta getJobHop(int i) { return (JobHopMeta)jobhops.get(i); }
-	public JobEntryCopy getJobEntry(int i) { return (JobEntryCopy)jobcopies.get(i); }
-	public NotePadMeta getNote(int i) { return (NotePadMeta)notes.get(i); }
-	public DatabaseMeta getDatabase(int i) { return (DatabaseMeta)databases.get(i); }
-	
-	public void addJobEntry(JobEntryCopy je) 
-	{ 
-		jobcopies.add(je); 
-		setChanged(); 
-	}
-	public void addJobHop(JobHopMeta hi) 
-	{ 
-		jobhops.add(hi); 
-		setChanged(); 
-	}
-	public void addNote(NotePadMeta ni) 
-	{ 
-		notes.add(ni); 
-		setChanged(); 
-	}
-	public void addDatabase(DatabaseMeta ci)
-	{
-		databases.add(ci);
-		setChanged();
-	}
-
-	public void addJobEntry(int p, JobEntryCopy si)
-	{
-		jobcopies.add(p, si);
-		changed_entries = true;
-	}
-	public void addJobHop(int p, JobHopMeta hi)
-	{
-		jobhops.add(p, hi);
-		changed_hops = true;
-	}
-	public void addNote(int p, NotePadMeta ni)
-	{
-		notes.add(p, ni);
-		changed_notes = true;
-	}
-	public void addDatabase(int p, DatabaseMeta ci)
-	{
-		databases.add(p, ci);
-		setChanged();
-	}
-
-	public void removeJobEntry(int i) { jobcopies.remove(i); setChanged(); }
-	public void removeJobHop(int i) { jobhops.remove(i); setChanged(); }
-	public void removeNote(int i) { notes.remove(i); setChanged(); }
-	public void removeDatabase(int i)
-	{
-		if (i<0 || i>=databases.size()) return;
-		databases.remove(i);
-		setChanged();
-	}
-
-	public int indexOfJobHop(JobHopMeta he)     { return jobhops.indexOf(he); }
-	public int indexOfNote(NotePadMeta ni)      { return notes.indexOf(ni); }
-	public int indexOfJobEntry(JobEntryCopy ge) { return jobcopies.indexOf(ge); }
-	public int indexOfDatabase(DatabaseMeta di) { return databases.indexOf(di); }
-
-	public void setJobEntry(int idx, JobEntryCopy jec)
-	{
-		jobcopies.set(idx, jec);
-	}
-
-	/**
-	 * Find an existing JobEntryCopy by it's name and number
-	 * @param name The name of the job entry copy
-	 * @param nr The number of the job entry copy
-	 * @return The JobEntryCopy or null if nothing was found!
-	 */
-	public JobEntryCopy findJobEntry(String name, int nr, boolean searchHiddenToo)
-	{
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy jec = getJobEntry(i);
-			if (jec.getName().equalsIgnoreCase(name) && jec.getNr()==nr)
-			{
-                if (searchHiddenToo || jec.isDrawn())
+                JobEntryCopy je = new JobEntryCopy(entrynode, databases, rep);
+                JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
+                if (prev != null)
                 {
-                    return jec;
+                    if (je.getNr() == 0) // See if the #0 already exists!
+                    {
+                        // Replace previous version with this one: remove it first
+                        int idx = indexOfJobEntry(prev);
+                        removeJobEntry(idx);
+                    }
+                    else
+                        if (je.getNr() > 0) // Use previously defined JobEntry info!
+                        {
+                            je.setEntry(prev.getEntry());
+
+                            // See if entry.5 already exists...
+                            prev = findJobEntry(je.getName(), je.getNr(), true);
+                            if (prev != null) // remove the old one!
+                            {
+                                int idx = indexOfJobEntry(prev);
+                                removeJobEntry(idx);
+                            }
+                        }
                 }
-			}
-		}
-		return null;
-	}
+                // Add the JobEntryCopy...
+                addJobEntry(je);
+            }
 
-	public JobEntryCopy findJobEntry(String full_name_nr)
-	{
-		int i;
-		for (i=0;i<nrJobEntries();i++)
-		{
-			// log.logDebug("findChefGraphEntry()", "looking at nr: "+i);
+            Node hopsnode = XMLHandler.getSubNode(jobnode, "hops");
+            int ho = XMLHandler.countNodes(hopsnode, "hop");
+            for (int i = 0; i < ho; i++)
+            {
+                Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i);
+                JobHopMeta hi = new JobHopMeta(hopnode, this);
+                jobhops.add(hi);
+            }
 
-			JobEntryCopy jec = getJobEntry(i);
-			JobEntryInterface je = jec.getEntry();
-			if (je.toString().equalsIgnoreCase(full_name_nr))
-			{
-				return jec;
-			}
-		}
-		return null;
-	}
+            // Read the notes...
+            Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads");
+            int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad");
+            for (int i = 0; i < nrnotes; i++)
+            {
+                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i);
+                NotePadMeta ni = new NotePadMeta(notepadnode);
+                notes.add(ni);
+            }
 
-	public JobHopMeta findJobHop(String name)
-	{
-		int i;
-		for (i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i); 
-			if (hi.toString().equalsIgnoreCase(name))
-			{
-				return hi; 
-			}
-		}
-		return null;
-	}
+            // Do we have the special entries?
+            if (findJobEntry(STRING_SPECIAL_START, 0, true) == null) addStart();
+            if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true) == null) addDummy();
 
-	public JobHopMeta findJobHopFrom(JobEntryCopy jge)
-	{
-		int i;
-		for (i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i); 
-			if (hi.from_entry.equals(jge)) // return the first
-			{
-				return hi; 
-			}
-		}
-		return null;
-	}
+            clearChanged();
+        }
+        catch (Exception e)
+        {
+            throw new KettleXMLException("Unable to load job info from XML node", e);
+        }
+        finally
+        {
+            setInternalKettleVariables();
+        }
+    }
 
-	public JobHopMeta findJobHop(JobEntryCopy from, JobEntryCopy to)
-	{
-		int i;
-		for (i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.isEnabled())
-			{ 
-				if (hi!=null && hi.from_entry!=null && hi.to_entry!=null &&
-				    hi.from_entry.equals(from) && hi.to_entry.equals(to)
-				   )
-				{
-					return hi; 
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Read the database connections in the repository and add them to this job if they are not yet present.
+     * 
+     * @param rep The repository to load the database connections from.
+     * @throws KettleException
+     */
+    public void readDatabases(Repository rep) throws KettleException
+    {
+        readDatabases(rep, true);
+    }
 
-	public JobHopMeta findJobHopTo(JobEntryCopy jge)
-	{
-		int i;
-		for (i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i); 
-			if (hi!=null && hi.to_entry!=null && hi.to_entry.equals(jge)) // Return the first!
-			{
-				return hi; 
-			}
-		}
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
+     */
+    public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
+    {
+        try
+        {
+            long dbids[] = rep.getDatabaseIDs();
+            for (int i = 0; i < dbids.length; i++)
+            {
+                DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+                DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the
+                                                                            // transformation
+                if (check == null || overWriteShared) // We only add, never overwrite database connections.
+                {
+                    if (databaseMeta.getName() != null)
+                    {
+                        addOrReplaceDatabase(databaseMeta);
+                        if (!overWriteShared) databaseMeta.setChanged(false);
+                    }
+                }
+            }
+            setChanged(false);
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
+        }
+        catch (KettleException ke)
+        {
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
+        }
+    }
 
-	public int findNrPrevChefGraphEntries(JobEntryCopy from)
-	{
-		return findNrPrevChefGraphEntries(from, false);
-	}
+    /**
+     * Find a database connection by it's name
+     * 
+     * @param name The database name to look for
+     * @return The database connection or null if nothing was found.
+     */
+    public DatabaseMeta findDatabase(String name)
+    {
+        for (int i = 0; i < nrDatabases(); i++)
+        {
+            DatabaseMeta ci = getDatabase(i);
+            if (ci.getName().equalsIgnoreCase(name)) { return ci; }
+        }
+        return null;
+    }
 
-	public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr)
-	{
-		return findPrevChefGraphEntry(to, nr, false);
-	}
-	
-	public int findNrPrevChefGraphEntries(JobEntryCopy to, boolean info)
-	{
-		int count=0;
-		int i;
-		
-		for (i=0;i<nrJobHops();i++) // Look at all the hops;
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.isEnabled() && hi.to_entry.equals(to))
-			{
-				count++; 
-			} 
-		}
-		return count;
-	}
-	
-	public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr, boolean info)
-	{
-		int count=0;
-		int i;
+    public void saveRep(Repository rep) throws KettleException
+    {
+        saveRep(rep, null);
+    }
 
-		for (i=0;i<nrJobHops();i++) // Look at all the hops;
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.isEnabled() && hi.to_entry.equals(to))
-			{
-				if (count==nr)
-				{
-					return hi.from_entry;
-				}
-				count++;
-			}
-		}
-		return null;
-	}
+    public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException
+    {
+        try
+        {
+            int nrWorks = 2 + nrDatabases() + nrNotes() + nrJobEntries() + nrJobHops();
+            if (monitor != null) monitor.beginTask("Saving transformation " + directory + Const.FILE_SEPARATOR + getName(), nrWorks);
 
-	public int findNrNextChefGraphEntries(JobEntryCopy from)
-	{
-		int count=0;
-		int i;
-		for (i=0;i<nrJobHops();i++) // Look at all the hops;
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.isEnabled() && hi.from_entry.equals(from)) count++;
-		}
-		return count;
-	}
-	
-	public JobEntryCopy findNextChefGraphEntry(JobEntryCopy from, int cnt)
-	{
-		int count=0;
-		int i;
+            // Before we start, make sure we have a valid job ID!
+            // Two possibilities:
+            // 1) We have a ID: keep it
+            // 2) We don't have an ID: look it up.
+            // If we find a transformation with the same name: ask!
+            //
+            if (monitor != null) monitor.subTask("Handling previous version of job...");
+            setID(rep.getJobID(getName(), directory.getID()));
 
-		for (i=0;i<nrJobHops();i++) // Look at all the hops;
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.isEnabled() && hi.from_entry.equals(from)) 
-			{
-				if (count==cnt)
-				{
-					return hi.to_entry;
-				}
-				count++;
-			}
-		}
-		return null;
-	}
+            // If no valid id is available in the database, assign one...
+            if (getID() <= 0)
+            {
+                setID(rep.getNextJobID());
+            }
+            else
+            {
+                // If we have a valid ID, we need to make sure everything is cleared out
+                // of the database for this id_job, before we put it back in...
+                rep.delAllFromJob(getID());
+            }
+            if (monitor != null) monitor.worked(1);
 
-	public boolean hasLoop(JobEntryCopy entry)
-	{
-		return hasLoop(entry, null);
-	}
-	
-	public boolean hasLoop(JobEntryCopy entry, JobEntryCopy lookup)
-	{
-		return false;
-	}
-	
-	public boolean isEntryUsedInHops(JobEntryCopy jge)
-	{
-		JobHopMeta fr = findJobHopFrom(jge);
-		JobHopMeta to = findJobHopTo(jge);
-		if (fr!=null || to!=null) return true;
-		return false;
-	}
+            // Now, save the job entry in R_JOB
+            // Note, we save this first so that we have an ID in the database.
+            // Everything else depends on this ID, including recursive job entries to the save job. (retry)
+            if (monitor != null) monitor.subTask("Saving job details...");
+            log.logDetailed(toString(), "Saving job info to repository...");
+            saveRepJob(rep);
+            if (monitor != null) monitor.worked(1);
 
-	public int countEntries(String name)
-	{
-		int count=0;
-		int i;
-		for (i=0;i<nrJobEntries();i++) // Look at all the hops;
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.getName().equalsIgnoreCase(name)) count++;
-		}
-		return count;
-	}
+            //
+            // Save the notes
+            //
+            log.logDetailed(toString(), "Saving notes to repository...");
+            for (int i = 0; i < nrNotes(); i++)
+            {
+                if (monitor != null) monitor.subTask("Saving note #" + (i + 1) + "/" + nrNotes());
+                NotePadMeta ni = getNote(i);
+                ni.saveRep(rep, getID());
+                if (ni.getID() > 0)
+                {
+                    rep.insertJobNote(getID(), ni.getID());
+                }
+                if (monitor != null) monitor.worked(1);
+            }
 
-	public int generateJobEntryNameNr(String basename)
-	{
-		int nr=1;
-		
-		JobEntryCopy e = findJobEntry(basename+" "+nr, 0, true); 
-		while(e!=null)
-		{
-			nr++;
-			e = findJobEntry(basename+" "+nr, 0, true);
-		}
-		return nr;
-	}
+            //
+            // Save the job entries
+            //
+            log.logDetailed(toString(), "Saving " + nrJobEntries() + " ChefGraphEntries to repository...");
+            for (int i = 0; i < nrJobEntries(); i++)
+            {
+                if (monitor != null) monitor.subTask("Saving job entry #" + (i + 1) + "/" + nrJobEntries());
+                JobEntryCopy cge = getJobEntry(i);
+                cge.saveRep(rep, getID());
+                if (monitor != null) monitor.worked(1);
+            }
 
-	public int findUnusedNr(String name)
-	{
-		int nr=1;
-		JobEntryCopy je = findJobEntry(name, nr, true);
-		while (je!=null)
-		{
-			nr++;
-			//log.logDebug("findUnusedNr()", "Trying unused nr: "+nr);
-			je = findJobEntry(name, nr, true);
-		}
-		return nr;
-	}
+            log.logDetailed(toString(), "Saving job hops to repository...");
+            for (int i = 0; i < nrJobHops(); i++)
+            {
+                if (monitor != null) monitor.subTask("Saving job hop #" + (i + 1) + "/" + nrJobHops());
+                JobHopMeta hi = getJobHop(i);
+                hi.saveRep(rep, getID());
+                if (monitor != null) monitor.worked(1);
+            }
 
-	public int findMaxNr(String name)
-	{
-		int max=0;
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.getName().equalsIgnoreCase(name))
-			{
-				if (je.getNr()>max) max=je.getNr();
-			}
-		}
-		return max;
-	}
+            // Commit this transaction!!
+            rep.commit();
 
-	/**
-	 * Proposes an alternative job entry name when the original already exists...
-	 * @param entryname The job entry name to find an alternative for..
-	 * @return The alternative stepname.
-	 */
-	public String getAlternativeJobentryName(String entryname)
-	{
-		String newname = entryname;
-		JobEntryCopy jec = findJobEntry(newname);
-		int nr = 1;
-		while (jec!=null)
-		{
-			nr++;
-			newname = entryname + " "+nr;
-			jec = findJobEntry(newname);
-		}
-			
-		return newname;
-	}
+            clearChanged();
+            if (monitor != null) monitor.done();
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            rep.rollback();
+            throw new KettleException("Unable to save Job in repository, database rollback performed.", dbe);
+        }
+    }
 
+    /**
+     * Load a job in a directory
+     * 
+     * @param log the logging channel
+     * @param rep The Repository
+     * @param jobname The name of the job
+     * @param repdir The directory in which the job resides.
+     * @throws KettleException
+     */
+    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir) throws KettleException
+    {
+        this(log, rep, jobname, repdir, null);
+    }
 
-	public JobEntryCopy[] getAllChefGraphEntries(String name)
-	{
-		int count=0;
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.getName().equalsIgnoreCase(name)) count++;
-		}
-		JobEntryCopy retval[] = new JobEntryCopy[count];
+    /**
+     * Load a job in a directory
+     * 
+     * @param log the logging channel
+     * @param rep The Repository
+     * @param jobname The name of the job
+     * @param repdir The directory in which the job resides.
+     * @throws KettleException
+     */
+    public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+    {
+        this.log = log;
 
-		count=0;
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.getName().equalsIgnoreCase(name)) 
-			{
-				retval[count]=je;
-				count++;
-			} 
-		}
-		return retval;
-	}
+        try
+        {
+            // Clear everything...
+            clear();
 
-	public JobHopMeta[] getAllJobHopsUsing(String name)
-	{
+            directory = repdir;
+
+            // Get the transformation id
+            setID(rep.getJobID(jobname, repdir.getID()));
+
+            // If no valid id is available in the database, then give error...
+            if (getID() > 0)
+            {
+                // Load the notes...
+                long noteids[] = rep.getJobNoteIDs(getID());
+                long jecids[] = rep.getJobEntryCopyIDs(getID());
+                long hopid[] = rep.getJobHopIDs(getID());
+
+                int nrWork = 2 + noteids.length + jecids.length + hopid.length;
+                if (monitor != null) monitor.beginTask("Loading job " + repdir + Const.FILE_SEPARATOR + jobname, nrWork);
+
+                // 
+                // Load the common database connections
+                //
+                if (monitor != null) monitor.subTask("Reading the available database from the repository");
+                readDatabases(rep);
+                if (monitor != null) monitor.worked(1);
+
+                //
+                // get job info:
+                //
+                if (monitor != null) monitor.subTask("Reading the job information");
+                Row jobrow = rep.getJob(getID());
+
+                name = jobrow.searchValue("NAME").getString();
+                logTable = jobrow.searchValue("TABLE_NAME_LOG").getString();
+
+                long id_logdb = jobrow.searchValue("ID_DATABASE_LOG").getInteger();
+                if (id_logdb > 0)
+                {
+                    // Get the logconnection
+                    logconnection = new DatabaseMeta(rep, id_logdb);
+                }
+                useBatchId = jobrow.getBoolean("USE_BATCH_ID", false);
+                batchIdPassed = jobrow.getBoolean("PASS_BATCH_ID", false);
+                logfieldUsed = jobrow.getBoolean("USE_LOGFIELD", false);
+
+                if (monitor != null) monitor.worked(1);
+
+                log.logDetailed(toString(), "Loading " + noteids.length + " notes");
+                for (int i = 0; i < noteids.length; i++)
+                {
+                    if (monitor != null) monitor.subTask("Reading note #" + (i + 1) + "/" + noteids.length);
+                    NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
+                    if (indexOfNote(ni) < 0) addNote(ni);
+                    if (monitor != null) monitor.worked(1);
+                }
+
+                // Load the job entries...
+                log.logDetailed(toString(), "Loading " + jecids.length + " job entries");
+                for (int i = 0; i < jecids.length; i++)
+                {
+                    if (monitor != null) monitor.subTask("Reading job entry #" + (i + 1) + "/" + (jecids.length));
+
+                    JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
+                    int idx = indexOfJobEntry(jec);
+                    if (idx < 0)
+                    {
+                        if (jec.getName() != null && jec.getName().length() > 0) addJobEntry(jec);
+                    }
+                    else
+                    {
+                        setJobEntry(idx, jec); // replace it!
+                    }
+                    if (monitor != null) monitor.worked(1);
+                }
+
+                // Load the hops...
+                log.logDetailed(toString(), "Loading " + hopid.length + " job hops");
+                for (int i = 0; i < hopid.length; i++)
+                {
+                    if (monitor != null) monitor.subTask("Reading job hop #" + (i + 1) + "/" + (jecids.length));
+                    JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
+                    jobhops.add(hi);
+                    if (monitor != null) monitor.worked(1);
+                }
+
+                // Finally, clear the changed flags...
+                clearChanged();
+                if (monitor != null) monitor.subTask("Finishing load");
+                if (monitor != null) monitor.done();
+            }
+            else
+            {
+                throw new KettleException("Can't find job : " + jobname);
+            }
+        }
+        catch (KettleException dbe)
+        {
+            throw new KettleException("An error occurred reading job [" + jobname + "] from the repository", dbe);
+        }
+        finally
+        {
+            setInternalKettleVariables();
+        }
+    }
+
+    public JobEntryCopy getChefGraphEntry(int x, int y, int iconsize)
+    {
+        int i, s;
+        s = nrJobEntries();
+        for (i = s - 1; i >= 0; i--) // Back to front because drawing goes from start to end
+        {
+            JobEntryCopy je = getJobEntry(i);
+            Point p = je.getLocation();
+            if (p != null)
+            {
+                if (x >= p.x && x <= p.x + iconsize && y >= p.y && y <= p.y + iconsize) { return je; }
+            }
+        }
+        return null;
+    }
+
+    public int nrJobEntries()
+    {
+        return jobcopies.size();
+    }
+
+    public int nrJobHops()
+    {
+        return jobhops.size();
+    }
+
+    public int nrNotes()
+    {
+        return notes.size();
+    }
+
+    public int nrDatabases()
+    {
+        return databases.size();
+    }
+
+    public JobHopMeta getJobHop(int i)
+    {
+        return (JobHopMeta) jobhops.get(i);
+    }
+
+    public JobEntryCopy getJobEntry(int i)
+    {
+        return (JobEntryCopy) jobcopies.get(i);
+    }
+
+    public NotePadMeta getNote(int i)
+    {
+        return (NotePadMeta) notes.get(i);
+    }
+
+    public DatabaseMeta getDatabase(int i)
+    {
+        return (DatabaseMeta) databases.get(i);
+    }
+
+    public void addJobEntry(JobEntryCopy je)
+    {
+        jobcopies.add(je);
+        setChanged();
+    }
+
+    public void addJobHop(JobHopMeta hi)
+    {
+        jobhops.add(hi);
+        setChanged();
+    }
+
+    public void addNote(NotePadMeta ni)
+    {
+        notes.add(ni);
+        setChanged();
+    }
+
+    public void addDatabase(DatabaseMeta ci)
+    {
+        databases.add(ci);
+        changed_databases = true;
+    }
+
+    public void addJobEntry(int p, JobEntryCopy si)
+    {
+        jobcopies.add(p, si);
+        changed_entries = true;
+    }
+
+    public void addJobHop(int p, JobHopMeta hi)
+    {
+        jobhops.add(p, hi);
+        changed_hops = true;
+    }
+
+    public void addNote(int p, NotePadMeta ni)
+    {
+        notes.add(p, ni);
+        changed_notes = true;
+    }
+
+    public void addDatabase(int p, DatabaseMeta ci)
+    {
+        databases.add(p, ci);
+        changed_databases = true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     */
+    public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
+    {
+        int index = databases.indexOf(databaseMeta);
+        if (index < 0)
+        {
+            databases.add(databaseMeta);
+        }
+        else
+        {
+            DatabaseMeta previous = getDatabase(index);
+            previous.replaceMeta(databaseMeta);
+        }
+        changed_databases = true;
+    }
+
+    public void removeJobEntry(int i)
+    {
+        jobcopies.remove(i);
+        setChanged();
+    }
+
+    public void removeJobHop(int i)
+    {
+        jobhops.remove(i);
+        setChanged();
+    }
+
+    public void removeNote(int i)
+    {
+        notes.remove(i);
+        setChanged();
+    }
+
+    public void removeDatabase(int i)
+    {
+        if (i < 0 || i >= databases.size()) return;
+        databases.remove(i);
+        changed_databases = true;
+    }
+
+    public int indexOfJobHop(JobHopMeta he)
+    {
+        return jobhops.indexOf(he);
+    }
+
+    public int indexOfNote(NotePadMeta ni)
+    {
+        return notes.indexOf(ni);
+    }
+
+    public int indexOfJobEntry(JobEntryCopy ge)
+    {
+        return jobcopies.indexOf(ge);
+    }
+
+    public int indexOfDatabase(DatabaseMeta di)
+    {
+        return databases.indexOf(di);
+    }
+
+    public void setJobEntry(int idx, JobEntryCopy jec)
+    {
+        jobcopies.set(idx, jec);
+    }
+
+    /**
+     * Find an existing JobEntryCopy by it's name and number
+     * 
+     * @param name The name of the job entry copy
+     * @param nr The number of the job entry copy
+     * @return The JobEntryCopy or null if nothing was found!
+     */
+    public JobEntryCopy findJobEntry(String name, int nr, boolean searchHiddenToo)
+    {
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy jec = getJobEntry(i);
+            if (jec.getName().equalsIgnoreCase(name) && jec.getNr() == nr)
+            {
+                if (searchHiddenToo || jec.isDrawn()) { return jec; }
+            }
+        }
+        return null;
+    }
+
+    public JobEntryCopy findJobEntry(String full_name_nr)
+    {
+        int i;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            // log.logDebug("findChefGraphEntry()", "looking at nr: "+i);
+
+            JobEntryCopy jec = getJobEntry(i);
+            JobEntryInterface je = jec.getEntry();
+            if (je.toString().equalsIgnoreCase(full_name_nr)) { return jec; }
+        }
+        return null;
+    }
+
+    public JobHopMeta findJobHop(String name)
+    {
+        int i;
+        for (i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.toString().equalsIgnoreCase(name)) { return hi; }
+        }
+        return null;
+    }
+
+    public JobHopMeta findJobHopFrom(JobEntryCopy jge)
+    {
+        int i;
+        for (i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.from_entry.equals(jge)) // return the first
+            { return hi; }
+        }
+        return null;
+    }
+
+    public JobHopMeta findJobHop(JobEntryCopy from, JobEntryCopy to)
+    {
+        int i;
+        for (i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.isEnabled())
+            {
+                if (hi != null && hi.from_entry != null && hi.to_entry != null && hi.from_entry.equals(from) && hi.to_entry.equals(to)) { return hi; }
+            }
+        }
+        return null;
+    }
+
+    public JobHopMeta findJobHopTo(JobEntryCopy jge)
+    {
+        int i;
+        for (i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi != null && hi.to_entry != null && hi.to_entry.equals(jge)) // Return the first!
+            { return hi; }
+        }
+        return null;
+    }
+
+    public int findNrPrevChefGraphEntries(JobEntryCopy from)
+    {
+        return findNrPrevChefGraphEntries(from, false);
+    }
+
+    public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr)
+    {
+        return findPrevChefGraphEntry(to, nr, false);
+    }
+
+    public int findNrPrevChefGraphEntries(JobEntryCopy to, boolean info)
+    {
+        int count = 0;
+        int i;
+
+        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.isEnabled() && hi.to_entry.equals(to))
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr, boolean info)
+    {
+        int count = 0;
+        int i;
+
+        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.isEnabled() && hi.to_entry.equals(to))
+            {
+                if (count == nr) { return hi.from_entry; }
+                count++;
+            }
+        }
+        return null;
+    }
+
+    public int findNrNextChefGraphEntries(JobEntryCopy from)
+    {
+        int count = 0;
+        int i;
+        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.isEnabled() && hi.from_entry.equals(from)) count++;
+        }
+        return count;
+    }
+
+    public JobEntryCopy findNextChefGraphEntry(JobEntryCopy from, int cnt)
+    {
+        int count = 0;
+        int i;
+
+        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.isEnabled() && hi.from_entry.equals(from))
+            {
+                if (count == cnt) { return hi.to_entry; }
+                count++;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasLoop(JobEntryCopy entry)
+    {
+        return hasLoop(entry, null);
+    }
+
+    public boolean hasLoop(JobEntryCopy entry, JobEntryCopy lookup)
+    {
+        return false;
+    }
+
+    public boolean isEntryUsedInHops(JobEntryCopy jge)
+    {
+        JobHopMeta fr = findJobHopFrom(jge);
+        JobHopMeta to = findJobHopTo(jge);
+        if (fr != null || to != null) return true;
+        return false;
+    }
+
+    public int countEntries(String name)
+    {
+        int count = 0;
+        int i;
+        for (i = 0; i < nrJobEntries(); i++) // Look at all the hops;
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.getName().equalsIgnoreCase(name)) count++;
+        }
+        return count;
+    }
+
+    public int generateJobEntryNameNr(String basename)
+    {
+        int nr = 1;
+
+        JobEntryCopy e = findJobEntry(basename + " " + nr, 0, true);
+        while (e != null)
+        {
+            nr++;
+            e = findJobEntry(basename + " " + nr, 0, true);
+        }
+        return nr;
+    }
+
+    public int findUnusedNr(String name)
+    {
+        int nr = 1;
+        JobEntryCopy je = findJobEntry(name, nr, true);
+        while (je != null)
+        {
+            nr++;
+            // log.logDebug("findUnusedNr()", "Trying unused nr: "+nr);
+            je = findJobEntry(name, nr, true);
+        }
+        return nr;
+    }
+
+    public int findMaxNr(String name)
+    {
+        int max = 0;
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.getName().equalsIgnoreCase(name))
+            {
+                if (je.getNr() > max) max = je.getNr();
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Proposes an alternative job entry name when the original already exists...
+     * 
+     * @param entryname The job entry name to find an alternative for..
+     * @return The alternative stepname.
+     */
+    public String getAlternativeJobentryName(String entryname)
+    {
+        String newname = entryname;
+        JobEntryCopy jec = findJobEntry(newname);
+        int nr = 1;
+        while (jec != null)
+        {
+            nr++;
+            newname = entryname + " " + nr;
+            jec = findJobEntry(newname);
+        }
+
+        return newname;
+    }
+
+    public JobEntryCopy[] getAllChefGraphEntries(String name)
+    {
+        int count = 0;
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.getName().equalsIgnoreCase(name)) count++;
+        }
+        JobEntryCopy retval[] = new JobEntryCopy[count];
+
+        count = 0;
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.getName().equalsIgnoreCase(name))
+            {
+                retval[count] = je;
+                count++;
+            }
+        }
+        return retval;
+    }
+
+    public JobHopMeta[] getAllJobHopsUsing(String name)
+    {
         List hops = new ArrayList();
 
-        for (int i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i);
-            if (hi.from_entry!=null && hi.to_entry!=null)
+        for (int i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta hi = getJobHop(i);
+            if (hi.from_entry != null && hi.to_entry != null)
             {
-                if (hi.from_entry.getName().equalsIgnoreCase(name) || hi.to_entry.getName().equalsIgnoreCase(name) )
+                if (hi.from_entry.getName().equalsIgnoreCase(name) || hi.to_entry.getName().equalsIgnoreCase(name))
                 {
                     hops.add(hi);
                 }
             }
-		}
-		return (JobHopMeta[]) hops.toArray(new JobHopMeta[hops.size()]);
-	}
+        }
+        return (JobHopMeta[]) hops.toArray(new JobHopMeta[hops.size()]);
+    }
 
-	public NotePadMeta getNote(int x, int y)
-	{
-		int i, s;
-		s = notes.size();
-		for (i=s-1;i>=0;i--)  // Back to front because drawing goes from start to end
-		{
-			NotePadMeta ni = (NotePadMeta )notes.get(i);
-			Point loc = ni.getLocation();
-			Point p = new Point(loc.x, loc.y);
-			if (   x >= p.x && x <= p.x+ni.width+2*Const.NOTE_MARGIN
-				&& y >= p.y && y <= p.y+ni.height+2*Const.NOTE_MARGIN           
-			   )
-			{
-				return ni;
-			}
-		}
-		return null;
-	}
-	
-	public void selectAll()
-	{
-		int i;
-		for (i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy ce = getJobEntry(i);
-			ce.setSelected(true);
-		}
-	}
+    public NotePadMeta getNote(int x, int y)
+    {
+        int i, s;
+        s = notes.size();
+        for (i = s - 1; i >= 0; i--) // Back to front because drawing goes from start to end
+        {
+            NotePadMeta ni = (NotePadMeta) notes.get(i);
+            Point loc = ni.getLocation();
+            Point p = new Point(loc.x, loc.y);
+            if (x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN) { return ni; }
+        }
+        return null;
+    }
 
-	public void unselectAll()
-	{
-		int i;
-		for (i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy ce = getJobEntry(i);
-			ce.setSelected(false);
-		}
-	}
+    public void selectAll()
+    {
+        int i;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy ce = getJobEntry(i);
+            ce.setSelected(true);
+        }
+    }
 
-	public void selectInRect(Rectangle rect) 
-	{
-		int i;
-		for (i = 0; i < nrJobEntries(); i++) 
-		{
-			JobEntryCopy je = getJobEntry(i);
-			Point p = je.getLocation();
-			if (((p.x >= rect.x && p.x <= rect.x + rect.width)
-				|| (p.x >= rect.x + rect.width && p.x <= rect.x))
-				&& ((p.y >= rect.y && p.y <= rect.y + rect.height)
-					|| (p.y >= rect.y + rect.height && p.y <= rect.y))
-				)
-				je.setSelected(true);
-		}
-	}
+    public void unselectAll()
+    {
+        int i;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy ce = getJobEntry(i);
+            ce.setSelected(false);
+        }
+    }
 
+    public void selectInRect(Rectangle rect)
+    {
+        int i;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            Point p = je.getLocation();
+            if (((p.x >= rect.x && p.x <= rect.x + rect.width) || (p.x >= rect.x + rect.width && p.x <= rect.x))
+                    && ((p.y >= rect.y && p.y <= rect.y + rect.height) || (p.y >= rect.y + rect.height && p.y <= rect.y))) je.setSelected(true);
+        }
+    }
 
-	public int getMaxUndo()
-	{
-		return max_undo;
-	}
-	
-	public void setMaxUndo(int mu)
-	{
-		max_undo=mu;
-		while (undo.size()>mu && undo.size()>0) undo.remove(0);
-	}
+    public int getMaxUndo()
+    {
+        return max_undo;
+    }
 
-	public int getUndoSize()
-	{
-		if (undo==null) return 0;
-		return undo.size();
-	}
+    public void setMaxUndo(int mu)
+    {
+        max_undo = mu;
+        while (undo.size() > mu && undo.size() > 0)
+            undo.remove(0);
+    }
 
-	public void addUndo(Object from[], Object to[], int pos[], Point prev[], Point curr[], int type_of_change)
-	{
-		// First clean up after the current position.
-		// Example: position at 3, size=5
-		// 012345
-		//    ^
-		// remove 34
-		// Add 4
-		// 01234
-		
-		while (undo.size()>undo_position+1 && undo.size()>0)
-		{
-			int last = undo.size()-1;
-			undo.remove(last);
-		}
-	
-		TransAction ta = new TransAction();
-		switch(type_of_change)
-		{
-		case TYPE_UNDO_CHANGE   : ta.setChanged(from, to, pos); break;
-		case TYPE_UNDO_DELETE   : ta.setDelete(from, pos); break;
-		case TYPE_UNDO_NEW      : ta.setNew(from, pos); break;
-		case TYPE_UNDO_POSITION : ta.setPosition(from, pos, prev, curr); break;
-		}
-		undo.add(ta);
-		undo_position++;
-		
-		if (undo.size()>max_undo)
-		{
-			undo.remove(0);
-			undo_position--;
-		}
-	}
-	
-	// get previous undo, change position
-	public TransAction previousUndo()
-	{
-		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
-		
-		TransAction retval = (TransAction)undo.get(undo_position);
+    public int getUndoSize()
+    {
+        if (undo == null) return 0;
+        return undo.size();
+    }
 
-		undo_position--;
-		
-		return retval;
-	}
+    public void addUndo(Object from[], Object to[], int pos[], Point prev[], Point curr[], int type_of_change, boolean nextAlso)
+    {
+        // First clean up after the current position.
+        // Example: position at 3, size=5
+        // 012345
+        // ^
+        // remove 34
+        // Add 4
+        // 01234
 
-	/** 
-	 * View current undo, don't change undo position
-	 * 
-	 * @return The current undo transaction 
-	 */
-	public TransAction viewThisUndo()
-	{
-		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
-		
-		TransAction retval = (TransAction)undo.get(undo_position);
-		
-		return retval;
-	}
+        while (undo.size() > undo_position + 1 && undo.size() > 0)
+        {
+            int last = undo.size() - 1;
+            undo.remove(last);
+        }
 
-	// View previous undo, don't change position
-	public TransAction viewPreviousUndo()
-	{
-		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
-		
-		TransAction retval = (TransAction)undo.get(undo_position);
-		
-		return retval;
-	}
+        TransAction ta = new TransAction();
+        switch (type_of_change)
+        {
+        case TYPE_UNDO_CHANGE:
+            ta.setChanged(from, to, pos);
+            break;
+        case TYPE_UNDO_DELETE:
+            ta.setDelete(from, pos);
+            break;
+        case TYPE_UNDO_NEW:
+            ta.setNew(from, pos);
+            break;
+        case TYPE_UNDO_POSITION:
+            ta.setPosition(from, pos, prev, curr);
+            break;
+        }
+        undo.add(ta);
+        undo_position++;
 
-	public TransAction nextUndo()
-	{
-		int size=undo.size();
-		if (size==0 || undo_position>=size-1) return null; // no redo left...
-		
-		undo_position++;
-				
-		TransAction retval = (TransAction)undo.get(undo_position);
-	
-		return retval;
-	}
+        if (undo.size() > max_undo)
+        {
+            undo.remove(0);
+            undo_position--;
+        }
+    }
 
-	public TransAction viewNextUndo()
-	{
-		int size=undo.size();
-		if (size==0 || undo_position>=size-1) return null; // no redo left...
-		
-		TransAction retval = (TransAction)undo.get(undo_position+1);
-	
-		return retval;
-	}
-	
-	public Point getMaximum()
-	{
-		int maxx = 0, maxy = 0;
-		for (int i = 0; i < nrJobEntries(); i++)
-		{
-			JobEntryCopy entry = getJobEntry(i);
-			Point loc = entry.getLocation();
-			if (loc.x > maxx)
-				maxx = loc.x;
-			if (loc.y > maxy)
-				maxy = loc.y;
-		}
-		for (int i = 0; i < nrNotes(); i++)
-		{
-			NotePadMeta ni = getNote(i);
-			Point loc = ni.getLocation();
-			if (loc.x + ni.width > maxx)
-				maxx = loc.x + ni.width;
-			if (loc.y + ni.height > maxy)
-				maxy = loc.y + ni.height;
-		}
+    // get previous undo, change position
+    public TransAction previousUndo()
+    {
+        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-		return new Point(maxx + 100, maxy + 100);
-	}
+        TransAction retval = (TransAction) undo.get(undo_position);
 
+        undo_position--;
 
-	public Point[] getSelectedLocations()
-	{
-		int sels = nrSelected();
-		Point retval[] = new Point[sels];
-		for (int i=0;i<sels;i++)
-		{
-			JobEntryCopy si = getSelected(i);
-			Point p = si.getLocation();
-			retval[i] = new Point(p.x, p.y); // explicit copy of location
-		}
-		return retval;
-	}
+        return retval;
+    }
 
-	public JobEntryCopy[] getSelectedEntries()
-	{
-		int sels = nrSelected();
-		if (sels==0) return null;
-		
-		JobEntryCopy retval[] = new JobEntryCopy[sels];
-		for (int i=0;i<sels;i++)
-		{
-			JobEntryCopy je = getSelected(i);
-			retval[i] = je;
-		}
-		return retval;
-	}
+    /**
+     * View current undo, don't change undo position
+     * 
+     * @return The current undo transaction
+     */
+    public TransAction viewThisUndo()
+    {
+        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
+        TransAction retval = (TransAction) undo.get(undo_position);
 
-	public int nrSelected() 
-	{
-		int i, count;
-		count = 0;
-		for (i = 0; i < nrJobEntries(); i++) 
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.isSelected() && je.isDrawn()) count++;
-		}
-		return count;
-	}
+        return retval;
+    }
 
-	public JobEntryCopy getSelected(int nr) 
-	{
-		int i, count;
-		count = 0;
-		for (i = 0; i < nrJobEntries(); i++) 
-		{
-			JobEntryCopy je = getJobEntry(i);
-			if (je.isSelected()) 
-			{
-				if (nr == count) return je;
-				count++;
-			}
-		}
-		return null;
-	}
+    // View previous undo, don't change position
+    public TransAction viewPreviousUndo()
+    {
+        if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-	public int[] getEntryIndexes(JobEntryCopy entries[])
-	{
-		int retval[] = new int[entries.length];
-		
-		for (int i=0;i<entries.length;i++) retval[i]=indexOfJobEntry(entries[i]);
-		
-		return retval;
-	}
-	
-	public JobEntryCopy findStart()
-	{
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			if (getJobEntry(i).isStart()) return getJobEntry(i);
-		}
-		return null;
-	}
+        TransAction retval = (TransAction) undo.get(undo_position);
 
+        return retval;
+    }
 
-	public String toString()
-	{
+    public TransAction nextUndo()
+    {
+        int size = undo.size();
+        if (size == 0 || undo_position >= size - 1) return null; // no redo left...
+
+        undo_position++;
+
+        TransAction retval = (TransAction) undo.get(undo_position);
+
+        return retval;
+    }
+
+    public TransAction viewNextUndo()
+    {
+        int size = undo.size();
+        if (size == 0 || undo_position >= size - 1) return null; // no redo left...
+
+        TransAction retval = (TransAction) undo.get(undo_position + 1);
+
+        return retval;
+    }
+
+    public Point getMaximum()
+    {
+        int maxx = 0, maxy = 0;
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy entry = getJobEntry(i);
+            Point loc = entry.getLocation();
+            if (loc.x > maxx) maxx = loc.x;
+            if (loc.y > maxy) maxy = loc.y;
+        }
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta ni = getNote(i);
+            Point loc = ni.getLocation();
+            if (loc.x + ni.width > maxx) maxx = loc.x + ni.width;
+            if (loc.y + ni.height > maxy) maxy = loc.y + ni.height;
+        }
+
+        return new Point(maxx + 100, maxy + 100);
+    }
+
+    public Point[] getSelectedLocations()
+    {
+        int sels = nrSelected();
+        Point retval[] = new Point[sels];
+        for (int i = 0; i < sels; i++)
+        {
+            JobEntryCopy si = getSelected(i);
+            Point p = si.getLocation();
+            retval[i] = new Point(p.x, p.y); // explicit copy of location
+        }
+        return retval;
+    }
+
+    public JobEntryCopy[] getSelectedEntries()
+    {
+        int sels = nrSelected();
+        if (sels == 0) return null;
+
+        JobEntryCopy retval[] = new JobEntryCopy[sels];
+        for (int i = 0; i < sels; i++)
+        {
+            JobEntryCopy je = getSelected(i);
+            retval[i] = je;
+        }
+        return retval;
+    }
+
+    public int nrSelected()
+    {
+        int i, count;
+        count = 0;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.isSelected() && je.isDrawn()) count++;
+        }
+        return count;
+    }
+
+    public JobEntryCopy getSelected(int nr)
+    {
+        int i, count;
+        count = 0;
+        for (i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy je = getJobEntry(i);
+            if (je.isSelected())
+            {
+                if (nr == count) return je;
+                count++;
+            }
+        }
+        return null;
+    }
+
+    public int[] getEntryIndexes(JobEntryCopy entries[])
+    {
+        int retval[] = new int[entries.length];
+
+        for (int i = 0; i < entries.length; i++)
+            retval[i] = indexOfJobEntry(entries[i]);
+
+        return retval;
+    }
+
+    public JobEntryCopy findStart()
+    {
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            if (getJobEntry(i).isStart()) return getJobEntry(i);
+        }
+        return null;
+    }
+
+    public String toString()
+    {
         if (name != null) return name;
-        if (filename != null) return filename;
-		else return getClass().getName();	
-	}
+        if (filename != null)
+            return filename;
+        else
+            return getClass().getName();
+    }
 
     /**
      * @return Returns the logfieldUsed.
@@ -1686,8 +1767,6 @@ public class JobMeta implements Cloneable, XMLInterface
         this.batchIdPassed = batchIdPassed;
     }
 
-    
-    
     /**
      * Builds a list of all the SQL statements that this transformation needs in order to work properly.
      * 
@@ -1771,7 +1850,7 @@ public class JobMeta implements Cloneable, XMLInterface
     {
         this.arguments = arguments;
     }
-    
+
     /**
      * Get a list of all the strings used in this job.
      *
@@ -1784,11 +1863,12 @@ public class JobMeta implements Cloneable, XMLInterface
         if (searchSteps)
         {
             // Loop over all steps in the transformation and see what the used vars are...
-            for (int i=0;i<nrJobEntries();i++)
+            for (int i = 0; i < nrJobEntries(); i++)
             {
                 JobEntryCopy entryMeta = getJobEntry(i);
                 stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, "Job entry name"));
-                if (entryMeta.getDescription()!=null) stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, "Job entry description"));
+                if (entryMeta.getDescription() != null)
+                    stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, "Job entry description"));
                 JobEntryInterface metaInterface = entryMeta.getEntry();
                 StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta, this);
             }
@@ -1797,30 +1877,31 @@ public class JobMeta implements Cloneable, XMLInterface
         // Loop over all steps in the transformation and see what the used vars are...
         if (searchDatabases)
         {
-            for (int i=0;i<nrDatabases();i++)
+            for (int i = 0; i < nrDatabases(); i++)
             {
                 DatabaseMeta meta = getDatabase(i);
                 stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
-                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
-                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
-                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
-                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
+                if (meta.getDatabaseName() != null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
+                if (meta.getUsername() != null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
+                if (meta.getDatabaseTypeDesc() != null)
+                    stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
+                if (meta.getDatabasePortNumberString() != null)
+                    stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
             }
         }
 
         // Loop over all steps in the transformation and see what the used vars are...
         if (searchNotes)
         {
-            for (int i=0;i<nrNotes();i++)
+            for (int i = 0; i < nrNotes(); i++)
             {
                 NotePadMeta meta = getNote(i);
-                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
+                if (meta.getNote() != null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
             }
         }
 
         return stringList;
     }
-
 
     public List getUsedVariables()
     {
@@ -1830,7 +1911,7 @@ public class JobMeta implements Cloneable, XMLInterface
         List varList = new ArrayList();
 
         // Look around in the strings, see what we find...
-        for (int i=0;i<stringList.size();i++)
+        for (int i = 0; i < stringList.size(); i++)
         {
             StringSearchResult result = (StringSearchResult) stringList.get(i);
             StringUtil.getUsedVariables(result.getString(), varList, false);
@@ -1847,11 +1928,11 @@ public class JobMeta implements Cloneable, XMLInterface
     public List getSelectedDrawnJobEntryList()
     {
         List list = new ArrayList();
-        
+
         for (int i = 0; i < nrJobEntries(); i++)
         {
             JobEntryCopy jobEntryCopy = getJobEntry(i);
-            if (jobEntryCopy.isDrawn() && jobEntryCopy.isSelected()) 
+            if (jobEntryCopy.isDrawn() && jobEntryCopy.isSelected())
             {
                 list.add(jobEntryCopy);
             }
@@ -1859,26 +1940,26 @@ public class JobMeta implements Cloneable, XMLInterface
         }
         return list;
     }
-    
+
     /**
      * This method sets various internal kettle variables that can be used by the transformation.
      */
     public void setInternalKettleVariables()
     {
         KettleVariables variables = KettleVariables.getInstance();
-        
-        if (filename!=null) // we have a finename that's defined.
+
+        if (filename != null) // we have a finename that's defined.
         {
             File file = new File(filename);
             try
             {
                 file = file.getCanonicalFile();
             }
-            catch(IOException e)
+            catch (IOException e)
             {
                 file = file.getAbsoluteFile();
             }
-            
+
             // The directory of the transformation
             variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, file.getParent());
 
@@ -1890,11 +1971,59 @@ public class JobMeta implements Cloneable, XMLInterface
             variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
             variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
         }
-        
+
         // The name of the job
         variables.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, ""));
 
         // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
+        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : "");
+    }
+
+    public boolean haveConnectionsChanged()
+    {
+        if (changed_databases) return true;
+
+        for (int i = 0; i < nrDatabases(); i++)
+        {
+            DatabaseMeta ci = getDatabase(i);
+            if (ci.hasChanged()) return true;
+        }
+        return false;
+    }
+    
+    public boolean haveJobEntriesChanged()
+    {
+        if (changed_entries) return true;
+        
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy entry = getJobEntry(i);
+            if (entry.hasChanged()) return true;
+        }
+        return false;
+    }
+    
+    public boolean haveJobHopsChanged()
+    {
+        if (changed_hops) return true;
+        
+        for (int i = 0; i < nrJobHops(); i++)
+        {
+            JobHopMeta jobHop = getJobHop(i);
+            if (jobHop.hasChanged()) return true;
+        }
+        return false;
+    }
+    
+    public boolean haveNotesChanged()
+    {
+        if (changed_notes) return true;
+        
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta note = getNote(i);
+            if (note.hasChanged()) return true;
+        }
+        return false;
     }
 }

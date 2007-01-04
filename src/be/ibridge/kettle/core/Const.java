@@ -416,6 +416,12 @@ public class Const
 	 */
 	public static final String XML_ENCODING = "UTF-8";
 
+    /** The possible extentions a transformation XML file can have. */
+    public static final String STRING_TRANS_AND_JOB_FILTER_EXT[] = new String[] { "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
+
+    /** The discriptions of the possible extentions a transformation XML file can have. */
+    public static final String STRING_TRANS_AND_JOB_FILTER_NAMES[] = new String[] { "Kettle transformations and jobs", "Kettle transformations", "Kettle jobs", "XML Files", "All files" };
+
 	/** The extention of a Kettle transformation XML file */
 	public static final String STRING_TRANS_DEFAULT_EXT = ".ktr";
 

@@ -5365,4 +5365,21 @@ public class Repository
     {
         Repository.currentRepository = currentRepository;
     }
+
+    /**
+     * @return a list of all the databases in the repository.
+     * @throws KettleException
+     */
+    public List getDatabases() throws KettleException
+    {
+        List list = new ArrayList();
+        long[] databaseIDs = getDatabaseIDs();
+        for (int i=0;i<databaseIDs.length;i++)
+        {
+            DatabaseMeta databaseMeta = new DatabaseMeta(this, databaseIDs[i]);
+            list.add(databaseMeta);
+        }
+            
+        return list;
+    }
 }

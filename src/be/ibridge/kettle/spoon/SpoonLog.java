@@ -439,7 +439,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 			{
 				if (spoon.props.getAutoSave())
 				{
-					spoon.saveFile(transMeta);
+					spoon.saveTransFile(transMeta);
 				}
 				else
 				{
@@ -451,7 +451,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 					int answer = md.open();
 					if ( (answer & 0xFF) == 0)
 					{
-						spoon.saveFile(transMeta);
+						spoon.saveTransFile(transMeta);
 					}
 					spoon.props.setAutoSave(md.getToggleState());
 				}

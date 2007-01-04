@@ -15,6 +15,9 @@ import be.ibridge.kettle.core.Const;
 public class RepositoryObject
 {
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+    public static final String STRING_OBJECT_TYPE_TRANSFORMATION = "Transformation";
+    public static final String STRING_OBJECT_TYPE_JOB =            "Job";
     
     private String name;
     private String modifiedUser;
@@ -86,11 +89,12 @@ public class RepositoryObject
     }
     
     
-    public void setTreeItem(TreeItem treeItem)
+    public void setTreeItem(TreeItem treeItem, String type)
     {
         treeItem.setText(0, Const.NVL(name, ""));
-        treeItem.setText(1, Const.NVL(modifiedUser, ""));
-        treeItem.setText(2, modifiedDate!=null ? simpleDateFormat.format(modifiedDate) : "");
+        treeItem.setText(1, Const.NVL(type, ""));
+        treeItem.setText(2, Const.NVL(modifiedUser, ""));
+        treeItem.setText(3, modifiedDate!=null ? simpleDateFormat.format(modifiedDate) : "");
     }
     
 }

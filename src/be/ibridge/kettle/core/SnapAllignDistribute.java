@@ -2,15 +2,19 @@ package be.ibridge.kettle.core;
 
 import java.util.List;
 
+import be.ibridge.kettle.spoon.UndoInterface;
+
 public class SnapAllignDistribute
 {
     private List elements;
     private AddUndoPositionInterface addUndoPositionInterface;
     private int[] indices;
     private Redrawable redrawable;
+    private UndoInterface undoInterface;
     
-    public SnapAllignDistribute(List elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
+    public SnapAllignDistribute(UndoInterface undoInterface, List elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
     {
+        this.undoInterface = undoInterface;
         this.elements = elements;
         this.indices = indices;
         this.addUndoPositionInterface = addUndoPositionInterface;
@@ -57,7 +61,7 @@ public class SnapAllignDistribute
             after[i] = new Point(p.x, p.y);
         }
 
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -91,7 +95,7 @@ public class SnapAllignDistribute
             after[i] = new Point(min, p.y);
         }
         
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -125,7 +129,7 @@ public class SnapAllignDistribute
             after[i] = new Point(max, p.y);
         }
         
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -158,7 +162,7 @@ public class SnapAllignDistribute
             after[i] = new Point(p.x, min);
         }
         
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -193,7 +197,7 @@ public class SnapAllignDistribute
             after[i] = new Point(p.x, max);
         }
         
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -256,7 +260,7 @@ public class SnapAllignDistribute
         }
 
         // Undo!
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 
@@ -321,7 +325,7 @@ public class SnapAllignDistribute
         }
 
         // Undo!
-        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        if (addUndoPositionInterface!=null) addUndoPositionInterface.addUndoPosition(undoInterface, elemArray, indices, before, after);
         redrawable.redraw();
     }
 }

@@ -72,7 +72,6 @@ public class SelectObjectDialog extends Dialog
 	private String lineText;
 	private Props props;
 	
-	private boolean trans, job, schema;
 	private Color dircolor;
 	private Repository rep;
 
@@ -83,25 +82,18 @@ public class SelectObjectDialog extends Dialog
     private TreeColumn changedColumn;
     private int sortColumn;
     private boolean ascending;
+    private TreeColumn typeColumn;
+    private String objectType;
 		
-	public SelectObjectDialog(Shell parent, Props props, Repository rep, boolean trans, boolean job, boolean schema)
+	public SelectObjectDialog(Shell parent, Repository rep)
 	{
 		super(parent, SWT.NONE);
 		
-		this.props          = props;
+		this.props          = Props.getInstance();
 		this.rep            = rep;
-		this.trans          = trans;
-		this.job            = job;
-		this.schema         = schema;
 		
 		shellText = Messages.getString("SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
-		lineText = (trans?Messages.getString("SelectObjectDialog.Dialog.Trans.Title"): //$NON-NLS-1$
-			                (job?Messages.getString("SelectObjectDialog.Dialog.Job.Title"): //$NON-NLS-1$
-			                	  (schema?Messages.getString("SelectObjectDialog.Dialog.Schema.Title"): //$NON-NLS-1$
-			                	  	      Messages.getString("SelectObjectDialog.Dialog.Object.Title") //$NON-NLS-1$
-			                	  )
-			                )
-					);
+		lineText = Messages.getString("SelectObjectDialog.Dialog.Object.Title"); //$NON-NLS-1$
 		objectName = null;
 		objectDirectory = null;
         
@@ -143,16 +135,21 @@ public class SelectObjectDialog extends Dialog
         nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
         nameColumn.setWidth(350);
         nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
-        
+
+        typeColumn = new TreeColumn(wTree, SWT.LEFT);
+        typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
+        typeColumn.setWidth(100);
+        typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+
         userColumn = new TreeColumn(wTree, SWT.LEFT);
         userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
         userColumn.setWidth(100);
-        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
 
         changedColumn = new TreeColumn(wTree, SWT.LEFT);
         changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
         changedColumn.setWidth(100);
-        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
         
         
         props.setLook(wTree);
@@ -224,7 +221,7 @@ public class SelectObjectDialog extends Dialog
             ascending=true;
         }
         
-        if (sortColumn>0 && sortColumn<4)
+        if (sortColumn>0 && sortColumn<5)
         {
             TreeColumn column = wTree.getColumn(sortColumn-1);
             wTree.setSortColumn(column);
@@ -243,7 +240,7 @@ public class SelectObjectDialog extends Dialog
             TreeItem ti = new TreeItem(wTree, SWT.NONE);
             ti.setExpanded(true);
             
-            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, trans, job, schema, sortColumn, ascending);
+            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, sortColumn, ascending);
         }
         catch(KettleDatabaseException e)
         {
@@ -282,7 +279,8 @@ public class SelectObjectDialog extends Dialog
 				if (level>0)
 				{
 					String path[] = Const.getTreeStrings(ti.getParentItem());
-					objectName = ti.getText();
+					objectName = ti.getText(0);
+                    objectType = ti.getText(1);
 					objectDirectory = rep.getDirectoryTree().findDirectory(path);
 					
 					if (objectDirectory!=null)
@@ -305,4 +303,36 @@ public class SelectObjectDialog extends Dialog
 	{
 		return objectDirectory;
 	}
+
+    /**
+     * @return the objectType
+     */
+    public String getObjectType()
+    {
+        return objectType;
+    }
+
+    /**
+     * @param objectType the objectType to set
+     */
+    public void setObjectType(String objectType)
+    {
+        this.objectType = objectType;
+    }
+
+    /**
+     * @return the objectName
+     */
+    public String getObjectName()
+    {
+        return objectName;
+    }
+
+    /**
+     * @param objectName the objectName to set
+     */
+    public void setObjectName(String objectName)
+    {
+        this.objectName = objectName;
+    }
 }

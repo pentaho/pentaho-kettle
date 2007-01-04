@@ -137,6 +137,7 @@ import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
+import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -656,7 +657,7 @@ public class Chef implements AddUndoPositionInterface
 			      					if (fdRepdir!=null)
 			      					{
 			      						jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), fdRepdir);
-                                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
+                                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
 			      					}
 			      					else
 			      					{
@@ -684,7 +685,7 @@ public class Chef implements AddUndoPositionInterface
 				      		try
 							{
 				      			jobMeta = new JobMeta(log, lastUsedFile.getFilename(), rep);
-                                props.addLastFile(Props.TYPE_PROPERTIES_CHEF, lastUsedFile.getFilename(), null, false, null);
+                                props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), null, false, null);
 							}
 				      		catch(KettleException ke)
 							{
@@ -1026,17 +1027,17 @@ public class Chef implements AddUndoPositionInterface
 		tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); 
         tiTabsGraph.setText(Messages.getString("Chef.Tab.GraphicalView.Text")); //$NON-NLS-1$
 		tiTabsGraph.setToolTipText(Messages.getString("Chef.Tab.GraphicalView.ToolTip")); //$NON-NLS-1$
-        chefgraph = new ChefGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, this);
+        // chefgraph = new ChefGraph(tabfolder, this);
 
         tiTabsLog = new CTabItem(tabfolder, SWT.NULL); 
         tiTabsLog.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
 		tiTabsLog.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
-		cheflog = new ChefLog(tabfolder, SWT.NONE, this);
+		// cheflog = new ChefLog(tabfolder, this);
 
         tiTabsHist = new CTabItem(tabfolder, SWT.NULL); 
         tiTabsHist.setText(Messages.getString("Chef.Tab.HistoryView.Text")); //$NON-NLS-1$
         tiTabsHist.setToolTipText(Messages.getString("Chef.Tab.HistoryView.ToolTip")); //$NON-NLS-1$
-        chefhist = new ChefHistory(tabfolder, SWT.NONE, this, log, null, cheflog, shell);
+        // chefhist = new ChefHistory(tabfolder, this, log, null, cheflog, shell);
 
 		tiTabsGraph.setControl(chefgraph);
 		tiTabsLog.setControl(cheflog);
@@ -1404,7 +1405,7 @@ public class Chef implements AddUndoPositionInterface
 		}
 	}
 	
-	public void readDatabases()
+	public void readDatabases() throws KettleException
 	{
 		jobMeta.readDatabases(rep);
 	}
@@ -1536,7 +1537,7 @@ public class Chef implements AddUndoPositionInterface
                     try
                     {
                         jobMeta = new JobMeta(log, fname, rep);
-                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, null, false, null);
+                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
                     }
                     catch(KettleXMLException xe)
                     {
@@ -1558,7 +1559,7 @@ public class Chef implements AddUndoPositionInterface
             else // Read a job from the repository!
             {
                 // Refresh the directory tree for now...
-                SelectObjectDialog sod = new SelectObjectDialog(shell, props, rep, false, true, false);
+                SelectObjectDialog sod = new SelectObjectDialog(shell, rep);
                 String fname  = sod.open();
                 RepositoryDirectory repdir = sod.getDirectory();
                 if (fname!=null && repdir!=null)
@@ -1568,7 +1569,7 @@ public class Chef implements AddUndoPositionInterface
                     if (jobInfo!=null)
                     {
                         jobMeta = jobInfo;
-                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, repdir.getPath(), true, rep.getName());
+                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, repdir.getPath(), true, rep.getName());
                         saveSettings();
                         addMenuLast();
                     }
@@ -1604,7 +1605,15 @@ public class Chef implements AddUndoPositionInterface
 		// Load common database info from active repository...
 		if (rep!=null)
 		{
-			jobMeta.readDatabases(rep);
+			try
+            {
+                jobMeta.readDatabases(rep);
+            }
+            catch (KettleException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 		}
 	}
 
@@ -1673,7 +1682,15 @@ public class Chef implements AddUndoPositionInterface
 		// Load common database info from active repository...
 		if (rep!=null)
 		{
-			jobMeta.readDatabases(rep);
+			try
+            {
+                jobMeta.readDatabases(rep);
+            }
+            catch (KettleException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 		}
 	}
 	
@@ -1809,7 +1826,7 @@ public class Chef implements AddUndoPositionInterface
 							}
 	
 							// Handle last opened files...
-							props.addLastFile(Props.TYPE_PROPERTIES_CHEF, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
+							props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
 							saveSettings();
 							addMenuLast();
 	
@@ -1907,7 +1924,7 @@ public class Chef implements AddUndoPositionInterface
             saved=true;
 
             // Handle last opened files...
-			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
+			props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
 			saveSettings();
 			addMenuLast();
 
@@ -2505,7 +2522,15 @@ public class Chef implements AddUndoPositionInterface
 		// Create a new job...
 		//
 		jobMeta=new JobMeta(log);
-		jobMeta.readDatabases(rep);
+		try
+        {
+            jobMeta.readDatabases(rep);
+        }
+        catch (KettleException e1)
+        {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 		setFilename(null);
 		jobMeta.setName(jobname);
 		jobMeta.setDirectory( repdir );
@@ -2529,18 +2554,18 @@ public class Chef implements AddUndoPositionInterface
                 // This is running in a new process: copy some KettleVariables info
                 // LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
 
-				monitor.beginTask(Messages.getString("Chef.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
+				monitor.beginTask(Messages.getString("Spoon.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);
 				JobEntryCopy previous = start;
 				
 				// Loop over the table-names...
 				for (int i=0;i<tables.length && !monitor.isCanceled();i++)
 				{
-					monitor.setTaskName(Messages.getString("Chef.RipDB.Monitor.ProcessingTable")+tables[i]+"]..."); //$NON-NLS-1$ //$NON-NLS-2$
+					monitor.setTaskName(Messages.getString("Spoon.RipDB.Monitor.ProcessingTable")+tables[i]+"]..."); //$NON-NLS-1$ //$NON-NLS-2$
 					//
 					// Create the new transformation...
 					//
-					String transname = Messages.getString("Chef.RipDB.Monitor.Transname1")+sourceDbInfo+"].["+tables[i]+Messages.getString("Chef.RipDB.Monitor.Transname2")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					String transname = Messages.getString("Spoon.RipDB.Monitor.Transname1")+sourceDbInfo+"].["+tables[i]+Messages.getString("Spoon.RipDB.Monitor.Transname2")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					
 					TransMeta ti = new TransMeta((String)null, transname, null);
 					
@@ -2549,15 +2574,15 @@ public class Chef implements AddUndoPositionInterface
 					//
 					// Add a note
 					//
-					String note = Messages.getString("Chef.RipDB.Monitor.Note1")+tables[i]+Messages.getString("Chef.RipDB.Monitor.Note2")+sourceDbInfo+"]"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					note+=Messages.getString("Chef.RipDB.Monitor.Note3")+tables[i]+Messages.getString("Chef.RipDB.Monitor.Note4")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					String note = Messages.getString("Spoon.RipDB.Monitor.Note1")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.Note2")+sourceDbInfo+"]"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					note+=Messages.getString("Spoon.RipDB.Monitor.Note3")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.Note4")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
 					ti.addNote(ni);
 					
 					//
 					// Add the TableInputMeta step...
 					// 
-					String fromstepname = Messages.getString("Chef.RipDB.Monitor.FromStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String fromstepname = Messages.getString("Spoon.RipDB.Monitor.FromStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableInputMeta tii = new TableInputMeta();
 					tii.setDatabaseMeta( sourceDbInfo );
 					tii.setSQL( "SELECT * FROM "+srcDbInfo.quoteField(tables[i]) ); //$NON-NLS-1$
@@ -2566,13 +2591,13 @@ public class Chef implements AddUndoPositionInterface
 					StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface)tii );
 					fromstep.setLocation(150,100);
 					fromstep.setDraw(true);
-					fromstep.setDescription(Messages.getString("Chef.RipDB.Monitor.FromStep.Description")+tables[i]+Messages.getString("Chef.RipDB.Monitor.FromStep.Description2")+sourceDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					fromstep.setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2")+sourceDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					ti.addStep(fromstep);
 					
 					//
 					// Add the TableOutputMeta step...
 					//
-					String tostepname = Messages.getString("Chef.RipDB.Monitor.ToStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String tostepname = Messages.getString("Spoon.RipDB.Monitor.ToStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableOutputMeta toi = new TableOutputMeta();
 					toi.setDatabase( targetDbInfo );
 					toi.setTablename( tables[i] );
@@ -2583,7 +2608,7 @@ public class Chef implements AddUndoPositionInterface
 					StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface)toi );
 					tostep.setLocation(500,100);
 					tostep.setDraw(true);
-					tostep.setDescription(Messages.getString("Chef.RipDB.Monitor.ToStep.Description1")+tables[i]+Messages.getString("Chef.RipDB.Monitor.ToStep.Description2")+targetDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					tostep.setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2")+targetDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					ti.addStep(tostep);
 					
 					//
@@ -2605,7 +2630,7 @@ public class Chef implements AddUndoPositionInterface
 					}
 					catch(KettleStepException kse)
 					{
-						throw new InvocationTargetException(kse, Messages.getString("Chef.RipDB.Exception.ErrorGettingSQLFromTransformation")+ti+"] : "+kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new InvocationTargetException(kse, Messages.getString("Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation")+ti+"] : "+kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					// remove the limit
 					tii.setSQL( tmpSql );
@@ -2619,7 +2644,7 @@ public class Chef implements AddUndoPositionInterface
 					}
 					catch(KettleException dbe)
 					{
-						throw new InvocationTargetException(dbe, Messages.getString("Chef.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
+						throw new InvocationTargetException(dbe, Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
 					}
 					
 					// We can now continue with the population of the job...
@@ -2636,11 +2661,11 @@ public class Chef implements AddUndoPositionInterface
 					//
 					if (sql!=null && sql.length()>0)
 					{
-						String jesqlname = Messages.getString("Chef.RipDB.JobEntrySQL.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
+						String jesqlname = Messages.getString("Spoon.RipDB.JobEntrySQL.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 						JobEntrySQL jesql = new JobEntrySQL(jesqlname);
 						jesql.setDatabase(targetDbInfo);
 						jesql.setSQL(sql);
-						jesql.setDescription(Messages.getString("Chef.RipDB.JobEntrySQL.Description")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						
 						JobEntryCopy jecsql = new JobEntryCopy(log);
 						jecsql.setEntry(jesql);
@@ -2657,13 +2682,13 @@ public class Chef implements AddUndoPositionInterface
 					//
 					// Add the jobentry for the transformation too...
 					//
-					String jetransname = Messages.getString("Chef.RipDB.JobEntryTrans.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
+					String jetransname = Messages.getString("Spoon.RipDB.JobEntryTrans.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					JobEntryTrans jetrans = new JobEntryTrans(jetransname);
 					jetrans.setTransname(ti.getName());
 					jetrans.setDirectory(ti.getDirectory());
 					
 					JobEntryCopy jectrans = new JobEntryCopy(log, jetrans);
-					jectrans.setDescription(Messages.getString("Chef.RipDB.JobEntryTrans.Description1")+Const.CR+Messages.getString("Chef.RipDB.JobEntryTrans.Description2")+sourceDbInfo+"].["+tables[i]+"]"+Const.CR+Messages.getString("Chef.RipDB.JobEntryTrans.Description3")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+					jectrans.setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1")+Const.CR+Messages.getString("Spoon.RipDB.JobEntryTrans.Description2")+sourceDbInfo+"].["+tables[i]+"]"+Const.CR+Messages.getString("Spoon.RipDB.JobEntryTrans.Description3")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 					jectrans.setDrawn();
 					location.x+=400;
 					jectrans.setLocation(new Point(location.x, location.y));
@@ -2689,12 +2714,12 @@ public class Chef implements AddUndoPositionInterface
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		finally
@@ -3286,29 +3311,35 @@ public class Chef implements AddUndoPositionInterface
 	public void addUndoNew(Object obj[], int position[])
 	{
 		// New step?
-		jobMeta.addUndo(obj, null, position, null, null, JobMeta.TYPE_UNDO_NEW);
+		jobMeta.addUndo(obj, null, position, null, null, JobMeta.TYPE_UNDO_NEW, false);
 		setUndoMenu();
 	}	
 
 	// Undo delete object
 	public void addUndoDelete(Object obj[], int position[])
 	{
-		jobMeta.addUndo(obj, null, position, null, null, JobMeta.TYPE_UNDO_DELETE);
+		jobMeta.addUndo(obj, null, position, null, null, JobMeta.TYPE_UNDO_DELETE, false);
 		setUndoMenu();
 	}	
 
+    // Change of step, connection, hop or note...
+    public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[])
+    {
+        addUndoPosition(jobMeta, obj, pos, prev, curr);
+    }
+    
 	// Change of step, connection, hop or note...
-	public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[])
+	public void addUndoPosition(UndoInterface undoInterface, Object obj[], int pos[], Point prev[], Point curr[])
 	{
 		// It's better to store the indexes of the objects, not the objects itself!
-		jobMeta.addUndo(obj, null, pos, prev, curr, JobMeta.TYPE_UNDO_POSITION);
+		jobMeta.addUndo(obj, null, pos, prev, curr, JobMeta.TYPE_UNDO_POSITION, false);
 		setUndoMenu();
 	}
 
 	// Change of step, connection, hop or note...
 	public void addUndoChange(Object from[], Object to[], int[] pos)
 	{
-		jobMeta.addUndo(from, to, pos, null, null, JobMeta.TYPE_UNDO_CHANGE);
+		jobMeta.addUndo(from, to, pos, null, null, JobMeta.TYPE_UNDO_CHANGE, false);
 		setUndoMenu();
 	}
 	

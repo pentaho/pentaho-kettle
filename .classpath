@@ -58,5 +58,6 @@
 	<classpathentry kind="lib" path="libext/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons-net-1.4.1.jar"/>
 	<classpathentry kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="libext/sqlitejdbc-v032-nested.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

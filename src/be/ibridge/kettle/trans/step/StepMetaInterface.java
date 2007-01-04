@@ -55,8 +55,7 @@ public interface StepMetaInterface
 	 * @return The fields that are being emitted by this step.
 	 * @throws KettleStepException when an error occurred searching for the fields.
 	 */
-	public Row getFields(Row r, String name, Row info)
-		throws KettleStepException;
+	public Row getFields(Row r, String name, Row info) throws KettleStepException;
 
 	/**
 	 * Get the XML that represents the values in this step
@@ -71,8 +70,7 @@ public interface StepMetaInterface
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
 	 */
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
-		throws KettleXMLException;
+	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException;
 
 	/**
 	 * Save the steps data into a Kettle repository
@@ -81,8 +79,7 @@ public interface StepMetaInterface
 	 * @param id_step The step ID
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void saveRep(Repository rep, long id_transformation, long id_step) 
-		throws KettleException;
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException;
 
 	/**
 	 * Read the steps information from a Kettle repository
@@ -92,8 +89,7 @@ public interface StepMetaInterface
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException;
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException;
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
@@ -180,9 +176,7 @@ public interface StepMetaInterface
 	 * @param output The output step names
 	 * @param info The fields used as information by this step
 	 */
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev,
-			String input[], String output[], Row info)
-		throws KettleStepException;
+	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info) throws KettleStepException;
 
 	/**
 	 * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work correctly.

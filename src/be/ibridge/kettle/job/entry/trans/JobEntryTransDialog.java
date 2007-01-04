@@ -606,7 +606,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 				{
                     if (rep!=null)
                     {
-    					SelectObjectDialog sod = new SelectObjectDialog(shell, props, rep, true, false, false);
+    					SelectObjectDialog sod = new SelectObjectDialog(shell, rep);
     					String transname = sod.open();
     					if (transname!=null)
     					{

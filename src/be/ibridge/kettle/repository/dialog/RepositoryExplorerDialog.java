@@ -1073,7 +1073,7 @@ public class RepositoryExplorerDialog extends Dialog
 				
 				TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
                 
-				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, true, false, false, sortColumn, ascending);
+				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending);
 			}
 			
 			// The Jobs...				
@@ -1083,7 +1083,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiJob.setText(STRING_JOBS);
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
-				rep.getDirectoryTree().getTreeWithNames(newJob, rep, dircolor, false, true, false, sortColumn, ascending);
+				rep.getDirectoryTree().getTreeWithNames(newJob, rep, dircolor, sortColumn, ascending);
 			}
 	
 			//

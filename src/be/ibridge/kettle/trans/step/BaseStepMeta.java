@@ -161,22 +161,22 @@ public class BaseStepMeta implements Cloneable
 		return row;
 	}
 
-	/**
-	 * Standard method to analyse the impact a step has on a database.
-	 * 
-	 * @param impact ArrayList of impact objects
-	 * @param transMeta TransInfo object containing the complete transformation
-	 * @param stepMeta StepMeta object containing the complete step
-	 * @param prev Row containing meta-data for the input fields (no data)
-	 * @param input The names of the input-steps
-	 * @param output The names of the output-steps
-	 * @param info Row containing meta-data for the informative (lookup) steps.
-	 */
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info) throws KettleStepException
-	{
-		// default: this step has NO impact on any database
-	}
-
+    /**
+     * Each step must be able to report on the impact it has on a database, table field, etc.
+     * @param impact The list of impacts @see be.ibridge.kettle.transMeta.DatabaseImpact
+     * @param transMeta The transformation information
+     * @param stepMeta The step information
+     * @param prev The fields entering this step
+     * @param input The previous step names
+     * @param output The output step names
+     * @param info The fields used as information by this step
+     */
+    public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info) throws KettleStepException
+    {
+        
+    }
+	
+    
 	/**
 	 * Standard method to return one or more SQLStatement objects that the step needs in order to work correctly.
 	 * This can mean "create table", "create index" statements but also "alter table ... add/drop/modify" statements.

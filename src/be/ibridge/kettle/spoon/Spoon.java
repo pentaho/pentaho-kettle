@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -31,8 +32,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -56,8 +60,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -82,10 +88,19 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.chef.ChefGraph;
+import be.ibridge.kettle.chef.ChefHistory;
+import be.ibridge.kettle.chef.ChefHistoryRefresher;
+import be.ibridge.kettle.chef.ChefLog;
+import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
+import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
+import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.cluster.dialog.ClusterSchemaDialog;
 import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
+import be.ibridge.kettle.core.AddUndoPositionInterface;
+import be.ibridge.kettle.core.ChangedFlagInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -124,12 +139,24 @@ import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
+import be.ibridge.kettle.job.JobHopMeta;
+import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.JobPlugin;
+import be.ibridge.kettle.job.dialog.JobDialog;
+import be.ibridge.kettle.job.dialog.JobLoadProgressDialog;
+import be.ibridge.kettle.job.dialog.JobSaveProgressDialog;
+import be.ibridge.kettle.job.entry.JobEntryCopy;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
+import be.ibridge.kettle.job.entry.JobEntryInterface;
+import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
+import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.partition.dialog.PartitionSchemaDialog;
@@ -139,6 +166,7 @@ import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.RepositoryMeta;
+import be.ibridge.kettle.repository.RepositoryObject;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
@@ -152,6 +180,7 @@ import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.trans.DatabaseImpact;
+import be.ibridge.kettle.trans.HasDatabasesInterface;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransConfiguration;
@@ -182,14 +211,9 @@ import be.ibridge.kettle.www.WebResult;
  * This class handles the main window of the Spoon graphical transformation editor.
  * 
  * @author Matt
- * @since 16-may-2003
- * 
- * Add i18n support
- * import the package:be.ibridge.kettle.i18n.Messages
- * 
- * @since 07-Feb-2006
+ * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon
+public class Spoon implements AddUndoPositionInterface
 {
     public static final String APP_NAME = Messages.getString("Spoon.Application.Name");  //"Spoon";
     
@@ -224,7 +248,13 @@ public class Spoon
      * If the transformation has no name it will be mapped under a number [1], [2] etc. 
      */
     private Map transformationMap;
-    
+
+    /** 
+     * This contains a map between the name of a transformation and the TransMeta object.
+     * If the transformation has no name it will be mapped under a number [1], [2] etc. 
+     */
+    private Map jobMap;
+
     /**
      * This contains a map between the name of the tab name and the object name and type 
      */
@@ -241,24 +271,32 @@ public class Spoon
     private MenuItem miEditUndo, miEditRedo;
     
     private Tree selectionTree;
-    private TreeItem  tiBase, tiPlug;
+    private TreeItem  tiTransBase, tiTransPlug, tiJobBase, tiJobPlug;
 
     private Tree pluginHistoryTree;    
     
     public static final String STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS"); // Transformations
+    public static final String STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");            // Jobs
     public static final String STRING_BUILDING_BLOCKS = Messages.getString("Spoon.STRING_BUILDING_BLOCKS"); // Building blocks
     public static final String STRING_ELEMENTS        = Messages.getString("Spoon.STRING_ELEMENTS");        // Model elements
     public static final String STRING_CONNECTIONS     = Messages.getString("Spoon.STRING_CONNECTIONS");     // Connections
     public static final String STRING_STEPS           = Messages.getString("Spoon.STRING_STEPS");           // Steps
+    public static final String STRING_JOB_ENTRIES     = Messages.getString("Spoon.STRING_JOB_ENTRIES");     // Job entries
     public static final String STRING_HOPS            = Messages.getString("Spoon.STRING_HOPS");            // Hops
     public static final String STRING_PARTITIONS      = Messages.getString("Spoon.STRING_PARTITIONS");      // Database Partition schemas
     public static final String STRING_SLAVES          = Messages.getString("Spoon.STRING_SLAVES");          // Slave servers
     public static final String STRING_CLUSTERS        = Messages.getString("Spoon.STRING_CLUSTERS");        // Cluster Schemas
-    public static final String STRING_BASE            = Messages.getString("Spoon.STRING_BASE");            // Base step types
-    public static final String STRING_PLUGIN          = Messages.getString("Spoon.STRING_PLUGIN");          // Plugin step types
+    public static final String STRING_TRANS_BASE            = Messages.getString("Spoon.STRING_BASE");            // Base step types
+    public static final String STRING_TRANS_PLUGIN          = Messages.getString("Spoon.STRING_PLUGIN");          // Plugin step types
+    public static final String STRING_JOB_BASE        = Messages.getString("Spoon.STRING_JOBENTRY_BASE");   // Base job entry types
+    public static final String STRING_JOB_PLUGIN      = Messages.getString("Spoon.STRING_JOBENTRY_PLUGIN"); // Plugin job entry types
     public static final String STRING_HISTORY         = Messages.getString("Spoon.STRING_HISTORY");         // Step creation history
 
-    public static final String STRING_TRANS_NO_NAME = Messages.getString("Spoon.STRING_TRANS_NO_NAME"); // <unnamed transformation>
+    public static final String STRING_TRANS_NO_NAME   = Messages.getString("Spoon.STRING_TRANS_NO_NAME");   // <unnamed transformation>
+    public static final String STRING_JOB_NO_NAME     = Messages.getString("Spoon.STRING_JOB_NO_NAME");     // <unnamed job>
+
+    public static final String STRING_TRANSFORMATION  = Messages.getString("Spoon.STRING_TRANSFORMATION");  // Transformation
+    public static final String STRING_JOB             = Messages.getString("Spoon.STRING_JOB");             // Job
 
     private static final String APPL_TITLE         = APP_NAME;
             
@@ -275,7 +313,7 @@ public class Spoon
 
     private TransExecutionConfiguration executionConfiguration;
 
-    private TreeItem tiTrans;
+    private TreeItem tiTrans, tiJobs;
 
     private TreeItem tiBlocks;
 
@@ -328,6 +366,14 @@ public class Spoon
     private MenuItem miRepUser;
 
     private MenuItem miRepExplore;
+
+    private MenuItem miJobRun;
+
+    private MenuItem miJobCopy;
+
+    private MenuItem miJobInfo;
+
+    private MenuItem miWizardRipDatabase;
         
     public Spoon(LogWriter l, Repository rep)
     {
@@ -362,6 +408,7 @@ public class Spoon
         shell.setLayout (layout);
         
         transformationMap = new Hashtable();
+        jobMap = new Hashtable();
         tabMap = new Hashtable();
         
         // INIT Data structure
@@ -402,6 +449,9 @@ public class Spoon
                 public void keyPressed(KeyEvent e) 
                 {
                     TransMeta transMeta = getActiveTransformation();
+                    // JobMeta jobMeta = getActiveJob();
+                    UndoInterface undoInterface = getActiveUndoInterface();
+                    
                     SpoonLog spoonLog = getActiveSpoonLog();
                     
                     boolean ctrl = (( e.stateMask&SWT.CONTROL)!=0);
@@ -414,7 +464,7 @@ public class Spoon
                     if (e.keyCode == SWT.F3 && !ctrl && !alt)    { createDatabaseWizard(transMeta); }
 
                     // F4 --> copyTableWizard
-                    if (e.keyCode == SWT.F4 && !ctrl && !alt)    { copyTableWizard(transMeta); }
+                    if (e.keyCode == SWT.F4 && !ctrl && !alt)    { copyTableWizard(); }
 
                     // CTRL-F4 --> close active transformation
                     if (e.keyCode == SWT.F4 && ctrl && !alt)    { closeTransformation(transMeta); }
@@ -437,8 +487,13 @@ public class Spoon
                     // F10 --> preview
                     if (e.keyCode == SWT.F10 && !ctrl && !alt)   { executeTransformation(transMeta, true, false, false, true, null);  }
 
+                    // CTRL-F10 --> ripDB wizard
+                    if (e.keyCode == SWT.F12 && ctrl && !alt)    { ripDBWizard(); }
+
                     // F11 --> Verify
                     if (e.keyCode == SWT.F11 && !ctrl && !alt) { checkTrans(transMeta); }
+                    
+
 
                     // CTRL-A --> Select All steps
                     if ((int)e.character ==  1 && ctrl && !alt) { if (transMeta!=null) { transMeta.selectAll(); refreshGraph(); } };
@@ -474,7 +529,7 @@ public class Spoon
                     if ((int)e.character == 15 && ctrl && !alt) { openFile(false);  }
                     
                     // CTRL-P --> print
-                    if ((int)e.character == 16 && ctrl && !alt) { printFile(transMeta);  }
+                    if ((int)e.character == 16 && ctrl && !alt) { printFile();  }
                     
                     // CTRL-Q --> Impact analyses
                     if ((int)e.character == 17 && ctrl && !alt) { analyseImpact(transMeta);}
@@ -483,7 +538,7 @@ public class Spoon
                     if ((int)e.character == 18 && ctrl && !alt) { openRepository(); };
 
                     // CTRL-S --> save
-                    if ((int)e.character == 19 && ctrl && !alt) { saveFile(transMeta);  }
+                    if ((int)e.character == 19 && ctrl && !alt) { saveTransFile(transMeta);  }
                     
                     // CTRL-ALT-S --> send to slave server
                     if ((int)e.character == 19 && ctrl && alt) { executeTransformation(transMeta, false, true, false, false, null);  }
@@ -495,10 +550,10 @@ public class Spoon
                     if ((int)e.character == 21 && ctrl && !alt) { executeTransformation(transMeta, false, false, true, false, null);  }
 
                     // CTRL-Y --> redo action
-                    if ((int)e.character == 25 && ctrl && !alt) { redoAction(transMeta);  }
+                    if ((int)e.character == 25 && ctrl && !alt) { redoAction(undoInterface);  }
                     
                     // CTRL-Z --> undo action
-                    if ((int)e.character == 26 && ctrl && !alt) { undoAction(transMeta);  }
+                    if ((int)e.character == 26 && ctrl && !alt) { undoAction(undoInterface);  }
                                         
                     // System.out.println("(int)e.character = "+(int)e.character+", keycode = "+e.keyCode+", stateMask="+e.stateMask);
                 }
@@ -588,6 +643,30 @@ public class Spoon
         
         return key;
     }
+    
+    /**
+     * Add a job to the job map 
+     * @param jobMeta the job to add to the map
+     * @return the key used to store the transformation in the map
+     */
+    public String addJob(JobMeta jobMeta)
+    {
+        String key = makeJobGraphTabName(jobMeta);
+
+        if (jobMap.get(key)==null)
+        {
+            jobMap.put(key, jobMeta);
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message")); // Transformation is already loaded
+            mb.setText(Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title")); // Sorry!
+            mb.open();
+        }
+        
+        return key;
+    }
 
     /**
      * @param transMeta the transformation to close, make sure it's ok to dispose of it BEFORE you call this.
@@ -607,7 +686,23 @@ public class Spoon
         refreshTree();
     }
 
-    
+    /**
+     * @param transMeta the transformation to close, make sure it's ok to dispose of it BEFORE you call this.
+     */
+    public void closeJob(JobMeta jobMeta)
+    {
+        jobMap.remove(makeJobGraphTabName(jobMeta));
+
+        // Close the associated tabs...
+        CTabItem graphTab = findCTabItem(makeJobGraphTabName(jobMeta));
+        if (graphTab!=null) graphTab.dispose();
+        CTabItem logTab = findCTabItem(makeJobLogTabName(jobMeta));
+        if (logTab!=null) logTab.dispose();
+        CTabItem historyTab = findCTabItem(makeJobHistoryTabName(jobMeta));
+        if (historyTab!=null) historyTab.dispose();
+        
+        refreshTree();
+    }
     
     /**
      * Search the transformation meta-data.
@@ -616,8 +711,8 @@ public class Spoon
     public void searchMetaData()
     {
         TransMeta[] transMetas = getLoadedTransformations();
-
-        if (transMetas==null || transMetas.length==0) return;
+        JobMeta[] jobMetas = getLoadedJobs();
+        if ( (transMetas==null || transMetas.length==0) && (jobMetas==null || jobMetas.length==0)) return;
         
         EnterSearchDialog esd = new EnterSearchDialog(shell);
         if (!esd.open())
@@ -626,6 +721,7 @@ public class Spoon
         }
 
         ArrayList rows = new ArrayList();
+
         for (int t=0;t<transMetas.length;t++)
         {
             TransMeta transMeta = transMetas[t];
@@ -647,7 +743,29 @@ public class Spoon
                 if (add) rows.add(result.toRow());
             }
         }
-        
+
+        for (int t=0;t<jobMetas.length;t++)
+        {
+            JobMeta jobMeta = jobMetas[t];
+            String filterString = esd.getFilterString();
+            String filter = filterString;
+            if (filter!=null) filter = filter.toUpperCase();
+            
+            List stringList = jobMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            for (int i=0;i<stringList.size();i++)
+            {
+                StringSearchResult result = (StringSearchResult) stringList.get(i);
+
+                boolean add = Const.isEmpty(filter);
+                if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getGrandParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
+                
+                if (add) rows.add(result.toRow());
+            }
+        }
+
         if (rows.size()!=0)
         {
             PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
@@ -665,8 +783,8 @@ public class Spoon
     public void getVariables()
     {
         TransMeta[] transMetas = getLoadedTransformations();
-
-        if (transMetas==null || transMetas.length==0) return;
+        JobMeta[] jobMetas = getLoadedJobs();
+        if ( (transMetas==null || transMetas.length==0) && (jobMetas==null || jobMetas.length==0)) return;
         
         KettleVariables kettleVariables = KettleVariables.getInstance();
         Properties sp = new Properties();
@@ -678,6 +796,22 @@ public class Spoon
             TransMeta transMeta = transMetas[t];
             
             List list = transMeta.getUsedVariables();
+            for (int i=0;i<list.size();i++)
+            {
+                String varName = (String)list.get(i);
+                String varValue = sp.getProperty(varName, "");
+                if (variables.searchValueIndex(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
+                {
+                    variables.addValue(new Value(varName, varValue));
+                }
+            }
+        }
+        
+        for (int t=0;t<jobMetas.length;t++)
+        {
+            JobMeta jobMeta = jobMetas[t];
+            
+            List list = jobMeta.getUsedVariables();
             for (int i=0;i<list.size();i++)
             {
                 String varName = (String)list.get(i);
@@ -869,17 +1003,17 @@ public class Spoon
         //
         MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
         miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
-        miFileExport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveXMLFile(getActiveTransformation()); } });
+        miFileExport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransXMLFile(getActiveTransformation()); } });
         // Save
         //
         miFileSave = new MenuItem(msFile, SWT.CASCADE); 
         miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
-        miFileSave.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFile(getActiveTransformation()); } });
+        miFileSave.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransFile(getActiveTransformation()); } });
         // Save as
         //
         miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); 
         miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
-        miFileSaveAs.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFileAs(getActiveTransformation()); } });
+        miFileSaveAs.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransFileAs(getActiveTransformation()); } });
         // Close
         //
         miFileClose = new MenuItem(msFile, SWT.CASCADE); 
@@ -890,7 +1024,7 @@ public class Spoon
         //
         miFilePrint = new MenuItem(msFile, SWT.CASCADE); 
         miFilePrint.setText(Messages.getString("Spoon.Menu.File.Print")); //"&Print \tCTRL-P"
-        miFilePrint.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { printFile(getActiveTransformation()); } });
+        miFilePrint.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { printFile(); } });
         new MenuItem(msFile, SWT.SEPARATOR);
         // Quit
         //
@@ -915,11 +1049,11 @@ public class Spoon
         // Undo
         //
         miEditUndo = new MenuItem(msEdit, SWT.CASCADE);
-        miEditUndo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { undoAction(getActiveTransformation()); } });
+        miEditUndo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { undoAction(getActiveUndoInterface()); } });
         // Redo
         //
         miEditRedo = new MenuItem(msEdit, SWT.CASCADE);
-        miEditRedo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { redoAction(getActiveTransformation()); } });
+        miEditRedo.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { redoAction(getActiveUndoInterface()); } });
         setUndoMenu(getActiveTransformation());
         new MenuItem(msEdit, SWT.SEPARATOR);
         // Search
@@ -1081,6 +1215,36 @@ public class Spoon
         miTransDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation());   } });
         
         ////////////////////////////////////////////////////////////
+        // Job
+        //
+        //
+
+        // The main job menu
+        MenuItem mJob = new MenuItem(mBar, SWT.CASCADE); 
+        mJob.setText(Messages.getString("Spoon.Menu.Job")); //$NON-NLS-1$
+        Menu msJob = new Menu(shell, SWT.DROP_DOWN);
+        mJob.setMenu(msJob);
+        
+        // Run
+        //
+        miJobRun = new MenuItem(msJob, SWT.CASCADE);   
+        miJobRun.setText(Messages.getString("Spoon.Menu.Job.Run")); //$NON-NLS-1$
+        new MenuItem(msJob, SWT.SEPARATOR);
+        miJobRun.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { executeJob(getActiveJob()); } });
+        
+        // Copy to clipboard
+        //
+        miJobCopy = new MenuItem(msJob, SWT.CASCADE);            miJobCopy.setText(Messages.getString("Spoon.Menu.Job.CopyToClipboard")); //$NON-NLS-1$
+        new MenuItem(msJob, SWT.SEPARATOR);
+        miJobCopy.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyJob(getActiveJob()); } });
+
+        // Edit job properties
+        //
+        miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText(Messages.getString("Spoon.Menu.Job.Settings")); //$NON-NLS-1$
+        miJobInfo.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { editJobProperties(getActiveJob());  } });
+
+        
+        ////////////////////////////////////////////////////////////
         // Wizard
         //
         //
@@ -1100,9 +1264,13 @@ public class Spoon
         //
         miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
         miWizardCopyTable.setText(Messages.getString("Spoon.Menu.Wizard.CopyTableWizard"));//&Copy table wizard...\tF4
-        miWizardCopyTable.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTableWizard(getActiveTransformation()); }});
-          
+        miWizardCopyTable.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTableWizard(); }});
         
+        miWizardRipDatabase = new MenuItem(msWizard, SWT.CASCADE); 
+        miWizardRipDatabase.setText(Messages.getString("Spoon.Menu.Wizard.CopyTables")); //$NON-NLS-1$
+        Listener lsWizardRipDatabase= new Listener() { public void handleEvent(Event e) { ripDBWizard();  } };
+        miWizardRipDatabase.addListener(SWT.Selection, lsWizardRipDatabase);
+
         ////////////////////////////////////////////////////////////
         // Help
         //
@@ -1130,7 +1298,8 @@ public class Spoon
         miHelpAbout.setText(Messages.getString("Spoon.Menu.About"));//"&About"
         miHelpAbout.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { helpAbout(); } });
     }
-   
+
+
     private void addMenuLast()
     {
         int idx = msFile.indexOf(miFileSep3);
@@ -1149,6 +1318,16 @@ public class Spoon
         {
             final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
             MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
+            
+            if (lastUsedFile.isTransformation())
+            {
+                miFileLast.setImage(GUIResource.getInstance().getImageSpoonGraph());
+            }
+            else
+            if (lastUsedFile.isJob())
+            {
+                miFileLast.setImage(GUIResource.getInstance().getImageChefGraph());
+            }
 
             char chr = (char) ('1' + i);
             int accel = SWT.CTRL | chr;
@@ -1170,9 +1349,8 @@ public class Spoon
                     // If the file comes from a repository and it's not the same as
                     // the one we're connected to, ask for a username/password!
                     //
-                    boolean noRepository = false;
-                    if (lastUsedFile.isSourceRepository()
-                            && (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())))
+                    boolean cancelled = false;
+                    if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())))
                     {
                         // Ask for a username password to get the required repository access
                         //
@@ -1196,10 +1374,27 @@ public class Spoon
                         }
                         else
                         {
-                            noRepository = true;
+                            cancelled = true;
+                        }
+                    }
+                    
+                    if (!cancelled)
+                    {
+                        try
+                        {
+                            loadLastUsedFile(lastUsedFile, rep.getRepositoryInfo());
+                            addMenuLast();
+                            refreshHistory();
+                        }
+                        catch(KettleException ke)
+                        {
+                            // "Error loading transformation", "I was unable to load this transformation from the
+                            // XML file because of an error"
+                            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                         }
                     }
 
+                    /*
                     if (lastUsedFile.isSourceRepository())
                     {
                         if (!noRepository && rep != null && rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))
@@ -1214,7 +1409,7 @@ public class Spoon
                                 transMeta.clearChanged();
                                 addSpoonGraph(transMeta);
                                 
-                                props.addLastFile(Props.TYPE_PROPERTIES_SPOON, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
+                                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
                             }
                         }
                         else
@@ -1235,7 +1430,7 @@ public class Spoon
                             transMeta.setFilename(lastUsedFile.getFilename());
                             addSpoonGraph(transMeta);
                             
-                            props.addLastFile(Props.TYPE_PROPERTIES_SPOON, lastUsedFile.getFilename(), null, false, null);
+                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), null, false, null);
                         }
                         catch (KettleException ke)
                         {
@@ -1244,10 +1439,8 @@ public class Spoon
                             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                         }
                     }
-                    addMenuLast();
-                    refreshTree();
-                    refreshGraph();
-                    refreshHistory();
+                    */
+                    
                 }
             };
             miFileLast.addListener(SWT.Selection, lsFileLast);
@@ -1274,20 +1467,20 @@ public class Spoon
         final ToolItem tiFileSave = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
         tiFileSave.setImage(imFileSave);
-        tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(getActiveTransformation()); }});
+        tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFile(getActiveTransformation()); }});
         tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save current transformation
 
         final ToolItem tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
         tiFileSaveAs.setImage(imFileSaveAs);
-        tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(getActiveTransformation()); }});
+        tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFileAs(getActiveTransformation()); }});
         tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save transformation with different name
 
         new ToolItem(tBar, SWT.SEPARATOR);
         final ToolItem tiFilePrint = new ToolItem(tBar, SWT.PUSH);
         final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
         tiFilePrint.setImage(imFilePrint);
-        tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(getActiveTransformation()); }});
+        tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
         tiFilePrint.setToolTipText(Messages.getString("Spoon.Tooltip.Print"));//Print
 
         new ToolItem(tBar, SWT.SEPARATOR);
@@ -1377,19 +1570,27 @@ public class Spoon
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
         
         tiTrans  = new TreeItem(selectionTree, SWT.NONE); tiTrans.setText(STRING_TRANSFORMATIONS);
+        tiJobs   = new TreeItem(selectionTree, SWT.NONE); tiJobs.setText(STRING_JOBS);
         
-        tiBlocks = new TreeItem(selectionTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
-        tiBase   = new TreeItem(tiBlocks, SWT.NONE); tiBase.setText(STRING_BASE);
-        tiPlug   = new TreeItem(tiBlocks, SWT.NONE); tiPlug.setText(STRING_PLUGIN);
+        tiBlocks    = new TreeItem(selectionTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
+        tiTransBase = new TreeItem(tiBlocks, SWT.NONE); tiTransBase.setText(STRING_TRANS_BASE);
+        tiTransPlug = new TreeItem(tiBlocks, SWT.NONE); tiTransPlug.setText(STRING_TRANS_PLUGIN);
+        tiJobBase   = new TreeItem(tiBlocks, SWT.NONE); tiJobBase.setText(STRING_JOB_BASE);
+        tiJobPlug   = new TreeItem(tiBlocks, SWT.NONE); tiJobPlug.setText(STRING_JOB_PLUGIN);
         
         // Fill the base components...
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        // TRANSFORMATIONS
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
         StepLoader steploader = StepLoader.getInstance();
         StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_NATIVE);
         String basecat[] = steploader.getCategories(StepPlugin.TYPE_NATIVE);
         TreeItem tiBaseCat[] = new TreeItem[basecat.length];
         for (int i=0;i<basecat.length;i++)
         {
-            tiBaseCat[i] = new TreeItem(tiBase, SWT.NONE);
+            tiBaseCat[i] = new TreeItem(tiTransBase, SWT.NONE);
             tiBaseCat[i].setText(basecat[i]);
             
             for (int j=0;j<basesteps.length;j++)
@@ -1408,7 +1609,7 @@ public class Spoon
         TreeItem tiPlugCat[] = new TreeItem[plugcat.length];
         for (int i=0;i<plugcat.length;i++)
         {
-            tiPlugCat[i] = new TreeItem(tiPlug, SWT.NONE);
+            tiPlugCat[i] = new TreeItem(tiTransPlug, SWT.NONE);
             tiPlugCat[i].setText(plugcat[i]);
             
             for (int j=0;j<plugins.length;j++)
@@ -1420,9 +1621,35 @@ public class Spoon
                 }
             }
         }
-        
-        tiBase.setExpanded(true);
-        tiPlug.setExpanded(true);
+        tiTransBase.setExpanded(true);
+        tiTransPlug.setExpanded(true);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        // JOBS
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+        JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
+        for (int i=0;i<baseEntries.length;i++)
+        {
+            TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
+            tiBaseItem.setText(baseEntries[i].getDescription());
+            
+            Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+            tiBaseItem.setImage(image);
+        }
+
+        // Show the plugins...
+        JobPlugin jobPlugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_PLUGIN); 
+        for (int i=0;i<jobPlugins.length;i++)
+        {
+            TreeItem tiPluginItem = new TreeItem(tiJobPlug, SWT.NONE);
+            tiPluginItem.setText(jobPlugins[i].getDescription());
+            Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+            tiPluginItem.setImage(image);
+        }        
+        tiJobBase.setExpanded(true);
+        tiJobPlug.setExpanded(true);
 
         addToolTipsToTree(selectionTree);
 
@@ -1496,14 +1723,18 @@ public class Spoon
                 case 2: // ------complete-----
                     if (path[0].equals(STRING_BUILDING_BLOCKS)) // the top level Transformations entry
                     {
-                        if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                        if (path[1].equals(STRING_TRANS_BASE) || path[1].equals(STRING_TRANS_PLUGIN))
                         {
                             object = new TreeSelection(StepPlugin.class);
                         }
                     }
-                    if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformation title
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformations title
                     {
                         object = new TreeSelection(findTransformation(path[1]));
+                    }
+                    if (path[0].equals(STRING_JOBS)) // Jobs title
+                    {
+                        object = new TreeSelection(findJob(path[1]));
                     }
                     break;
                         
@@ -1518,6 +1749,21 @@ public class Spoon
                         if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(SlaveServer.class, transMeta);
                         if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(ClusterSchema.class, transMeta);
                     }
+                    if (path[0].equals(STRING_JOBS)) // Jobs title
+                    {
+                        JobMeta jobMeta = findJob(path[1]);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, jobMeta);
+                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(JobEntryCopy.class, jobMeta);
+                    }
+                    if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
+                    {
+                        if (path[1].equals(STRING_JOB_BASE) || path[1].equals(STRING_JOB_PLUGIN))
+                        {
+                            JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[2]);
+                            object = new TreeSelection(jobPlugin);
+                        }
+                    }
+
                     break;
                     
                 case 4:  // ------complete-----
@@ -1531,9 +1777,16 @@ public class Spoon
                         if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(transMeta.findSlaveServer(path[3]), transMeta);
                         if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(transMeta.findClusterSchema(path[3]), transMeta);
                     }
+                    if (path[0].equals(STRING_JOBS)) // The name of a job
+                    {
+                        JobMeta jobMeta = findJob(path[1]);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(jobMeta.findDatabase(path[3]), jobMeta);
+                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(jobMeta.findJobEntry(path[3]), jobMeta);
+                    }
+
                     if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
                     {
-                        if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                        if (path[1].equals(STRING_TRANS_BASE) || path[1].equals(STRING_TRANS_PLUGIN))
                         {
                             object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[3]));
                         }
@@ -1615,8 +1868,8 @@ public class Spoon
                             tooltip = sp.getTooltip();
                         }
                         else
-                        if (item.getText().equalsIgnoreCase(STRING_BASE) ||
-                            item.getText().equalsIgnoreCase(STRING_PLUGIN)
+                        if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE) ||
+                            item.getText().equalsIgnoreCase(STRING_TRANS_PLUGIN)
                            )
                         {
                             
@@ -1656,7 +1909,6 @@ public class Spoon
                     TreeSelection treeObject = treeObjects[0];
                     Object object = treeObject.getSelection();
                     
-                    // Drop of existing hidden step onto canvas?
                     if (object instanceof StepMeta)
                     {
                         StepMeta stepMeta = (StepMeta)object;
@@ -1684,6 +1936,19 @@ public class Spoon
                     	type = DragAndDropContainer.TYPE_TRANS_HOP;
                         data=hop.toString(); // nothing for really ;-)
                     }
+                    if (object instanceof JobEntryCopy)
+                    {
+                        JobEntryCopy jobEntryCopy = (JobEntryCopy)object;
+                        type = DragAndDropContainer.TYPE_JOB_ENTRY;
+                        data=jobEntryCopy.getName(); // name of the job entry.
+                    }
+                    else
+                    if (object instanceof JobPlugin)
+                    {
+                        JobPlugin jobPlugin = (JobPlugin)object;
+                        type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+                        data=jobPlugin.getDescription(); // Step type
+                    }
                     else
                     {
                         event.doit=false;
@@ -1703,32 +1968,41 @@ public class Spoon
     {
         pluginHistoryTree.removeAll();
         
-        TreeItem tiMain = new TreeItem(pluginHistoryTree, SWT.NONE);
-        tiMain.setText(STRING_HISTORY);
-        tiMain.setImage(GUIResource.getInstance().getImageSpoon());
+        UndoInterface undoInterface = getActiveUndoInterface();
+        if (undoInterface==null) return;
         
-        List pluginHistory = props.getPluginHistory();
-        for (int i=0;i<pluginHistory.size();i++)
+        if (undoInterface instanceof TransMeta)
         {
-            String pluginID = (String)pluginHistory.get(i);
-            StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(pluginID);
-            if (stepPlugin!=null)
+            TreeItem tiMain = new TreeItem(pluginHistoryTree, SWT.NONE);
+            tiMain.setText(STRING_HISTORY);
+            tiMain.setImage(GUIResource.getInstance().getImageSpoon());
+            
+            List pluginHistory = props.getPluginHistory();
+            for (int i=0;i<pluginHistory.size();i++)
             {
-                Image image = (Image) GUIResource.getInstance().getImagesSteps().get(pluginID);
-    
-                TreeItem ti = new TreeItem(tiMain, SWT.NONE);
-                ti.setText(stepPlugin.getDescription());
-                ti.setImage(image);
-            }
-        }
+                String pluginID = (String)pluginHistory.get(i);
+                StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(pluginID);
+                if (stepPlugin!=null)
+                {
+                    Image image = (Image) GUIResource.getInstance().getImagesSteps().get(pluginID);
         
-        tiMain.setExpanded(true);
+                    TreeItem ti = new TreeItem(tiMain, SWT.NONE);
+                    ti.setText(stepPlugin.getDescription());
+                    ti.setImage(image);
+                }
+            }
+            tiMain.setExpanded(true);
+        }
+        else
+        {
+            // TODO Add the job entries plugin history
+        }
     }
 
     /**
      * If you click in the tree, you might want to show the corresponding window.
      */
-    private void showSelection()
+    public void showSelection()
     {
         TreeSelection[] objects = getTreeObjects(selectionTree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
@@ -1741,7 +2015,6 @@ public class Spoon
         TransMeta transMeta = null;
         if (selection instanceof TransMeta) transMeta = (TransMeta) selection;
         if (parent instanceof TransMeta) transMeta = (TransMeta) parent;
-        
         if (transMeta!=null)
         {
             // Search the corresponding SpoonGraph tab
@@ -1753,6 +2026,21 @@ public class Spoon
                 if (current!=desired) tabfolder.setSelection(desired);
             }
         }
+        
+        JobMeta jobMeta = null;
+        if (selection instanceof JobMeta) jobMeta = (JobMeta) selection;
+        if (parent instanceof JobMeta) jobMeta = (JobMeta) parent;
+        if (jobMeta!=null)
+        {
+            // Search the corresponding SpoonGraph tab
+            CTabItem tabItem = findCTabItem(makeJobGraphTabName(jobMeta));
+            if (tabItem!=null)
+            {
+                int current = tabfolder.getSelectionIndex();
+                int desired = tabfolder.indexOf(tabItem); 
+                if (current!=desired) tabfolder.setSelection(desired);
+            }
+        }        
     }
     
     private void setMenu()
@@ -1800,11 +2088,11 @@ public class Spoon
 
                 // New Connection Wizard
                 MenuItem miWizard  = new MenuItem(mCSH, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
-                miWizard.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard((TransMeta)parent); } } );
+                miWizard.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard((HasDatabasesInterface)parent); } } );
                 
                 // Clear complete DB Cache
                 MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));
-                miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache((TransMeta)parent); } } );
+                miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache(); } } );
             }
             if (selection.equals(PartitionSchema.class))
             {
@@ -1837,10 +2125,10 @@ public class Spoon
             if (selection instanceof DatabaseMeta)
             {
                 final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-                final TransMeta transMeta = (TransMeta) parent;
+                final HasDatabasesInterface transMeta = (HasDatabasesInterface) parent;
                 
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.New"));//New
-                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection((TransMeta)parent); } } );
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection(transMeta); } } );
 
                 MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Edit"));//Edit
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editConnection(transMeta, databaseMeta); } } );
@@ -1849,7 +2137,7 @@ public class Spoon
                 miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeConnection(transMeta, databaseMeta); } } );
                 
                 MenuItem miCopy = new MenuItem(mCSH, SWT.PUSH); miCopy.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard"));//Copy to clipboard
-                miCopy.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clipConnection(transMeta, databaseMeta); } } );
+                miCopy.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clipConnection(databaseMeta); } } );
                 
                 MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delConnection(transMeta, databaseMeta); } } );
@@ -1857,10 +2145,10 @@ public class Spoon
                 new MenuItem(mCSH, SWT.SEPARATOR);
                 
                 MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
-                miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { sqlConnection(transMeta, databaseMeta); } } );
+                miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { sqlConnection(databaseMeta); } } );
                 
                 MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+databaseMeta.getName());//Clear DB Cache of 
-                miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache(transMeta, databaseMeta); } } );
+                miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache(databaseMeta); } } );
                 
                 new MenuItem(mCSH, SWT.SEPARATOR);
                 MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
@@ -1938,7 +2226,7 @@ public class Spoon
                 
                 MenuItem miMonitor  = new MenuItem(mCSH, SWT.PUSH); 
                 miMonitor.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Monitor"));//New
-                miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { monitorClusterSchema(transMeta, clusterSchema); } } );   
+                miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { monitorClusterSchema(clusterSchema); } } );   
             }
             
             // Right click on a slave server
@@ -1949,7 +2237,7 @@ public class Spoon
                 
                 MenuItem miEdit  = new MenuItem(mCSH, SWT.PUSH); 
                 miEdit.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Edit"));//New
-                miEdit.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { editSlaveServer(transMeta, slaveServer); } } );   
+                miEdit.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { editSlaveServer(slaveServer); } } );   
 
                 MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); 
                 miDel.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Delete"));//Delete
@@ -1982,7 +2270,7 @@ public class Spoon
         if (selection instanceof Class)
         {
             if (selection.equals(TransHopMeta.class)) newHop((TransMeta)parent);
-            if (selection.equals(DatabaseMeta.class)) newConnection((TransMeta)parent);
+            if (selection.equals(DatabaseMeta.class)) newConnection((HasDatabasesInterface)parent);
             if (selection.equals(PartitionSchema.class)) newDatabasePartitioningSchema((TransMeta)parent);
             if (selection.equals(ClusterSchema.class)) newClusteringSchema((TransMeta)parent);
             if (selection.equals(SlaveServer.class)) newSlaveServer((TransMeta)parent);
@@ -1990,16 +2278,16 @@ public class Spoon
         else
         {
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
-            if (selection instanceof DatabaseMeta) editConnection((TransMeta) parent, (DatabaseMeta) selection);
+            if (selection instanceof DatabaseMeta) editConnection((HasDatabasesInterface) parent, (DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
             if (selection instanceof TransHopMeta) editHop((TransMeta)parent, (TransHopMeta)selection);
-            if (selection instanceof PartitionSchema) editPartitionSchema((TransMeta)parent, (PartitionSchema)selection);
+            if (selection instanceof PartitionSchema) editPartitionSchema((HasDatabasesInterface)parent, (PartitionSchema)selection);
             if (selection instanceof ClusterSchema) editClusterSchema((TransMeta)parent, (ClusterSchema)selection);
-            if (selection instanceof SlaveServer) editSlaveServer((TransMeta)parent, (SlaveServer)selection);
+            if (selection instanceof SlaveServer) editSlaveServer((SlaveServer)selection);
         }
     }
     
-    protected void monitorClusterSchema(TransMeta transMeta, ClusterSchema clusterSchema)
+    protected void monitorClusterSchema(ClusterSchema clusterSchema)
     {
         for (int i=0;i<clusterSchema.getSlaveServers().size();i++)
         {
@@ -2008,7 +2296,7 @@ public class Spoon
         }
     }
     
-    protected void editSlaveServer(TransMeta transMeta, SlaveServer slaveServer)
+    protected void editSlaveServer(SlaveServer slaveServer)
     {
         SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
         if (dialog.open())
@@ -2111,18 +2399,18 @@ public class Spoon
         return rep.getRepositoryInfo().getName();
     }
 
-    public void sqlConnection(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void sqlConnection(DatabaseMeta databaseMeta)
     {
-        SQLEditor sql = new SQLEditor(shell, SWT.NONE, databaseMeta, transMeta.getDbCache(), "");
+        SQLEditor sql = new SQLEditor(shell, SWT.NONE, databaseMeta, DBCache.getInstance(), "");
         sql.open();
     }
     
-    public void editConnection(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void editConnection(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
     {
         DatabaseMeta before = (DatabaseMeta)databaseMeta.clone();
 
         DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, databaseMeta, props);
-        con.setDatabases(transMeta.getDatabases());
+        con.setDatabases(hasDatabasesInterface.getDatabases());
         String newname = con.open(); 
         if (!Const.isEmpty(newname))  // null: CANCEL
         {                
@@ -2130,7 +2418,7 @@ public class Spoon
             
             // Store undo/redo information
             DatabaseMeta after = (DatabaseMeta)databaseMeta.clone();
-            addUndoChange(transMeta, new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { transMeta.indexOfDatabase(databaseMeta) } );
+            addUndoChange((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) } );
             
             saveConnection(databaseMeta);
             
@@ -2142,10 +2430,10 @@ public class Spoon
         setShellText();
     }
 
-    public void dupeConnection(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void dupeConnection(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
     {
         String name = databaseMeta.getName();
-        int pos = transMeta.indexOfDatabase(databaseMeta);                
+        int pos = hasDatabasesInterface.indexOfDatabase(databaseMeta);                
         if (databaseMeta!=null)
         {
             DatabaseMeta copy = (DatabaseMeta)databaseMeta.clone();
@@ -2156,16 +2444,16 @@ public class Spoon
             String newname = con.open(); 
             if (newname != null)  // null: CANCEL
             {
-                copy.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
-                transMeta.addDatabase(pos+1, copy);
-                addUndoNew(transMeta, new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
+                copy.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), name);
+                hasDatabasesInterface.addDatabase(pos+1, copy);
+                addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
                 saveConnection(copy);             
                 refreshTree();
             }
         }
     }
     
-    public void clipConnection(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void clipConnection(DatabaseMeta databaseMeta)
     {
         String xml = XMLHandler.getXMLHeader() + databaseMeta.getXML();
         toClipboard(xml);
@@ -2176,9 +2464,9 @@ public class Spoon
      * Delete a database connection
      * @param name The name of the database connection.
      */
-    public void delConnection(TransMeta transMeta, DatabaseMeta db)
+    public void delConnection(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta db)
     {
-        int pos = transMeta.indexOfDatabase(db);                
+        int pos = hasDatabasesInterface.indexOfDatabase(db);                
         boolean worked=false;
         
         // delete from repository?
@@ -2207,8 +2495,8 @@ public class Spoon
 
         if (rep==null || worked)
         {
-            addUndoDelete(transMeta, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
-            transMeta.removeDatabase(pos);
+            addUndoDelete((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
+            hasDatabasesInterface.removeDatabase(pos);
         }
 
         refreshTree();
@@ -2634,16 +2922,16 @@ public class Spoon
         newHop(transMeta, null, null);
     }
     
-    public void newConnection(TransMeta transMeta)
+    public void newConnection(HasDatabasesInterface hasDatabasesInterface)
     {
         DatabaseMeta db = new DatabaseMeta(); 
         DatabaseDialog con = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, db, props);
         String con_name = con.open(); 
         if (!Const.isEmpty(con_name))
         {
-            db.verifyAndModifyDatabaseName(transMeta.getDatabases(), null);
-            transMeta.addDatabase(db);
-            addUndoNew(transMeta, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { transMeta.indexOfDatabase(db) });
+            db.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
+            hasDatabasesInterface.addDatabase(db);
+            addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { hasDatabasesInterface.indexOfDatabase(db) });
             saveConnection(db);
             refreshTree();
         }
@@ -2871,67 +3159,147 @@ public class Spoon
         if (rep==null || importfile)  // Load from XML
         {
             FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-            // dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-            dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
-            dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
+            dialog.setFilterExtensions(Const.STRING_TRANS_AND_JOB_FILTER_EXT);
+            dialog.setFilterNames(Const.STRING_TRANS_AND_JOB_FILTER_NAMES);
             String fname = dialog.open();
             if (fname!=null)
             {
+                // Open the XML and see what's in there.
+                // We expect a single <transformation> or <job> root at this time...
                 try
                 {
-                    TransMeta transMeta = new TransMeta(fname, rep);
-                    props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, null, false, null);
-                    addMenuLast();
-                    if (!importfile) transMeta.clearChanged();
-                    transMeta.setFilename(fname);
-                    addSpoonGraph(transMeta);
+                    Document document = XMLHandler.loadXMLFile(fname);
+                    boolean loaded = false;
+                    // Check for a transformation...
+                    Node transNode = XMLHandler.getSubNode(document, TransMeta.XML_TAG);
+                    if (transNode!=null) // yep, found a transformation
+                    {
+                        TransMeta transMeta = new TransMeta();
+                        transMeta.loadXML(transNode, rep, true);
+                        props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
+                        addMenuLast();
+                        if (!importfile) transMeta.clearChanged();
+                        transMeta.setFilename(fname);
+                        addSpoonGraph(transMeta);
+
+                        refreshTree();
+                        refreshHistory();
+                        loaded=true;
+                    }
+                    
+                    // Check for a job...
+                    Node jobNode = XMLHandler.getSubNode(document, JobMeta.XML_TAG);
+                    if (jobNode!=null) // Indeed, found a job
+                    {
+                        JobMeta jobMeta = new JobMeta(log);
+                        jobMeta.loadXML(jobNode, rep);
+                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
+                        addMenuLast();
+                        if (!importfile) jobMeta.clearChanged();
+                        jobMeta.setFilename(fname);
+                        addChefGraph(jobMeta);
+                        loaded=true;
+                    }
+                    
+                    if (!loaded)
+                    {
+                        // Give error back
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                        mb.setMessage(Messages.getString("Spoon.UnknownFileType.Message", fname));
+                        mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
+                        mb.open();
+                    }
                 }
                 catch(KettleException e)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname+Const.CR+e.getMessage());//"Error opening : "
-                    mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));//"Error!"
-                    mb.open();
+                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname, e);
                 }
-
-                refreshGraph();
-                refreshTree();
-                refreshHistory();
             }
         }
-        else // Read a transformation from the repository!
+        else
         {
-            SelectObjectDialog sod = new SelectObjectDialog(shell, props, rep, true, false, false);
-            String transname            = sod.open();
-            RepositoryDirectory repdir = sod.getDirectory();
-            if (transname!=null && repdir!=null)
+            SelectObjectDialog sod = new SelectObjectDialog(shell, rep);
+            if (sod.open()!=null)
             {
-                TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, transname, repdir);
-                TransMeta transMeta = tlpd.open();
-                if (transMeta!=null)
+                String type = sod.getObjectType();
+                String name = sod.getObjectName();
+                RepositoryDirectory repdir  = sod.getDirectory();
+                
+                // Load a transformation
+                if (RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION.equals(type))
                 {
-                    // transMeta = new TransInfo(log, rep, transname, repdir);
-                    log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",transname,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
-                    //System.out.println("name="+transMeta.getName());
-                    props.addLastFile(Props.TYPE_PROPERTIES_SPOON, transname, repdir.getPath(), true, rep.getName());
-                    addMenuLast();
-                    transMeta.clearChanged();
-                    transMeta.setFilename(transname);
-                    addSpoonGraph(transMeta);
+                    TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, name, repdir);
+                    TransMeta transMeta = tlpd.open();
+                    if (transMeta!=null)
+                    {
+                        // transMeta = new TransInfo(log, rep, transname, repdir);
+                        log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",name,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
+                        //System.out.println("name="+transMeta.getName());
+                        props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
+                        addMenuLast();
+                        transMeta.clearChanged();
+                        transMeta.setFilename(name);
+                        addSpoonGraph(transMeta);
+                    }
+                    refreshGraph();
+                    refreshTree();
+                    refreshHistory();
                 }
-                refreshGraph();
-                refreshTree();
-                refreshHistory();
+                else
+                // Load a job
+                if (RepositoryObject.STRING_OBJECT_TYPE_JOB.equals(type))
+                {
+                    JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, name, repdir);
+                    JobMeta jobMeta = jlpd.open();
+                    if (jobMeta!=null)
+                    {
+                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
+                        saveSettings();
+                        addMenuLast();
+                        addChefGraph(jobMeta);
+                    }
+                    refreshGraph();
+                    refreshTree();
+                }
             }
         }
     }
     
     public void newFile()
     {
+        String[] choices = new String[] { STRING_TRANSFORMATION, STRING_JOB };
+        EnterSelectionDialog enterSelectionDialog = new EnterSelectionDialog(shell, choices, Messages.getString("Spoon.Dialog.NewFile.Title"), Messages.getString("Spoon.Dialog.NewFile.Message"));
+        if (enterSelectionDialog.open()!=null)
+        {
+            switch( enterSelectionDialog.getSelectionNr() )
+            {
+            case 0: newTransFile(); break;
+            case 1: newJobFile(); break;
+            }
+        }
+    }
+    
+    public void newTransFile()
+    {
         TransMeta transMeta = new TransMeta();
         loadRepositoryObjects(transMeta);
         addSpoonGraph(transMeta);
         refreshTree();
+    }
+    
+    public void newJobFile()
+    {
+        try
+        {
+            JobMeta jobMeta = new JobMeta(log);
+            if (rep!=null) jobMeta.readDatabases(rep);
+            addChefGraph(jobMeta);
+            refreshTree();
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Title"), Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Message"), e);
+        }
     }
     
     public void loadRepositoryObjects(TransMeta transMeta)
@@ -3093,7 +3461,7 @@ public class Spoon
         return exit;
     }
     
-    public boolean saveFile(TransMeta transMeta)
+    public boolean saveTransFile(TransMeta transMeta)
     {
         if (transMeta==null) return false;
         
@@ -3103,7 +3471,7 @@ public class Spoon
         
         if (rep!=null)
         {
-            saved=saveRepository(transMeta);
+            saved=saveTransRepository(transMeta);
         }
         else
         {
@@ -3113,13 +3481,13 @@ public class Spoon
             }
             else
             {
-                saved=saveFileAs(transMeta);
+                saved=saveTransFileAs(transMeta);
             }
         }
         
         if (saved) // all was OK
         {
-            saved=saveSharedObjects(transMeta);
+            saved=saveTransSharedObjects(transMeta);
         }
         
         try
@@ -3136,12 +3504,12 @@ public class Spoon
         return saved;
     }
     
-    public boolean saveRepository(TransMeta transMeta)
+    public boolean saveTransRepository(TransMeta transMeta)
     {
-        return saveRepository(transMeta, false);
+        return saveTransRepository(transMeta, false);
     }
 
-    public boolean saveRepository(TransMeta transMeta, boolean ask_name)
+    public boolean saveTransRepository(TransMeta transMeta, boolean ask_name)
     {
         log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToRepository"));//"Save to repository..."
         if (rep!=null)
@@ -3206,7 +3574,7 @@ public class Spoon
                             }
     
                             // Handle last opened files...
-                            props.addLastFile(Props.TYPE_PROPERTIES_SPOON, transMeta.getName(), transMeta.getDirectory().getPath(), true, getRepositoryName());
+                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, transMeta.getName(), transMeta.getDirectory().getPath(), true, getRepositoryName());
                             saveSettings();
                             addMenuLast();
     
@@ -3235,7 +3603,7 @@ public class Spoon
         return false;
     }
 
-    public boolean saveFileAs(TransMeta transMeta)
+    public boolean saveTransFileAs(TransMeta transMeta)
     {
         boolean saved=false;
         
@@ -3244,19 +3612,19 @@ public class Spoon
         if (rep!=null)
         {
             transMeta.setID(-1L);
-            saved=saveRepository(transMeta, true);
+            saved=saveTransRepository(transMeta, true);
             renameTabs();
         }
         else
         {
-            saved=saveXMLFile(transMeta);
+            saved=saveTransXMLFile(transMeta);
             renameTabs();
         }
         
         return saved;
     }
     
-    private void loadSharedObjects(TransMeta transMeta)
+    private void loadTransSharedObjects(TransMeta transMeta)
     {
         try
         {
@@ -3268,7 +3636,7 @@ public class Spoon
         }
     }
     
-    private boolean saveSharedObjects(TransMeta transMeta)
+    private boolean saveTransSharedObjects(TransMeta transMeta)
     {
         try
         {
@@ -3282,7 +3650,7 @@ public class Spoon
         }
     }
 
-    private boolean saveXMLFile(TransMeta transMeta)
+    private boolean saveTransXMLFile(TransMeta transMeta)
     {
         boolean saved=false;
         
@@ -3339,7 +3707,7 @@ public class Spoon
             saved=true;
 
             // Handle last opened files...
-            props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, null, false, null);
+            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
             saveSettings();
             addMenuLast();
             
@@ -3415,17 +3783,18 @@ public class Spoon
         GUIResource guiResource = GUIResource.getInstance();
         
         // get a list of transformations from the transformation map
-        Collection collection = transformationMap.values();
-        TransMeta[] transMetas = (TransMeta[]) collection.toArray(new TransMeta[collection.size()]);
-        
-        // Sort the transformations by name
-        //
-        // Arrays.sort(transMetas);
-        
+        Collection transformations = transformationMap.values();
+        TransMeta[] transMetas = (TransMeta[]) transformations.toArray(new TransMeta[transformations.size()]);
+
+        // get a list of jobs from the job map
+        Collection jobs = jobMap.values();
+        JobMeta[] jobMetas = (JobMeta[]) jobs.toArray(new JobMeta[jobs.size()]);
+
         // Refresh the content of the tree for those transformations
         //
         // First remove the old ones.
         tiTrans.removeAll();
+        tiJobs.removeAll();
 
         // Now add the data back 
         //
@@ -3548,6 +3917,70 @@ public class Spoon
                 if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold());
             }
         }
+        
+        // Now add the data back 
+        //
+        for (int t=0;t<jobMetas.length;t++)
+        {
+            JobMeta jobMeta = jobMetas[t];
+            
+            // Add a tree item with the name of job
+            //
+            TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
+            String name = makeJobGraphTabName(jobMeta);
+            if (Const.isEmpty(name)) name = STRING_JOB_NO_NAME;
+            tiJobName.setText(name);
+            tiJobName.setImage(guiResource.getImageBol());
+            
+            ///////////////////////////////////////////////////////
+            //
+            // Now add the database connections
+            //
+            TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
+            tiDbTitle.setText(STRING_CONNECTIONS);
+            tiDbTitle.setImage(guiResource.getImageConnection());
+            
+            // Draw the connections themselves below it.
+            for (int i=0;i<jobMeta.nrDatabases();i++)
+            {
+                DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
+                TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
+                tiDb.setText(databaseMeta.getName());
+                if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
+                tiDb.setImage(guiResource.getImageConnection());
+            }
+
+            ///////////////////////////////////////////////////////
+            //
+            // The job entries
+            //
+            TreeItem tiJobEntriesTitle = new TreeItem(tiJobName, SWT.NONE);
+            tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
+            tiJobEntriesTitle.setImage(guiResource.getImageBol());
+            
+            // Put the steps below it.
+            for (int i=0;i<jobMeta.nrJobEntries();i++)
+            {
+                JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
+                TreeItem tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
+                tiJobEntry.setText(jobEntry.getName());
+                // if (jobEntry.isShared()) tiStep.setFont(guiResource.getFontBold()); TODO: allow job entries to be shared as well...
+                if (jobEntry.isStart())
+                {
+                    tiJobEntry.setImage(GUIResource.getInstance().getImageStart());
+                }
+                else
+                if (jobEntry.isDummy())
+                {
+                    tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
+                }
+                else
+                {
+                    Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getTypeDesc());
+                    tiJobEntry.setImage(image);
+                }
+            }
+        }
 
         
         // Set the expanded state of the complete tree.
@@ -3576,6 +4009,11 @@ public class Spoon
         {
             SpoonGraph spoonGraph = (SpoonGraph) tabMapEntry.getObject();
             spoonGraph.redraw();
+        }
+        if (tabMapEntry.getObject() instanceof ChefGraph)
+        {
+            ChefGraph chefGraph = (ChefGraph) tabMapEntry.getObject();
+            chefGraph.redraw();
         }
          
         setShellText();
@@ -3746,11 +4184,14 @@ public class Spoon
     private void setTreeImages()
     {
         tiTrans.setImage(GUIResource.getInstance().getImageBol());
-        tiBase.setImage(GUIResource.getInstance().getImageBol());
-        tiPlug.setImage(GUIResource.getInstance().getImageBol());
+        tiJobs.setImage(GUIResource.getInstance().getImageBol());
+        tiTransBase.setImage(GUIResource.getInstance().getImageBol());
+        tiTransPlug.setImage(GUIResource.getInstance().getImageBol());
+        tiJobBase.setImage(GUIResource.getInstance().getImageBol());
+        tiJobPlug.setImage(GUIResource.getInstance().getImageBol());
         tiBlocks.setImage(GUIResource.getInstance().getImageBol());
 
-        TreeItem tiBaseCat[]=tiBase.getItems();
+        TreeItem tiBaseCat[]=tiTransBase.getItems();
         for (int x=0;x<tiBaseCat.length;x++)
         {
             tiBaseCat[x].setImage(GUIResource.getInstance().getImageBol());
@@ -3773,7 +4214,7 @@ public class Spoon
                 }
             }
         }
-        TreeItem tiPlugCat[]=tiPlug.getItems();
+        TreeItem tiPlugCat[]=tiTransPlug.getItems();
         for (int x=0;x<tiPlugCat.length;x++)
         {
             tiPlugCat[x].setImage(GUIResource.getInstance().getImageBol());
@@ -3800,9 +4241,29 @@ public class Spoon
     public void setShellText()
     {
         if (shell.isDisposed()) return;
+        
+        String fname = null;
+        String name = null;
+        long id = -1L;
+        ChangedFlagInterface changed = null;
 
         TransMeta transMeta = getActiveTransformation();
-        String fname = transMeta!=null ? transMeta.getFilename() : "" ;
+        if (transMeta!=null)
+        {
+            changed = transMeta;
+            fname = transMeta.getFilename();
+            name = transMeta.getName();
+            id = transMeta.getID();
+        }
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null)
+        {
+            changed = jobMeta;
+            fname = jobMeta.getFilename();
+            name = jobMeta.getName();
+            id = jobMeta.getID();
+        }
+        
 
         String text = "";
         
@@ -3815,15 +4276,15 @@ public class Spoon
             text+= APPL_TITLE+" - ";
         }
         
-        if (rep!=null && transMeta!=null && transMeta.getId()>0)
+        if (rep!=null && id>0)
         {
-            if (Const.isEmpty(transMeta.getName()))
+            if (Const.isEmpty(name))
             {
                 text+=Messages.getString("Spoon.Various.NoName");//"[no name]"
             }
             else
             {
-                text+=transMeta.getName();
+                text+=name;
             }
         }
         else
@@ -3834,7 +4295,7 @@ public class Spoon
             }
         }
         
-        if (transMeta!=null && transMeta.hasChanged())
+        if (changed!=null && changed.hasChanged())
         {
             text+=" "+Messages.getString("Spoon.Various.Changed");
         }
@@ -3848,21 +4309,24 @@ public class Spoon
     public void enableMenus()
     {
         boolean enableTransMenu = getActiveTransformation()!=null;
+        boolean enableJobMenu   = getActiveJob()!=null;
+        
         boolean enableRepositoryMenu = rep!=null;
         
         // Only enable certain menu-items if we need to.
-        miFileSave.setEnabled(enableTransMenu);
-        miFileSaveAs.setEnabled(enableTransMenu);
-        miFileClose.setEnabled(enableTransMenu);
-        miFilePrint.setEnabled(enableTransMenu);
+        miFileSave.setEnabled(enableTransMenu || enableJobMenu);
+        miFileSaveAs.setEnabled(enableTransMenu || enableJobMenu);
+        miFileClose.setEnabled(enableTransMenu || enableJobMenu);
+        miFilePrint.setEnabled(enableTransMenu || enableJobMenu);
 
-        miEditUndo.setEnabled(enableTransMenu);
-        miEditRedo.setEnabled(enableTransMenu);
+        miEditUndo.setEnabled(enableTransMenu || enableJobMenu);
+        miEditRedo.setEnabled(enableTransMenu || enableJobMenu);
         miEditUnselectAll.setEnabled(enableTransMenu);
         miEditSelectAll.setEnabled(enableTransMenu);
         miEditCopy.setEnabled(enableTransMenu);
         miEditPaste.setEnabled(enableTransMenu);
 
+        // Transformations
         miTransRun.setEnabled(enableTransMenu);
         miTransPreview.setEnabled(enableTransMenu);
         miTransCheck.setEnabled(enableTransMenu);
@@ -3876,12 +4340,18 @@ public class Spoon
         miTransImage.setEnabled(enableTransMenu);
         miTransDetails.setEnabled(enableTransMenu);
 
-        miWizardNewConnection.setEnabled(enableTransMenu);
-        miWizardCopyTable.setEnabled(enableTransMenu);
+        // Jobs
+        miJobRun.setEnabled(enableJobMenu);   
+        miJobCopy.setEnabled(enableJobMenu);
+        miJobInfo.setEnabled(enableJobMenu);
+
+        miWizardNewConnection.setEnabled(enableTransMenu || enableJobMenu || enableRepositoryMenu);
+        miWizardCopyTable.setEnabled(enableTransMenu || enableJobMenu || enableRepositoryMenu);
         
         miRepDisconnect.setEnabled(enableRepositoryMenu);
         miRepExplore.setEnabled(enableRepositoryMenu);
         miRepUser.setEnabled(enableRepositoryMenu);
+        
     }
     
     private void markTabsChanged()
@@ -3904,9 +4374,25 @@ public class Spoon
         }
     }
     
-    private void printFile(TransMeta transMeta)
+    private void printFile()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null)
+        {
+            printTransFile(transMeta);
+        }
+        
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null)
+        {
+            printJobFile(jobMeta);
+        }
+    }
+    
+    private void printTransFile(TransMeta transMeta)
     {
         SpoonGraph spoonGraph = getActiveSpoonGraph();
+        if (spoonGraph==null) return;
         
         PrintSpool ps = new PrintSpool();
         Printer printer = ps.getPrinter(shell);
@@ -3922,10 +4408,50 @@ public class Spoon
         ps.dispose();
     }
     
+    private void printJobFile(JobMeta jobMeta)
+    {
+        ChefGraph chefGraph = getActiveChefGraph();
+        if (chefGraph==null) return;
+        
+        PrintSpool ps = new PrintSpool();
+        Printer printer = ps.getPrinter(shell);
+        
+        // Create an image of the screen
+        Point max = jobMeta.getMaximum();
+        
+        PaletteData pal = ps.getPaletteData();      
+        
+        ImageData imd = new ImageData(max.x, max.y, printer.getDepth(), pal);
+        Image img = new Image(printer, imd);
+        
+        GC img_gc = new GC(img);
+        
+        // Clear the background first, fill with background color...
+        img_gc.setForeground(GUIResource.getInstance().getColorBackground());
+        img_gc.fillRectangle(0,0,max.x, max.y);
+        
+        // Draw the transformation...
+        chefGraph.drawJob(img_gc);
+        
+        ps.printImage(shell, props, img);
+        
+        img_gc.dispose();
+        img.dispose();
+        ps.dispose();
+    }
+
+    
     private SpoonGraph getActiveSpoonGraph()
     {
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
         if (mapEntry.getObject() instanceof SpoonGraph) return (SpoonGraph) mapEntry.getObject();
+        return null;
+    }
+    
+    private ChefGraph getActiveChefGraph()
+    {
+        TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
+        if (mapEntry.getObject() instanceof ChefGraph) return (ChefGraph) mapEntry.getObject();
         return null;
     }
 
@@ -3940,6 +4466,17 @@ public class Spoon
         return findSpoonLogOfTransformation(transMeta);
     }
     
+    /**
+     * @return the Log tab associated with the active job
+     */
+    private ChefLog getActiveJobLog()
+    {
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta==null) return null; // nothing to work with.
+
+        return findChefLogOfJob(jobMeta);
+    }
+    
     public SpoonGraph findSpoonGraphOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
@@ -3951,6 +4488,22 @@ public class Spoon
             {
                 SpoonGraph spoonGraph = (SpoonGraph) mapEntry.getObject();
                 if (spoonGraph.getTransMeta().equals(transMeta)) return spoonGraph;
+            }
+        }
+        return null;
+    }
+    
+    public ChefGraph findChefGraphOfJob(JobMeta jobMeta)
+    {
+        // Now loop over the entries in the tab-map
+        Collection collection = tabMap.values();
+        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        {
+            TabMapEntry mapEntry = (TabMapEntry) iter.next();
+            if (mapEntry.getObject() instanceof ChefGraph)
+            {
+                ChefGraph chefGraph = (ChefGraph) mapEntry.getObject();
+                if (chefGraph.getJobMeta().equals(jobMeta)) return chefGraph;
             }
         }
         return null;
@@ -3972,6 +4525,22 @@ public class Spoon
         return null;
     }
     
+    public ChefLog findChefLogOfJob(JobMeta jobMeta)
+    {
+        // Now loop over the entries in the tab-map
+        Collection collection = tabMap.values();
+        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        {
+            TabMapEntry mapEntry = (TabMapEntry) iter.next();
+            if (mapEntry.getObject() instanceof ChefLog)
+            {
+                ChefLog chefLog = (ChefLog) mapEntry.getObject();
+                if (chefLog.getJobMeta().equals(jobMeta)) return chefLog;
+            }
+        }
+        return null;
+    }
+    
     public SpoonHistory findSpoonHistoryOfTransformation(TransMeta transMeta)
     {
         if (transMeta==null) return null;
@@ -3985,6 +4554,24 @@ public class Spoon
             {
                 SpoonHistory spoonHistory = (SpoonHistory) mapEntry.getObject();
                 if (spoonHistory.getTransMeta()!=null && spoonHistory.getTransMeta().equals(transMeta)) return spoonHistory;
+            }
+        }
+        return null;
+    }
+    
+    public ChefHistory findChefHistoryOfJob(JobMeta jobMeta)
+    {
+        if (jobMeta==null) return null;
+        
+        // Now loop over the entries in the tab-map
+        Collection collection = tabMap.values();
+        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        {
+            TabMapEntry mapEntry = (TabMapEntry) iter.next();
+            if (mapEntry.getObject() instanceof ChefHistory)
+            {
+                ChefHistory chefHistory = (ChefHistory) mapEntry.getObject();
+                if (chefHistory.getJobMeta()!=null && chefHistory.getJobMeta().equals(jobMeta)) return chefHistory;
             }
         }
         return null;
@@ -4023,16 +4610,56 @@ public class Spoon
         
         return transMeta;
     }
+    
+    /**
+     * @return The active JobMeta object by looking at the selected ChefGraph, ChefLog, ChefHist
+     *         If nothing valueable is selected, we return null
+     */
+    public JobMeta getActiveJob()
+    {
+        if (tabfolder==null) return null;
+        CTabItem tabItem = tabfolder.getSelection();
+        if (tabItem==null) return null;
+        
+        // What job is in the active tab?
+        // ChefLog, ChefGraph & ChefHist contain the same job
+        //
+        TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
+        JobMeta jobMeta = null;
+        if (mapEntry.getObject() instanceof ChefGraph) jobMeta = ((ChefGraph) mapEntry.getObject()).getJobMeta();
+        if (mapEntry.getObject() instanceof ChefLog) jobMeta = ((ChefLog) mapEntry.getObject()).getJobMeta();
+        if (mapEntry.getObject() instanceof ChefHistory) jobMeta = ((ChefHistory) mapEntry.getObject()).getJobMeta();
+        
+        return jobMeta;
+    }
+    
+    public UndoInterface getActiveUndoInterface()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return transMeta;
+        return getActiveJob();
+    }
 
     public TransMeta findTransformation(String name)
     {
         return (TransMeta)transformationMap.get(name);
     }
     
+    public JobMeta findJob(String name)
+    {
+        return (JobMeta)jobMap.get(name);
+    }
+    
     public TransMeta[] getLoadedTransformations()
     {
         List list = new ArrayList(transformationMap.values());
         return (TransMeta[]) list.toArray(new TransMeta[list.size()]);
+    }
+    
+    public JobMeta[] getLoadedJobs()
+    {
+        List list = new ArrayList(jobMap.values());
+        return (JobMeta[]) list.toArray(new JobMeta[list.size()]);
     }
 
     public SpoonGraph getSpoonGraph(TransMeta transMeta)
@@ -4063,7 +4690,7 @@ public class Spoon
         //
         if (tid.isSharedObjectsFileChanged())
         {
-            loadSharedObjects(transMeta);
+            loadTransSharedObjects(transMeta);
         }
         
         if (tid.isSharedObjectsFileChanged() || ti!=null)
@@ -4108,17 +4735,35 @@ public class Spoon
         refreshGraph();
     }
     
-    public void undoAction(TransMeta transMeta)
+    public void undoAction(UndoInterface undoInterface)
     {
-        if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        spoonGraph.forceFocus();
+        if (undoInterface==null) return;
         
-        TransAction ta = transMeta.previousUndo();
+        TransAction ta = undoInterface.previousUndo();
         if (ta==null) return;
         
-        setUndoMenu(transMeta); // something changed: change the menu
-        switch(ta.getType())
+        setUndoMenu(undoInterface); // something changed: change the menu
+        
+        if (undoInterface instanceof TransMeta) undoTransformationAction((TransMeta)undoInterface, ta);
+        if (undoInterface instanceof JobMeta) undoJobAction((JobMeta)undoInterface, ta);
+        
+        // Put what we undo in focus
+        if (undoInterface instanceof TransMeta)
+        {
+            SpoonGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
+            spoonGraph.forceFocus();
+        }
+        if (undoInterface instanceof JobMeta)
+        {
+            ChefGraph chefGraph = findChefGraphOfJob((JobMeta)undoInterface);
+            chefGraph.forceFocus();
+        }
+    }
+    
+
+    private void undoTransformationAction(TransMeta transMeta, TransAction transAction)
+    {
+        switch(transAction.getType())
         {
             //
             // NEW
@@ -4127,9 +4772,9 @@ public class Spoon
             // We created a new step : undo this...
             case TransAction.TYPE_ACTION_NEW_STEP:
                 // Delete the step at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeStep(idx);
                 }
                 refreshTree();
@@ -4139,9 +4784,9 @@ public class Spoon
             // We created a new connection : undo this...
             case TransAction.TYPE_ACTION_NEW_CONNECTION:
                 // Delete the connection at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeDatabase(idx);
                 }
                 refreshTree();
@@ -4151,9 +4796,9 @@ public class Spoon
             // We created a new note : undo this...
             case TransAction.TYPE_ACTION_NEW_NOTE:
                 // Delete the note at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeNote(idx);
                 }
                 refreshTree();
@@ -4163,9 +4808,9 @@ public class Spoon
             // We created a new hop : undo this...
             case TransAction.TYPE_ACTION_NEW_HOP:
                 // Delete the hop at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeTransHop(idx);
                 }
                 refreshTree();
@@ -4175,9 +4820,9 @@ public class Spoon
             // We created a new slave : undo this...
             case TransAction.TYPE_ACTION_NEW_SLAVE:
                 // Delete the slave at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.getSlaveServers().remove(idx);
                 }
                 refreshTree();
@@ -4187,9 +4832,9 @@ public class Spoon
                 // We created a new slave : undo this...
             case TransAction.TYPE_ACTION_NEW_CLUSTER:
                 // Delete the slave at correct location:
-                for (int i=ta.getCurrent().length-1;i>=0;i--)
+                for (int i=transAction.getCurrent().length-1;i>=0;i--)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.getClusterSchemas().remove(idx);
                 }
                 refreshTree();
@@ -4203,10 +4848,10 @@ public class Spoon
             // We delete a step : undo this...
             case TransAction.TYPE_ACTION_DELETE_STEP:
                 // un-Delete the step at correct location: re-insert
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    StepMeta stepMeta = (StepMeta)ta.getCurrent()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    StepMeta stepMeta = (StepMeta)transAction.getCurrent()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.addStep(idx, stepMeta);
                 }
                 refreshTree();
@@ -4216,10 +4861,10 @@ public class Spoon
             // We deleted a connection : undo this...
             case TransAction.TYPE_ACTION_DELETE_CONNECTION:
                 // re-insert the connection at correct location:
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    DatabaseMeta ci = (DatabaseMeta)ta.getCurrent()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    DatabaseMeta ci = (DatabaseMeta)transAction.getCurrent()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.addDatabase(idx, ci);
                 }
                 refreshTree();
@@ -4229,10 +4874,10 @@ public class Spoon
             // We delete new note : undo this...
             case TransAction.TYPE_ACTION_DELETE_NOTE:
                 // re-insert the note at correct location:
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    NotePadMeta ni = (NotePadMeta)ta.getCurrent()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    NotePadMeta ni = (NotePadMeta)transAction.getCurrent()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.addNote(idx, ni);
                 }
                 refreshTree();
@@ -4242,10 +4887,10 @@ public class Spoon
             // We deleted a hop : undo this...
             case TransAction.TYPE_ACTION_DELETE_HOP:
                 // re-insert the hop at correct location:
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    TransHopMeta hi = (TransHopMeta)ta.getCurrent()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    TransHopMeta hi = (TransHopMeta)transAction.getCurrent()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     // Build a new hop:
                     StepMeta from = transMeta.findStep(hi.getFromStep().getName());
                     StepMeta to   = transMeta.findStep(hi.getToStep().getName());
@@ -4264,10 +4909,10 @@ public class Spoon
             // We changed a step : undo this...
             case TransAction.TYPE_ACTION_CHANGE_STEP:
                 // Delete the current step, insert previous version.
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    StepMeta prev = (StepMeta)ta.getPrevious()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    StepMeta prev = (StepMeta)transAction.getPrevious()[i];
+                    int idx = transAction.getCurrentIndex()[i];
 
                     transMeta.removeStep(idx);
                     transMeta.addStep(idx, prev);
@@ -4279,10 +4924,10 @@ public class Spoon
             // We changed a connection : undo this...
             case TransAction.TYPE_ACTION_CHANGE_CONNECTION:
                 // Delete & re-insert
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    DatabaseMeta prev = (DatabaseMeta)ta.getPrevious()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    DatabaseMeta prev = (DatabaseMeta)transAction.getPrevious()[i];
+                    int idx = transAction.getCurrentIndex()[i];
 
                     transMeta.removeDatabase(idx);
                     transMeta.addDatabase(idx, prev);
@@ -4294,11 +4939,11 @@ public class Spoon
             // We changed a note : undo this...
             case TransAction.TYPE_ACTION_CHANGE_NOTE:
                 // Delete & re-insert
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeNote(idx);
-                    NotePadMeta prev = (NotePadMeta)ta.getPrevious()[i];
+                    NotePadMeta prev = (NotePadMeta)transAction.getPrevious()[i];
                     transMeta.addNote(idx, prev);
                 }
                 refreshTree();
@@ -4308,10 +4953,10 @@ public class Spoon
             // We changed a hop : undo this...
             case TransAction.TYPE_ACTION_CHANGE_HOP:
                 // Delete & re-insert
-                for (int i=0;i<ta.getCurrent().length;i++)
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    TransHopMeta prev = (TransHopMeta)ta.getPrevious()[i];
-                    int idx = ta.getCurrentIndex()[i];
+                    TransHopMeta prev = (TransHopMeta)transAction.getPrevious()[i];
+                    int idx = transAction.getCurrentIndex()[i];
 
                     transMeta.removeTransHop(idx);
                     transMeta.addTransHop(idx, prev);
@@ -4327,21 +4972,21 @@ public class Spoon
             // The position of a step has changed: undo this...
             case TransAction.TYPE_ACTION_POSITION_STEP:
                 // Find the location of the step:
-                for (int i = 0; i < ta.getCurrentIndex().length; i++) 
+                for (int i = 0; i < transAction.getCurrentIndex().length; i++) 
                 {
-                    StepMeta stepMeta = transMeta.getStep(ta.getCurrentIndex()[i]);
-                    stepMeta.setLocation(ta.getPreviousLocation()[i]);
+                    StepMeta stepMeta = transMeta.getStep(transAction.getCurrentIndex()[i]);
+                    stepMeta.setLocation(transAction.getPreviousLocation()[i]);
                 }
                 refreshGraph();
                 break;
     
             // The position of a note has changed: undo this...
             case TransAction.TYPE_ACTION_POSITION_NOTE:
-                for (int i=0;i<ta.getCurrentIndex().length;i++)
+                for (int i=0;i<transAction.getCurrentIndex().length;i++)
                 {
-                    int idx = ta.getCurrentIndex()[i];
+                    int idx = transAction.getCurrentIndex()[i];
                     NotePadMeta npi = transMeta.getNote(idx);
-                    Point prev = ta.getPreviousLocation()[i];
+                    Point prev = transAction.getPreviousLocation()[i];
                     npi.setLocation(prev);
                 }
                 refreshGraph();
@@ -4356,26 +5001,218 @@ public class Spoon
         }
     }
     
-    public void redoAction(TransMeta transMeta)
+    private void undoJobAction(JobMeta jobMeta, TransAction transAction)
     {
-        if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        spoonGraph.forceFocus();
+        switch(transAction.getType())
+        {
+            //
+            // NEW
+            //
 
-        TransAction ta = transMeta.nextUndo();
+            // We created a new entry : undo this...
+            case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
+                // Delete the entry at correct location:
+                {
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=idx.length-1;i>=0;i--) jobMeta.removeJobEntry(idx[i]);
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We created a new note : undo this...
+            case TransAction.TYPE_ACTION_NEW_NOTE:
+                // Delete the note at correct location:
+                {
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=idx.length-1;i>=0;i--) jobMeta.removeNote(idx[i]);
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We created a new hop : undo this...
+            case TransAction.TYPE_ACTION_NEW_JOB_HOP:
+                // Delete the hop at correct location:
+                {
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=idx.length-1;i>=0;i--) jobMeta.removeJobHop(idx[i]);
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+
+            //
+            // DELETE
+            //
+
+            // We delete an entry : undo this...
+            case TransAction.TYPE_ACTION_DELETE_STEP:
+                // un-Delete the entry at correct location: re-insert
+                {
+                    JobEntryCopy ce[] = (JobEntryCopy[])transAction.getCurrent();
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=0;i<ce.length;i++) jobMeta.addJobEntry(idx[i], ce[i]);
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We delete new note : undo this...
+            case TransAction.TYPE_ACTION_DELETE_NOTE:
+                // re-insert the note at correct location:
+                {
+                    NotePadMeta ni[] = (NotePadMeta[])transAction.getCurrent();
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=0;i<idx.length;i++) jobMeta.addNote(idx[i], ni[i]);
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We deleted a new hop : undo this...
+            case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
+                // re-insert the hop at correct location:
+                {
+                    JobHopMeta hi[] = (JobHopMeta[])transAction.getCurrent();
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=0;i<hi.length;i++)
+                    {
+                        jobMeta.addJobHop(idx[i], hi[i]);
+                    }
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+
+
+            //
+            // CHANGE
+            //
+
+            // We changed a job entry: undo this...
+            case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
+                // Delete the current job entry, insert previous version.
+                {
+                    JobEntryCopy prev[] = (JobEntryCopy[])transAction.getPrevious();
+                    int idx[] = transAction.getCurrentIndex();
+                    
+                    for (int i=0;i<idx.length;i++)
+                    {
+                        jobMeta.removeJobEntry(idx[i]);
+                        jobMeta.addJobEntry(idx[i], prev[i]);
+                    }
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We changed a note : undo this...
+            case TransAction.TYPE_ACTION_CHANGE_NOTE:
+                // Delete & re-insert
+                {
+                    NotePadMeta prev[] = (NotePadMeta[])transAction.getPrevious();
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=0;i<idx.length;i++)
+                    {
+                        jobMeta.removeNote(idx[i]);
+                        jobMeta.addNote(idx[i], prev[i]);
+                    }
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+    
+            // We changed a hop : undo this...
+            case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
+                // Delete & re-insert
+                {
+                    JobHopMeta prev[] = (JobHopMeta[])transAction.getPrevious();
+                    int idx[] = transAction.getCurrentIndex();
+                    for (int i=0;i<idx.length;i++)
+                    {
+                        jobMeta.removeJobHop(idx[i]);
+                        jobMeta.addJobHop(idx[i], prev[i]);
+                    }
+                    refreshTree();
+                    refreshGraph();
+                }
+                break;
+
+            //
+            // POSITION
+            //
+                
+            // The position of a step has changed: undo this...
+            case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
+                // Find the location of the step:
+                {
+                    int  idx[] = transAction.getCurrentIndex();
+                    Point  p[] = transAction.getPreviousLocation();
+                    for (int i = 0; i < p.length; i++) 
+                    {
+                        JobEntryCopy entry = jobMeta.getJobEntry(idx[i]);
+                        entry.setLocation(p[i]);
+                    }
+                    refreshGraph();
+                }
+                break;
+    
+            // The position of a note has changed: undo this...
+            case TransAction.TYPE_ACTION_POSITION_NOTE:
+                int idx[] = transAction.getCurrentIndex();
+                Point prev[] = transAction.getPreviousLocation();
+                for (int i=0;i<idx.length;i++)
+                {
+                    NotePadMeta npi = jobMeta.getNote(idx[i]);
+                    npi.setLocation(prev[i]);
+                }
+                refreshGraph();
+                break;
+            default: break;
+        }
+    }
+
+
+    public void redoAction(UndoInterface undoInterface)
+    {
+        if (undoInterface==null) return;
+        
+        TransAction ta = undoInterface.nextUndo();
         if (ta==null) return;
-        setUndoMenu(transMeta); // something changed: change the menu
-        switch(ta.getType())
+        
+        setUndoMenu(undoInterface); // something changed: change the menu
+
+        if (undoInterface instanceof TransMeta) redoTransformationAction((TransMeta)undoInterface, ta);
+        if (undoInterface instanceof JobMeta) redoJobAction((JobMeta)undoInterface, ta);
+
+        // Put what we redo in focus
+        if (undoInterface instanceof TransMeta)
+        {
+            SpoonGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
+            spoonGraph.forceFocus();
+        }
+        if (undoInterface instanceof JobMeta)
+        {
+            ChefGraph chefGraph = findChefGraphOfJob((JobMeta)undoInterface);
+            chefGraph.forceFocus();
+        }
+    }
+    
+
+    private void redoTransformationAction(TransMeta transMeta, TransAction transAction)
+    {
+        switch(transAction.getType())
         {
         //
         // NEW
         //
         case TransAction.TYPE_ACTION_NEW_STEP:
             // re-delete the step at correct location:
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                StepMeta stepMeta = (StepMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                StepMeta stepMeta = (StepMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.addStep(idx, stepMeta);
                                 
                 refreshTree();
@@ -4385,10 +5222,10 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_NEW_CONNECTION:
             // re-insert the connection at correct location:
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                DatabaseMeta ci = (DatabaseMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                DatabaseMeta ci = (DatabaseMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.addDatabase(idx, ci);
                 refreshTree();
                 refreshGraph();
@@ -4397,10 +5234,10 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_NEW_NOTE:
             // re-insert the note at correct location:
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                NotePadMeta ni = (NotePadMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                NotePadMeta ni = (NotePadMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.addNote(idx, ni);
                 refreshTree();
                 refreshGraph();
@@ -4409,10 +5246,10 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_NEW_HOP:
             // re-insert the hop at correct location:
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                TransHopMeta hi = (TransHopMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                TransHopMeta hi = (TransHopMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.addTransHop(idx, hi);
                 refreshTree();
                 refreshGraph();
@@ -4424,9 +5261,9 @@ public class Spoon
         //
         case TransAction.TYPE_ACTION_DELETE_STEP:
             // re-remove the step at correct location:
-            for (int i=ta.getCurrent().length-1;i>=0;i--)
+            for (int i=transAction.getCurrent().length-1;i>=0;i--)
             {
-                int idx = ta.getCurrentIndex()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.removeStep(idx);
             }
             refreshTree();
@@ -4435,9 +5272,9 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_DELETE_CONNECTION:
             // re-remove the connection at correct location:
-            for (int i=ta.getCurrent().length-1;i>=0;i--)
+            for (int i=transAction.getCurrent().length-1;i>=0;i--)
             {
-                int idx = ta.getCurrentIndex()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.removeDatabase(idx);
             }
             refreshTree();
@@ -4446,9 +5283,9 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_DELETE_NOTE:
             // re-remove the note at correct location:
-            for (int i=ta.getCurrent().length-1;i>=0;i--)
+            for (int i=transAction.getCurrent().length-1;i>=0;i--)
             {
-                int idx = ta.getCurrentIndex()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.removeNote(idx);
             }
             refreshTree();
@@ -4457,9 +5294,9 @@ public class Spoon
 
         case TransAction.TYPE_ACTION_DELETE_HOP:
             // re-remove the hop at correct location:
-            for (int i=ta.getCurrent().length-1;i>=0;i--)
+            for (int i=transAction.getCurrent().length-1;i>=0;i--)
             {
-                int idx = ta.getCurrentIndex()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 transMeta.removeTransHop(idx);
             }
             refreshTree();
@@ -4473,10 +5310,10 @@ public class Spoon
         // We changed a step : undo this...
         case TransAction.TYPE_ACTION_CHANGE_STEP:
             // Delete the current step, insert previous version.
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                StepMeta stepMeta = (StepMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                StepMeta stepMeta = (StepMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 
                 transMeta.removeStep(idx);
                 transMeta.addStep(idx, stepMeta);
@@ -4488,10 +5325,10 @@ public class Spoon
         // We changed a connection : undo this...
         case TransAction.TYPE_ACTION_CHANGE_CONNECTION:
             // Delete & re-insert
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                DatabaseMeta ci = (DatabaseMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                DatabaseMeta ci = (DatabaseMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
 
                 transMeta.removeDatabase(idx);
                 transMeta.addDatabase(idx, ci);
@@ -4503,10 +5340,10 @@ public class Spoon
         // We changed a note : undo this...
         case TransAction.TYPE_ACTION_CHANGE_NOTE:
             // Delete & re-insert
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                NotePadMeta ni = (NotePadMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                NotePadMeta ni = (NotePadMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
 
                 transMeta.removeNote(idx);
                 transMeta.addNote(idx, ni);
@@ -4518,10 +5355,10 @@ public class Spoon
         // We changed a hop : undo this...
         case TransAction.TYPE_ACTION_CHANGE_HOP:
             // Delete & re-insert
-            for (int i=0;i<ta.getCurrent().length;i++)
+            for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                TransHopMeta hi = (TransHopMeta)ta.getCurrent()[i];
-                int idx = ta.getCurrentIndex()[i];
+                TransHopMeta hi = (TransHopMeta)transAction.getCurrent()[i];
+                int idx = transAction.getCurrentIndex()[i];
 
                 transMeta.removeTransHop(idx);
                 transMeta.addTransHop(idx, hi);
@@ -4534,20 +5371,20 @@ public class Spoon
         // CHANGE POSITION
         //
         case TransAction.TYPE_ACTION_POSITION_STEP:
-            for (int i=0;i<ta.getCurrentIndex().length;i++)
+            for (int i=0;i<transAction.getCurrentIndex().length;i++)
             {
                 // Find & change the location of the step:
-                StepMeta stepMeta = transMeta.getStep(ta.getCurrentIndex()[i]);
-                stepMeta.setLocation(ta.getCurrentLocation()[i]);
+                StepMeta stepMeta = transMeta.getStep(transAction.getCurrentIndex()[i]);
+                stepMeta.setLocation(transAction.getCurrentLocation()[i]);
             }
             refreshGraph();
             break;
         case TransAction.TYPE_ACTION_POSITION_NOTE:
-            for (int i=0;i<ta.getCurrentIndex().length;i++)
+            for (int i=0;i<transAction.getCurrentIndex().length;i++)
             {
-                int idx = ta.getCurrentIndex()[i];
+                int idx = transAction.getCurrentIndex()[i];
                 NotePadMeta npi = transMeta.getNote(idx);
-                Point curr = ta.getCurrentLocation()[i];
+                Point curr = transAction.getCurrentLocation()[i];
                 npi.setLocation(curr);
             }
             refreshGraph();
@@ -4562,12 +5399,173 @@ public class Spoon
         }
     }
     
-    public void setUndoMenu(TransMeta transMeta)
+    private void redoJobAction(JobMeta jobMeta, TransAction transAction)
+    {
+        switch(transAction.getType())
+        {
+        //
+        // NEW
+        //
+        case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
+            // re-delete the entry at correct location:
+            {
+                JobEntryCopy si[] = (JobEntryCopy[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=0;i<idx.length;i++) jobMeta.addJobEntry(idx[i], si[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        case TransAction.TYPE_ACTION_NEW_NOTE:
+            // re-insert the note at correct location:
+            {
+                NotePadMeta ni[] = (NotePadMeta[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=0;i<idx.length;i++) jobMeta.addNote(idx[i], ni[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        case TransAction.TYPE_ACTION_NEW_JOB_HOP:
+            // re-insert the hop at correct location:
+            {
+                JobHopMeta hi[] = (JobHopMeta[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=0;i<idx.length;i++) jobMeta.addJobHop(idx[i], hi[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+        
+        //  
+        // DELETE
+        //
+        case TransAction.TYPE_ACTION_DELETE_JOB_ENTRY:
+            // re-remove the entry at correct location:
+            {
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=idx.length-1;i>=0;i--) jobMeta.removeJobEntry(idx[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        case TransAction.TYPE_ACTION_DELETE_NOTE:
+            // re-remove the note at correct location:
+            {
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=idx.length-1;i>=0;i--) jobMeta.removeNote(idx[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
+            // re-remove the hop at correct location:
+            {
+                int idx[] = transAction.getCurrentIndex();
+                for (int i=idx.length-1;i>=0;i--) jobMeta.removeJobHop(idx[i]);
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        //
+        // CHANGE
+        //
+
+        // We changed a step : undo this...
+        case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
+            // Delete the current step, insert previous version.
+            {
+                JobEntryCopy ce[] = (JobEntryCopy[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+                
+                for (int i=0;i<idx.length;i++)
+                {
+                    jobMeta.removeJobEntry(idx[i]);
+                    jobMeta.addJobEntry(idx[i], ce[i]);
+                }
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        // We changed a note : undo this...
+        case TransAction.TYPE_ACTION_CHANGE_NOTE:
+            // Delete & re-insert
+            {
+                NotePadMeta ni[] = (NotePadMeta[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+                
+                for (int i=0;i<idx.length;i++)
+                {
+                    jobMeta.removeNote(idx[i]);
+                    jobMeta.addNote(idx[i], ni[i]);
+                }
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        // We changed a hop : undo this...
+        case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
+            // Delete & re-insert
+            {
+                JobHopMeta hi[] = (JobHopMeta[])transAction.getCurrent();
+                int idx[] = transAction.getCurrentIndex();
+
+                for (int i=0;i<idx.length;i++)
+                {
+                    jobMeta.removeJobHop(idx[i]);
+                    jobMeta.addJobHop(idx[i], hi[i]);
+                }
+                refreshTree();
+                refreshGraph();
+            }
+            break;
+
+        //
+        // CHANGE POSITION
+        //
+        case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
+            {
+                // Find the location of the step:
+                int idx[] = transAction.getCurrentIndex();
+                Point p[] = transAction.getCurrentLocation();
+                for (int i = 0; i < p.length; i++) 
+                {
+                    JobEntryCopy entry = jobMeta.getJobEntry(idx[i]);
+                    entry.setLocation(p[i]);
+                }
+                refreshGraph();
+            }
+            break;
+        case TransAction.TYPE_ACTION_POSITION_NOTE:
+            {
+                int idx[] = transAction.getCurrentIndex();
+                Point curr[] = transAction.getCurrentLocation();
+                for (int i=0;i<idx.length;i++)
+                {
+                    NotePadMeta npi = jobMeta.getNote(idx[i]);
+                    npi.setLocation(curr[i]);
+                }
+                refreshGraph();
+            }
+            break;
+        default: break;
+        }
+    }
+
+
+    public void setUndoMenu(UndoInterface undoInterface)
     {
         if (shell.isDisposed()) return;
 
-        TransAction prev = transMeta!=null ? transMeta.viewThisUndo() : null;
-        TransAction next = transMeta!=null ? transMeta.viewNextUndo() : null;
+        TransAction prev = undoInterface!=null ? undoInterface.viewThisUndo() : null;
+        TransAction next = undoInterface!=null ? undoInterface.viewNextUndo() : null;
         
         if (prev!=null) 
         {
@@ -4593,42 +5591,49 @@ public class Spoon
     }
 
 
-    public void addUndoNew(TransMeta transMeta, Object obj[], int position[])
+    public void addUndoNew(UndoInterface undoInterface, Object obj[], int position[])
     {
-        addUndoNew(transMeta, obj, position, false);
+        addUndoNew(undoInterface, obj, position, false);
     }   
 
-    public void addUndoNew(TransMeta transMeta, Object obj[], int position[], boolean nextAlso)
+    public void addUndoNew(UndoInterface undoInterface, Object obj[], int position[], boolean nextAlso)
     {
-        // New object?
-        transMeta.addUndo(obj, null, position, null, null, TransMeta.TYPE_UNDO_NEW, nextAlso);
-        setUndoMenu(transMeta);
-    }   
-
-    // Undo delete object
-    public void addUndoDelete(TransMeta transMeta, Object obj[], int position[])
-    {
-        addUndoDelete(transMeta, obj, position, false);
+        undoInterface.addUndo(obj, null, position, null, null, TransMeta.TYPE_UNDO_NEW, nextAlso);
+        setUndoMenu(undoInterface);
     }   
 
     // Undo delete object
-    public void addUndoDelete(TransMeta transMeta, Object obj[], int position[], boolean nextAlso)
+    public void addUndoDelete(UndoInterface undoInterface, Object obj[], int position[])
     {
-        transMeta.addUndo(obj, null, position, null, null, TransMeta.TYPE_UNDO_DELETE, nextAlso);
-        setUndoMenu(transMeta);
+        addUndoDelete(undoInterface, obj, position, false);
     }   
 
+    // Undo delete object
+    public void addUndoDelete(UndoInterface undoInterface, Object obj[], int position[], boolean nextAlso)
+    {
+        undoInterface.addUndo(obj, null, position, null, null, TransMeta.TYPE_UNDO_DELETE, nextAlso);
+        setUndoMenu(undoInterface);
+    }   
+    
     // Change of step, connection, hop or note...
-    public void addUndoChange(TransMeta transMeta, Object from[], Object to[], int[] pos)
+    public void addUndoPosition(UndoInterface undoInterface, Object obj[], int pos[], Point prev[], Point curr[])
     {
-        addUndoChange(transMeta, from, to, pos, false);
+        // It's better to store the indexes of the objects, not the objects itself!
+        undoInterface.addUndo(obj, null, pos, prev, curr, JobMeta.TYPE_UNDO_POSITION, false);
+        setUndoMenu(undoInterface);
     }
 
     // Change of step, connection, hop or note...
-    public void addUndoChange(TransMeta transMeta, Object from[], Object to[], int[] pos, boolean nextAlso)
+    public void addUndoChange(UndoInterface undoInterface, Object from[], Object to[], int[] pos)
     {
-        transMeta.addUndo(from, to, pos, null, null, TransMeta.TYPE_UNDO_CHANGE, nextAlso);
-        setUndoMenu(transMeta);
+        addUndoChange(undoInterface, from, to, pos, false);
+    }
+
+    // Change of step, connection, hop or note...
+    public void addUndoChange(UndoInterface undoInterface, Object from[], Object to[], int[] pos, boolean nextAlso)
+    {
+        undoInterface.addUndo(from, to, pos, null, null, TransMeta.TYPE_UNDO_CHANGE, nextAlso);
+        setUndoMenu(undoInterface);
     }
 
     
@@ -4681,26 +5686,26 @@ public class Spoon
         }
     }
 
-    public void clearDBCache(TransMeta transMeta)
+    public void clearDBCache()
     {
-        clearDBCache(transMeta, null);
+        clearDBCache(null);
     }
     
-    public void clearDBCache(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void clearDBCache(DatabaseMeta databaseMeta)
     {
         if (databaseMeta!=null)
         {
-            transMeta.getDbCache().clear(databaseMeta.getName());
+            DBCache.getInstance().clear(databaseMeta.getName());
         }
         else
         {
-            transMeta.getDbCache().clear(null);
+            DBCache.getInstance().clear(null);
         }
     }
 
-    public void exploreDB(TransMeta transMeta, DatabaseMeta databaseMeta)
+    public void exploreDB(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
     {
-        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, databaseMeta, transMeta.getDatabases(), true );
+        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, databaseMeta, hasDatabasesInterface.getDatabases(), true );
         std.open();
     }
     
@@ -4811,7 +5816,14 @@ public class Spoon
     
     public void copyTransformation(TransMeta transMeta)
     {
-        toClipboard(XMLHandler.getXMLHeader()+transMeta.getXML());
+        if (transMeta==null) return;
+        toClipboard(XMLHandler.getXMLHeader() + transMeta.getXML());
+    }
+    
+    public void copyJob(JobMeta jobMeta)
+    {
+        if (jobMeta==null) return;
+        toClipboard(XMLHandler.getXMLHeader() + jobMeta.getXML());
     }
     
     public void copyTransformationImage(TransMeta transMeta)
@@ -4830,15 +5842,59 @@ public class Spoon
 	 * Shows a wizard that creates a new database connection...
 	 *
 	 */
-    private void createDatabaseWizard(TransMeta transMeta)
+    private void createDatabaseWizard(HasDatabasesInterface hasDatabasesInterface)
     {
     	CreateDatabaseWizard cdw=new CreateDatabaseWizard();
-    	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, transMeta.getDatabases());
+    	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, hasDatabasesInterface.getDatabases());
     	if(newDBInfo!=null){ //finished
-    		transMeta.addDatabase(newDBInfo);
+    		hasDatabasesInterface.addDatabase(newDBInfo);
     		refreshTree();
     		refreshGraph();
     	}
+    }
+    
+    public ArrayList getActiveDatabases()
+    {
+        Map map = new Hashtable();
+        
+        HasDatabasesInterface transMeta = getActiveTransformation();
+        if (transMeta!=null)
+        {
+            for (int i=0;i<transMeta.nrDatabases();i++)
+            {
+                map.put(transMeta.getDatabase(i).getName(), transMeta.getDatabase(i));
+            }
+        }
+        HasDatabasesInterface jobMeta = getActiveJob();
+        if (jobMeta!=null)
+        {
+            for (int i=0;i<jobMeta.nrDatabases();i++)
+            {
+                map.put(jobMeta.getDatabase(i).getName(), jobMeta.getDatabase(i));
+            }
+        }
+        if (rep!=null)
+        {
+            try
+            {
+                List repDBs = rep.getDatabases();
+                for (int i=0;i<repDBs.size();i++)
+                {
+                    DatabaseMeta databaseMeta = (DatabaseMeta) repDBs.get(i);
+                    map.put(databaseMeta.getName(), databaseMeta);
+                }
+            }
+            catch(Exception e)
+            {
+                log.logError(toString(), "Unexpected error reading databases from the repository: "+e.toString());
+                log.logError(toString(), Const.getStackTracker(e));
+            }
+        }
+        
+        ArrayList databases = new ArrayList();
+        databases.addAll( map.values() );
+        
+        return databases;
     }
         
     /**
@@ -4851,21 +5907,21 @@ public class Spoon
      * 4) Select a name for the new transformation<p>
      * 6) Create 1 transformation for the selected table<p> 
      */
-    private void copyTableWizard(final TransMeta transMeta)
+    private void copyTableWizard()
     {
-        final CopyTableWizardPage1 page1 = new CopyTableWizardPage1("1", transMeta.getDatabases());
+        ArrayList databases = getActiveDatabases();
+        if (databases.size()==0) return; // Nothing to do here
+        
+        final CopyTableWizardPage1 page1 = new CopyTableWizardPage1("1", databases);
         page1.createControl(shell);
         final CopyTableWizardPage2 page2 = new CopyTableWizardPage2("2");
         page2.createControl(shell);
-        // final CopyTableWizardPage3 page3 = new CopyTableWizardPage3 ("3", rep);
-        // page3.createControl(shell);
 
         Wizard wizard = new Wizard() 
         {
             public boolean performFinish() 
             {
-                return copyTable(transMeta, page1.getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection()
-                      );
+                return copyTable(page1.getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection());
             }
             
             /**
@@ -4885,7 +5941,7 @@ public class Spoon
         wd.open();
     }
 
-    public boolean copyTable(TransMeta transMeta, DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo, String tablename )
+    public boolean copyTable(DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo, String tablename )
     {
         try
         {
@@ -5106,35 +6162,35 @@ public class Spoon
             return;
         }
 
-        final Spoon win = new Spoon(log, display, null);
-        win.setDestroy(true);
-        win.setArguments((String[])args.toArray(new String[args.size()]));
+        final Spoon spoon = new Spoon(log, display, null);
+        spoon.setDestroy(true);
+        spoon.setArguments((String[])args.toArray(new String[args.size()]));
         
         log.logBasic(APP_NAME, Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
         
-        RepositoryMeta repinfo = null;
+        RepositoryMeta repositoryMeta = null;
         UserInfo userinfo = null;
         
-        if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && win.props.showRepositoriesDialogAtStartup())
+        if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && spoon.props.showRepositoriesDialogAtStartup())
         {       
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
             int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
             splash.hide();
-            RepositoriesDialog rd = new RepositoriesDialog(win.disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+            RepositoriesDialog rd = new RepositoriesDialog(spoon.disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
             if (rd.open())
             {
-                repinfo = rd.getRepository();
+                repositoryMeta = rd.getRepository();
                 userinfo = rd.getUser();
                 if (!userinfo.useTransformations())
                 {
-                    MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR );
+                    MessageBox mb = new MessageBox(spoon.shell, SWT.OK | SWT.ICON_ERROR );
                     mb.setMessage(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Message"));//"Sorry, this repository user can't work with transformations from the repository."
                     mb.setText(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Title"));//"Error!"
                     mb.open();
                     
                     userinfo = null;
-                    repinfo  = null;
+                    repositoryMeta  = null;
                 }
             }
             else
@@ -5143,7 +6199,7 @@ public class Spoon
                 if (rd.isCancelled()) 
                 {
                     splash.dispose();
-                    win.quitFile();
+                    spoon.quitFile();
                     return;
                 }
             }
@@ -5159,32 +6215,32 @@ public class Spoon
                     RepositoriesMeta repsinfo = new RepositoriesMeta(log);
                     if (repsinfo.readData())
                     {
-                        repinfo = repsinfo.findRepository(optionRepname.toString());
-                        if (repinfo!=null)
+                        repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+                        if (repositoryMeta!=null)
                         {
                             // Define and connect to the repository...
-                            win.rep = new Repository(log, repinfo, userinfo);
-                            if (win.rep.connect(Messages.getString("Spoon.Application.Name")))//"Spoon"
+                            spoon.rep = new Repository(log, repositoryMeta, userinfo);
+                            if (spoon.rep.connect(Messages.getString("Spoon.Application.Name")))//"Spoon"
                             {
                                 if (Const.isEmpty(optionDirname)) optionDirname=new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
                                 
                                 // Check username, password
-                                win.rep.userinfo = new UserInfo(win.rep, optionUsername.toString(), optionPassword.toString());
+                                spoon.rep.userinfo = new UserInfo(spoon.rep, optionUsername.toString(), optionPassword.toString());
                                 
-                                if (win.rep.userinfo.getID()>0)
+                                if (spoon.rep.userinfo.getID()>0)
                                 {
                                     // OK, if we have a specified transformation, try to load it...
                                     // If not, keep the repository logged in.
                                     if (!Const.isEmpty(optionTransname))
                                     {
-                                        RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(optionDirname.toString());
+                                        RepositoryDirectory repdir = spoon.rep.getDirectoryTree().findDirectory(optionDirname.toString());
                                         if (repdir!=null)
                                         {
-                                            TransMeta transMeta = new TransMeta(win.rep, optionTransname.toString(), repdir);
+                                            TransMeta transMeta = new TransMeta(spoon.rep, optionTransname.toString(), repdir);
                                             transMeta.setFilename(optionRepname.toString());
                                             transMeta.clearChanged();
                                             
-                                            win.addSpoonGraph(transMeta);
+                                            spoon.addSpoonGraph(transMeta);
                                         }
                                         else
                                         {
@@ -5195,8 +6251,8 @@ public class Spoon
                                 else
                                 {
                                     log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableVerifyUser"));//"Can't verify username and password."
-                                    win.rep.disconnect();
-                                    win.rep=null;
+                                    spoon.rep.disconnect();
+                                    spoon.rep=null;
                                 }
                             }
                             else
@@ -5220,77 +6276,32 @@ public class Spoon
                     TransMeta transMeta = new TransMeta(optionFilename.toString());
                     transMeta.setFilename(optionFilename.toString());
                     transMeta.clearChanged();
-                    win.addSpoonGraph(transMeta);
+                    spoon.addSpoonGraph(transMeta);
                 }
             }
             else // Normal operations, nothing on the commandline...
             {
                 // Can we connect to the repository?
-                if (repinfo!=null && userinfo!=null)
+                if (repositoryMeta!=null && userinfo!=null)
                 {
-                    win.rep = new Repository(log, repinfo, userinfo);
-                    if (!win.rep.connect(Messages.getString("Spoon.Application.Name"))) //"Spoon"
+                    spoon.rep = new Repository(log, repositoryMeta, userinfo);
+                    if (!spoon.rep.connect(Messages.getString("Spoon.Application.Name"))) //"Spoon"
                     {
-                        win.rep = null;
+                        spoon.rep = null;
                     }
                 }
     
-                if (win.props.openLastFile())
+                if (spoon.props.openLastFile())
                 {
                     log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
                     
-                    String  lastfiles[] = win.props.getLastFiles();
-                    String  lastdirs[]  = win.props.getLastDirs();
-                    boolean lasttypes[] = win.props.getLastTypes();
-                    String  lastrepos[] = win.props.getLastRepositories();
-            
-                    if (lastfiles.length>0)
+                    List lastUsedFiles = spoon.props.getLastUsedFiles();
+                    
+                    if (lastUsedFiles.size()>0)
                     {
-                        boolean use_repository = repinfo!=null;
+                        LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(0);
                         
-                        // Perhaps we need to connect to the repository?
-                        if (lasttypes[0])
-                        {
-                            if (!Const.isEmpty(lastrepos[0]))
-                            {
-                                if (use_repository && !lastrepos[0].equalsIgnoreCase(repinfo.getName()))
-                                {
-                                    // We just asked...
-                                    use_repository = false;
-                                }
-                            }
-                        }
-                        
-                        if (use_repository && lasttypes[0])
-                        {
-                            if (win.rep!=null) // load from this repository...
-                            {
-                                if (win.rep.getName().equalsIgnoreCase(lastrepos[0]))
-                                {
-                                    RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(lastdirs[0]);
-                                    if (repdir!=null)
-                                    {
-                                        log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.AutoLoadingTransformation",lastfiles[0],lastdirs[0]));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
-                                        TransLoadProgressDialog tlpd = new TransLoadProgressDialog(win.shell, win.rep, lastfiles[0], repdir);
-                                        TransMeta transMeta = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
-                                        if (transMeta != null) 
-                                        {
-                                            transMeta.setFilename(lastfiles[0]);
-                                            transMeta.clearChanged();
-                                            win.addSpoonGraph(transMeta);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (!lasttypes[0] && !Const.isEmpty(lastfiles[0]))
-                        {
-                            TransMeta transMeta = new TransMeta(lastfiles[0]);
-                            transMeta.setFilename(lastfiles[0]);
-                            transMeta.clearChanged();
-                            win.addSpoonGraph(transMeta);
-                        }                       
+                        spoon.loadLastUsedFile(lastUsedFile, repositoryMeta);
                     }
                 }
             }
@@ -5298,19 +6309,19 @@ public class Spoon
         catch(KettleException ke)
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
-            win.rep=null;
+            spoon.rep=null;
             // ke.printStackTrace();
         }
                 
-        win.open ();
+        spoon.open ();
 
         splash.dispose();
         
         try
         {
-            while (!win.isDisposed ()) 
+            while (!spoon.isDisposed ()) 
             {
-                if (!win.readAndDispatch ()) win.sleep ();
+                if (!spoon.readAndDispatch ()) spoon.sleep ();
             }
         }
         catch(Throwable e)
@@ -5318,7 +6329,7 @@ public class Spoon
             log.logError(APP_NAME, Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
             e.printStackTrace();
         }
-        win.dispose();
+        spoon.dispose();
 
         log.logBasic(APP_NAME, APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
 
@@ -5327,6 +6338,79 @@ public class Spoon
         
         // Kill all remaining things in this VM!
         System.exit(0);
+    }
+
+    private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException
+    {
+        boolean useRepository = repositoryMeta!=null;
+        
+        // Perhaps we need to connect to the repository?
+        if (lastUsedFile.isSourceRepository())
+        {
+            if (!Const.isEmpty(lastUsedFile.getRepositoryName()))
+            {
+                if (useRepository && !lastUsedFile.getRepositoryName().equalsIgnoreCase(repositoryMeta.getName()))
+                {
+                    // We just asked...
+                    useRepository = false;
+                }
+            }
+        }
+        
+        if (useRepository && lastUsedFile.isSourceRepository())
+        {
+            if (rep!=null) // load from this repository...
+            {
+                if (rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))
+                {
+                    RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(lastUsedFile.getDirectory());
+                    if (repdir!=null)
+                    {
+                        // Are we loading a transformation or a job?
+                        if (lastUsedFile.isTransformation())
+                        {
+                            log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.AutoLoadingTransformation",lastUsedFile.getFilename(), lastUsedFile.getDirectory()));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
+                            TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
+                            TransMeta transMeta = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
+                            if (transMeta != null) 
+                            {
+                                transMeta.setFilename(lastUsedFile.getFilename());
+                                transMeta.clearChanged();
+                                addSpoonGraph(transMeta);
+                                refreshTree();
+                            }
+                        }
+                        else
+                        if (lastUsedFile.isJob())
+                        {
+                            JobMeta jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), repdir);
+                            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
+                            jobMeta.clearChanged();
+                            addChefGraph(jobMeta);
+                            refreshTree();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!lastUsedFile.isSourceRepository() && !Const.isEmpty(lastUsedFile.getFilename()))
+        {
+            if (lastUsedFile.isTransformation())
+            {
+                TransMeta transMeta = new TransMeta(lastUsedFile.getFilename());
+                transMeta.setFilename(lastUsedFile.getFilename());
+                transMeta.clearChanged();
+                addSpoonGraph(transMeta);
+            }
+            if (lastUsedFile.isJob())
+            {
+                JobMeta jobMeta = new JobMeta(log, lastUsedFile.getFilename(), rep);
+                jobMeta.setFilename(lastUsedFile.getFilename());
+                jobMeta.clearChanged();
+                addChefGraph(jobMeta);
+            }
+        }                       
     }
 
     /**
@@ -5505,9 +6589,9 @@ public class Spoon
         }
     }
     
-    private void editPartitionSchema(TransMeta transMeta, PartitionSchema partitionSchema)
+    private void editPartitionSchema(HasDatabasesInterface hasDatabasesInterface, PartitionSchema partitionSchema)
     {
-        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases());
+        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, hasDatabasesInterface.getDatabases());
         if (dialog.open())
         {
             refreshTree();
@@ -5808,6 +6892,14 @@ public class Spoon
         }
     }
     
+    
+    public void executeJob(JobMeta jobMeta)
+    {
+        addChefLog(jobMeta);
+        ChefLog chefLog = getActiveJobLog();
+        chefLog.startJob();
+    }
+    
     public CTabItem findCTabItem(String text)
     {
         CTabItem[] items = tabfolder.getItems();
@@ -5871,9 +6963,48 @@ public class Spoon
         }
     }
     
+    public void addChefGraph(JobMeta jobMeta)
+    {
+        String key = addJob(jobMeta);
+        if (key!=null)
+        {
+            // See if there already is a tab for this graph
+            // If no, add it
+            // If yes, select that tab
+            //
+            String tabName = makeJobGraphTabName(jobMeta);
+            CTabItem tabItem=findCTabItem(tabName);
+            if (tabItem==null)
+            {
+                ChefGraph chefGraph = new ChefGraph(tabfolder, this, jobMeta);
+                tabItem = new CTabItem(tabfolder, SWT.CLOSE);
+                tabItem.setText(tabName);
+                tabItem.setToolTipText("Graphical view of Job : "+tabName);
+                tabItem.setImage(GUIResource.getInstance().getImageChefGraph());
+                tabItem.setControl(chefGraph);
+                
+                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefGraph));
+            }
+            int idx = tabfolder.indexOf(tabItem);
+            
+            // OK, also see if we need to open a new history window.
+            if (jobMeta.getLogConnection()!=null && !Const.isEmpty(jobMeta.getLogTable()))
+            {
+                addChefHistory(jobMeta, false);
+            }
+            // keep the focus on the graph
+            tabfolder.setSelection(idx);
+        }
+    }
+    
     public String makeLogTabName(TransMeta transMeta)
     {
-        return "Log: "+makeGraphTabName(transMeta);
+        return "Trans log: "+makeGraphTabName(transMeta);
+    }
+    
+    public String makeJobLogTabName(JobMeta jobMeta)
+    {
+        return "Job log: "+makeJobGraphTabName(jobMeta);
     }
     
     public String makeGraphTabName(TransMeta transMeta)
@@ -5889,16 +7020,33 @@ public class Spoon
         return transMeta.getName();
     }
     
+    public String makeJobGraphTabName(JobMeta jobMeta)
+    {
+        if (Const.isEmpty(jobMeta.getName()))
+        {
+            if (Const.isEmpty(jobMeta.getFilename()))
+            {
+                return STRING_JOB_NO_NAME;
+            }
+            return jobMeta.getFilename();
+        }
+        return jobMeta.getName();
+    }
+    
     public String makeHistoryTabName(TransMeta transMeta)
     {
-        return "History: "+makeGraphTabName(transMeta);
+        return "Trans History: "+makeGraphTabName(transMeta);
+    }
+    
+    public String makeJobHistoryTabName(JobMeta jobMeta)
+    {
+        return "Job History: "+makeJobGraphTabName(jobMeta);
     }
     
     public String makeSlaveTabName(SlaveServer slaveServer)
     {
         return "Slave server: "+slaveServer.getName();
     }
-    
     
     public void addSpoonLog(TransMeta transMeta)
     {
@@ -5935,6 +7083,42 @@ public class Spoon
         tabfolder.setSelection(idx);
     }
     
+    public void addChefLog(JobMeta jobMeta)
+    {
+        // See if there already is a tab for this log
+        // If no, add it
+        // If yes, select that tab
+        //
+        String tabName = makeJobLogTabName(jobMeta);
+        CTabItem tabItem=findCTabItem(tabName);
+        if (tabItem==null)
+        {
+            ChefLog chefLog = new ChefLog(tabfolder, this, jobMeta);
+            tabItem = new CTabItem(tabfolder, SWT.CLOSE);
+            tabItem.setText(tabName);
+            tabItem.setToolTipText("Execution log for job: "+makeJobGraphTabName(jobMeta));
+            tabItem.setControl(chefLog);
+
+            // If there is an associated history window, we want to keep that one up-to-date as well.
+            //
+            ChefHistory chefHistory = findChefHistoryOfJob(jobMeta);
+            CTabItem historyItem = findCTabItem(makeJobHistoryTabName(jobMeta));
+            
+            if (chefHistory!=null && historyItem!=null)
+            {
+                ChefHistoryRefresher chefHistoryRefresher = new ChefHistoryRefresher(historyItem, chefHistory);
+                tabfolder.addSelectionListener(chefHistoryRefresher);
+                chefLog.setChefHistoryRefresher(chefHistoryRefresher);
+            }
+
+            
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefLog));
+        }
+        int idx = tabfolder.indexOf(tabItem);
+        tabfolder.setSelection(idx);
+    }
+
+    
     public void addSpoonHistory(TransMeta transMeta, boolean select)
     {
         // See if there already is a tab for this history view
@@ -5962,6 +7146,41 @@ public class Spoon
             spoonHistory.markRefreshNeeded(); // will refresh when first selected
                         
             tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonHistory));
+        }
+        if (select)
+        {
+            int idx = tabfolder.indexOf(tabItem);
+            tabfolder.setSelection(idx);
+        }
+    }
+    
+    public void addChefHistory(JobMeta jobMeta, boolean select)
+    {
+        // See if there already is a tab for this history view
+        // If no, add it
+        // If yes, select that tab
+        //
+        String tabName = makeJobHistoryTabName(jobMeta);
+        CTabItem tabItem=findCTabItem(tabName);
+        if (tabItem==null)
+        {
+            ChefHistory chefHistory = new ChefHistory(tabfolder, this, jobMeta);
+            tabItem = new CTabItem(tabfolder, SWT.CLOSE);
+            tabItem.setText(tabName);
+            tabItem.setToolTipText("Execution history for job : "+makeJobGraphTabName(jobMeta));
+            tabItem.setControl(chefHistory);
+            
+            // If there is an associated log window that's open, find it and add a refresher
+            ChefLog chefLog = findChefLogOfJob(jobMeta);
+            if (chefLog!=null)
+            {
+                ChefHistoryRefresher chefHistoryRefresher = new ChefHistoryRefresher(tabItem, chefHistory);
+                tabfolder.addSelectionListener(chefHistoryRefresher);
+                chefLog.setChefHistoryRefresher(chefHistoryRefresher);
+            }
+            chefHistory.markRefreshNeeded(); // will refresh when first selected
+                        
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefHistory));
         }
         if (select)
         {
@@ -6068,6 +7287,813 @@ public class Spoon
             }
         }
     }
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //
+    //
+    // Job manipulation steps...
+    //
+    //
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    public JobEntryCopy newChefGraphEntry(JobMeta jobMeta, String type_desc, boolean openit)
+    {
+        JobEntryLoader jobLoader = JobEntryLoader.getInstance();
+        JobPlugin jobPlugin = null; 
+        
+        try
+        {
+            jobPlugin = jobLoader.findJobEntriesWithDescription(type_desc);
+
+            if (jobPlugin!=null)
+            {
+                // System.out.println("new job entry of type: "+type+" ["+type_desc+"]");
+                
+                // Determine name & number for this entry.
+                String basename = type_desc;
+                int nr = jobMeta.generateJobEntryNameNr(basename);
+                String entry_name = basename+" "+nr; //$NON-NLS-1$
+                
+                // Generate the appropriate class...
+                JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
+                jei.setName(entry_name);
+        
+                if (openit)
+                {
+                    JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
+                    if (d.open()!=null)
+                    {
+                        JobEntryCopy jge = new JobEntryCopy(log);
+                        jge.setEntry(jei);
+                        jge.setLocation(50,50);
+                        jge.setNr(0);
+                        jobMeta.addJobEntry(jge);
+                        addUndoNew(jobMeta, new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
+                        refreshGraph();
+                        refreshTree();
+                        return jge;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    JobEntryCopy jge = new JobEntryCopy(log);
+                    jge.setEntry(jei);
+                    jge.setLocation(50,50);
+                    jge.setNr(0);
+                    jobMeta.addJobEntry(jge);
+                    addUndoNew(jobMeta, new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
+                    refreshGraph();
+                    refreshTree();
+                    return jge;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch(Throwable e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Title"), Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        }
+    }
+
+    public boolean saveJobFile(JobMeta jobMeta)
+    {
+        log.logDetailed(toString(), "Save file..."); //$NON-NLS-1$
+        if (rep!=null)
+        {
+            return saveJobRepository(jobMeta);
+        }
+        else
+        {
+            if (jobMeta.getFilename()!=null)
+            {
+                return saveJob(jobMeta, jobMeta.getFilename());
+            }
+            else
+            {
+                return saveJobFileAs(jobMeta);
+            }
+        }
+    }
+    
+    private boolean saveJobXMLFile(JobMeta jobMeta)
+    {
+        boolean saved=false;
+        
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
+        dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+        String fname = dialog.open();
+        if (fname!=null) 
+        {
+            // Is the filename ending on .ktr, .xml?
+            boolean ending=false;
+            for (int i=0;i<Const.STRING_JOB_FILTER_EXT.length-1;i++)
+            {
+                if (fname.endsWith(Const.STRING_JOB_FILTER_EXT[i].substring(1))) 
+                {
+                    ending=true;
+                } 
+            }
+            if (fname.endsWith(Const.STRING_JOB_DEFAULT_EXT)) ending=true;
+            if (!ending)
+            {
+                fname+=Const.STRING_JOB_DEFAULT_EXT;
+            }
+            // See if the file already exists...
+            File f = new File(fname);
+            int id = SWT.YES;
+            if (f.exists())
+            {
+                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
+                mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
+                mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
+                id = mb.open();
+            }
+            if (id==SWT.YES)
+            {
+                saved=saveJob(jobMeta, fname);
+                jobMeta.setFilename(fname);
+            }
+        }
+        
+        return saved;
+    }
+
+
+    public boolean saveJobRepository(JobMeta jobMeta)
+    {
+        return saveJobRepository(jobMeta, false);
+    }
+
+    public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name)
+    {
+        log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
+        if (rep!=null)
+        {
+            boolean answer = true;
+            boolean ask    = ask_name;
+            while (answer && ( ask || jobMeta.getName()==null || jobMeta.getName().length()==0 ) )
+            {
+                if (!ask)
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+                ask=false;
+                answer = editJobProperties(jobMeta);
+            }
+            
+            if (answer && jobMeta.getName()!=null && jobMeta.getName().length()>0)
+            {
+                if (!rep.getUserInfo().isReadonly())
+                {
+                    boolean saved=false;
+                    int response = SWT.YES;
+                    if (jobMeta.showReplaceWarning(rep))
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+                        mb.setMessage(Messages.getString("Chef.Dialog.JobExistsOverwrite.Message1")+jobMeta.getName()+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message2")+Const.CR+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        mb.setText(Messages.getString("Chef.Dialog.JobExistsOverwrite.Title")); //$NON-NLS-1$
+                        response = mb.open();
+                    }
+                    
+                    if (response == SWT.YES)
+                    {
+                        // Keep info on who & when this transformation was changed...
+                        jobMeta.modifiedDate = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE);                //$NON-NLS-1$
+                        jobMeta.modifiedDate.sysdate();
+                        jobMeta.modifiedUser = rep.getUserInfo().getLogin();
+
+                        JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
+                        if (jspd.open())
+                        {
+                            if (!props.getSaveConfirmation())
+                            {
+                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
+                                                                                         null,
+                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
+                                                                                         MessageDialog.QUESTION,
+                                                                                         new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
+                                                                                         0,
+                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
+                                                                                         props.getSaveConfirmation()
+                                                                                         );
+                                md.open();
+                                props.setSaveConfirmation(md.getToggleState());
+                            }
+    
+                            // Handle last opened files...
+                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
+                            saveSettings();
+                            addMenuLast();
+    
+                            setShellText();
+                        }
+                    }
+                    return saved;
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
+                    mb.setMessage(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+            }
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
+            mb.open();
+        }
+        return false;
+    }
+    
+    public boolean saveJobFileAs(JobMeta jobMeta)
+    {
+        boolean saved=false;
+        
+        if (rep!=null)
+        {
+            jobMeta.setID(-1L);
+            saved=saveJobRepository(jobMeta, true);
+        }
+        else
+        {
+            saved=saveJobXMLFile(jobMeta);
+        }
+        
+        return saved;
+    }
+
+
+    public void saveJobFileAsXML(JobMeta jobMeta)
+    {
+        log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
+
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+        dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
+        dialog.setFilterNames     (Const.STRING_JOB_FILTER_NAMES);
+        String fname = dialog.open();
+        if (fname!=null) 
+        {
+            // Is the filename ending on .ktr, .xml?
+            boolean ending=false;
+            for (int i=0;i<Const.STRING_JOB_FILTER_EXT.length-1;i++)
+            {
+                if (fname.endsWith(Const.STRING_JOB_FILTER_EXT[i].substring(1))) ending=true;
+            }
+            if (fname.endsWith(Const.STRING_JOB_DEFAULT_EXT)) ending=true;
+            if (!ending)
+            {
+                fname+=Const.STRING_JOB_DEFAULT_EXT;
+            }
+            // See if the file already exists...
+            File f = new File(fname);
+            int id = SWT.YES;
+            if (f.exists())
+            {
+                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
+                mb.setMessage(Messages.getString("Chef.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Chef.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
+                id = mb.open();
+            }
+            if (id==SWT.YES)
+            {
+                saveJob(jobMeta, fname);
+            }
+        } 
+    }
+    
+    private boolean saveJob(JobMeta jobMeta, String fname)
+    {
+        boolean saved = false;
+        String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
+        try
+        {
+            DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
+            dos.write(xml.getBytes(Const.XML_ENCODING));
+            dos.close();
+            
+            saved=true;
+
+            // Handle last opened files...
+            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
+            saveSettings();
+            addMenuLast();
+
+            log.logDebug(toString(), "File written to ["+fname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            jobMeta.setFilename( fname );
+            jobMeta.clearChanged();
+            setShellText();
+        }
+        catch(Exception e)
+        {
+            log.logDebug(toString(), "Error opening file for writing! --> "+e.toString()); //$NON-NLS-1$
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(Messages.getString("Chef.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString()); //$NON-NLS-1$
+            mb.setText(Messages.getString("Chef.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
+            mb.open();
+        }
+        return saved;
+    }
+    
+    private boolean editJobProperties(JobMeta jobMeta)
+    {
+        if (jobMeta==null) return false;
+        JobDialog jd = new JobDialog(shell, SWT.NONE, jobMeta, rep);
+        JobMeta ji = jd.open();
+        setShellText();
+        return ji!=null;
+    }
+
+    
+    public void editChefGraphEntry(JobMeta jobMeta, JobEntryCopy je)
+    {
+        try
+        {
+            log.logBasic(toString(), "edit job graph entry: "+je.getName()); //$NON-NLS-1$
+            
+            JobEntryCopy before =(JobEntryCopy)je.clone_deep();
+            boolean entry_changed=false;
+            
+            JobEntryInterface jei = je.getEntry();
+            
+            JobEntryDialogInterface d = jei.getDialog(shell, jei, jobMeta,je.getName(),rep); 
+            if (d!=null)
+            {
+                if (d.open()!=null)
+                {
+                    entry_changed=true;
+                }
+        
+                if (entry_changed)
+                {
+                    addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { je }, new int[] { jobMeta.indexOfJobEntry(je) } );
+                    refreshGraph();
+                    refreshTree();
+                }
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                mb.setMessage(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
+                mb.open();
+            }
+
+        }
+        catch(Exception e)
+        {
+            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+
+    
+    public JobEntryTrans newJobEntry(JobMeta jobMeta, int type)
+    {
+        JobEntryTrans je = new JobEntryTrans();
+        je.setType(type);
+        String basename = JobEntryTrans.typeDesc[type]; 
+        int nr = jobMeta.generateJobEntryNameNr(basename);
+        je.setName(basename+" "+nr); //$NON-NLS-1$
+
+        setShellText();
+        
+        return je;
+    }
+
+    public void deleteChefGraphEntry(JobMeta jobMeta, String name)
+    {
+        // First delete all the hops using entry with name:
+        JobHopMeta hi[] = jobMeta.getAllJobHopsUsing(name);
+        if (hi.length>0)
+        {
+            int hix[] = new int[hi.length];
+            for (int i=0;i<hi.length;i++) hix[i] = jobMeta.indexOfJobHop(hi[i]);
+            
+            addUndoDelete(jobMeta, hi, hix);
+            for (int i=hix.length-1;i>=0;i--) jobMeta.removeJobHop(hix[i]);
+        }
+        
+        // Then delete all the entries with name:
+        JobEntryCopy je[] = jobMeta.getAllChefGraphEntries(name);
+        int jex[] = new int[je.length];
+        for (int i=0;i<je.length;i++) jex[i] = jobMeta.indexOfJobEntry(je[i]);
+
+        addUndoDelete(jobMeta, je, jex);
+        for (int i=jex.length-1;i>=0;i--) jobMeta.removeJobEntry(jex[i]);
+        
+        refreshGraph();
+        refreshTree();
+    }
+
+    public void dupeChefGraphEntry(JobMeta jobMeta, String name)
+    {
+        JobEntryCopy jge = jobMeta.findJobEntry(name, 0, true);
+        if (jge!=null)
+        {
+            JobEntryCopy dupejge = (JobEntryCopy)jge.clone();
+            dupejge.setNr( jobMeta.findUnusedNr(dupejge.getName()) );
+            if (dupejge.isDrawn())
+            {
+                Point p = jge.getLocation();
+                dupejge.setLocation(p.x+10, p.y+10);
+            }
+            jobMeta.addJobEntry(dupejge);
+            refreshGraph();
+            refreshTree();
+        }
+        setShellText();
+    }
+    
+    
+    public void copyJobEntries(JobMeta jobMeta, JobEntryCopy jec[])
+    {
+        if (jec==null || jec.length==0) return;
+        
+        String xml = XMLHandler.getXMLHeader();
+        xml+="<jobentries>"+Const.CR; //$NON-NLS-1$
+
+        for (int i=0;i<jec.length;i++)
+        {
+            xml+=jec[i].getXML();
+        }
+        
+        xml+="    </jobentries>"+Const.CR; //$NON-NLS-1$
+        
+        toClipboard(xml);
+    }
+
+    public void pasteXML(JobMeta jobMeta, String clipcontent, Point loc)
+    {
+        try
+        {
+            Document doc = XMLHandler.loadXMLString(clipcontent);
+
+            // De-select all, re-select pasted steps...
+            jobMeta.unselectAll();
+            
+            Node entriesnode = XMLHandler.getSubNode(doc, "jobentries"); //$NON-NLS-1$
+            int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
+            log.logDebug(toString(), "I found "+nr+" job entries to paste on location: "+loc); //$NON-NLS-1$ //$NON-NLS-2$
+            JobEntryCopy entries[] = new JobEntryCopy[nr];
+            
+            //Point min = new Point(loc.x, loc.y);
+            Point min = new Point(99999999,99999999);
+            
+            for (int i=0;i<nr;i++)
+            {
+                Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
+                entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), rep);
+
+                String name = jobMeta.getAlternativeJobentryName(entries[i].getName());
+                entries[i].setName(name);
+
+                if (loc!=null)
+                {
+                    Point p = entries[i].getLocation();
+                    
+                    if (min.x > p.x) min.x = p.x;
+                    if (min.y > p.y) min.y = p.y;
+                }
+            }
+            
+            // What's the difference between loc and min?
+            // This is the offset:
+            Point offset = new Point(loc.x-min.x, loc.y-min.y);
+            
+            // Undo/redo object positions...
+            int position[] = new int[entries.length];
+            
+            for (int i=0;i<entries.length;i++)
+            {
+                Point p = entries[i].getLocation();
+                String name = entries[i].getName();
+                
+                entries[i].setLocation(p.x+offset.x, p.y+offset.y);
+                
+                // Check the name, find alternative...
+                entries[i].setName( jobMeta.getAlternativeJobentryName(name) );
+                jobMeta.addJobEntry(entries[i]);
+                position[i] = jobMeta.indexOfJobEntry(entries[i]);
+            }
+            
+            // Save undo information too...
+            addUndoNew(jobMeta, entries, position);
+
+            if (jobMeta.hasChanged())
+            {
+                refreshTree();
+                refreshGraph();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+    
+    public void newJobHop(JobMeta jobMeta, JobEntryCopy fr, JobEntryCopy to)
+    {
+        log.logBasic(toString(), Messages.getString("Chef.Log.NewJobHop")+fr.getName()+", "+to.getName()+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        JobHopMeta hi = new JobHopMeta(fr, to);
+        jobMeta.addJobHop(hi);
+        addUndoNew(jobMeta, new JobHopMeta[] {hi}, new int[] { jobMeta.indexOfJobHop(hi)} );
+        refreshGraph();
+        refreshTree();
+    }
+
+    /**
+     * Create a job that extracts tables & data from a database.<p><p>
+     * 
+     * 0) Select the database to rip<p>
+     * 1) Select the tables in the database to rip<p>
+     * 2) Select the database to dump to<p>
+     * 3) Select the repository directory in which it will end up<p>
+     * 4) Select a name for the new job<p>
+     * 5) Create an empty job with the selected name.<p>
+     * 6) Create 1 transformation for every selected table<p>
+     * 7) add every created transformation to the job & evaluate<p>
+     * 
+     */
+    private void ripDBWizard()
+    {
+        final ArrayList databases = getActiveDatabases();
+        if (databases.size() == 0) return; // Nothing to do here
+
+        final RipDatabaseWizardPage1 page1 = new RipDatabaseWizardPage1("1", databases); //$NON-NLS-1$
+        page1.createControl(shell);
+        final RipDatabaseWizardPage2 page2 = new RipDatabaseWizardPage2("2"); //$NON-NLS-1$
+        page2.createControl(shell);
+        final RipDatabaseWizardPage3 page3 = new RipDatabaseWizardPage3("3", rep); //$NON-NLS-1$
+        page3.createControl(shell);
+
+        Wizard wizard = new Wizard()
+        {
+            public boolean performFinish()
+            {
+                JobMeta jobMeta = ripDB(databases, page3.getJobname(), page3.getDirectory(), page1.getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection());
+                if (jobMeta==null) return false;
+                
+                addChefGraph(jobMeta);
+                return true;
+            }
+
+            /**
+             * @see org.eclipse.jface.wizard.Wizard#canFinish()
+             */
+            public boolean canFinish()
+            {
+                return page3.canFinish();
+            }
+        };
+
+        wizard.addPage(page1);
+        wizard.addPage(page2);
+        wizard.addPage(page3);
+
+        WizardDialog wd = new WizardDialog(shell, wizard);
+        wd.setMinimumPageSize(700, 400);
+        wd.open();
+    }
+
+    public JobMeta ripDB(
+                final ArrayList databases, 
+                final String jobname, 
+                final RepositoryDirectory repdir, 
+                final DatabaseMeta sourceDbInfo, 
+                final DatabaseMeta targetDbInfo, 
+                final String[] tables
+            )
+    {
+        //
+        // Create a new job...
+        //
+        final JobMeta jobMeta = new JobMeta(log);
+        jobMeta.setDatabases(databases);
+        jobMeta.setFilename(null);
+        jobMeta.setName(jobname);
+        jobMeta.setDirectory(repdir);
+        refreshTree();
+        refreshGraph();
+
+        final Point location = new Point(50, 50);
+
+        // The start entry...
+        final JobEntryCopy start = jobMeta.findStart();
+        start.setLocation(new Point(location.x, location.y));
+        start.setDrawn();
+
+        // final Thread parentThread = Thread.currentThread();
+
+        // Create a dialog with a progress indicator!
+        IRunnableWithProgress op = new IRunnableWithProgress()
+        {
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+            {
+                // This is running in a new process: copy some KettleVariables info
+                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(),
+                // parentThread.getName(), true);
+
+                monitor.beginTask(Messages.getString("Spoon.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
+                monitor.worked(0);
+                JobEntryCopy previous = start;
+
+                // Loop over the table-names...
+                for (int i = 0; i < tables.length && !monitor.isCanceled(); i++)
+                {
+                    monitor.setTaskName(Messages.getString("Spoon.RipDB.Monitor.ProcessingTable") + tables[i] + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+                    //
+                    // Create the new transformation...
+                    //
+                    String transname = Messages.getString("Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+                    TransMeta ti = new TransMeta((String) null, transname, null);
+
+                    ti.setDirectory(repdir);
+
+                    //
+                    // Add a note
+                    //
+                    String note = Messages.getString("Spoon.RipDB.Monitor.Note1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note2") + sourceDbInfo + "]" + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    note += Messages.getString("Spoon.RipDB.Monitor.Note3") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note4") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
+                    ti.addNote(ni);
+
+                    //
+                    // Add the TableInputMeta step...
+                    // 
+                    String fromstepname = Messages.getString("Spoon.RipDB.Monitor.FromStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                    TableInputMeta tii = new TableInputMeta();
+                    tii.setDatabaseMeta(sourceDbInfo);
+                    tii.setSQL("SELECT * FROM " + sourceDbInfo.quoteField(tables[i])); //$NON-NLS-1$
+
+                    String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
+                    StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
+                    fromstep.setLocation(150, 100);
+                    fromstep.setDraw(true);
+                    fromstep
+                            .setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    ti.addStep(fromstep);
+
+                    //
+                    // Add the TableOutputMeta step...
+                    //
+                    String tostepname = Messages.getString("Spoon.RipDB.Monitor.ToStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                    TableOutputMeta toi = new TableOutputMeta();
+                    toi.setDatabase(targetDbInfo);
+                    toi.setTablename(tables[i]);
+                    toi.setCommitSize(100);
+                    toi.setTruncateTable(true);
+
+                    String tostepid = StepLoader.getInstance().getStepPluginID(toi);
+                    StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
+                    tostep.setLocation(500, 100);
+                    tostep.setDraw(true);
+                    tostep
+                            .setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    ti.addStep(tostep);
+
+                    //
+                    // Add a hop between the two steps...
+                    //
+                    TransHopMeta hi = new TransHopMeta(fromstep, tostep);
+                    ti.addTransHop(hi);
+
+                    //
+                    // Now we generate the SQL needed to run for this transformation.
+                    //
+                    // First set the limit to 1 to speed things up!
+                    String tmpSql = tii.getSQL();
+                    tii.setSQL(tii.getSQL() + sourceDbInfo.getLimitClause(1));
+                    String sql = ""; //$NON-NLS-1$
+                    try
+                    {
+                        sql = ti.getSQLStatementsString();
+                    }
+                    catch (KettleStepException kse)
+                    {
+                        throw new InvocationTargetException(kse,
+                                Messages.getString("Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation") + ti + "] : " + kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
+                    // remove the limit
+                    tii.setSQL(tmpSql);
+
+                    //
+                    // Now, save the transformation...
+                    //
+                    try
+                    {
+                        ti.saveRep(rep);
+                    }
+                    catch (KettleException dbe)
+                    {
+                        throw new InvocationTargetException(dbe, Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
+                    }
+
+                    // We can now continue with the population of the job...
+                    // //////////////////////////////////////////////////////////////////////
+
+                    location.x = 250;
+                    if (i > 0) location.y += 100;
+
+                    //
+                    // We can continue defining the job.
+                    //
+                    // First the SQL, but only if needed!
+                    // If the table exists & has the correct format, nothing is done
+                    //
+                    if (sql != null && sql.length() > 0)
+                    {
+                        String jesqlname = Messages.getString("Spoon.RipDB.JobEntrySQL.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                        JobEntrySQL jesql = new JobEntrySQL(jesqlname);
+                        jesql.setDatabase(targetDbInfo);
+                        jesql.setSQL(sql);
+                        jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+                        JobEntryCopy jecsql = new JobEntryCopy(log);
+                        jecsql.setEntry(jesql);
+                        jecsql.setLocation(new Point(location.x, location.y));
+                        jecsql.setDrawn();
+                        jobMeta.addJobEntry(jecsql);
+
+                        // Add the hop too...
+                        JobHopMeta jhi = new JobHopMeta(previous, jecsql);
+                        jobMeta.addJobHop(jhi);
+                        previous = jecsql;
+                    }
+
+                    //
+                    // Add the jobentry for the transformation too...
+                    //
+                    String jetransname = Messages.getString("Spoon.RipDB.JobEntryTrans.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                    JobEntryTrans jetrans = new JobEntryTrans(jetransname);
+                    jetrans.setTransname(ti.getName());
+                    jetrans.setDirectory(ti.getDirectory());
+
+                    JobEntryCopy jectrans = new JobEntryCopy(log, jetrans);
+                    jectrans
+                            .setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+                    jectrans.setDrawn();
+                    location.x += 400;
+                    jectrans.setLocation(new Point(location.x, location.y));
+                    jobMeta.addJobEntry(jectrans);
+
+                    // Add a hop between the last 2 job entries.
+                    JobHopMeta jhi2 = new JobHopMeta(previous, jectrans);
+                    jobMeta.addJobHop(jhi2);
+                    previous = jectrans;
+
+                    monitor.worked(1);
+                }
+
+                monitor.worked(100);
+                monitor.done();
+            }
+        };
+
+        try
+        {
+            ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+            pmd.run(false, true, op);
+        }
+        catch (InvocationTargetException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        }
+        catch (InterruptedException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        }
+        finally
+        {
+            refreshGraph();
+            refreshTree();
+        }
+        
+        return jobMeta;
+    }
+
     
 }
 

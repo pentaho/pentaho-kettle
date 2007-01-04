@@ -43,7 +43,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 public class RepositoryDirectory
 {
     public static final String DIRECTORY_SEPARATOR = "/";
-    
+
 	private RepositoryDirectory parent;
 	private ArrayList           children;
 	
@@ -550,12 +550,10 @@ public class RepositoryDirectory
 	 * @param ti The TreeItem to set the name on and to create the subdirectories
 	 * @param rep The repository
 	 * @param dircolor The color in which the directories will be drawn.
-	 * @param trans  Include the transformations in the tree or not
-	 * @param job    Include the jobs in the tree or not
 	 * @param schema Include the schemas in the tree or not
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, boolean trans, boolean job, boolean schema, int sortPosition, boolean ascending) throws KettleDatabaseException
+	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending) throws KettleDatabaseException
 	{
 		ti.setText(getDirectoryName());
 		ti.setForeground(dircolor);
@@ -565,22 +563,30 @@ public class RepositoryDirectory
 		{
 			RepositoryDirectory subdir = getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
-			subdir.getTreeWithNames(subti, rep, dircolor, trans, job, schema, sortPosition, ascending);
+			subdir.getTreeWithNames(subti, rep, dircolor, sortPosition, ascending);
 		}
 		
 		try
 		{
-			// Then the transformations, jobs or schemas...
-            List repositoryObjects = null;
-			if (trans) repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
-			if (job) repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
+			// Then show the transformations & jobs in that directory...
+            List repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
             if (repositoryObjects!=null)
             {
                 for (int i=0;i<repositoryObjects.size();i++)
                 {
                     TreeItem tiObject = new TreeItem(ti, SWT.NONE);
                     RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
-                    repositoryObject.setTreeItem(tiObject);
+                    repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION);
+                }
+            }
+            repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
+            if (repositoryObjects!=null)
+            {
+                for (int i=0;i<repositoryObjects.size();i++)
+                {
+                    TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                    RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
+                    repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_JOB);
                 }
             }
 		}
