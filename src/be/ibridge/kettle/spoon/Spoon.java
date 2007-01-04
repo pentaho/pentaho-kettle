@@ -449,7 +449,7 @@ public class Spoon implements AddUndoPositionInterface
                 public void keyPressed(KeyEvent e) 
                 {
                     TransMeta transMeta = getActiveTransformation();
-                    // JobMeta jobMeta = getActiveJob();
+                    JobMeta jobMeta = getActiveJob();
                     UndoInterface undoInterface = getActiveUndoInterface();
                     
                     SpoonLog spoonLog = getActiveSpoonLog();
@@ -458,7 +458,11 @@ public class Spoon implements AddUndoPositionInterface
                     boolean alt  = (( e.stateMask&SWT.ALT)!=0);
                     
                     // ESC --> Unselect All steps
-                    if (e.keyCode == SWT.ESC && !ctrl && !alt)   {  if (transMeta!=null) { transMeta.unselectAll(); refreshGraph(); } };
+                    if (e.keyCode == SWT.ESC && !ctrl && !alt)   
+                    {  
+                        if (transMeta!=null) { transMeta.unselectAll(); refreshGraph(); } 
+                        if (jobMeta!=null) { jobMeta.unselectAll(); refreshGraph(); } 
+                    };
 
                     // F3 --> createDatabaseWizard
                     if (e.keyCode == SWT.F3 && !ctrl && !alt)    { createDatabaseWizard(transMeta); }
@@ -467,7 +471,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F4 && !ctrl && !alt)    { copyTableWizard(); }
 
                     // CTRL-F4 --> close active transformation
-                    if (e.keyCode == SWT.F4 && ctrl && !alt)    { closeTransformation(transMeta); }
+                    if (e.keyCode == SWT.F4 && ctrl && !alt)    { closeFile(); }
 
                     // F5 --> refresh
                     if (e.keyCode == SWT.F5 && !ctrl && !alt)    { refreshGraph(); refreshTree(); }
@@ -538,7 +542,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 18 && ctrl && !alt) { openRepository(); };
 
                     // CTRL-S --> save
-                    if ((int)e.character == 19 && ctrl && !alt) { saveTransFile(transMeta);  }
+                    if ((int)e.character == 19 && ctrl && !alt) { saveFile();  }
                     
                     // CTRL-ALT-S --> send to slave server
                     if ((int)e.character == 19 && ctrl && alt) { executeTransformation(transMeta, false, true, false, false, null);  }
@@ -666,6 +670,16 @@ public class Spoon implements AddUndoPositionInterface
         }
         
         return key;
+    }
+    
+    
+    public void closeFile()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) closeTransformation(transMeta);
+
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) closeJob(jobMeta);
     }
 
     /**
@@ -1003,22 +1017,22 @@ public class Spoon implements AddUndoPositionInterface
         //
         MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
         miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
-        miFileExport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransXMLFile(getActiveTransformation()); } });
+        miFileExport.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveXMLFile(); } });
         // Save
         //
         miFileSave = new MenuItem(msFile, SWT.CASCADE); 
         miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
-        miFileSave.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransFile(getActiveTransformation()); } });
+        miFileSave.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFile(); } });
         // Save as
         //
         miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); 
         miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
-        miFileSaveAs.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveTransFileAs(getActiveTransformation()); } });
+        miFileSaveAs.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { saveFileAs(); } });
         // Close
         //
         miFileClose = new MenuItem(msFile, SWT.CASCADE); 
         miFileClose.setText(Messages.getString("Spoon.Menu.File.Close")); //&Close \tCTRL-F4
-        miFileClose.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { closeTransformation(getActiveTransformation()); } });
+        miFileClose.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { closeFile(); } });
         new MenuItem(msFile, SWT.SEPARATOR);
         // Print
         //
@@ -3461,6 +3475,17 @@ public class Spoon implements AddUndoPositionInterface
         return exit;
     }
     
+    public boolean saveFile()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return saveTransFile(transMeta);
+
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) return saveJobFile(jobMeta);
+
+        return false;
+    }
+    
     public boolean saveTransFile(TransMeta transMeta)
     {
         if (transMeta==null) return false;
@@ -3603,6 +3628,17 @@ public class Spoon implements AddUndoPositionInterface
         return false;
     }
 
+    public boolean saveFileAs()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return saveTransFileAs(transMeta);
+
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) return saveJobFileAs(jobMeta);
+
+        return false;
+    }
+    
     public boolean saveTransFileAs(TransMeta transMeta)
     {
         boolean saved=false;
@@ -3649,6 +3685,18 @@ public class Spoon implements AddUndoPositionInterface
             return false;
         }
     }
+    
+    private boolean saveXMLFile()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return saveTransXMLFile(transMeta);
+
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) return saveJobXMLFile(jobMeta);
+        
+        return false;
+    }
+    
 
     private boolean saveTransXMLFile(TransMeta transMeta)
     {
@@ -5654,6 +5702,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void checkTrans(TransMeta transMeta, boolean only_selected)
     {
+        if (transMeta==null) return;
         SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
 
@@ -6568,6 +6617,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void createKettleArchive(TransMeta transMeta)
     {
+        if (transMeta==null) return;
         JarfileGenerator.generateJarFile(transMeta);
     }
     
