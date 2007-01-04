@@ -136,20 +136,21 @@ public class SelectObjectDialog extends Dialog
         nameColumn.setWidth(350);
         nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
 
+        // No sorting on the type column just yet.
         typeColumn = new TreeColumn(wTree, SWT.LEFT);
         typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
         typeColumn.setWidth(100);
-        typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+        // typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
 
         userColumn = new TreeColumn(wTree, SWT.LEFT);
         userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
         userColumn.setWidth(100);
-        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
 
         changedColumn = new TreeColumn(wTree, SWT.LEFT);
         changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
         changedColumn.setWidth(100);
-        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
+        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
         
         
         props.setLook(wTree);

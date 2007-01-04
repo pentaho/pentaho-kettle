@@ -92,6 +92,7 @@ import be.ibridge.kettle.chef.ChefGraph;
 import be.ibridge.kettle.chef.ChefHistory;
 import be.ibridge.kettle.chef.ChefHistoryRefresher;
 import be.ibridge.kettle.chef.ChefLog;
+import be.ibridge.kettle.chef.Messages;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
@@ -174,6 +175,7 @@ import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
 import be.ibridge.kettle.spoon.dialog.AnalyseImpactProgressDialog;
 import be.ibridge.kettle.spoon.dialog.CheckTransProgressDialog;
+import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
 import be.ibridge.kettle.spoon.dialog.GetSQLProgressDialog;
 import be.ibridge.kettle.spoon.dialog.ShowCreditsDialog;
 import be.ibridge.kettle.spoon.dialog.TipsDialog;
@@ -1190,7 +1192,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         miTransSQL = new MenuItem(msTrans, SWT.CASCADE); 
         miTransSQL.setText(Messages.getString("Spoon.Menu.Transformation.GetSQL"));//&Get SQL
-        miTransSQL.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { getSQL(getActiveTransformation());           } });
+        miTransSQL.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { getSQL();           } });
         new MenuItem(msTrans, SWT.SEPARATOR);
         // Show last Impact results
         //
@@ -1409,54 +1411,6 @@ public class Spoon implements AddUndoPositionInterface
                             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                         }
                     }
-
-                    /*
-                    if (lastUsedFile.isSourceRepository())
-                    {
-                        if (!noRepository && rep != null && rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))
-                        {
-                            // OK, we're connected to the new repository...
-                            // Load the transformation...
-                            RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(lastUsedFile.getDirectory());
-                            TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), fdRepdir);
-                            TransMeta transMeta = tlpd.open();
-                            if (transMeta != null)
-                            {
-                                transMeta.clearChanged();
-                                addSpoonGraph(transMeta);
-                                
-                                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
-                            }
-                        }
-                        else
-                        {
-                            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                            mb.setMessage(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Message")); // Can't load from rep, please connect first
-                            mb.setText(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Title"));// Error!
-                            mb.open();
-                        }
-                    }
-                    else
-                    // Load from XML!
-                    {
-                        try
-                        {
-                            TransMeta transMeta = new TransMeta(lastUsedFile.getFilename());
-                            transMeta.clearChanged();
-                            transMeta.setFilename(lastUsedFile.getFilename());
-                            addSpoonGraph(transMeta);
-                            
-                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), null, false, null);
-                        }
-                        catch (KettleException ke)
-                        {
-                            // "Error loading transformation", "I was unable to load this transformation from the
-                            // XML file because of an error"
-                            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
-                        }
-                    }
-                    */
-                    
                 }
             };
             miFileLast.addListener(SWT.Selection, lsFileLast);
@@ -1546,7 +1500,7 @@ public class Spoon implements AddUndoPositionInterface
         idSQL.transparentPixel = sqlPixel;
         Image imSQL2= new Image(disp, idSQL);
         tiSQL.setImage(imSQL2);
-        tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(getActiveTransformation());  }});
+        tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL();  }});
         tiSQL.setToolTipText(Messages.getString("Spoon.Tooltip.GenerateSQLForTranformation"));//Generate the SQL needed to run this transformation
 
         tBar.addDisposeListener(new DisposeListener() 
@@ -5817,11 +5771,19 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    public void getSQL()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) getTransSQL(transMeta);
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) getJobSQL(jobMeta);
+    }
+    
     /**
      * Get & show the SQL required to run the loaded transformation...
      *
      */
-    public void getSQL(TransMeta transMeta)
+    public void getTransSQL(TransMeta transMeta)
     {
         GetSQLProgressDialog pspd = new GetSQLProgressDialog(shell, transMeta);
         ArrayList stats = pspd.open();
@@ -5842,6 +5804,30 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    /**
+     * Get & show the SQL required to run the loaded job entry...
+     *
+     */
+    public void getJobSQL(JobMeta jobMeta)
+    {
+        GetJobSQLProgressDialog pspd = new GetJobSQLProgressDialog(shell, jobMeta, rep);
+        ArrayList stats = pspd.open();
+        if (stats!=null) // null means error, but we already displayed the error
+        {
+            if (stats.size()>0)
+            {
+                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, SWT.NONE, stats);
+                ssd.open();
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+                mb.setMessage(Messages.getString("Spoon.Dialog.JobNoSQLNeedEexecuted.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Spoon.Dialog.JobNoSQLNeedEexecuted.Title")); //$NON-NLS-1$
+                mb.open();
+            }
+        }
+    }
     
     public void toClipboard(String cliptext)
     {
@@ -6435,6 +6421,7 @@ public class Spoon implements AddUndoPositionInterface
                             TransMeta transMeta = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
                             if (transMeta != null) 
                             {
+                                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
                                 transMeta.setFilename(lastUsedFile.getFilename());
                                 transMeta.clearChanged();
                                 addSpoonGraph(transMeta);
@@ -6462,6 +6449,7 @@ public class Spoon implements AddUndoPositionInterface
                 TransMeta transMeta = new TransMeta(lastUsedFile.getFilename());
                 transMeta.setFilename(lastUsedFile.getFilename());
                 transMeta.clearChanged();
+                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), null, false, null);
                 addSpoonGraph(transMeta);
             }
             if (lastUsedFile.isJob())
@@ -6469,6 +6457,7 @@ public class Spoon implements AddUndoPositionInterface
                 JobMeta jobMeta = new JobMeta(log, lastUsedFile.getFilename(), rep);
                 jobMeta.setFilename(lastUsedFile.getFilename());
                 jobMeta.clearChanged();
+                props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), null, false, null);
                 addChefGraph(jobMeta);
             }
         }                       
@@ -7568,7 +7557,7 @@ public class Spoon implements AddUndoPositionInterface
                             }
     
                             // Handle last opened files...
-                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
+                            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
                             saveSettings();
                             addMenuLast();
     
@@ -7666,7 +7655,7 @@ public class Spoon implements AddUndoPositionInterface
             saved=true;
 
             // Handle last opened files...
-            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
+            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
             saveSettings();
             addMenuLast();
 

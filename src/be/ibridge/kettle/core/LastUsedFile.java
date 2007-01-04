@@ -56,13 +56,13 @@ public class LastUsedFile
     
     public int hashCode()
     {
-        return toString().hashCode();
+        return (getFileType()+toString()).hashCode();
     }
     
     public boolean equals(Object obj)
     {
         LastUsedFile file = (LastUsedFile) obj;
-        return toString().equals(file.toString());
+        return getFileType().equals(file.getFileType()) && toString().equals(file.toString());
     }
 
     /**
