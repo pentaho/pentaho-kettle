@@ -2,7 +2,7 @@ package be.ibridge.kettle.www;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -52,8 +52,10 @@ public class AddTransServlet extends HttpServlet
 
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
-        PrintStream out = new PrintStream(response.getOutputStream());
+        PrintWriter out = response.getWriter();
         InputStream is = request.getInputStream(); // read from the client
+
+        response.setStatus(HttpServletResponse.SC_OK);
 
         if (useXML)
         {
@@ -107,6 +109,8 @@ public class AddTransServlet extends HttpServlet
             {
                 message = "Transformation '"+trans.getName()+"' was added to the list.";
             }
+            message+=" (session id = "+request.getSession(true).getId()+")";
+            
             if (useXML)
             {
                 out.println(new WebResult(WebResult.STRING_OK, message));
@@ -139,8 +143,8 @@ public class AddTransServlet extends HttpServlet
             out.println("</HTML>");
         }
 
-        out.flush();
-
+        response.flushBuffer();
+        
         Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         baseRequest.setHandled(true);
     }

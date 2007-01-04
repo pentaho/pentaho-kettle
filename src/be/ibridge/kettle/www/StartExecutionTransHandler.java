@@ -1,7 +1,7 @@
 package be.ibridge.kettle.www;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,20 +34,21 @@ public class StartExecutionTransHandler extends AbstractHandler
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         if (!isStarted()) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Prepare execution of transformation requested");
-
-        response.setContentType("text/html");
+        if (log.isDebug()) log.logDebug(toString(), "Start execution of transformation requested");
+        response.setStatus(HttpServletResponse.SC_OK);
 
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
-        PrintStream out = new PrintStream(response.getOutputStream());
+        PrintWriter out = response.getWriter();
         if (useXML)
         {
+            response.setContentType("text/xml");
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
         }
         else
         {
+            response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD><TITLE>Prepare execution of transformation</TITLE></HEAD>");
             out.println("<BODY>");
@@ -108,8 +109,8 @@ public class StartExecutionTransHandler extends AbstractHandler
             out.println("</HTML>");
         }
 
-        out.flush();
-
+        response.flushBuffer();
+        
         Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         baseRequest.setHandled(true);
     }

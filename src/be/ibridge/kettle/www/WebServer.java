@@ -3,15 +3,15 @@ package be.ibridge.kettle.www;
 import interbase.interclient.UnknownHostException;
 
 import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandler;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -54,7 +54,7 @@ public class WebServer
 
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);;
-        constraint.setRoles(new String[] { Constraint.ANY_ROLE });
+        constraint.setRoles( new String[] { Constraint.ANY_ROLE } );
         constraint.setAuthenticate(true);
         
         ConstraintMapping constraintMapping = new ConstraintMapping();
@@ -65,112 +65,24 @@ public class WebServer
         securityHandler.setUserRealm(userRealm);
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
         
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        server.setHandler(contexts);
+        new ContextHandler(contexts, "/*").addHandler(securityHandler);
+        new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS).addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
+        new ContextHandler(contexts, GetRootHandler.CONTEXT_PATH).addHandler(new GetRootHandler());
+        new ContextHandler(contexts, GetStatusHandler.CONTEXT_PATH).addHandler(new GetStatusHandler(transformationMap));
+        new ContextHandler(contexts, GetTransStatusHandler.CONTEXT_PATH).addHandler(new GetTransStatusHandler(transformationMap));
+        new ContextHandler(contexts, StartTransHandler.CONTEXT_PATH).addHandler(new StartTransHandler(transformationMap));
+        new ContextHandler(contexts, StopTransHandler.CONTEXT_PATH).addHandler(new StopTransHandler(transformationMap));
+        new ContextHandler(contexts, PrepareExecutionTransHandler.CONTEXT_PATH).addHandler(new PrepareExecutionTransHandler(transformationMap));
+        new ContextHandler(contexts, StartExecutionTransHandler.CONTEXT_PATH).addHandler(new StartExecutionTransHandler(transformationMap));
 
-        ServletHandler servletHandler = new ServletHandler();
-        servletHandler.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
-        server.setHandlers(
-                new Handler[] 
-                { 
-                        getRootContext(securityHandler),
-                        getStatusContext(securityHandler),
-                        getTransStatusContext(securityHandler),
-                        getStartTransContext(securityHandler),
-                        getPrepareExecutionTransContext(securityHandler),
-                        getStartExecutionTransContext(securityHandler),
-                        getStopTransContext(securityHandler),
-                        getUploadTransPageContext(securityHandler),
-                        getUploadTransContext(securityHandler),
-                        
-                        getAddTransContext(securityHandler), 
-                }
-        );
-        
         createListeners();
         
         server.start();
         server.join();
     }
 
-    private Handler getRootContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(GetRootHandler.CONTEXT_PATH, securityHandler);
-        handler.setContextPath(GetRootHandler.CONTEXT_PATH);
-        handler.setResourceBase(".");
-        handler.addHandler(new GetRootHandler());
-        return handler;
-    }
-
-    private Handler getStatusContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(GetStatusHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new GetStatusHandler(transformationMap));
-        return handler;
-    }
-
-    private Handler getTransStatusContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(GetTransStatusHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new GetTransStatusHandler(transformationMap));
-        return handler;
-    }
-    
-    private Handler getStartTransContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(StartTransHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new StartTransHandler(transformationMap));
-        return handler;
-    }
-
-    private Handler getPrepareExecutionTransContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(PrepareExecutionTransHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new PrepareExecutionTransHandler(transformationMap));
-        return handler;
-    }
-
-    private Handler getStartExecutionTransContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(StartExecutionTransHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new StartExecutionTransHandler(transformationMap));
-        return handler;
-    }
-
-    private Handler getStopTransContext(SecurityHandler securityHandler)
-    {
-        ContextHandler handler = createContext(StopTransHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new StopTransHandler(transformationMap));
-        return handler;
-    }
-    
-    private Handler getAddTransContext(SecurityHandler securityHandler)
-    {
-        ServletHandler handler=new ServletHandler();
-        handler.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
-        return handler;
-    }
-    
-    private Handler getUploadTransPageContext(SecurityHandler securityHandler) throws Exception
-    {
-        ContextHandler handler = createContext(UploadTransPageHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new UploadTransPageHandler(UploadTransHandler.CONTEXT_PATH));
-        return handler;
-    }
-        
-    private Handler getUploadTransContext(SecurityHandler securityHandler) throws Exception
-    {
-        ContextHandler handler = createContext(UploadTransHandler.CONTEXT_PATH, securityHandler);
-        handler.addHandler(new UploadTransHandler(transformationMap));
-        return handler;
-    }
-
-
-    private ContextHandler createContext(final String contextPath, SecurityHandler securityHandler)
-    {
-        ContextHandler contextHandler = new ContextHandler(server, contextPath);
-        // contextHandler.addHandler(securityHandler);
-        return contextHandler;
-    }
-    
     private void createListeners() throws UnknownHostException 
     {
         SocketConnector connector = new SocketConnector();

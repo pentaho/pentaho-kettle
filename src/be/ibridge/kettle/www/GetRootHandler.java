@@ -31,9 +31,6 @@ public class GetRootHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Root requested");
 
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
-
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         
@@ -46,13 +43,15 @@ public class GetRootHandler extends AbstractHandler
 
         out.println("<p>");
         out.println("<a href=\"/kettle/status\">Show status</a><br>");
-        out.println("<a href=\"/kettle/uploadTransPage\">Upload a transformation (XML file)</a><br>");
 
         out.println("<p>");
         out.println("</BODY>");
         out.println("</HTML>");
         
-        out.flush();
+        response.flushBuffer();
+        
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
 
     public String toString()

@@ -146,27 +146,27 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     /**
      * Connection to an SAP R/3 system
      */
-    public static final int TYPE_DATABASE_SAPR3      = 17;
+    public static final int TYPE_DATABASE_SAPR3       = 17;
     
     /**
      * Connection to an Ingress database
      */
-    public static final int TYPE_DATABASE_INGRES     = 18;
+    public static final int TYPE_DATABASE_INGRES      = 18;
 
     /**
      * Connection to a Borland Interbase database
      */
-    public static final int TYPE_DATABASE_INTERBASE  = 19;
+    public static final int TYPE_DATABASE_INTERBASE   = 19;
 
     /**
     * Connection to an ExtenDB database
     */
-    public static final int TYPE_DATABASE_EXTENDB    = 20;
+    public static final int TYPE_DATABASE_EXTENDB     = 20;
     
     /**
      * Connection to a Teradata database
      */
-     public static final int TYPE_DATABASE_TERADATA  = 21;
+     public static final int TYPE_DATABASE_TERADATA   = 21;
      
      /**
       * Connection to an Oracle RDB database
@@ -181,14 +181,18 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
  	/**
  	 * Connection to a Netezza database
  	 */
- 	public static final int TYPE_DATABASE_NETEZZA    =  24;
+ 	public static final int TYPE_DATABASE_NETEZZA     =  24;
 
     /**
      * Connection to an IBM UniVerse database
      */
-    public static final int TYPE_DATABASE_UNIVERSE   =  25;
+    public static final int TYPE_DATABASE_UNIVERSE    =  25;
 
-    
+    /**
+     * Connection to a SQLite database
+     */
+    public static final int TYPE_DATABASE_SQLITE      =  26;
+
 
 
 	/**
@@ -212,7 +216,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public static final int TYPE_ACCESS_PLUGIN        =  3;
     
     /**
-     * Connect to the database using plugin specific method. (SAP R/3)
+     * Connect to the database using JNDI.
      */
     public static final int TYPE_ACCESS_JNDI        =  4;
     

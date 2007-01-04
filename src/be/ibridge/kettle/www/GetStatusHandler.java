@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
 import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
@@ -35,6 +37,8 @@ public class GetStatusHandler extends AbstractHandler
         if (!isStarted()) return;
 
         if (log.isDebug()) log.logDebug(toString(), "Status requested");
+        response.setStatus(HttpServletResponse.SC_OK);
+        
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
         if (useXML)
@@ -105,11 +109,10 @@ public class GetStatusHandler extends AbstractHandler
             out.println("</HTML>");
         }
 
-        // out.flush();
         response.flushBuffer();
         
-        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        // baseRequest.setHandled(true);
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
 
     public String toString()

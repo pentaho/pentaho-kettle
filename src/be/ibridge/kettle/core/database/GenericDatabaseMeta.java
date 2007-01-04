@@ -5,7 +5,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.value.Value;
 
 /**
- * Contains Hypersonic specific information through static final members 
+ * Contains Generic Database Connection information through static final members 
  * 
  * @author Matt
  * @since  11-mrt-2005

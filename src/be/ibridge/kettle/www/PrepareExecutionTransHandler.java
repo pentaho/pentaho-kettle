@@ -1,7 +1,7 @@
 package be.ibridge.kettle.www;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +43,9 @@ public class PrepareExecutionTransHandler extends AbstractHandler
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
-        PrintStream out = new PrintStream(response.getOutputStream());
+        response.setStatus(HttpServletResponse.SC_OK);
+        
+        PrintWriter out = response.getWriter();
         if (useXML)
         {
             response.setContentType("text/xml");
@@ -143,8 +145,8 @@ public class PrepareExecutionTransHandler extends AbstractHandler
             out.println("</HTML>");
         }
 
-        out.flush();
-
+        response.flushBuffer();
+        
         Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         baseRequest.setHandled(true);
     }

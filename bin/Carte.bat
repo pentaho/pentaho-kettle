@@ -70,6 +70,7 @@ set CLASSPATH=%CLASSPATH%;libext\servlet-api-2.5-6.0.2.jar
 set CLASSPATH=%CLASSPATH%;libext\simple-jndi-0.11.1.jar
 set CLASSPATH=%CLASSPATH%;libext\unijdbc.jar
 set CLASSPATH=%CLASSPATH%;libext\xdbjdbc.jar
+set CLASSPATH=%CLASSPATH%;libext\sqlitejdbc-v032-nested.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

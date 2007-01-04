@@ -1,12 +1,14 @@
 package be.ibridge.kettle.www;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
 import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
@@ -33,11 +35,10 @@ public class StopTransHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Stop of transformation requested");
 
-
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
-        PrintStream out = new PrintStream(response.getOutputStream());
+        PrintWriter out = response.getWriter();
         try
         {
             if (useXML)
@@ -107,10 +108,10 @@ public class StopTransHandler extends AbstractHandler
             out.println("</HTML>");
         }
 
-        out.flush();
-
-        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        // baseRequest.setHandled(true);
+        response.flushBuffer();
+        
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
 
     public String toString()

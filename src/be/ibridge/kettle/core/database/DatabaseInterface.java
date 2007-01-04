@@ -57,6 +57,7 @@ public interface DatabaseInterface extends Cloneable
             H2DatabaseMeta.class,
             NetezzaDatabaseMeta.class,
             UniVerseDatabaseMeta.class,
+            SQLiteDatabaseMeta.class,
 		};
 	
 	/**
