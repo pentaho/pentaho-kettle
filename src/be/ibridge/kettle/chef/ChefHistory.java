@@ -15,7 +15,10 @@
  
 package be.ibridge.kettle.chef;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -41,6 +44,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.value.ValueDate;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.spoon.Spoon;
@@ -204,37 +208,40 @@ public class ChefHistory extends Composite implements TabItemInterface
         );
 	}
 
-	private void setupReplayListener() {
+	private void setupReplayListener() 
+    {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
-			// final SimpleDateFormat df = new SimpleDateFormat(ValueDate.DATE_FORMAT);
+			final SimpleDateFormat df = new SimpleDateFormat(ValueDate.DATE_FORMAT);
 
-			public void widgetSelected(SelectionEvent e) {
-				int idx = wFields.getSelectionIndex();
-				if (idx >= 0) {
-					String fields[] = wFields.getItem(idx);
-					String dateString = fields[12];
-					if (dateString == null
-							|| dateString.equals(Const.NULL_STRING)) {
-						MessageBox mb = new MessageBox(shell, SWT.OK
-								| SWT.ICON_ERROR);
-						mb.setMessage(Messages.getString("ChefHistory.Error.ReplayingJob") //$NON-NLS-1$
-								+ Const.CR + Messages.getString("ChefHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
-						mb.setText(Messages.getString("ChefHistory.ERROR")); //$NON-NLS-1$
-						mb.open();
-						return;
-					}
-//					try {
-//						Date date = df.parse(dateString);
-//						chef.tabfolder.setSelection(1);
-//						chefLog.startJob(date); // TODO: add replay stuff too
-//					} catch (ParseException e1) {
-//						new ErrorDialog(shell, 
-//								Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
-//								Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-//					}
-				}
-			}
+			public void widgetSelected(SelectionEvent e)
+            {
+                int idx = wFields.getSelectionIndex();
+                if (idx >= 0)
+                {
+                    String fields[] = wFields.getItem(idx);
+                    String dateString = fields[12];
+                    if (dateString == null || dateString.equals(Const.NULL_STRING))
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                        mb.setMessage(Messages.getString("ChefHistory.Error.ReplayingJob") //$NON-NLS-1$
+                                + Const.CR + Messages.getString("ChefHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
+                        mb.setText(Messages.getString("ChefHistory.ERROR")); //$NON-NLS-1$
+                        mb.open();
+                        return;
+                    }
+                    try
+                    {
+                        Date date = df.parse(dateString);
+                        spoon.executeJob(jobMeta, true, false, false, false, date);
+                    }
+                    catch (ParseException e1)
+                    {
+                        new ErrorDialog(shell, Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
+                                Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+                    }
+                }
+            }
 		};
 	
         wReplay.addSelectionListener(lsReplay);

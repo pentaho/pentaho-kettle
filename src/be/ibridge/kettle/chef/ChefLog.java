@@ -347,15 +347,15 @@ public class ChefLog extends Composite implements TabItemInterface
 				else
 				{
 					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
-																			 null,
-																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("ChefLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-																			 MessageDialog.QUESTION,
-																			 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-																			 0,
-																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
-																			 spoon.props.getAutoSave()
-																			 );
+						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
+						 null,
+						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("ChefLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+						 MessageDialog.QUESTION,
+						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+						 0,
+						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
+						 spoon.props.getAutoSave()
+						 );
 					int answer = md.open();
 					if ( (answer&0xFF) == 0)
 					{

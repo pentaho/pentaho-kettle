@@ -374,6 +374,8 @@ public class Spoon implements AddUndoPositionInterface
     private MenuItem miJobInfo;
 
     private MenuItem miWizardRipDatabase;
+
+    private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
         
     public Spoon(LogWriter l, Repository rep)
     {
@@ -486,10 +488,10 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F8 && !ctrl && !alt)    { if (spoonLog!=null) { spoonLog.showPreview(); } }
                     
                     // F9 --> run
-                    if (e.keyCode == SWT.F9 && !ctrl && !alt)    { executeTransformation(transMeta, true, false, false, false, null); }
+                    if (e.keyCode == SWT.F9 && !ctrl && !alt)    { executeFile(true, false, false, false, null); }
                     
                     // F10 --> preview
-                    if (e.keyCode == SWT.F10 && !ctrl && !alt)   { executeTransformation(transMeta, true, false, false, true, null);  }
+                    if (e.keyCode == SWT.F10 && !ctrl && !alt)   { executeFile(true, false, false, true, null);  }
 
                     // CTRL-F10 --> ripDB wizard
                     if (e.keyCode == SWT.F12 && ctrl && !alt)    { ripDBWizard(); }
@@ -545,13 +547,13 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 19 && ctrl && !alt) { saveFile();  }
                     
                     // CTRL-ALT-S --> send to slave server
-                    if ((int)e.character == 19 && ctrl && alt) { executeTransformation(transMeta, false, true, false, false, null);  }
+                    if ((int)e.character == 19 && ctrl && alt) { executeFile(false, true, false, false, null);  }
 
                     // CTRL-T --> transformation
                     if ((int)e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta);  }
 
-                    // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { executeTransformation(transMeta, false, false, true, false, null);  }
+                    // CTRL-U --> transformation replay
+                    if ((int)e.character == 21 && ctrl && !alt) { executeFile(false, false, true, false, null);  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(undoInterface);  }
@@ -1244,7 +1246,7 @@ public class Spoon implements AddUndoPositionInterface
         miJobRun = new MenuItem(msJob, SWT.CASCADE);   
         miJobRun.setText(Messages.getString("Spoon.Menu.Job.Run")); //$NON-NLS-1$
         new MenuItem(msJob, SWT.SEPARATOR);
-        miJobRun.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { executeJob(getActiveJob()); } });
+        miJobRun.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { executeJob(getActiveJob(), true, false, false, false, null); } });
         
         // Copy to clipboard
         //
@@ -1478,53 +1480,53 @@ public class Spoon implements AddUndoPositionInterface
         tiFileOpen.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openFile(false); }});
         tiFileOpen.setToolTipText(Messages.getString("Spoon.Tooltip.OpenTranformation"));//Open tranformation
 
-        final ToolItem tiFileSave = new ToolItem(tBar, SWT.PUSH);
+        tiFileSave = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
         tiFileSave.setImage(imFileSave);
         tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFile(getActiveTransformation()); }});
         tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save current transformation
 
-        final ToolItem tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
+        tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
         tiFileSaveAs.setImage(imFileSaveAs);
         tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFileAs(getActiveTransformation()); }});
         tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save transformation with different name
 
         new ToolItem(tBar, SWT.SEPARATOR);
-        final ToolItem tiFilePrint = new ToolItem(tBar, SWT.PUSH);
+        tiFilePrint = new ToolItem(tBar, SWT.PUSH);
         final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
         tiFilePrint.setImage(imFilePrint);
         tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
         tiFilePrint.setToolTipText(Messages.getString("Spoon.Tooltip.Print"));//Print
 
         new ToolItem(tBar, SWT.SEPARATOR);
-        final ToolItem tiFileRun = new ToolItem(tBar, SWT.PUSH);
+        tiFileRun = new ToolItem(tBar, SWT.PUSH);
         final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
         tiFileRun.setImage(imFileRun);
-        tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(getActiveTransformation(), true, false, false, false, null); }});
+        tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, false, null); }});
         tiFileRun.setToolTipText(Messages.getString("Spoon.Tooltip.RunTranformation"));//Run this transformation
 
-        final ToolItem tiFilePreview = new ToolItem(tBar, SWT.PUSH);
+        tiFilePreview = new ToolItem(tBar, SWT.PUSH);
         final Image imFilePreview = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
         tiFilePreview.setImage(imFilePreview);
-        tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(getActiveTransformation(), true, false, false, true, null); }});
+        tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
         tiFilePreview.setToolTipText(Messages.getString("Spoon.Tooltip.PreviewTranformation"));//Preview this transformation
 
-        final ToolItem tiFileReplay = new ToolItem(tBar, SWT.PUSH);
+        tiFileReplay = new ToolItem(tBar, SWT.PUSH);
         final Image imFileReplay = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
         tiFileReplay.setImage(imFileReplay);
-        tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(getActiveTransformation(), true, false, false, true, null); }});
+        tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
         tiFileReplay.setToolTipText("Replay this transformation");
 
         new ToolItem(tBar, SWT.SEPARATOR);
-        final ToolItem tiFileCheck = new ToolItem(tBar, SWT.PUSH);
+        tiFileCheck = new ToolItem(tBar, SWT.PUSH);
         final Image imFileCheck = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png")); 
         tiFileCheck.setImage(imFileCheck);
         tiFileCheck.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { checkTrans(getActiveTransformation()); }});
         tiFileCheck.setToolTipText(Messages.getString("Spoon.Tooltip.VerifyTranformation"));//Verify this transformation
 
         new ToolItem(tBar, SWT.SEPARATOR);
-        final ToolItem tiImpact = new ToolItem(tBar, SWT.PUSH);
+        tiImpact = new ToolItem(tBar, SWT.PUSH);
         final Image imImpact = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"impact.png")); 
         // Can't seem to get the transparency correct for this image!
         ImageData idImpact = imImpact.getImageData();
@@ -1536,7 +1538,7 @@ public class Spoon implements AddUndoPositionInterface
         tiImpact.setToolTipText(Messages.getString("Spoon.Tooltip.AnalyzeTranformation"));//Analyze the impact of this transformation on the database(s)
 
         new ToolItem(tBar, SWT.SEPARATOR);
-        final ToolItem tiSQL = new ToolItem(tBar, SWT.PUSH);
+        tiSQL = new ToolItem(tBar, SWT.PUSH);
         final Image imSQL = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
         // Can't seem to get the transparency correct for this image!
         ImageData idSQL = imSQL.getImageData();
@@ -4400,6 +4402,16 @@ public class Spoon implements AddUndoPositionInterface
         miRepExplore.setEnabled(enableRepositoryMenu);
         miRepUser.setEnabled(enableRepositoryMenu);
         
+        // Do the bar as well
+        tiSQL.setEnabled(enableTransMenu || enableJobMenu);
+        tiImpact.setEnabled(enableTransMenu);
+        tiFileCheck.setEnabled(enableTransMenu);
+        tiFileReplay.setEnabled(enableTransMenu);
+        tiFilePreview.setEnabled(enableTransMenu);
+        tiFileRun.setEnabled(enableTransMenu || enableJobMenu);
+        tiFilePrint.setEnabled(enableTransMenu || enableJobMenu);
+        tiFileSaveAs.setEnabled(enableTransMenu || enableJobMenu);
+        tiFileSave.setEnabled(enableTransMenu || enableJobMenu);
     }
     
     private void markTabsChanged()
@@ -6882,6 +6894,16 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
+    public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) executeTransformation(transMeta, local, remote, cluster, preview, replayDate);
+        
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) executeJob(jobMeta, local, remote, cluster, preview, replayDate);
+        
+    }
+
     public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
     {
         if (transMeta==null) return;
@@ -6942,12 +6964,11 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    
-    public void executeJob(JobMeta jobMeta)
+    public void executeJob(JobMeta jobMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
     {
         addChefLog(jobMeta);
         ChefLog chefLog = getActiveJobLog();
-        chefLog.startJob();
+        chefLog.startJob(replayDate);
     }
     
     public CTabItem findCTabItem(String text)
