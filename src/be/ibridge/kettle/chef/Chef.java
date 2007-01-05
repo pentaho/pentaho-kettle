@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -104,13 +103,11 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
-import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
-import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
@@ -126,17 +123,15 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
-import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.repository.PermissionMeta;
-import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
-import be.ibridge.kettle.repository.RepositoryMeta;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
+import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
 import be.ibridge.kettle.trans.StepLoader;
@@ -3355,6 +3350,9 @@ public class Chef implements AddUndoPositionInterface
 	
 	public static void main (String [] a) throws KettleException
 	{
+        Spoon.main(a);
+        
+        /*
 		EnvUtil.environmentInit();
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) args.add(a[i]);
@@ -3403,7 +3401,7 @@ public class Chef implements AddUndoPositionInterface
         
         if (log.getRealFilename()!=null) log.logBasic(APP_NAME, Messages.getString("Chef.Log.LoggingGoesTo")+log.getRealFilename()); //$NON-NLS-1$
         		
-		/* Load the plugins etc.*/
+		// Load the plugins etc.
 		StepLoader stloader = StepLoader.getInstance();
 		if (!stloader.read())
 		{
@@ -3411,7 +3409,7 @@ public class Chef implements AddUndoPositionInterface
 			return;
 		}
         
-        /* Load the plugins etc.*/
+        // Load the plugins etc.
         JobEntryLoader jeloader = JobEntryLoader.getInstance();
         if (!jeloader.read())
         {
@@ -3604,6 +3602,7 @@ public class Chef implements AddUndoPositionInterface
         
         // Kill all remaining things in this VM!
        System.exit(0);
+       */
 	}
 
     /**
