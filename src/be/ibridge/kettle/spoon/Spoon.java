@@ -7084,7 +7084,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, "Unexpected error", "Unexpected error opening browser tab called '"+name+"'", new Exception(e));
+            // new ErrorDialog(shell, "Unexpected error", "Unexpected error opening browser tab called '"+name+"'", new Exception(e));
         }
     }
     

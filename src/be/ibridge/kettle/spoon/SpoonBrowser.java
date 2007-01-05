@@ -26,7 +26,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -49,7 +48,7 @@ public class SpoonBrowser implements TabItemInterface
     
     private static Browser browser;
 
-    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl)
+    public SpoonBrowser(Composite parent, final Spoon spoon, final String stringUrl) throws SWTError
     {
         this.shell = parent.getShell();
         this.spoon = spoon;
@@ -76,15 +75,8 @@ public class SpoonBrowser implements TabItemInterface
         comp.setLayoutData(data);
         comp.setLayout(new FillLayout());
 
-        try {
-            browser = new Browser(comp, SWT.NONE);
-        } catch (SWTError e) {
-            MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-            messageBox.setMessage("Closing tab. The Browser could not be initialized.");
-            messageBox.setText("Fatal error - browser terminated");
-            messageBox.open();
-            return;
-        }
+        browser = new Browser(comp, SWT.NONE);
+
         back.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
                 browser.back();
