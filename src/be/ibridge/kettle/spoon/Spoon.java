@@ -564,8 +564,6 @@ public class Spoon implements AddUndoPositionInterface
                     
                     // CTRL-Z --> undo action
                     if ((int)e.character == 26 && ctrl && !alt) { undoAction(undoInterface);  }
-                                        
-                    // System.out.println("(int)e.character = "+(int)e.character+", keycode = "+e.keyCode+", stateMask="+e.stateMask);
                 }
             };
         modKeys = new KeyAdapter() 
@@ -615,6 +613,10 @@ public class Spoon implements AddUndoPositionInterface
                 } 
             } 
         );
+        
+        // Add a browser widget
+        addSpoonBrowser("Welcome!", "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
+
 
         shell.layout();
         
@@ -1006,6 +1008,8 @@ public class Spoon implements AddUndoPositionInterface
         MenuItem miFileNew = new MenuItem(msFile, SWT.CASCADE); 
         miFileNew.setText(Messages.getString("Spoon.Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
         miFileNew.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { newFile(); } } );
+        
+        
         // Open
         //
         MenuItem miFileOpen = new MenuItem(msFile, SWT.CASCADE); 
@@ -1957,9 +1961,6 @@ public class Spoon implements AddUndoPositionInterface
         // No clicked on a real object: returns a class
         if (selection instanceof Class)
         {
-            Class selClass = (Class) selection;
-            System.out.println("Selection class: "+selClass.getName());
-            
             if (selection.equals(TransHopMeta.class))
             {
                 // New
@@ -2611,8 +2612,6 @@ public class Spoon implements AddUndoPositionInterface
     {
         try
         {
-            //System.out.println(clipcontent);
-            
             Document doc = XMLHandler.loadXMLString(clipcontent);
             Node transnode = XMLHandler.getSubNode(doc, "transformation");
             // De-select all, re-select pasted steps...
@@ -3041,16 +3040,18 @@ public class Spoon implements AddUndoPositionInterface
                     // If it exists, change the settings...
                     if (newDatabase!=null)
                     {
-                        // System.out.println("Found the new database in the repository ["+oldDatabase.getName()+"]");
+                        // 
                         // A database connection with the same name exists in the new repository.
                         // Change the old connections to reflect the settings in the new repository 
+                        //
                         oldDatabase.setDatabaseInterface(newDatabase.getDatabaseInterface());
                     }
                     else
                     {
-                        // System.out.println("Couldn't find the new database in the repository ["+oldDatabase.getName()+"]");
+                        // 
                         // The old database is not present in the new repository: simply add it to the list.
                         // When the transformation gets saved, it will be added to the repository.
+                        //
                         transMeta.addDatabase(oldDatabase);
                     }
                 }
@@ -3091,8 +3092,6 @@ public class Spoon implements AddUndoPositionInterface
             {
                 String object_type = erd.getObjectType();
                 RepositoryDirectory repdir = erd.getObjectDirectory();
-                
-                // System.out.println("Load ["+object_type+"] --> ["+objname+"] from dir ["+(repdir==null)+"]");
                 
                 // Try to open it as a transformation.
                 if (object_type.equals(RepositoryExplorerDialog.STRING_TRANSFORMATIONS))
@@ -3237,9 +3236,7 @@ public class Spoon implements AddUndoPositionInterface
                     TransMeta transMeta = tlpd.open();
                     if (transMeta!=null)
                     {
-                        // transMeta = new TransInfo(log, rep, transname, repdir);
                         log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadToTransformation",name,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
-                        //System.out.println("name="+transMeta.getName());
                         props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repdir.getPath(), true, rep.getName());
                         addMenuLast();
                         transMeta.clearChanged();
@@ -3543,7 +3540,6 @@ public class Spoon implements AddUndoPositionInterface
                 }
                 ask=false;
                 answer = editTransformationProperties(transMeta);
-                // System.out.println("answer="+answer+", ask="+ask+", transMeta.getName()="+transMeta.getName());
             }
             
             if (answer && transMeta.getName()!=null && transMeta.getName().length()>0)
@@ -4186,7 +4182,6 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     StringBuffer content=new StringBuffer();
                     
-                    System.out.println("Filename = "+filename);
                     FileInputStream fis = new FileInputStream(new File(filename));
                     int ch = fis.read();
                     while (ch>=0)
@@ -4195,7 +4190,6 @@ public class Spoon implements AddUndoPositionInterface
                         ch = fis.read();
                     }
 
-                    System.out.println("Content = "+content);
                     ShowBrowserDialog sbd = new ShowBrowserDialog(shell, Messages.getString("Spoon.Dialog.ErrorHelpText.Title"), content.toString());//"Error help text"
                     sbd.open();
                 }
@@ -4938,8 +4932,7 @@ public class Spoon implements AddUndoPositionInterface
                     StepMeta prev = (StepMeta)transAction.getPrevious()[i];
                     int idx = transAction.getCurrentIndex()[i];
 
-                    transMeta.removeStep(idx);
-                    transMeta.addStep(idx, prev);
+                    transMeta.getStep(idx).replaceMeta(prev);
                 }
                 refreshTree();
                 refreshGraph();
@@ -4953,8 +4946,7 @@ public class Spoon implements AddUndoPositionInterface
                     DatabaseMeta prev = (DatabaseMeta)transAction.getPrevious()[i];
                     int idx = transAction.getCurrentIndex()[i];
 
-                    transMeta.removeDatabase(idx);
-                    transMeta.addDatabase(idx, prev);
+                    transMeta.getDatabase(idx).replaceMeta(prev);
                 }
                 refreshTree();
                 refreshGraph();
@@ -5339,8 +5331,7 @@ public class Spoon implements AddUndoPositionInterface
                 StepMeta stepMeta = (StepMeta)transAction.getCurrent()[i];
                 int idx = transAction.getCurrentIndex()[i];
                 
-                transMeta.removeStep(idx);
-                transMeta.addStep(idx, stepMeta);
+                transMeta.getStep(idx).replaceMeta(stepMeta);
             }
             refreshTree();
             refreshGraph();
@@ -5351,11 +5342,10 @@ public class Spoon implements AddUndoPositionInterface
             // Delete & re-insert
             for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                DatabaseMeta ci = (DatabaseMeta)transAction.getCurrent()[i];
+                DatabaseMeta databaseMeta = (DatabaseMeta)transAction.getCurrent()[i];
                 int idx = transAction.getCurrentIndex()[i];
 
-                transMeta.removeDatabase(idx);
-                transMeta.addDatabase(idx, ci);
+                transMeta.getDatabase(idx).replaceMeta(databaseMeta);
             }
             refreshTree();
             refreshGraph();
@@ -7067,6 +7057,37 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    public void addSpoonBrowser(String name, String urlString)
+    {
+        try
+        {
+            // OK, now we have the HTML, create a new browset tab.
+            
+            // See if there already is a tab for this browser
+            // If no, add it
+            // If yes, select that tab
+            //
+            CTabItem tabItem=findCTabItem(name);
+            if (tabItem==null)
+            {
+                SpoonBrowser browser = new SpoonBrowser(tabfolder, this, urlString);
+                tabItem = new CTabItem(tabfolder, SWT.CLOSE);
+                tabItem.setText(name);
+                tabItem.setControl(browser.getComposite());
+                
+                tabMap.put(name, new TabMapEntry(tabItem, name, browser));
+            }
+            int idx = tabfolder.indexOf(tabItem);
+            
+            // keep the focus on the graph
+            tabfolder.setSelection(idx);
+        }
+        catch(Throwable e)
+        {
+            new ErrorDialog(shell, "Unexpected error", "Unexpected error opening browser tab called '"+name+"'", new Exception(e));
+        }
+    }
+    
     public String makeLogTabName(TransMeta transMeta)
     {
         return "Trans log: "+makeGraphTabName(transMeta);
@@ -7300,8 +7321,6 @@ public class Spoon implements AddUndoPositionInterface
                     transformationMap.remove(before);
                     transformationMap.put(after, entry.getObject().getManagedObject());
                 }
-                
-                System.out.println("Renamed tab ["+before+"] to ["+after+"]");
             }
         }
     }
@@ -7381,8 +7400,6 @@ public class Spoon implements AddUndoPositionInterface
 
             if (jobPlugin!=null)
             {
-                // System.out.println("new job entry of type: "+type+" ["+type_desc+"]");
-                
                 // Determine name & number for this entry.
                 String basename = type_desc;
                 int nr = jobMeta.generateJobEntryNameNr(basename);
