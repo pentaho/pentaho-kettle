@@ -277,7 +277,7 @@ public class Spoon implements AddUndoPositionInterface
     private Tree selectionTree;
     private TreeItem  tiTransBase, tiJobBase;
 
-    private Tree pluginHistoryTree;    
+    private Tree coreObjectsTree;    
     
     public static final String STRING_TRANSFORMATIONS = Messages.getString("Spoon.STRING_TRANSFORMATIONS"); // Transformations
     public static final String STRING_JOBS            = Messages.getString("Spoon.STRING_JOBS");            // Jobs
@@ -317,7 +317,7 @@ public class Spoon implements AddUndoPositionInterface
 
     private TreeItem tiTrans, tiJobs;
 
-    private TreeItem tiBlocks;
+    // private TreeItem tiBlocks;
 
     private Menu mCSH;
 
@@ -896,9 +896,6 @@ public class Spoon implements AddUndoPositionInterface
         
         // Load shared objects from XML file.
         // loadSharedObjects();
-        
-        // What plugins did we use previously?
-        refreshPluginHistory();
         
         // Perhaps the transformation contains elements at startup?
         refreshTree();  // Do a complete refresh then...
@@ -1544,12 +1541,34 @@ public class Spoon implements AddUndoPositionInterface
         tiTrans  = new TreeItem(selectionTree, SWT.NONE); tiTrans.setText(STRING_TRANSFORMATIONS);
         tiJobs   = new TreeItem(selectionTree, SWT.NONE); tiJobs.setText(STRING_JOBS);
         
-        tiBlocks    = new TreeItem(selectionTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
-        tiTransBase = new TreeItem(tiBlocks, SWT.NONE); tiTransBase.setText(STRING_TRANS_BASE);
-        tiJobBase   = new TreeItem(tiBlocks, SWT.NONE); tiJobBase.setText(STRING_JOB_BASE);
+        addToolTipsToTree(selectionTree);
+
+        // Default selection (double-click, enter)
+        // lsNewDef  = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ newSelected();  } };
+        
+        // Add all the listeners... 
+        // selectionTree.addSelectionListener(lsEditDef); // double click somewhere in the tree...
+        // tCSH.addSelectionListener(lsNewDef); // double click somewhere in the tree...
+        
+        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
+        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
+        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ editSelected(); } });
+        
+        // Keyboard shortcuts!
+        selectionTree.addKeyListener(defKeys);
+        selectionTree.addKeyListener(modKeys);
+        
+        // Set a listener on the tree
+        addDragSourceToTree(selectionTree);
+        
+        // OK, now add a list of often-used icons to the bottom of the tree...
+        coreObjectsTree = new Tree(leftSash, SWT.SINGLE );
+
+        // tiBlocks    = new TreeItem(coreObjectsTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
+        tiTransBase = new TreeItem(coreObjectsTree, SWT.NONE); tiTransBase.setText(STRING_TRANS_BASE);
+        tiJobBase   = new TreeItem(coreObjectsTree, SWT.NONE); tiJobBase.setText(STRING_JOB_BASE);
         
         // Fill the base components...
-        
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // TRANSFORMATIONS
         //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1592,39 +1611,18 @@ public class Spoon implements AddUndoPositionInterface
         }
 
         tiJobBase.setExpanded(true);
+        
+        // Scroll to the top
+        coreObjectsTree.setSelection(tiTransBase);
+        coreObjectsTree.showSelection();
 
-        addToolTipsToTree(selectionTree);
-
-        // Default selection (double-click, enter)
-        // lsNewDef  = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ newSelected();  } };
-        
-        // Add all the listeners... 
-        // selectionTree.addSelectionListener(lsEditDef); // double click somewhere in the tree...
-        // tCSH.addSelectionListener(lsNewDef); // double click somewhere in the tree...
-        
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ editSelected(); } });
-        
-        // Keyboard shortcuts!
-        selectionTree.addKeyListener(defKeys);
-        selectionTree.addKeyListener(modKeys);
-        
-        // Set a listener on the tree
-        addDragSourceToTree(selectionTree);
-        
-        
-        
-        // OK, now add a list of often-used icons to the bottom of the tree...
-        pluginHistoryTree = new Tree(leftSash, SWT.SINGLE );
-        
         // Add tooltips for history tree too
-        addToolTipsToTree(pluginHistoryTree);
+        addToolTipsToTree(coreObjectsTree);
         
         // Set the same listener on this tree
-        addDragSourceToTree(pluginHistoryTree);
+        addDragSourceToTree(coreObjectsTree);
 
-        leftSash.setWeights(new int[] { 70, 30 } );
+        leftSash.setWeights(new int[] { 50, 50 } );
         
         setTreeImages();
     }
@@ -1697,15 +1695,6 @@ public class Spoon implements AddUndoPositionInterface
                         if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, jobMeta);
                         if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(JobEntryCopy.class, jobMeta);
                     }
-                    if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
-                    {
-                        if (path[1].equals(STRING_JOB_BASE))
-                        {
-                            JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[2]);
-                            object = new TreeSelection(jobPlugin);
-                        }
-                    }
-
                     break;
                     
                 case 4:  // ------complete-----
@@ -1724,14 +1713,6 @@ public class Spoon implements AddUndoPositionInterface
                         JobMeta jobMeta = findJob(path[1]);
                         if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(jobMeta.findDatabase(path[3]), jobMeta);
                         if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(jobMeta.findJobEntry(path[3]), jobMeta);
-                    }
-
-                    if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
-                    {
-                        if (path[1].equals(STRING_TRANS_BASE))
-                        {
-                            object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[3]));
-                        }
                     }
                     break;
                     
@@ -1755,9 +1736,9 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
         }
-        if (tree.equals(pluginHistoryTree))
+        if (tree.equals(coreObjectsTree))
         {
-            TreeItem[] selection = pluginHistoryTree.getSelection();
+            TreeItem[] selection = coreObjectsTree.getSelection();
             for (int s=0;s<selection.length;s++)
             {
                 TreeItem treeItem = selection[s];
@@ -1768,15 +1749,18 @@ public class Spoon implements AddUndoPositionInterface
                 switch(path.length)
                 {
                 case 0: break;
-                case 1: break; // ------complete-----
-                case 2: // ------complete-----
-                    if (path[0].equals(STRING_HISTORY))
+                case 1: break; // nothing
+                case 2: // Job entries
+                    if (path[0].equals(STRING_JOB_BASE))
                     {
-                        StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithDescription(path[1]);
-                        if (stepPlugin!=null)
-                        {
-                            object = new TreeSelection(stepPlugin);
-                        }
+                        JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[1]);
+                        object = new TreeSelection(jobPlugin);
+                    }
+                    break;
+                case 3: // Steps
+                    if (path[0].equals(STRING_TRANS_BASE))
+                    {
+                        object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[2]));
                     }
                     break;
                 default: break;
@@ -1903,41 +1887,6 @@ public class Spoon implements AddUndoPositionInterface
             }
         );
 
-    }
-    
-    public void refreshPluginHistory()
-    {
-        pluginHistoryTree.removeAll();
-        
-        UndoInterface undoInterface = getActiveUndoInterface();
-        if (undoInterface==null) return;
-        
-        if (undoInterface instanceof TransMeta)
-        {
-            TreeItem tiMain = new TreeItem(pluginHistoryTree, SWT.NONE);
-            tiMain.setText(STRING_HISTORY);
-            tiMain.setImage(GUIResource.getInstance().getImageSpoon());
-            
-            List pluginHistory = props.getPluginHistory();
-            for (int i=0;i<pluginHistory.size();i++)
-            {
-                String pluginID = (String)pluginHistory.get(i);
-                StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(pluginID);
-                if (stepPlugin!=null)
-                {
-                    Image image = (Image) GUIResource.getInstance().getImagesSteps().get(pluginID);
-        
-                    TreeItem ti = new TreeItem(tiMain, SWT.NONE);
-                    ti.setText(stepPlugin.getDescription());
-                    ti.setImage(image);
-                }
-            }
-            tiMain.setExpanded(true);
-        }
-        else
-        {
-            // TODO Add the job entries plugin history
-        }
     }
 
     /**
@@ -4077,7 +4026,6 @@ public class Spoon implements AddUndoPositionInterface
         TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
 
         selectionTree.setFocus();
-        refreshPluginHistory();
         setShellText();
     }
     
@@ -4277,7 +4225,7 @@ public class Spoon implements AddUndoPositionInterface
         tiJobs.setImage(GUIResource.getInstance().getImageBol());
         tiTransBase.setImage(GUIResource.getInstance().getImageBol());
         tiJobBase.setImage(GUIResource.getInstance().getImageBol());
-        tiBlocks.setImage(GUIResource.getInstance().getImageBol());
+        // tiBlocks.setImage(GUIResource.getInstance().getImageBol());
 
         TreeItem tiBaseCat[]=tiTransBase.getItems();
         for (int x=0;x<tiBaseCat.length;x++)
