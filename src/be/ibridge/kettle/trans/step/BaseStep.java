@@ -1067,12 +1067,6 @@ public class BaseStep extends Thread
                     inputRowSets.remove(in_handling);
                     if (inputRowSets.size() == 0) // nothing more to be found!
                     {
-                        if (linesRead==0 && linesInput==0 && linesWritten==0 && linesOutput<=1) // TODO: debugging, remove after testing
-                        {
-                            try { Thread.sleep(1000); } catch(Exception e) {}
-                            log.logError(toString(), "SUSPECT OF PROBLEM: # of input rowsets: "+inputRowSets.size());
-                        }
-    
                         return null; 
                     }
                 }
