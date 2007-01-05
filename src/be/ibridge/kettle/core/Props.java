@@ -664,7 +664,7 @@ public class Props implements Cloneable
 	
 	public FontData getDefaultFont()
 	{
-        if (isOSLookShown()) return null;
+        if (isOSLookShown()) return display.getSystemFont().getFontData()[0];
 
 		FontData def = getDefaultFontData();
 		

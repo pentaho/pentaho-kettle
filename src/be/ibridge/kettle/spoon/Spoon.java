@@ -50,6 +50,9 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -272,7 +275,7 @@ public class Spoon implements AddUndoPositionInterface
     private MenuItem miEditUndo, miEditRedo;
     
     private Tree selectionTree;
-    private TreeItem  tiTransBase, tiTransPlug, tiJobBase, tiJobPlug;
+    private TreeItem  tiTransBase, tiJobBase;
 
     private Tree pluginHistoryTree;    
     
@@ -287,10 +290,8 @@ public class Spoon implements AddUndoPositionInterface
     public static final String STRING_PARTITIONS      = Messages.getString("Spoon.STRING_PARTITIONS");      // Database Partition schemas
     public static final String STRING_SLAVES          = Messages.getString("Spoon.STRING_SLAVES");          // Slave servers
     public static final String STRING_CLUSTERS        = Messages.getString("Spoon.STRING_CLUSTERS");        // Cluster Schemas
-    public static final String STRING_TRANS_BASE            = Messages.getString("Spoon.STRING_BASE");            // Base step types
-    public static final String STRING_TRANS_PLUGIN          = Messages.getString("Spoon.STRING_PLUGIN");          // Plugin step types
+    public static final String STRING_TRANS_BASE      = Messages.getString("Spoon.STRING_BASE");            // Base step types
     public static final String STRING_JOB_BASE        = Messages.getString("Spoon.STRING_JOBENTRY_BASE");   // Base job entry types
-    public static final String STRING_JOB_PLUGIN      = Messages.getString("Spoon.STRING_JOBENTRY_PLUGIN"); // Plugin job entry types
     public static final String STRING_HISTORY         = Messages.getString("Spoon.STRING_HISTORY");         // Step creation history
 
     public static final String STRING_TRANS_NO_NAME   = Messages.getString("Spoon.STRING_TRANS_NO_NAME");   // <unnamed transformation>
@@ -1545,9 +1546,7 @@ public class Spoon implements AddUndoPositionInterface
         
         tiBlocks    = new TreeItem(selectionTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
         tiTransBase = new TreeItem(tiBlocks, SWT.NONE); tiTransBase.setText(STRING_TRANS_BASE);
-        tiTransPlug = new TreeItem(tiBlocks, SWT.NONE); tiTransPlug.setText(STRING_TRANS_PLUGIN);
         tiJobBase   = new TreeItem(tiBlocks, SWT.NONE); tiJobBase.setText(STRING_JOB_BASE);
-        tiJobPlug   = new TreeItem(tiBlocks, SWT.NONE); tiJobPlug.setText(STRING_JOB_PLUGIN);
         
         // Fill the base components...
         
@@ -1556,8 +1555,8 @@ public class Spoon implements AddUndoPositionInterface
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
         StepLoader steploader = StepLoader.getInstance();
-        StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_NATIVE);
-        String basecat[] = steploader.getCategories(StepPlugin.TYPE_NATIVE);
+        StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+        String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL);
         TreeItem tiBaseCat[] = new TreeItem[basecat.length];
         for (int i=0;i<basecat.length;i++)
         {
@@ -1570,30 +1569,11 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     TreeItem ti = new TreeItem(tiBaseCat[i], 0);
                     ti.setText(basesteps[j].getDescription());
-                }
-            }
-        }
-
-        // Show the plugins...
-        StepPlugin plugins[] = steploader.getStepsWithType(StepPlugin.TYPE_PLUGIN);
-        String plugcat[] = steploader.getCategories(StepPlugin.TYPE_PLUGIN);
-        TreeItem tiPlugCat[] = new TreeItem[plugcat.length];
-        for (int i=0;i<plugcat.length;i++)
-        {
-            tiPlugCat[i] = new TreeItem(tiTransPlug, SWT.NONE);
-            tiPlugCat[i].setText(plugcat[i]);
-            
-            for (int j=0;j<plugins.length;j++)
-            {
-                if (plugins[j].getCategory().equalsIgnoreCase(plugcat[i]))
-                {
-                    TreeItem ti = new TreeItem(tiPlugCat[i], 0);
-                    ti.setText(plugins[j].getDescription());
+                    if (basesteps[j].isPlugin()) ti.setFont(GUIResource.getInstance().getFontBold());
                 }
             }
         }
         tiTransBase.setExpanded(true);
-        tiTransPlug.setExpanded(true);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // JOBS
@@ -1605,22 +1585,13 @@ public class Spoon implements AddUndoPositionInterface
         {
             TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
             tiBaseItem.setText(baseEntries[i].getDescription());
+            if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
             
             Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
             tiBaseItem.setImage(image);
         }
 
-        // Show the plugins...
-        JobPlugin jobPlugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_PLUGIN); 
-        for (int i=0;i<jobPlugins.length;i++)
-        {
-            TreeItem tiPluginItem = new TreeItem(tiJobPlug, SWT.NONE);
-            tiPluginItem.setText(jobPlugins[i].getDescription());
-            Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-            tiPluginItem.setImage(image);
-        }        
         tiJobBase.setExpanded(true);
-        tiJobPlug.setExpanded(true);
 
         addToolTipsToTree(selectionTree);
 
@@ -1694,7 +1665,7 @@ public class Spoon implements AddUndoPositionInterface
                 case 2: // ------complete-----
                     if (path[0].equals(STRING_BUILDING_BLOCKS)) // the top level Transformations entry
                     {
-                        if (path[1].equals(STRING_TRANS_BASE) || path[1].equals(STRING_TRANS_PLUGIN))
+                        if (path[1].equals(STRING_TRANS_BASE))
                         {
                             object = new TreeSelection(StepPlugin.class);
                         }
@@ -1728,7 +1699,7 @@ public class Spoon implements AddUndoPositionInterface
                     }
                     if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
                     {
-                        if (path[1].equals(STRING_JOB_BASE) || path[1].equals(STRING_JOB_PLUGIN))
+                        if (path[1].equals(STRING_JOB_BASE))
                         {
                             JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[2]);
                             object = new TreeSelection(jobPlugin);
@@ -1757,7 +1728,7 @@ public class Spoon implements AddUndoPositionInterface
 
                     if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
                     {
-                        if (path[1].equals(STRING_TRANS_BASE) || path[1].equals(STRING_TRANS_PLUGIN))
+                        if (path[1].equals(STRING_TRANS_BASE))
                         {
                             object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[3]));
                         }
@@ -1839,9 +1810,7 @@ public class Spoon implements AddUndoPositionInterface
                             tooltip = sp.getTooltip();
                         }
                         else
-                        if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE) ||
-                            item.getText().equalsIgnoreCase(STRING_TRANS_PLUGIN)
-                           )
+                        if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE))
                         {
                             
                             tooltip=Messages.getString("Spoon.Tooltip.SelectStepType",Const.CR);  //"Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
@@ -2366,6 +2335,115 @@ public class Spoon implements AddUndoPositionInterface
                             }
                         }
                     }
+                }
+            }
+        );
+        
+        // Drag & Drop for steps
+        Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
+        DropTarget ddTarget = new DropTarget(tabfolder, DND.DROP_MOVE);
+        ddTarget.setTransfer(ttypes);
+        ddTarget.addDropListener(new DropTargetListener()
+            {
+                public void dragEnter(DropTargetEvent event)
+                {
+                }
+    
+                public void dragLeave(DropTargetEvent event)
+                {
+                }
+    
+                public void dragOperationChanged(DropTargetEvent event)
+                {
+                }
+    
+                public void dragOver(DropTargetEvent event)
+                {
+                }
+    
+                public void drop(DropTargetEvent event)
+                {
+                    // no data to copy, indicate failure in event.detail
+                    if (event.data == null)
+                    {
+                        event.detail = DND.DROP_NONE;
+                        return;
+                    }
+    
+                    // What's the real drop position?
+                    Point p = new Point(event.x, event.y);
+                    
+                    // Subtract locations of parents...
+                    Composite follow = tabfolder;
+                    while (follow.getParent()!=null)
+                    {
+                        follow=follow.getParent();
+                        org.eclipse.swt.graphics.Point parentLoc = follow.getLocation();
+                        p.x-=parentLoc.x;
+                        p.y-=parentLoc.y;
+                    }
+                    p.x-=10;
+                    p.y-=75;
+    
+                    // 
+                    // We expect a Drag and Drop container... (encased in XML)
+                    try
+                    {
+                        DragAndDropContainer container = (DragAndDropContainer)event.data;
+                        
+                        switch(container.getType())
+                        {
+                        // Create a new step
+                        // Since we drag onto the tabfolder, there is no graph to accept this
+                        // Therefor we need to create a new transformation.
+                        //
+                        case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
+                            {
+                                // Add the transformation.
+                                // Since there is no transformation or job loaded, it should be safe to do so.
+                                //
+                                TransMeta transMeta = new TransMeta();
+                                addSpoonGraph(transMeta);
+                                
+                                // Not an existing step: data refers to the type of step to create
+                                String steptype = container.getData();
+                                StepMeta stepMeta = newStep(transMeta, steptype, steptype, false, true);
+                                stepMeta.setLocation(p);
+                                stepMeta.setDraw(true);
+                                
+                                refreshTree();
+                            }
+                            break;
+                            
+                        // Create a new TableInput step using the selected connection...
+                        case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: 
+                            {
+                                // Add the transformation.
+                                // Since there is no transformation or job loaded, it should be safe to do so.
+                                //
+                                JobMeta jobMeta = new JobMeta(log);
+                                addChefGraph(jobMeta);
+                                
+                                // Not an existing entry: data refers to the type of step to create
+                                String steptype = container.getData();
+                                JobEntryCopy jobEntry = newChefGraphEntry(jobMeta, steptype, false);
+                                jobEntry.setLocation(p);
+                                jobEntry.setDrawn(true);
+                                
+                                refreshGraph();
+                                refreshTree();
+                            }
+                            break;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
+                    }
+                }
+    
+                public void dropAccept(DropTargetEvent event)
+                {
                 }
             }
         );
@@ -4198,9 +4276,7 @@ public class Spoon implements AddUndoPositionInterface
         tiTrans.setImage(GUIResource.getInstance().getImageBol());
         tiJobs.setImage(GUIResource.getInstance().getImageBol());
         tiTransBase.setImage(GUIResource.getInstance().getImageBol());
-        tiTransPlug.setImage(GUIResource.getInstance().getImageBol());
         tiJobBase.setImage(GUIResource.getInstance().getImageBol());
-        tiJobPlug.setImage(GUIResource.getInstance().getImageBol());
         tiBlocks.setImage(GUIResource.getInstance().getImageBol());
 
         TreeItem tiBaseCat[]=tiTransBase.getItems();
@@ -4219,28 +4295,6 @@ public class Spoon implements AddUndoPositionInterface
                 if (sp!=null)
                 {
                     Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(sp.getID()[0]);
-                    if (stepimg!=null)
-                    {
-                        stepitem.setImage(stepimg);
-                    }
-                }
-            }
-        }
-        TreeItem tiPlugCat[]=tiTransPlug.getItems();
-        for (int x=0;x<tiPlugCat.length;x++)
-        {
-            tiPlugCat[x].setImage(GUIResource.getInstance().getImageBol());
-            
-            TreeItem ti[] = tiPlugCat[x].getItems();
-            for (int i=0;i<ti.length;i++)
-            {
-                TreeItem stepitem = ti[i];
-                String description = stepitem.getText();
-                StepLoader steploader = StepLoader.getInstance();
-                StepPlugin sp = steploader.findStepPluginWithDescription(description);
-                if (sp!=null)
-                {
-                    Image stepimg = (Image)((GUIResource.getInstance().getImagesStepsSmall()).get(sp.getID()[0]));
                     if (stepimg!=null)
                     {
                         stepitem.setImage(stepimg);
@@ -7552,15 +7606,15 @@ public class Spoon implements AddUndoPositionInterface
                             if (!props.getSaveConfirmation())
                             {
                                 MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
-                                                                                         null,
-                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
-                                                                                         MessageDialog.QUESTION,
-                                                                                         new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
-                                                                                         0,
-                                                                                         Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
-                                                                                         props.getSaveConfirmation()
-                                                                                         );
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
+                                     null,
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
+                                     MessageDialog.QUESTION,
+                                     new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
+                                     0,
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
+                                     props.getSaveConfirmation()
+                                     );
                                 md.open();
                                 props.setSaveConfirmation(md.getToggleState());
                             }
@@ -7580,8 +7634,8 @@ public class Spoon implements AddUndoPositionInterface
                 else
                 {
                     MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-                    mb.setMessage(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
+                    mb.setMessage(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
                     mb.open();
                 }
             }
@@ -7589,8 +7643,8 @@ public class Spoon implements AddUndoPositionInterface
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
             mb.open();
         }
         return false;
@@ -7642,8 +7696,8 @@ public class Spoon implements AddUndoPositionInterface
             if (f.exists())
             {
                 MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("Chef.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$
-                mb.setText(Messages.getString("Chef.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
                 id = mb.open();
             }
             if (id==SWT.YES)
@@ -7679,8 +7733,8 @@ public class Spoon implements AddUndoPositionInterface
         {
             log.logDebug(toString(), "Error opening file for writing! --> "+e.toString()); //$NON-NLS-1$
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Chef.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString()); //$NON-NLS-1$
-            mb.setText(Messages.getString("Chef.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString()); //$NON-NLS-1$
+            mb.setText(Messages.getString("Spoon.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
             mb.open();
         }
         return saved;
@@ -7732,8 +7786,8 @@ public class Spoon implements AddUndoPositionInterface
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                mb.setMessage(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
-                mb.setText(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
                 mb.open();
             }
 
