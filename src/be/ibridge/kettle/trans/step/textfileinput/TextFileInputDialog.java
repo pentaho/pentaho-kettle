@@ -855,6 +855,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 new ColumnInfo(Messages.getString("TextFileInputDialog.RequiredColumn.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
             };
 
+        colinfo[ 0].setUsingVariables(true);
         colinfo[ 1].setToolTip(Messages.getString("TextFileInputDialog.RegExpColumn.Column"));
         colinfo[ 2].setToolTip(Messages.getString("TextFileInputDialog.RequiredColumn.Tooltip"));
 

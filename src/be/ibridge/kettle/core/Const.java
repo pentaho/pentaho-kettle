@@ -165,7 +165,7 @@ public class Const
 	/**
 	 * The margin between the different dialog components & widgets
 	 */
-	public static final int MARGIN = 3;
+	public static final int MARGIN = 4;
 
 	/**
 	 * The default percentage of the width of screen where we consider the middle of a dialog.

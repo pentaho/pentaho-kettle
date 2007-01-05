@@ -92,7 +92,6 @@ import be.ibridge.kettle.chef.ChefGraph;
 import be.ibridge.kettle.chef.ChefHistory;
 import be.ibridge.kettle.chef.ChefHistoryRefresher;
 import be.ibridge.kettle.chef.ChefLog;
-import be.ibridge.kettle.chef.Messages;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
@@ -501,10 +500,12 @@ public class Spoon implements AddUndoPositionInterface
                     // F11 --> Verify
                     if (e.keyCode == SWT.F11 && !ctrl && !alt) { checkTrans(transMeta); }
                     
-
-
                     // CTRL-A --> Select All steps
-                    if ((int)e.character ==  1 && ctrl && !alt) { if (transMeta!=null) { transMeta.selectAll(); refreshGraph(); } };
+                    if ((int)e.character ==  1 && ctrl && !alt) 
+                    {
+                        if (transMeta!=null) { transMeta.selectAll(); refreshGraph(); } 
+                        if (jobMeta!=null) { jobMeta.selectAll(); refreshGraph(); } 
+                    };
                     
                     // CTRL-D --> Disconnect from repository
                     if ((int)e.character ==  4 && ctrl && !alt) { closeRepository();  };
@@ -1437,13 +1438,13 @@ public class Spoon implements AddUndoPositionInterface
         tiFileSave = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
         tiFileSave.setImage(imFileSave);
-        tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFile(getActiveTransformation()); }});
+        tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(); }});
         tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save current transformation
 
         tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
         final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
         tiFileSaveAs.setImage(imFileSaveAs);
-        tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveTransFileAs(getActiveTransformation()); }});
+        tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(); }});
         tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save transformation with different name
 
         new ToolItem(tBar, SWT.SEPARATOR);
@@ -1906,6 +1907,7 @@ public class Spoon implements AddUndoPositionInterface
                     	type = DragAndDropContainer.TYPE_TRANS_HOP;
                         data=hop.toString(); // nothing for really ;-)
                     }
+                    else
                     if (object instanceof JobEntryCopy)
                     {
                         JobEntryCopy jobEntryCopy = (JobEntryCopy)object;
@@ -2348,12 +2350,18 @@ public class Spoon implements AddUndoPositionInterface
                             
                             event.doit=close;
                             
-                            // Also clean up the log/history associated with this transformation
+                            // Also clean up the log/history associated with this transformation/job
                             //
                             if (event.doit && entry.getObject() instanceof SpoonGraph)
                             {
                                 TransMeta transMeta = (TransMeta)entry.getObject().getManagedObject();
                                 closeTransformation(transMeta);
+                                refreshTree();
+                            }
+                            if (event.doit && entry.getObject() instanceof ChefGraph)
+                            {
+                                JobMeta jobMeta = (JobMeta)entry.getObject().getManagedObject();
+                                closeJob(jobMeta);
                                 refreshTree();
                             }
                         }
@@ -3541,15 +3549,15 @@ public class Spoon implements AddUndoPositionInterface
                             if (!props.getSaveConfirmation())
                             {
                                 MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                                                                         Messages.getString("Spoon.Message.Warning.SaveOK"), //"Save OK!"
-                                                                                         null,
-                                                                                         Messages.getString("Spoon.Message.Warning.TransformationWasStored"),//"This transformation was stored in repository"
-                                                                                         MessageDialog.QUESTION,
-                                                                                         new String[] { Messages.getString("Spoon.Message.Warning.OK") },//"OK!"
-                                                                                         0,
-                                                                                         Messages.getString("Spoon.Message.Warning.NotShowThisMessage"),//"Don't show this message again."
-                                                                                         props.getSaveConfirmation()
-                                                                                         );
+                                     Messages.getString("Spoon.Message.Warning.SaveOK"), //"Save OK!"
+                                     null,
+                                     Messages.getString("Spoon.Message.Warning.TransformationWasStored"),//"This transformation was stored in repository"
+                                     MessageDialog.QUESTION,
+                                     new String[] { Messages.getString("Spoon.Message.Warning.OK") },//"OK!"
+                                     0,
+                                     Messages.getString("Spoon.Message.Warning.NotShowThisMessage"),//"Don't show this message again."
+                                     props.getSaveConfirmation()
+                                     );
                                 md.open();
                                 props.setSaveConfirmation(md.getToggleState());
                             }
@@ -7269,12 +7277,13 @@ public class Spoon implements AddUndoPositionInterface
             }
             
             String before = entry.getTabItem().getText();
-            if (entry.getObject() instanceof SpoonGraph)
-            {
-                entry.getTabItem().setText( makeGraphTabName( (TransMeta) entry.getObject().getManagedObject() ) );
-            }
+            if (entry.getObject() instanceof SpoonGraph) entry.getTabItem().setText( makeGraphTabName( (TransMeta) entry.getObject().getManagedObject() ) );
             if (entry.getObject() instanceof SpoonLog) entry.getTabItem().setText( makeLogTabName( (TransMeta) entry.getObject().getManagedObject() ) );
             if (entry.getObject() instanceof SpoonHistory) entry.getTabItem().setText( makeHistoryTabName( (TransMeta) entry.getObject().getManagedObject() ) );
+            if (entry.getObject() instanceof ChefGraph) entry.getTabItem().setText( makeJobGraphTabName( (JobMeta) entry.getObject().getManagedObject() ) );
+            if (entry.getObject() instanceof ChefLog) entry.getTabItem().setText( makeJobLogTabName( (JobMeta) entry.getObject().getManagedObject() ) );
+            if (entry.getObject() instanceof ChefHistory) entry.getTabItem().setText( makeJobHistoryTabName( (JobMeta) entry.getObject().getManagedObject() ) );
+
             String after = entry.getTabItem().getText();
 
             if (!before.equals(after))
@@ -7562,6 +7571,8 @@ public class Spoon implements AddUndoPositionInterface
                             addMenuLast();
     
                             setShellText();
+                            
+                            saved=true;
                         }
                     }
                     return saved;
@@ -7680,6 +7691,13 @@ public class Spoon implements AddUndoPositionInterface
         if (jobMeta==null) return false;
         JobDialog jd = new JobDialog(shell, SWT.NONE, jobMeta, rep);
         JobMeta ji = jd.open();
+        
+        if (ji!=null)
+        {
+            refreshTree();
+            renameTabs(); // cheap operation, might as will do it anyway
+        }
+        
         setShellText();
         return ji!=null;
     }

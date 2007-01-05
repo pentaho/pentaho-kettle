@@ -685,11 +685,6 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		{
 			public void keyPressed(KeyEvent e) 
 			{
-				if ((int) e.character == 1) // CTRL-A
-				{
-					jobMeta.selectAll();
-					redraw();
-				}
                 if ((int) e.character == 3) // CTRL-C
                 {
                     spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
@@ -1488,7 +1483,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			{
 				JobMeta newJobMeta = new JobMeta(log, spoon.rep, exactJobname, entry.getDirectory());
 				newJobMeta.clearChanged();
-				spoon.addChefGraph(jobMeta);
+				spoon.addChefGraph(newJobMeta);
 			}
 			catch(Throwable e)
 			{
