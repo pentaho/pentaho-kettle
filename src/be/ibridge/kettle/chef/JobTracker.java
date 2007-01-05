@@ -19,9 +19,6 @@ import be.ibridge.kettle.job.entry.JobEntryCopy;
  */
 public class JobTracker
 {
-    /** The job that is doing the tracking */
-    private JobMeta jobMeta;
-    
     /** The trackers for each individual job entry */
     private List jobTrackers;
     
@@ -30,10 +27,16 @@ public class JobTracker
     
     /** The parent job tracker, null if this is the root */
     private JobTracker parentJobTracker;
+
+    private String jobName;
+
+    private String jobFilename;
     
     public JobTracker(JobMeta jobMeta)
     {
-        this.jobMeta = jobMeta;
+        this.jobName = jobMeta.getName();
+        this.jobFilename = jobMeta.getFilename();
+        
         jobTrackers = new ArrayList();
     }
     /**
@@ -98,22 +101,6 @@ public class JobTracker
         jobTrackers.clear();
         result = null;
     }
-
-    /**
-     * @return Returns the jobMeta.
-     */
-    public JobMeta getJobMeta()
-    {
-        return jobMeta;
-    }
-
-    /**
-     * @param jobMeta The jobMeta to set.
-     */
-    public void setJobMeta(JobMeta jobMeta)
-    {
-        this.jobMeta = jobMeta;
-    }
     
     /**
      * Finds the JobTracker for the job entry specified.
@@ -163,5 +150,33 @@ public class JobTracker
         }
         
         return total;
+    }
+    /**
+     * @return the jobFilename
+     */
+    public String getJobFilename()
+    {
+        return jobFilename;
+    }
+    /**
+     * @param jobFilename the jobFilename to set
+     */
+    public void setJobFilename(String jobFilename)
+    {
+        this.jobFilename = jobFilename;
+    }
+    /**
+     * @return the jobName
+     */
+    public String getJobName()
+    {
+        return jobName;
+    }
+    /**
+     * @param jobName the jobName to set
+     */
+    public void setJobName(String jobName)
+    {
+        this.jobName = jobName;
     }
 }
