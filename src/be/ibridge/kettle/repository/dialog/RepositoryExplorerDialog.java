@@ -1097,8 +1097,13 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				if (userinfo.isAdministrator() || userinfo.getLogin().equalsIgnoreCase(users[i]))
 				{
-					TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
-					newUser.setText(users[i]);
+					if ( users[i] != null )
+					{
+						// If users[i] is null TreeWidget will throw exceptions.
+						// The solution is to verify on saving a user.
+					    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
+					    newUser.setText(users[i]);
+					}
 				}
 			}
 	
@@ -1655,33 +1660,30 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void newUser()
 	{
-		try
+		UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, new UserInfo());
+		UserInfo ui = ud.open();
+		if (ui!=null)
 		{
-			UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, new UserInfo());
-			UserInfo ui = ud.open();
-			if (ui!=null)
+/***************************
+            Removed by sboden as the user dialog already saves the id on pressing ok.
+            Related defect #4228 on javaforge.
+				
+   	     	// See if this user already exists...
+		    long uid = rep.getUserID(ui.getLogin());
+			if (uid<=0)
 			{
-				// See if this user already exists...
-				long uid = rep.getUserID(ui.getLogin());
-				if (uid<=0)
-				{
-					ui.saveRep(rep);
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
-					mb.open();
-				}
-					
-				// Refresh tree...
-				refreshTree();
+				ui.saveRep(rep);
 			}
-		}
-		catch(KettleException e)
-		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			else
+			{
+				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
+				mb.open();
+			}
+****************************/					
+			// Refresh tree...
+			refreshTree();
 		}
 	}
 

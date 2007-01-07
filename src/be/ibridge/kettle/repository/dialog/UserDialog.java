@@ -63,9 +63,11 @@ public class UserDialog extends Dialog
 	
 	private Button    wOK, wCancel;
 	
-	private Props    props;
+	private Props      props;
 	private Repository rep;
-	private UserInfo userinfo;
+	private UserInfo   userinfo;
+	
+	private boolean    newUser = false;
 
 	/** This dialog grabs a UserMeta structure, valid for the specified repository.*/
 	public UserDialog(Shell par, int style, LogWriter lg, Props pr, Repository rep, UserInfo ui)
@@ -261,6 +263,11 @@ public class UserDialog extends Dialog
 		getData();
 
 		BaseStepDialog.setSize(shell);
+		
+		if ( userinfo.getID() <= 0 )
+		{
+		    setNewUser(true);  
+		}
 
 		shell.open();
 		Display display = parent.getDisplay();
@@ -300,7 +307,39 @@ public class UserDialog extends Dialog
 	{
 		try
 		{
-			userinfo.setLogin(wLogin.getText());
+			String login = wLogin.getText();
+			
+			if ( login == null || login.length() == 0 )
+			{
+				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				mb.setMessage(Messages.getString("UserDialog.Dialog.User.New.EmptyLogin.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("UserDialog.Dialog.User.New.EmptyLogin.Title")); //$NON-NLS-1$
+				mb.open();
+				
+				// don't dispose
+				return;			
+			}
+			
+		    long uid = rep.getUserID(login);
+		    if ( getNewUser() )
+		    {
+		    	if ( uid > 0 )
+		    	{
+					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+					mb.setMessage(Messages.getString("UserDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("UserDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
+					mb.open();
+					
+					// don't dispose
+					return;
+		    	}
+		    	else
+		    	{
+		    	    userinfo.setID(uid);
+		    	}
+		    }						    	
+
+			userinfo.setLogin(login);
 			userinfo.setPassword(wPassword.getText());
 			userinfo.setName(wUsername.getText());
 			userinfo.setDescription(wDescription.getText());
@@ -342,5 +381,25 @@ public class UserDialog extends Dialog
 			mb.setText(Messages.getString("UserDialog.Dialog.ErrorRetrievingProfiles.Title")); //$NON-NLS-1$
 			mb.open();
 		}
+	}
+	
+	/**
+	 * Set the flag this dialog is opened to create a new user
+	 * 
+	 * @param flag 
+	 */
+	private void setNewUser(boolean flag)
+	{
+		newUser = flag;
+	}
+	
+	/**
+	 * Get the flag whether this dialog is for a new user or not.
+	 * 
+	 * @return true when used for a new user else false
+	 */
+	private boolean getNewUser()
+	{
+		return newUser;
 	}
 }
