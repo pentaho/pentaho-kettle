@@ -108,7 +108,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 	private ScrollBar hori;
 	private ScrollBar vert;
 
-	public boolean shift, control;
+	// public boolean shift, control;
 	private boolean split_hop;
 	private int last_button;
 	private JobHopMeta last_hop_split;
@@ -169,28 +169,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		selected_entries = null;
 		lastclick = null;
 
-		addKeyListener(new KeyAdapter() 
-		{
-			public void keyPressed(KeyEvent e) 
-			{
-				shift = (e.keyCode == SWT.SHIFT);
-				control = (e.keyCode == SWT.CONTROL);
-			}
-
-			public void keyReleased(KeyEvent e) 
-			{
-				shift = (e.keyCode == SWT.SHIFT);
-				control = (e.keyCode == SWT.CONTROL);
-			}
-		});
-
 		addMouseListener(new MouseAdapter() 
 		{
 			public void mouseDoubleClick(MouseEvent e) 
 			{
 			    clearSettings();
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
 
 				Point real = screen2real(e.x, e.y);
 				
@@ -229,8 +212,6 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			public void mouseDown(MouseEvent e) 
 			{
                 clearSettings();
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
                 
 				last_button = e.button;
 				Point real = screen2real(e.x, e.y);
@@ -277,8 +258,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
 			public void mouseUp(MouseEvent e) 
 			{
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
+                boolean control = (e.stateMask & SWT.CONTROL) != 0;
 
 				if (iconoffset==null) iconoffset=new Point(0,0);
 				Point real = screen2real(e.x, e.y);
@@ -429,6 +409,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		{
 			public void mouseMove(MouseEvent e) 
 			{
+                boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+
                 // Remember the last position of the mouse for paste with keyboard
                 lastMove = new Point(e.x, e.y);
 
@@ -448,7 +430,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 					selected_entries = new JobEntryCopy[] { selected_icon };
 					prev_locations = new Point[] { selected_icon.getLocation()};
 				}
-
+                
 				// Did we select a region...?
 				if (selrect != null) 
 				{
@@ -1538,7 +1520,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		gc.dispose();
 		img.dispose();
 
-		spoon.setShellText();
+		// spoon.setShellText();
 	}
     
 	public void drawJob(GC gc) 

@@ -463,7 +463,7 @@ public class Props implements Cloneable
             fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
-            log.logBasic(toString(), Messages.getString("Spoon.Log.SaveProperties"));
+            log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{

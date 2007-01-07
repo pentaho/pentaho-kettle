@@ -338,9 +338,7 @@ public class Job extends Thread
 			// If the link is unconditional, execute the next job entry (entries).
 			// If the startpoint was an evaluation and the link color is correct: green or red, execute the next job entry...
 			//
-			if (  hi.isUnconditional() || 
-				( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) )
-			   ) 
+			if (  hi.isUnconditional() || ( startpoint.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
 			{				
 				// Start this next step!
 				log.logBasic(jobMeta.toString(), "Starting entry ["+nextEntry.getName()+"]");

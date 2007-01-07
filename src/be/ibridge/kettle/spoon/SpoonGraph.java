@@ -134,7 +134,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
     private ScrollBar        vert;
 
-    public boolean           shift, control;
+    // public boolean           shift, control;
 
     private boolean          split_hop;
 
@@ -230,9 +230,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             public void mouseDoubleClick(MouseEvent e)
             {
                 clearSettings();
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
-
+                
                 Point real = screen2real(e.x, e.y);
 
                 StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
@@ -266,9 +264,8 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             public void mouseDown(MouseEvent e)
             {
                 clearSettings();
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
-
+                boolean control = (e.stateMask & SWT.CONTROL) != 0;
+                
                 last_button = e.button;
                 Point real = screen2real(e.x, e.y);
 
@@ -318,9 +315,8 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
             public void mouseUp(MouseEvent e)
             {
-                control = (e.stateMask & SWT.CONTROL) != 0;
-                shift = (e.stateMask & SWT.SHIFT) != 0;
-
+                boolean control = (e.stateMask & SWT.CONTROL) != 0;
+                
                 if (iconoffset == null) iconoffset = new Point(0, 0);
                 Point real = screen2real(e.x, e.y);
                 Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
@@ -507,6 +503,8 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         {
             public void mouseMove(MouseEvent e)
             {
+                boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+
                 // Remember the last position of the mouse for paste with keyboard
                 lastMove = new Point(e.x, e.y);
                 Point real = screen2real(e.x, e.y);
@@ -1899,7 +1897,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         e.gc.drawImage(img, 0, 0);
         img.dispose();
 
-        spoon.setShellText();
+        // spoon.setShellText();
     }
 
     public Image getTransformationImage(Device device, int x, int y)

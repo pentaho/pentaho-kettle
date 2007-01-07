@@ -301,6 +301,9 @@ public class Spoon implements AddUndoPositionInterface
     public static final String STRING_JOB             = Messages.getString("Spoon.STRING_JOB");             // Job
 
     private static final String APPL_TITLE         = APP_NAME;
+
+    private static final String STRING_WELCOME_TAB_NAME = "Welcome!";
+    private static final String URL_WELCOME_PAGE        = "http://kettle.pentaho.org";
             
     public  KeyAdapter defKeys;
     public  KeyAdapter modKeys;
@@ -615,7 +618,7 @@ public class Spoon implements AddUndoPositionInterface
         );
         
         // Add a browser widget
-        addSpoonBrowser("Welcome!", "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
+        addSpoonBrowser(STRING_WELCOME_TAB_NAME, "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
 
 
         shell.layout();
@@ -695,15 +698,37 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void closeTransformation(TransMeta transMeta)
     {
-        transformationMap.remove(makeGraphTabName(transMeta));
-
+        String tabName = makeGraphTabName(transMeta);
+        transformationMap.remove(tabName);
+        tabMap.remove(tabName);
+        
         // Close the associated tabs...
-        CTabItem graphTab = findCTabItem(makeGraphTabName(transMeta));
-        if (graphTab!=null) graphTab.dispose();
-        CTabItem logTab = findCTabItem(makeLogTabName(transMeta));
-        if (logTab!=null) logTab.dispose();
-        CTabItem historyTab = findCTabItem(makeHistoryTabName(transMeta));
-        if (historyTab!=null) historyTab.dispose();
+        // Graph
+        String graphTabName = makeGraphTabName(transMeta);
+        CTabItem graphTab = findCTabItem(graphTabName);
+        if (graphTab!=null)
+        {
+            graphTab.dispose();
+            tabMap.remove(graphTabName);
+        }
+        
+        // Logging
+        String logTabName = makeLogTabName(transMeta);
+        CTabItem logTab = findCTabItem(logTabName);
+        if (logTab!=null)
+        {
+            logTab.dispose();
+            tabMap.remove(logTabName);
+        }
+        
+        //History
+        String historyTabName = makeHistoryTabName(transMeta);
+        CTabItem historyTab = findCTabItem(historyTabName);
+        if (historyTab!=null) 
+        {
+            historyTab.dispose();
+            tabMap.remove(historyTabName);
+        }
         
         refreshTree();
     }
@@ -713,17 +738,46 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void closeJob(JobMeta jobMeta)
     {
-        jobMap.remove(makeJobGraphTabName(jobMeta));
-
+        String tabName = makeJobGraphTabName(jobMeta);
+        jobMap.remove(tabName);
+        tabMap.remove(tabName);
+        
         // Close the associated tabs...
-        CTabItem graphTab = findCTabItem(makeJobGraphTabName(jobMeta));
-        if (graphTab!=null) graphTab.dispose();
-        CTabItem logTab = findCTabItem(makeJobLogTabName(jobMeta));
-        if (logTab!=null) logTab.dispose();
-        CTabItem historyTab = findCTabItem(makeJobHistoryTabName(jobMeta));
-        if (historyTab!=null) historyTab.dispose();
+        // Graph
+        String graphTabName = makeJobGraphTabName(jobMeta);
+        CTabItem graphTab = findCTabItem(graphTabName);
+        if (graphTab!=null)
+        {
+            graphTab.dispose();
+            tabMap.remove(graphTabName);
+        }
+        
+        // Logging
+        String logTabName = makeJobLogTabName(jobMeta);
+        CTabItem logTab = findCTabItem(logTabName);
+        if (logTab!=null)
+        {
+            logTab.dispose();
+            tabMap.remove(logTabName);
+        }
+        
+        //History
+        String historyTabName = makeJobHistoryTabName(jobMeta);
+        CTabItem historyTab = findCTabItem(historyTabName);
+        if (historyTab!=null) 
+        {
+            historyTab.dispose();
+            tabMap.remove(historyTabName);
+        }
         
         refreshTree();
+    }
+    
+    public void closeSpoonBrowser()
+    {
+        tabMap.remove(STRING_WELCOME_TAB_NAME);
+        CTabItem tab = findCTabItem(STRING_WELCOME_TAB_NAME);
+        if (tab!=null) tab.dispose();
     }
     
     /**
@@ -1312,6 +1366,11 @@ public class Spoon implements AddUndoPositionInterface
         MenuItem miHelpTOTD = new MenuItem(msHelp, SWT.CASCADE); 
         miHelpTOTD.setText(Messages.getString("Spoon.Menu.Help.Tip"));//&Tip of the day
         miHelpTOTD.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { new TipsDialog(shell, props).open(); }});
+        // Welcome screen
+        //
+        MenuItem miHelpWelcome = new MenuItem(msHelp, SWT.CASCADE); 
+        miHelpWelcome.setText(Messages.getString("Spoon.Menu.Help.Welcome")); //&Welcome screen
+        miHelpWelcome.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { addSpoonBrowser(STRING_WELCOME_TAB_NAME, URL_WELCOME_PAGE); }});
         new MenuItem(msHelp, SWT.SEPARATOR);
         // About
         //
@@ -1523,6 +1582,7 @@ public class Spoon implements AddUndoPositionInterface
     }
 
     private static final String STRING_SPOON_MAIN_TREE = "Spoon Main Tree";
+    private static final String STRING_SPOON_CORE_OBJECTS_TREE= "Spoon Core Objects Tree";
     
     private void addTree()
     {
@@ -1545,8 +1605,6 @@ public class Spoon implements AddUndoPositionInterface
         tiTrans  = new TreeItem(selectionTree, SWT.NONE); tiTrans.setText(STRING_TRANSFORMATIONS);
         tiJobs   = new TreeItem(selectionTree, SWT.NONE); tiJobs.setText(STRING_JOBS);
         
-        addToolTipsToTree(selectionTree);
-
         // Default selection (double-click, enter)
         // lsNewDef  = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ newSelected();  } };
         
@@ -1556,7 +1614,7 @@ public class Spoon implements AddUndoPositionInterface
         
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
-        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ editSelected(); } });
+        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(); } });
         
         // Keyboard shortcuts!
         selectionTree.addKeyListener(defKeys);
@@ -1568,51 +1626,10 @@ public class Spoon implements AddUndoPositionInterface
         // OK, now add a list of often-used icons to the bottom of the tree...
         coreObjectsTree = new Tree(leftSash, SWT.SINGLE );
 
-        // tiBlocks    = new TreeItem(coreObjectsTree, SWT.NONE); tiBlocks.setText(STRING_BUILDING_BLOCKS);
-        tiTransBase = new TreeItem(coreObjectsTree, SWT.NONE); tiTransBase.setText(STRING_TRANS_BASE);
-        tiJobBase   = new TreeItem(coreObjectsTree, SWT.NONE); tiJobBase.setText(STRING_JOB_BASE);
-        
-        // Fill the base components...
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        // TRANSFORMATIONS
-        //////////////////////////////////////////////////////////////////////////////////////////////////
+        // Add a tree memory as well...
+        TreeMemory.addTreeListener(coreObjectsTree, STRING_SPOON_CORE_OBJECTS_TREE);
 
-        StepLoader steploader = StepLoader.getInstance();
-        StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-        String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL);
-        TreeItem tiBaseCat[] = new TreeItem[basecat.length];
-        for (int i=0;i<basecat.length;i++)
-        {
-            tiBaseCat[i] = new TreeItem(tiTransBase, SWT.NONE);
-            tiBaseCat[i].setText(basecat[i]);
-            
-            for (int j=0;j<basesteps.length;j++)
-            {
-                if (basesteps[j].getCategory().equalsIgnoreCase(basecat[i]))
-                {
-                    TreeItem ti = new TreeItem(tiBaseCat[i], 0);
-                    ti.setText(basesteps[j].getDescription());
-                    if (basesteps[j].isPlugin()) ti.setFont(GUIResource.getInstance().getFontBold());
-                }
-            }
-        }
-        tiTransBase.setExpanded(true);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        // JOBS
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-
-        JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-        JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
-        for (int i=0;i<baseEntries.length;i++)
-        {
-            TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
-            tiBaseItem.setText(baseEntries[i].getDescription());
-            if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
-            
-            Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-            tiBaseItem.setImage(image);
-        }
+        refreshCoreObjectsTree();
 
         tiJobBase.setExpanded(true);
         
@@ -1631,6 +1648,95 @@ public class Spoon implements AddUndoPositionInterface
         setTreeImages();
     }
     
+    private void refreshCoreObjectsTree()
+    {
+        clearCoreObjectsTree();
+        addCoreObjectsToTree();
+    }
+    
+    private void clearCoreObjectsTree()
+    {
+        TreeItem[] items = coreObjectsTree.getItems();
+        for (int i=0;i<items.length;i++) items[i].dispose();
+    }
+    
+    private void addCoreObjectsToTree()
+    {
+        boolean showTrans = getActiveTransformation()!=null;
+        boolean showJob   = getActiveJob()!=null;
+        int nrTabs        = tabMap.size();
+        
+        if (showTrans || nrTabs==0)
+        {
+            tiTransBase = new TreeItem(coreObjectsTree, SWT.NONE); 
+            tiTransBase.setText(STRING_TRANS_BASE);
+            tiTransBase.setImage(GUIResource.getInstance().getImageBol());
+
+            // Fill the base components...
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+            // TRANSFORMATIONS
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+    
+            StepLoader steploader = StepLoader.getInstance();
+            StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+            String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL);
+            
+            for (int i=0;i<basecat.length;i++)
+            {
+                TreeItem tiBaseCat = new TreeItem(tiTransBase, SWT.NONE);
+                tiBaseCat.setText(basecat[i]);
+                tiBaseCat.setImage(GUIResource.getInstance().getImageBol());
+                
+                for (int j=0;j<basesteps.length;j++)
+                {
+                    if (basesteps[j].getCategory().equalsIgnoreCase(basecat[i]))
+                    {
+                        TreeItem treeItem = new TreeItem(tiBaseCat, 0);
+                        treeItem.setText(basesteps[j].getDescription());
+                        if (basesteps[j].isPlugin()) treeItem.setFont(GUIResource.getInstance().getFontBold());
+                        
+                        Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(basesteps[j].getID()[0]);
+                        if (stepimg!=null)
+                        {
+                            treeItem.setImage(stepimg);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (showJob || nrTabs==0)
+        {
+            tiJobBase   = new TreeItem(coreObjectsTree, SWT.NONE); 
+            tiJobBase.setText(STRING_JOB_BASE);
+            tiJobBase.setImage(GUIResource.getInstance().getImageBol());
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+            // JOBS
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+    
+            JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+            JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
+            for (int i=0;i<baseEntries.length;i++)
+            {
+                TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
+                tiBaseItem.setText(baseEntries[i].getDescription());
+                if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
+                
+                Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+                tiBaseItem.setImage(image);
+                
+                Image jobEntryImg = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+                if (jobEntryImg!=null)
+                {
+                    tiBaseItem.setImage(jobEntryImg);
+                }
+            }
+        }
+        
+        TreeMemory.setExpandedFromMemory(coreObjectsTree, STRING_SPOON_CORE_OBJECTS_TREE);
+    }
+
     protected void shareObject(SharedObjectInterface sharedObjectInterface)
     {
         sharedObjectInterface.setShared(true);
@@ -1661,6 +1767,10 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // the top level Transformations entry
                     {
                         object = new TreeSelection(TransMeta.class);
+                    }
+                    if (path[0].equals(STRING_JOBS)) // the top level Jobs entry
+                    {
+                        object = new TreeSelection(JobMeta.class);
                     }
                     break;
                     
@@ -1798,10 +1908,20 @@ public class Spoon implements AddUndoPositionInterface
                             tooltip = sp.getTooltip();
                         }
                         else
-                        if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE))
                         {
-                            
-                            tooltip=Messages.getString("Spoon.Tooltip.SelectStepType",Const.CR);  //"Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
+                            JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+                            JobPlugin jobPlugin = jobEntryLoader.findJobEntriesWithDescription(item.getText());
+                            if (jobPlugin!=null)
+                            {
+                                tooltip = jobPlugin.getTooltip();
+                            }
+                            else
+                            {
+                                if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE))
+                                {
+                                    tooltip=Messages.getString("Spoon.Tooltip.SelectStepType",Const.CR);  //"Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
+                                }
+                            }
                         }
                     }
                     tree.setToolTipText(tooltip);
@@ -1961,6 +2081,18 @@ public class Spoon implements AddUndoPositionInterface
         // No clicked on a real object: returns a class
         if (selection instanceof Class)
         {
+            if (selection.equals(TransMeta.class))
+            {
+                // New
+                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newTransFile(); }} );
+            }
+            if (selection.equals(JobMeta.class))
+            {
+                // New
+                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newJobFile(); }} );
+            }
             if (selection.equals(TransHopMeta.class))
             {
                 // New
@@ -2006,6 +2138,22 @@ public class Spoon implements AddUndoPositionInterface
         }
         else
         {
+            if (selection instanceof TransMeta)
+            {
+                // Open log window
+                MenuItem miLog  = new MenuItem(mCSH, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
+                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonLog((TransMeta)selection); }} );
+                MenuItem miHistory  = new MenuItem(mCSH, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
+                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonHistory((TransMeta)selection, true); }} );
+            }
+            if (selection instanceof JobMeta)
+            {
+                // Open log window
+                MenuItem miLog  = new MenuItem(mCSH, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
+                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefLog((JobMeta)selection); }} );
+                MenuItem miHistory  = new MenuItem(mCSH, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
+                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefHistory((JobMeta)selection, true); }} );
+            }
             if (selection instanceof StepPlugin)
             {
                 // New
@@ -2147,9 +2295,8 @@ public class Spoon implements AddUndoPositionInterface
      * Reaction to double click
      *
      */
-    private void editSelected()
-    {
-        
+    private void doubleClickedInTree()
+    {        
         TreeSelection[] objects = getTreeObjects(selectionTree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
 
@@ -2160,6 +2307,8 @@ public class Spoon implements AddUndoPositionInterface
                 
         if (selection instanceof Class)
         {
+            if (selection.equals(TransMeta.class)) newTransFile();
+            if (selection.equals(JobMeta.class)) newJobFile();
             if (selection.equals(TransHopMeta.class)) newHop((TransMeta)parent);
             if (selection.equals(DatabaseMeta.class)) newConnection((HasDatabasesInterface)parent);
             if (selection.equals(PartitionSchema.class)) newDatabasePartitioningSchema((TransMeta)parent);
@@ -2236,7 +2385,9 @@ public class Spoon implements AddUndoPositionInterface
                 public void close(CTabFolderEvent event) 
                 {
                     // Try to find the tab-item that's being closed.
-                    Collection collection = tabMap.values();
+                    ArrayList collection = new ArrayList();
+                    collection.addAll(tabMap.values());
+                    
                     for (Iterator iter = collection.iterator(); iter.hasNext();)
                     {
                         TabMapEntry entry = (TabMapEntry) iter.next();
@@ -2281,6 +2432,11 @@ public class Spoon implements AddUndoPositionInterface
                             {
                                 JobMeta jobMeta = (JobMeta)entry.getObject().getManagedObject();
                                 closeJob(jobMeta);
+                                refreshTree();
+                            }
+                            if (event.doit && entry.getObject() instanceof SpoonBrowser)
+                            {
+                                closeSpoonBrowser();
                                 refreshTree();
                             }
                         }
@@ -2372,6 +2528,7 @@ public class Spoon implements AddUndoPositionInterface
                                 // Since there is no transformation or job loaded, it should be safe to do so.
                                 //
                                 JobMeta jobMeta = new JobMeta(log);
+                                setStartVisible(jobMeta);
                                 addChefGraph(jobMeta);
                                 
                                 // Not an existing entry: data refers to the type of step to create
@@ -3294,6 +3451,8 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             JobMeta jobMeta = new JobMeta(log);
+            setStartVisible(jobMeta);
+            
             if (rep!=null) jobMeta.readDatabases(rep);
             addChefGraph(jobMeta);
             refreshTree();
@@ -3304,6 +3463,13 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    private void setStartVisible(JobMeta jobMeta)
+    {
+        // Put a start button on the canvas
+        // jobMeta.getStart().setDrawn();
+        // jobMeta.getStart().setLocation(50, 50);
+    }
+
     public void loadRepositoryObjects(TransMeta transMeta)
     {
         // Load common database info from active repository...
@@ -4217,9 +4383,6 @@ public class Spoon implements AddUndoPositionInterface
     {
         tiTrans.setImage(GUIResource.getInstance().getImageBol());
         tiJobs.setImage(GUIResource.getInstance().getImageBol());
-        tiTransBase.setImage(GUIResource.getInstance().getImageBol());
-        tiJobBase.setImage(GUIResource.getInstance().getImageBol());
-        // tiBlocks.setImage(GUIResource.getInstance().getImageBol());
 
         TreeItem tiBaseCat[]=tiTransBase.getItems();
         for (int x=0;x<tiBaseCat.length;x++)
@@ -4370,6 +4533,9 @@ public class Spoon implements AddUndoPositionInterface
         tiFilePrint.setEnabled(enableTransMenu || enableJobMenu);
         tiFileSaveAs.setEnabled(enableTransMenu || enableJobMenu);
         tiFileSave.setEnabled(enableTransMenu || enableJobMenu);
+        
+        // What steps & plugins to show?
+        refreshCoreObjectsTree();
     }
     
     private void markTabsChanged()
@@ -5876,7 +6042,7 @@ public class Spoon implements AddUndoPositionInterface
     public void copyTransformationImage(TransMeta transMeta)
     {
         SpoonGraph spoonGraph = getSpoonGraph(transMeta);
-        if (spoonGraph==null) return; // TODO: should not happen, check this
+        if (spoonGraph==null) return;
         
         Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
         
@@ -7910,7 +8076,6 @@ public class Spoon implements AddUndoPositionInterface
     
     public void newJobHop(JobMeta jobMeta, JobEntryCopy fr, JobEntryCopy to)
     {
-        log.logBasic(toString(), Messages.getString("Chef.Log.NewJobHop")+fr.getName()+", "+to.getName()+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         JobHopMeta hi = new JobHopMeta(fr, to);
         jobMeta.addJobHop(hi);
         addUndoNew(jobMeta, new JobHopMeta[] {hi}, new int[] { jobMeta.indexOfJobHop(hi)} );

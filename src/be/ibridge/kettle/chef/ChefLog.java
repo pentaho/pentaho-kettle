@@ -59,8 +59,7 @@ import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
 import be.ibridge.kettle.job.JobMeta;
-import be.ibridge.kettle.job.entry.JobEntryCopy;
-import be.ibridge.kettle.spoon.Messages;
+import be.ibridge.kettle.job.entry.JobEntryCopy;    
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.spoon.TabItemInterface;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
@@ -74,9 +73,6 @@ import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
  */
 public class ChefLog extends Composite implements TabItemInterface
 {
-	// public final static String START_TEXT = 
-	// public final static String STOP_TEXT  = 
-
 	private Color white;
 	private Shell shell;
 	private Display display;
@@ -116,6 +112,7 @@ public class ChefLog extends Composite implements TabItemInterface
 		this.log=LogWriter.getInstance();
 		display=shell.getDisplay();
 		this.spoon=spoon;
+        this.jobMeta = jobMeta;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -509,11 +506,11 @@ public class ChefLog extends Composite implements TabItemInterface
                 
                 // Re-populate this...
                 TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
-                String jobName = jobTracker.getJobMeta().getName();
+                String jobName = jobTracker.getJobName();
 
                 if(Const.isEmpty(jobName)) 
                 {
-                    if (!Const.isEmpty(jobTracker.getJobMeta().getFilename())) jobName = jobTracker.getJobMeta().getFilename();
+                    if (!Const.isEmpty(jobTracker.getJobFilename())) jobName = jobTracker.getJobFilename();
                     else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
                 }
                 treeItem.setText(0, jobName);
@@ -540,7 +537,7 @@ public class ChefLog extends Composite implements TabItemInterface
                 if (jobTracker.nrJobTrackers()>0)
                 {
                     // This is a sub-job: display the name at the top of the list...
-                    treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix")+jobTracker.getJobMeta().getName() ); //$NON-NLS-1$
+                    treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix")+jobTracker.getJobName() ); //$NON-NLS-1$
                     
                     // then populare the sub-job entries ...
                     for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -565,7 +562,7 @@ public class ChefLog extends Composite implements TabItemInterface
                         }
                         else
                         {
-                            treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix2")+jobTracker.getJobMeta().getName()); //$NON-NLS-1$
+                            treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix2")+jobTracker.getJobName()); //$NON-NLS-1$
                         }
                         String comment = result.getComment();
                         if (comment!=null)
@@ -607,7 +604,7 @@ public class ChefLog extends Composite implements TabItemInterface
 
             job=null;
             isRunning=false;
-            chefHistoryRefresher.markRefreshNeeded();
+            if (chefHistoryRefresher!=null) chefHistoryRefresher.markRefreshNeeded();
             log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		

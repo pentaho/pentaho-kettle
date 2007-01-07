@@ -797,7 +797,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
        int nr = jobTracker.nrJobTrackers();
 
        messageText.append(Const.rightPad(" ", level*2));
-       messageText.append(Const.NVL( jobTracker.getJobMeta().getName(), "-") );
+       messageText.append(Const.NVL( jobTracker.getJobName(), "-") );
        JobEntryResult jer = jobTracker.getJobEntryResult(); 
        if (jer!=null)
        {
