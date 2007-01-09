@@ -1462,7 +1462,8 @@ public class Spoon implements AddUndoPositionInterface
                     {
                         try
                         {
-                            loadLastUsedFile(lastUsedFile, rep.getRepositoryInfo());
+                            RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
+                            loadLastUsedFile(lastUsedFile, meta);
                             addMenuLast();
                             refreshHistory();
                         }
