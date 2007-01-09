@@ -217,7 +217,7 @@ import be.ibridge.kettle.www.WebResult;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface
+public class Spoon implements AddUndoPositionInterface 
 {
     public static final String APP_NAME = Messages.getString("Spoon.Application.Name");  //"Spoon";
     
@@ -304,6 +304,10 @@ public class Spoon implements AddUndoPositionInterface
 
     private static final String STRING_WELCOME_TAB_NAME = "Welcome!";
     private static final String URL_WELCOME_PAGE        = "http://kettle.pentaho.org";
+    
+    public static final int STATE_CORE_OBJECTS_NONE     = 1;   // No core objects
+    public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
+    public static final int STATE_CORE_OBJECTS_SPOON    = 3;   // Spoon state: steps
             
     public  KeyAdapter defKeys;
     public  KeyAdapter modKeys;
@@ -380,6 +384,8 @@ public class Spoon implements AddUndoPositionInterface
 
     private MenuItem miWizardRipDatabase;
 
+    private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
+    
     private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
         
     public Spoon(LogWriter l, Repository rep)
@@ -1657,6 +1663,7 @@ public class Spoon implements AddUndoPositionInterface
     
     private void clearCoreObjectsTree()
     {
+    	setCoreObjectsState(STATE_CORE_OBJECTS_NONE);
         TreeItem[] items = coreObjectsTree.getItems();
         for (int i=0;i<items.length;i++) items[i].dispose();
     }
@@ -1704,6 +1711,7 @@ public class Spoon implements AddUndoPositionInterface
                     }
                 }
             }
+            setCoreObjectsState(STATE_CORE_OBJECTS_SPOON);
         }
 
         if (showJob || nrTabs==0)
@@ -1733,6 +1741,7 @@ public class Spoon implements AddUndoPositionInterface
                     tiBaseItem.setImage(jobEntryImg);
                 }
             }
+            setCoreObjectsState(STATE_CORE_OBJECTS_CHEF);
         }
         
         TreeMemory.setExpandedFromMemory(coreObjectsTree, STRING_SPOON_CORE_OBJECTS_TREE);
@@ -2381,8 +2390,45 @@ public class Spoon implements AddUndoPositionInterface
         sashform.setWeights(weights);
         sashform.setVisible(true);      
         
-        tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() 
+        tabfolder.addSelectionListener(new SelectionAdapter() 
             {
+				public void widgetSelected(SelectionEvent event) {
+                    ArrayList collection = new ArrayList();
+                    collection.addAll(tabMap.values());
+					
+                    for (Iterator iter = collection.iterator(); iter.hasNext();)
+                    {                   	
+                        TabMapEntry entry = (TabMapEntry) iter.next();
+                        if (event.item.equals(entry.getTabItem())) 
+                        {
+                            TabItemInterface itemInterface = entry.getObject();
+                            
+                            //
+                            // Another way to implement this may be to keep track of the
+                            // state of the core object tree in method addCoreObjectsToTree()
+                            //
+                            if (event.doit && entry.getObject() instanceof SpoonGraph)
+                            {
+                               if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
+                               {
+                                   refreshCoreObjectsTree();
+                               }
+                            }
+                            if (event.doit && entry.getObject() instanceof ChefGraph)
+                            {
+                               if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
+                               {
+                                   refreshCoreObjectsTree();
+                               }
+                            }                            
+                        }
+                    }
+
+				}        	
+            });
+        
+        tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() 
+            {                               
                 public void close(CTabFolderEvent event) 
                 {
                     // Try to find the tab-item that's being closed.
@@ -8357,6 +8403,24 @@ public class Spoon implements AddUndoPositionInterface
         return jobMeta;
     }
 
+    /**
+     * Set the core object state.
+     * 
+     * @param state
+     */
+    public void setCoreObjectsState(int state)
+    {
+    	coreObjectsState = state;
+    }
     
+    /**
+     * Get the core object state.
+     * 
+     * @return state.
+     */
+    public int getCoreObjectsState()
+    {
+    	return coreObjectsState;
+    }    
 }
 
