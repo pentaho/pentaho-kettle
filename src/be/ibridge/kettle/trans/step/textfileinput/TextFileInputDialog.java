@@ -2359,6 +2359,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                                 {
                                     // Trim the field
                                     field = Const.trim(field);
+                                    // Replace all spaces & - with underscore _
+                                    field = Const.replace(field, " ", "_");
+                                    field = Const.replace(field, "-", "_");
                                 }
 
                                 TableItem item = new TableItem(table, SWT.NONE);
