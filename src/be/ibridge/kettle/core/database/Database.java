@@ -1630,7 +1630,7 @@ public class Database
 	{
 		StringBuffer ins=new StringBuffer(128);
 		
-		ins.append("INSERT INTO ").append(databaseMeta.quoteField(tableName)).append("(");
+		ins.append("INSERT INTO ").append(databaseMeta.quoteField(tableName)).append(" (");
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
@@ -2222,7 +2222,7 @@ public class Database
 					{
                         String schemaName = alltables.getString("TABLE_SCHEM");
 						String name       = alltables.getString("TABLE_NAME");
-						if ( tablename.equalsIgnoreCase(name) || 
+						if ( tablename.equals(name) || 
                              ( schemaName!=null && tablename.equalsIgnoreCase( databaseMeta.getSchemaTableCombination(schemaName, name)) )
                            )
 						{
@@ -3544,14 +3544,14 @@ public class Database
 		// First, check for reserved SQL in the input row r...
 		databaseMeta.quoteReservedWords(fields);
 		String quotedTk = tk != null ? databaseMeta.quoteField(tk) : null;
-		
+        
 		if (checkTableExists(tablename))
 		{
-			retval=getAlterTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
+			retval=getAlterTableStatement(databaseMeta.quoteField(tablename), fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		else
 		{
-			retval=getCreateTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
+			retval=getCreateTableStatement(databaseMeta.quoteField(tablename), fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		
 		return retval;
