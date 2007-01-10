@@ -155,6 +155,10 @@ public class EnterOptionsDialog extends Dialog
 	private Button       wShowTips;
 	private FormData     fdlShowTips, fdShowTips;
 
+    private Label        wlShowWelcome;
+    private Button       wShowWelcome;
+    private FormData     fdlShowWelcome, fdShowWelcome;
+
 	private Label        wlUseCache;
 	private Button       wUseCache;
 	private FormData     fdlUseCache, fdUseCache;
@@ -1036,13 +1040,31 @@ public class EnterOptionsDialog extends Dialog
         fdShowTips.right= new FormAttachment(100, 0);
         wShowTips.setLayoutData(fdShowTips);
 
+        // Show welcome page on startup?
+        wlShowWelcome=new Label(wGeneralComp, SWT.RIGHT);
+        wlShowWelcome.setText("Show welcome page at startup? ");
+        props.setLook(wlShowWelcome);
+        fdlShowWelcome=new FormData();
+        fdlShowWelcome.left = new FormAttachment(0, 0);
+        fdlShowWelcome.top  = new FormAttachment(wShowTips, margin);
+        fdlShowWelcome.right= new FormAttachment(middle, -margin);
+        wlShowWelcome.setLayoutData(fdlShowWelcome);
+        wShowWelcome=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wShowWelcome);
+        wShowWelcome.setSelection(props.showWelcomePageOnStartup());
+        fdShowWelcome=new FormData();
+        fdShowWelcome.left = new FormAttachment(middle, 0);
+        fdShowWelcome.top  = new FormAttachment(wShowTips, margin);
+        fdShowWelcome.right= new FormAttachment(100, 0);
+        wShowWelcome.setLayoutData(fdShowWelcome);
+
         // Use DB Cache?
         wlUseCache=new Label(wGeneralComp, SWT.RIGHT);
         wlUseCache.setText("Use Database cache? ");
         props.setLook(wlUseCache);
         fdlUseCache=new FormData();
         fdlUseCache.left = new FormAttachment(0, 0);
-        fdlUseCache.top  = new FormAttachment(wShowTips, margin);
+        fdlUseCache.top  = new FormAttachment(wShowWelcome, margin);
         fdlUseCache.right= new FormAttachment(middle, -margin);
         wlUseCache.setLayoutData(fdlUseCache);
         wUseCache=new Button(wGeneralComp, SWT.CHECK);
@@ -1050,7 +1072,7 @@ public class EnterOptionsDialog extends Dialog
         wUseCache.setSelection(props.useDBCache());
         fdUseCache=new FormData();
         fdUseCache.left = new FormAttachment(middle, 0);
-        fdUseCache.top  = new FormAttachment(wShowTips, margin);
+        fdUseCache.top  = new FormAttachment(wShowWelcome, margin);
         fdUseCache.right= new FormAttachment(100, 0);
         wUseCache.setLayoutData(fdUseCache);
 
@@ -1356,6 +1378,7 @@ public class EnterOptionsDialog extends Dialog
 
 		props.setMaxUndo                             ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
 		props.setShowTips                            ( wShowTips.getSelection()    );
+        props.setShowWelcomePageOnStartup            ( wShowWelcome.getSelection() );
 		props.setUseDBCache                          ( wUseCache.getSelection()    );
 		props.setOpenLastFile                        ( wOpenLast.getSelection()    );
 		props.setAutoSave                            ( wAutoSave.getSelection()    );
