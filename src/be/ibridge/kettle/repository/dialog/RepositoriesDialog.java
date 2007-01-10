@@ -399,6 +399,12 @@ public class RepositoriesDialog
 	
 		shell.setSize(bounds.width+20, dialogBounds.height);
 
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+        mb.setText("Warning");
+        mb.setMessage("Developers & beta-testers beware: you need to upgrade your repository because we added an 'R_REPOSITORY_LOG' table.\nWe will use that table to log operations (save/update/delete) to and also to lock the repository on to better (easier) allow multi-user operations.\n\nThank you for your understanding,\n\nMatt\n");
+        mb.open();
+        
+        
 		shell.open();
 		while (!shell.isDisposed())
 		{
