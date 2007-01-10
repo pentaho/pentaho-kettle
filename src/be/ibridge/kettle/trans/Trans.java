@@ -19,7 +19,9 @@ package be.ibridge.kettle.trans;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
@@ -37,6 +39,7 @@ import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
+import be.ibridge.kettle.trans.cluster.TransSplitter;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInitThread;
@@ -45,6 +48,10 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaDataCombi;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
+import be.ibridge.kettle.www.AddTransServlet;
+import be.ibridge.kettle.www.PrepareExecutionTransHandler;
+import be.ibridge.kettle.www.StartExecutionTransHandler;
+import be.ibridge.kettle.www.WebResult;
 
 
 /**
@@ -1785,6 +1792,117 @@ public class Trans
     {
         this.running = running;
     }
+    
+    public static final TransSplitter executeClustered(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) throws KettleException 
+    {
+        try
+        {
+            if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
+
+            TransSplitter transSplitter = new TransSplitter(transMeta);
+            transSplitter.splitOriginalTransformation();
+            
+            // Send the transformations to the servers...
+            //
+            // First the master...
+            //
+            TransMeta master = transSplitter.getMaster();
+            SlaveServer masterServer = null;
+            List masterSteps = master.getTransHopSteps(false);
+            if (masterSteps.size()>0) // If there is something that needs to be done on the master...
+            {
+                masterServer = transSplitter.getMasterServer();
+                if (executionConfiguration.isClusterPosting())
+                {
+                    String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(masterReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
+                    }
+                }
+            }
+            
+            // Then the slaves...
+            //
+            SlaveServer slaves[] = transSplitter.getSlaveTargets();
+            for (int i=0;i<slaves.length;i++)
+            {
+                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                if (executionConfiguration.isClusterPosting())
+                {
+                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(slaveReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
+                    }
+                }
+            }
+            
+            if (executionConfiguration.isClusterPosting())
+            {
+                if (executionConfiguration.isClusterPreparing())
+                {
+                    // Prepare the master...
+                    if (masterSteps.size()>0) // If there is something that needs to be done on the master...
+                    {
+                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(masterReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
+                        }
+                    }
+                    
+                    // Prepare the slaves
+                    for (int i=0;i<slaves.length;i++)
+                    {
+                        TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(slaveReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
+                        }
+                    }
+                }
+                
+                if (executionConfiguration.isClusterStarting())
+                {
+                    // Start the master...
+                    if (masterSteps.size()>0) // If there is something that needs to be done on the master...
+                    {
+                        String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(masterReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
+                        }
+                    }
+                    
+                    // Start the slaves
+                    for (int i=0;i<slaves.length;i++)
+                    {
+                        TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        WebResult webResult = WebResult.fromXMLString(slaveReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
+                        }
+                    }
+                }
+            }
+            
+            return transSplitter;
+        }
+        catch(Exception e)
+        {
+            throw new KettleException("There was an error during transformation split");
+        }
+    }
+
 }
 
 

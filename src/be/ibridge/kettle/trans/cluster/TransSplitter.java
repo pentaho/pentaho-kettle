@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.swt.widgets.Shell;
-
 import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.NotePadMeta;
@@ -327,7 +325,7 @@ public class TransSplitter
     }
     
     
-    public void splitOriginalTransformation(Shell shell) throws KettleException
+    public void splitOriginalTransformation() throws KettleException
     {
         // Mixing clusters is not supported at the moment
         // Perform some basic checks on the cluster configuration.
@@ -717,8 +715,6 @@ public class TransSplitter
                                             }
                                         }
                                         slaveStep.getStepMetaInterface().setInfoSteps(infoSteps);
-                                        
-                                        // new Spoon(LogWriter.getInstance(), shell.getDisplay(), slave, null).open();
                                     }
                                 }
                             }

@@ -624,8 +624,10 @@ public class Spoon implements AddUndoPositionInterface
         );
         
         // Add a browser widget
-        addSpoonBrowser(STRING_WELCOME_TAB_NAME, "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
-
+        if (props.showWelcomePageOnStartup())
+        {
+            addSpoonBrowser(STRING_WELCOME_TAB_NAME, "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
+        }
 
         shell.layout();
         
@@ -2401,7 +2403,7 @@ public class Spoon implements AddUndoPositionInterface
                         TabMapEntry entry = (TabMapEntry) iter.next();
                         if (event.item.equals(entry.getTabItem())) 
                         {
-                            TabItemInterface itemInterface = entry.getObject();
+                            // TabItemInterface itemInterface = entry.getObject();
                             
                             //
                             // Another way to implement this may be to keep track of the
@@ -6986,7 +6988,7 @@ public class Spoon implements AddUndoPositionInterface
             if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
 
             TransSplitter transSplitter = new TransSplitter(transMeta);
-            transSplitter.splitOriginalTransformation(shell);
+            transSplitter.splitOriginalTransformation();
             
             // Send the transformations to the servers...
             //

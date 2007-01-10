@@ -129,7 +129,11 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private Label        wlClearFiles;
 	private Button       wClearFiles;
 	private FormData     fdlClearFiles, fdClearFiles;
-	
+    
+    private Label        wlCluster;
+    private Button       wCluster;
+    private FormData     fdlCluster, fdCluster;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -141,7 +145,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private SelectionAdapter lsDef;
 	
 	private JobEntryTrans jobentry;
-	private boolean  backupChanged, backupLogfile, backupDate, backupTime;
+	private boolean  backupChanged;
 	private Props    props;
 	private Display  display;
 	private Repository rep;
@@ -171,9 +175,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			}
 		};
 		backupChanged = jobentry.hasChanged();
-		backupLogfile = jobentry.setLogfile;
-		backupDate    = jobentry.addDate;
-		backupTime    = jobentry.addTime;
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -313,8 +314,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.setLogfile=!jobentry.setLogfile;
-					jobentry.setChanged();
 					setActive();
 				}
 			}
@@ -372,15 +371,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdAddDate.top  = new FormAttachment(wLogext, margin);
 		fdAddDate.right= new FormAttachment(100, 0);
 		wAddDate.setLayoutData(fdAddDate);
-		wAddDate.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					jobentry.addDate=!jobentry.addDate;
-					jobentry.setChanged();
-				}
-			}
-		);
 
 		// Add time to logfile name?
 		wlAddTime=new Label(wLogging, SWT.RIGHT);
@@ -398,15 +388,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdAddTime.top  = new FormAttachment(wlAddDate, margin);
 		fdAddTime.right= new FormAttachment(100, 0);
 		wAddTime.setLayoutData(fdAddTime);
-		wAddTime.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					jobentry.addTime=!jobentry.addTime;
-					jobentry.setChanged();
-				}
-			}
-		);
 
 		wlLoglevel=new Label(wLogging, SWT.RIGHT);
 		wlLoglevel.setText("Loglevel ");
@@ -458,8 +439,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.argFromPrevious=!jobentry.argFromPrevious;
-					jobentry.setChanged();
 					wlFields.setEnabled(!jobentry.argFromPrevious);
 					wFields.setEnabled(!jobentry.argFromPrevious);
 				}
@@ -482,15 +461,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
         fdEveryRow.top  = new FormAttachment(wPrevious, margin);
         fdEveryRow.right= new FormAttachment(100, 0);
         wEveryRow.setLayoutData(fdEveryRow);
-        wEveryRow.addSelectionListener(new SelectionAdapter() 
-            {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    jobentry.execPerRow=!jobentry.execPerRow;
-                    jobentry.setChanged();
-                }
-            }
-        );
         
 		// Clear the result rows before executing the transformation?
         //
@@ -509,15 +479,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdClearRows.top  = new FormAttachment(wEveryRow, margin);
 		fdClearRows.right= new FormAttachment(100, 0);
 		wClearRows.setLayoutData(fdClearRows);
-		wClearRows.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					jobentry.clearResultRows=!jobentry.clearResultRows;
-					jobentry.setChanged();
-				}
-			}
-		);
 
 		// Clear the result rows before executing the transformation?
         //
@@ -536,22 +497,32 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdClearFiles.top  = new FormAttachment(wClearRows, margin);
 		fdClearFiles.right= new FormAttachment(100, 0);
 		wClearFiles.setLayoutData(fdClearFiles);
-		wClearFiles.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					jobentry.clearResultFiles=!jobentry.clearResultFiles;
-					jobentry.setChanged();
-				}
-			}
-		);
+
+
+        // Clear the result rows before executing the transformation?
+        //
+        wlCluster=new Label(shell, SWT.RIGHT);
+        wlCluster.setText("Run this transformation in a clustered mode? ");
+        props.setLook(wlCluster);
+        fdlCluster=new FormData();
+        fdlCluster.left = new FormAttachment(0, 0);
+        fdlCluster.top  = new FormAttachment(wClearFiles, margin);
+        fdlCluster.right= new FormAttachment(middle, -margin);
+        wlCluster.setLayoutData(fdlCluster);
+        wCluster=new Button(shell, SWT.CHECK);
+        props.setLook(wCluster);
+        fdCluster=new FormData();
+        fdCluster.left = new FormAttachment(middle, 0);
+        fdCluster.top  = new FormAttachment(wClearFiles, margin);
+        fdCluster.right= new FormAttachment(100, 0);
+        wCluster.setLayoutData(fdCluster);
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText("Fields : ");
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wClearFiles, margin);
+		fdlFields.top  = new FormAttachment(wCluster, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -681,20 +652,21 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void setActive()
 	{
-		wlLogfile.setEnabled(jobentry.setLogfile);
-		wLogfile.setEnabled(jobentry.setLogfile);
+		wlLogfile.setEnabled(wSetLogfile.getSelection());
+		wLogfile.setEnabled(wSetLogfile.getSelection());
 		
-		wlLogext.setEnabled(jobentry.setLogfile);
-		wLogext.setEnabled(jobentry.setLogfile);
+		wlLogext.setEnabled(wSetLogfile.getSelection());
+		wLogext.setEnabled(wSetLogfile.getSelection());
 
-		wlAddDate.setEnabled(jobentry.setLogfile);
-		wAddDate.setEnabled(jobentry.setLogfile);
+		wlAddDate.setEnabled(wSetLogfile.getSelection());
+		wAddDate.setEnabled(wSetLogfile.getSelection());
 
-		wlAddTime.setEnabled(jobentry.setLogfile);
-		wAddTime.setEnabled(jobentry.setLogfile);
+		wlAddTime.setEnabled(wSetLogfile.getSelection());
+		wAddTime.setEnabled(wSetLogfile.getSelection());
 
-		wlLoglevel.setEnabled(jobentry.setLogfile);
-		wLoglevel.setEnabled(jobentry.setLogfile);
+		wlLoglevel.setEnabled(wSetLogfile.getSelection());
+		wLoglevel.setEnabled(wSetLogfile.getSelection());
+        
 		if (jobentry.setLogfile)
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -728,15 +700,17 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
-		wPrevious.setSelection(jobentry.argFromPrevious);
-        wEveryRow.setSelection(jobentry.execPerRow);
-		wSetLogfile.setSelection(jobentry.setLogfile);
 		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
+
+        wPrevious.setSelection(jobentry.argFromPrevious);
+        wEveryRow.setSelection(jobentry.execPerRow);
+        wSetLogfile.setSelection(jobentry.setLogfile);
 		wAddDate.setSelection(jobentry.addDate);
 		wAddTime.setSelection(jobentry.addTime);
 		wClearRows.setSelection(jobentry.clearResultRows);
 		wClearFiles.setSelection(jobentry.clearResultFiles);
+        wCluster.setSelection(jobentry.isClustering());
 		
 		wLoglevel.select(jobentry.loglevel+1);
 	}
@@ -744,9 +718,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private void cancel()
 	{
 		jobentry.setChanged(backupChanged);
-		jobentry.setLogfile = backupLogfile;
-		jobentry.addDate = backupDate;
-		jobentry.addTime = backupTime;
 		
 		jobentry=null;
 		dispose();
@@ -780,6 +751,18 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		jobentry.logfile=wLogfile.getText();
 		jobentry.logext =wLogext.getText();
 		jobentry.loglevel = wLoglevel.getSelectionIndex()-1;
+        
+        jobentry.argFromPrevious = wPrevious.getSelection();
+        jobentry.execPerRow = wEveryRow.getSelection();
+        jobentry.setLogfile = wSetLogfile.getSelection();
+        jobentry.addDate = wAddDate.getSelection();
+        jobentry.addTime = wAddTime.getSelection();
+        jobentry.clearResultRows = wClearRows.getSelection();
+        jobentry.clearResultFiles = wClearFiles.getSelection();
+        jobentry.setClustering(wCluster.getSelection());
+        
+        jobentry.setChanged();
+        
 		dispose();
 	}
 }

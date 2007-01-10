@@ -43,7 +43,9 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.cluster.TransSplitter;
 
 
 /**
@@ -72,7 +74,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  boolean addDate, addTime;
 	public  int     loglevel;
 	
-    private String directoryPath;
+    private String  directoryPath;
+    
+    private boolean clustering;
 	
 	public JobEntryTrans(String name)
 	{
@@ -186,7 +190,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
 		retval.append("      "+XMLHandler.addTagValue("add_date",          addDate));
 		retval.append("      "+XMLHandler.addTagValue("add_time",          addTime));
-		retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+        retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+        retval.append("      "+XMLHandler.addTagValue("cluster",           clustering));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
@@ -222,6 +227,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
+            clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "cluster") );
 
 			// How many arguments?
 			int argnr = 0;
@@ -260,6 +266,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+            clustering       = rep.getJobEntryAttributeBoolean(id_jobentry, "cluster");
 	
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -300,6 +307,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
+            rep.saveJobEntryAttribute(id_job, getID(), "cluster", clustering);
 			
 			// save the arguments...
 			if (arguments!=null)
@@ -415,30 +423,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		{
                 log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
                 
-                // Create the transformation from meta-data
-                Trans trans = new Trans(logwriter, transMeta);
-                
-                if (parentJob.getJobMeta().isBatchIdPassed())
-                {
-                    trans.setPassedBatchId(parentJob.getPassedBatchId());
-                }
-
                 // Set the result rows for the next one...
-                trans.getTransMeta().setPreviousResult(result);
+                transMeta.setPreviousResult(result);
 
                 if (clearResultRows)
                 {
-                	trans.getTransMeta().getPreviousResult().setRows(new ArrayList());
+                    transMeta.getPreviousResult().setRows(new ArrayList());
                 }
 
                 if (clearResultFiles)
                 {
-                	trans.getTransMeta().getPreviousResult().getResultFiles().clear();
+                    transMeta.getPreviousResult().getResultFiles().clear();
                 }
 
-                // set the parent job on the transformation, variables are taken from here...
-                trans.setParentJob(parentJob);
-                
                 /*
                  * Set one or more "result" rows on the transformation...
                  */
@@ -468,7 +465,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         // Can't figure out a real use-case for it, but hey, who am I to decide that, right?
                         // :-)
                         //
-                        trans.getTransMeta().getPreviousResult().getRows().addAll(newList);
+                        transMeta.getPreviousResult().getRows().addAll(newList);
                     }
                 }
                 else
@@ -491,46 +488,76 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         args = parentJob.getJobMeta().getArguments();
                     }
                 }
-                
-    			// Execute!
-    			if (!trans.execute(args))
-    			{
-                    log.logError(toString(), "Unable to prepare for execution of the transformation");
-    				result.setNrErrors(1);
-    			}
-    			else
-    			{
-    				while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0)
-    				{
-    					try { Thread.sleep(100);}
-    					catch(InterruptedException e) { }
-    				}
-    				
-    				if (parentJob.isStopped() || trans.getErrors() != 0)
-    				{
-    					trans.stopAll();
-    					trans.waitUntilFinished();
-    					trans.endProcessing("stop");
-                        result.setNrErrors(1);
-    				}
-    				else
-    				{
-    					trans.endProcessing("end");
-    				}
-    				Result newResult = trans.getResult();
+
+                if (clustering)
+                {
+                    TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
+                    executionConfiguration.setClusterPosting(true);
+                    executionConfiguration.setClusterPreparing(true);
+                    executionConfiguration.setClusterStarting(true);
+                    executionConfiguration.setClusterShowingTransformation(false);
+                    executionConfiguration.setSafeModeEnabled(false);
+                    TransSplitter transSplitter = Trans.executeClustered(transMeta, executionConfiguration );
+                    // TODO: Figure out a way to see if the remote transformations are finished.
+                    // We could just look at the master, but I doubt that that is enough.
+                    transSplitter.getSlaveTargets(); // <-- ask these guys
+                    transSplitter.getMasterServer(); // <-- AND this one
+                }
+                else
+                {
+                    // Create the transformation from meta-data
+                    Trans trans = new Trans(logwriter, transMeta);
                     
-                    result.clear(); // clear only the numbers, NOT the files or rows.
-                    result.add(newResult);
-                    
-                    // Set the result rows too...
-                    result.setRows(newResult.getRows());
-                    
-                    if (setLogfile) 
+                    if (parentJob.getJobMeta().isBatchIdPassed())
                     {
-                    	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, new File(getLogFilename()), parentJob.getName(), toString());
-    					result.getResultFiles().add(resultFile);
-    				}
-    			}
+                        trans.setPassedBatchId(parentJob.getPassedBatchId());
+                    }
+    
+    
+                    // set the parent job on the transformation, variables are taken from here...
+                    trans.setParentJob(parentJob);
+                    
+                    
+        			// Execute!
+        			if (!trans.execute(args))
+        			{
+                        log.logError(toString(), "Unable to prepare for execution of the transformation");
+        				result.setNrErrors(1);
+        			}
+        			else
+        			{
+        				while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0)
+        				{
+        					try { Thread.sleep(100);}
+        					catch(InterruptedException e) { }
+        				}
+        				
+        				if (parentJob.isStopped() || trans.getErrors() != 0)
+        				{
+        					trans.stopAll();
+        					trans.waitUntilFinished();
+        					trans.endProcessing("stop");
+                            result.setNrErrors(1);
+        				}
+        				else
+        				{
+        					trans.endProcessing("end");
+        				}
+        				Result newResult = trans.getResult();
+                        
+                        result.clear(); // clear only the numbers, NOT the files or rows.
+                        result.add(newResult);
+                        
+                        // Set the result rows too...
+                        result.setRows(newResult.getRows());
+                        
+                        if (setLogfile) 
+                        {
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, new File(getLogFilename()), parentJob.getName(), toString());
+        					result.getResultFiles().add(resultFile);
+        				}
+        			}
+                }
     		}
     		catch(KettleException e)
     		{
@@ -624,5 +651,21 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryTransDialog(shell,this,rep);
+    }
+
+    /**
+     * @return the clustering
+     */
+    public boolean isClustering()
+    {
+        return clustering;
+    }
+
+    /**
+     * @param clustering the clustering to set
+     */
+    public void setClustering(boolean clustering)
+    {
+        this.clustering = clustering;
     }
 }
