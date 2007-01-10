@@ -2202,7 +2202,7 @@ public class Database
 	}
 	
 	/**
-	 * See if the table specified exists by looking at the data dictionary!
+	 * See if the table specified exists by reading
 	 * @param tablename The name of the table to check.
 	 * @return true if the table exists, false if it doesn't.
 	 */
@@ -2212,6 +2212,19 @@ public class Database
 		{
 			log.logDebug(toString(), "Checking if table ["+tablename+"] exists!");
 			
+            // Just try to read from the table.
+            String sql = databaseMeta.getSQLTableExists(tablename);
+            try
+            {
+                getOneRow(sql);
+                return true;
+            }
+            catch(KettleDatabaseException e)
+            {
+                return false;
+            }
+            
+            /*
 			if (getDatabaseMetaData()!=null)
 			{
 				ResultSet alltables = getDatabaseMetaData().getTables(null, null, "%" , new String[] { "TABLE", "VIEW", "SYNONYM" } );
@@ -2243,6 +2256,7 @@ public class Database
 			{
 				throw new KettleDatabaseException("Unable to get database meta-data from the database.");
 			}
+            */
 		}
 		catch(Exception e)
 		{

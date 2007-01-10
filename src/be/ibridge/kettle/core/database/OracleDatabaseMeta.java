@@ -88,6 +88,10 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	    return "SELECT /*+FIRST_ROWS*/ * FROM "+tableName+" WHERE ROWNUM < 1";
 	}
 
+    public String getSQLTableExists(String tablename)
+    {
+        return getSQLQueryFields(tablename);
+    }
 	
 	public String getDriverClass()
 	{

@@ -56,7 +56,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return " LIMIT "+nrRows;	
 	}
 	
-	/**
+    /**
 	 * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
 	 * @param tableName The name of the table to determine the layout for
 	 * @return The SQL to launch.
@@ -66,7 +66,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	    return "SELECT * FROM "+tableName+" LIMIT 1";
 	}
 
-	
+    public String getSQLTableExists(String tablename)
+    {
+        return getSQLQueryFields(tablename);
+    }
+    
 	/**
 	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */

@@ -1735,17 +1735,20 @@ public class Spoon implements AddUndoPositionInterface
             JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
             for (int i=0;i<baseEntries.length;i++)
             {
-                TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
-                tiBaseItem.setText(baseEntries[i].getDescription());
-                if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
-                
-                Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-                tiBaseItem.setImage(image);
-                
-                Image jobEntryImg = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-                if (jobEntryImg!=null)
+                if (!baseEntries[i].getID().equals("SPECIAL"))
                 {
-                    tiBaseItem.setImage(jobEntryImg);
+                    TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
+                    tiBaseItem.setText(baseEntries[i].getDescription());
+                    if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
+                    
+                    Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+                    tiBaseItem.setImage(image);
+                    
+                    Image jobEntryImg = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+                    if (jobEntryImg!=null)
+                    {
+                        tiBaseItem.setImage(jobEntryImg);
+                    }
                 }
             }
             setCoreObjectsState(STATE_CORE_OBJECTS_CHEF);

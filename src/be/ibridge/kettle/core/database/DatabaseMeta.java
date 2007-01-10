@@ -2153,4 +2153,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         databaseInterface.setConnectionPoolingProperties(properties);
     }
 
+    public String getSQLTableExists(String tablename)
+    {
+        return databaseInterface.getSQLTableExists(tablename);
+    }
+
 }

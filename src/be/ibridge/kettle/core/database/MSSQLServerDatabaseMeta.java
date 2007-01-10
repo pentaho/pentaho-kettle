@@ -97,6 +97,16 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	{
 		return false;
 	}
+    
+    public String getSQLQueryFields(String tableName)
+    {
+        return "SELECT TOP 1 * FROM "+tableName;
+    }
+    
+    public String getSQLTableExists(String tablename)
+    {
+        return  getSQLQueryFields(tablename);
+    }
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table

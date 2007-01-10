@@ -139,6 +139,16 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return " limit " + nrRows;
     }
     
+    public String getSQLQueryFields(String tableName)
+    {
+        return "SELECT * FROM "+tableName+getLimitClause(1);
+    }
+    
+    public String getSQLTableExists(String tablename)
+    {
+        return getSQLQueryFields(tablename);
+    }
+    
     /**
      * Get the SQL to get the next value of a sequence. (Netezza version) 
      * @param sequenceName The sequence name

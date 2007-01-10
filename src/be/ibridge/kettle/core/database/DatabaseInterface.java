@@ -670,4 +670,10 @@ public interface DatabaseInterface extends Cloneable
 
     /** set the connection pooling properties */
     public void setConnectionPoolingProperties(Properties properties);
+
+    /**
+     * @param tablename The table to verify the existance for
+     * @return The SQL to execute to verify if the given table exists.  If an Exception is thrown for this SQL, we don't have the table.
+     */
+    public String getSQLTableExists(String tablename);
 }
