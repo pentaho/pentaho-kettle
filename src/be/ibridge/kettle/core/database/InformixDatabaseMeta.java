@@ -98,6 +98,21 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	{
 		return true;
 	}
+    
+    public String getLimitClause(int nrRows)
+    {
+        return " LIMIT "+nrRows;
+    }
+    
+    public String getSQLQueryFields(String tableName)
+    {
+        return super.getSQLQueryFields(tableName)+getLimitClause(1);
+    }
+    
+    public String getSQLTableExists(String tablename)
+    {
+        return getSQLQueryFields(tablename);
+    }
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table
