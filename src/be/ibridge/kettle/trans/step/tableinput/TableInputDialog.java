@@ -387,10 +387,13 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (inf!=null)
 		{	
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-			String tableName = (String)std.open();
-			if (tableName != null)
+            std.setSplitSchemaAndTable(true);
+			if (std.open()!= null)
 			{
-				String sql = "SELECT *"+Const.CR+"FROM "+inf.quoteField(tableName)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+                String tableName = inf.quoteField(std.getTableName());
+                String schemaName = inf.quoteField(std.getSchemaName());
+                
+				String sql = "SELECT *"+Const.CR+"FROM "+inf.getSchemaTableCombination(schemaName, tableName)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);

@@ -715,4 +715,20 @@ public class DatabaseExplorerDialog extends Dialog
     {
         this.tableName = tableName;
     }
+
+    /**
+     * @return the splitSchemaAndTable
+     */
+    public boolean isSplitSchemaAndTable()
+    {
+        return splitSchemaAndTable;
+    }
+
+    /**
+     * @param splitSchemaAndTable the splitSchemaAndTable to set
+     */
+    public void setSplitSchemaAndTable(boolean splitSchemaAndTable)
+    {
+        this.splitSchemaAndTable = splitSchemaAndTable;
+    }
 }
