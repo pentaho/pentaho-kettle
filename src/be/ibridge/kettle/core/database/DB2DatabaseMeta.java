@@ -91,11 +91,11 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	}
 
 	/**
-	 * @return true if the database supports schemas
+	 * @return true if the database supports schemas, DB2 supports it (v7 and v8 for sure).
 	 */
 	public boolean supportsSchemas()
 	{
-		return false;
+		return true;
 	}
 	
 	/**
