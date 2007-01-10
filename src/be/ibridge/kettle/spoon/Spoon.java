@@ -3171,6 +3171,9 @@ public class Spoon implements AddUndoPositionInterface
             {
                 try
                 {
+                    rep.lockRepository();
+                    rep.insertLogEntry("Saving database '"+db.getName()+"'");
+                    
                     db.saveRep(rep);
                     log.logDetailed(toString(), Messages.getString("Spoon.Log.SavedDatabaseConnection",db.getDatabaseName()));//"Saved database connection ["+db+"] to the repository."
                     
@@ -3183,6 +3186,18 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     rep.rollback(); // In case of failure: undo changes!
                     new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
+                }
+                finally
+                {
+                    try
+                    {
+                        rep.unlockRepository();
+                    }
+                    catch(KettleDatabaseException e)
+                    {
+                        new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+                    }
+
                 }
             }
             else

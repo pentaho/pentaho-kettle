@@ -1563,6 +1563,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
             rep.lockRepository(); // make sure we're they only one using the repository at the moment
 
+            rep.insertLogEntry("save transformation '"+getName()+"'");
+            
             // Clear attribute id cache
             rep.clearNextIDCounters(); // force repository lookup.
 

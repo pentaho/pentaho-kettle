@@ -1912,7 +1912,9 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				if (!userinfo.isReadonly())
 				{
-					dbinfo.saveRep(rep);
+                    rep.lockRepository();
+                    rep.insertLogEntry("Updating database connection '"+dbinfo.getName()+"'");
+                    dbinfo.saveRep(rep);
 				}
 				else
 				{
@@ -1928,6 +1930,17 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
 	}
 
 	public void newDatabase()
@@ -1943,6 +1956,8 @@ public class RepositoryExplorerDialog extends Dialog
 				long idDatabase = rep.getDatabaseID(name);
 				if (idDatabase<=0)
 				{
+                    rep.lockRepository();
+                    rep.insertLogEntry("Creating new database '"+dbinfo.getName()+"'");
 					dbinfo.saveRep(rep);
 				}
 				else
@@ -1960,6 +1975,17 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
 	}
 
 	public void delDatabase(String databasename)

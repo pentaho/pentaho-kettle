@@ -424,7 +424,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	{
 		try
 		{
-			// If we don't have an ID, we don't know which entry in the database we need to update.
+            // If we don't have an ID, we don't know which entry in the database we need to update.
 			// See if a database with the same name is already available...
 			if (getID()<=0)
 			{

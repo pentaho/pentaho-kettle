@@ -776,6 +776,10 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             int nrWorks = 2 + nrDatabases() + nrNotes() + nrJobEntries() + nrJobHops();
             if (monitor != null) monitor.beginTask("Saving transformation " + directory + Const.FILE_SEPARATOR + getName(), nrWorks);
 
+            rep.lockRepository();
+            
+            rep.insertLogEntry("save job '"+getName()+"'");
+            
             // Before we start, make sure we have a valid job ID!
             // Two possibilities:
             // 1) We have a ID: keep it
@@ -854,6 +858,14 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             rep.rollback();
             throw new KettleException("Unable to save Job in repository, database rollback performed.", dbe);
         }
+        finally
+        {
+            // don't forget to unlock the repository.
+            // Normally this is done by the commit / rollback statement, but hey there are some freaky database out
+            // there...
+            rep.unlockRepository();
+        }
+
     }
 
     /**

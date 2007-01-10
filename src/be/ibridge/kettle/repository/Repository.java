@@ -67,6 +67,7 @@ public class Repository
 
     private final String repositoryTableNames[] = new String[] 
          { 
+            "R_REPOSITORY_LOG", "R_VERSION",
             "R_DATABASE_TYPE", "R_DATABASE_CONTYPE", "R_DATABASE", "R_DATABASE_ATTRIBUTE", "R_NOTE",
             "R_TRANSFORMATION", "R_DIRECTORY", "R_TRANS_ATTRIBUTE", "R_DEPENDENCY", "R_TRANS_STEP_CONDITION",
             "R_CONDITION", "R_VALUE", "R_TRANS_HOP", "R_STEP_TYPE", "R_STEP", "R_STEP_ATTRIBUTE", "R_TRANS_NOTE",
@@ -755,6 +756,11 @@ public class Repository
 	{
 		return getNextID("R_NOTE", "ID_NOTE");
 	}
+    
+    public synchronized long getNextLogID() throws KettleDatabaseException
+    {
+        return getNextID("R_REPOSITORY_LOG", "ID_REPOSITORY_LOG");
+    }
 
 	public synchronized long getNextDatabaseID() throws KettleDatabaseException
 	{
@@ -1024,8 +1030,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width,
-			long gui_location_height) throws KettleDatabaseException
+	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width, long gui_location_height) throws KettleDatabaseException
 	{
 		long id = getNextNoteID();
 
@@ -1045,6 +1050,25 @@ public class Repository
 
 		return id;
 	}
+    
+    public synchronized long insertLogEntry(String description) throws KettleDatabaseException
+    {
+        long id = getNextLogID();
+
+        Row table = new Row();
+        table.addValue(new Value("ID_REPOSITORY_LOG", id));
+        table.addValue(new Value("REP_VERSION",    getVersion()));
+        table.addValue(new Value("LOG_DATE",       new Date()));
+        table.addValue(new Value("LOG_USER",       userinfo!=null?userinfo.getLogin():"admin"));
+        table.addValue(new Value("OPERATION_DESC", description));
+
+        database.prepareInsert(table, "R_REPOSITORY_LOG");
+        database.setValuesInsert(table);
+        database.insertRow();
+        database.closeInsert();
+
+        return id;
+    }
 
 	public synchronized void insertTransNote(long id_transformation, long id_note) throws KettleDatabaseException
 	{
@@ -3400,9 +3424,46 @@ public class Repository
 		int KEY = 9; // integer, no need for bigint!
 
 		log.logBasic(toString(), "Starting to create or modify the repository tables...");
-		if (monitor!=null) monitor.beginTask((upgrade?"Upgrading ":"Creating")+" the Kettle repository...", 31);
+        String message = (upgrade?"Upgrading ":"Creating")+" the Kettle repository...";
+		if (monitor!=null) monitor.beginTask(message, 31);
         
         setAutoCommit(true);
+        
+        //////////////////////////////////////////////////////////////////////////////////
+        // R_LOG
+        //
+        // Log the operations we do in the repository.
+        //
+        table = new Row();
+        tablename = "R_REPOSITORY_LOG";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_REPOSITORY_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("REP_VERSION",    Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("LOG_DATE",       Value.VALUE_TYPE_DATE));
+        table.addValue(new Value("LOG_USER",       Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("OPERATION_DESC", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_REPOSITORY_LOG", false);
+        
+        if (sql != null && sql.length() > 0)
+        {
+            try
+            {
+                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                database.execStatements(sql);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
+            }
+            catch (KettleDatabaseException dbe)
+            {
+                throw new KettleDatabaseException("Unable to create or modify table " + tablename, dbe);
+            }
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+
+        
+        insertLogEntry((upgrade?"Upgrade":"Creation")+" of the Kettle repository");
 
         //////////////////////////////////////////////////////////////////////////////////
         // R_VERSION
@@ -5225,12 +5286,12 @@ public class Repository
     
     public synchronized void lockRepository() throws KettleDatabaseException
     {
-        database.lockTables(repositoryTableNames);
+        database.lockTables(new String[] { "R_REPOSITORY_LOG" } );
     }
     
     public synchronized void unlockRepository() throws KettleDatabaseException
     {
-        database.unlockTables(repositoryTableNames);
+        database.unlockTables(new String[] { "R_REPOSITORY_LOG" });
     }
     
     public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException

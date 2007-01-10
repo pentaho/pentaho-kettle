@@ -2124,6 +2124,8 @@ public class Chef implements AddUndoPositionInterface
 			{
 				try
 				{
+                    rep.lockRepository();
+                    rep.insertLogEntry("saving database connection '"+db.getName()+"'");
 					db.saveRep(rep);
 					log.logDetailed(toString(), "Saved database connection ["+db+"] to the repository."); //$NON-NLS-1$ //$NON-NLS-2$
 					
@@ -2132,8 +2134,20 @@ public class Chef implements AddUndoPositionInterface
 				}
 				catch(KettleException ke)
 				{
+                    rep.rollback();
 					new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message1")+db+Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message2"), ke);  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
+                finally
+                {
+                    try
+                    {
+                        rep.unlockRepository();
+                    }
+                    catch(KettleException e)
+                    {
+                        new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message1")+db+Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message2"), e);  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    }
+                }
 			}
 			else
 			{
