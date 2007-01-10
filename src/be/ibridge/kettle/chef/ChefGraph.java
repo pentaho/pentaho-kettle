@@ -121,6 +121,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
     private Menu mPop;
 
+    private Menu mPopAD;
+
 	public ChefGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
 		super(par,  SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
@@ -861,15 +863,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         final int mousey = y;        
 
         // Re-use the popup menu if it was allocated beforehand...
-        if (mPop==null)
+        if (mPop!=null && !mPop.isDisposed())
         {
-            mPop = new Menu((Control) this);
+            mPop.dispose();
         }
-        else
-        {
-            MenuItem children[] = mPop.getItems();
-            for (int i=0;i<children.length;i++) children[i].dispose();
-        }
+        mPop = new Menu((Control) this);
         
 		final JobEntryCopy je = jobMeta.getChefGraphEntry(x, y, iconsize);
 		if (je != null) // We clicked on a Job Entry!
@@ -1110,7 +1108,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				});
 			}
 			setMenu(mPop);
-		} 
+		}
 		else // Clear the menu
 		{
 			final JobHopMeta hi = findJobHop(x, y);
@@ -1120,7 +1118,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				MenuItem miPopEval = new MenuItem(mPop, SWT.CASCADE);
 				miPopEval.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation")); //$NON-NLS-1$
 
-				Menu mPopAD = new Menu(miPopEval);
+                if (mPopAD!=null && !mPopAD.isDisposed())
+                {
+                    mPopAD.dispose();
+                }
+				mPopAD = new Menu(miPopEval);
 				MenuItem miPopEvalUncond = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
 				miPopEvalUncond.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.Unconditional")); //$NON-NLS-1$
 				miPopEvalUncond.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setUnconditional(); spoon.refreshGraph();}} );
@@ -1233,7 +1235,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 					}
 				);
 				setMenu(mPop);
-			} 
+			}
 			else 
 			{
 				// Clicked on the background: maybe we hit a note?
@@ -1277,8 +1279,6 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				else
 				{
 					// New note
-					Menu mPop = new Menu((Control)this);
-
 					MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE); miNoteNew.setText(Messages.getString("ChefGraph.PopupMenu.Note.New")); //$NON-NLS-1$
 					miNoteNew.addSelectionListener(
 						new SelectionAdapter() 

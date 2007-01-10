@@ -1047,7 +1047,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void addMenu()
     {
-        if (mBar!=null)
+        if (mBar!=null && !mBar.isDisposed())
         {
             mBar.dispose();
         }
@@ -1063,6 +1063,11 @@ public class Spoon implements AddUndoPositionInterface
         MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
         //mFile.setText("&File");
         mFile.setText(Messages.getString("Spoon.Menu.File") );
+        
+        if (msFile!=null && !msFile.isDisposed())
+        {
+            msFile.dispose();
+        }
         msFile = new Menu(shell, SWT.DROP_DOWN);
         mFile.setMenu(msFile);
         // New

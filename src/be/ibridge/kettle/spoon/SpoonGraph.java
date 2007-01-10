@@ -103,7 +103,6 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
     private SpoonGraph       canvas;
 
-
     private int              iconsize;
 
     private Point            lastclick;
@@ -1148,15 +1147,11 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         final int mousey = y;
         
         // Re-use the popup menu if it was allocated beforehand...
-        if (mPop==null)
+        if (mPop!=null && !mPop.isDisposed())
         {
-            mPop = new Menu((Control) this);
+            mPop.dispose();
         }
-        else
-        {
-        	MenuItem children[] = mPop.getItems();
-        	for (int i=0;i<children.length;i++) children[i].dispose();
-        }
+        mPop = new Menu((Control) this);
 
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!

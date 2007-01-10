@@ -126,6 +126,7 @@ public class ConditionEditor extends Composite
 	private ArrayList modListeners;
 	
 	private String messageString;
+    private Menu mPop;
 	
 	public ConditionEditor(Composite composite, int arg1, Condition co, Props pr, Row input_fields) 
 	{
@@ -487,12 +488,16 @@ public class ConditionEditor extends Composite
 	private void setMenu(int area, Point screen)
 	{
 		final int cond_nr = getNrSubcondition(screen);
-
+        if (mPop!=null && !mPop.isDisposed())
+        {
+            mPop.dispose();
+        }
+        
 		switch(area)
 		{
 		case AREA_NOT:
 			{
-				Menu mPop = new Menu(widget);
+                mPop = new Menu(widget);
 				MenuItem miNegate = new MenuItem(mPop, SWT.CASCADE);
 				miNegate.setText("Negate condition");
 				miNegate.addSelectionListener(new SelectionAdapter()
@@ -510,7 +515,7 @@ public class ConditionEditor extends Composite
 		case AREA_BACKGROUND:
 		case AREA_ICON_ADD:
 			{
-				Menu mPop = new Menu(widget);
+				mPop = new Menu(widget);
 				MenuItem miAdd = new MenuItem(mPop, SWT.CASCADE);
 				miAdd.setText("Add condition");
 				miAdd.addSelectionListener(new SelectionAdapter()
@@ -525,7 +530,7 @@ public class ConditionEditor extends Composite
 			break;
 		case AREA_SUBCONDITION:
 			{
-				Menu mPop = new Menu(widget);
+				mPop = new Menu(widget);
 				MenuItem miEdit = new MenuItem(mPop, SWT.CASCADE);
 				miEdit.setText("Edit condition");
 				miEdit.addSelectionListener(new SelectionAdapter()

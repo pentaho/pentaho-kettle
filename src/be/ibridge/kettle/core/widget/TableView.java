@@ -272,7 +272,11 @@ public class TableView extends Composite
         editor.grabHorizontal = true;
         editor.grabVertical = true;
 		
-		mRow = new Menu(table);
+        if (mRow!=null && !mRow.isDisposed())
+        {
+            mRow.dispose();
+        }
+        mRow = new Menu(table);
 		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(Messages.getString("TableView.menu.InsertBeforeRow"));
 		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(Messages.getString("TableView.menu.InsertAfterRow"));
 		new MenuItem(mRow, SWT.SEPARATOR);

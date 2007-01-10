@@ -433,7 +433,11 @@ public class DatabaseExplorerDialog extends Dialog
 					}
 					final String table = tab;
 					
-					mTree = new Menu(shell, SWT.POP_UP);
+                    if (mTree!=null && !mTree.isDisposed())
+                    {
+                        mTree.dispose();
+                    }
+                    mTree = new Menu(shell, SWT.POP_UP);
 					MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText("&Preview first 100 rows of ["+table+"]");
 					miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
 					MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText("Preview &first ... rows of ["+table+"]");

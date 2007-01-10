@@ -261,7 +261,11 @@ public class CopyOfTableView extends Composite
         editor.grabHorizontal = true;
         editor.grabVertical = true;
 		
-		mRow = new Menu(table);
+        if (mRow!=null && !mRow.isDisposed())
+        {
+            mRow.dispose();
+        }
+        mRow = new Menu(table);
 		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText("Insert before this row");
 		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText("Insert after this row");
 		new MenuItem(mRow, SWT.SEPARATOR);
