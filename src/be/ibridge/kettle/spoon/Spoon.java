@@ -2050,6 +2050,11 @@ public class Spoon implements AddUndoPositionInterface
                 int current = tabfolder.getSelectionIndex();
                 int desired = tabfolder.indexOf(tabItem); 
                 if (current!=desired) tabfolder.setSelection(desired);
+                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
+                {
+                	// Switch the core objects in the lower left corner to the spoon trans types
+                    refreshCoreObjectsTree();
+                }                
             }
         }
         
@@ -2065,6 +2070,11 @@ public class Spoon implements AddUndoPositionInterface
                 int current = tabfolder.getSelectionIndex();
                 int desired = tabfolder.indexOf(tabItem); 
                 if (current!=desired) tabfolder.setSelection(desired);
+                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
+                {
+                	// Switch the core objects in the lower left corner to the spoon job types
+                    refreshCoreObjectsTree();
+                }                
             }
         }        
     }
