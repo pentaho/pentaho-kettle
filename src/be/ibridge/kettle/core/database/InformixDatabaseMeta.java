@@ -104,14 +104,9 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         return false;
     }
     
-    public String getLimitClause(int nrRows)
-    {
-        return " LIMIT "+nrRows;
-    }
-    
     public String getSQLQueryFields(String tableName)
     {
-        return super.getSQLQueryFields(tableName)+getLimitClause(1);
+        return "SELECT FIRST 1 * FROM "+tableName;
     }
     
     public String getSQLTableExists(String tablename)
