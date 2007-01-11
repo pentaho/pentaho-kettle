@@ -244,7 +244,26 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 */
 	public String getModifyColumnStatement(String tablename, Value v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-		return "ALTER TABLE "+tablename+" MODIFY ("+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" )";
+        Value tmpColumn = new Value(v);
+        int threeoh = v.getName().length()>=30 ? 30 : v.getName().length();
+        
+        tmpColumn.setName(v.getName().substring(0,threeoh)+"_KTL"); // should always be less then 35
+        
+        String sql="";
+        
+        // Create a new tmp column
+        sql+=getAddColumnStatement(tablename, tmpColumn, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
+        // copy the old data over to the tmp column
+        sql+="UPDATE "+tablename+" SET "+tmpColumn.getName()+"="+v.getName()+";"+Const.CR;
+        // drop the old column
+        sql+=getDropColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
+        // create the wanted column
+        sql+=getAddColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
+        // copy the data from the tmp column to the wanted column (again)  
+        // All this to avoid the rename clause as this is not supported on all Oracle versions
+        sql+="UPDATE "+tablename+" SET "+v.getName()+"="+tmpColumn.getName();
+        
+        return sql; // "ALTER TABLE "+tablename+" MODIFY ("+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" )";
 	}
 
 	public String getFieldDefinition(Value v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
