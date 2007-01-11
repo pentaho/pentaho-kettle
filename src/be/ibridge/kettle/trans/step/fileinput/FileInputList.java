@@ -81,11 +81,12 @@ public class FileInputList
                     {
                         for (int j = 0; j < fileNames.length; j++)
                         {
-                            fileInputList.addFile(new File(file, fileNames[j]));
+                            File localFile = new File(file, fileNames[j]);
+                            if (!localFile.isDirectory() && localFile.isFile()) fileInputList.addFile(localFile);
                         }
                     }
                     
-                    if (fileNames==null || fileNames.length==0)
+                    if (Const.isEmpty(fileNames))
                     {
                         if (onerequired) fileInputList.addNonAccessibleFile(file);
                     }
@@ -101,7 +102,7 @@ public class FileInputList
                 File file = new File(onefile);
                 if (file.exists())
                 {
-                    if (file.canRead())
+                    if (file.canRead() && file.isFile())
                     {
                         if (file.isFile()) fileInputList.addFile(file);
                     }
