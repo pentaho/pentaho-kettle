@@ -52,7 +52,6 @@ import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.job.entry.eval.JobEntryEval;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -118,9 +117,13 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
     public static final int     TYPE_UNDO_POSITION   = 4;
 
-    public static final String  STRING_SPECIAL_START = "START";
+    public static final String STRING_SPECIAL        = "SPECIAL";
+    public static final String STRING_SPECIAL_START  = "START";
+    public static final String STRING_SPECIAL_DUMMY  = "DUMMY";
+    public static final String STRING_SPECIAL_OK     = "OK";
+    public static final String STRING_SPECIAL_ERROR  = "ERROR";
 
-    public static final String  STRING_SPECIAL_DUMMY = "DUMMY";
+
 
     // Remember the size and position of the different windows...
     public boolean              max[]                = new boolean[1];
@@ -189,59 +192,39 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
     public void addDefaults()
     {
+        /*
         addStart(); // Add starting point!
         addDummy(); // Add dummy!
         addOK(); // errors == 0 evaluation
         addError(); // errors != 0 evaluation
-
+        */
+        
         clearChanged();
     }
 
-    private void addStart()
+    public static final JobEntryCopy createStartEntry()
     {
-        JobEntrySpecial je = new JobEntrySpecial(STRING_SPECIAL_START, true, false);
-        JobEntryCopy jge = new JobEntryCopy(log);
-        jge.setID(-1L);
-        jge.setEntry(je);
-        jge.setLocation(50, 50);
-        jge.setDrawn(false);
-        jge.setDescription("A job starts to process here.");
-        addJobEntry(jge);
+        JobEntrySpecial jobEntrySpecial = new JobEntrySpecial(STRING_SPECIAL_START, true, false);
+        JobEntryCopy jobEntry = new JobEntryCopy();
+        jobEntry.setID(-1L);
+        jobEntry.setEntry(jobEntrySpecial);
+        jobEntry.setLocation(50, 50);
+        jobEntry.setDrawn(false);
+        jobEntry.setDescription("A job starts to process here.");
+        return jobEntry;
 
     }
 
-    private void addDummy()
+    public static final JobEntryCopy createDummyEntry()
     {
-        JobEntrySpecial dummy = new JobEntrySpecial(STRING_SPECIAL_DUMMY, false, true);
-        JobEntryCopy dummyge = new JobEntryCopy(log);
-        dummyge.setID(-1L);
-        dummyge.setEntry(dummy);
-        dummyge.setLocation(50, 50);
-        dummyge.setDrawn(false);
-        dummyge.setDescription("A dummy entry.");
-        addJobEntry(dummyge);
-    }
-
-    public void addOK()
-    {
-        JobEntryEval ok = new JobEntryEval("OK", "errors == 0");
-        JobEntryCopy jgok = new JobEntryCopy(log);
-        jgok.setEntry(ok);
-        jgok.setLocation(0, 0);
-        jgok.setDrawn(false);
-        jgok.setDescription("This comparisson is true when no errors have occured.");
-        addJobEntry(jgok);
-    }
-
-    public void addError()
-    {
-        JobEntryEval err = new JobEntryEval("ERROR", "errors != 0");
-        JobEntryCopy jgerr = new JobEntryCopy(log);
-        jgerr.setEntry(err);
-        jgerr.setLocation(0, 0);
-        jgerr.setDrawn(false);
-        jgerr.setDescription("This comparisson is true when one or more errors have occured.");
-        addJobEntry(jgerr);
+        JobEntrySpecial jobEntrySpecial = new JobEntrySpecial(STRING_SPECIAL_DUMMY, false, true);
+        JobEntryCopy jobEntry = new JobEntryCopy();
+        jobEntry.setID(-1L);
+        jobEntry.setEntry(jobEntrySpecial);
+        jobEntry.setLocation(50, 50);
+        jobEntry.setDrawn(false);
+        jobEntry.setDescription("A dummy entry.");
+        return jobEntry;
     }
 
     public JobEntryCopy getStart()
@@ -686,8 +669,8 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             }
 
             // Do we have the special entries?
-            if (findJobEntry(STRING_SPECIAL_START, 0, true) == null) addStart();
-            if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true) == null) addDummy();
+            // if (findJobEntry(STRING_SPECIAL_START, 0, true) == null) addJobEntry(JobMeta.createStartEntry()); // TODO: remove this
+            // if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true) == null) addJobEntry(JobMeta.createDummyEntry()); // TODO: remove this
 
             clearChanged();
         }

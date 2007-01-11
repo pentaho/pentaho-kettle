@@ -158,6 +158,7 @@ import be.ibridge.kettle.job.dialog.JobSaveProgressDialog;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
+import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.pan.CommandLineOption;
@@ -1731,6 +1732,19 @@ public class Spoon implements AddUndoPositionInterface
             // JOBS
             //////////////////////////////////////////////////////////////////////////////////////////////////
     
+            // First add a few "Special entries: Start, Dummy, OK, ERROR
+            //
+            String specialText[] = new String[] { JobMeta.STRING_SPECIAL_START, JobMeta.STRING_SPECIAL_DUMMY };
+            Image  specialImage[]= new Image[] { GUIResource.getInstance().getImageStart(), GUIResource.getInstance().getImageDummy() };
+            
+            for (int i=0;i<specialText.length;i++)
+            {
+                TreeItem treeItem = new TreeItem(tiJobBase, SWT.NONE);
+                treeItem.setText(specialText[i]);
+                treeItem.setImage(specialImage[i]);
+            }
+        
+            
             JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
             JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
             for (int i=0;i<baseEntries.length;i++)
@@ -1786,11 +1800,11 @@ public class Spoon implements AddUndoPositionInterface
                 case 1: // ------complete-----
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // the top level Transformations entry
                     {
-                        object = new TreeSelection(TransMeta.class);
+                        object = new TreeSelection(path[0], TransMeta.class);
                     }
                     if (path[0].equals(STRING_JOBS)) // the top level Jobs entry
                     {
-                        object = new TreeSelection(JobMeta.class);
+                        object = new TreeSelection(path[0], JobMeta.class);
                     }
                     break;
                     
@@ -1799,16 +1813,16 @@ public class Spoon implements AddUndoPositionInterface
                     {
                         if (path[1].equals(STRING_TRANS_BASE))
                         {
-                            object = new TreeSelection(StepPlugin.class);
+                            object = new TreeSelection(path[1], StepPlugin.class);
                         }
                     }
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformations title
                     {
-                        object = new TreeSelection(findTransformation(path[1]));
+                        object = new TreeSelection(path[1], findTransformation(path[1]));
                     }
                     if (path[0].equals(STRING_JOBS)) // Jobs title
                     {
-                        object = new TreeSelection(findJob(path[1]));
+                        object = new TreeSelection(path[1], findJob(path[1]));
                     }
                     break;
                         
@@ -1816,18 +1830,18 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformations title
                     {
                         TransMeta transMeta = findTransformation(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, transMeta);
-                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(StepMeta.class, transMeta);
-                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(TransHopMeta.class, transMeta);
-                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(PartitionSchema.class, transMeta);
-                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(SlaveServer.class, transMeta);
-                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(ClusterSchema.class, transMeta);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[2], DatabaseMeta.class, transMeta);
+                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(path[2], StepMeta.class, transMeta);
+                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(path[2], TransHopMeta.class, transMeta);
+                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(path[2], PartitionSchema.class, transMeta);
+                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(path[2], SlaveServer.class, transMeta);
+                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(path[2], ClusterSchema.class, transMeta);
                     }
                     if (path[0].equals(STRING_JOBS)) // Jobs title
                     {
                         JobMeta jobMeta = findJob(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, jobMeta);
-                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(JobEntryCopy.class, jobMeta);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[2], DatabaseMeta.class, jobMeta);
+                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(path[2], JobEntryCopy.class, jobMeta);
                     }
                     break;
                     
@@ -1835,18 +1849,18 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
                     {
                         TransMeta transMeta = findTransformation(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(transMeta.findDatabase(path[3]), transMeta);
-                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(transMeta.findStep(path[3]), transMeta);
-                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(transMeta.findTransHop(path[3]), transMeta);
-                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(transMeta.findPartitionSchema(path[3]), transMeta);
-                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(transMeta.findSlaveServer(path[3]), transMeta);
-                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(transMeta.findClusterSchema(path[3]), transMeta);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
+                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
+                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
+                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
+                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
+                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
                     }
                     if (path[0].equals(STRING_JOBS)) // The name of a job
                     {
                         JobMeta jobMeta = findJob(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(jobMeta.findDatabase(path[3]), jobMeta);
-                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(jobMeta.findJobEntry(path[3]), jobMeta);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], jobMeta.findDatabase(path[3]), jobMeta);
+                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(path[3], jobMeta.findJobEntry(path[3]), jobMeta);
                     }
                     break;
                     
@@ -1857,7 +1871,7 @@ public class Spoon implements AddUndoPositionInterface
                         if (path[2].equals(STRING_CLUSTERS))
                         {
                             ClusterSchema clusterSchema = transMeta.findClusterSchema(path[3]);
-                            object = new TreeSelection(clusterSchema.findSlaveServer(path[4]), clusterSchema, transMeta);
+                            object = new TreeSelection(path[4], clusterSchema.findSlaveServer(path[4]), clusterSchema, transMeta);
                         }
                     }
                     break;
@@ -1888,13 +1902,20 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_JOB_BASE))
                     {
                         JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithDescription(path[1]);
-                        object = new TreeSelection(jobPlugin);
+                        if (jobPlugin!=null)
+                        {
+                            object = new TreeSelection(path[1], jobPlugin);
+                        }
+                        else
+                        {
+                            object = new TreeSelection(path[1], JobPlugin.class); // Special entries Start, Dummy, ...
+                        }
                     }
                     break;
                 case 3: // Steps
                     if (path[0].equals(STRING_TRANS_BASE))
                     {
-                        object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[2]));
+                        object = new TreeSelection(path[2], StepLoader.getInstance().findStepPluginWithDescription(path[2]));
                     }
                     break;
                 default: break;
@@ -1976,6 +1997,7 @@ public class Spoon implements AddUndoPositionInterface
                     
                     TreeSelection treeObject = treeObjects[0];
                     Object object = treeObject.getSelection();
+                    JobMeta jobMeta = getActiveJob();
                     
                     if (object instanceof StepMeta)
                     {
@@ -2017,6 +2039,23 @@ public class Spoon implements AddUndoPositionInterface
                         JobPlugin jobPlugin = (JobPlugin)object;
                         type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
                         data=jobPlugin.getDescription(); // Step type
+                    }
+                    else
+                    if (object instanceof Class && object.equals(JobPlugin.class))
+                    {
+                        JobEntryCopy dummy = null;
+                        if (jobMeta!=null) dummy = jobMeta.findJobEntry("Dummy", 0, true);
+                        if (JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase(treeObject.getItemText()) && dummy!=null)
+                        {
+                            // if dummy already exists, add a copy
+                            type = DragAndDropContainer.TYPE_JOB_ENTRY;
+                            data=dummy.getName();
+                        }
+                        else
+                        {
+                            type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+                            data = treeObject.getItemText();
+                        }
                     }
                     else
                     {
@@ -2591,11 +2630,10 @@ public class Spoon implements AddUndoPositionInterface
                         // Create a new TableInput step using the selected connection...
                         case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: 
                             {
-                                // Add the transformation.
-                                // Since there is no transformation or job loaded, it should be safe to do so.
+                                // Add the job.
+                                // Since there is no job or job loaded, it should be safe to do so.
                                 //
                                 JobMeta jobMeta = new JobMeta(log);
-                                setStartVisible(jobMeta);
                                 addChefGraph(jobMeta);
                                 
                                 // Not an existing entry: data refers to the type of step to create
@@ -3530,7 +3568,6 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             JobMeta jobMeta = new JobMeta(log);
-            setStartVisible(jobMeta);
             
             if (rep!=null) jobMeta.readDatabases(rep);
             addChefGraph(jobMeta);
@@ -3540,13 +3577,6 @@ public class Spoon implements AddUndoPositionInterface
         {
             new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Title"), Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Message"), e);
         }
-    }
-    
-    private void setStartVisible(JobMeta jobMeta)
-    {
-        // Put a start button on the canvas
-        // jobMeta.getStart().setDrawn();
-        // jobMeta.getStart().setLocation(50, 50);
     }
 
     public void loadRepositoryObjects(TransMeta transMeta)
@@ -4201,7 +4231,7 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
         
-        // Now add the data back 
+        // Now add the jobs
         //
         for (int t=0;t<jobMetas.length;t++)
         {
@@ -4245,7 +4275,11 @@ public class Spoon implements AddUndoPositionInterface
             for (int i=0;i<jobMeta.nrJobEntries();i++)
             {
                 JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
-                TreeItem tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
+                
+                TreeItem tiJobEntry = Const.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
+                if (tiJobEntry!=null) continue; // only show it once
+                
+                tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
                 tiJobEntry.setText(jobEntry.getName());
                 // if (jobEntry.isShared()) tiStep.setFont(guiResource.getFontBold()); TODO: allow job entries to be shared as well...
                 if (jobEntry.isStart())
@@ -7645,7 +7679,15 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             jobPlugin = jobLoader.findJobEntriesWithDescription(type_desc);
-
+            if (jobPlugin==null)
+            {
+                // Check if it's not START or DUMMY
+                if (JobMeta.STRING_SPECIAL_START.equals(type_desc) || JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
+                {
+                    jobPlugin = jobLoader.findJobEntriesWithID(JobMeta.STRING_SPECIAL);
+                }
+            }
+            
             if (jobPlugin!=null)
             {
                 // Determine name & number for this entry.
@@ -7657,12 +7699,32 @@ public class Spoon implements AddUndoPositionInterface
                 JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
                 jei.setName(entry_name);
         
+                if (jei.isSpecial())
+                {
+                    if (JobMeta.STRING_SPECIAL_START.equals(type_desc))
+                    {
+                        // Check if start is already on the canvas...
+                        if (jobMeta.findStart()!=null) 
+                        {
+                            ChefGraph.showOnlyStartOnceMessage(shell);
+                            return null;
+                        }
+                        ((JobEntrySpecial)jei).setStart(true);
+                        jei.setName("Start");
+                    }
+                    if (JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
+                    {
+                        ((JobEntrySpecial)jei).setDummy(true);
+                        jei.setName("Dummy");
+                    }
+                }
+                
                 if (openit)
                 {
                     JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
                     if (d.open()!=null)
                     {
-                        JobEntryCopy jge = new JobEntryCopy(log);
+                        JobEntryCopy jge = new JobEntryCopy();
                         jge.setEntry(jei);
                         jge.setLocation(50,50);
                         jge.setNr(0);
@@ -7679,7 +7741,7 @@ public class Spoon implements AddUndoPositionInterface
                 }
                 else
                 {
-                    JobEntryCopy jge = new JobEntryCopy(log);
+                    JobEntryCopy jge = new JobEntryCopy();
                     jge.setEntry(jei);
                     jge.setLocation(50,50);
                     jge.setNr(0);
@@ -7980,6 +8042,12 @@ public class Spoon implements AddUndoPositionInterface
             boolean entry_changed=false;
             
             JobEntryInterface jei = je.getEntry();
+            
+            if (jei.isSpecial())
+            {
+                JobEntrySpecial special = (JobEntrySpecial) jei;
+                if (special.isDummy()) return;
+            }
             
             JobEntryDialogInterface d = jei.getDialog(shell, jei, jobMeta,je.getName(),rep); 
             if (d!=null)
@@ -8365,7 +8433,7 @@ public class Spoon implements AddUndoPositionInterface
                     // First the SQL, but only if needed!
                     // If the table exists & has the correct format, nothing is done
                     //
-                    if (sql != null && sql.length() > 0)
+                    if (!Const.isEmpty(sql))
                     {
                         String jesqlname = Messages.getString("Spoon.RipDB.JobEntrySQL.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
                         JobEntrySQL jesql = new JobEntrySQL(jesqlname);
@@ -8373,7 +8441,7 @@ public class Spoon implements AddUndoPositionInterface
                         jesql.setSQL(sql);
                         jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-                        JobEntryCopy jecsql = new JobEntryCopy(log);
+                        JobEntryCopy jecsql = new JobEntryCopy();
                         jecsql.setEntry(jesql);
                         jecsql.setLocation(new Point(location.x, location.y));
                         jecsql.setDrawn();

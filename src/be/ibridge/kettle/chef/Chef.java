@@ -2184,7 +2184,7 @@ public class Chef implements AddUndoPositionInterface
 	                JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
 					if (d.open()!=null)
 					{
-						JobEntryCopy jge = new JobEntryCopy(log);
+						JobEntryCopy jge = new JobEntryCopy();
 						jge.setEntry(jei);
 						jge.setLocation(50,50);
 						jge.setNr(0);
@@ -2201,7 +2201,7 @@ public class Chef implements AddUndoPositionInterface
 				}
 				else
 				{
-					JobEntryCopy jge = new JobEntryCopy(log);
+					JobEntryCopy jge = new JobEntryCopy();
 					jge.setEntry(jei);
 					jge.setLocation(50,50);
 					jge.setNr(0);
@@ -2676,7 +2676,7 @@ public class Chef implements AddUndoPositionInterface
 						jesql.setSQL(sql);
 						jesql.setDescription(Messages.getString("Spoon.RipDB.JobEntrySQL.Description")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						
-						JobEntryCopy jecsql = new JobEntryCopy(log);
+						JobEntryCopy jecsql = new JobEntryCopy();
 						jecsql.setEntry(jesql);
 						jecsql.setLocation(new Point(location.x, location.y));
 						jecsql.setDrawn();

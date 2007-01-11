@@ -351,4 +351,20 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntrySpecialDialog(shell,this);
     }
+
+    /**
+     * @param dummy the dummy to set
+     */
+    public void setDummy(boolean dummy)
+    {
+        this.dummy = dummy;
+    }
+
+    /**
+     * @param start the start to set
+     */
+    public void setStart(boolean start)
+    {
+        this.start = start;
+    }
 }

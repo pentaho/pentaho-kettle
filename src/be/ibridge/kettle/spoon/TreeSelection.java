@@ -8,13 +8,16 @@ public class TreeSelection
 
     private Object grandParent;
 
+    private String itemText;
+
     /**
      * @param selection
      * @param parent
      * @param grandParent
      */
-    public TreeSelection(Object selection, Object parent, Object grandParent)
+    public TreeSelection(String itemText, Object selection, Object parent, Object grandParent)
     {
+        this.itemText = itemText;
         this.selection = selection;
         this.parent = parent;
         this.grandParent = grandParent;
@@ -24,17 +27,17 @@ public class TreeSelection
      * @param selection
      * @param parent
      */
-    public TreeSelection(Object selection, Object parent)
+    public TreeSelection(String itemText, Object selection, Object parent)
     {
-        this(selection, parent, null);
+        this(itemText, selection, parent, null);
     }
 
     /**
      * @param selection
      */
-    public TreeSelection(Object selection)
+    public TreeSelection(String itemText, Object selection)
     {
-        this(selection, null, null);
+        this(itemText, selection, null, null);
     }
 
     /**
@@ -83,6 +86,22 @@ public class TreeSelection
     public void setSelection(Object selection)
     {
         this.selection = selection;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getItemText()
+    {
+        return itemText;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setItemText(String description)
+    {
+        this.itemText = description;
     }
 
 }

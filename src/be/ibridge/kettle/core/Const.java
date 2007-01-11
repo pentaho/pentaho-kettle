@@ -1556,7 +1556,7 @@ public class Const
 	 * @param separator The separator used.
 	 * @return the string split into an array of strings
 	 * 
-	 * @deprecated
+	 * NOTE: this is deprecated stuff, just use String.split()
 	 */
 	public static final String[] splitString(String string, String separator)
 	{

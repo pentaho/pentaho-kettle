@@ -585,7 +585,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                                 jge.setLocation(p.x, p.y);
                                 jge.setDrawn();
                                 redraw();
-                            } 
+                            }
                         }
                         break;
                     case DragAndDropContainer.TYPE_JOB_ENTRY: // Drag existing one onto the canvas
@@ -596,11 +596,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                                 // There can be only 1 start!
                                 if (jge.isStart() && jge.isDrawn()) 
                                 {
-                                    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-                                    mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
-                                    mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
-                                    mb.open();
-
+                                    showOnlyStartOnceMessage(shell);
                                     return;
                                 }
 
@@ -743,7 +739,15 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		setBackground(GUIResource.getInstance().getColorBackground());
 	}
 	
-	public void delSelected()
+	public static void showOnlyStartOnceMessage(Shell shell)
+    {
+        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
+        mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
+        mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
+        mb.open();
+    }
+
+    public void delSelected()
     {
         JobEntryCopy[] copies = jobMeta.getSelectedEntries();
         int nrsels = copies.length;
