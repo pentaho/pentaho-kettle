@@ -2154,9 +2154,9 @@ public class Database
 		}
 		catch(SQLException ex)
 		{
-			log.logError(toString(), "ERROR executing ["+sql+"]");
-			log.logError(toString(), "ERROR in part: ["+debug+"]");
-			printSQLException(ex);
+			// log.logError(toString(), "ERROR executing ["+sql+"]");
+			// log.logError(toString(), "ERROR in part: ["+debug+"]");
+			// printSQLException(ex);
             throw new KettleDatabaseException("An error occurred executing SQL: "+Const.CR+sql, ex);
 		}
 		catch(Exception e)
