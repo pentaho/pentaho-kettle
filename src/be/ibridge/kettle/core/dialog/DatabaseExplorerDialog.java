@@ -93,7 +93,8 @@ public class DatabaseExplorerDialog extends Dialog
 	private String    tableName; 
 	
 	private boolean justLook;
-	private String  selectTable;
+    private String  selectedSchema;
+	private String  selectedTable;
 	private List    databases;
     private boolean splitSchemaAndTable;
     private String schemaName;
@@ -139,8 +140,9 @@ public class DatabaseExplorerDialog extends Dialog
         this.databases = databases;
         this.justLook=look;
         this.splitSchemaAndTable = splitSchemaAndTable;
-        
-        selectTable=null;
+                
+        selectedSchema=null;
+        selectedTable=null;
     
         props=Props.getInstance();
         log=LogWriter.getInstance();
@@ -150,7 +152,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 	public void setSelectedTable(String selectedTable)
 	{
-		this.selectTable = selectedTable;
+		this.selectedTable = selectedTable;
 	}
 	
 	public Object open() 
@@ -374,13 +376,13 @@ public class DatabaseExplorerDialog extends Dialog
 				
 			// Make sure the selected table is shown...
 			// System.out.println("Selecting table "+k);
-			if (selectTable!=null && selectTable.length()>0)
+			if (!Const.isEmpty(selectedTable))
 			{
 				TreeItem ti = null;
-                if (ti==null && tiTab!=null) Const.findTreeItem(tiTab,  selectTable);
-				if (ti==null && tiView!=null) Const.findTreeItem(tiView, selectTable);
-				if (ti==null && tiTree!=null) Const.findTreeItem(tiTree, selectTable);
-				if (ti==null && tiSyn!=null) Const.findTreeItem(tiSyn,  selectTable);
+                if (ti==null && tiTab!=null) ti = Const.findTreeItem(tiTab, selectedSchema, selectedTable);
+				if (ti==null && tiView!=null) ti = Const.findTreeItem(tiView, selectedSchema, selectedTable);
+				if (ti==null && tiTree!=null) ti = Const.findTreeItem(tiTree, selectedSchema, selectedTable);
+				if (ti==null && tiSyn!=null) ti = Const.findTreeItem(tiSyn,  selectedSchema, selectedTable);
 				
 				if (ti!=null)
 				{
@@ -389,7 +391,7 @@ public class DatabaseExplorerDialog extends Dialog
 					wTree.showSelection();
 				}
 				
-				selectTable=null;
+				selectedTable=null;
 			}
 			
 			tiTree.setExpanded(true);
@@ -730,5 +732,21 @@ public class DatabaseExplorerDialog extends Dialog
     public void setSplitSchemaAndTable(boolean splitSchemaAndTable)
     {
         this.splitSchemaAndTable = splitSchemaAndTable;
+    }
+
+    /**
+     * @return the selectSchema
+     */
+    public String getSelectedSchema()
+    {
+        return selectedSchema;
+    }
+
+    /**
+     * @param selectSchema the selectSchema to set
+     */
+    public void setSelectedSchema(String selectSchema)
+    {
+        this.selectedSchema = selectSchema;
     }
 }

@@ -69,6 +69,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public final static String	typeDescLookup[]				= Value.getTypes();
 
+    /** The lookup schema name*/
+    private String             schemaName;
+
 	/** The lookup table*/
 	private String             tableName;
 
@@ -150,8 +153,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	/**
-     * @param tablename
-     *            The tablename to set.
+     * @param tablename The tablename to set.
      */
 	public void setTableName(String tablename)
 	{
@@ -568,6 +570,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			int nrkeys, nrfields;
 			String commit;
 
+            schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta = Const.findDatabase(databases, con);
@@ -639,9 +642,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		int nrkeys, nrfields;
 
+        schemaName = ""; //$NON-NLS-1$
 		tableName = Messages.getString("DimensionLookupMeta.DefualtTableName"); //$NON-NLS-1$
 		databaseMeta = null;
-		commitSize = 0;
+		commitSize = 100;
 		update = true;
 
 		nrkeys = 0;
@@ -705,7 +709,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 if (databaseMeta!=null)
                 {
                     Database db = new Database(databaseMeta);
-                    Row extraFields = db.getTableFields(tableName);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+                    Row extraFields = db.getTableFields(schemaTable);
 
                     for (int i = 0; i < fieldLookup.length; i++)
                     {
@@ -748,6 +753,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
         StringBuffer retval = new StringBuffer(512);
 		
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -805,6 +811,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
 			databaseMeta = Const.findDatabase(databases, id_connection);
 
+            schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
 			tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
 			commitSize = (int) rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
 			update = rep.getStepAttributeBoolean(id_step, "update"); //$NON-NLS-1$
@@ -848,58 +855,54 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
-	{
-		try
-		{
-			rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$
-			rep
-					.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta == null ? -1 : databaseMeta //$NON-NLS-1$
-							.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "update", update); //$NON-NLS-1$
+    {
+        try
+        {
+            rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta == null ? -1 : databaseMeta.getID()); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "update", update); //$NON-NLS-1$
 
-			for (int i = 0; i < keyStream.length; i++)
-			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]); //$NON-NLS-1$
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]); //$NON-NLS-1$
-			}
+            for (int i = 0; i < keyStream.length; i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]); //$NON-NLS-1$
+            }
 
-			rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
 
-			if (fieldStream != null)
-				for (int i = 0; i < fieldStream.length; i++)
-				{
-					if (fieldStream[i] != null)
-					{
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_update", //$NON-NLS-1$
-												getUpdateType(update, fieldUpdate[i]));
-					}
-				}
+            if (fieldStream != null) for (int i = 0; i < fieldStream.length; i++)
+            {
+                if (fieldStream[i] != null)
+                {
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_update", getUpdateType(update, fieldUpdate[i])); //$NON-NLS-1$
+                }
+            }
 
-			rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "creation_method", techKeyCreation); //$NON-NLS-1$
-			// For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
-			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "creation_method", techKeyCreation); //$NON-NLS-1$
+            // For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
+            rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
 
-			rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
 
-			// Also, save the step-database relationship!
-			if (databaseMeta != null)
-				rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
-		}
-		catch (KettleDatabaseException dbe)
-		{
-			throw new KettleException(Messages.getString("DimensionLookupMeta.Exception.UnableToLoadDimensionLookupInfoFromRepository"), dbe); //$NON-NLS-1$
-		}
-	}
+            // Also, save the step-database relationship!
+            if (databaseMeta != null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException(Messages.getString("DimensionLookupMeta.Exception.UnableToLoadDimensionLookupInfoFromRepository"), dbe); //$NON-NLS-1$
+        }
+    }
 
 	public Date getMinDate()
 	{
@@ -977,13 +980,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			try
 			{
 				db.connect();
-				if (tableName != null && tableName.length() != 0)
+				if (!Const.isEmpty(tableName))
 				{
 					boolean first = true;
 					boolean error_found = false;
 					error_message = ""; //$NON-NLS-1$
-
-					Row r = db.getTableFields(tableName);
+					
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+					Row r = db.getTableFields(schemaTable);
 					if (r != null)
 					{
 						for (int i = 0; i < fieldLookup.length; i++)
@@ -1198,9 +1202,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			{
 				db.connect();
 
-				if (tableName != null && tableName.length() != 0)
+				if (!Const.isEmpty(tableName))
 				{
-					Row tableFields = db.getTableFields(tableName);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+					Row tableFields = db.getTableFields(schemaTable);
 					if (tableFields != null)
 					{
 						if (prev != null && prev.size() > 0)
@@ -1237,7 +1242,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 										}
 										error_found = true;
 										error_message += "\t\t" + dimfield +Messages.getString("DimensionLookupMeta.CheckResult.KeyNotPresentInDimensiontable") //$NON-NLS-1$ //$NON-NLS-2$
-															+ tableName + ")" + Const.CR; //$NON-NLS-1$
+															+ schemaTable + ")" + Const.CR; //$NON-NLS-1$
 									}
 									else
 									{
@@ -1252,7 +1257,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 											warning_found = true;
 											error_message += "\t\t" + strfield + " (" + strvalue.getOrigin() //$NON-NLS-1$ //$NON-NLS-2$
 																+Messages.getString("DimensionLookupMeta.CheckResult.KeyNotTheSameTypeAs") + dimfield + " (" //$NON-NLS-1$ //$NON-NLS-2$
-																+ tableName + ")" + Const.CR; //$NON-NLS-1$
+																+ schemaTable + ")" + Const.CR; //$NON-NLS-1$
 											error_message += Messages.getString("DimensionLookupMeta.CheckResult.WarningInfoInDBConversion"); //$NON-NLS-1$
 										}
 									}
@@ -1406,7 +1411,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			try
 			{
 				db.connect();
-				fields = db.getTableFields(tableName);
+				fields = db.getTableFields(databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName));
 			}
 			catch (KettleDatabaseException dbe)
 			{
@@ -1432,8 +1437,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			{
 				if (prev != null && prev.size() > 0)
 				{
-					if (tableName != null && tableName.length() > 0)
+					if (!Const.isEmpty(tableName))
 					{
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName); 
 						Database db = new Database(databaseMeta);
 						try
 						{
@@ -1513,48 +1519,43 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.UnableToFindFields") + errors); //$NON-NLS-1$
 							}
 
-							log
-									.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.GetDDLForTable") + tableName + "] : " //$NON-NLS-1$ //$NON-NLS-2$
+							log.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.GetDDLForTable") + schemaTable + "] : " //$NON-NLS-1$ //$NON-NLS-2$
 															+ fields.toStringMeta());
 
-							sql += db.getDDL(tableName, fields, (sequenceName != null && sequenceName.length() != 0) ? null
-																											: keyField,
-												autoIncrement, null, true);
+							sql += db.getDDL(schemaTable, fields, (sequenceName != null && sequenceName.length() != 0) ? null : keyField, autoIncrement, null, true);
 
 							log.logDebug(toString(), "sql =" + sql); //$NON-NLS-1$
 
 							String idx_fields[] = null;
 
 							// Key lookup dimensions...
-							if (keyLookup != null && keyLookup.length > 0)
+							if (!Const.isEmpty(keyLookup))
 							{
 								idx_fields = new String[keyLookup.length];
 								for (int i = 0; i < keyLookup.length; i++)
+                                {
 									idx_fields[i] = keyLookup[i];
+                                }
 							}
 							else
 							{
-								retval
-										.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NoKeyFieldsSpecified")); //$NON-NLS-1$
+								retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NoKeyFieldsSpecified")); //$NON-NLS-1$
 							}
 
-							if (idx_fields != null && idx_fields.length > 0
-								&& !db.checkIndexExists(tableName, idx_fields))
+							if (!Const.isEmpty(idx_fields) && !db.checkIndexExists(schemaName, tableName, idx_fields))
 							{
 								String indexname = "idx_" + tableName + "_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
-								sql += db.getCreateIndexStatement(tableName, indexname, idx_fields, false, false,
-																	false, true);
+								sql += db.getCreateIndexStatement(schemaName, tableName, indexname, idx_fields, false, false, false, true);
 							}
 
 							// (Bitmap) index on technical key
 							idx_fields = new String[] { keyField };
-							if (keyField != null && keyField.length() > 0)
+							if (!Const.isEmpty(keyField))
 							{
-								if (!db.checkIndexExists(tableName, idx_fields))
+								if (!db.checkIndexExists(schemaName, tableName, idx_fields))
 								{
 									String indexname = "idx_" + tableName + "_tk"; //$NON-NLS-1$ //$NON-NLS-2$
-									sql += db.getCreateIndexStatement(tableName, indexname, idx_fields, true, false,
-																		true, true);
+									sql += db.getCreateIndexStatement(schemaName, tableName, indexname, idx_fields, true, false, true, true);
 								}
 							}
 							else
@@ -1563,12 +1564,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							}
 
 							// The optional Oracle sequence
-							if ( CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
-									 sequenceName != null)
+							if ( CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) && !Const.isEmpty(sequenceName))
 							{
-							    if (!db.checkSequenceExists(sequenceName))
+							    if (!db.checkSequenceExists(schemaName, sequenceName))
 							    {
-								    sql += db.getCreateSequenceStatement(sequenceName, 1L, 1L, -1L, true);
+								    sql += db.getCreateSequenceStatement(schemaName, sequenceName, 1L, 1L, -1L, true);
 							    }
 							}
 
@@ -1720,5 +1720,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         {
             return super.getUsedDatabaseConnections();
         }
+    }
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
     }
 }

@@ -69,7 +69,6 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.TableItemInsertListener;
 
-
 /**
  *  Dialog for the Dimension Lookup/Update step. 
  */
@@ -83,6 +82,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private FormData     fdKeyComp, fdFieldsComp;
 
 	private CCombo       wConnection;
+
+    private Label        wlSchema;
+    private Text         wSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
@@ -199,9 +201,40 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
+        // Update the dimension?
+        wlUpdate=new Label(shell, SWT.RIGHT);
+        wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
+        props.setLook(wlUpdate);
+        FormData fdlUpdate=new FormData();
+        fdlUpdate.left   = new FormAttachment(0, 0);
+        fdlUpdate.right  = new FormAttachment(middle, -margin);
+        fdlUpdate.top    = new FormAttachment(wStepname, margin);
+        wlUpdate.setLayoutData(fdlUpdate);
+        wUpdate=new Button(shell, SWT.CHECK);
+        props.setLook(wUpdate);
+        FormData fdUpdate=new FormData();
+        fdUpdate.left = new FormAttachment(middle, 0);
+        fdUpdate.top  = new FormAttachment(wStepname, margin);
+        fdUpdate.right= new FormAttachment(100, 0);
+        wUpdate.setLayoutData(fdUpdate); 
+
+        // Clicking on update changes the options in the update combo boxes!
+        wUpdate.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    input.setUpdate(!input.isUpdate());
+                    input.setChanged();
+
+                    setFlags();
+                }
+            }
+        );      
+        
+
 
 		// Connection line
-		wConnection = addConnectionLine(shell, wStepname, middle, margin);
+		wConnection = addConnectionLine(shell, wUpdate, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
@@ -216,6 +249,26 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     		}
         );
 
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("DimensionLookupDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        FormData fdlSchema = new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        FormData fdSchema = new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
+
+
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("DimensionLookupDialog.TargeTable.Label")); //$NON-NLS-1$
@@ -223,7 +276,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wConnection, margin);
+		fdlTable.top  = new FormAttachment(wSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -231,7 +284,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wbTable.setText(Messages.getString("DimensionLookupDialog.Browse.Button")); //$NON-NLS-1$
 		FormData fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wConnection, margin);
+		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -239,7 +292,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wTable.addModifyListener(lsMod);
 		FormData fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wConnection, margin);
+		fdTable.top  = new FormAttachment(wSchema, margin);
 		fdTable.right= new FormAttachment(wbTable, 0);
 		wTable.setLayoutData(fdTable);
 
@@ -261,39 +314,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdCommit.right= new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
 
-		// Update the dimension?
-		wlUpdate=new Label(shell, SWT.RIGHT);
-		wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
- 		props.setLook(wlUpdate);
-		FormData fdlUpdate=new FormData();
-		fdlUpdate.left   = new FormAttachment(0, 0);
-		fdlUpdate.right  = new FormAttachment(middle, -margin);
-		fdlUpdate.top    = new FormAttachment(wCommit, margin);
-		wlUpdate.setLayoutData(fdlUpdate);
-		wUpdate=new Button(shell, SWT.CHECK);
- 		props.setLook(wUpdate);
-		FormData fdUpdate=new FormData();
-		fdUpdate.left = new FormAttachment(middle, 0);
-		fdUpdate.top  = new FormAttachment(wCommit, margin);
-		fdUpdate.right= new FormAttachment(100, 0);
-		wUpdate.setLayoutData(fdUpdate); 
-
-		// Clicking on update changes the options in the update combo boxes!
-		wUpdate.addSelectionListener(new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					input.setUpdate(!input.isUpdate());
-					input.setChanged();
-
-					setFlags();
-				}
-			}
-		); 		
-		
 		wlTkRename=new Label(shell, SWT.RIGHT);
-	
-		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
  		
 		//////////////////////////
@@ -415,7 +438,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wUpdate, margin);
+		fdTabFolder.top   = new FormAttachment(wCommit, margin);
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(wlTkRename, -2 * margin);		
 		wTabFolder.setLayoutData(fdTabFolder);
@@ -674,6 +697,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 
 		wStepname.addSelectionListener( lsDef );
+        wSchema.addSelectionListener( lsDef );
 		wTable.addSelectionListener( lsDef );
 		wCommit.addSelectionListener( lsDef );
 		wTk.addSelectionListener( lsDef );
@@ -751,6 +775,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wMinyear.setEnabled( update );
         wlVersion.setEnabled( update );
         wVersion.setEnabled( update );
+        wlTkRename.setEnabled( !update );
+        wTkRename.setEnabled( !update );
 
         // Set the technical creation key fields correct... then disable 
         // depending on update or not. Then reset if we're updating. It makes
@@ -839,6 +865,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		wUpdate.setSelection( input.isUpdate() );
 
+        if (input.getSchemaName()!=null)      wSchema.setText( input.getSchemaName() );
 		if (input.getTableName()!=null)       wTable.setText( input.getTableName() );
 		if (input.getKeyField()!=null)        wTk.setText(input.getKeyField());
 		if (input.getKeyRename()!=null)       wTkRename.setText(input.getKeyRename());
@@ -978,6 +1005,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			in.getFieldUpdate()[i]  = DimensionLookupMeta.getUpdateType(in.isUpdate(), item.getText(3));
 		}
 
+        in.setSchemaName( wSchema.getText() );
 		in.setTableName( wTable.getText() );
 		in.setKeyField( wTk.getText() );
 		in.setKeyRename( wTkRename.getText() );
@@ -1021,16 +1049,19 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private void getTableName()
 	{
 		int connr = wConnection.getSelectionIndex();
+        if (connr<0) return;
 		DatabaseMeta inf = transMeta.getDatabase(connr);
 
 		log.logDebug(toString(), Messages.getString("DimensionLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
+        std.setSelectedSchema(wSchema.getText());
 		std.setSelectedTable(wTable.getText());
-		String tableName = (String)std.open();
-		if (tableName != null)
+        std.setSplitSchemaAndTable(true);
+		if (std.open() != null)
 		{
-			wTable.setText(tableName);
+            wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+			wTable.setText(Const.NVL(std.getTableName(), ""));
 		}
 	}
 
@@ -1094,14 +1125,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	 */
 	private void getLookup()
 	{
-		DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-		if (ci!=null)
+		DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
 		{
-			Database db = new Database(ci);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
-				Row r = db.getTableFields(wTable.getText());
+                String schemaTable = databaseMeta.getQuotedSchemaTableCombination(wSchema.getText(), wTable.getText()); 
+				Row r = db.getTableFields(schemaTable);
 				if (r!=null)
 				{
                     BaseStepDialog.getFieldsFromPrevious(r, wUpIns, 2, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, new TableItemInsertListener()

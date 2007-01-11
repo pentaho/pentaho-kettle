@@ -1086,26 +1086,56 @@ public class Const
 		ti.setExpanded(!ti.getExpanded());
 	}
 
+    public static final TreeItem findTreeItem(TreeItem parent, String name)
+    {
+        return findTreeItem(parent, null, name);
+    }
+    
 	/**
 	 * Finds a TreeItem with a certain label (name) in a (part of a) tree.
 	 * @param parent The TreeItem where we start looking.
+     * @param parentName The name of the parent to match as well (null=not used)
 	 * @param name The name or item label to look for.
 	 * @return The TreeItem if the label was found, null if nothing was found.
 	 */
-	public static final TreeItem findTreeItem(TreeItem parent, String name)
+	public static final TreeItem findTreeItem(TreeItem parent, String parentName, String name)
 	{
-		if (parent.getText().equalsIgnoreCase(name))
-			return parent;
-
-		TreeItem ti[] = parent.getItems();
-		for (int i = 0; i < ti.length; i++)
-		{
-			TreeItem child = findTreeItem(ti[i], name);
-			if (child != null)
-				return child;
-		}
-		return null;
+		return findTreeItem(null, parent, parentName, name);
 	}
+    
+    private static final TreeItem findTreeItem(TreeItem grandParent, TreeItem parent, String parentName, String name)
+    {
+        if (Const.isEmpty(parentName))
+        {
+            if (parent.getText().equalsIgnoreCase(name))
+            {
+                return parent;
+            }
+        }
+        else
+        {
+            if (grandParent!=null && grandParent.getText().equalsIgnoreCase("OTHER"))
+            {
+                System.out.println("Other");
+            }
+            if (grandParent!=null && grandParent.getText().equalsIgnoreCase(parentName) &&
+                parent.getText().equalsIgnoreCase(name))
+            {
+                return parent;
+            }
+        }
+
+        TreeItem ti[] = parent.getItems();
+        for (int i = 0; i < ti.length; i++)
+        {
+            TreeItem child = findTreeItem(parent, ti[i], parentName, name);
+            if (child != null)
+            {
+                return child;
+            }
+        }
+        return null;
+    }
 
 	/**
 	 * Determines the Kettle directory in the user's home directory.
@@ -1880,6 +1910,15 @@ public class Const
     	return string==null || string.length()==0;
     }
     
+    /**
+     * Check if the string array supplied is empty.  A String array is empty when it is null or when the number of elements is 0
+     * @param string The string array to check
+     * @return true if the string array supplied is empty
+     */
+    public static final boolean isEmpty(String[] strings)
+    {
+        return strings==null || strings.length==0;
+    }
 
     /**
      * @return a new ClassLoader

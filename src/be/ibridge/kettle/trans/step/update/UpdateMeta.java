@@ -52,10 +52,13 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** The lookup table name */
+    private String schemaName;
+
+    /** The lookup table name */
 	private String tableName;
 	
 	/** database connection */
-	private DatabaseMeta database;
+	private DatabaseMeta databaseMeta;
 	
 	/** which field in input stream to compare with? */
 	private String keyStream[];
@@ -110,17 +113,17 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the database.
      */
-    public DatabaseMeta getDatabase()
+    public DatabaseMeta getDatabaseMeta()
     {
-        return database;
+        return databaseMeta;
     }
     
     /**
      * @param database The database to set.
      */
-    public void setDatabase(DatabaseMeta database)
+    public void setDatabaseMeta(DatabaseMeta database)
     {
-        this.database = database;
+        this.databaseMeta = database;
     }
     
     /**
@@ -320,11 +323,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			int nrkeys, nrvalues;
 			
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			database = Const.findDatabase(databases, con);
+			databaseMeta = Const.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize=Const.toInt(csize, 0);
             errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored")); //$NON-NLS-1$ //$NON-NLS-2$
             ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field"); //$NON-NLS-1$
+            schemaName     = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
 			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
@@ -361,11 +365,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		keyStream        = null;
-		updateLookup      = null;
-		database = null;
-		commitSize     = 0;
-		tableName      = Messages.getString("UpdateMeta.DefaultTableName"); //$NON-NLS-1$
+		keyStream    = null;
+		updateLookup = null;
+		databaseMeta = null;
+		commitSize   = 100;
+        schemaName   = ""; //$NON-NLS-1$
+		tableName    = Messages.getString("UpdateMeta.DefaultTableName"); //$NON-NLS-1$
 
 		int nrkeys   = 0;
 		int nrvalues = 0;
@@ -374,10 +379,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			keyLookup[i]   = "age"; //$NON-NLS-1$
-			keyCondition[i]= "BETWEEN"; //$NON-NLS-1$
-			keyStream[i]         = "age_from"; //$NON-NLS-1$
-			keyStream2[i]        = "age_to"; //$NON-NLS-1$
+			keyLookup[i]    = "age"; //$NON-NLS-1$
+			keyCondition[i] = "BETWEEN"; //$NON-NLS-1$
+			keyStream[i]    = "age_from"; //$NON-NLS-1$
+			keyStream2[i]   = "age_to"; //$NON-NLS-1$
 		}
 
 		for (int i=0;i<nrvalues;i++)
@@ -391,11 +396,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
+        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int i=0;i<keyStream.length;i++)
@@ -427,9 +433,10 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			database = Const.findDatabase( databases, id_connection);
+			databaseMeta = Const.findDatabase( databases, id_connection);
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+            schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
             
             errorIgnored    =     rep.getStepAttributeBoolean(id_step, "error_ignored"); //$NON-NLS-1$
@@ -465,8 +472,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection", database==null?-1:database.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$
 
             rep.saveStepAttribute(id_transformation, id_step, "error_ignored",        errorIgnored); //$NON-NLS-1$
@@ -487,7 +495,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			
 			// Also, save the step-database relationship!
-			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
 		}
 		catch(Exception e)
 		{
@@ -518,14 +526,14 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
 		
-		if (database!=null)
+		if (databaseMeta!=null)
 		{
-			Database db = new Database(database);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
 				
-				if (tableName!=null && tableName.length()!=0)
+				if (!Const.isEmpty(tableName))
 				{
 					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("UpdateMeta.CheckResult.TableNameOK"), stepinfo); //$NON-NLS-1$
 					remarks.add(cr);
@@ -535,7 +543,8 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					error_message = ""; //$NON-NLS-1$
 					
 					// Check fields in table
-					Row r = db.getTableFields(tableName);
+                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tableName));
+					Row r = db.getTableFields( schemaTable );
 					if (r!=null)
 					{
 						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("UpdateMeta.CheckResult.TableExists"), stepinfo); //$NON-NLS-1$
@@ -728,20 +737,22 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
 	{
-		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
+		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 	
-		if (database!=null)
+		if (databaseMeta!=null)
 		{
 			if (prev!=null && prev.size()>0)
 			{
-				if (tableName!=null && tableName.length()>0)
+				if (!Const.isEmpty(tableName))
 				{
-					Database db = new Database(database);
+                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tableName));
+
+					Database db = new Database(databaseMeta);
 					try
 					{
 						db.connect();
 						
-						String cr_table = db.getDDL(tableName, 
+						String cr_table = db.getDDL(schemaTable, 
 													prev, 
 													null, 
 													false, 
@@ -763,12 +774,11 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 						}
 
 						// Key lookup dimensions...
-						if (idx_fields!=null && idx_fields.length>0 && 
-							!db.checkIndexExists(tableName, idx_fields)
+						if (idx_fields!=null && idx_fields.length>0 && !db.checkIndexExists(schemaName, tableName, idx_fields)
 						   )
 						{
 							String indexname = "idx_"+tableName+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
-							cr_index = db.getCreateIndexStatement(tableName, indexname, idx_fields, false, false, false, true);
+							cr_index = db.getCreateIndexStatement(schemaName, tableName, indexname, idx_fields, false, false, false, true);
 						}
 						
 						String sql = cr_table+cr_index;
@@ -808,7 +818,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
             {
                 Value v = prev.searchValue(keyStream[i]);
 
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), database
+                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
                         .getDatabaseName(), tableName, keyLookup[i], keyStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 impact.add(ii);
             }
@@ -818,7 +828,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
             {
                 Value v = prev.searchValue(updateStream[i]);
 
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_UPDATE, transMeta.getName(), stepMeta.getName(), database
+                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_UPDATE, transMeta.getName(), stepMeta.getName(), databaseMeta
                         .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 impact.add(ii);
             }
@@ -842,14 +852,34 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     
     public DatabaseMeta[] getUsedDatabaseConnections()
     {
-        if (database!=null) 
+        if (databaseMeta!=null) 
         {
-            return new DatabaseMeta[] { database };
+            return new DatabaseMeta[] { databaseMeta };
         }
         else
         {
             return super.getUsedDatabaseConnections();
         }
+    }
+
+
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
     }
 
 }

@@ -152,7 +152,7 @@ public class TransBuilder
             //
             String tostepname = "write to [" + targetTableName + "]";
             TableOutputMeta toi = new TableOutputMeta();
-            toi.setDatabase(targetDBInfo);
+            toi.setDatabaseMeta(targetDBInfo);
             toi.setTablename(targetTableName);
             toi.setCommitSize(200);
             toi.setTruncateTable(true);

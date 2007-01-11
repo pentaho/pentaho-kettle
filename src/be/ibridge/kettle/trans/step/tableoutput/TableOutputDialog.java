@@ -61,6 +61,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 {
 	private CCombo       wConnection;
 
+    private Label        wlSchema;
+    private Text         wSchema;
+    private FormData     fdlSchema, fdSchema;
+
 	private Label        wlTable;
 	private Button       wbTable;
 	private TextVar      wTable;
@@ -174,9 +178,28 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Connection line
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
-		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
+		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
-		
+
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("TableOutputDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        fdlSchema=new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin*2);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        fdSchema=new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin*2);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
+
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("TableOutputDialog.TargetTable.Label"));
@@ -184,7 +207,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wConnection, margin*2);
+		fdlTable.top  = new FormAttachment(wSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -192,14 +215,14 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wbTable.setText(Messages.getString("System.Button.Browse"));
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wConnection, margin);
+		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
-		fdTable.top  = new FormAttachment(wConnection, margin*2);
+		fdTable.top  = new FormAttachment(wSchema, margin);
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
@@ -549,8 +572,12 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		wStepname.addSelectionListener( lsDef );
 		wCommit.addSelectionListener( lsDef );
+        wSchema.addSelectionListener( lsDef );
 		wTable.addSelectionListener( lsDef );
-		
+		wPartField.addSelectionListener( lsDef );
+        wNameField.addSelectionListener( lsDef );
+        wReturnField.addSelectionListener( lsDef );
+        
 		wbTable.addSelectionListener
 		(
 			new SelectionAdapter()
@@ -647,8 +674,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	 */ 
 	public void getData()
 	{
-		if (input.getTablename()      != null) wTable.setText(input.getTablename());
-		if (input.getDatabase() != null) wConnection.setText(input.getDatabase().getName());
+        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
+		if (input.getTablename() != null) wTable.setText(input.getTablename());
+		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		
         wTruncate.setSelection( input.truncateTable() );
         wIgnore.setSelection(input.ignoreErrors());
@@ -682,8 +710,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
 	private void getInfo(TableOutputMeta info)
 	{
+        info.setSchemaName( wSchema.getText() );
 		info.setTablename( wTable.getText() );
-		info.setDatabase(  transMeta.findDatabase(wConnection.getText()) );
+		info.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
 		info.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
 		info.setTruncateTable( wTruncate.getSelection() );
 		info.setIgnoreErrors( wIgnore.getSelection() );
@@ -705,7 +734,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		getInfo(input);
 
-		if (input.getDatabase()==null)
+		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("TableOutputDialog.ConnectionError.DialogMessage"));
@@ -727,11 +756,13 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			log.logDebug(toString(), Messages.getString("TableOutputDialog.Log.LookingAtConnection", inf.toString()));
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-			std.setSelectedTable(wTable.getText());
-			String tableName = (String)std.open();
-			if (tableName != null)
+            std.setSelectedSchema(wSchema.getText());
+            std.setSelectedTable(wTable.getText());
+            std.setSplitSchemaAndTable(true);
+			if (std.open() != null)
 			{
-				wTable.setText(tableName);
+                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+                wTable.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else
@@ -765,7 +796,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabase(), transMeta.getDbCache(), sql.getSQL());
+					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
 					sqledit.open();
 				}
 				else

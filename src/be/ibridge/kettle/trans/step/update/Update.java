@@ -55,8 +55,8 @@ public class Update extends BaseStep implements StepInterface
 		{
 			first=false;
 			
-			data.dblup.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
-			data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+			data.dblup.setLookup(meta.getSchemaName(), meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
+			data.dbupd.prepareUpdate(meta.getSchemaName(), meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
 			
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("Update.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
@@ -208,8 +208,8 @@ public class Update extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.dblup=new Database(meta.getDatabase());
-			data.dbupd=new Database(meta.getDatabase());
+			data.dblup=new Database(meta.getDatabaseMeta());
+			data.dbupd=new Database(meta.getDatabaseMeta());
 			try 
 			{
                 if (getTransMeta().isUsingUniqueConnections())

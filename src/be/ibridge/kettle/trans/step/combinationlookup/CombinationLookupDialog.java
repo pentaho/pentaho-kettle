@@ -68,53 +68,46 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 {
 	private CCombo       wConnection;
 
+    private Label        wlSchema;
+    private Text         wSchema;
+
 	private Label        wlTable;
 	private Button       wbTable;
 	private Text         wTable;
-	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
-	private FormData     fdlCommit, fdCommit;
 
 	private Label        wlCachesize;
 	private Text         wCachesize;
 	
 	private Label        wlTk;
 	private Text         wTk;
-	private FormData     fdlTk, fdTk;
 
 	private Group        gTechGroup;
 	private FormData     fdTechGroup;
 	
 	private Label        wlAutoinc;
 	private Button       wAutoinc;
-	private GridData     gdlAutoinc, gdAutoinc;
 
 	private Label        wlTableMax;
 	private Button       wTableMax;
-	private GridData     gdlTableMax, gdTableMax;	
 
 	private Label        wlSeqButton;
 	private Button       wSeqButton;
-	private GridData     gdlSeqButton, gdSeqButton, gdSeq;			
 	private Text         wSeq;     
 
 	private Label        wlReplace;
 	private Button       wReplace;
-	private FormData     fdlReplace, fdReplace;
 
 	private Label        wlHashcode;
 	private Button       wHashcode;
-	private FormData     fdlHashcode, fdHashcode;
 
 	private Label        wlKey;
 	private TableView    wKey;
-	private FormData     fdlKey, fdKey;
 
 	private Label        wlHashfield;
 	private Text         wHashfield;
-	private FormData     fdlHashfield, fdHashfield;
 
 	private Button       wGet, wCreate;
 	private Listener     lsGet, lsCreate;	
@@ -194,30 +187,50 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			}
 		);
 		
-		// Table line...
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("CombinationLookupDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        FormData fdlSchema = new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        FormData fdSchema = new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
+
+
+        // Table line...
 		wlTable = new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("CombinationLookupDialog.Target.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
-		fdlTable = new FormData();
+		FormData fdlTable = new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right = new FormAttachment(middle, -margin);
-		fdlTable.top = new FormAttachment(wConnection, margin * 2);
+		fdlTable.top = new FormAttachment(wSchema, margin );
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
  		props.setLook(wbTable);
  		wbTable.setText(Messages.getString("CombinationLookupDialog.BrowseTable.Button"));
-		fdbTable = new FormData();
+		FormData fdbTable = new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
-		fdbTable.top = new FormAttachment(wConnection, margin);
+		fdbTable.top = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
-		fdTable = new FormData();
+		FormData fdTable = new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top = new FormAttachment(wConnection, margin * 2);
+		fdTable.top = new FormAttachment(wSchema, margin );
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);		
 		
@@ -225,7 +238,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlCommit=new Label(shell, SWT.RIGHT);
 		wlCommit.setText(Messages.getString("CombinationLookupDialog.Commitsize.Label")); //$NON-NLS-1$
  		props.setLook(wlCommit);
-		fdlCommit=new FormData();
+		FormData fdlCommit = new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
 		fdlCommit.right= new FormAttachment(middle, -margin);
 		fdlCommit.top  = new FormAttachment(wTable, margin);
@@ -233,7 +246,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wCommit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCommit);
 		wCommit.addModifyListener(lsMod);
-		fdCommit=new FormData();
+		FormData fdCommit = new FormData();
 		fdCommit.top  = new FormAttachment(wTable, margin);
 		fdCommit.left = new FormAttachment(middle, 0);
 		fdCommit.right= new FormAttachment(middle+(100-middle)/3, -margin);
@@ -264,7 +277,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlKey=new Label(shell, SWT.NONE);
 		wlKey.setText(Messages.getString("CombinationLookupDialog.Keyfields.Label")); //$NON-NLS-1$
  		props.setLook(wlKey);
-		fdlKey=new FormData();
+		FormData fdlKey = new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
 		fdlKey.top   = new FormAttachment(wCommit, margin);
 		fdlKey.right = new FormAttachment(100, 0);
@@ -301,7 +314,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlHashfield=new Label(shell, SWT.RIGHT);
 		wlHashfield.setText(Messages.getString("CombinationLookupDialog.Hashfield.Label")); //$NON-NLS-1$
  		props.setLook(wlHashfield);
-		fdlHashfield=new FormData();
+		FormData fdlHashfield = new FormData();
 		fdlHashfield.left  = new FormAttachment(0, 0);
 		fdlHashfield.right = new FormAttachment(middle, -margin);
 		fdlHashfield.bottom= new FormAttachment(wOK, -2*margin);
@@ -309,7 +322,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wHashfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wHashfield);
 		wHashfield.addModifyListener(lsMod);
-		fdHashfield=new FormData();
+		FormData fdHashfield = new FormData();
 		fdHashfield.left  = new FormAttachment(middle, 0);
 		fdHashfield.right = new FormAttachment(100, 0);
 		fdHashfield.bottom= new FormAttachment(wOK, -2*margin);
@@ -319,14 +332,14 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlHashcode=new Label(shell, SWT.RIGHT);
 		wlHashcode.setText(Messages.getString("CombinationLookupDialog.Hashcode.Label")); //$NON-NLS-1$
  		props.setLook(wlHashcode);
-		fdlHashcode=new FormData();
+		FormData fdlHashcode = new FormData();
 		fdlHashcode.left  = new FormAttachment(0, 0);
 		fdlHashcode.right = new FormAttachment(middle, -margin);
 		fdlHashcode.bottom= new FormAttachment(wHashfield, -margin);
 		wlHashcode.setLayoutData(fdlHashcode);
 		wHashcode=new Button(shell, SWT.CHECK);
  		props.setLook(wHashcode);
-		fdHashcode=new FormData();
+		FormData fdHashcode = new FormData();
 		fdHashcode.left   = new FormAttachment(middle, 0);
 		fdHashcode.right  = new FormAttachment(100, 0);
 		fdHashcode.bottom = new FormAttachment(wHashfield, -margin);
@@ -344,14 +357,14 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlReplace=new Label(shell, SWT.RIGHT);
 		wlReplace.setText(Messages.getString("CombinationLookupDialog.Replace.Label")); //$NON-NLS-1$
  		props.setLook(wlReplace);
-		fdlReplace=new FormData();
+		FormData fdlReplace = new FormData();
 		fdlReplace.left  = new FormAttachment(0, 0);
 		fdlReplace.right = new FormAttachment(middle, -margin);
 		fdlReplace.bottom= new FormAttachment(wHashcode, -margin);
 		wlReplace.setLayoutData(fdlReplace);
 		wReplace=new Button(shell, SWT.CHECK);
  		props.setLook(wReplace);
-		fdReplace=new FormData();
+		FormData fdReplace = new FormData();
 		fdReplace.left  = new FormAttachment(middle, 0);
 		fdReplace.bottom= new FormAttachment(wHashcode, -margin);
 		fdReplace.right = new FormAttachment(100, 0);
@@ -380,13 +393,13 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wTableMax=new Button(gTechGroup, SWT.RADIO);
  		props.setLook(wTableMax);
  		wTableMax.setSelection(false);
-		gdTableMax=new GridData();
+		GridData gdTableMax = new GridData();
 		wTableMax.setLayoutData(gdTableMax);
 		wTableMax.setToolTipText(Messages.getString("CombinationLookupDialog.TableMaximum.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		wlTableMax=new Label(gTechGroup, SWT.LEFT);
 		wlTableMax.setText(Messages.getString("CombinationLookupDialog.TableMaximum.Label")); //$NON-NLS-1$
  		props.setLook(wlTableMax);
-		gdlTableMax = new GridData(GridData.FILL_BOTH);
+		GridData gdlTableMax = new GridData(GridData.FILL_BOTH);
 		gdlTableMax.horizontalSpan = 2; gdlTableMax.verticalSpan = 1;
 		wlTableMax.setLayoutData(gdlTableMax);
 		
@@ -394,19 +407,19 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wSeqButton=new Button(gTechGroup, SWT.RADIO);
  		props.setLook(wSeqButton);
  		wSeqButton.setSelection(false);
-		gdSeqButton=new GridData();
+		GridData gdSeqButton = new GridData();
 		wSeqButton.setLayoutData(gdSeqButton);
 		wSeqButton.setToolTipText(Messages.getString("CombinationLookupDialog.Sequence.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
 		wlSeqButton=new Label(gTechGroup, SWT.LEFT);
 		wlSeqButton.setText(Messages.getString("CombinationLookupDialog.Sequence.Label")); //$NON-NLS-1$
  		props.setLook(wlSeqButton); 	
-		gdlSeqButton=new GridData();
+		GridData gdlSeqButton = new GridData();
 		wlSeqButton.setLayoutData(gdlSeqButton);
 
 		wSeq=new Text(gTechGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSeq);
 		wSeq.addModifyListener(lsMod);
-		gdSeq=new GridData(GridData.FILL_HORIZONTAL);
+		GridData gdSeq = new GridData(GridData.FILL_HORIZONTAL);
 		wSeq.setLayoutData(gdSeq);
 		wSeq.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent arg0) {
@@ -424,13 +437,13 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wAutoinc=new Button(gTechGroup, SWT.RADIO);
  		props.setLook(wAutoinc);
  		wAutoinc.setSelection(false);
-		gdAutoinc=new GridData();
+		GridData gdAutoinc = new GridData();
 		wAutoinc.setLayoutData(gdAutoinc);
 		wAutoinc.setToolTipText(Messages.getString("CombinationLookupDialog.AutoincButton.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		wlAutoinc=new Label(gTechGroup, SWT.LEFT);
 		wlAutoinc.setText(Messages.getString("CombinationLookupDialog.Autoincrement.Label")); //$NON-NLS-1$
  		props.setLook(wlAutoinc);
-		gdlAutoinc=new GridData();
+		GridData gdlAutoinc = new GridData();
 		wlAutoinc.setLayoutData(gdlAutoinc);
 
 		setTableMax();
@@ -441,20 +454,20 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wlTk=new Label(shell, SWT.RIGHT);
 		wlTk.setText(Messages.getString("CombinationLookupDialog.TechnicalKey.Label")); //$NON-NLS-1$
  		props.setLook(wlTk);
-		fdlTk=new FormData();
+		FormData fdlTk = new FormData();
 		fdlTk.left   = new FormAttachment(0, 0);
 		fdlTk.right  = new FormAttachment(middle, -margin);
 		fdlTk.bottom = new FormAttachment(gTechGroup, -margin);
 		wlTk.setLayoutData(fdlTk);
 		wTk=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTk);
-		fdTk=new FormData();
+		FormData fdTk = new FormData();
 		fdTk.left   = new FormAttachment(middle, 0);
 		fdTk.bottom = new FormAttachment(gTechGroup, -margin);
 		fdTk.right  = new FormAttachment(100, 0);
 		wTk.setLayoutData(fdTk);
 
-		fdKey=new FormData();
+		FormData fdKey = new FormData();
 		fdKey.left  = new FormAttachment(0, 0);
 		fdKey.top   = new FormAttachment(wlKey, margin);
 		fdKey.right = new FormAttachment(100, 0);
@@ -475,7 +488,14 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 
 		wStepname.addSelectionListener( lsDef );
-
+		wSchema.addSelectionListener( lsDef );
+        wTable.addSelectionListener( lsDef );
+        wCommit.addSelectionListener( lsDef );
+        wSeq.addSelectionListener( lsDef );
+        wTk.addSelectionListener( lsDef );
+        wCachesize.addSelectionListener( lsDef );
+        wHashfield.addSelectionListener( lsDef );
+        
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -622,6 +642,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		setAutoincUse();
 		setSequence();
 		setTableMax();
+        if (input.getSchemaName()!=null)        wSchema.setText( input.getSchemaName() );
   		if (input.getTablename()!=null)         wTable.setText( input.getTablename() );
 		if (input.getTechnicalKeyField()!=null) wTk.setText(input.getTechnicalKeyField());
 
@@ -687,6 +708,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		in.setReplaceFields( wReplace.getSelection() );
 		in.setUseHash( wHashcode.getSelection() );
 		in.setHashField( wHashfield.getText() );
+        in.setSchemaName( wSchema.getText() );
 		in.setTablename( wTable.getText() );
 		in.setTechnicalKeyField( wTk.getText() );
 		if ( wAutoinc.getSelection() == true )  
@@ -719,19 +741,20 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
 		int connr = wConnection.getSelectionIndex();
-		if (connr >= 0)
-			inf = transMeta.getDatabase(connr);
+		if (connr >= 0) inf = transMeta.getDatabase(connr);
 
 		if (inf != null)
 		{
 			log.logDebug(toString(), Messages.getString("CombinationLookupDialog.Log.LookingAtConnection", inf.toString()));
 
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
+            std.setSelectedSchema(wSchema.getText());
 			std.setSelectedTable(wTable.getText());
-			String tableName = (String) std.open();
-			if (tableName != null)
+            std.setSplitSchemaAndTable(true);
+			if (std.open() != null)
 			{
-				wTable.setText(tableName);
+                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+				wTable.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else

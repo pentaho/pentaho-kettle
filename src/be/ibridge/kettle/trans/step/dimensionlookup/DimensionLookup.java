@@ -86,8 +86,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}		
 	}	
 	
-	private synchronized void lookupValues(Row row)
-		throws KettleException
+	private synchronized void lookupValues(Row row) throws KettleException
 	{
 		Row lu = new Row();
 		Row add;		
@@ -101,9 +100,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		{
 			first=false;
 			determineTechKeyCreation();
-			if (getCopy()==0) data.db.checkDimZero(meta.getTableName(), meta.getKeyField(), meta.getVersionField(), meta.isAutoIncrement());
+			if (getCopy()==0) data.db.checkDimZero(meta.getSchemaName(), meta.getTableName(), meta.getKeyField(), meta.getVersionField(), meta.isAutoIncrement());
 			
-			data.db.setDimLookup(meta.getTableName(), 
+			data.db.setDimLookup(meta.getSchemaName(),
+                                 meta.getTableName(), 
 								 meta.getKeyLookup(), 
 				                 meta.getKeyField(), 
 				                 meta.getVersionField(), 
@@ -232,14 +232,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				    case CREATION_METHOD_TABLEMAX:
 						// What's the next value for the technical key?
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTableName(), technicalKey);
                         break;
 				    case CREATION_METHOD_AUTOINC:
 						autoinc=true;
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
 						break;
 				    case CREATION_METHOD_SEQUENCE:						
-						technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
+						technicalKey=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getKeyField());
 						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
 						break;					
 				}	               
@@ -250,7 +250,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				 *   ;
 				 */
 				
-				data.db.dimInsert(row, meta.getTableName(), 
+				data.db.dimInsert(row, meta.getSchemaName(), meta.getTableName(), 
 								  true, 
 								  autoinc?null:meta.getKeyField(),   // In case of auto increment, don't insert the key, let the database do it.
 								  autoinc, 
@@ -328,7 +328,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						 * SET    fieldlookup[] = row.getValue(fieldnrs)
 						 * WHERE  returnkey = dimkey
 						 */
-						data.db.dimUpdate(row, meta.getTableName(), meta.getFieldLookup(), data.fieldnrs, meta.getKeyField(), technicalKey);
+						data.db.dimUpdate(row, meta.getSchemaName(), meta.getTableName(), meta.getFieldLookup(), data.fieldnrs, meta.getKeyField(), technicalKey);
 						linesUpdated++;
 					}
 					else
@@ -356,7 +356,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					// Try to get the value by looking at a SEQUENCE (oracle mostly)
 					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 					{
-						technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
+						technicalKey=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getKeyField());
 						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence2")+technicalKey.toString()); //$NON-NLS-1$
 					}
 					else
@@ -364,10 +364,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					{
 						// What's the next value for the technical key?
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTableName(), technicalKey);
 					}
 
-					data.db.dimInsert( row, meta.getTableName(), 
+					data.db.dimInsert( row, meta.getSchemaName(), meta.getTableName(), 
 									   false,
 									   meta.getKeyField(), autoinc, technicalKey, 
 									   meta.getVersionField(), val_version, 
@@ -389,7 +389,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					 * 
 					 * --> update ALL versions in the dimension table.
 					 */
-					data.db.dimPunchThrough( row, meta.getTableName(), meta.getFieldUpdate(), 
+					data.db.dimPunchThrough( row, meta.getSchemaName(), meta.getTableName(), meta.getFieldUpdate(), 
 											 meta.getFieldLookup(), data.fieldnrs, 
 											 meta.getKeyStream(), meta.getKeyLookup(), data.keynrs
 									 	);

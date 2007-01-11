@@ -633,22 +633,33 @@ public class Database
 			throw new KettleDatabaseException("Error performing rollback on connection", e);
 		}
 	}
-	
+
+    /**
+     * Prepare inserting values into a table, using the fields & values in a Row
+     * @param r The row to determine which values need to be inserted
+     * @param table The name of the table in which we want to insert rows
+     * @throws KettleDatabaseException if something went wrong.
+     */
+    public void prepareInsert(Row r, String tableName) throws KettleDatabaseException
+    {
+        prepareInsert(r, null, tableName);
+    }
+    
 	/**
 	 * Prepare inserting values into a table, using the fields & values in a Row
 	 * @param r The row to determine which values need to be inserted
-	 * @param table The name of the table in which we want to insert rows
+     * @param schemaName The name of the schema in which we want to insert rows
+	 * @param tableName The name of the table in which we want to insert rows
 	 * @throws KettleDatabaseException if something went wrong.
 	 */
-	public void prepareInsert(Row r, String table)
-		throws KettleDatabaseException
+	public void prepareInsert(Row r, String schemaName, String tableName) throws KettleDatabaseException
 	{
 		if (r.size()==0)
 		{
 			throw new KettleDatabaseException("No fields in row, can't insert!");
 		}
 		
-		String ins = getInsertStatement(table, r);
+		String ins = getInsertStatement(schemaName, tableName, r);
 				
 		log.logDetailed(toString(),"Preparing statement: "+Const.CR+ins);
 		prepStatementInsert=prepareSQL(ins);
@@ -1051,17 +1062,15 @@ public class Database
 			throw new KettleDatabaseException("Unable to set timestamp on fromdate or todate", ex);
 		}
 	}			
-	
-	public void dimUpdate(Row row, 
-						     String table, 
-						     String fieldlookup[], 
-						     int fieldnrs[], 
-						     String returnkey, 
-						     Value dimkey
-						     )
-		throws KettleDatabaseException
+
+    public void dimUpdate(Row row, String tableName, String fieldlookup[], int fieldnrs[], String returnkey, Value dimkey) throws KettleDatabaseException
+    {
+        dimUpdate(row, null, tableName, fieldlookup, fieldnrs, returnkey, dimkey);
+    }
+    
+	public void dimUpdate(Row row, String schemaName, String tableName, String fieldlookup[], int fieldnrs[], String returnkey, Value dimkey) throws KettleDatabaseException
 	{
-		int i;
+		String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		
 		if (pstmt_dup==null) // first time: construct prepared statement
 		{
@@ -1073,9 +1082,9 @@ public class Database
 			 * ;
 			 */
 			 
-			String sql="UPDATE "+table+Const.CR+"SET ";
+			String sql="UPDATE "+schemaTable+Const.CR+"SET ";
 			
-			for (i=0;i<fieldlookup.length;i++)
+			for (int i=0;i<fieldlookup.length;i++)
 			{
 				if (i>0) sql+=", "; else sql+="  ";
 				sql+=fieldlookup[i]+" = ?"+Const.CR;
@@ -1096,7 +1105,7 @@ public class Database
 		// Assemble information
 		// New
 		Row rupd=new Row();
-		for (i=0;i<fieldnrs.length;i++)
+		for (int i=0;i<fieldnrs.length;i++)
 		{
 			rupd.addValue( row.getValue(fieldnrs[i]));
 		}
@@ -1106,12 +1115,21 @@ public class Database
 		insertRow(pstmt_dup);
 	}
 
+    public void dimInsert(Row row, String tableName, boolean newentry, String keyfield, boolean autoinc, Value technicalKey, String versionfield,
+            Value val_version, String datefrom, Value val_datfrom, String dateto, Value val_datto, String fieldlookup[], int fieldnrs[],
+            String key[], String keylookup[], int keynrs[]) throws KettleDatabaseException
+
+    {
+        dimInsert(row, null, tableName, newentry, keyfield, autoinc, technicalKey, versionfield, val_version, datefrom, val_datfrom, dateto, val_datto, fieldlookup, fieldnrs, key, keylookup, keynrs);
+    }
+
 	// This inserts new record into dimension
 	// Optionally, if the entry already exists, update date range from previous version
 	// of the entry.
 	// 
 	public void dimInsert(Row row, 
-	                         String table,
+                             String schemaName,
+	                         String tableName,
 	                         boolean newentry, 
 	                         String keyfield, 
 	                         boolean autoinc,
@@ -1127,10 +1145,9 @@ public class Database
 	                         String key[], 
 	                         String keylookup[],
 	                         int    keynrs[]
-							)
-		throws KettleDatabaseException
+							) throws KettleDatabaseException
 	{
-		int i;
+		String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		
 		if (prepStatementInsert==null && prepStatementUpdate==null) // first time: construct prepared statement
 		{
@@ -1142,7 +1159,7 @@ public class Database
 			 * ;
 			 */
 			 
-			String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
+			String sql="INSERT INTO "+schemaTable+"( ";
 			
 			if (!autoinc) sql+=databaseMeta.quoteField(keyfield)+", "; // NO AUTOINCREMENT
 			else
@@ -1150,12 +1167,12 @@ public class Database
 			
 			sql+=databaseMeta.quoteField(versionfield)+", "+databaseMeta.quoteField(datefrom)+", "+databaseMeta.quoteField(dateto);
 
-			for (i=0;i<keylookup.length;i++)
+			for (int i=0;i<keylookup.length;i++)
 			{
 				sql+=", "+databaseMeta.quoteField(keylookup[i]);
 			}
 			
-			for (i=0;i<fieldlookup.length;i++)
+			for (int i=0;i<fieldlookup.length;i++)
 			{
 				sql+=", "+databaseMeta.quoteField(fieldlookup[i]);
 			}
@@ -1164,12 +1181,12 @@ public class Database
 			if (!autoinc) sql+="?, ";
 			sql+="?, ?, ?";
 
-			for (i=0;i<keynrs.length;i++)
+			for (int i=0;i<keynrs.length;i++)
 			{
 				sql+=", ?";
 			}
 			
-			for (i=0;i<fieldnrs.length;i++)
+			for (int i=0;i<fieldnrs.length;i++)
 			{
 				sql+=", ?";
 			}
@@ -1202,9 +1219,9 @@ public class Database
 			* ;
 			*/
 
-			String sql_upd="UPDATE "+databaseMeta.quoteField(table)+Const.CR+"SET "+databaseMeta.quoteField(dateto)+" = ?"+Const.CR;
+			String sql_upd="UPDATE "+schemaTable+Const.CR+"SET "+databaseMeta.quoteField(dateto)+" = ?"+Const.CR;
 			sql_upd+="WHERE ";
-			for (i=0;i<keylookup.length;i++)
+			for (int i=0;i<keylookup.length;i++)
 			{
 				if (i>0) sql_upd+="AND   ";
 				sql_upd+=databaseMeta.quoteField(keylookup[i])+" = ?"+Const.CR;
@@ -1236,11 +1253,11 @@ public class Database
 		}
 		rins.addValue(val_datfrom);
 		rins.addValue(val_datto);
-		for (i=0;i<keynrs.length;i++)
+		for (int i=0;i<keynrs.length;i++)
 		{
 			rins.addValue( row.getValue(keynrs[i]));
 		}
-		for (i=0;i<fieldnrs.length;i++)
+		for (int i=0;i<fieldnrs.length;i++)
 		{
 			Value val = row.getValue(fieldnrs[i]);
 			rins.addValue( val );
@@ -1284,7 +1301,7 @@ public class Database
 			*/
 			Row rupd = new Row();
 			rupd.addValue(val_datfrom);
-			for (i=0;i<keynrs.length;i++)
+			for (int i=0;i<keynrs.length;i++)
 			{
 				rupd.addValue( row.getValue(keynrs[i]));
 			}
@@ -1337,22 +1354,17 @@ public class Database
 		}
 	}
 
+    public void dimPunchThrough(Row row, String tableName, int fieldupdate[], String fieldlookup[], int fieldnrs[], String key[], String keylookup[], int keynrs[]) throws KettleDatabaseException
+    {
+        dimPunchThrough(row, null, tableName, fieldupdate, fieldlookup, fieldnrs, key, keylookup, keynrs);
+    }
+    
 	// This updates all versions of a dimension entry.
 	// 
-	public void dimPunchThrough(Row row, 
-							 	   String table,
-							 	   int    fieldupdate[],
-							 	   String fieldlookup[], 
-							 	   int    fieldnrs[],
-							 	   String key[], 
-							 	   String keylookup[],
-							 	   int    keynrs[]
-							)
-		throws KettleDatabaseException
+	public void dimPunchThrough(Row row, String schemaName, String tableName, int fieldupdate[], String fieldlookup[], int fieldnrs[], String key[], String keylookup[], int keynrs[]) throws KettleDatabaseException
 	{
-		int i;
-		boolean first;
-		
+		boolean first=false;
+		String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		if (pstmt_pun==null) // first time: construct prepared statement
 		{
 			/* 
@@ -1362,10 +1374,10 @@ public class Database
 			* ;
 			*/
 
-			String sql_upd="UPDATE "+table+Const.CR;
+			String sql_upd="UPDATE "+schemaTable+Const.CR;
 			sql_upd+="SET ";
 			first=true;
-			for (i=0;i<fieldlookup.length;i++)
+			for (int i=0;i<fieldlookup.length;i++)
 			{
 				if (fieldupdate[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_PUNCHTHROUGH)
 				{
@@ -1375,7 +1387,7 @@ public class Database
 				}
 			}
 			sql_upd+="WHERE ";
-			for (i=0;i<keylookup.length;i++)
+			for (int i=0;i<keylookup.length;i++)
 			{
 				if (i>0) sql_upd+="AND   ";
 				sql_upd+=keylookup[i]+" = ?"+Const.CR;
@@ -1392,14 +1404,14 @@ public class Database
 		}
 		
 		Row rupd=new Row();
-		for (i=0;i<fieldlookup.length;i++)
+		for (int i=0;i<fieldlookup.length;i++)
 		{
 			if (fieldupdate[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_PUNCHTHROUGH)
 			{
 				rupd.addValue( row.getValue(fieldnrs[i]));
 			}
 		}
-		for (i=0;i<keynrs.length;i++)
+		for (int i=0;i<keynrs.length;i++)
 		{
 			rupd.addValue( row.getValue(keynrs[i]));
 		}
@@ -1410,12 +1422,30 @@ public class Database
 	}
 
 	
-
+    /**
+     * This inserts new record into a junk dimension
+     */
+    public void combiInsert(   Row     row, 
+                               String  tableName,
+                               String  keyfield, 
+                               boolean autoinc,
+                               Value   val_key, 
+                               String  keylookup[], 
+                               int     keynrs[],
+                               boolean crc,
+                               String  crcfield,
+                               Value   val_crc
+                              ) throws KettleDatabaseException
+    {
+        combiInsert(row, null, tableName, keyfield, autoinc, val_key, keylookup, keynrs, crc, crcfield, val_crc);
+    }
+    
 	/**
 	 * This inserts new record into a junk dimension
 	 */
 	public void combiInsert(   Row     row, 
-							   String  table,
+                               String  schemaName,
+							   String  tableName,
 							   String  keyfield, 
 	                           boolean autoinc,
 							   Value   val_key, 
@@ -1424,10 +1454,10 @@ public class Database
 							   boolean crc,
 							   String  crcfield,
 							   Value   val_crc
-							  )
-		throws KettleDatabaseException
+							  ) throws KettleDatabaseException
 	{
 		String debug="Combination insert";
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		try
 		{
 			boolean comma;
@@ -1444,7 +1474,7 @@ public class Database
 				 */
 				 
 				StringBuffer sql = new StringBuffer(100);
-				sql.append("INSERT INTO ").append(databaseMeta.quoteField(table)).append("( ");
+				sql.append("INSERT INTO ").append(schemaTable).append("( ");
 				comma=false;
 	
 				if (!autoinc) // NO AUTOINCREMENT 
@@ -1581,17 +1611,22 @@ public class Database
 			
 		}
 	}
-	
-	public Value getNextSequenceValue(String seq, String keyfield)
-		throws KettleDatabaseException
+
+    public Value getNextSequenceValue(String sequenceName, String keyfield) throws KettleDatabaseException
+    {
+        return getNextSequenceValue(null, sequenceName, keyfield);
+    }
+    
+	public Value getNextSequenceValue(String schemaName, String sequenceName, String keyfield) throws KettleDatabaseException
 	{
-		Value retval=null;
+        String schemaSequence = databaseMeta.getQuotedSchemaTableCombination(schemaName, sequenceName);
+        Value retval=null;
 		
 		try
 		{
 			if (pstmt_seq==null)
 			{
-				pstmt_seq=connection.prepareStatement(databaseMeta.getSeqNextvalSQL(databaseMeta.stripCR(seq)));
+				pstmt_seq=connection.prepareStatement(databaseMeta.getSeqNextvalSQL(databaseMeta.stripCR(schemaSequence)));
 			}
 			ResultSet rs=null;
 			try 
@@ -1611,26 +1646,31 @@ public class Database
 		}
 		catch(SQLException ex)
 		{
-			throw new KettleDatabaseException("Unable to get next value for sequence : "+seq, ex);
+			throw new KettleDatabaseException("Unable to get next value for sequence : "+schemaSequence, ex);
 		}
 		
 		return retval;
 	}
 	
-	public void insertRow(String tableName, Row fields)
-		throws KettleDatabaseException
+	public void insertRow(String tableName, Row fields) throws KettleDatabaseException
 	{
 		prepareInsert(fields, tableName);
 		setValuesInsert(fields);
 		insertRow();
 		closeInsert();
 	}
-	
-	public String getInsertStatement(String tableName, Row fields)
+
+    public String getInsertStatement(String tableName, Row fields)
+    {
+        return getInsertStatement(null, tableName, fields);
+    }
+
+	public String getInsertStatement(String schemaName, String tableName, Row fields)
 	{
 		StringBuffer ins=new StringBuffer(128);
 		
-		ins.append("INSERT INTO ").append(databaseMeta.quoteField(tableName)).append("(");
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+		ins.append("INSERT INTO ").append(schemaTable).append("(");
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
@@ -2189,18 +2229,16 @@ public class Database
 		return res;
 	}
 	
-	public Row getTableFields(String tablename)
-		throws KettleDatabaseException
+	public Row getTableFields(String tablename) throws KettleDatabaseException
 	{
 		return getQueryFields(databaseMeta.getSQLQueryFields(tablename), false);
 	}
 
-	public Row getQueryFields(String sql, boolean param)
-		throws KettleDatabaseException
+	public Row getQueryFields(String sql, boolean param) throws KettleDatabaseException
 	{
 		return getQueryFields(sql, param, null);
 	}
-	
+    
 	/**
 	 * See if the table specified exists by reading
 	 * @param tablename The name of the table to check.
@@ -2263,25 +2301,35 @@ public class Database
 			throw new KettleDatabaseException("Unable to check if table ["+tablename+"] exists on connection ["+databaseMeta.getName()+"]", e);
 		}
 	}
-	
+
+    /**
+     * Check whether the sequence exists, Oracle only! 
+     * @param sequenceName The name of the sequence
+     * @return true if the sequence exists.
+     */
+    public boolean checkSequenceExists(String sequenceName) throws KettleDatabaseException
+    {
+        return checkSequenceExists(null, sequenceName);
+    }
+    
 	/**
 	 * Check whether the sequence exists, Oracle only! 
 	 * @param sequenceName The name of the sequence
 	 * @return true if the sequence exists.
 	 */
-	public boolean checkSequenceExists(String sequenceName)
-		throws KettleDatabaseException
+	public boolean checkSequenceExists(String schemaName, String sequenceName) throws KettleDatabaseException
 	{
 		boolean retval=false;
 		
 		if (!databaseMeta.supportsSequences()) return retval;
 		
+        String schemaSequence = databaseMeta.getQuotedSchemaTableCombination(schemaName, sequenceName);
 		try
 		{
 			//
 			// Get the info from the data dictionary...
 			//
-			String sql = databaseMeta.getSQLSequenceExists(sequenceName);
+			String sql = databaseMeta.getSQLSequenceExists(schemaSequence);
 			ResultSet res = openQuery(sql);
 			if (res!=null)
 			{
@@ -2295,11 +2343,22 @@ public class Database
 		}
 		catch(Exception e)
 		{
-			throw new KettleDatabaseException("Unexpected error checking whether or not sequence ["+sequenceName+"] exists", e);
+			throw new KettleDatabaseException("Unexpected error checking whether or not sequence ["+schemaSequence+"] exists", e);
 		}
 		
 		return retval;
 	}
+    
+    /**
+     * Check if an index on certain fields in a table exists.
+     * @param tableName The table on which the index is checked
+     * @param idx_fields The fields on which the indexe is checked
+     * @return True if the index exists
+     */
+    public boolean checkIndexExists(String tableName, String idx_fields[]) throws KettleDatabaseException
+    {
+        return checkIndexExists(null, tableName, idx_fields);
+    }
 	
 	/**
 	 * Check if an index on certain fields in a table exists.
@@ -2307,8 +2366,9 @@ public class Database
 	 * @param idx_fields The fields on which the indexe is checked
 	 * @return True if the index exists
 	 */
-	public boolean checkIndexExists(String tablename, String idx_fields[]) throws KettleDatabaseException
+	public boolean checkIndexExists(String schemaName, String tableName, String idx_fields[]) throws KettleDatabaseException
 	{
+        String tablename = databaseMeta.getSchemaTableCombination(schemaName, tableName);
 		if (!checkTableExists(tablename)) return false;
 		
 		log.logDebug(toString(), "CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
@@ -2469,8 +2529,13 @@ public class Database
 			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
 		}
 	}
-	
-	public String getCreateIndexStatement(String tablename, String indexname, String idx_fields[], boolean tk, boolean unique, boolean bitmap, boolean semi_colon)
+
+    public String getCreateIndexStatement(String tablename, String indexname, String idx_fields[], boolean tk, boolean unique, boolean bitmap, boolean semi_colon)
+    {
+        return getCreateIndexStatement(null, tablename, indexname, idx_fields, tk, unique, bitmap, semi_colon);
+    }
+    
+	public String getCreateIndexStatement(String schemaname, String tablename, String indexname, String idx_fields[], boolean tk, boolean unique, boolean bitmap, boolean semi_colon)
 	{
 		String cr_index="";
 		
@@ -2483,7 +2548,7 @@ public class Database
 			cr_index += "BITMAP ";
 		
 		cr_index += "INDEX "+databaseMeta.quoteField(indexname)+Const.CR+" ";
-		cr_index += "ON "+databaseMeta.quoteField(tablename)+Const.CR;
+		cr_index += "ON "+databaseMeta.getQuotedSchemaTableCombination(schemaname,tablename)+Const.CR;
 		cr_index += "( "+Const.CR;
 		for (int i=0;i<idx_fields.length;i++)
 		{
@@ -2506,15 +2571,21 @@ public class Database
 		return cr_index;
 	}
 	
-	public String getCreateSequenceStatement(String sequence, long start_at, long increment_by, long max_value, boolean semi_colon)
+    public String getCreateSequenceStatement(String sequence, long start_at, long increment_by, long max_value, boolean semi_colon)
+    {
+        return getCreateSequenceStatement(null, sequence, start_at, increment_by, max_value, semi_colon);
+    }
+    
+	public String getCreateSequenceStatement(String schemaName, String sequenceName, long start_at, long increment_by, long max_value, boolean semi_colon)
 	{
 		String cr_seq="";
 		
-		if (sequence==null || sequence.length()==0) return cr_seq;
+		if (Const.isEmpty(sequenceName)) return cr_seq;
 		
 		if (databaseMeta.supportsSequences())
 		{
-			cr_seq += "CREATE SEQUENCE "+databaseMeta.quoteField(sequence)+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
+            String schemaSequence = databaseMeta.getQuotedSchemaTableCombination(schemaName, sequenceName);
+			cr_seq += "CREATE SEQUENCE "+schemaSequence+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
 			if (max_value>0) cr_seq += "MAXVALUE "+max_value+Const.CR;
@@ -3009,12 +3080,28 @@ public class Database
     {
 		setLookup(table, codes, condition, gets, rename, orderby, false);
     }
+    
+    public void setLookup(String schema, String table, String codes[], String condition[], 
+            String gets[], String rename[], String orderby
+            ) throws KettleDatabaseException
+    {
+        setLookup(schema, table, codes, condition, gets, rename, orderby, false);
+    }
+
+    public void setLookup(String tableName, String codes[], String condition[], 
+            String gets[], String rename[], String orderby,
+            boolean checkForMultipleResults) throws KettleDatabaseException
+    {
+        setLookup(null, tableName, codes, condition, gets, rename, orderby, checkForMultipleResults);
+    }
 
 	// Lookup certain fields in a table
-	public void setLookup(String table, String codes[], String condition[], 
+	public void setLookup(String schemaName, String tableName, String codes[], String condition[], 
 	                      String gets[], String rename[], String orderby,
 	                      boolean checkForMultipleResults) throws KettleDatabaseException
 	{
+        String table = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+        
 		String sql = "SELECT ";
 		
 		for (int i=0;i<gets.length;i++)
@@ -3027,7 +3114,7 @@ public class Database
 			}
 		}
 
-		sql += " FROM "+databaseMeta.quoteField(table)+" WHERE ";
+		sql += " FROM "+table+" WHERE ";
 
 		for (int i=0;i<codes.length;i++)
 		{
@@ -3068,16 +3155,21 @@ public class Database
 		}
 	}
 
+    public boolean prepareUpdate(String table, String codes[], String condition[], String sets[])
+    {
+        return prepareUpdate(null, table, codes, condition, sets);
+    }
+    
 	// Lookup certain fields in a table
-	public boolean prepareUpdate(String table, String codes[], String condition[], String sets[])
+	public boolean prepareUpdate(String schemaName, String tableName, String codes[], String condition[], String sets[])
 	{
 		StringBuffer sql = new StringBuffer(128);
 
-		int i;
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+        
+		sql.append("UPDATE ").append(schemaTable).append(Const.CR).append("SET ");
 
-		sql.append("UPDATE ").append(databaseMeta.quoteField(table)).append(Const.CR).append("SET ");
-
-		for (i=0;i<sets.length;i++)
+		for (int i=0;i<sets.length;i++)
 		{
 			if (i!=0) sql.append(",   ");
 			sql.append(databaseMeta.quoteField(sets[i]));
@@ -3086,7 +3178,7 @@ public class Database
 
 		sql.append("WHERE ");
 
-		for (i=0;i<codes.length;i++)
+		for (int i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql.append("AND   ");
 			sql.append(databaseMeta.quoteField(codes[i]));
@@ -3120,6 +3212,7 @@ public class Database
 		return true;
 	}
 
+
     /**
      * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
      * @param table The table-name to delete in
@@ -3129,14 +3222,26 @@ public class Database
      */
     public boolean prepareDelete(String table, String codes[], String condition[])
     {
+        return prepareDelete(null, table, codes, condition);
+    }
+    
+    /**
+     * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
+     * @param schemaName the schema-name to delete in
+     * @param tableName The table-name to delete in
+     * @param codes  
+     * @param condition
+     * @return true when everything went OK, false when something went wrong.
+     */
+    public boolean prepareDelete(String schemaName, String tableName, String codes[], String condition[])
+    {
         String sql;
 
-        int i;
-
+        String table = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
         sql = "DELETE FROM "+table+Const.CR;
         sql+= "WHERE ";
         
-        for (i=0;i<codes.length;i++)
+        for (int i=0;i<codes.length;i++)
         {
             if (i!=0) sql += "AND   ";
             sql += codes[i];
@@ -3174,7 +3279,6 @@ public class Database
 	{
 		String sql;
 		int pos=0;
-		int i;
 		
 		sql = "{ ";
 		if (returnvalue!=null && returnvalue.length()!=0)
@@ -3185,7 +3289,7 @@ public class Database
 		
 		if (arg.length>0) sql+="(";
 		
-		for (i=0;i<arg.length;i++)
+		for (int i=0;i<arg.length;i++)
 		{
 			if (i!=0) sql += ", ";
 			sql += " ?";
@@ -3214,7 +3318,7 @@ public class Database
 				}
 				pos++;
 			}
-			for (i=0;i<arg.length;i++)
+			for (int i=0;i<arg.length;i++)
 			{
 				if (argdir[i].equalsIgnoreCase("OUT") || argdir[i].equalsIgnoreCase("INOUT"))
 				{
@@ -3237,28 +3341,23 @@ public class Database
 		}
 	}
 	
-	/*
-	 * table: dimension table
-	 * keys[]: which dim-fields do we use to look up key?
-	 * retval: name of the key to return
-	 * datefield: do we have a datefield?
-	 * datefrom, dateto: date-range, if any. 
-	 */
-	public boolean setDimLookup(String table, 
-								String keys[], 
-								String tk, 
-								String version, 
-								String extra[], 
-                                String extraRename[],
-								String datefrom, 
-								String dateto
-							   )
-		throws KettleDatabaseException
+    public boolean setDimLookup(String table, String keys[], String tk, String version, String extra[], String extraRename[], String datefrom, String dateto) throws KettleDatabaseException
+    {
+        return setDimLookup(null, table, keys, tk, version, extra, extraRename, datefrom, dateto);
+    }
+
+    /*
+     * table: dimension table keys[]: which dim-fields do we use to look up key? retval: name of the key to return
+     * datefield: do we have a datefield? datefrom, dateto: date-range, if any.
+     */
+	public boolean setDimLookup(String schemaName, String tableName, 
+								String keys[], String tk, String version, String extra[], 
+                                String extraRename[], String datefrom, String dateto
+							   ) throws KettleDatabaseException
 	{
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		String sql;
 	
-		int i;
-		
 		/* 
 		 * SELECT <tk>, <version>, ... 
 		 * FROM <table> 
@@ -3272,7 +3371,7 @@ public class Database
 		
 		if (extra!=null)
 		{
-			for (i=0;i<extra.length;i++)
+			for (int i=0;i<extra.length;i++)
 			{
 				if (extra[i]!=null && extra[i].length()!=0)
                 {
@@ -3289,9 +3388,9 @@ public class Database
             
 		}
 		
-		sql+= " FROM "+databaseMeta.quoteField(table)+" WHERE ";
+		sql+= " FROM "+schemaTable+" WHERE ";
 		
-		for (i=0;i<keys.length;i++)
+		for (int i=0;i<keys.length;i++)
 		{
 			if (i!=0) sql += " AND ";
 			sql += databaseMeta.quoteField(keys[i])+" = ? ";
@@ -3321,21 +3420,26 @@ public class Database
 		return true;
 	}
 
+    /*  CombinationLookup
+     * table: dimension table
+     * keys[]: which dim-fields do we use to look up key?
+     * retval: name of the key to return
+     */
+    public void setCombiLookup(String tableName, String keys[], String retval, boolean crc, String crcfield) throws KettleDatabaseException
+    {
+        setCombiLookup(null, tableName, keys, retval, crc, crcfield);
+    }
+
 	/*  CombinationLookup
 	 * table: dimension table
 	 * keys[]: which dim-fields do we use to look up key?
 	 * retval: name of the key to return
 	 */
-	public void    setCombiLookup(String table, 
-								  String keys[], 
-								  String retval,
-								  boolean crc,
-								  String crcfield
-							   )
-		throws KettleDatabaseException
+	public void setCombiLookup(String schemaName, String tableName, String keys[], String retval, boolean crc, String crcfield) throws KettleDatabaseException
 	{
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+        
 		StringBuffer sql = new StringBuffer(100);
-		int i;
 		boolean comma;
 		
 		/* 
@@ -3358,7 +3462,7 @@ public class Database
 		 * 
 		 */
 		sql.append("SELECT ").append(databaseMeta.quoteField(retval)).append(Const.CR);
-        sql.append("FROM ").append(databaseMeta.quoteField(table)).append(Const.CR);
+        sql.append("FROM ").append(schemaTable).append(Const.CR);
         sql.append("WHERE ");
 		comma=false;
 		
@@ -3372,7 +3476,7 @@ public class Database
 			sql.append("( ( ");
 		}
 		
-		for (i=0;i<keys.length;i++)
+		for (int i=0;i<keys.length;i++)
 		{
 			if (comma)
 			{
@@ -3544,28 +3648,26 @@ public class Database
 		return getDDL(tablename, fields, null, false, null, true);
 	}
 
-	public String getDDL(String tablename, Row fields, String tk, boolean use_autoinc, String pk)
-		throws KettleDatabaseException
+	public String getDDL(String tablename, Row fields, String tk, boolean use_autoinc, String pk) throws KettleDatabaseException
 	{
 		return getDDL(tablename, fields, tk, use_autoinc, pk, true);
 	}
-	
-	public String getDDL(String tablename, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
-		throws KettleDatabaseException
-	{	
+
+	public String getDDL(String tableName, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon) throws KettleDatabaseException
+	{
 		String retval;
 		
 		// First, check for reserved SQL in the input row r...
 		databaseMeta.quoteReservedWords(fields);
 		String quotedTk = tk != null ? databaseMeta.quoteField(tk) : null;
 		
-		if (checkTableExists(tablename))
+		if (checkTableExists(tableName))
 		{
-			retval=getAlterTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
+			retval=getAlterTableStatement(tableName, fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		else
 		{
-			retval=getCreateTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
+			retval=getCreateTableStatement(tableName, fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		
 		return retval;
@@ -3573,7 +3675,7 @@ public class Database
 	
     /**
      * Generates SQL
-     * @param tablename the table name or schema/table combination: this needs to be quoted properly in advance.
+     * @param tableName the table name or schema/table combination: this needs to be quoted properly in advance.
      * @param fields the fields
      * @param tk the name of the technical key field
      * @param use_autoinc true if we need to use auto-increment fields for a primary key
@@ -3581,11 +3683,11 @@ public class Database
      * @param semicolon append semicolon to the statement
      * @return the SQL needed to create the specified table and fields.
      */
-	public String getCreateTableStatement(String tablename, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
+	public String getCreateTableStatement(String tableName, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval;
 		
-		retval = "CREATE TABLE "+tablename+Const.CR;
+		retval = "CREATE TABLE "+tableName+Const.CR;
 		retval+= "("+Const.CR;
 		for (int i=0;i<fields.size();i++)
 		{
@@ -3626,14 +3728,12 @@ public class Database
 		return retval;
 	}
 
-	public String getAlterTableStatement(String tablename, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
-		throws KettleDatabaseException
+	public String getAlterTableStatement(String tableName, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon) throws KettleDatabaseException
 	{
 		String retval="";
-		String tableName = databaseMeta.quoteField(tablename);
 		
 		// Get the fields that are in the table now:
-		Row tabFields = getTableFields(tablename);
+		Row tabFields = getTableFields(tableName);
 		
         // Don't forget to quote these as well...
         databaseMeta.quoteReservedWords(tabFields);
@@ -3718,12 +3818,17 @@ public class Database
 		return retval;
 	}
 
-	public void checkDimZero(String tablename, String tk, String version, boolean use_autoinc)
-		throws KettleDatabaseException
+    public void checkDimZero(String tableName, String tk, String version, boolean use_autoinc) throws KettleDatabaseException
+    {
+        checkDimZero(null, tableName, tk, version, use_autoinc);
+    }
+
+	public void checkDimZero(String schemaName, String tableName, String tk, String version, boolean use_autoinc) throws KettleDatabaseException
 	{
 		int start_tk = databaseMeta.getNotFoundTK(use_autoinc);
 				
-        String sql = "SELECT count(*) FROM "+databaseMeta.quoteField(tablename)+" WHERE "+databaseMeta.quoteField(tk)+" = "+start_tk;
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+        String sql = "SELECT count(*) FROM "+schemaTable+" WHERE "+databaseMeta.quoteField(tk)+" = "+start_tk;
 		Row r = getOneRow(sql); 
 		Value count = r.getValue(0);
 		if (count.getNumber() == 0)
@@ -3734,7 +3839,7 @@ public class Database
 				String isql;
 				if (!databaseMeta.supportsAutoinc() || !use_autoinc)
 				{
-					isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
+					isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
 				}
 				else
 				{
@@ -3742,16 +3847,16 @@ public class Database
 					{
 					case DatabaseMeta.TYPE_DATABASE_CACHE       :
 					case DatabaseMeta.TYPE_DATABASE_GUPTA     :
-					case DatabaseMeta.TYPE_DATABASE_ORACLE      :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break; 
+					case DatabaseMeta.TYPE_DATABASE_ORACLE      :  isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break; 
 					case DatabaseMeta.TYPE_DATABASE_INFORMIX    : 
-					case DatabaseMeta.TYPE_DATABASE_MYSQL       :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (1, 1)"; break;
+					case DatabaseMeta.TYPE_DATABASE_MYSQL       :  isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (1, 1)"; break;
 					case DatabaseMeta.TYPE_DATABASE_MSSQL       :  
 					case DatabaseMeta.TYPE_DATABASE_DB2         : 
 					case DatabaseMeta.TYPE_DATABASE_DBASE       :  
 					case DatabaseMeta.TYPE_DATABASE_GENERIC     :  
 					case DatabaseMeta.TYPE_DATABASE_SYBASE      :
-					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(version)+") values (1)"; break;
-					default: isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break;
+					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(version)+") values (1)"; break;
+					default: isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break;
 					}					
 				}
 				
@@ -3759,7 +3864,7 @@ public class Database
 			}
 			catch(SQLException e)
 			{
-				throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+tablename+"] : "+sql, e);
+				throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+schemaTable+"] : "+sql, e);
 			}
 		}
 	}

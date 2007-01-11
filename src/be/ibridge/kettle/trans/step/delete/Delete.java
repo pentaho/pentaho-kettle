@@ -54,7 +54,7 @@ public class Delete extends BaseStep implements StepInterface
 		{
 			first=false;
 			
-			data.dbupd.prepareDelete(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition());
+			data.dbupd.prepareDelete(meta.getSchemaName(), meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition());
 			
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("Delete.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
@@ -141,7 +141,7 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.dbupd=new Database(meta.getDatabase());
+			data.dbupd=new Database(meta.getDatabaseMeta());
 			try 
 			{
                 if (getTransMeta().isUsingUniqueConnections())

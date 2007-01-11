@@ -69,6 +69,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	private TableView    wKey;
 	private FormData     fdlKey, fdKey;
 
+    private Label        wlSchema;
+    private Text         wSchema;
+    private FormData     fdlSchema, fdSchema;
+
 	private Label        wlTable;
 	private Button       wbTable;
 	private Text         wTable;
@@ -150,9 +154,28 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Connection line
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
-		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
+		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 		
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("UpdateDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        fdlSchema=new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin*2);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        fdSchema=new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin*2);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
+
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("UpdateDialog.TargetTable.Label")); //$NON-NLS-1$
@@ -160,7 +183,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wConnection, margin*2);
+		fdlTable.top  = new FormAttachment(wSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -168,7 +191,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wbTable.setText(Messages.getString("UpdateDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wConnection, margin);
+		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -176,7 +199,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wConnection, margin*2);
+		fdTable.top  = new FormAttachment(wSchema, margin);
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
@@ -346,8 +369,12 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
-		wStepname.addSelectionListener( lsDef );
-		
+        wStepname.addSelectionListener( lsDef );
+        wSchema.addSelectionListener( lsDef );
+        wTable.addSelectionListener( lsDef );
+        wCommit.addSelectionListener( lsDef );
+		wIgnoreFlagField.addSelectionListener( lsDef );
+        
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -413,8 +440,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getUpdateStream()[i]!=null ) item.setText(2, input.getUpdateStream()[i]);
 		}
 		
+        if (input.getSchemaName()!=null)       wSchema.setText( input.getSchemaName() );
 		if (input.getTableName()!=null)        wTable.setText( input.getTableName() );
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
+		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
 		else if (transMeta.nrDatabases()==1)
 		{
 			wConnection.setText( transMeta.getDatabase(0).getName() );
@@ -466,8 +494,9 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			inf.getUpdateStream()[i]    = item.getText(2);
 		}
 		
+        inf.setSchemaName( wSchema.getText() ); 
 		inf.setTableName( wTable.getText() ); 
-		inf.setDatabase( transMeta.findDatabase(wConnection.getText()) );
+		inf.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         
         inf.setErrorIgnored( wErrorIgnored.getSelection());
         inf.setIgnoreFlagField( wIgnoreFlagField.getText());
@@ -482,7 +511,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 		
-		if (input.getDatabase()==null)
+		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("UpdateDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
@@ -505,11 +534,13 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			log.logDebug(toString(), Messages.getString("UpdateDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-			std.setSelectedTable(wTable.getText());
-			String tableName = (String)std.open();
-			if (tableName != null)
+            std.setSelectedSchema(wSchema.getText());
+            std.setSelectedTable(wTable.getText());
+            std.setSplitSchemaAndTable(true);
+			if (std.open() != null)
 			{
-				wTable.setText(tableName);
+                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+                wTable.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else
@@ -580,7 +611,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabase(), transMeta.getDbCache(), sql.getSQL());
+					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
 					sqledit.open();
 				}
 				else

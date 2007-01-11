@@ -52,7 +52,8 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  
 public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private DatabaseMeta database;
+	private DatabaseMeta databaseMeta;
+    private String       schemaName;
 	private String       tablename;
 	private int          commitSize;
 	private boolean      truncateTable;
@@ -235,17 +236,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	/**
      * @return Returns the database.
      */
-    public DatabaseMeta getDatabase()
+    public DatabaseMeta getDatabaseMeta()
     {
-        return database;
+        return databaseMeta;
     }
     
     /**
      * @param database The database to set.
      */
-    public void setDatabase(DatabaseMeta database)
+    public void setDatabaseMeta(DatabaseMeta database)
     {
-        this.database = database;
+        this.databaseMeta = database;
     }
     
     /**
@@ -329,15 +330,15 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     
-	private void readData(Node stepnode, ArrayList databases)
-		throws KettleXMLException
+	private void readData(Node stepnode, ArrayList databases) throws KettleXMLException
 	{
 		try
 		{
 			String commit;
 		
 			String con = XMLHandler.getTagValue(stepnode, "connection");
-			database      = Const.findDatabase(databases, con);
+			databaseMeta      = Const.findDatabase(databases, con);
+            schemaName    = XMLHandler.getTagValue(stepnode, "schema");
 			tablename     = XMLHandler.getTagValue(stepnode, "table");
 			commit        = XMLHandler.getTagValue(stepnode, "commit");
 			commitSize    = Const.toInt(commit, 0);
@@ -365,7 +366,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		database = null;
+		databaseMeta = null;
 		tablename      = "";
 		commitSize = 100;
         
@@ -381,7 +382,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("connection",    database==null?"":database.getName()));
+		retval.append("    "+XMLHandler.addTagValue("connection",    databaseMeta==null?"":databaseMeta.getName()));
+        retval.append("    "+XMLHandler.addTagValue("schema",        schemaName));
 		retval.append("    "+XMLHandler.addTagValue("table",         tablename));
 		retval.append("    "+XMLHandler.addTagValue("commit",        commitSize));
 		retval.append("    "+XMLHandler.addTagValue("truncate",      truncateTable));
@@ -403,13 +405,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
-			database = Const.findDatabase( databases, id_connection);
+			databaseMeta = Const.findDatabase( databases, id_connection);
+            schemaName       =      rep.getStepAttributeString (id_step, "schema");
 			tablename        =      rep.getStepAttributeString (id_step, "table");
 			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit");
 			truncateTable    =      rep.getStepAttributeBoolean(id_step, "truncate"); 
@@ -434,12 +436,12 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
-		throws KettleException
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   database==null?-1:database.getID());
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   databaseMeta==null?-1:databaseMeta.getID());
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);
 			rep.saveStepAttribute(id_transformation, id_step, "table",       	 tablename);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",          commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncateTable);
@@ -459,7 +461,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "return_field", generatedKeyField);
             
 			// Also, save the step-database relationship!
-			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
+			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
 			
 		}
 		catch(Exception e)
@@ -489,12 +491,12 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
-		if (database!=null)
+		if (databaseMeta!=null)
 		{
 			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.ConnectionExists"), stepMeta);
 			remarks.add(cr);
 
-			Database db = new Database(database);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
@@ -502,18 +504,19 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.ConnectionOk"), stepMeta);
 				remarks.add(cr);
 
-				if (tablename!=null && tablename.length()!=0)
+				if (!Const.isEmpty(tablename))
 				{
+                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
 					// Check if this table exists...
-					if (db.checkTableExists(tablename))
+					if (db.checkTableExists(schemaTable))
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableAccessible", tablename), stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableAccessible", schemaTable), stepMeta);
 						remarks.add(cr);
 
-						Row r = db.getTableFields(tablename);
+						Row r = db.getTableFields(schemaTable);
 						if (r!=null)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableOk", tablename), stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableOk", schemaTable), stepMeta);
 							remarks.add(cr);
 
 							String error_message = "";
@@ -587,7 +590,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.TableError", tablename), stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.TableError", schemaTable), stepMeta);
 						remarks.add(cr);
 					}
 				}
@@ -648,7 +651,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_TRUNCATE, 
 											transMeta.getName(),
 											stepMeta.getName(),
-											database.getDatabaseName(),
+											databaseMeta.getDatabaseName(),
 											tablename,
 											"",
 											"",
@@ -668,7 +671,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 				DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_WRITE, 
 												transMeta.getName(),
 												stepMeta.getName(),
-												database.getDatabaseName(),
+												databaseMeta.getDatabaseName(),
 												tablename,
 												v.getName(),
 												v.getName(),
@@ -683,20 +686,21 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
 	{
-		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
+		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 	
-		if (database!=null)
+		if (databaseMeta!=null)
 		{
 			if (prev!=null && prev.size()>0)
 			{
-				if (tablename!=null && tablename.length()>0)
+				if (!Const.isEmpty(tablename))
 				{
-					Database db = new Database(database);
+					Database db = new Database(databaseMeta);
 					try
 					{
 						db.connect();
 						
-						String cr_table = db.getDDL(tablename, prev);
+                        String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
+                        String cr_table = db.getDDL(schemaTable, prev);
 						
 						// Empty string means: nothing to do: set it to null...
 						if (cr_table==null || cr_table.length()==0) cr_table=null;
@@ -732,19 +736,21 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
     public Row getRequiredFields() throws KettleException
     {
-        if (database!=null)
+        if (databaseMeta!=null)
         {
-            Database db = new Database(database);
+            Database db = new Database(databaseMeta);
             try
             {
                 db.connect();
                 
-                if (tablename!=null && tablename.length()!=0)
+                if (!Const.isEmpty(tablename))
                 {
+                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
+                    
                     // Check if this table exists...
-                    if (db.checkTableExists(tablename))
+                    if (db.checkTableExists(schemaTable))
                     {
-                        return db.getTableFields(tablename);
+                        return db.getTableFields(schemaTable);
                     }
                     else
                     {
@@ -774,13 +780,29 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     public DatabaseMeta[] getUsedDatabaseConnections()
     {
-        if (database!=null) 
+        if (databaseMeta!=null) 
         {
-            return new DatabaseMeta[] { database };
+            return new DatabaseMeta[] { databaseMeta };
         }
         else
         {
             return super.getUsedDatabaseConnections();
         }
+    }
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
     }
 }

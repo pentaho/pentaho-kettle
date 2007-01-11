@@ -2608,7 +2608,7 @@ public class Chef implements AddUndoPositionInterface
 					//
 					String tostepname = Messages.getString("Spoon.RipDB.Monitor.ToStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableOutputMeta toi = new TableOutputMeta();
-					toi.setDatabase( targetDbInfo );
+					toi.setDatabaseMeta( targetDbInfo );
 					toi.setTablename( tables[i] );
 					toi.setCommitSize( 100 );
 					toi.setTruncateTable( true );

@@ -185,7 +185,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				}
 			}
 
-			data.db.setCombiLookup(meta.getTablename(), meta.getKeyLookup(),
+			data.db.setCombiLookup(meta.getSchemaName(), meta.getTablename(), meta.getKeyLookup(),
 								   meta.getTechnicalKeyField(), meta.useHash(),
 								   meta.getHashField() );
 		}
@@ -231,14 +231,14 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				    case CREATION_METHOD_TABLEMAX:
 				    	//  Use our own counter: what's the next value for the technical key?
 				        val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
-				        data.db.getNextValue(getTransMeta().getCounters(), meta.getTablename(), val_key);
+				        data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTablename(), val_key);
                         break;
 				    case CREATION_METHOD_AUTOINC:
 				    	autoinc=true;
 						val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
 						break;
 				    case CREATION_METHOD_SEQUENCE:
-						val_key=data.db.getNextSequenceValue(meta.getSequenceFrom(), meta.getTechnicalKeyField());
+						val_key=data.db.getNextSequenceValue(meta.getSchemaName(), meta.getSequenceFrom(), meta.getTechnicalKeyField());
 						if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
 						break;
 				}
@@ -246,7 +246,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				String tkFieldName = meta.getTechnicalKeyField();
 				if (autoinc) tkFieldName=null;
 
-				data.db.combiInsert( row, meta.getTablename(), tkFieldName,
+				data.db.combiInsert( row, meta.getSchemaName(), meta.getTablename(), tkFieldName,
 			                    autoinc,
 			                    val_key,
 						        meta.getKeyLookup(),

@@ -1576,7 +1576,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
 	public String quoteField(String field)
 	{
-        if (field==null) return null;
+        if (Const.isEmpty(field)) return null;
 		if (isReservedWord(field) && quoteReservedWords())
         {
             return handleCase(getStartQuote()+field+getEndQuote());            
@@ -2161,6 +2161,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public boolean needsToLockAllTables()
     {
         return databaseInterface.needsToLockAllTables();
+    }
+
+    public String getQuotedSchemaTableCombination(String schemaName, String tableName)
+    {
+        return getSchemaTableCombination(quoteField(schemaName), quoteField(tableName));
     }
 
 }

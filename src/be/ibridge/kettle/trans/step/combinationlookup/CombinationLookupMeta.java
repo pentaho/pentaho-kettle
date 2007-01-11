@@ -52,7 +52,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 {
 	/** Default cache size: 0 will cache everything */
 	public final static int DEFAULT_CACHE_SIZE  = 9999;
-	
+
+    /** what's the lookup schema? */
+    private String  schemaName;
+
 	/** what's the lookup table? */
 	private String  tablename;
 
@@ -351,6 +354,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		{
 			String commit, csize;
 
+            schemaName  = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			tablename  = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database = Const.findDatabase(databases, con);
@@ -395,9 +399,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 	public void setDefault()
 	{
+        schemaName    = ""; //$NON-NLS-1$
 		tablename     = Messages.getString("CombinationLookupMeta.DimensionTableName.Label"); //$NON-NLS-1$
 		database      = null;
-		commitSize    = 0;
+		commitSize    = 100;
 		cacheSize     = DEFAULT_CACHE_SIZE;
 		replaceFields = false;
 		useHash       = false;
@@ -447,6 +452,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer(512);
 
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -486,6 +492,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			database = Const.findDatabase( databases, id_connection);
 
+            schemaName       =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			tablename        =      rep.getStepAttributeString (id_step, "table"); //$NON-NLS-1$
 			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
 			cacheSize        = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
@@ -520,27 +527,28 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			long id      = rep.saveStepAttribute(id_transformation, id_step, "table",          tablename); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "id_connection",  database==null?-1:database.getID()); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "commit",         commitSize); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "cache_size",     cacheSize); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "replace",        replaceFields); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",         schemaName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "table",          tablename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",  database==null?-1:database.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "commit",         commitSize); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "cache_size",     cacheSize); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "replace",        replaceFields); //$NON-NLS-1$
 
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crc",            useHash); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crcfield",       hashField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "crc",            useHash); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "crcfield",       hashField); //$NON-NLS-1$
 
 			for (int i=0;i<keyField.length;i++)
 			{
-				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keyField[i]); //$NON-NLS-1$
-				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keyLookup[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keyField[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keyLookup[i]); //$NON-NLS-1$
 			}
 
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "return_name",         technicalKeyField); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "sequence",            sequenceFrom); //$NON-NLS-1$
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "creation_method",     techKeyCreation); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "return_name",         technicalKeyField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "sequence",            sequenceFrom); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "creation_method",     techKeyCreation); //$NON-NLS-1$
 
 			// For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc); //$NON-NLS-1$
 
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
@@ -569,7 +577,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					boolean error_found=false;
 					error_message = ""; //$NON-NLS-1$
 
-					Row r = db.getTableFields(tablename);
+                    String schemaTable = database.getQuotedSchemaTableCombination(schemaName, tablename);
+					Row r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
 						for (int i=0;i<keyLookup.length;i++)
@@ -740,8 +749,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		{
 			if (prev!=null && prev.size()>0)
 			{
-				if (tablename!=null && tablename.length()>0)
+				if (!Const.isEmpty(tablename))
 				{
+                    String schemaTable = database.getQuotedSchemaTableCombination(schemaName, tablename);
 					Database db = new Database(database);
 					try
 					{
@@ -759,14 +769,14 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 						// Then the hashcode (optional)
 						Value vhashfield = null;
-						if (useHash && hashField != null && hashField.length()>0)
+						if (useHash && !Const.isEmpty(hashField))
 						{
 							vhashfield = new Value(hashField, Value.VALUE_TYPE_INTEGER);
 							vhashfield.setLength(15,0);
 							doHash = true;
 						}
 
-						if ( ! db.checkTableExists(tablename) )
+						if ( ! db.checkTableExists(schemaTable) )
 						{
 							// Add technical key field.
 							fields.addValue(vkeyfield);				
@@ -814,7 +824,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							// Table already exists
 
 							// Get the fields that are in the table now:
-							Row tabFields = db.getTableFields(tablename);
+							Row tabFields = db.getTableFields(schemaTable);
 
 							// Don't forget to quote these as well...
 							database.quoteReservedWords(tabFields);
@@ -865,7 +875,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							}
 						}
 
-						cr_table = db.getDDL(tablename,
+						cr_table = db.getDDL(schemaTable,
 								             fields,
 								             (CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
 										     sequenceFrom!=null && sequenceFrom.length()!=0)?null:technicalKeyField,
@@ -895,7 +905,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						}
 						else  // index on all key fields...
 						{
-							if (keyLookup!=null && keyLookup.length>0)
+							if (!Const.isEmpty(keyLookup))
 							{
 								int nrfields = keyLookup.length;
 								if (nrfields>32 && database.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
@@ -913,25 +923,24 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 						// OK, now get the create index statement...
 
-						if ( technicalKeyField != null )
+						if ( !Const.isEmpty(technicalKeyField))
 						{
 							String techKeyArr[] = new String [] { technicalKeyField };
-							if (!db.checkIndexExists(tablename, techKeyArr))
+							if (!db.checkIndexExists(schemaName, tablename, techKeyArr))
 							{
 								String indexname = "idx_"+tablename+"_pk"; //$NON-NLS-1$ //$NON-NLS-2$
-								cr_uniq_index = db.getCreateIndexStatement(tablename, indexname, techKeyArr, true, true, false, true);
+								cr_uniq_index = db.getCreateIndexStatement(schemaName, tablename, indexname, techKeyArr, true, true, false, true);
 								cr_uniq_index+=Const.CR;
 							}
 						}
 
 
 						// OK, now get the create lookup index statement...
-						if (idx_fields!=null && idx_fields.length>0 &&
-								!db.checkIndexExists(tablename, idx_fields)
+						if (!Const.isEmpty(idx_fields) && !db.checkIndexExists(schemaName, tablename, idx_fields)
 						)
 						{
 							String indexname = "idx_"+tablename+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
-							cr_index = db.getCreateIndexStatement(tablename, indexname, idx_fields, false, false, false, true);
+							cr_index = db.getCreateIndexStatement(schemaName, tablename, indexname, idx_fields, false, false, false, true);
 							cr_index+=Const.CR;
 						}
 
@@ -939,14 +948,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						// Don't forget the sequence (optional)
 						//
 						String cr_seq=""; //$NON-NLS-1$
-						if ((database.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE) &&
-								CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
-								sequenceFrom!=null && sequenceFrom.length()>0
-						)
+						if ( database.supportsSequences() && !Const.isEmpty(sequenceFrom) )
 						{
-							if (!db.checkSequenceExists(sequenceFrom))
+							if (!db.checkSequenceExists(schemaName, sequenceFrom))
 							{
-								cr_seq+=db.getCreateSequenceStatement(sequenceFrom, 1L, 1L, -1L, true);
+								cr_seq+=db.getCreateSequenceStatement(schemaName, sequenceFrom, 1L, 1L, -1L, true);
 								cr_seq+=Const.CR;
 							}
 						}
@@ -1058,6 +1064,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
         	 (getSequenceFrom() != null && o.getSequenceFrom() != null &&
         	  ! getSequenceFrom().equals(o.getSequenceFrom())) )
         	 return false;
+
+        if ( (getSchemaName() == null && o.getSchemaName() != null) ||
+             (getSchemaName() != null && o.getSchemaName() == null) ||
+             (getSchemaName() != null && o.getSchemaName() != null &&
+              ! getSchemaName().equals(o.getSchemaName())) )
+             return false;
+
         if ( (getTablename() == null && o.getTablename() != null) ||
            	 (getTablename() != null && o.getTablename() == null) ||
            	 (getTablename() != null && o.getTablename() != null &&
@@ -1082,5 +1095,21 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     	  //   getKeyLookup()
 
         return true;
+    }
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
     }
 }

@@ -57,7 +57,7 @@ public class AddSequence extends BaseStep implements StepInterface
 		{
 			try
 			{
-				next = data.getDb().getNextSequenceValue(meta.getSequenceName(), meta.getValuename());
+				next = data.getDb().getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getValuename());
 			}
 			catch(KettleDatabaseException dbe)
 			{

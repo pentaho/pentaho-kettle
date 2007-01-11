@@ -53,6 +53,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 	private boolean      useDatabase;
 	private DatabaseMeta database;
+    private String       schemaName;
 	private String       sequenceName;
 
 	private boolean      useCounter;
@@ -217,6 +218,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			useDatabase = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
 			String conn  = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database   = Const.findDatabase(databases, conn);
+            schemaName        = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
 			
 			useCounter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -236,6 +238,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		valuename  = "valuename"; //$NON-NLS-1$
 		
 		useDatabase = false;
+        schemaName    = ""; //$NON-NLS-1$
 		sequenceName    = "SEQ_"; //$NON-NLS-1$
 		database = null;
 		
@@ -267,6 +270,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -283,12 +287,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename        =      rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
+			valuename          =      rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
 	
-			useDatabase     =      rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
+			useDatabase        =      rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
 			long id_connection =    rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			database = Const.findDatabase( databases, id_connection);
-			sequenceName          =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
+            schemaName         =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
+			sequenceName       =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	
 			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
             counterName     =      rep.getStepAttributeString (id_step, "counter_name");  //$NON-NLS-1$
@@ -311,6 +316,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			
 			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   database==null?-1:database.getID()); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); //$NON-NLS-1$
 					
 			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter); //$NON-NLS-1$
@@ -338,7 +344,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				if (db.checkSequenceExists(sequenceName))
+				if (db.checkSequenceExists(schemaName, sequenceName))
 				{
 					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
 				}
@@ -383,7 +389,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				try
 				{
 					db.connect();
-					if (!db.checkSequenceExists(sequenceName))
+					if (!db.checkSequenceExists(schemaName, sequenceName))
 					{
 						String cr_table = db.getCreateSequenceStatement(sequenceName, startAt, incrementBy, maxValue, true);
 						retval.setSQL(cr_table);
@@ -453,5 +459,21 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
     public void setCounterName(String counterName)
     {
         this.counterName = counterName;
+    }
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
     }
 }

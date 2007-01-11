@@ -158,7 +158,7 @@ public class TableOutput extends BaseStep implements StepInterface
             tableName = data.tableName;
         }
         
-        if (tableName==null || tableName.length()==0)
+        if (Const.isEmpty(tableName))
         {
             throw new KettleStepException("The tablename is not defined (empty)");
         }
@@ -166,7 +166,7 @@ public class TableOutput extends BaseStep implements StepInterface
         insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
         if (insertStatement==null)
         {
-            String sql = data.db.getInsertStatement(tableName, r);
+            String sql = data.db.getInsertStatement(meta.getSchemaName(), tableName, r);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
             data.preparedStatements.put(tableName, insertStatement);
@@ -237,7 +237,7 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
                 data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
                 
-				data.db=new Database(meta.getDatabase());
+				data.db=new Database(meta.getDatabaseMeta());
 				
                 if (getTransMeta().isUsingUniqueConnections())
                 {
@@ -248,7 +248,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     data.db.connect(getPartitionID());
                 }
                 
-				logBasic("Connected to database ["+meta.getDatabase()+"] (commit="+meta.getCommitSize()+")");
+				logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+meta.getCommitSize()+")");
 				data.db.setCommit(meta.getCommitSize());
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())

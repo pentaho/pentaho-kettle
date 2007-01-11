@@ -71,6 +71,10 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	private TableView    wKey;
 	private FormData     fdlKey, fdKey;
 
+    private Label        wlSchema;
+    private Text         wSchema;
+    private FormData     fdlSchema, fdSchema;
+
 	private Label        wlTable;
 	private Button       wbTable;
 	private Text         wTable;
@@ -136,9 +140,28 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Connection line
 		wConnection = addConnectionLine(shell, wStepname, middle, margin);
-		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
+		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
-		
+
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("DeleteDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        fdlSchema=new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin*2);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        fdSchema=new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin*2);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
+
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("DeleteDialog.TargetTable.Label")); //$NON-NLS-1$
@@ -146,7 +169,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wConnection, margin*2);
+		fdlTable.top  = new FormAttachment(wSchema, margin);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -154,7 +177,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wbTable.setText(Messages.getString("DeleteDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wConnection, margin);
+		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -162,7 +185,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wConnection, margin*2);
+		fdTable.top  = new FormAttachment(wSchema, margin);
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
@@ -244,6 +267,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
+        wSchema.addSelectionListener( lsDef );
+        wTable.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -297,8 +322,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getKeyStream2()[i]        !=null) item.setText(4, input.getKeyStream2()[i]);
 		}
 				
-		if (input.getTableName()!=null)        wTable.setText( input.getTableName() );
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
+        if (input.getSchemaName()!=null) wSchema.setText( input.getSchemaName() );
+		if (input.getTableName()!=null) wTable.setText( input.getTableName() );
+		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
 		else if (transMeta.nrDatabases()==1)
 		{
 			wConnection.setText( transMeta.getDatabase(0).getName() );
@@ -337,8 +363,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			inf.getKeyStream2()[i]         = item.getText(4);
 		}
 
+        inf.setSchemaName( wSchema.getText() ); 
 		inf.setTableName( wTable.getText() ); 
-		inf.setDatabase( transMeta.findDatabase(wConnection.getText()) );
+		inf.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         
 		stepname = wStepname.getText(); // return value
 	}
@@ -350,7 +377,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 		
-		if (input.getDatabase()==null)
+		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("DeleteDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
@@ -373,11 +400,13 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			log.logDebug(toString(), Messages.getString("DeleteDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
+            std.setSelectedSchema(wSchema.getText());
 			std.setSelectedTable(wTable.getText());
-			String tableName = (String)std.open();
-			if (tableName != null)
+            std.setSplitSchemaAndTable(true);
+			if (std.open() != null)
 			{
-				wTable.setText(tableName);
+                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+                wTable.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else

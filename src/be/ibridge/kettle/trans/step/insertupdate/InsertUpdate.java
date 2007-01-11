@@ -71,7 +71,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
                     ins.addValue( new Value(meta.getUpdateLookup()[i]) );
                 }
             }
-            data.db.prepareInsert(ins, meta.getTableName());
+            data.db.prepareInsert(ins, meta.getSchemaName(), meta.getTableName());
             
             if (!meta.isUpdateBypassed())
             {
@@ -81,7 +81,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             			updateColumns.add(meta.getUpdateLookup()[i]);
             		}
             	}
-            	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), (String[])updateColumns.toArray(new String[]{}));
+            	data.db.prepareUpdate(meta.getSchemaName(), meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), (String[])updateColumns.toArray(new String[]{}));
             }
 			
 			// lookup the values!
@@ -253,7 +253,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		    
 		    try
 		    {
-				data.db=new Database(meta.getDatabase());
+				data.db=new Database(meta.getDatabaseMeta());
                 if (getTransMeta().isUsingUniqueConnections())
                 {
                     synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
