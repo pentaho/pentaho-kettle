@@ -139,6 +139,21 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
         return " limit "+nrRows;
     }
     
+    public String getSQLQueryFields(String tableName)
+    {
+        return "SELECT * FROM "+tableName+getLimitClause(1);
+    }
+    
+    public String getSQLTableExists(String tablename)
+    {
+        return getSQLQueryFields(tablename);
+    }
+    
+    public boolean needsToLockAllTables()
+    {
+        return false;
+    }
+    
     /**
      * Get the SQL to get the next value of a sequence. (PostgreSQL version) 
      * @param sequenceName The sequence name

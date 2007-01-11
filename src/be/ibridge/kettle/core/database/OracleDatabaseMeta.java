@@ -92,6 +92,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     {
         return getSQLQueryFields(tablename);
     }
+    
+    public boolean needsToLockAllTables()
+    {
+        return false;
+    }
 	
 	public String getDriverClass()
 	{
