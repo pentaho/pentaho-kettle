@@ -2158,4 +2158,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         return databaseInterface.getSQLTableExists(tablename);
     }
 
+    public boolean needsToLockAllTables()
+    {
+        return databaseInterface.needsToLockAllTables();
+    }
+
 }

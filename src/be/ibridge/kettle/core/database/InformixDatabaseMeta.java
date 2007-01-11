@@ -99,6 +99,11 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return true;
 	}
     
+    public boolean needsToLockAllTables()
+    {
+        return false;
+    }
+    
     public String getLimitClause(int nrRows)
     {
         return " LIMIT "+nrRows;

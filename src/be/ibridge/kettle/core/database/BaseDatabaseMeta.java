@@ -1120,4 +1120,9 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         return "SELECT * FROM "+tablename;
     }
+    
+    public boolean needsToLockAllTables()
+    {
+        return true;
+    }
 }

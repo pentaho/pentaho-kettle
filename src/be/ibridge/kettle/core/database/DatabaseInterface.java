@@ -676,4 +676,9 @@ public interface DatabaseInterface extends Cloneable
      * @return The SQL to execute to verify if the given table exists.  If an Exception is thrown for this SQL, we don't have the table.
      */
     public String getSQLTableExists(String tablename);
+
+    /**
+     * @return true if the database needs all repository tables to be locked, not just one ref table (R_REPOSITORY_LOG)
+     */
+    public boolean needsToLockAllTables();
 }

@@ -5286,12 +5286,26 @@ public class Repository
     
     public synchronized void lockRepository() throws KettleDatabaseException
     {
-        database.lockTables(new String[] { "R_REPOSITORY_LOG" } );
+        if (database.getDatabaseMeta().needsToLockAllTables())
+        {
+            database.lockTables(repositoryTableNames);
+        }
+        else
+        {
+            database.lockTables( new String[] { "R_REPOSITORY_LOG" } );
+        }
     }
     
     public synchronized void unlockRepository() throws KettleDatabaseException
     {
-        database.unlockTables(new String[] { "R_REPOSITORY_LOG" });
+        if (database.getDatabaseMeta().needsToLockAllTables())
+        {
+            database.unlockTables(repositoryTableNames);
+        }
+        else
+        {
+            database.unlockTables(new String[] { "R_REPOSITORY_LOG" });
+        }
     }
     
     public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException
