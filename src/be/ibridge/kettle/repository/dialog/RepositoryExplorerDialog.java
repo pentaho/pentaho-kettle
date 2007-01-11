@@ -244,17 +244,17 @@ public class RepositoryExplorerDialog extends Dialog
             typeColumn = new TreeColumn(wTree, SWT.LEFT);
             typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
             typeColumn.setWidth(100);
-            // typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+            //typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
             
             userColumn = new TreeColumn(wTree, SWT.LEFT);
             userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
             userColumn.setWidth(100);
-            userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+            userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
 
             changedColumn = new TreeColumn(wTree, SWT.LEFT);
             changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
             changedColumn.setWidth(100);
-            changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+            changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
             
             // Add a memory to the tree.
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
@@ -552,7 +552,7 @@ public class RepositoryExplorerDialog extends Dialog
             ascending=true;
         }
         
-        if (sortColumn>0 && sortColumn<4)
+        if (sortColumn>0 && sortColumn<5)
         {
             TreeColumn column = wTree.getColumn(sortColumn-1);
             wTree.setSortColumn(column);
