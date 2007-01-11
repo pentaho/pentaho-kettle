@@ -999,6 +999,7 @@ public class Repository
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SHOWN", 0, transMeta.isFeedbackShown()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SIZE", transMeta.getFeedbackSize(), "");
 		insertTransAttribute(transMeta.getId(), 0, "USING_THREAD_PRIORITIES", 0, transMeta.isUsingThreadPriorityManagment()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, "SHARED_FILE", 0, transMeta.getSharedObjectsFile());
         
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());
@@ -1008,7 +1009,8 @@ public class Repository
 	}
 
 	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
-			String modified_user, Value modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed) throws KettleDatabaseException
+			String modified_user, Value modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed, 
+            String sharedObjectsFile) throws KettleDatabaseException
 	{
 		Row table = new Row();
 
@@ -1022,6 +1024,7 @@ public class Repository
         table.addValue(new Value("USE_BATCH_ID", useBatchId));
         table.addValue(new Value("PASS_BATCH_ID", batchIdPassed));
         table.addValue(new Value("USE_LOGFIELD", logfieldUsed));
+        table.addValue(new Value("SHARED_FILE", sharedObjectsFile));
 
 		database.prepareInsert(table, "R_JOB");
 		database.setValuesInsert(table);
@@ -4572,6 +4575,8 @@ public class Repository
         table.addValue(new Value("USE_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));
         table.addValue(new Value("PASS_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));
         table.addValue(new Value("USE_LOGFIELD", Value.VALUE_TYPE_BOOLEAN, 0, 0));
+        table.addValue(new Value("SHARED_FILE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
+
 		sql = database.getDDL(tablename, table, null, false, "ID_JOB", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...

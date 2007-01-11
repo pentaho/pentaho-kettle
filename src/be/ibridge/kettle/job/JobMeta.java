@@ -18,7 +18,10 @@ package be.ibridge.kettle.job;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -38,6 +41,8 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
+import be.ibridge.kettle.core.SharedObjectInterface;
+import be.ibridge.kettle.core.SharedObjects;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
@@ -57,7 +62,6 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.trans.HasDatabasesInterface;
-import be.ibridge.kettle.trans.Messages;
 
 /**
  * Defines a Job and provides methods to load, save, verify, etc.
@@ -69,11 +73,11 @@ import be.ibridge.kettle.trans.Messages;
 
 public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
 {
-    public static final String  XML_TAG              = "job";
+    public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
     public LogWriter            log;
 
-    private static final String STRING_MODIFIED_DATE = "MODIFIED_DATE";
+    private static final String STRING_MODIFIED_DATE = "MODIFIED_DATE"; //$NON-NLS-1$
 
     private long                id;
 
@@ -117,11 +121,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
     public static final int     TYPE_UNDO_POSITION   = 4;
 
-    public static final String STRING_SPECIAL        = "SPECIAL";
-    public static final String STRING_SPECIAL_START  = "START";
-    public static final String STRING_SPECIAL_DUMMY  = "DUMMY";
-    public static final String STRING_SPECIAL_OK     = "OK";
-    public static final String STRING_SPECIAL_ERROR  = "ERROR";
+    public static final String STRING_SPECIAL        = "SPECIAL"; //$NON-NLS-1$
+    public static final String STRING_SPECIAL_START  = "START"; //$NON-NLS-1$
+    public static final String STRING_SPECIAL_DUMMY  = "DUMMY"; //$NON-NLS-1$
+    public static final String STRING_SPECIAL_OK     = "OK"; //$NON-NLS-1$
+    public static final String STRING_SPECIAL_ERROR  = "ERROR"; //$NON-NLS-1$
 
 
 
@@ -140,7 +144,8 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
     private boolean             logfieldUsed;
 
-    private String              string;
+    /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
+    private String              sharedObjectsFile;
 
     public JobMeta(LogWriter l)
     {
@@ -180,9 +185,9 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         addDefaults();
         setChanged(false);
 
-        modifiedUser = "-";
+        modifiedUser = "-"; //$NON-NLS-1$
 
-        modifiedDate = new Value(string, Value.VALUE_TYPE_DATE).sysdate();
+        modifiedDate = new Value("modifiedDate", Value.VALUE_TYPE_DATE).sysdate(); //$NON-NLS-1$
 
         directory = new RepositoryDirectory();
 
@@ -210,7 +215,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         jobEntry.setEntry(jobEntrySpecial);
         jobEntry.setLocation(50, 50);
         jobEntry.setDrawn(false);
-        jobEntry.setDescription("A job starts to process here.");
+        jobEntry.setDescription(Messages.getString("JobMeta.StartJobEntry.Description")); //$NON-NLS-1$
         return jobEntry;
 
     }
@@ -223,7 +228,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         jobEntry.setEntry(jobEntrySpecial);
         jobEntry.setLocation(50, 50);
         jobEntry.setDrawn(false);
-        jobEntry.setDescription("A dummy entry.");
+        jobEntry.setDescription(Messages.getString("JobMeta.DummyJobEntry.Description")); //$NON-NLS-1$
         return jobEntry;
     }
 
@@ -403,11 +408,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         {
             // The ID has to be assigned, even when it's a new item...
             rep.insertJob(getID(), directory.getID(), getName(), logconnection == null ? -1 : logconnection.getID(), logTable, modifiedUser,
-                    modifiedDate, useBatchId, batchIdPassed, logfieldUsed);
+                    modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile);
         }
         catch (KettleDatabaseException dbe)
         {
-            throw new KettleException("Unable to save job info to repository", dbe);
+            throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobToRepository"), dbe); //$NON-NLS-1$
         }
     }
 
@@ -432,11 +437,12 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         DatabaseMeta ci = getLogConnection();
         StringBuffer retval = new StringBuffer();
 
-        retval.append("<job>" + Const.CR);
-        retval.append("  " + XMLHandler.addTagValue("name", getName()));
-        retval.append("  " + XMLHandler.addTagValue("directory", directory.getPath()));
-        retval.append("  " + XMLHandler.addTagValue("modified_user", modifiedUser));
-        retval.append("  " + XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : ""));
+        retval.append("<"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
+        
+        retval.append("  " + XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  " + XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  " + XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  " + XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         for (int i = 0; i < nrDatabases(); i++)
         {
@@ -444,38 +450,40 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             retval.append(dbinfo.getXML());
         }
 
-        retval.append("  " + XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName()));
-        retval.append("  " + XMLHandler.addTagValue("logtable", logTable));
+        retval.append("  " + XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("  " + XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("   " + XMLHandler.addTagValue("use_batchid", useBatchId));
-        retval.append("   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed));
-        retval.append("   " + XMLHandler.addTagValue("use_logfield", logfieldUsed));
+        retval.append("   " + XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   " + XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("  <entries>" + Const.CR);
+        retval.append("   " + XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
+
+        retval.append("  <entries>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrJobEntries(); i++)
         {
             JobEntryCopy jge = getJobEntry(i);
             retval.append(jge.getXML());
         }
-        retval.append("    </entries>" + Const.CR);
+        retval.append("    </entries>" + Const.CR); //$NON-NLS-1$
 
-        retval.append("  <hops>" + Const.CR);
+        retval.append("  <hops>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrJobHops(); i++)
         {
             JobHopMeta hi = getJobHop(i);
             retval.append(hi.getXML());
         }
-        retval.append("    </hops>" + Const.CR);
+        retval.append("    </hops>" + Const.CR); //$NON-NLS-1$
 
-        retval.append("  <notepads>" + Const.CR);
+        retval.append("  <notepads>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrNotes(); i++)
         {
             NotePadMeta ni = getNote(i);
             retval.append(ni.getXML());
         }
-        retval.append("    </notepads>" + Const.CR);
+        retval.append("    </notepads>" + Const.CR); //$NON-NLS-1$
 
-        retval.append("  </job>" + Const.CR);
+        retval.append("  </"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -509,12 +517,12 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             }
             else
             {
-                throw new KettleXMLException("Error reading/validating information from XML file: " + fname);
+                throw new KettleXMLException(Messages.getString("JobMeta.Exception.ErrorReadingFromXMLFile") + fname); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
-            throw new KettleXMLException("Unable to load the job from XML file [" + fname + "]", e);
+            throw new KettleXMLException(Messages.getString("JobMeta.Exception.UnableToLoadJobFromXMLFile") + fname + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -538,11 +546,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             //
             // get job info:
             //
-            name = XMLHandler.getTagValue(jobnode, "name");
+            name = XMLHandler.getTagValue(jobnode, "name"); //$NON-NLS-1$
 
             // Changed user/date
-            modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user");
-            String modDate = XMLHandler.getTagValue(jobnode, "modified_date");
+            modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user"); //$NON-NLS-1$
+            String modDate = XMLHandler.getTagValue(jobnode, "modified_date"); //$NON-NLS-1$
             if (modDate != null)
             {
                 modifiedDate = new Value(STRING_MODIFIED_DATE, modDate);
@@ -550,19 +558,25 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             }
 
             // Load the default list of databases
-            if (rep != null)
+            // Read objects from the shared XML file & the repository
+            try
             {
-                readDatabases(rep);
-                clearChanged();
+                sharedObjectsFile = XMLHandler.getTagValue(jobnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
+                readSharedObjects(rep);
+            }
+            catch(Exception e)
+            {
+                LogWriter.getInstance().logError(toString(), Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$ //$NON-NLS-1$
+                LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             }
 
             // 
             // Read the database connections
             //
-            int nr = XMLHandler.countNodes(jobnode, "connection");
+            int nr = XMLHandler.countNodes(jobnode, "connection"); //$NON-NLS-1$
             for (int i = 0; i < nr; i++)
             {
-                Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i);
+                Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i); //$NON-NLS-1$
                 DatabaseMeta dbcon = new DatabaseMeta(dbnode);
 
                 DatabaseMeta exist = findDatabase(dbcon.getName());
@@ -581,10 +595,12 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                         {
                             Shell shell = props.getDisplay().getActiveShell();
 
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Warning", null, "Connection [" + dbcon.getName()
-                                    + "] already exists, do you want to overwrite this database connection?", MessageDialog.WARNING, new String[] {
-                                    "Yes", "No" },// "Yes", "No"
-                                    1, "Please, don't show this warning anymore.", !props.askAboutReplacingDatabaseConnections());
+                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Warning", null, 
+                                    Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName())  //$NON-NLS-1$ //$NON-NLS-2$
+                                    , MessageDialog.WARNING, 
+                                    new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
+                                                   Messages.getString("System.Button.No") },//$NON-NLS-1$
+                                    1, Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"), !props.askAboutReplacingDatabaseConnections()); //$NON-NLS-1$
                             int idx = md.open();
                             props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
                             overwrite = ((idx & 0xFF) == 0); // Yes means: overwrite
@@ -603,22 +619,22 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             /*
              * Get the log database connection & log table
              */
-            String logcon = XMLHandler.getTagValue(jobnode, "logconnection");
+            String logcon = XMLHandler.getTagValue(jobnode, "logconnection"); //$NON-NLS-1$
             logconnection = findDatabase(logcon);
-            logTable = XMLHandler.getTagValue(jobnode, "logtable");
+            logTable = XMLHandler.getTagValue(jobnode, "logtable"); //$NON-NLS-1$
 
-            useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid"));
-            batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));
-            logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield"));
+            useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
+            batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
+            logfieldUsed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield")); //$NON-NLS-1$ //$NON-NLS-2$
 
             /*
              * read the job entries...
              */
-            Node entriesnode = XMLHandler.getSubNode(jobnode, "entries");
-            int tr = XMLHandler.countNodes(entriesnode, "entry");
+            Node entriesnode = XMLHandler.getSubNode(jobnode, "entries"); //$NON-NLS-1$
+            int tr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
             for (int i = 0; i < tr; i++)
             {
-                Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
+                Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
                 // System.out.println("Reading entry:\n"+entrynode);
 
                 JobEntryCopy je = new JobEntryCopy(entrynode, databases, rep);
@@ -649,21 +665,21 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                 addJobEntry(je);
             }
 
-            Node hopsnode = XMLHandler.getSubNode(jobnode, "hops");
-            int ho = XMLHandler.countNodes(hopsnode, "hop");
+            Node hopsnode = XMLHandler.getSubNode(jobnode, "hops"); //$NON-NLS-1$
+            int ho = XMLHandler.countNodes(hopsnode, "hop"); //$NON-NLS-1$
             for (int i = 0; i < ho; i++)
             {
-                Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i);
+                Node hopnode = XMLHandler.getSubNodeByNr(hopsnode, "hop", i); //$NON-NLS-1$
                 JobHopMeta hi = new JobHopMeta(hopnode, this);
                 jobhops.add(hi);
             }
 
             // Read the notes...
-            Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads");
-            int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad");
+            Node notepadsnode = XMLHandler.getSubNode(jobnode, "notepads"); //$NON-NLS-1$
+            int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad"); //$NON-NLS-1$
             for (int i = 0; i < nrnotes; i++)
             {
-                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i);
+                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i); //$NON-NLS-1$
                 NotePadMeta ni = new NotePadMeta(notepadnode);
                 notes.add(ni);
             }
@@ -676,7 +692,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         }
         catch (Exception e)
         {
-            throw new KettleXMLException("Unable to load job info from XML node", e);
+            throw new KettleXMLException(Messages.getString("JobMeta.Exception.UnableToLoadJobFromXMLNode"), e); //$NON-NLS-1$
         }
         finally
         {
@@ -723,13 +739,74 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         }
         catch (KettleDatabaseException dbe)
         {
-            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
         }
         catch (KettleException ke)
         {
-            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("JobMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
         }
     }
+    
+    public void readSharedObjects(Repository rep) throws KettleException
+    {
+        // Extract the shared steps, connections, etc. using the SharedObjects class
+        //
+        String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+        SharedObjects sharedObjects = new SharedObjects(soFile); 
+        Map objectsMap = sharedObjects.getObjectsMap();
+        Collection objects = objectsMap.values();
+        
+        // First read the databases...
+        // We read databases & slaves first because there might be dependencies that need to be resolved.
+        //
+        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        {
+            Object object = iter.next();
+            if (object instanceof DatabaseMeta)
+            {
+                DatabaseMeta databaseMeta = (DatabaseMeta) object;
+                addOrReplaceDatabase(databaseMeta);
+            }
+        }
+
+        if (rep!=null)
+        {
+            readDatabases(rep, true);
+        }
+    }
+    
+    public void saveSharedObjects() throws KettleException
+    {
+        try
+        {
+            // First load all the shared objects...
+            String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+            SharedObjects sharedObjects = new SharedObjects(soFile);
+            
+            // Now overwrite the objects in there
+            List shared = new ArrayList();
+            shared.addAll(databases);
+            
+            // The databases connections...
+            for (int i=0;i<shared.size();i++)
+            {
+                SharedObjectInterface sharedObject = (SharedObjectInterface) shared.get(i);
+                if (sharedObject.isShared()) 
+                {
+                    sharedObjects.storeObject(sharedObject);
+                }
+            }
+            
+            // Save the objects
+            sharedObjects.saveToFile();
+        }
+        catch(IOException e)
+        {
+            
+        }
+    }
+
+    
 
     /**
      * Find a database connection by it's name
@@ -757,11 +834,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         try
         {
             int nrWorks = 2 + nrDatabases() + nrNotes() + nrJobEntries() + nrJobHops();
-            if (monitor != null) monitor.beginTask("Saving transformation " + directory + Const.FILE_SEPARATOR + getName(), nrWorks);
+            if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.SavingTransformation") + directory + Const.FILE_SEPARATOR + getName(), nrWorks); //$NON-NLS-1$
 
             rep.lockRepository();
             
-            rep.insertLogEntry("save job '"+getName()+"'");
+            rep.insertLogEntry("save job '"+getName()+"'"); //$NON-NLS-1$ //$NON-NLS-2$
             
             // Before we start, make sure we have a valid job ID!
             // Two possibilities:
@@ -769,7 +846,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             // 2) We don't have an ID: look it up.
             // If we find a transformation with the same name: ask!
             //
-            if (monitor != null) monitor.subTask("Handling previous version of job...");
+            if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.HandlingPreviousVersionOfJob")); //$NON-NLS-1$
             setID(rep.getJobID(getName(), directory.getID()));
 
             // If no valid id is available in the database, assign one...
@@ -788,18 +865,18 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             // Now, save the job entry in R_JOB
             // Note, we save this first so that we have an ID in the database.
             // Everything else depends on this ID, including recursive job entries to the save job. (retry)
-            if (monitor != null) monitor.subTask("Saving job details...");
-            log.logDetailed(toString(), "Saving job info to repository...");
+            if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.SavingJobDetails")); //$NON-NLS-1$
+            log.logDetailed(toString(), "Saving job info to repository..."); //$NON-NLS-1$
             saveRepJob(rep);
             if (monitor != null) monitor.worked(1);
 
             //
             // Save the notes
             //
-            log.logDetailed(toString(), "Saving notes to repository...");
+            log.logDetailed(toString(), "Saving notes to repository..."); //$NON-NLS-1$
             for (int i = 0; i < nrNotes(); i++)
             {
-                if (monitor != null) monitor.subTask("Saving note #" + (i + 1) + "/" + nrNotes());
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.SavingNoteNr") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
                 NotePadMeta ni = getNote(i);
                 ni.saveRep(rep, getID());
                 if (ni.getID() > 0)
@@ -812,19 +889,20 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             //
             // Save the job entries
             //
-            log.logDetailed(toString(), "Saving " + nrJobEntries() + " ChefGraphEntries to repository...");
+            log.logDetailed(toString(), "Saving " + nrJobEntries() + " ChefGraphEntries to repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+            rep.updateJobEntryTypes();
             for (int i = 0; i < nrJobEntries(); i++)
             {
-                if (monitor != null) monitor.subTask("Saving job entry #" + (i + 1) + "/" + nrJobEntries());
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.SavingJobEntryNr") + (i + 1) + "/" + nrJobEntries()); //$NON-NLS-1$ //$NON-NLS-2$
                 JobEntryCopy cge = getJobEntry(i);
                 cge.saveRep(rep, getID());
                 if (monitor != null) monitor.worked(1);
             }
 
-            log.logDetailed(toString(), "Saving job hops to repository...");
+            log.logDetailed(toString(), "Saving job hops to repository..."); //$NON-NLS-1$
             for (int i = 0; i < nrJobHops(); i++)
             {
-                if (monitor != null) monitor.subTask("Saving job hop #" + (i + 1) + "/" + nrJobHops());
+                if (monitor != null) monitor.subTask("Saving job hop #" + (i + 1) + "/" + nrJobHops()); //$NON-NLS-1$ //$NON-NLS-2$
                 JobHopMeta hi = getJobHop(i);
                 hi.saveRep(rep, getID());
                 if (monitor != null) monitor.worked(1);
@@ -839,7 +917,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         catch (KettleDatabaseException dbe)
         {
             rep.rollback();
-            throw new KettleException("Unable to save Job in repository, database rollback performed.", dbe);
+            throw new KettleException(Messages.getString("JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); //$NON-NLS-1$
         }
         finally
         {
@@ -897,50 +975,60 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                 long hopid[] = rep.getJobHopIDs(getID());
 
                 int nrWork = 2 + noteids.length + jecids.length + hopid.length;
-                if (monitor != null) monitor.beginTask("Loading job " + repdir + Const.FILE_SEPARATOR + jobname, nrWork);
-
-                // 
-                // Load the common database connections
-                //
-                if (monitor != null) monitor.subTask("Reading the available database from the repository");
-                readDatabases(rep);
-                if (monitor != null) monitor.worked(1);
+                if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.LoadingJob") + repdir + Const.FILE_SEPARATOR + jobname, nrWork); //$NON-NLS-1$
 
                 //
                 // get job info:
                 //
-                if (monitor != null) monitor.subTask("Reading the job information");
-                Row jobrow = rep.getJob(getID());
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobInformation")); //$NON-NLS-1$
+                Row jobRow = rep.getJob(getID());
 
-                name = jobrow.searchValue("NAME").getString();
-                logTable = jobrow.searchValue("TABLE_NAME_LOG").getString();
+                name = jobRow.searchValue("NAME").getString(); //$NON-NLS-1$
+                logTable = jobRow.searchValue("TABLE_NAME_LOG").getString(); //$NON-NLS-1$
 
-                long id_logdb = jobrow.searchValue("ID_DATABASE_LOG").getInteger();
+                long id_logdb = jobRow.searchValue("ID_DATABASE_LOG").getInteger(); //$NON-NLS-1$
                 if (id_logdb > 0)
                 {
                     // Get the logconnection
                     logconnection = new DatabaseMeta(rep, id_logdb);
                 }
-                useBatchId = jobrow.getBoolean("USE_BATCH_ID", false);
-                batchIdPassed = jobrow.getBoolean("PASS_BATCH_ID", false);
-                logfieldUsed = jobrow.getBoolean("USE_LOGFIELD", false);
+                useBatchId = jobRow.getBoolean("USE_BATCH_ID", false); //$NON-NLS-1$
+                batchIdPassed = jobRow.getBoolean("PASS_BATCH_ID", false); //$NON-NLS-1$
+                logfieldUsed = jobRow.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
 
                 if (monitor != null) monitor.worked(1);
+                // 
+                // Load the common database connections
+                //
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingAvailableDatabasesFromRepository")); //$NON-NLS-1$
+                // Read objects from the shared XML file & the repository
+                try
+                {
+                    sharedObjectsFile = jobRow.getString("SHARED_FILE", null);
+                    readSharedObjects(rep);
+                }
+                catch(Exception e)
+                {
+                    LogWriter.getInstance().logError(toString(), Messages.getString("JobMeta.ErrorReadingSharedObjects.Message", e.toString())); // $NON-NLS-1$ //$NON-NLS-1$
+                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                }
+                if (monitor != null) monitor.worked(1);
 
-                log.logDetailed(toString(), "Loading " + noteids.length + " notes");
+                
+                log.logDetailed(toString(), "Loading " + noteids.length + " notes"); //$NON-NLS-1$ //$NON-NLS-2$
                 for (int i = 0; i < noteids.length; i++)
                 {
-                    if (monitor != null) monitor.subTask("Reading note #" + (i + 1) + "/" + noteids.length);
+                    if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingNoteNr") + (i + 1) + "/" + noteids.length); //$NON-NLS-1$ //$NON-NLS-2$
                     NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
                     if (indexOfNote(ni) < 0) addNote(ni);
                     if (monitor != null) monitor.worked(1);
                 }
 
                 // Load the job entries...
-                log.logDetailed(toString(), "Loading " + jecids.length + " job entries");
+                log.logDetailed(toString(), "Loading " + jecids.length + " job entries"); //$NON-NLS-1$ //$NON-NLS-2$
                 for (int i = 0; i < jecids.length; i++)
                 {
-                    if (monitor != null) monitor.subTask("Reading job entry #" + (i + 1) + "/" + (jecids.length));
+                    if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobEntryNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
 
                     JobEntryCopy jec = new JobEntryCopy(log, rep, getID(), jecids[i], jobentries, databases);
                     int idx = indexOfJobEntry(jec);
@@ -956,10 +1044,10 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                 }
 
                 // Load the hops...
-                log.logDetailed(toString(), "Loading " + hopid.length + " job hops");
+                log.logDetailed(toString(), "Loading " + hopid.length + " job hops"); //$NON-NLS-1$ //$NON-NLS-2$
                 for (int i = 0; i < hopid.length; i++)
                 {
-                    if (monitor != null) monitor.subTask("Reading job hop #" + (i + 1) + "/" + (jecids.length));
+                    if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.ReadingJobHopNr") + (i + 1) + "/" + (jecids.length)); //$NON-NLS-1$ //$NON-NLS-2$
                     JobHopMeta hi = new JobHopMeta(rep, hopid[i], this, jobcopies);
                     jobhops.add(hi);
                     if (monitor != null) monitor.worked(1);
@@ -967,17 +1055,17 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
                 // Finally, clear the changed flags...
                 clearChanged();
-                if (monitor != null) monitor.subTask("Finishing load");
+                if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
                 if (monitor != null) monitor.done();
             }
             else
             {
-                throw new KettleException("Can't find job : " + jobname);
+                throw new KettleException(Messages.getString("JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$
             }
         }
         catch (KettleException dbe)
         {
-            throw new KettleException("An error occurred reading job [" + jobname + "] from the repository", dbe);
+            throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob1") + jobname + Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob2"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
         }
         finally
         {
@@ -1348,11 +1436,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
     {
         int nr = 1;
 
-        JobEntryCopy e = findJobEntry(basename + " " + nr, 0, true);
+        JobEntryCopy e = findJobEntry(basename + " " + nr, 0, true); //$NON-NLS-1$
         while (e != null)
         {
             nr++;
-            e = findJobEntry(basename + " " + nr, 0, true);
+            e = findJobEntry(basename + " " + nr, 0, true); //$NON-NLS-1$
         }
         return nr;
     }
@@ -1398,7 +1486,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         while (jec != null)
         {
             nr++;
-            newname = entryname + " " + nr;
+            newname = entryname + " " + nr; //$NON-NLS-1$
             jec = findJobEntry(newname);
         }
 
@@ -1769,20 +1857,20 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
      */
     public ArrayList getSQLStatements(Repository repository, IProgressMonitor monitor) throws KettleException
     {
-        if (monitor != null) monitor.beginTask("Getting the SQL needed for this job...", nrJobEntries() + 1);
+        if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
         ArrayList stats = new ArrayList();
 
         for (int i = 0; i < nrJobEntries(); i++)
         {
             JobEntryCopy copy = getJobEntry(i);
-            if (monitor != null) monitor.subTask("Getting SQL statements for job entry copy [" + copy + "]");
+            if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
             ArrayList list = copy.getEntry().getSQLStatements(repository);
             stats.addAll(list);
             if (monitor != null) monitor.worked(1);
         }
 
         // Also check the sql for the logtable...
-        if (monitor != null) monitor.subTask("Getting SQL statements for the job (logtable, etc.)");
+        if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLStatementsForJobLogTables")); //$NON-NLS-1$
         if (logconnection != null && logTable != null && logTable.length() > 0)
         {
             Database db = new Database(logconnection);
@@ -1793,14 +1881,14 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                 String sql = db.getDDL(logTable, fields);
                 if (sql != null && sql.length() > 0)
                 {
-                    SQLStatement stat = new SQLStatement("<this job>", logconnection, sql);
+                    SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logconnection, sql); //$NON-NLS-1$
                     stats.add(stat);
                 }
             }
             catch (KettleDatabaseException dbe)
             {
-                SQLStatement stat = new SQLStatement("<this job>", logconnection, null);
-                stat.setError("Error obtaining job log table info: " + dbe.getMessage());
+                SQLStatement stat = new SQLStatement(Messages.getString("JobMeta.SQLFeedback.ThisJob"), logconnection, null); //$NON-NLS-1$
+                stat.setError(Messages.getString("JobMeta.SQLFeedback.ErrorObtainingJobLogTableInfo") + dbe.getMessage()); //$NON-NLS-1$
                 stats.add(stat);
             }
             finally
@@ -1861,9 +1949,9 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             for (int i = 0; i < nrJobEntries(); i++)
             {
                 JobEntryCopy entryMeta = getJobEntry(i);
-                stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, "Job entry name"));
+                stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, this, Messages.getString("JobMeta.SearchMetadata.JobEntryName"))); //$NON-NLS-1$
                 if (entryMeta.getDescription() != null)
-                    stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, "Job entry description"));
+                    stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, this, Messages.getString("JobMeta.SearchMetadata.JobEntryDescription"))); //$NON-NLS-1$
                 JobEntryInterface metaInterface = entryMeta.getEntry();
                 StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta, this);
             }
@@ -1875,13 +1963,13 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             for (int i = 0; i < nrDatabases(); i++)
             {
                 DatabaseMeta meta = getDatabase(i);
-                stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
-                if (meta.getDatabaseName() != null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
-                if (meta.getUsername() != null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
+                stringList.add(new StringSearchResult(meta.getName(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseConnectionName"))); //$NON-NLS-1$
+                if (meta.getDatabaseName() != null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseName"))); //$NON-NLS-1$
+                if (meta.getUsername() != null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseUsername"))); //$NON-NLS-1$
                 if (meta.getDatabaseTypeDesc() != null)
-                    stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
+                    stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
                 if (meta.getDatabasePortNumberString() != null)
-                    stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
+                    stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, Messages.getString("JobMeta.SearchMetadata.DatabasePort"))); //$NON-NLS-1$
             }
         }
 
@@ -1891,7 +1979,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             for (int i = 0; i < nrNotes(); i++)
             {
                 NotePadMeta meta = getNote(i);
-                if (meta.getNote() != null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
+                if (meta.getNote() != null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, Messages.getString("JobMeta.SearchMetadata.NotepadText"))); //$NON-NLS-1$
             }
         }
 
@@ -1963,15 +2051,15 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         }
         else
         {
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
         }
 
         // The name of the job
-        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, ""));
+        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
 
         // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : "");
+        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
     }
 
     public boolean haveConnectionsChanged()
@@ -2020,5 +2108,21 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             if (note.hasChanged()) return true;
         }
         return false;
+    }
+
+    /**
+     * @return the sharedObjectsFile
+     */
+    public String getSharedObjectsFile()
+    {
+        return sharedObjectsFile;
+    }
+
+    /**
+     * @param sharedObjectsFile the sharedObjectsFile to set
+     */
+    public void setSharedObjectsFile(String sharedObjectsFile)
+    {
+        this.sharedObjectsFile = sharedObjectsFile;
     }
 }

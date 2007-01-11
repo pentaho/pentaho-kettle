@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -107,6 +108,9 @@ public class JobDialog extends Dialog
 	
 	private ModifyListener lsMod;
 	private boolean changed;
+    
+    private TextVar wSharedObjectsFile;
+    private boolean sharedObjectsFileChanged;
 
     /** @deprecated */
     public JobDialog(Shell parent, int style, LogWriter l, Props props, JobMeta jobMeta, Repository rep)
@@ -136,11 +140,10 @@ public class JobDialog extends Dialog
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobMeta.setChanged();
+				changed = true;
 			}
 		};
-		changed = jobMeta.hasChanged();
-
+		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
@@ -349,6 +352,33 @@ public class JobDialog extends Dialog
         fdLogfield.right= new FormAttachment(100, 0);
         wLogfield.setLayoutData(fdLogfield);
 
+        // Shared objects file
+        Label wlSharedObjectsFile = new Label(shell, SWT.RIGHT);
+        wlSharedObjectsFile.setText(Messages.getString("JobDialog.SharedObjectsFile.Label")); //$NON-NLS-1$
+        props.setLook(wlSharedObjectsFile);
+        FormData fdlSharedObjectsFile = new FormData();
+        fdlSharedObjectsFile.left = new FormAttachment(0, 0);
+        fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
+        fdlSharedObjectsFile.top  = new FormAttachment(wLogfield, 3*margin);
+        wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
+        wSharedObjectsFile=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wlSharedObjectsFile.setToolTipText(Messages.getString("JobDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
+        wSharedObjectsFile.setToolTipText(Messages.getString("JobDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
+        props.setLook(wSharedObjectsFile);
+        FormData fdSharedObjectsFile = new FormData();
+        fdSharedObjectsFile.left = new FormAttachment(middle, 0);
+        fdSharedObjectsFile.top  = new FormAttachment(wLogfield, 3*margin);
+        fdSharedObjectsFile.right= new FormAttachment(100, 0);
+        wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
+        wSharedObjectsFile.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent arg0)
+                {
+                    sharedObjectsFileChanged = true;
+                }
+            }
+        );
+
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
@@ -357,7 +387,7 @@ public class JobDialog extends Dialog
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, margin, wLogfield);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, margin, wSharedObjectsFile);
         
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -410,6 +440,11 @@ public class JobDialog extends Dialog
         wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
         wLogfield.setSelection(jobMeta.isLogfieldUsed());
         
+        wSharedObjectsFile.setText(Const.NVL(jobMeta.getSharedObjectsFile(), ""));
+        sharedObjectsFileChanged=false;
+        
+        changed = jobMeta.hasChanged();
+
         setFlags();
 	}
     
@@ -439,7 +474,8 @@ public class JobDialog extends Dialog
         jobMeta.setUseBatchId( wBatch.getSelection());
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
         jobMeta.setLogfieldUsed( wLogfield.getSelection());
-        
+        jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
+
 		dispose();
 	}
 	
@@ -505,7 +541,10 @@ public class JobDialog extends Dialog
 		}
 	}
 
-
+    public boolean isSharedObjectsFileChanged()
+    {
+        return sharedObjectsFileChanged;
+    }
 
 	public String toString()
 	{

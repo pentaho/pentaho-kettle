@@ -1903,6 +1903,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
                 usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );
+                
+                sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
             }
         }
         catch (KettleDatabaseException dbe)
@@ -1970,9 +1972,6 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         {
             String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
 
-            // Read objects from the shared XML file & the repository
-            readSharedObjects(rep);
-            
             setName(transname);
             directory = repdir;
             directoryTree = directory.findRoot();
@@ -1997,10 +1996,21 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
                 log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
 
-                // Load the common database connections
+                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
+                loadRepTrans(rep);
+                if (monitor != null) monitor.worked(1);
 
+                // Load the common database connections
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
-                readSharedObjects(rep);
+                try
+                {
+                    readSharedObjects(rep);
+                }
+                catch(Exception e)
+                {
+                    LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                }
                 if (monitor != null) monitor.worked(1);
 
                 // Load the notes...
@@ -2059,14 +2069,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 for (int i = 0; i < nrSteps(); i++)
                 {
                     getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
-                }
-
-
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
-                loadRepTrans(rep);
-                if (monitor != null) monitor.worked(1);
-                
-                
+                }                
 
                 // Have all partitioned step reference the correct partitioning schema
                 for (int i = 0; i < nrSteps(); i++)
@@ -2197,6 +2200,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         retval.append("    " + XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
+        retval.append("    " + XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
         
         retval.append("    <dependencies>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
@@ -2397,12 +2401,13 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
             try
             {
+                sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
                 readSharedObjects(rep);
-                clearChanged();
             }
-            catch(KettleException e)
+            catch(Exception e)
             {
-                throw new KettleXMLException(Messages.getString("TransMeta.Exception.UnableToReadSharedObjectsFromRepository.Message"), e);
+                LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
+                LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             }
 
             // Handle connections

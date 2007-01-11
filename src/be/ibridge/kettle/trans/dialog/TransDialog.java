@@ -962,6 +962,14 @@ public class TransDialog extends Dialog
         fdSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
         fdSharedObjectsFile.right= new FormAttachment(100, 0);
         wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
+        wSharedObjectsFile.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent arg0)
+                {
+                    sharedObjectsFileChanged = true;
+                }
+            }
+        );
 
         // Show feedback in transformations steps?
         Label wlManageThreads = new Label(wMiscComp, SWT.RIGHT);

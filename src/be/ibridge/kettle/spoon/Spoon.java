@@ -533,8 +533,11 @@ public class Spoon implements AddUndoPositionInterface
                     // CTRL-ALT-I --> Copy Transformation Image to clipboard
                     if ((int)e.character ==  9 && ctrl && alt) { if (transMeta!=null) { copyTransformationImage(transMeta); } }
 
-                    // CTRL-J --> Get variables
-                    if ((int)e.character == 10 && ctrl && !alt ) { getVariables(); };
+                    // CTRL-J --> Edit job properties
+                    if ((int)e.character == 10 && ctrl && !alt ) { editJobProperties(jobMeta); };
+
+                    // CTRL-ALT-J --> Get variables
+                    if ((int)e.character == 10 && ctrl && alt ) { getVariables(); };
 
                     // CTRL-K --> Create Kettle archive
                     if ((int)e.character == 11 && ctrl && !alt ) { if (transMeta!=null) { createKettleArchive(transMeta); } };
@@ -1153,7 +1156,7 @@ public class Spoon implements AddUndoPositionInterface
         // Set variables
         //
         MenuItem miEditVars = new MenuItem(msEdit, SWT.CASCADE); 
-        miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Set variables \tCTRL-J
+        miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Set variables \tCTRL-ALT-J
         miEditVars.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { getVariables(); } });
         // Show variables
         MenuItem miEditSVars = new MenuItem(msEdit, SWT.CASCADE); 
@@ -2176,7 +2179,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 // New
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
-                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection((TransMeta)parent); }} );
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection((HasDatabasesInterface)parent); }} );
 
                 // New Connection Wizard
                 MenuItem miWizard  = new MenuItem(mCSH, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
@@ -2615,6 +2618,14 @@ public class Spoon implements AddUndoPositionInterface
                                 // Since there is no transformation or job loaded, it should be safe to do so.
                                 //
                                 TransMeta transMeta = new TransMeta();
+                                try
+                                {
+                                    transMeta.readSharedObjects(rep);
+                                }
+                                catch(KettleException e)
+                                {
+                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeGraphTabName(transMeta)), e);
+                                }                                
                                 addSpoonGraph(transMeta);
                                 
                                 // Not an existing step: data refers to the type of step to create
@@ -2634,6 +2645,14 @@ public class Spoon implements AddUndoPositionInterface
                                 // Since there is no job or job loaded, it should be safe to do so.
                                 //
                                 JobMeta jobMeta = new JobMeta(log);
+                                try
+                                {
+                                    jobMeta.readSharedObjects(rep);
+                                }
+                                catch(KettleException e)
+                                {
+                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
+                                }
                                 addChefGraph(jobMeta);
                                 
                                 // Not an existing entry: data refers to the type of step to create
@@ -3558,7 +3577,15 @@ public class Spoon implements AddUndoPositionInterface
     public void newTransFile()
     {
         TransMeta transMeta = new TransMeta();
-        loadRepositoryObjects(transMeta);
+        try
+        {
+            transMeta.readSharedObjects(rep);
+            transMeta.clearChanged();
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Exception.ErrorReadingSharedObjects.Message"), e);
+        }
         addSpoonGraph(transMeta);
         refreshTree();
     }
@@ -3568,8 +3595,15 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             JobMeta jobMeta = new JobMeta(log);
+            try
+            {
+                jobMeta.readSharedObjects(rep);
+            }
+            catch(KettleException e)
+            {
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
+            }
             
-            if (rep!=null) jobMeta.readDatabases(rep);
             addChefGraph(jobMeta);
             refreshTree();
         }
@@ -3950,6 +3984,33 @@ public class Spoon implements AddUndoPositionInterface
             return false;
         }
     }
+    
+    private void loadJobSharedObjects(JobMeta jobMeta)
+    {
+        try
+        {
+            jobMeta.readSharedObjects(rep);
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
+        }
+    }
+    
+    private boolean saveJobSharedObjects(JobMeta jobMeta)
+    {
+        try
+        {
+            jobMeta.saveSharedObjects();
+            return true;
+        }
+        catch(Exception e)
+        {
+            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
+            return false;
+        }
+    }
+
     
     private boolean saveXMLFile()
     {
@@ -4995,6 +5056,14 @@ public class Spoon implements AddUndoPositionInterface
         
         if (tid.isSharedObjectsFileChanged() || ti!=null)
         {
+            try
+            {
+                transMeta.readSharedObjects(rep);
+            }
+            catch(KettleException e)
+            {
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeGraphTabName(transMeta)), e);
+            }                                
             refreshTree();
             renameTabs(); // cheap operation, might as will do it anyway
         }
@@ -7767,21 +7836,28 @@ public class Spoon implements AddUndoPositionInterface
     public boolean saveJobFile(JobMeta jobMeta)
     {
         log.logDetailed(toString(), "Save file..."); //$NON-NLS-1$
+        boolean saved = false;
         if (rep!=null)
         {
-            return saveJobRepository(jobMeta);
+            saved  = saveJobRepository(jobMeta);
         }
         else
         {
             if (jobMeta.getFilename()!=null)
             {
-                return saveJob(jobMeta, jobMeta.getFilename());
+                saved = saveJob(jobMeta, jobMeta.getFilename());
             }
             else
             {
-                return saveJobFileAs(jobMeta);
+                saved = saveJobFileAs(jobMeta);
             }
         }
+        
+        if (saved) // all was OK
+        {
+            saved=saveJobSharedObjects(jobMeta);
+        }
+        return saved;
     }
     
     private boolean saveJobXMLFile(JobMeta jobMeta)
@@ -8021,7 +8097,14 @@ public class Spoon implements AddUndoPositionInterface
         JobDialog jd = new JobDialog(shell, SWT.NONE, jobMeta, rep);
         JobMeta ji = jd.open();
         
-        if (ji!=null)
+        // In this case, load shared objects
+        //
+        if (jd.isSharedObjectsFileChanged())
+        {
+            loadJobSharedObjects(jobMeta);
+        }
+        
+        if (jd.isSharedObjectsFileChanged() || ji!=null)
         {
             refreshTree();
             renameTabs(); // cheap operation, might as will do it anyway
