@@ -245,16 +245,14 @@ public class BaseStepDialog extends Dialog
 			wConnection.select(idx);
 		}
 	}
-	
-	public CCombo addConnectionLine(Composite parent, 
-									Control previous, 
-									int middle, 
-                                    int margin
-									)
+
+    public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin)
+    {
+        return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
+    }
+
+	public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection, final Button wbnConnection, final Button wbeConnection)
 	{
-		final Label        wlConnection;
-		final Button       wbnConnection;
-		final Button       wbeConnection;
 		final CCombo       wConnection;
 		final FormData     fdlConnection, fdbConnection, fdeConnection, fdConnection;
 
@@ -263,7 +261,6 @@ public class BaseStepDialog extends Dialog
 
 		addDatabases(wConnection);
 
-		wlConnection=new Label(parent, SWT.RIGHT);
 		wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
  		props.setLook(wlConnection);
 		fdlConnection=new FormData();
@@ -276,7 +273,6 @@ public class BaseStepDialog extends Dialog
 		// 
 		// NEW button
 		//
-		wbnConnection=new Button(parent, SWT.PUSH);
 		wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
 		wbnConnection.addSelectionListener(new SelectionAdapter() 
 		{
@@ -302,7 +298,6 @@ public class BaseStepDialog extends Dialog
 		//
 		// Edit button
 		//
-		wbeConnection=new Button(parent, SWT.PUSH);
 		wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
 		wbeConnection.addSelectionListener(new SelectionAdapter() 
 		{

@@ -60,7 +60,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlUseDatabase;
 	private Button       wUseDatabase;
 
+    private Label        wlConnection;
 	private CCombo       wConnection;
+    private Button       wbnConnection, wbeConnection;
 
     private Label        wlSchema;
     private Text         wSchema;
@@ -188,16 +190,17 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					input.setUseDatabase(!input.isDatabaseUsed());
-					input.setChanged();
+                    wUseCounter.setSelection(!wUseDatabase.getSelection());
 					enableFields();
 				}
 			}
 		);
 
 		// Connection line
-		// Connection line
-		wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin);
+		wlConnection = new Label(gDatabase, SWT.RIGHT);
+        wbnConnection = new Button(gDatabase, SWT.PUSH);
+		wbeConnection = new Button(gDatabase, SWT.PUSH);
+        wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin, wlConnection, wbnConnection, wbeConnection);
 		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
@@ -273,8 +276,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					input.setUseCounter(!input.isCounterUsed() );
-					input.setChanged();
+                    wUseDatabase.setSelection(!wUseCounter.getSelection());
 					enableFields();
 				}
 			}
@@ -402,18 +404,26 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	
 	public void enableFields()
 	{
-		//wlConnection.setEnabled(input.isDatabaseUsed());
-		wConnection.setEnabled(input.isDatabaseUsed());
-		//wbConnection.setEnabled(input.isDatabaseUsed());
-		wlSeqname.setEnabled(input.isDatabaseUsed());
-		wSeqname.setEnabled(input.isDatabaseUsed());
+        boolean useDatabase = wUseDatabase.getSelection();
+        boolean useCounter = wUseCounter.getSelection();
+        
+		wlConnection.setEnabled(useDatabase);
+		wConnection.setEnabled(useDatabase);
+        wbnConnection.setEnabled(useDatabase);
+		wbeConnection.setEnabled(useDatabase);
+        wlSchema.setEnabled(useDatabase);
+        wSchema.setEnabled(useDatabase);
+        wlSeqname.setEnabled(useDatabase);
+		wSeqname.setEnabled(useDatabase);
 		
-		wlStartAt.setEnabled(input.isCounterUsed());
-		wStartAt.setEnabled(input.isCounterUsed());
-		wlIncrBy.setEnabled(input.isCounterUsed());
-		wIncrBy.setEnabled(input.isCounterUsed());
-		wlMaxVal.setEnabled(input.isCounterUsed());
-		wMaxVal.setEnabled(input.isCounterUsed());
+        wlCounterName.setEnabled(useCounter);
+        wCounterName.setEnabled(useCounter);
+		wlStartAt.setEnabled(useCounter);
+		wStartAt.setEnabled(useCounter);
+		wlIncrBy.setEnabled(useCounter);
+		wIncrBy.setEnabled(useCounter);
+		wlMaxVal.setEnabled(useCounter);
+		wMaxVal.setEnabled(useCounter);
 	}
 
 	/**
@@ -455,6 +465,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	{
 		stepname = wStepname.getText(); // return value
 
+        input.setUseCounter(wUseCounter.getSelection());
+        input.setUseDatabase(wUseDatabase.getSelection());
+        
 		String connection=wConnection.getText();
 		input.setDatabase(transMeta.findDatabase(connection));
         input.setSchemaName(wSchema.getText());
