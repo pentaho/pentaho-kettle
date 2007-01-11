@@ -2652,9 +2652,6 @@ public class Spoon implements AddUndoPositionInterface
             
             saveConnection(databaseMeta);
             
-            // The connection is saved, clear the changed flag.
-            databaseMeta.setChanged(false);
-            
             refreshTree();
         }
         setShellText();
@@ -3761,6 +3758,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         
         renameTabs(); // filename or name of transformation might have changed.
+        refreshTree();
 
         return saved;
     }
@@ -3891,6 +3889,8 @@ public class Spoon implements AddUndoPositionInterface
             saved=saveTransXMLFile(transMeta);
             renameTabs();
         }
+        
+        refreshTree();
         
         return saved;
     }

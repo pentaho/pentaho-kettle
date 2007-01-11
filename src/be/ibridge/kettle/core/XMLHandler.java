@@ -532,9 +532,7 @@ public class XMLHandler
 	 */
 	public static final Document loadXMLFile(File file) throws KettleXMLException
 	{
-	    LogWriter log = LogWriter.getInstance();
-
-		DocumentBuilderFactory dbf;
+	    DocumentBuilderFactory dbf;
 		DocumentBuilder db;
 		Document doc;
 		
@@ -549,8 +547,7 @@ public class XMLHandler
 			}
 			catch(FileNotFoundException ef)
 			{
-				log.logError(getString(), "Error opening file: "+file.getAbsolutePath()+" : "+ef.toString());
-				return null;
+				throw new KettleXMLException(ef);
 			}
 				
 			return doc;
