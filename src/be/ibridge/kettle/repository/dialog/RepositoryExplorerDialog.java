@@ -152,6 +152,7 @@ public class RepositoryExplorerDialog extends Dialog
     private int sortColumn;
     private boolean ascending;
     private TreeColumn nameColumn;
+    private TreeColumn typeColumn;
     private TreeColumn userColumn;
     private TreeColumn changedColumn;
     
@@ -238,6 +239,12 @@ public class RepositoryExplorerDialog extends Dialog
             nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
             nameColumn.setWidth(350);
             nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
+            
+            // No sorting on the type column just yet.
+            typeColumn = new TreeColumn(wTree, SWT.LEFT);
+            typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
+            typeColumn.setWidth(100);
+            // typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
             
             userColumn = new TreeColumn(wTree, SWT.LEFT);
             userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
