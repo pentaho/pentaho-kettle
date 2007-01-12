@@ -541,19 +541,22 @@ public class RepositoryDirectory
 			return false;
 		}
 	}
-	
-	/**
-	 * Set the name of this directory on a TreeItem. 
-	 * Also, create children on this TreeItem to reflect the subdirectories.
-	 * In these sub-directories, fill in the available transformations from the repository.
-	 * 
-	 * @param ti The TreeItem to set the name on and to create the subdirectories
-	 * @param rep The repository
-	 * @param dircolor The color in which the directories will be drawn.
-	 * @param schema Include the schemas in the tree or not
-	 * @throws KettleDatabaseException if something goes wrong.
-	 */
-	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending) throws KettleDatabaseException
+
+    /**
+     * Set the name of this directory on a TreeItem. 
+     * Also, create children on this TreeItem to reflect the subdirectories.
+     * In these sub-directories, fill in the available transformations from the repository.
+
+     * @param ti The TreeItem to set the name on and to create the subdirectories
+     * @param rep The repository
+     * @param dircolor The color in which the directories will be drawn.
+     * @param sortPosition The sort position
+     * @param ascending The ascending flag
+     * @param getTransformations Include transformations in the tree or not
+     * @param getJobs Include jobs in the tree or not
+     * @throws KettleDatabaseException
+     */
+	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, int sortPosition, boolean ascending, boolean getTransformations, boolean getJobs) throws KettleDatabaseException
 	{
 		ti.setText(getDirectoryName());
 		ti.setForeground(dircolor);
@@ -563,30 +566,36 @@ public class RepositoryDirectory
 		{
 			RepositoryDirectory subdir = getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
-			subdir.getTreeWithNames(subti, rep, dircolor, sortPosition, ascending);
+			subdir.getTreeWithNames(subti, rep, dircolor, sortPosition, ascending, getTransformations, getJobs);
 		}
 		
 		try
 		{
 			// Then show the transformations & jobs in that directory...
-            List repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
-            if (repositoryObjects!=null)
+            if (getTransformations)
             {
-                for (int i=0;i<repositoryObjects.size();i++)
+                List repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
+                if (repositoryObjects!=null)
                 {
-                    TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-                    RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
-                    repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION);
+                    for (int i=0;i<repositoryObjects.size();i++)
+                    {
+                        TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                        RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
+                        repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION);
+                    }
                 }
             }
-            repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
-            if (repositoryObjects!=null)
+            if (getJobs)
             {
-                for (int i=0;i<repositoryObjects.size();i++)
+                List repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
+                if (repositoryObjects!=null)
                 {
-                    TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-                    RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
-                    repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_JOB);
+                    for (int i=0;i<repositoryObjects.size();i++)
+                    {
+                        TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                        RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
+                        repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_JOB);
+                    }
                 }
             }
 		}

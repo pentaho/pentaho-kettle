@@ -681,4 +681,15 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database needs all repository tables to be locked, not just one ref table (R_REPOSITORY_LOG)
      */
     public boolean needsToLockAllTables();
+
+    /**
+     * @return true if the database is streaming results (normally this is an option just for MySQL).
+     */
+    public boolean isStreamingResults();
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setStreamingResults(boolean useStreaming);
+
 }

@@ -122,7 +122,6 @@ public class Database
 		databaseMeta = inf;
 		
 		pstmt = null;
-		// rsmd = null;
 		rowinfo = null;
 		dbmd = null;
 		
@@ -2105,7 +2104,7 @@ public class Database
                     
                     // System.out.println("Setting pstmt fetchsize to : "+fs);
                     {
-                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
                         {
                             pstmt.setFetchSize(Integer.MIN_VALUE);
                         }
@@ -2128,7 +2127,7 @@ public class Database
 				{
 					debug = "Set fetchsize";
                     int fs = Const.FETCH_SIZE<=sel_stmt.getMaxRows()?sel_stmt.getMaxRows():Const.FETCH_SIZE;
-                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
                     {
                         sel_stmt.setFetchSize(Integer.MIN_VALUE);
                     }
@@ -2190,7 +2189,7 @@ public class Database
 			{
 				debug = "OQ Set fetchsize";
                 int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults())
                 {
                     ps.setFetchSize(Integer.MIN_VALUE);
                 }

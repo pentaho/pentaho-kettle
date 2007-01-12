@@ -222,6 +222,8 @@ public class Spoon implements AddUndoPositionInterface
 {
     public static final String APP_NAME = Messages.getString("Spoon.Application.Name");  //"Spoon";
     
+    private static Spoon staticSpoon;
+    
     private LogWriter log;
     private Display disp;
     private Shell shell;
@@ -645,6 +647,10 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
+    public static Spoon getInstance()
+    {
+        return staticSpoon;
+    }
 
 
     /**
@@ -6561,6 +6567,7 @@ public class Spoon implements AddUndoPositionInterface
         }
 
         final Spoon spoon = new Spoon(log, display, null);
+        staticSpoon = spoon;
         spoon.setDestroy(true);
         spoon.setArguments((String[])args.toArray(new String[args.size()]));
         
@@ -7408,7 +7415,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void addSpoonBrowser(String name, String urlString)
+    public boolean addSpoonBrowser(String name, String urlString)
     {
         try
         {
@@ -7432,10 +7439,11 @@ public class Spoon implements AddUndoPositionInterface
             
             // keep the focus on the graph
             tabfolder.setSelection(idx);
+            return true;
         }
         catch(Throwable e)
         {
-            // new ErrorDialog(shell, "Unexpected error", "Unexpected error opening browser tab called '"+name+"'", new Exception(e));
+            return false;
         }
     }
     

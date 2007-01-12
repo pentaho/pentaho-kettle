@@ -108,6 +108,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
     /** The pooling parameters */
     public static final String ATTRIBUTE_POOLING_PARAMETER_PREFIX = "POOLING_";
     
+    /**
+     * A flag to determine if we should use result streaming on MySQL
+     */
+    public static final String ATTRIBUTE_USE_RESULT_STREAMING = "STREAM_RESULTS";
+
+    
+    
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
         {
            new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."), 
@@ -1125,4 +1132,22 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         return true;
     }
+    
+    /**
+     * @return true if the database is streaming results (normally this is an option just for MySQL).
+     */
+    public boolean isStreamingResults()
+    {
+        String usePool = attributes.getProperty(ATTRIBUTE_USE_RESULT_STREAMING, "Y"); // DEFAULT TO YES!!
+        return "Y".equalsIgnoreCase(usePool);
+    }
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setStreamingResults(boolean useStreaming)
+    {
+        attributes.setProperty(ATTRIBUTE_USE_RESULT_STREAMING, useStreaming?"Y":"N");
+    }
+
 }

@@ -241,7 +241,7 @@ public class SelectObjectDialog extends Dialog
             TreeItem ti = new TreeItem(wTree, SWT.NONE);
             ti.setExpanded(true);
             
-            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, sortColumn, ascending);
+            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, true, true);
         }
         catch(KettleDatabaseException e)
         {

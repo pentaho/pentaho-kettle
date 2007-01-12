@@ -2168,4 +2168,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         return getSchemaTableCombination(quoteField(schemaName), quoteField(tableName));
     }
 
+    /**
+     * @return true if the database is streaming results (normally this is an option just for MySQL).
+     */
+    public boolean isStreamingResults()
+    {
+        return databaseInterface.isStreamingResults();
+    }
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setStreamingResults(boolean useStreaming)
+    {
+        databaseInterface.setStreamingResults(useStreaming);
+    }
+
+
 }
