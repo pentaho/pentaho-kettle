@@ -102,39 +102,34 @@ public class RepositoryExplorerDialog extends Dialog
     private static final String STRING_CLUSTERS        = Messages.getString("RepositoryExplorerDialog.Tree.String.Clusters"); //$NON-NLS-1$
 	public  static final String STRING_TRANSFORMATIONS = Messages.getString("RepositoryExplorerDialog.Tree.String.Transformations"); //$NON-NLS-1$
 	public  static final String STRING_JOBS            = Messages.getString("RepositoryExplorerDialog.Tree.String.Jobs"); //$NON-NLS-1$
-	public  static final String STRING_SCHEMAS         = Messages.getString("RepositoryExplorerDialog.Tree.String.Schemas"); //$NON-NLS-1$
 	private static final String STRING_USERS           = Messages.getString("RepositoryExplorerDialog.Tree.String.Users"); //$NON-NLS-1$
 	private static final String STRING_PROFILES        = Messages.getString("RepositoryExplorerDialog.Tree.String.Profiles"); //$NON-NLS-1$
 	
 	private static final int    ITEM_CATEGORY_NONE                        =  0;
 	private static final int    ITEM_CATEGORY_ROOT                        =  1;
-	private static final int    ITEM_CATEGORY_OBJECTS                     =  2;
-	private static final int    ITEM_CATEGORY_DATABASES_ROOT              =  3;
-	private static final int    ITEM_CATEGORY_DATABASE                    =  4;
-	private static final int    ITEM_CATEGORY_TRANSFORMATIONS_ROOT        =  5;
-	private static final int    ITEM_CATEGORY_TRANSFORMATION              =  6;
-	private static final int    ITEM_CATEGORY_TRANSFORMATION_DIRECTORY    =  7;
-	private static final int    ITEM_CATEGORY_JOBS_ROOT                   =  8;
-	private static final int    ITEM_CATEGORY_JOB                         =  9;
-	private static final int    ITEM_CATEGORY_JOB_DIRECTORY               = 10;
-	private static final int    ITEM_CATEGORY_SCHEMAS_ROOT                = 11;
-	private static final int    ITEM_CATEGORY_SCHEMA                      = 12;
-	private static final int    ITEM_CATEGORY_SCHEMA_DIRECTORY            = 13;
-	private static final int    ITEM_CATEGORY_USERS_ROOT                  = 14;
-	private static final int    ITEM_CATEGORY_USER                        = 15;
-	private static final int    ITEM_CATEGORY_PROFILES_ROOT               = 16;
-	private static final int    ITEM_CATEGORY_PROFILE                     = 17;
-    private static final int    ITEM_CATEGORY_PARTITIONS_ROOT             = 18;
-    private static final int    ITEM_CATEGORY_PARTITION                   = 19;
-    private static final int    ITEM_CATEGORY_SLAVES_ROOT                 = 20;
-    private static final int    ITEM_CATEGORY_SLAVE                       = 21;
-    private static final int    ITEM_CATEGORY_CLUSTERS_ROOT               = 22;
-    private static final int    ITEM_CATEGORY_CLUSTER                     = 23;
+	private static final int    ITEM_CATEGORY_DATABASES_ROOT              =  2;
+	private static final int    ITEM_CATEGORY_DATABASE                    =  3;
+	private static final int    ITEM_CATEGORY_TRANSFORMATIONS_ROOT        =  4;
+	private static final int    ITEM_CATEGORY_TRANSFORMATION              =  5;
+	private static final int    ITEM_CATEGORY_TRANSFORMATION_DIRECTORY    =  6;
+	private static final int    ITEM_CATEGORY_JOBS_ROOT                   =  7;
+	private static final int    ITEM_CATEGORY_JOB                         =  8;
+	private static final int    ITEM_CATEGORY_JOB_DIRECTORY               =  9;
+	private static final int    ITEM_CATEGORY_USERS_ROOT                  = 10;
+	private static final int    ITEM_CATEGORY_USER                        = 11;
+	private static final int    ITEM_CATEGORY_PROFILES_ROOT               = 12;
+	private static final int    ITEM_CATEGORY_PROFILE                     = 13;
+    private static final int    ITEM_CATEGORY_PARTITIONS_ROOT             = 14;
+    private static final int    ITEM_CATEGORY_PARTITION                   = 15;
+    private static final int    ITEM_CATEGORY_SLAVES_ROOT                 = 16;
+    private static final int    ITEM_CATEGORY_SLAVE                       = 17;
+    private static final int    ITEM_CATEGORY_CLUSTERS_ROOT               = 18;
+    private static final int    ITEM_CATEGORY_CLUSTER                     = 19;
 	
 	private Shell     shell;
 	private Tree      wTree;
-	private Button    wOK;
-	private Button    wCancel;
+	private Button    wCommit;
+	private Button    wRollback;
 
 	private LogWriter log;
 	private Props props;
@@ -260,10 +255,10 @@ public class RepositoryExplorerDialog extends Dialog
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
      		// Buttons
-    		wOK = new Button(shell, SWT.PUSH); 
-    		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-    		wCancel = new Button(shell, SWT.PUSH); 
-    		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+    		wCommit = new Button(shell, SWT.PUSH); 
+    		wCommit.setText(Messages.getString("RepositoryExplorerDialog.Button.Commit")); //$NON-NLS-1$
+    		wRollback = new Button(shell, SWT.PUSH); 
+    		wRollback.setText(Messages.getString("RepositoryExplorerDialog.Button.Rollback")); //$NON-NLS-1$
     				
     		FormData fdTree      = new FormData(); 
     		int margin =  10;
@@ -274,10 +269,10 @@ public class RepositoryExplorerDialog extends Dialog
     		fdTree.bottom = new FormAttachment(100, -50);
     		wTree.setLayoutData(fdTree);
     
-    		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null );
+    		BaseStepDialog.positionBottomButtons(shell, new Button[] { wCommit, wRollback }, margin, null );
     
     		// Add listeners
-    		wOK.addListener(SWT.Selection, new Listener ()
+    		wCommit.addListener(SWT.Selection, new Listener ()
     			{
     				public void handleEvent (Event e) 
     				{
@@ -286,7 +281,7 @@ public class RepositoryExplorerDialog extends Dialog
     			}
     		);
     		// Add listeners
-    		wCancel.addListener(SWT.Selection, new Listener ()
+    		wRollback.addListener(SWT.Selection, new Listener ()
     			{
     				public void handleEvent (Event e) 
     				{
@@ -574,23 +569,21 @@ public class RepositoryExplorerDialog extends Dialog
 			switch(cat)
 			{
 			case ITEM_CATEGORY_JOB:
-			case ITEM_CATEGORY_SCHEMA:
 			case ITEM_CATEGORY_TRANSFORMATION:
 				{
 					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-3];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+3];
+					String realpath[] = new String[level-2];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					repdir = rep.getDirectoryTree().findDirectory(realpath);
 				}
 				break;
 			case ITEM_CATEGORY_JOB_DIRECTORY:
-			case ITEM_CATEGORY_SCHEMA_DIRECTORY:
 			case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY:
 				{
 					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+3];
+					String realpath[] = new String[level-1];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					repdir = rep.getDirectoryTree().findDirectory(realpath);
 				}
@@ -630,7 +623,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			switch(cat)
 			{
-			case ITEM_CATEGORY_OBJECTS                     :
+			case ITEM_CATEGORY_ROOT :
 				{
 					// Export all
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
@@ -696,11 +689,11 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_TRANSFORMATIONS_ROOT        :
 				break;
 			case ITEM_CATEGORY_TRANSFORMATION              :
-				if (level>=3)
+				if (level>=2)
 				{
-					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-3];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+3];
+					// The first 1 levels of path[] don't belong to the path to this transformation!
+					String realpath[] = new String[level-2];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
 					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
@@ -747,13 +740,12 @@ public class RepositoryExplorerDialog extends Dialog
 				break;
 				
 			case ITEM_CATEGORY_JOB_DIRECTORY               :
-			case ITEM_CATEGORY_SCHEMA_DIRECTORY            :
 			case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY    :
-				if (level>=3)
+				if (level>=2)
 				{
-					// The first 2 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+3];
+					// The first levels of path[] don't belong to the path to this directory!
+					String realpath[] = new String[level-1];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
 					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
@@ -801,13 +793,12 @@ public class RepositoryExplorerDialog extends Dialog
 				break;
 				
 			case ITEM_CATEGORY_JOBS_ROOT                   :
-				break;
-				
+				break;				
 			case ITEM_CATEGORY_JOB                         :
 				{
 					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-3];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+3];
+					String realpath[] = new String[level-2];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
 					
 					// Find the directory in the directory tree...
 					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
@@ -840,12 +831,6 @@ public class RepositoryExplorerDialog extends Dialog
 					);
 					miRen.setEnabled(!userinfo.isReadonly());
 				}
-				break;
-				
-			case ITEM_CATEGORY_SCHEMAS_ROOT                :
-				break;
-				
-			case ITEM_CATEGORY_SCHEMA                      :
 				break;
 				
 			case ITEM_CATEGORY_USERS_ROOT                  :
@@ -959,8 +944,8 @@ public class RepositoryExplorerDialog extends Dialog
 					final String name = item.getText();
 	
 					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String path[] = new String[level-3];
-					for (int i=0;i<path.length;i++) path[i] = text[i+3];
+					String path[] = new String[level-2];
+					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(path);
@@ -973,8 +958,8 @@ public class RepositoryExplorerDialog extends Dialog
 					final String name = item.getText();
 	
 					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String path[] = new String[level-3];
-					for (int i=0;i<path.length;i++) path[i] = text[i+3];
+					String path[] = new String[level-2];
+					for (int i=0;i<path.length;i++) path[i] = text[i+2];
 					
 					// Find the directory in the directory tree...
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(path);
@@ -2562,17 +2547,17 @@ public class RepositoryExplorerDialog extends Dialog
             else if (item.equals(STRING_CLUSTERS))        cat = ITEM_CATEGORY_CLUSTERS_ROOT;
             else if (item.equals(STRING_TRANSFORMATIONS)) cat = ITEM_CATEGORY_TRANSFORMATIONS_ROOT;
             else if (item.equals(STRING_JOBS))            cat = ITEM_CATEGORY_JOBS_ROOT;
-            else if (item.equals(STRING_SCHEMAS))         cat = ITEM_CATEGORY_SCHEMAS_ROOT;
 		}
 		else
-		if (level==2)
+		if (level>=2)
 		{
-			if (parent.equals(STRING_USERS)) cat = ITEM_CATEGORY_USER;
+			     if (parent.equals(STRING_USERS)) cat = ITEM_CATEGORY_USER;
 			else if (parent.equals(STRING_PROFILES)) cat = ITEM_CATEGORY_PROFILE;
             else if (parent.equals(STRING_DATABASES)) cat = ITEM_CATEGORY_DATABASE;
             else if (parent.equals(STRING_PARTITIONS)) cat = ITEM_CATEGORY_PARTITION;
             else if (parent.equals(STRING_SLAVES)) cat = ITEM_CATEGORY_SLAVE;
             else if (parent.equals(STRING_CLUSTERS)) cat = ITEM_CATEGORY_CLUSTER;
+                 
             if (path[1].equals(STRING_TRANSFORMATIONS))
             {
                 if (ti.getForeground().equals(dircolor)) 
@@ -2585,13 +2570,6 @@ public class RepositoryExplorerDialog extends Dialog
                 if (ti.getForeground().equals(dircolor)) 
                      cat = ITEM_CATEGORY_JOB_DIRECTORY;
                 else cat = ITEM_CATEGORY_JOB;
-            }
-            else
-            if (path[1].equals(STRING_SCHEMAS))
-            {
-                if (ti.getForeground().equals(dircolor)) 
-                     cat = ITEM_CATEGORY_SCHEMA_DIRECTORY;
-                else cat = ITEM_CATEGORY_SCHEMA;
             }
 		}
 		
