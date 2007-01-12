@@ -231,7 +231,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				    case CREATION_METHOD_TABLEMAX:
 				    	//  Use our own counter: what's the next value for the technical key?
 				        val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
-				        data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTablename(), val_key);
+				        data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTablename(), val_key);
                         break;
 				    case CREATION_METHOD_AUTOINC:
 				    	autoinc=true;

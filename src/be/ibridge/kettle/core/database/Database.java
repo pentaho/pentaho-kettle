@@ -4339,10 +4339,16 @@ public class Database
 		
 		return row;
 	}
-	
-	public synchronized void getNextValue(Hashtable counters, String table, Value val_key) throws KettleDatabaseException
+
+    public synchronized void getNextValue(Hashtable counters, String tableName, Value val_key) throws KettleDatabaseException
+    {
+        getNextValue(counters, null, tableName, val_key);
+    }
+    
+	public synchronized void getNextValue(Hashtable counters, String schemaName, String tableName, Value val_key) throws KettleDatabaseException
 	{
-		String lookup = databaseMeta.quoteField(table)+"."+databaseMeta.quoteField(val_key.getName());
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+		String lookup = schemaTable+"."+databaseMeta.quoteField(val_key.getName());
 		
 		// Try to find the previous sequence value...
 		Counter counter = null;
@@ -4350,7 +4356,7 @@ public class Database
         
 		if (counter==null)
 		{
-			Row r = getOneRow("SELECT MAX("+databaseMeta.quoteField(val_key.getName())+") FROM "+databaseMeta.quoteField(table));
+			Row r = getOneRow("SELECT MAX("+databaseMeta.quoteField(val_key.getName())+") FROM "+schemaTable);
 			if (r!=null)
 			{
 				counter = new Counter(r.getValue(0).getInteger()+1, 1);
@@ -4359,7 +4365,7 @@ public class Database
 			}
 			else
 			{
-				throw new KettleDatabaseException("Couldn't find maximum key value from table "+table);
+				throw new KettleDatabaseException("Couldn't find maximum key value from table "+schemaTable);
 			}
 		}
 		else

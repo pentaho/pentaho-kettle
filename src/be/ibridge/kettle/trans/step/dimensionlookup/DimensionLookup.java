@@ -232,7 +232,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				    case CREATION_METHOD_TABLEMAX:
 						// What's the next value for the technical key?
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTableName(), technicalKey);
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), technicalKey);
                         break;
 				    case CREATION_METHOD_AUTOINC:
 						autoinc=true;
@@ -364,7 +364,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					{
 						// What's the next value for the technical key?
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName()+"."+meta.getTableName(), technicalKey);
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getSchemaName(), meta.getTableName(), technicalKey);
 					}
 
 					data.db.dimInsert( row, meta.getSchemaName(), meta.getTableName(), 
