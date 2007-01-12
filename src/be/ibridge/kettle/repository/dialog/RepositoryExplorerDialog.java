@@ -225,7 +225,7 @@ public class RepositoryExplorerDialog extends Dialog
             //
             MenuItem miFileClose= new MenuItem(msFile, SWT.CASCADE); 
             miFileClose.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileClose")); //$NON-NLS-1$
-            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { handleOK(); } });
+            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { commit(); } });
             
             
      		// Tree
@@ -280,7 +280,7 @@ public class RepositoryExplorerDialog extends Dialog
     			{
     				public void handleEvent (Event e) 
     				{
-    					handleOK();
+    					commit();
     				}
     			}
     		);
@@ -289,7 +289,7 @@ public class RepositoryExplorerDialog extends Dialog
     			{
     				public void handleEvent (Event e) 
     				{
-    					dispose();
+    					rollback();
     				}
     			}
     		);
@@ -508,7 +508,7 @@ public class RepositoryExplorerDialog extends Dialog
     
     
     		// Detect X or ALT-F4 or something that kills this window...
-    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { dispose(); } } );
+    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { rollback(); } } );
             
             debug="set screen size and position"; //$NON-NLS-1$
     
@@ -833,7 +833,18 @@ public class RepositoryExplorerDialog extends Dialog
 					// Find the directory in the directory tree...
 					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
 	
-
+                    // Open job...
+                    MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
+                    miOpen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Jobs.Open")); //$NON-NLS-1$
+                    miOpen.addSelectionListener( 
+                        new SelectionAdapter() 
+                        { 
+                            public void widgetSelected(SelectionEvent e) 
+                            { 
+                                openJob(item, repdir);
+                            }
+                        }
+                    );
 					// Delete job
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
 					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Jobs.Delete")); //$NON-NLS-1$
@@ -1010,7 +1021,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 
-	public void dispose()
+	public void rollback()
 	{
         rep.rollback();
 
@@ -1018,7 +1029,7 @@ public class RepositoryExplorerDialog extends Dialog
 		shell.dispose();
 	}
 	
-	public void handleOK()
+	public void commit()
 	{
 	    try
 	    {
@@ -1028,7 +1039,9 @@ public class RepositoryExplorerDialog extends Dialog
 	    {
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 	    }
-		dispose();
+        
+        props.setScreen(new WindowProperty(shell));
+        shell.dispose();
 	}
 	
 	public void refreshTree()
@@ -1170,9 +1183,17 @@ public class RepositoryExplorerDialog extends Dialog
 		objectName =  name;
 		objectDir  =  repdir;
 		objectType =  STRING_TRANSFORMATIONS;
-		handleOK();
+		commit();
 	}
-	
+
+    public void openJob(String name, RepositoryDirectory repdir)
+    {
+        objectName =  name;
+        objectDir  =  repdir;
+        objectType =  STRING_JOBS;
+        commit();
+    }
+
 	public boolean delSelectedTransformations()
 	{
 		boolean retval=false;
