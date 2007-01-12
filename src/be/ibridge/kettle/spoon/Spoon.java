@@ -3392,7 +3392,7 @@ public class Spoon implements AddUndoPositionInterface
                 String object_type = erd.getObjectType();
                 RepositoryDirectory repdir = erd.getObjectDirectory();
                 
-                // Try to open it as a transformation.
+                // Try to open the selected transformation.
                 if (object_type.equals(RepositoryExplorerDialog.STRING_TRANSFORMATIONS))
                 {
                     try
@@ -3412,6 +3412,28 @@ public class Spoon implements AddUndoPositionInterface
                         mb.open();
                     }
                 }
+                else
+                // Try to open the selected job.
+                if (object_type.equals(RepositoryExplorerDialog.STRING_JOBS))
+                {
+                    try
+                    {
+                        JobMeta jobMeta = new JobMeta(log, rep, objname, repdir);
+                        jobMeta.clearChanged();
+                        jobMeta.setFilename(objname);
+                        addChefGraph(jobMeta);
+                        refreshTree();
+                        refreshGraph();
+                    }
+                    catch(KettleException e)
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
+                        mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
+                        mb.open();
+                    }
+                }
+                
             }
         }
     }

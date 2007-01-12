@@ -76,6 +76,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
  		props.setLook(shell);
+        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{

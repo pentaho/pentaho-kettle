@@ -70,6 +70,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
  		props.setLook(shell);
+        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{

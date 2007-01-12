@@ -63,6 +63,7 @@ public class RowsToResultDialog extends BaseStepDialog implements StepDialogInte
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE);
  		props.setLook(shell);
+        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{

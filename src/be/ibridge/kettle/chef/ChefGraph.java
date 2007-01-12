@@ -1416,12 +1416,9 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				newTrans.clearChanged();
 				spoon.open();
 			}
-			catch(Throwable ke)
+			catch(Throwable e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message")+Const.CR+ke.getMessage()); //$NON-NLS-1$
-				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception)e); //$NON-NLS-1$ $NON-NLS-2$ 
 			}
 		}
 		else
@@ -1429,7 +1426,10 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			try
 			{
                 // only try to load if the file exists...
-                
+                if (Const.isEmpty(exactFilename))
+                {
+                    throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
+                }
                 File file = new File(exactFilename);
                 TransMeta launchTransMeta = null;
                 if (file.exists())
@@ -1446,12 +1446,9 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                 spoon.addSpoonGraph( launchTransMeta );
 				spoon.open();
 			}
-			catch(Throwable xe)
+			catch(Throwable e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message")+Const.CR+xe.getMessage()); //$NON-NLS-1$
-				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception)e);
 			}
 
 		}
@@ -1473,16 +1470,18 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
-				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), new Exception(e));
 			}
 		}
 		else
 		{
 			try
 			{
+                if (Const.isEmpty(exactFilename))
+                {
+                    throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
+                }
+
                 File file = new File(exactFilename);
                 
                 JobMeta newJobMeta;
@@ -1501,10 +1500,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
-				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), new Exception(e));
 			}
 		}
 	}

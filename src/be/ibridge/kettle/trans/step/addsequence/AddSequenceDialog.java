@@ -99,8 +99,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		Display display = parent.getDisplay();
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(		shell);
-		
+ 		props.setLook(shell);
+        setShellImage(shell, input);
+
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 

@@ -79,6 +79,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{

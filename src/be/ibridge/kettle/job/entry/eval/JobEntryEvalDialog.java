@@ -81,11 +81,11 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 	
 	public JobEntryEvalDialog(Shell parent, JobEntryEval in)
 	{
-			super(parent, SWT.NONE);
-			props=Props.getInstance();
-			input=in;
+		super(parent, SWT.NONE);
+		props=Props.getInstance();
+		input=in;
 
-			if (input.getName() == null) input.setName("Evaluation");
+		if (input.getName() == null) input.setName("Evaluation");
 	}
 
 	public JobEntryInterface open()
@@ -146,7 +146,6 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 		fdlPosition.left  = new FormAttachment(0, 0);
 		fdlPosition.bottom = new FormAttachment(wOK, -margin);
 		wlPosition.setLayoutData(fdlPosition);
-
 
 		// Script line
 		wlScript=new Label(shell, SWT.NONE);

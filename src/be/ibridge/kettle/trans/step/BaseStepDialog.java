@@ -33,6 +33,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
@@ -61,6 +63,7 @@ import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransMeta;
 
 public class BaseStepDialog extends Dialog
@@ -103,6 +106,21 @@ public class BaseStepDialog extends Dialog
 	{
 		this(parent, in, tr, null);
 	}
+    
+    public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface)
+    {
+        try
+        {
+            String id = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
+            if (id!=null)
+            {
+                shell.setImage((Image) GUIResource.getInstance().getImagesSteps().get(id));
+            }
+        }
+        catch(Throwable e)
+        {
+        }
+    }
 
 	public void dispose()
 	{

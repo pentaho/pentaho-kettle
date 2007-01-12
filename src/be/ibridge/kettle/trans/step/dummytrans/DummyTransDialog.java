@@ -62,7 +62,8 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
  		props.setLook(shell);
-
+ 		setShellImage(shell, input);
+        
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 

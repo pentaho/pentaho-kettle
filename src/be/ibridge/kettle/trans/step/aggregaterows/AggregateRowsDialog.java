@@ -76,6 +76,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(	shell);
+        setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{

@@ -129,6 +129,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
+        setShellImage(shell, input);
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;

@@ -146,7 +146,7 @@ public class GUIResource
         colorOrange     = new ManagedColor(display, 255, 165,   0 );
 
         colorWhite      = new ManagedColor(display, 255, 255, 255 );
-        colorDemoGray   = new ManagedColor(display, 248, 248, 248 );
+        colorDemoGray   = new ManagedColor(display, 240, 240, 240 );
         colorLightGray  = new ManagedColor(display, 225, 225, 225 );
         colorDarkGray   = new ManagedColor(display, 100, 100, 100 );
         colorBlack      = new ManagedColor(display,   0,   0,   0 );

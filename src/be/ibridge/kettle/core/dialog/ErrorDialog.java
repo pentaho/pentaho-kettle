@@ -86,7 +86,7 @@ public class ErrorDialog extends Dialog
     {
         this(parent, title, message, exception);
     }
-
+   
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
@@ -94,7 +94,7 @@ public class ErrorDialog extends Dialog
 
 		Display display  = parent.getDisplay();
         final Font largeFont = GUIResource.getInstance().getFontLarge();
-		final Color gray = GUIResource.getInstance().getColorLightGray();
+		final Color gray = GUIResource.getInstance().getColorDemoGray();
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
  		props.setLook(shell);

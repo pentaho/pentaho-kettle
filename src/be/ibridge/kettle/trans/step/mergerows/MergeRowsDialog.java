@@ -93,7 +93,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
  		props.setLook(shell);
-
+        setShellImage(shell, input);
 		
 		ModifyListener lsMod = new ModifyListener() 
 		{
