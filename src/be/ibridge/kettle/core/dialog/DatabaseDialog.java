@@ -1432,6 +1432,10 @@ public class DatabaseDialog extends Dialog
             wlServername.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_INFORMIX);
             wServername.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_INFORMIX);
 
+            // If the type is not Mysql: disable the result streaming option.
+            wlStreamResult.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_MYSQL);
+            wStreamResult.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_MYSQL);
+
             // If this is an Oracle connection enable the Oracle tab
             wlData.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_ORACLE);
             wData.setEnabled(dbtype == DatabaseMeta.TYPE_DATABASE_ORACLE);
