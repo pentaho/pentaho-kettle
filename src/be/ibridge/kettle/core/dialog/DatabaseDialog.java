@@ -850,9 +850,9 @@ public class DatabaseDialog extends Dialog
         props.setLook(wMySQLComp);
         wMySQLComp.setLayout(MySQLLayout);
 
-        // Servername
-        wlServername = new Label(wMySQLComp, SWT.RIGHT);
-        wlServername.setText(Messages.getString("DatabaseDialog.label.MySQLStreamResults")); //$NON-NLS-1$
+        // StreamResult
+        wlStreamResult = new Label(wMySQLComp, SWT.RIGHT);
+        wlStreamResult.setText(Messages.getString("DatabaseDialog.label.MySQLStreamResults")); //$NON-NLS-1$
         props.setLook(wlStreamResult);
         FormData fdlStreamResult = new FormData();
         fdlStreamResult.top = new FormAttachment(0, margin);
