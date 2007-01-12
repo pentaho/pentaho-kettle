@@ -63,6 +63,8 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 
+import be.ibridge.kettle.cluster.SlaveServer;
+import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
@@ -315,7 +317,7 @@ public class RepositoryExplorerDialog extends Dialog
     				public void keyPressed(KeyEvent e) 
     				{
     					// F2 --> rename...
-    					if (e.keyCode == SWT.F2)    { renameInTree(); }
+    					if (e.keyCode == SWT.F2)    { if (!userinfo.isReadonly()) renameInTree(); }
     					// F5 --> refresh...
     					if (e.keyCode == SWT.F5)    { refreshTree(); }
     				}
@@ -685,7 +687,41 @@ public class RepositoryExplorerDialog extends Dialog
 					miDel.setEnabled(!userinfo.isReadonly());
 				}
 				break;
+
+            case ITEM_CATEGORY_SLAVES_ROOT :
+                {
+                    // New slave
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Slave.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                }
+                break;
 				
+            case ITEM_CATEGORY_SLAVE :
+                {
+                    // New slave
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Slave.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                    // Edit database info
+                    MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
+                    miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Edit")); //$NON-NLS-1$
+                    SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editSlaveServer(item); } };
+                    miEdit.addSelectionListener( lsEdit );
+                    miEdit.setEnabled(!userinfo.isReadonly());
+                    // Delete database info
+                    MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
+                    miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Delete")); //$NON-NLS-1$
+                    SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delSlaveServer(item); } };
+                    miDel.addSelectionListener( lsDel );
+                    miDel.setEnabled(!userinfo.isReadonly());
+                }
+                break;
+                
 			case ITEM_CATEGORY_TRANSFORMATIONS_ROOT        :
 				break;
 			case ITEM_CATEGORY_TRANSFORMATION              :
@@ -1896,17 +1932,17 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			long idDatabase = rep.getDatabaseID(databasename);
-			DatabaseMeta dbinfo = new DatabaseMeta(rep, idDatabase);
+			DatabaseMeta databaseMeta = new DatabaseMeta(rep, idDatabase);
 
-			DatabaseDialog dd = new DatabaseDialog(shell, SWT.NONE, log, dbinfo, props);
+			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
 			if (name!=null)
 			{
 				if (!userinfo.isReadonly())
 				{
                     rep.lockRepository();
-                    rep.insertLogEntry("Updating database connection '"+dbinfo.getName()+"'");
-                    dbinfo.saveRep(rep);
+                    rep.insertLogEntry("Updating database connection '"+databaseMeta.getName()+"'");
+                    databaseMeta.saveRep(rep);
 				}
 				else
 				{
@@ -1939,8 +1975,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			DatabaseMeta dbinfo = new DatabaseMeta();
-			DatabaseDialog dd = new DatabaseDialog(shell, SWT.NONE, log, dbinfo, props);
+			DatabaseMeta databaseMeta = new DatabaseMeta();
+			DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 			String name = dd.open();
 			if (name!=null)
 			{
@@ -1949,8 +1985,8 @@ public class RepositoryExplorerDialog extends Dialog
 				if (idDatabase<=0)
 				{
                     rep.lockRepository();
-                    rep.insertLogEntry("Creating new database '"+dbinfo.getName()+"'");
-					dbinfo.saveRep(rep);
+                    rep.insertLogEntry("Creating new database '"+databaseMeta.getName()+"'");
+					databaseMeta.saveRep(rep);
 				}
 				else
 				{
@@ -1979,6 +2015,8 @@ public class RepositoryExplorerDialog extends Dialog
             }
         }
 	}
+
+
 
 	public void delDatabase(String databasename)
 	{
@@ -2202,38 +2240,50 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				Const.flipExpanded(ti);
 			}
-			else
-			if (level==1 && ti.getText().equalsIgnoreCase(STRING_USERS))
-			{
-				if (!userinfo.isReadonly()) newUser();
-			}
-			else
-			if (level==1 && ti.getText().equalsIgnoreCase(STRING_PROFILES))
-			{
-				if (!userinfo.isReadonly()) newProfile();
-			}
-			else
+
+            else
 			if (level==1 && ti.getText().equalsIgnoreCase(STRING_DATABASES))
 			{
 				if (!userinfo.isReadonly()) newDatabase();
 			}
-			else
-			if (level==1 && parent.getText().equalsIgnoreCase(STRING_USERS))
+            else
+            if (level==2 && parent.getText().equalsIgnoreCase(STRING_DATABASES))
+            {
+                if (!userinfo.isReadonly()) editDatabase(ti.getText());
+            }
+
+            else
+            if (level==1 && ti.getText().equalsIgnoreCase(STRING_USERS))
+            {
+                if (!userinfo.isReadonly()) newUser();
+            }
+            else
+            if (level==1 && parent.getText().equalsIgnoreCase(STRING_USERS))
 			{
-				editUser(ti.getText());
+                if (!userinfo.isReadonly()) editUser(ti.getText());
 			}
-			else
+            else
+            if (level==1 && ti.getText().equalsIgnoreCase(STRING_PROFILES))
+            {
+                if (!userinfo.isReadonly()) newProfile();
+            }
+            else
 			if (level==1 && parent.getText().equalsIgnoreCase(STRING_PROFILES))
 			{
-				editProfile(ti.getText());
+                if (!userinfo.isReadonly()) editProfile(ti.getText());
 			}
-			else
-			if (level==2 && parent.getText().equalsIgnoreCase(STRING_DATABASES))
-			{
-				editDatabase(ti.getText());
-			}
+            
+            else
+            if (level==1 && ti.getText().equalsIgnoreCase(STRING_SLAVES))
+            {
+                if (!userinfo.isReadonly()) newSlaveServer();
+            }
+            else
+            if (level==2 && parent.getText().equalsIgnoreCase(STRING_SLAVES))
+            {
+                if (!userinfo.isReadonly()) editSlaveServer(ti.getText());
+            }
 		}
-		
 	}
 
 	public void editProfile(String profilename)
@@ -2580,5 +2630,100 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
+
+    public void newSlaveServer()
+    {
+        try
+        {
+            SlaveServer slaveServer = new SlaveServer();
+            SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
+            if (dd.open())
+            {
+                // See if this slave server already exists...
+                long idSlave = rep.getSlaveID(slaveServer.getName());
+                if (idSlave<=0)
+                {
+                    rep.lockRepository();
+                    rep.insertLogEntry("Creating new slave server '"+slaveServer.getName()+"'");
+                    slaveServer.saveRep(rep);
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+                    // Refresh tree...
+                refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void editSlaveServer(String slaveName)
+    {
+        try
+        {
+            long id = rep.getSlaveID(slaveName);
+            SlaveServer slaveServer = new SlaveServer(rep, id);
+
+            SlaveServerDialog dd = new SlaveServerDialog(shell, slaveServer);
+            if (dd.open())
+            {
+                rep.lockRepository();
+                rep.insertLogEntry("Updating slave server '"+slaveServer.getName()+"'");
+                slaveServer.saveRep(rep);
+                if(!slaveName.equalsIgnoreCase(slaveServer.getName())) refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Edit.UnexpectedError.Message")+slaveName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void delSlaveServer(String slaveName)
+    {
+        try
+        {
+            long id = rep.getDatabaseID(slaveName);
+            if (id>0)
+            {
+                rep.delSlave(id);
+            }
+    
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
 
 }

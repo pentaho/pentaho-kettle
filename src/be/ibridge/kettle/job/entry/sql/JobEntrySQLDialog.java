@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -63,8 +62,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  */
 public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 {
-	private LogWriter    log;
-
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -88,8 +85,8 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntrySQL    	jobentry;
-	private JobMeta         jobinfo;
+	private JobEntrySQL    	jobEntrySQL;
+	private JobMeta         jobMeta;
 	private Shell       	shell;
 	private Props       	props;
 
@@ -97,15 +94,14 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 
 	private boolean changed;
 	
-	public JobEntrySQLDialog(Shell parent, JobEntrySQL je,JobMeta ji)
+	public JobEntrySQLDialog(Shell parent, JobEntrySQL jobEntrySQL, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		log=LogWriter.getInstance();
-		jobentry=je;
-		jobinfo=ji;
+		this.jobEntrySQL=jobEntrySQL;
+		this.jobMeta=jobMeta;
 
-		if (jobentry.getName() == null) jobentry.setName("SQL");
+		if (this.jobEntrySQL.getName() == null) this.jobEntrySQL.setName("SQL");
 	}
 
 	public JobEntryInterface open()
@@ -120,10 +116,10 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntrySQL.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntrySQL.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -176,11 +172,11 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				DatabaseMeta ci = new DatabaseMeta();
-				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+				DatabaseMeta databaseMeta = new DatabaseMeta();
+				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				if (cid.open()!=null)
 				{
-					wConnection.add(ci.getName());
+					wConnection.add(databaseMeta.getName());
 					wConnection.select(wConnection.getItemCount()-1);
 				}
 			}
@@ -192,9 +188,9 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 
 		wConnection=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
  		props.setLook(wConnection);
-		for (int i=0;i<jobinfo.nrDatabases();i++)
+		for (int i=0;i<jobMeta.nrDatabases();i++)
 		{
-			DatabaseMeta ci = jobinfo.getDatabase(i);
+			DatabaseMeta ci = jobMeta.getDatabase(i);
 			wConnection.add(ci.getName());
 		}
 		wConnection.select(0);
@@ -225,8 +221,8 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                	jobentry.setUseVariableSubstitution(!jobentry.getUseVariableSubstitution());
-                	jobentry.setChanged();
+                	jobEntrySQL.setUseVariableSubstitution(!jobEntrySQL.getUseVariableSubstitution());
+                	jobEntrySQL.setChanged();
                 }
             }
         );
@@ -292,7 +288,7 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntrySQL;
 	}
 
 	public void dispose()
@@ -307,28 +303,28 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 	 */ 
 	public void getData()
 	{
-		if (jobentry.getName() != null) wName.setText( jobentry.getName() );
-		if (jobentry.getSQL()  != null) wSQL.setText( jobentry.getSQL() );
-		DatabaseMeta dbinfo = jobentry.getDatabase(); 
+		if (jobEntrySQL.getName() != null) wName.setText( jobEntrySQL.getName() );
+		if (jobEntrySQL.getSQL()  != null) wSQL.setText( jobEntrySQL.getSQL() );
+		DatabaseMeta dbinfo = jobEntrySQL.getDatabase(); 
 		if (dbinfo!=null && dbinfo.getName()!=null) wConnection.setText(dbinfo.getName());
 		else wConnection.setText("");
 
-        wUseSubs.setSelection(jobentry.getUseVariableSubstitution());		
+        wUseSubs.setSelection(jobEntrySQL.getUseVariableSubstitution());		
 		wName.selectAll();
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntrySQL.setChanged(changed);
+		jobEntrySQL=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setSQL(wSQL.getText());
-		jobentry.setDatabase( jobinfo.findDatabase(wConnection.getText()));
+		jobEntrySQL.setName(wName.getText());
+		jobEntrySQL.setSQL(wSQL.getText());
+		jobEntrySQL.setDatabase( jobMeta.findDatabase(wConnection.getText()));
 		dispose();
 	}
 	

@@ -256,12 +256,12 @@ public class JobDialog extends Dialog
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
-                    if (ci==null) ci=new DatabaseMeta();
-                    DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+                    DatabaseMeta databaseMeta = jobMeta.findDatabase(wLogconnection.getText());
+                    if (databaseMeta==null) databaseMeta=new DatabaseMeta();
+                    DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
                     if (cid.open()!=null)
                     {
-                        wLogconnection.setText(ci.getName());
+                        wLogconnection.setText(databaseMeta.getName());
                     }
                 }
             }

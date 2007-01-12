@@ -79,7 +79,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class DatabaseDialog extends Dialog
 {
-    private DatabaseMeta   connection;
+    private DatabaseMeta   databaseMeta;
 
     private CTabFolder     wTabFolder;
 
@@ -146,7 +146,7 @@ public class DatabaseDialog extends Dialog
 
     private Button         wOK, wTest, wExp, wList, wCancel, wOptionsHelp;
 
-    private String         connectionName;
+    private String         databaseName;
 
     private ModifyListener lsMod;
 
@@ -166,15 +166,28 @@ public class DatabaseDialog extends Dialog
 
     private long           database_id;
 
-    public DatabaseDialog(Shell par, int style, LogWriter lg, DatabaseMeta conn, Props pr)
+    /**
+     * @deprecated Please use the simple version (w/ just the parent and the databaseMeta object)
+     * @param parent
+     * @param style
+     * @param lg
+     * @param databaseMeta
+     * @param pr
+     */
+    public DatabaseDialog(Shell parent, int style, LogWriter lg, DatabaseMeta databaseMeta, Props pr)
     {
-        super(par, style);
-        connection = conn;
-        connectionName = conn.getName();
-        props = pr;
+        this(parent, databaseMeta);
+    }
+
+    public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
+    {
+        super(parent, SWT.NONE);
+        this.databaseMeta = databaseMeta;
+        this.databaseName = databaseMeta.getName();
+        this.props = Props.getInstance();
         this.databases = null;
-        this.extraOptions = conn.getExtraOptions();
-        this.database_id = conn.getID();
+        this.extraOptions = databaseMeta.getExtraOptions();
+        this.database_id = databaseMeta.getID();
 
         String path = ""; //$NON-NLS-1$
         try
@@ -203,10 +216,10 @@ public class DatabaseDialog extends Dialog
         {
             public void modifyText(ModifyEvent e)
             {
-                connection.setChanged();
+                databaseMeta.setChanged();
             }
         };
-        changed = connection.hasChanged();
+        changed = databaseMeta.hasChanged();
 
         middle = props.getMiddlePct();
         margin = Const.MARGIN;
@@ -352,14 +365,14 @@ public class DatabaseDialog extends Dialog
 
         BaseStepDialog.setSize(shell);
 
-        connection.setChanged(changed);
+        databaseMeta.setChanged(changed);
         shell.open();
         Display display = parent.getDisplay();
         while (!shell.isDisposed())
         {
             if (!display.readAndDispatch()) display.sleep();
         }
-        return connectionName;
+        return databaseName;
     }
 
     public static final void checkPasswordVisible(Text wPassword)
@@ -607,13 +620,13 @@ public class DatabaseDialog extends Dialog
         wlUsePool.setLayoutData(fdlUsePool);
 
         wUsePool = new Button(wPoolComp, SWT.CHECK);
-        wUsePool.setSelection(connection.isUsingConnectionPool());
+        wUsePool.setSelection(databaseMeta.isUsingConnectionPool());
         props.setLook(wUsePool);
         wUsePool.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent event)
             {
-                connection.setChanged();
+                databaseMeta.setChanged();
                 enableFields();
             }
         });
@@ -633,7 +646,7 @@ public class DatabaseDialog extends Dialog
         wlInitPool.setLayoutData(fdlInitPool);
 
         wInitPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wInitPool.setText(Integer.toString(connection.getInitialPoolSize()));
+        wInitPool.setText(Integer.toString(databaseMeta.getInitialPoolSize()));
         props.setLook(wInitPool);
         wInitPool.addModifyListener(lsMod);
         FormData fdInitPool = new FormData();
@@ -653,7 +666,7 @@ public class DatabaseDialog extends Dialog
         wlMaxPool.setLayoutData(fdlMaxPool);
 
         wMaxPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wMaxPool.setText(Integer.toString(connection.getMaximumPoolSize()));
+        wMaxPool.setText(Integer.toString(databaseMeta.getMaximumPoolSize()));
         props.setLook(wMaxPool);
         wMaxPool.addModifyListener(lsMod);
         FormData fdMaxPool = new FormData();
@@ -748,7 +761,7 @@ public class DatabaseDialog extends Dialog
         wlData.setLayoutData(fdlData);
 
         wData = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wData.setText(NVL(connection.getDataTablespace() == null ? "" : connection.getDataTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
+        wData.setText(NVL(databaseMeta.getDataTablespace() == null ? "" : databaseMeta.getDataTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wData);
         wData.addModifyListener(lsMod);
         FormData fdData = new FormData();
@@ -768,7 +781,7 @@ public class DatabaseDialog extends Dialog
         wlIndex.setLayoutData(fdlIndex);
 
         wIndex = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wIndex.setText(NVL(connection.getIndexTablespace() == null ? "" : connection.getIndexTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
+        wIndex.setText(NVL(databaseMeta.getIndexTablespace() == null ? "" : databaseMeta.getIndexTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wIndex);
         wIndex.addModifyListener(lsMod);
         FormData fdIndex = new FormData();
@@ -1274,40 +1287,40 @@ public class DatabaseDialog extends Dialog
 
     public void getData()
     {
-        wConn.setText(NVL(connection == null ? "" : connection.getName(), "")); //$NON-NLS-1$ //$NON-NLS-2$
-        wConnType.select(connection.getDatabaseType() - 1);
+        wConn.setText(NVL(databaseMeta == null ? "" : databaseMeta.getName(), "")); //$NON-NLS-1$ //$NON-NLS-2$
+        wConnType.select(databaseMeta.getDatabaseType() - 1);
         wConnType.showSelection();
         previousDatabaseType = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex() + 1);
 
         setAccessList();
 
         String accessList[] = wConnAcc.getItems();
-        int accessIndex = Const.indexOfString(connection.getAccessTypeDesc(), accessList);
+        int accessIndex = Const.indexOfString(databaseMeta.getAccessTypeDesc(), accessList);
         wConnAcc.select(accessIndex);
         wConnAcc.showSelection();
 
-        wHostName.setText(NVL(connection.getHostname(), "")); //$NON-NLS-1$
-        wDBName.setText(NVL(connection.getDatabaseName(), "")); //$NON-NLS-1$
-        wPort.setText(NVL(connection.getDatabasePortNumberString(), "")); //$NON-NLS-1$
-        wServername.setText(NVL(connection.getServername(), "")); //$NON-NLS-1$
-        wUsername.setText(NVL(connection.getUsername(), "")); //$NON-NLS-1$
-        wPassword.setText(NVL(connection.getPassword(), "")); //$NON-NLS-1$
-        wData.setText(NVL(connection.getDataTablespace(), "")); //$NON-NLS-1$
-        wIndex.setText(NVL(connection.getIndexTablespace(), "")); //$NON-NLS-1$
+        wHostName.setText(NVL(databaseMeta.getHostname(), "")); //$NON-NLS-1$
+        wDBName.setText(NVL(databaseMeta.getDatabaseName(), "")); //$NON-NLS-1$
+        wPort.setText(NVL(databaseMeta.getDatabasePortNumberString(), "")); //$NON-NLS-1$
+        wServername.setText(NVL(databaseMeta.getServername(), "")); //$NON-NLS-1$
+        wUsername.setText(NVL(databaseMeta.getUsername(), "")); //$NON-NLS-1$
+        wPassword.setText(NVL(databaseMeta.getPassword(), "")); //$NON-NLS-1$
+        wData.setText(NVL(databaseMeta.getDataTablespace(), "")); //$NON-NLS-1$
+        wIndex.setText(NVL(databaseMeta.getIndexTablespace(), "")); //$NON-NLS-1$
 
-        wSAPLanguage.setText(connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "")); //$NON-NLS-1$
-        wSAPSystemNumber.setText(connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "")); //$NON-NLS-1$
-        wSAPClient.setText(connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, "")); //$NON-NLS-1$
+        wSAPLanguage.setText(databaseMeta.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "")); //$NON-NLS-1$
+        wSAPSystemNumber.setText(databaseMeta.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "")); //$NON-NLS-1$
+        wSAPClient.setText(databaseMeta.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, "")); //$NON-NLS-1$
 
-        wURL.setText(connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, "")); //$NON-NLS-1$
-        wDriverClass.setText(connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, "")); //$NON-NLS-1$
+        wURL.setText(databaseMeta.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, "")); //$NON-NLS-1$
+        wDriverClass.setText(databaseMeta.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, "")); //$NON-NLS-1$
 
-        wStreamResult.setSelection( connection.isStreamingResults() );
+        wStreamResult.setSelection( databaseMeta.isStreamingResults() );
         
         getOptionsData();
         checkPasswordVisible(wPassword.getTextWidget());
 
-        wSQL.setText(NVL(connection.getConnectSQL(), "")); //$NON-NLS-1$
+        wSQL.setText(NVL(databaseMeta.getConnectSQL(), "")); //$NON-NLS-1$
 
         getPoolingData();
 
@@ -1320,8 +1333,8 @@ public class DatabaseDialog extends Dialog
     private void getClusterData()
     {
         // The clustering information
-        wUseCluster.setSelection(connection.isPartitioned());
-        PartitionDatabaseMeta[] clusterInformation = connection.getPartitioningInformation();
+        wUseCluster.setSelection(databaseMeta.isPartitioned());
+        PartitionDatabaseMeta[] clusterInformation = databaseMeta.getPartitioningInformation();
         for (int i = 0; i < clusterInformation.length; i++)
         {
             PartitionDatabaseMeta meta = clusterInformation[i];
@@ -1373,7 +1386,7 @@ public class DatabaseDialog extends Dialog
     private void getPoolingData()
     {
         // The extra options as well...
-        Properties properties = connection.getConnectionPoolingProperties();
+        Properties properties = databaseMeta.getConnectionPoolingProperties();
         Iterator keys = properties.keySet().iterator();
         while (keys.hasNext())
         {
@@ -1514,8 +1527,8 @@ public class DatabaseDialog extends Dialog
 
     private void cancel()
     {
-        connectionName = null;
-        connection.setChanged(changed);
+        databaseName = null;
+        databaseMeta.setChanged(changed);
         dispose();
     }
 
@@ -1659,9 +1672,9 @@ public class DatabaseDialog extends Dialog
     {
         try
         {
-            getInfo(connection);
-            connectionName = connection.getName();
-            connection.setID(database_id);
+            getInfo(databaseMeta);
+            databaseName = databaseMeta.getName();
+            databaseMeta.setID(database_id);
             dispose();
         }
         catch (KettleException e)

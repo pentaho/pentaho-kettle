@@ -2702,7 +2702,7 @@ public class Spoon implements AddUndoPositionInterface
     {
         DatabaseMeta before = (DatabaseMeta)databaseMeta.clone();
 
-        DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, databaseMeta, props);
+        DatabaseDialog con = new DatabaseDialog(shell, databaseMeta);
         con.setDatabases(hasDatabasesInterface.getDatabases());
         String newname = con.open(); 
         if (!Const.isEmpty(newname))  // null: CANCEL
@@ -2726,18 +2726,18 @@ public class Spoon implements AddUndoPositionInterface
         int pos = hasDatabasesInterface.indexOfDatabase(databaseMeta);                
         if (databaseMeta!=null)
         {
-            DatabaseMeta copy = (DatabaseMeta)databaseMeta.clone();
+            DatabaseMeta databaseMetaCopy = (DatabaseMeta)databaseMeta.clone();
             String dupename = Messages.getString("Spoon.Various.DupeName") +name; //"(copy of) "
-            copy.setName(dupename);
+            databaseMetaCopy.setName(dupename);
 
-            DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, copy, props);
+            DatabaseDialog con = new DatabaseDialog(shell, databaseMetaCopy);
             String newname = con.open(); 
             if (newname != null)  // null: CANCEL
             {
-                copy.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), name);
-                hasDatabasesInterface.addDatabase(pos+1, copy);
-                addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
-                saveConnection(copy);             
+                databaseMetaCopy.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), name);
+                hasDatabasesInterface.addDatabase(pos+1, databaseMetaCopy);
+                addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)databaseMetaCopy.clone() }, new int[] { pos+1 });
+                saveConnection(databaseMetaCopy);             
                 refreshTree();
             }
         }
@@ -3212,15 +3212,15 @@ public class Spoon implements AddUndoPositionInterface
     
     public void newConnection(HasDatabasesInterface hasDatabasesInterface)
     {
-        DatabaseMeta db = new DatabaseMeta(); 
-        DatabaseDialog con = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, db, props);
+        DatabaseMeta databaseMeta = new DatabaseMeta(); 
+        DatabaseDialog con = new DatabaseDialog(shell, databaseMeta);
         String con_name = con.open(); 
         if (!Const.isEmpty(con_name))
         {
-            db.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
-            hasDatabasesInterface.addDatabase(db);
-            addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { hasDatabasesInterface.indexOfDatabase(db) });
-            saveConnection(db);
+            databaseMeta.verifyAndModifyDatabaseName(hasDatabasesInterface.getDatabases(), null);
+            hasDatabasesInterface.addDatabase(databaseMeta);
+            addUndoNew((UndoInterface)hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta)databaseMeta.clone() }, new int[] { hasDatabasesInterface.indexOfDatabase(databaseMeta) });
+            saveConnection(databaseMeta);
             refreshTree();
         }
     }

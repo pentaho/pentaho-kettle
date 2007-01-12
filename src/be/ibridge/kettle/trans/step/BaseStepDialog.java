@@ -278,14 +278,14 @@ public class BaseStepDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				DatabaseMeta ci = new DatabaseMeta();
-				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+				DatabaseMeta databaseMeta = new DatabaseMeta();
+				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				if (cid.open()!=null)
 				{
-					transMeta.addDatabase(ci);
+					transMeta.addDatabase(databaseMeta);
 					wConnection.removeAll();
 					addDatabases(wConnection);
-					selectDatabase(wConnection, ci.getName());
+					selectDatabase(wConnection, databaseMeta.getName());
 				}
 			}
 		});
@@ -303,15 +303,15 @@ public class BaseStepDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
-				if (ci!=null)
+				DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+				if (databaseMeta!=null)
 				{
-					DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+					DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 					if (cid.open()!=null)
 					{
 						wConnection.removeAll();
 						addDatabases(wConnection);
-						selectDatabase(wConnection, ci.getName());
+						selectDatabase(wConnection, databaseMeta.getName());
 					}
 				}
 			}

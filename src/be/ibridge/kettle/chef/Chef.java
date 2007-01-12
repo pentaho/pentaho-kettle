@@ -1186,7 +1186,7 @@ public class Chef implements AddUndoPositionInterface
 		{
 			DatabaseMeta before = (DatabaseMeta)db.clone();
 			
-			DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, db, props);
+			DatabaseDialog con = new DatabaseDialog(shell, db);
             con.setDatabases(jobMeta.getDatabases());
 			String newname = con.open(); 
 			if (newname != null)  // null: CANCEL
@@ -1228,7 +1228,7 @@ public class Chef implements AddUndoPositionInterface
 			jobMeta.addDatabase(pos+1, newdb);
 			refreshTree();
 
-			DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, newdb, props);
+			DatabaseDialog con = new DatabaseDialog(shell, newdb);
 			String newname = con.open(); 
 			if (newname != null)  // null: CANCEL
 			{
@@ -2104,7 +2104,7 @@ public class Chef implements AddUndoPositionInterface
 	public void newConnection()
 	{
 		DatabaseMeta db = new DatabaseMeta(); 
-		DatabaseDialog con = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, db, props);
+		DatabaseDialog con = new DatabaseDialog(shell, db);
 		String con_name = con.open(); 
 		if (con_name!=null)
 		{

@@ -563,12 +563,12 @@ public class TransDialog extends Dialog
         {
             public void widgetSelected(SelectionEvent e) 
             {
-                DatabaseMeta ci = new DatabaseMeta();
-                DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+                DatabaseMeta databaseMeta = new DatabaseMeta();
+                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
                 if (cid.open()!=null)
                 {
-                    transMeta.addDatabase(ci);
-                    wLogconnection.add(ci.getName());
+                    transMeta.addDatabase(databaseMeta);
+                    wLogconnection.add(databaseMeta.getName());
                     wLogconnection.select(wLogconnection.getItemCount()-1);
                 }
             }

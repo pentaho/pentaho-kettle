@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -63,8 +62,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  */
 public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogInterface
 {
-	private LogWriter    log;
-
 	private Label        wlName;
 	private Text         wName;
     private FormData     fdlName, fdName;
@@ -81,8 +78,8 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryTableExists jobentry;
-	private JobMeta         jobinfo;
+	private JobEntryTableExists jobEntryTableExists;
+	private JobMeta         jobMeta;
 	private Shell       	shell;
 	private Props       	props;
 
@@ -90,15 +87,14 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
 	private boolean changed;
 	
-	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists je, JobMeta ji)
+	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists jobEntryTableExists, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		log=LogWriter.getInstance();
-		jobentry=je;
-		jobinfo=ji;
+		this.jobEntryTableExists=jobEntryTableExists;
+		this.jobMeta=jobMeta;
 
-		if (jobentry.getName() == null) jobentry.setName("Table exists");
+		if (this.jobEntryTableExists.getName() == null) this.jobEntryTableExists.setName("Table exists");
 	}
 
 	public JobEntryInterface open()
@@ -113,10 +109,10 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntryTableExists.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntryTableExists.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -162,11 +158,11 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				DatabaseMeta ci = new DatabaseMeta();
-				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+				DatabaseMeta databaseMeta = new DatabaseMeta();
+				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				if (cid.open()!=null)
 				{
-					wConnection.add(ci.getName());
+					wConnection.add(databaseMeta.getName());
 					wConnection.select(wConnection.getItemCount()-1);
 				}
 			}
@@ -178,9 +174,9 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
 		wConnection=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
  		props.setLook(wConnection);
-		for (int i=0;i<jobinfo.nrDatabases();i++)
+		for (int i=0;i<jobMeta.nrDatabases();i++)
 		{
-			DatabaseMeta ci = jobinfo.getDatabase(i);
+			DatabaseMeta ci = jobMeta.getDatabase(i);
 			wConnection.add(ci.getName());
 		}
 		wConnection.select(0);
@@ -243,7 +239,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntryTableExists;
 	}
 
 	public void dispose()
@@ -260,27 +256,27 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 	{
 		// System.out.println("evaluates: "+jobentry.evaluates());
 		
-		if (jobentry.getName()   != null) wName.setText( jobentry.getName() );
-		if (jobentry.getTablename() != null) wTablename.setText( jobentry.getTablename() );
-		if (jobentry.getDatabase()!=null)
+		if (jobEntryTableExists.getName()   != null) wName.setText( jobEntryTableExists.getName() );
+		if (jobEntryTableExists.getTablename() != null) wTablename.setText( jobEntryTableExists.getTablename() );
+		if (jobEntryTableExists.getDatabase()!=null)
 		{
-			wConnection.setText( jobentry.getDatabase().getName() );
+			wConnection.setText( jobEntryTableExists.getDatabase().getName() );
 		}
 		wName.selectAll();
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntryTableExists.setChanged(changed);
+		jobEntryTableExists=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setDatabase( jobinfo.findDatabase(wConnection.getText()) );
-		jobentry.setTablename(wTablename.getText());
+		jobEntryTableExists.setName(wName.getText());
+		jobEntryTableExists.setDatabase( jobMeta.findDatabase(wConnection.getText()) );
+		jobEntryTableExists.setTablename(wTablename.getText());
 		dispose();
 	}
 	

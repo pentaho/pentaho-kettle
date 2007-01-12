@@ -119,6 +119,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         
         return xml.toString();
     }
+
+    public void saveRep(Repository rep) throws KettleDatabaseException
+    {
+        saveRep(rep, -1L);
+    }
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
@@ -134,7 +139,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         }
         
         // Save the trans-slave relationship too.
-        rep.insertTransformationSlave(id_transformation, getId());
+        if (id_transformation>=0) rep.insertTransformationSlave(id_transformation, getId());
     }
     
     public SlaveServer(Repository rep, long id_slave_server) throws KettleDatabaseException

@@ -169,14 +169,14 @@ public class RepositoryDialog
 			{
 				public void widgetSelected(SelectionEvent arg0) 
 				{
-					DatabaseMeta dbinfo = new DatabaseMeta();
-					DatabaseDialog dd = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, dbinfo, props);
+					DatabaseMeta databaseMeta = new DatabaseMeta();
+					DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 					if (dd.open()!=null)
 					{
-						repositories.addDatabase(dbinfo);
+						repositories.addDatabase(databaseMeta);
 						fillConnections();
 						
-						int idx = repositories.indexOfDatabase(dbinfo);
+						int idx = repositories.indexOfDatabase(databaseMeta);
 						wConnection.select(idx);
 						
 					}
@@ -189,14 +189,14 @@ public class RepositoryDialog
 			{
 				public void widgetSelected(SelectionEvent arg0) 
 				{
-					DatabaseMeta dbinfo = repositories.searchDatabase(wConnection.getText());
-					if (dbinfo!=null)
+					DatabaseMeta databaseMeta = repositories.searchDatabase(wConnection.getText());
+					if (databaseMeta!=null)
 					{
-						DatabaseDialog dd = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, dbinfo, props);
+						DatabaseDialog dd = new DatabaseDialog(shell, databaseMeta);
 						if (dd.open()!=null)
 						{
 							fillConnections();
-							int idx = repositories.indexOfDatabase(dbinfo);
+							int idx = repositories.indexOfDatabase(databaseMeta);
 							wConnection.select(idx);
 						}
 					}
