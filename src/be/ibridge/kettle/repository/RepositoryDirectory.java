@@ -50,7 +50,7 @@ public class RepositoryDirectory
 	private String directoryname;
 	
 	private long id;
-
+    
 	/**
 	 * Create a new subdirectory in a certain other directory.
 	 * @param parent The directory to create the subdirectory in
@@ -571,33 +571,37 @@ public class RepositoryDirectory
 		
 		try
 		{
+            List repositoryObjects = new ArrayList();
+            
 			// Then show the transformations & jobs in that directory...
             if (getTransformations)
             {
-                List repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
-                if (repositoryObjects!=null)
+                List repositoryTransformations = rep.getTransformationObjects(getID());
+                if (repositoryTransformations!=null)
                 {
-                    for (int i=0;i<repositoryObjects.size();i++)
-                    {
-                        TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-                        RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
-                        repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION);
-                    }
+                    repositoryObjects.addAll(repositoryTransformations);
                 }
             }
             if (getJobs)
             {
-                List repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
-                if (repositoryObjects!=null)
+                List repositoryJobs = rep.getJobObjects(getID());
+                if (repositoryJobs!=null)
                 {
-                    for (int i=0;i<repositoryObjects.size();i++)
-                    {
-                        TreeItem tiObject = new TreeItem(ti, SWT.NONE);
-                        RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
-                        repositoryObject.setTreeItem(tiObject, RepositoryObject.STRING_OBJECT_TYPE_JOB);
-                    }
+                    repositoryObjects.addAll(repositoryJobs);
                 }
             }
+            
+            // Sort the directory list appropriately...
+            //
+            RepositoryObject.sortRepositoryObjects(repositoryObjects, sortPosition, ascending);
+            
+            for (int i=0;i<repositoryObjects.size();i++)
+            {
+                TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                RepositoryObject repositoryObject = (RepositoryObject)repositoryObjects.get(i);
+                repositoryObject.setTreeItem(tiObject);
+            }
+
 		}
 		catch(KettleDatabaseException dbe)
 		{

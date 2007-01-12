@@ -2149,14 +2149,14 @@ public class Repository
 		return getStrings("SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
 	}
     
-    public List getJobObjects(long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    public List getJobObjects(long id_directory) throws KettleDatabaseException
     {
-        return getRepositoryObjects("R_JOB", id_directory, sortPosition, ascending);
+        return getRepositoryObjects("R_JOB", RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
     }
 
-    public List getTransformationObjects(long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    public List getTransformationObjects(long id_directory) throws KettleDatabaseException
     {
-        return getRepositoryObjects("R_TRANSFORMATION", id_directory, sortPosition, ascending);
+        return getRepositoryObjects("R_TRANSFORMATION", RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
     }
 
     /**
@@ -2165,21 +2165,14 @@ public class Repository
      * 
      * @throws KettleDatabaseException
      */
-    private synchronized List getRepositoryObjects(String tableName, long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    private synchronized List getRepositoryObjects(String tableName, String objectType, long id_directory) throws KettleDatabaseException
     {
         String nameField = databaseMeta.quoteField("NAME");
         
-        String sortField = nameField;
-        switch(sortPosition)
-        {
-        case 2: sortField = "MODIFIED_USER"; break;
-        case 3: sortField = "MODIFIED_DATE"; break;
-        }
-        
         String sql = "SELECT "+nameField+", MODIFIED_USER, MODIFIED_DATE " +
                 "FROM "+tableName+" " +
-                "WHERE ID_DIRECTORY = " + id_directory + " " +
-                "ORDER BY "+sortField+" "+(ascending?"ASC":"DESC");
+                "WHERE ID_DIRECTORY = " + id_directory + " "
+                ;
 
         List repositoryObjects = new ArrayList();
         
@@ -2189,7 +2182,7 @@ public class Repository
             Row r = database.getRow(rs);
             while (r != null)
             {
-                repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate()));
+                repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate(), objectType));
                 r = database.getRow(rs);
             }
             database.closeQuery(rs);

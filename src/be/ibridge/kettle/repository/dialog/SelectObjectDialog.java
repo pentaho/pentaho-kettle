@@ -98,7 +98,7 @@ public class SelectObjectDialog extends Dialog
 		objectDirectory = null;
         
         sortColumn = 0;
-        ascending = true;
+        ascending = false;
 	}
 	
 	public String open()
@@ -134,13 +134,13 @@ public class SelectObjectDialog extends Dialog
         nameColumn = new TreeColumn(wTree, SWT.LEFT);
         nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
         nameColumn.setWidth(350);
-        nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
+        nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(0); } });
 
         // No sorting on the type column just yet.
         typeColumn = new TreeColumn(wTree, SWT.LEFT);
         typeColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Type")); //$NON-NLS-1$
         typeColumn.setWidth(100);
-        // typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+        typeColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
 
         userColumn = new TreeColumn(wTree, SWT.LEFT);
         userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
@@ -149,7 +149,7 @@ public class SelectObjectDialog extends Dialog
 
         changedColumn = new TreeColumn(wTree, SWT.LEFT);
         changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
-        changedColumn.setWidth(100);
+        changedColumn.setWidth(120);
         changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
         
         
@@ -222,9 +222,9 @@ public class SelectObjectDialog extends Dialog
             ascending=true;
         }
         
-        if (sortColumn>0 && sortColumn<5)
+        if (sortColumn>=0 && sortColumn<4)
         {
-            TreeColumn column = wTree.getColumn(sortColumn-1);
+            TreeColumn column = wTree.getColumn(sortColumn);
             wTree.setSortColumn(column);
             wTree.setSortDirection(ascending?SWT.UP:SWT.DOWN);
         }
@@ -257,7 +257,7 @@ public class SelectObjectDialog extends Dialog
 	
 	public void getData()
 	{
-		setSort(1);
+		setSort(0);
 	}
 	
 	private void cancel()
