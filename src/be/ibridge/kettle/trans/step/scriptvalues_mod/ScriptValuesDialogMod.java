@@ -953,10 +953,13 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			if (row!=null){
 				// Modification for Additional Script parsing
 				try{
-					for(int i=0;i<input.getAddClasses().length;i++){
-						Object jsOut = Context.javaToJS(input.getAddClasses()[i].getAddObject(), jsscope);
-						ScriptableObject.putProperty(jsscope, input.getAddClasses()[i].getJSName(), jsOut);
-					}
+                    if (input.getAddClasses()!=null)
+                    {
+    					for(int i=0;i<input.getAddClasses().length;i++){
+    						Object jsOut = Context.javaToJS(input.getAddClasses()[i].getAddObject(), jsscope);
+    						ScriptableObject.putProperty(jsscope, input.getAddClasses()[i].getJSName(), jsOut);
+    					}
+                    }
 				}catch(Exception e){
 					errorMessage="Coundln't not add JavaClasses to Context! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
 					retval = false;

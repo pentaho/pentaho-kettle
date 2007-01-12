@@ -66,7 +66,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface
 {
 	
-	private ScriptValuesAddClasses[] additionaClasses;
+	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	
 	private String  script;
@@ -475,10 +475,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
  
 			// Modification for Additional Script parsing
 			try{
-				for(int i=0;i<getAddClasses().length;i++){
-					Object jsOut = Context.javaToJS(getAddClasses()[i].getAddObject(), jsscope);
-					ScriptableObject.putProperty(jsscope, getAddClasses()[i].getJSName(), jsOut);
-				}
+                if (getAddClasses()!=null)
+                {
+    				for(int i=0;i<getAddClasses().length;i++){
+    					Object jsOut = Context.javaToJS(getAddClasses()[i].getAddObject(), jsscope);
+    					ScriptableObject.putProperty(jsscope, getAddClasses()[i].getJSName(), jsOut);
+    				}
+                }
 			}catch(Exception e){
 				error_message = ("Coundln't not add JavaClasses to Context! Error:");
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
@@ -812,7 +815,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			Node stepnode = dom.getDocumentElement();
 			Node libraries = XMLHandler.getSubNode(stepnode, "js_libraries");
 			int nbOfLibs = XMLHandler.countNodes(libraries, "js_lib");
-			additionaClasses = new ScriptValuesAddClasses[nbOfLibs];
+			additionalClasses = new ScriptValuesAddClasses[nbOfLibs];
 			for(int i=0;i<nbOfLibs;i++){
 				Node fnode = XMLHandler.getSubNodeByNr(libraries, "js_lib", i);
 				String strJarName = XMLHandler.getTagAttribute(fnode, "name");
@@ -821,7 +824,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				
 				Class addClass = LoadAdditionalClass(strActPath + "/plugins/steps/ScriptValues_mod/"+ strJarName,strClassName);
 				Object addObject = addClass.newInstance();
-				additionaClasses[i] = new ScriptValuesAddClasses(addClass, addObject, strJSName);
+				additionalClasses[i] = new ScriptValuesAddClasses(addClass, addObject, strJSName);
 			}
 		}catch(Exception e) {
 			throw new KettleException("ScriptValuesMeta.Exception.UnableToParseXMLforAdditionalClasses", e); 
@@ -843,6 +846,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	}
 	
 	public ScriptValuesAddClasses[] getAddClasses(){
-		return additionaClasses;
+		return additionalClasses;
 	}
 }

@@ -166,11 +166,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				
 				// Modification for Additional Script parsing
 				try{
-					for(int i=0;i<meta.getAddClasses().length;i++){
-						//Object jsOut = data.cx.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
-						Object jsOut = Context.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
-						ScriptableObject.putProperty(data.scope, meta.getAddClasses()[i].getJSName(), jsOut);
-					}
+                    if (meta.getAddClasses()!=null)
+                    {
+    					for(int i=0;i<meta.getAddClasses().length;i++){
+    						//Object jsOut = data.cx.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
+    						Object jsOut = Context.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
+    						ScriptableObject.putProperty(data.scope, meta.getAddClasses()[i].getJSName(), jsOut);
+    					}
+                    }
 				}catch(Exception e){
 					//System.out.println(e.toString());
 					logError("ScriptValues.Log.CouldNotAttachAdditionalScripts"+e.toString()); //$NON-NLS-1$
