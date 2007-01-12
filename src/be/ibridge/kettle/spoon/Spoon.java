@@ -1868,8 +1868,8 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_JOBS)) // The name of a job
                     {
                         JobMeta jobMeta = findJob(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], jobMeta.findDatabase(path[3]), jobMeta);
-                        if (path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(path[3], jobMeta.findJobEntry(path[3]), jobMeta);
+                        if (jobMeta!=null && path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], jobMeta.findDatabase(path[3]), jobMeta);
+                        if (jobMeta!=null && path[2].equals(STRING_JOB_ENTRIES)) object = new TreeSelection(path[3], jobMeta.findJobEntry(path[3]), jobMeta);
                     }
                     break;
                     
@@ -1877,7 +1877,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
                     {
                         TransMeta transMeta = findTransformation(path[1]);
-                        if (path[2].equals(STRING_CLUSTERS))
+                        if (transMeta!=null && path[2].equals(STRING_CLUSTERS))
                         {
                             ClusterSchema clusterSchema = transMeta.findClusterSchema(path[3]);
                             object = new TreeSelection(path[4], clusterSchema.findSlaveServer(path[4]), clusterSchema, transMeta);
