@@ -1429,6 +1429,10 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     spoon.refreshTree();
                 }
             });
+            // See if we can change the number of copies.
+            // If a previous step is directing output towards this one, we can't
+            final boolean multipleOK = checkNumberOfCopies(transMeta, stepMeta);
+
             miCopies.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent e)
@@ -1441,6 +1445,19 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     if (cop >= 0)
                     {
                         if (cop == 0) cop = 1;
+                        
+                        if (!multipleOK)
+                        {
+                            cop = 1;
+                            // dmsegbox
+                            
+                            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
+                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
+                            mb.setText(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Title")); //$NON-NLS-1$
+                            mb.open();
+                            
+                        }
+                        
                         if (stepMeta.getCopies() != cop)
                         {
                             stepMeta.setCopies(cop);
@@ -1449,6 +1466,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     }
                 }
             });
+            
             miDupeStep.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent e)
@@ -1714,6 +1732,27 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 }
             }
         }
+    }
+
+    private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta)
+    {
+        boolean enabled = true;
+        StepMeta[] prevSteps = transMeta.getPrevSteps(stepMeta);
+        for (int i=0;i<prevSteps.length && enabled;i++)
+        {
+            // See what the target steps are.  
+            // If one of the target steps is our original step, we can't start multiple copies
+            // 
+            String[] targetSteps = prevSteps[i].getStepMetaInterface().getTargetSteps();
+            if (targetSteps!=null)
+            {
+                for (int t=0;t<targetSteps.length && enabled;t++)
+                {
+                   if (targetSteps[t].equalsIgnoreCase(stepMeta.getName())) enabled=false; 
+                }
+            }
+        }
+        return enabled;
     }
 
     private void setToolTip(int x, int y)
