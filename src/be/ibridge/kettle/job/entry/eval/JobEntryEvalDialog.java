@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -71,7 +72,7 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryEval input;
+	private JobEntryEval jobEntry;
 	private Shell   shell;
 	private Props   props;
 
@@ -79,13 +80,13 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 
 	private boolean changed;
 	
-	public JobEntryEvalDialog(Shell parent, JobEntryEval in)
+	public JobEntryEvalDialog(Shell parent, JobEntryEval jobEntry)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		input=in;
+		this.jobEntry=jobEntry;
 
-		if (input.getName() == null) input.setName("Evaluation");
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("Evaluation");
 	}
 
 	public JobEntryInterface open()
@@ -95,15 +96,16 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				input.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = input.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -198,7 +200,7 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return input;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -213,22 +215,22 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 	 */ 
 	public void getData()
 	{
-		if (input.getName()   != null) wName.setText( input.getName() );
+		if (jobEntry.getName()   != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
-		if (input.getScript() != null) wScript.setText( input.getScript() );
+		if (jobEntry.getScript() != null) wScript.setText( jobEntry.getScript() );
 	}
 	
 	private void cancel()
 	{
-		input.setChanged(changed);
-		input=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		input.setName(wName.getText());
-		input.setScript(wScript.getText());
+		jobEntry.setName(wName.getText());
+		jobEntry.setScript(wScript.getText());
 		dispose();
 	}
 	

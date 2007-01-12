@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -78,7 +79,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryTableExists jobEntryTableExists;
+	private JobEntryTableExists jobEntry;
 	private JobMeta         jobMeta;
 	private Shell       	shell;
 	private Props       	props;
@@ -87,14 +88,14 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
 	private boolean changed;
 	
-	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists jobEntryTableExists, JobMeta jobMeta)
+	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists jobEntry, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		this.jobEntryTableExists=jobEntryTableExists;
+		this.jobEntry=jobEntry;
 		this.jobMeta=jobMeta;
 
-		if (this.jobEntryTableExists.getName() == null) this.jobEntryTableExists.setName("Table exists");
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("Table exists");
 	}
 
 	public JobEntryInterface open()
@@ -104,15 +105,16 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobEntryTableExists.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobEntryTableExists.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -239,7 +241,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobEntryTableExists;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -256,27 +258,27 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 	{
 		// System.out.println("evaluates: "+jobentry.evaluates());
 		
-		if (jobEntryTableExists.getName()   != null) wName.setText( jobEntryTableExists.getName() );
-		if (jobEntryTableExists.getTablename() != null) wTablename.setText( jobEntryTableExists.getTablename() );
-		if (jobEntryTableExists.getDatabase()!=null)
+		if (jobEntry.getName()   != null) wName.setText( jobEntry.getName() );
+		if (jobEntry.getTablename() != null) wTablename.setText( jobEntry.getTablename() );
+		if (jobEntry.getDatabase()!=null)
 		{
-			wConnection.setText( jobEntryTableExists.getDatabase().getName() );
+			wConnection.setText( jobEntry.getDatabase().getName() );
 		}
 		wName.selectAll();
 	}
 	
 	private void cancel()
 	{
-		jobEntryTableExists.setChanged(changed);
-		jobEntryTableExists=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobEntryTableExists.setName(wName.getText());
-		jobEntryTableExists.setDatabase( jobMeta.findDatabase(wConnection.getText()) );
-		jobEntryTableExists.setTablename(wTablename.getText());
+		jobEntry.setName(wName.getText());
+		jobEntry.setDatabase( jobMeta.findDatabase(wConnection.getText()) );
+		jobEntry.setTablename(wTablename.getText());
 		dispose();
 	}
 	

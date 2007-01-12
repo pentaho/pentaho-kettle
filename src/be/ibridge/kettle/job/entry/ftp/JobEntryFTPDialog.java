@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -104,7 +105,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryFTP     jobentry;
+	private JobEntryFTP     jobEntry;
 	private Shell       	shell;
 	private Props       	props;
 
@@ -112,13 +113,13 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 
 	private boolean changed;
 	
-	public JobEntryFTPDialog(Shell parent, JobEntryFTP je, JobMeta ji)
+	public JobEntryFTPDialog(Shell parent, JobEntryFTP jobEntry, JobMeta jobMeta)
 	{
-			super(parent, SWT.NONE);
-			props=Props.getInstance();
-			jobentry=je;
-	
-			if (jobentry.getName() == null) jobentry.setName("FTP Files");
+		super(parent, SWT.NONE);
+		props=Props.getInstance();
+		this.jobEntry=jobEntry;
+
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("FTP Files");
 	}
 
 	public JobEntryInterface open()
@@ -128,15 +129,16 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -345,7 +347,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
     
     public void checkPasswordVisible()
@@ -375,43 +377,43 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 	 */ 
 	public void getData()
 	{
-		if (jobentry.getName()    != null) wName.setText( jobentry.getName() );
+		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.getTextWidget().selectAll();
 
-		wServerName.setText(Const.NVL(jobentry.getServerName(), ""));
-		wUserName.setText(Const.NVL(jobentry.getUserName(), ""));
-		wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
-		wFtpDirectory.setText(Const.NVL(jobentry.getFtpDirectory(), ""));
-		wTargetDirectory.setText(Const.NVL(jobentry.getTargetDirectory(), ""));
-		wWildcard.setText(Const.NVL(jobentry.getWildcard(), ""));
-		wBinaryMode.setSelection(jobentry.isBinaryMode());
-		wTimeout.setText(""+jobentry.getTimeout());
-		wRemove.setSelection(jobentry.getRemove());
-        wOnlyNew.setSelection(jobentry.isOnlyGettingNewFiles());
-        wActive.setSelection(jobentry.isActiveConnection());
+		wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+		wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+		wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+		wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
+		wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
+		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+		wBinaryMode.setSelection(jobEntry.isBinaryMode());
+		wTimeout.setText(""+jobEntry.getTimeout());
+		wRemove.setSelection(jobEntry.getRemove());
+        wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
+        wActive.setSelection(jobEntry.isActiveConnection());
 	}
 
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setServerName(wServerName.getText());
-		jobentry.setUserName(wUserName.getText());
-		jobentry.setPassword(wPassword.getText());
-		jobentry.setFtpDirectory(wFtpDirectory.getText());
-		jobentry.setTargetDirectory(wTargetDirectory.getText());
-		jobentry.setWildcard(wWildcard.getText());
-		jobentry.setBinaryMode(wBinaryMode.getSelection());
-		jobentry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
-		jobentry.setRemove(wRemove.getSelection());
-        jobentry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
-        jobentry.setActiveConnection(wActive.getSelection());
+		jobEntry.setName(wName.getText());
+		jobEntry.setServerName(wServerName.getText());
+		jobEntry.setUserName(wUserName.getText());
+		jobEntry.setPassword(wPassword.getText());
+		jobEntry.setFtpDirectory(wFtpDirectory.getText());
+		jobEntry.setTargetDirectory(wTargetDirectory.getText());
+		jobEntry.setWildcard(wWildcard.getText());
+		jobEntry.setBinaryMode(wBinaryMode.getSelection());
+		jobEntry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
+		jobEntry.setRemove(wRemove.getSelection());
+        jobEntry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
+        jobEntry.setActiveConnection(wActive.getSelection());
 
 		dispose();
 	}

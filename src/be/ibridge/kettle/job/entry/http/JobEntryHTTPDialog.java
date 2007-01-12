@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -124,7 +125,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryHTTP     jobentry;
+	private JobEntryHTTP     jobEntry;
 	private Shell       	 shell;
 	private Props       	 props;
 
@@ -132,13 +133,13 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 
 	private boolean changed;
 	
-	public JobEntryHTTPDialog(Shell parent, JobEntryHTTP je, JobMeta ji)
+	public JobEntryHTTPDialog(Shell parent, JobEntryHTTP jobEntry, JobMeta jobMeta)
 	{
-			super(parent, SWT.NONE);
-			props=Props.getInstance();
-			jobentry=je;
-	
-			if (jobentry.getName() == null) jobentry.setName("FTP Files");
+		super(parent, SWT.NONE);
+		props=Props.getInstance();
+		this.jobEntry=jobEntry;
+
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("FTP Files");
 	}
 
 	public JobEntryInterface open()
@@ -148,15 +149,16 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -472,7 +474,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
 
 	private void setFlags()
@@ -500,59 +502,59 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 	 */ 
 	public void getData()
 	{
-		if (jobentry.getName()    != null) wName.setText( jobentry.getName() );
+		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
 
-		wURL.setText(Const.NVL(jobentry.getUrl(), ""));
-        wRunEveryRow.setSelection( jobentry.isRunForEveryRow() );
-        wFieldURL.setText(Const.NVL(jobentry.getUrlFieldname(), "") );
-		wTargetFile.setText(Const.NVL(jobentry.getTargetFilename(), ""));
-        wAppend.setSelection( jobentry.isFileAppended() );
-        wDateTimeAdded.setSelection( jobentry.isDateTimeAdded() );
-        wTargetExt.setText(Const.NVL(jobentry.getTargetFilenameExtention(), ""));
+		wURL.setText(Const.NVL(jobEntry.getUrl(), ""));
+        wRunEveryRow.setSelection( jobEntry.isRunForEveryRow() );
+        wFieldURL.setText(Const.NVL(jobEntry.getUrlFieldname(), "") );
+		wTargetFile.setText(Const.NVL(jobEntry.getTargetFilename(), ""));
+        wAppend.setSelection( jobEntry.isFileAppended() );
+        wDateTimeAdded.setSelection( jobEntry.isDateTimeAdded() );
+        wTargetExt.setText(Const.NVL(jobEntry.getTargetFilenameExtention(), ""));
 
-        wUploadFile.setText(Const.NVL(jobentry.getUploadFilename(), ""));
+        wUploadFile.setText(Const.NVL(jobEntry.getUploadFilename(), ""));
 
-        jobentry.setDateTimeAdded( wDateTimeAdded.getSelection() );
-        jobentry.setTargetFilenameExtention( wTargetExt.getText() );
+        jobEntry.setDateTimeAdded( wDateTimeAdded.getSelection() );
+        jobEntry.setTargetFilenameExtention( wTargetExt.getText() );
 
-        wUserName.setText(Const.NVL(jobentry.getUsername(), ""));
-        wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
+        wUserName.setText(Const.NVL(jobEntry.getUsername(), ""));
+        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
         
-        wProxyServer.setText( Const.NVL(jobentry.getProxyHostname(), "") );
-        wProxyPort.setText( Const.NVL(jobentry.getProxyPort(), "") );
-        wNonProxyHosts.setText( Const.NVL(jobentry.getNonProxyHosts(), "") );
+        wProxyServer.setText( Const.NVL(jobEntry.getProxyHostname(), "") );
+        wProxyPort.setText( Const.NVL(jobEntry.getProxyPort(), "") );
+        wNonProxyHosts.setText( Const.NVL(jobEntry.getNonProxyHosts(), "") );
         
         setFlags();
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setName( wName.getText() );
-		jobentry.setUrl( wURL.getText() );
-        jobentry.setRunForEveryRow( wRunEveryRow.getSelection() );
-        jobentry.setUrlFieldname( wFieldURL.getText() );
-		jobentry.setTargetFilename( wTargetFile.getText() );
-        jobentry.setFileAppended( wAppend.getSelection() );
+		jobEntry.setName( wName.getText() );
+		jobEntry.setUrl( wURL.getText() );
+        jobEntry.setRunForEveryRow( wRunEveryRow.getSelection() );
+        jobEntry.setUrlFieldname( wFieldURL.getText() );
+		jobEntry.setTargetFilename( wTargetFile.getText() );
+        jobEntry.setFileAppended( wAppend.getSelection() );
         
-        jobentry.setDateTimeAdded( wDateTimeAdded.getSelection() );
-        jobentry.setTargetFilenameExtention( wTargetExt.getText() );
+        jobEntry.setDateTimeAdded( wDateTimeAdded.getSelection() );
+        jobEntry.setTargetFilenameExtention( wTargetExt.getText() );
 
-        jobentry.setUploadFilename( wUploadFile.getText() );
+        jobEntry.setUploadFilename( wUploadFile.getText() );
 
-		jobentry.setUsername( wUserName.getText() );
-        jobentry.setPassword( wPassword.getText() );
+		jobEntry.setUsername( wUserName.getText() );
+        jobEntry.setPassword( wPassword.getText() );
         
-        jobentry.setProxyHostname( wProxyServer.getText() );
-        jobentry.setProxyPort( wProxyPort.getText() );
-        jobentry.setNonProxyHosts( wNonProxyHosts.getText() );
+        jobEntry.setProxyHostname( wProxyServer.getText() );
+        jobEntry.setProxyPort( wProxyPort.getText() );
+        jobEntry.setNonProxyHosts( wNonProxyHosts.getText() );
         
 		dispose();
 	}

@@ -49,6 +49,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -85,7 +86,7 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntrySQL    	jobEntrySQL;
+	private JobEntrySQL    	jobEntry;
 	private JobMeta         jobMeta;
 	private Shell       	shell;
 	private Props       	props;
@@ -94,14 +95,14 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 
 	private boolean changed;
 	
-	public JobEntrySQLDialog(Shell parent, JobEntrySQL jobEntrySQL, JobMeta jobMeta)
+	public JobEntrySQLDialog(Shell parent, JobEntrySQL jobEntry, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		this.jobEntrySQL=jobEntrySQL;
+		this.jobEntry=jobEntry;
 		this.jobMeta=jobMeta;
 
-		if (this.jobEntrySQL.getName() == null) this.jobEntrySQL.setName("SQL");
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("SQL");
 	}
 
 	public JobEntryInterface open()
@@ -111,15 +112,16 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobEntrySQL.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobEntrySQL.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -221,8 +223,8 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                	jobEntrySQL.setUseVariableSubstitution(!jobEntrySQL.getUseVariableSubstitution());
-                	jobEntrySQL.setChanged();
+                	jobEntry.setUseVariableSubstitution(!jobEntry.getUseVariableSubstitution());
+                	jobEntry.setChanged();
                 }
             }
         );
@@ -288,7 +290,7 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobEntrySQL;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -303,28 +305,28 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 	 */ 
 	public void getData()
 	{
-		if (jobEntrySQL.getName() != null) wName.setText( jobEntrySQL.getName() );
-		if (jobEntrySQL.getSQL()  != null) wSQL.setText( jobEntrySQL.getSQL() );
-		DatabaseMeta dbinfo = jobEntrySQL.getDatabase(); 
+		if (jobEntry.getName() != null) wName.setText( jobEntry.getName() );
+		if (jobEntry.getSQL()  != null) wSQL.setText( jobEntry.getSQL() );
+		DatabaseMeta dbinfo = jobEntry.getDatabase(); 
 		if (dbinfo!=null && dbinfo.getName()!=null) wConnection.setText(dbinfo.getName());
 		else wConnection.setText("");
 
-        wUseSubs.setSelection(jobEntrySQL.getUseVariableSubstitution());		
+        wUseSubs.setSelection(jobEntry.getUseVariableSubstitution());		
 		wName.selectAll();
 	}
 	
 	private void cancel()
 	{
-		jobEntrySQL.setChanged(changed);
-		jobEntrySQL=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobEntrySQL.setName(wName.getText());
-		jobEntrySQL.setSQL(wSQL.getText());
-		jobEntrySQL.setDatabase( jobMeta.findDatabase(wConnection.getText()));
+		jobEntry.setName(wName.getText());
+		jobEntry.setSQL(wSQL.getText());
+		jobEntry.setDatabase( jobMeta.findDatabase(wConnection.getText()));
 		dispose();
 	}
 	

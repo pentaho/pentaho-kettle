@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -72,7 +73,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntryFileExists jobentry;
+	private JobEntryFileExists jobEntry;
 	private Shell       	shell;
 	private Props       	props;
 
@@ -80,13 +81,13 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 
 	private boolean changed;
 	
-	public JobEntryFileExistsDialog(Shell parent, JobEntryFileExists je, JobMeta ji)
+	public JobEntryFileExistsDialog(Shell parent, JobEntryFileExists jobEntry, JobMeta jobMeta)
 	{
-			super(parent, SWT.NONE);
-			props=Props.getInstance();
-			jobentry=je;
+		super(parent, SWT.NONE);
+		props=Props.getInstance();
+		this.jobEntry=jobEntry;
 
-			if (jobentry.getName() == null) jobentry.setName("File exists");
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("File exists");
 	}
 
 	public JobEntryInterface open()
@@ -96,15 +97,16 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -223,7 +225,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -238,22 +240,22 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 	 */ 
 	public void getData()
 	{
-		if (jobentry.getName()    != null) wName.setText( jobentry.getName() );
+		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
-		if (jobentry.getFilename()!= null) wFilename.setText( jobentry.getFilename() );
+		if (jobEntry.getFilename()!= null) wFilename.setText( jobEntry.getFilename() );
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setFilename(wFilename.getText());
+		jobEntry.setName(wName.getText());
+		jobEntry.setFilename(wFilename.getText());
 		dispose();
 	}
 

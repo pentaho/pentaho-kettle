@@ -25,6 +25,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -49,7 +51,9 @@ import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TextVar;
+import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectDirectoryDialog;
@@ -550,4 +554,19 @@ public class JobDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
+    
+    public static final void setShellImage(Shell shell, JobEntryInterface jobEntryInterface)
+    {
+        try
+        {
+            String id = JobEntryLoader.getInstance().getJobEntryID(jobEntryInterface);
+            if (id!=null)
+            {
+                shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));
+            }
+        }
+        catch(Throwable e)
+        {
+        }
+    }
 }

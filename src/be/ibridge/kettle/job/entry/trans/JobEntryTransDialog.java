@@ -53,6 +53,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
@@ -144,18 +145,18 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private JobEntryTrans jobentry;
+	private JobEntryTrans jobEntry;
 	private boolean  backupChanged;
 	private Props    props;
 	private Display  display;
 	private Repository rep;
 	
-	public JobEntryTransDialog(Shell parent, JobEntryTrans je, Repository rep)
+	public JobEntryTransDialog(Shell parent, JobEntryTrans jobEntry, Repository rep)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		
-		this.jobentry=je;
+		this.jobEntry=jobEntry;
 		this.rep=rep;
 	}
 
@@ -166,15 +167,16 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		backupChanged = jobentry.hasChanged();
+		backupChanged = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -400,7 +402,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wLoglevel=new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		for (int i=0;i<LogWriter.logLevelDescription.length;i++) 
 			wLoglevel.add(LogWriter.logLevelDescription[i]);
-		wLoglevel.select( jobentry.loglevel+1); //+1: starts at -1	
+		wLoglevel.select( jobEntry.loglevel+1); //+1: starts at -1	
 		
  		props.setLook(wLoglevel);
 		fdLoglevel=new FormData();
@@ -428,7 +430,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious=new Button(shell, SWT.CHECK );
  		props.setLook(wPrevious);
-		wPrevious.setSelection(jobentry.argFromPrevious);
+		wPrevious.setSelection(jobEntry.argFromPrevious);
 		wPrevious.setToolTipText("Check this to pass the results of the previous entry to the arguments of this entry.");
 		fdPrevious=new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
@@ -439,8 +441,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					wlFields.setEnabled(!jobentry.argFromPrevious);
-					wFields.setEnabled(!jobentry.argFromPrevious);
+					wlFields.setEnabled(!jobEntry.argFromPrevious);
+					wFields.setEnabled(!jobEntry.argFromPrevious);
 				}
 			}
 		);
@@ -526,7 +528,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
-		int rows = jobentry.arguments==null?1:(jobentry.arguments.length==0?0:jobentry.arguments.length);
+		int rows = jobEntry.arguments==null?1:(jobEntry.arguments.length==0?0:jobEntry.arguments.length);
 		final int FieldsRows= rows;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
@@ -547,8 +549,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdFields.bottom = new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
 
-		wlFields.setEnabled(!jobentry.argFromPrevious);
-		wFields.setEnabled(!jobentry.argFromPrevious);
+		wlFields.setEnabled(!jobEntry.argFromPrevious);
+		wFields.setEnabled(!jobEntry.argFromPrevious);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -640,7 +642,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -667,7 +669,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wlLoglevel.setEnabled(wSetLogfile.getSelection());
 		wLoglevel.setEnabled(wSetLogfile.getSelection());
         
-		if (jobentry.setLogfile)
+		if (jobEntry.setLogfile)
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		}
@@ -679,56 +681,56 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void getData()
 	{
-		if (jobentry.getDirectory()!=null)
+		if (jobEntry.getDirectory()!=null)
         {
-            wDirectory.setText(jobentry.getDirectory().getPath());
+            wDirectory.setText(jobEntry.getDirectory().getPath());
         }
         else
         {
-            if (jobentry.getDirectoryPath()!=null) wDirectory.setText(jobentry.getDirectoryPath());
+            if (jobEntry.getDirectoryPath()!=null) wDirectory.setText(jobEntry.getDirectoryPath());
         }
-		if (jobentry.getName()!=null)      wName.setText(jobentry.getName());
-		if (jobentry.getTransname()!=null) wTransname.setText(jobentry.getTransname()); 
-		if (jobentry.getFilename()!=null)  wFilename.setText(jobentry.getFilename());
-		if (jobentry.arguments!=null)
+		if (jobEntry.getName()!=null)      wName.setText(jobEntry.getName());
+		if (jobEntry.getTransname()!=null) wTransname.setText(jobEntry.getTransname()); 
+		if (jobEntry.getFilename()!=null)  wFilename.setText(jobEntry.getFilename());
+		if (jobEntry.arguments!=null)
 		{
-			for (int i=0;i<jobentry.arguments.length;i++)
+			for (int i=0;i<jobEntry.arguments.length;i++)
 			{
 				TableItem ti = wFields.table.getItem(i);
-				if (jobentry.arguments[i]!=null) ti.setText(1, jobentry.arguments[i]);
+				if (jobEntry.arguments[i]!=null) ti.setText(1, jobEntry.arguments[i]);
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
-		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
-		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
+		if (jobEntry.logfile!=null) wLogfile.setText(jobEntry.logfile);
+		if (jobEntry.logext!=null) wLogext.setText(jobEntry.logext);
 
-        wPrevious.setSelection(jobentry.argFromPrevious);
-        wEveryRow.setSelection(jobentry.execPerRow);
-        wSetLogfile.setSelection(jobentry.setLogfile);
-		wAddDate.setSelection(jobentry.addDate);
-		wAddTime.setSelection(jobentry.addTime);
-		wClearRows.setSelection(jobentry.clearResultRows);
-		wClearFiles.setSelection(jobentry.clearResultFiles);
-        wCluster.setSelection(jobentry.isClustering());
+        wPrevious.setSelection(jobEntry.argFromPrevious);
+        wEveryRow.setSelection(jobEntry.execPerRow);
+        wSetLogfile.setSelection(jobEntry.setLogfile);
+		wAddDate.setSelection(jobEntry.addDate);
+		wAddTime.setSelection(jobEntry.addTime);
+		wClearRows.setSelection(jobEntry.clearResultRows);
+		wClearFiles.setSelection(jobEntry.clearResultFiles);
+        wCluster.setSelection(jobEntry.isClustering());
 		
-		wLoglevel.select(jobentry.loglevel+1);
+		wLoglevel.select(jobEntry.loglevel+1);
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(backupChanged);
+		jobEntry.setChanged(backupChanged);
 		
-		jobentry=null;
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setTransname(wTransname.getText());
-		jobentry.setFileName(wFilename.getText());
-		jobentry.setName(wName.getText());
-		if (rep!=null) jobentry.setDirectory( rep.getDirectoryTree().findDirectory( wDirectory.getText() ) );
+		jobEntry.setTransname(wTransname.getText());
+		jobEntry.setFileName(wFilename.getText());
+		jobEntry.setName(wName.getText());
+		if (rep!=null) jobEntry.setDirectory( rep.getDirectoryTree().findDirectory( wDirectory.getText() ) );
         
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;
@@ -737,31 +739,31 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			String arg = wFields.getNonEmpty(i).getText(1);
 			if (arg!=null && arg.length()!=0) nr++;
 		}
-		jobentry.arguments = new String[nr];
+		jobEntry.arguments = new String[nr];
 		nr=0;
 		for (int i=0;i<nritems;i++)
 		{
 			String arg = wFields.getNonEmpty(i).getText(1);
 			if (arg!=null && arg.length()!=0) 
 			{
-				jobentry.arguments[nr]=arg;
+				jobEntry.arguments[nr]=arg;
 				nr++;
 			} 
 		}
-		jobentry.logfile=wLogfile.getText();
-		jobentry.logext =wLogext.getText();
-		jobentry.loglevel = wLoglevel.getSelectionIndex()-1;
+		jobEntry.logfile=wLogfile.getText();
+		jobEntry.logext =wLogext.getText();
+		jobEntry.loglevel = wLoglevel.getSelectionIndex()-1;
         
-        jobentry.argFromPrevious = wPrevious.getSelection();
-        jobentry.execPerRow = wEveryRow.getSelection();
-        jobentry.setLogfile = wSetLogfile.getSelection();
-        jobentry.addDate = wAddDate.getSelection();
-        jobentry.addTime = wAddTime.getSelection();
-        jobentry.clearResultRows = wClearRows.getSelection();
-        jobentry.clearResultFiles = wClearFiles.getSelection();
-        jobentry.setClustering(wCluster.getSelection());
+        jobEntry.argFromPrevious = wPrevious.getSelection();
+        jobEntry.execPerRow = wEveryRow.getSelection();
+        jobEntry.setLogfile = wSetLogfile.getSelection();
+        jobEntry.addDate = wAddDate.getSelection();
+        jobEntry.addTime = wAddTime.getSelection();
+        jobEntry.clearResultRows = wClearRows.getSelection();
+        jobEntry.clearResultFiles = wClearFiles.getSelection();
+        jobEntry.setClustering(wCluster.getSelection());
         
-        jobentry.setChanged();
+        jobEntry.setChanged();
         
 		dispose();
 	}

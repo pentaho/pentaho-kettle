@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -97,7 +98,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private JobEntrySFTP     jobentry;
+	private JobEntrySFTP     jobEntry;
 	private Shell       	shell;
 	private Props       	props;
 
@@ -105,13 +106,13 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 
 	private boolean changed;
 	
-	public JobEntrySFTPDialog(Shell parent, JobEntrySFTP je, JobMeta ji)
+	public JobEntrySFTPDialog(Shell parent, JobEntrySFTP jobEntry, JobMeta jobMeta)
 	{
 			super(parent, SWT.NONE);
 			props=Props.getInstance();
-			jobentry=je;
+			this.jobEntry=jobEntry;
 	
-			if (jobentry.getName() == null) jobentry.setName("FTP Files");
+			if (this.jobEntry.getName() == null) this.jobEntry.setName("FTP Files");
 	}
 
 	public JobEntryInterface open()
@@ -121,15 +122,16 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		changed = jobentry.hasChanged();
+		changed = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -339,7 +341,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		{
 		    if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -354,37 +356,37 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 	 */ 
 	public void getData()
 	{
-		if (jobentry.getName()    != null) wName.setText( jobentry.getName() );
+		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
 		wName.selectAll();
 
-		wServerName.setText(Const.NVL(jobentry.getServerName(), ""));
-		wServerPort.setText(jobentry.getServerPort());
-		wUserName.setText(Const.NVL(jobentry.getUserName(), ""));
-		wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
-		wScpDirectory.setText(Const.NVL(jobentry.getScpDirectory(), ""));
-		wTargetDirectory.setText(Const.NVL(jobentry.getTargetDirectory(), ""));
-		wWildcard.setText(Const.NVL(jobentry.getWildcard(), ""));
-		wRemove.setSelection(jobentry.getRemove());
+		wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+		wServerPort.setText(jobEntry.getServerPort());
+		wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+		wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+		wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
+		wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
+		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+		wRemove.setSelection(jobEntry.getRemove());
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(changed);
-		jobentry=null;
+		jobEntry.setChanged(changed);
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setServerName(wServerName.getText());
-		jobentry.setServerPort(wServerPort.getText());
-		jobentry.setUserName(wUserName.getText());
-		jobentry.setPassword(wPassword.getText());
-		jobentry.setScpDirectory(wScpDirectory.getText());
-		jobentry.setTargetDirectory(wTargetDirectory.getText());
-		jobentry.setWildcard(wWildcard.getText());
-		jobentry.setRemove(wRemove.getSelection());
+		jobEntry.setName(wName.getText());
+		jobEntry.setServerName(wServerName.getText());
+		jobEntry.setServerPort(wServerPort.getText());
+		jobEntry.setUserName(wUserName.getText());
+		jobEntry.setPassword(wPassword.getText());
+		jobEntry.setScpDirectory(wScpDirectory.getText());
+		jobEntry.setTargetDirectory(wTargetDirectory.getText());
+		jobEntry.setWildcard(wWildcard.getText());
+		jobEntry.setRemove(wRemove.getSelection());
 
 		dispose();
 	}

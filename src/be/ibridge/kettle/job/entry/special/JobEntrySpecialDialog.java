@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
@@ -46,7 +47,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private JobEntrySpecial  scheduler;
+	private JobEntrySpecial  jobEntry;
 	private boolean  backupChanged;
 	private Props    props;
 	private Display  display;
@@ -59,11 +60,11 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 	private CCombo wDayOfWeek;
 	private Spinner wDayOfMonth;
 	
-	public JobEntrySpecialDialog(Shell parent, JobEntrySpecial scheduler)
+	public JobEntrySpecialDialog(Shell parent, JobEntrySpecial jobEntry)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		this.scheduler=scheduler;
+		this.jobEntry=jobEntry;
 	}
 
 	public JobEntryInterface open()
@@ -73,15 +74,16 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
+        shell.setImage(GUIResource.getInstance().getImageStart());
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				scheduler.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		backupChanged = scheduler.hasChanged();
+		backupChanged = jobEntry.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -187,7 +189,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return scheduler;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -199,33 +201,33 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 		
 	public void getData()
 	{
-		wRepeat.setSelection(scheduler.isRepeat());
-		wType.select(scheduler.getSchedulerType());
-		wInterval.setSelection(scheduler.getInterval());
-		wHour.setSelection(scheduler.getHour());
-		wMinutes.setSelection(scheduler.getMinutes());
-		wDayOfWeek.select(scheduler.getWeekDay());
-		wDayOfMonth.setSelection(scheduler.getDayOfMonth());
+		wRepeat.setSelection(jobEntry.isRepeat());
+		wType.select(jobEntry.getSchedulerType());
+		wInterval.setSelection(jobEntry.getInterval());
+		wHour.setSelection(jobEntry.getHour());
+		wMinutes.setSelection(jobEntry.getMinutes());
+		wDayOfWeek.select(jobEntry.getWeekDay());
+		wDayOfMonth.setSelection(jobEntry.getDayOfMonth());
 		wType.addSelectionListener(lsDef);
 	}
 	
 	private void cancel()
 	{
-		scheduler.setChanged(backupChanged);
+		jobEntry.setChanged(backupChanged);
 		
-		scheduler=null;
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		scheduler.setRepeat(wRepeat.getSelection());
-		scheduler.setSchedulerType(wType.getSelectionIndex());
-		scheduler.setInterval(wInterval.getSelection());
-		scheduler.setHour(wHour.getSelection());
-		scheduler.setMinutes(wMinutes.getSelection());
-		scheduler.setWeekDay(wDayOfWeek.getSelectionIndex());
-		scheduler.setDayOfMonth(wDayOfMonth.getSelection());
+		jobEntry.setRepeat(wRepeat.getSelection());
+		jobEntry.setSchedulerType(wType.getSelectionIndex());
+		jobEntry.setInterval(wInterval.getSelection());
+		jobEntry.setHour(wHour.getSelection());
+		jobEntry.setMinutes(wMinutes.getSelection());
+		jobEntry.setWeekDay(wDayOfWeek.getSelectionIndex());
+		jobEntry.setDayOfMonth(wDayOfMonth.getSelection());
 		dispose();
 	}
 	

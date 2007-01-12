@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -116,16 +117,16 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private JobEntryShell jobentry;
+	private JobEntryShell jobEntry;
 	private boolean  backupChanged, backupLogfile, backupDate, backupTime;
 	private Props    props;
 	private Display  display;
 	
-	public JobEntryShellDialog(Shell parent, JobEntryShell je)
+	public JobEntryShellDialog(Shell parent, JobEntryShell jobEntry)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		jobentry=je;
+		this.jobEntry=jobEntry;
 	}
 
 	public JobEntryInterface open()
@@ -135,18 +136,19 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobentry.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		backupChanged = jobentry.hasChanged();
-		backupLogfile = jobentry.setLogfile;
-		backupDate    = jobentry.addDate;
-		backupTime    = jobentry.addTime;
+		backupChanged = jobEntry.hasChanged();
+		backupLogfile = jobEntry.setLogfile;
+		backupDate    = jobEntry.addDate;
+		backupTime    = jobEntry.addTime;
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -238,8 +240,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.setLogfile=!jobentry.setLogfile;
-					jobentry.setChanged();
+					jobEntry.setLogfile=!jobEntry.setLogfile;
+					jobEntry.setChanged();
 					setActive();
 				}
 			}
@@ -301,8 +303,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.addDate=!jobentry.addDate;
-					jobentry.setChanged();
+					jobEntry.addDate=!jobEntry.addDate;
+					jobEntry.setChanged();
 				}
 			}
 		);
@@ -327,8 +329,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.addTime=!jobentry.addTime;
-					jobentry.setChanged();
+					jobEntry.addTime=!jobEntry.addTime;
+					jobEntry.setChanged();
 				}
 			}
 		);
@@ -344,7 +346,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		wLoglevel=new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		for (int i=0;i<LogWriter.logLevelDescription.length;i++) 
 			wLoglevel.add(LogWriter.logLevelDescription[i]);
-		wLoglevel.select( jobentry.loglevel+1); //+1: starts at -1	
+		wLoglevel.select( jobEntry.loglevel+1); //+1: starts at -1	
 		
  		props.setLook(wLoglevel);
 		fdLoglevel=new FormData();
@@ -372,7 +374,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious=new Button(shell, SWT.CHECK );
  		props.setLook(wPrevious);
-		wPrevious.setSelection(jobentry.argFromPrevious);
+		wPrevious.setSelection(jobEntry.argFromPrevious);
 		wPrevious.setToolTipText("Check this to pass the results of the previous entry to the arguments of this entry.");
 		fdPrevious=new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
@@ -383,10 +385,10 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.argFromPrevious=!jobentry.argFromPrevious;
-					jobentry.setChanged();
-					wlFields.setEnabled(!jobentry.argFromPrevious);
-					wFields.setEnabled(!jobentry.argFromPrevious);
+					jobEntry.argFromPrevious=!jobEntry.argFromPrevious;
+					jobEntry.setChanged();
+					wlFields.setEnabled(!jobEntry.argFromPrevious);
+					wFields.setEnabled(!jobEntry.argFromPrevious);
 				}
 			}
 		);
@@ -401,7 +403,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
         wlEveryRow.setLayoutData(fdlEveryRow);
         wEveryRow=new Button(shell, SWT.CHECK );
         props.setLook(wEveryRow);
-        wEveryRow.setSelection(jobentry.execPerRow);
+        wEveryRow.setSelection(jobEntry.execPerRow);
         wEveryRow.setToolTipText("Check this to execute this transformation mulitple times : once for every input row.");
         fdEveryRow=new FormData();
         fdEveryRow.left = new FormAttachment(middle, 0);
@@ -412,8 +414,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    jobentry.execPerRow=!jobentry.execPerRow;
-                    jobentry.setChanged();
+                    jobEntry.execPerRow=!jobEntry.execPerRow;
+                    jobEntry.setChanged();
                 }
             }
         );
@@ -427,7 +429,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
-		int rows = jobentry.arguments==null?1:(jobentry.arguments.length==0?0:jobentry.arguments.length);
+		int rows = jobEntry.arguments==null?1:(jobEntry.arguments.length==0?0:jobEntry.arguments.length);
 		final int FieldsRows= rows;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
@@ -448,8 +450,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		fdFields.bottom = new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
 
-		wlFields.setEnabled(!jobentry.argFromPrevious);
-		wFields.setEnabled(!jobentry.argFromPrevious);
+		wlFields.setEnabled(!jobEntry.argFromPrevious);
+		wFields.setEnabled(!jobEntry.argFromPrevious);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -508,7 +510,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobentry;
+		return jobEntry;
 	}
 
 	public void dispose()
@@ -520,21 +522,21 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void setActive()
 	{
-		wlLogfile.setEnabled(jobentry.setLogfile);
-		wLogfile.setEnabled(jobentry.setLogfile);
+		wlLogfile.setEnabled(jobEntry.setLogfile);
+		wLogfile.setEnabled(jobEntry.setLogfile);
 		
-		wlLogext.setEnabled(jobentry.setLogfile);
-		wLogext.setEnabled(jobentry.setLogfile);
+		wlLogext.setEnabled(jobEntry.setLogfile);
+		wLogext.setEnabled(jobEntry.setLogfile);
 
-		wlAddDate.setEnabled(jobentry.setLogfile);
-		wAddDate.setEnabled(jobentry.setLogfile);
+		wlAddDate.setEnabled(jobEntry.setLogfile);
+		wAddDate.setEnabled(jobEntry.setLogfile);
 
-		wlAddTime.setEnabled(jobentry.setLogfile);
-		wAddTime.setEnabled(jobentry.setLogfile);
+		wlAddTime.setEnabled(jobEntry.setLogfile);
+		wAddTime.setEnabled(jobEntry.setLogfile);
 
-		wlLoglevel.setEnabled(jobentry.setLogfile);
-		wLoglevel.setEnabled(jobentry.setLogfile);
-		if (jobentry.setLogfile)
+		wlLoglevel.setEnabled(jobEntry.setLogfile);
+		wLoglevel.setEnabled(jobEntry.setLogfile);
+		if (jobEntry.setLogfile)
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		}
@@ -546,44 +548,44 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void getData()
 	{
-		if (jobentry.getName()!=null)     wName.setText(jobentry.getName());
-		if (jobentry.getFilename()!=null) wFilename.setText(jobentry.getFilename());
-		if (jobentry.arguments!=null)
+		if (jobEntry.getName()!=null)     wName.setText(jobEntry.getName());
+		if (jobEntry.getFilename()!=null) wFilename.setText(jobEntry.getFilename());
+		if (jobEntry.arguments!=null)
 		{
-			for (int i=0;i<jobentry.arguments.length;i++)
+			for (int i=0;i<jobEntry.arguments.length;i++)
 			{
 				TableItem ti = wFields.table.getItem(i);
-				if (jobentry.arguments[i]!=null) ti.setText(1, jobentry.arguments[i]);
+				if (jobEntry.arguments[i]!=null) ti.setText(1, jobEntry.arguments[i]);
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
-		wPrevious.setSelection(jobentry.argFromPrevious);
-        wEveryRow.setSelection(jobentry.execPerRow);
-		wSetLogfile.setSelection(jobentry.setLogfile);
-		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
-		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
-		wAddDate.setSelection(jobentry.addDate);
-		wAddTime.setSelection(jobentry.addTime);
+		wPrevious.setSelection(jobEntry.argFromPrevious);
+        wEveryRow.setSelection(jobEntry.execPerRow);
+		wSetLogfile.setSelection(jobEntry.setLogfile);
+		if (jobEntry.logfile!=null) wLogfile.setText(jobEntry.logfile);
+		if (jobEntry.logext!=null) wLogext.setText(jobEntry.logext);
+		wAddDate.setSelection(jobEntry.addDate);
+		wAddTime.setSelection(jobEntry.addTime);
 
-		wLoglevel.select(jobentry.loglevel+1);
+		wLoglevel.select(jobEntry.loglevel+1);
 	}
 	
 	private void cancel()
 	{
-		jobentry.setChanged(backupChanged);
-		jobentry.setLogfile = backupLogfile;
-		jobentry.addDate = backupDate;
-		jobentry.addTime = backupTime;
+		jobEntry.setChanged(backupChanged);
+		jobEntry.setLogfile = backupLogfile;
+		jobEntry.addDate = backupDate;
+		jobEntry.addTime = backupTime;
 		
-		jobentry=null;
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobentry.setFileName(wFilename.getText());
-		jobentry.setName(wName.getText());
+		jobEntry.setFileName(wFilename.getText());
+		jobEntry.setName(wName.getText());
 		
 		int nritems = wFields.nrNonEmpty();
 		int nr = 0;
@@ -592,21 +594,21 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			String arg = wFields.getNonEmpty(i).getText(1);
 			if (arg!=null && arg.length()!=0) nr++;
 		}
-		jobentry.arguments = new String[nr];
+		jobEntry.arguments = new String[nr];
 		nr=0;
 		for (int i=0;i<nritems;i++)
 		{
 			String arg = wFields.getNonEmpty(i).getText(1);
 			if (arg!=null && arg.length()!=0) 
 			{
-				jobentry.arguments[nr]=arg;
+				jobEntry.arguments[nr]=arg;
 				nr++;
 			} 
 		}
 
-		jobentry.logfile=wLogfile.getText();
-		jobentry.logext =wLogext.getText();
-		jobentry.loglevel = wLoglevel.getSelectionIndex()-1;
+		jobEntry.logfile=wLogfile.getText();
+		jobEntry.logext =wLogext.getText();
+		jobEntry.loglevel = wLoglevel.getSelectionIndex()-1;
 		dispose();
 	}
 }

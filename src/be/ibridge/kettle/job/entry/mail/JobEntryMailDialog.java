@@ -41,6 +41,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.core.widget.TextVar;
+import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -120,16 +121,16 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private JobEntryMail  jobmail;
+	private JobEntryMail  jobEntry;
 	private boolean  backupDate, backupChanged;
 	private Props    props;
 	private Display  display;
 	
-	public JobEntryMailDialog(Shell parent, JobEntryMail jm)
+	public JobEntryMailDialog(Shell parent, JobEntryMail jobEntry)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
-		jobmail=jm;
+		this.jobEntry=jobEntry;
 	}
 
 	public JobEntryInterface open()
@@ -139,16 +140,17 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
+        JobDialog.setShellImage(shell, jobEntry);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				jobmail.setChanged();
+				jobEntry.setChanged();
 			}
 		};
-		backupChanged = jobmail.hasChanged();
-		backupDate    = jobmail.getIncludeDate();
+		backupChanged = jobEntry.hasChanged();
+		backupDate    = jobEntry.getIncludeDate();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -208,8 +210,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    jobmail.setUsingAuthentication(!jobmail.isUsingAuthentication());
-                    jobmail.setChanged();
+                    jobEntry.setUsingAuthentication(!jobEntry.isUsingAuthentication());
+                    jobEntry.setChanged();
                     setFlags();
                 }
             }
@@ -272,8 +274,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobmail.setIncludeDate(!jobmail.getIncludeDate());
-					jobmail.setChanged();
+					jobEntry.setIncludeDate(!jobEntry.getIncludeDate());
+					jobEntry.setChanged();
 				}
 			}
 		);
@@ -298,8 +300,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobmail.setIncludingFiles(!jobmail.isIncludingFiles());
-					jobmail.setChanged();
+					jobEntry.setIncludingFiles(!jobEntry.isIncludingFiles());
+					jobEntry.setChanged();
 					setFlags();
 				}
 			}
@@ -347,8 +349,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobmail.setZipFiles(!jobmail.isZipFiles());
-					jobmail.setChanged();
+					jobEntry.setZipFiles(!jobEntry.isZipFiles());
+					jobEntry.setChanged();
 					setFlags();
 				}
 			}
@@ -409,8 +411,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    jobmail.setOnlySendComment(!jobmail.isOnlySendComment());
-                    jobmail.setChanged();
+                    jobEntry.setOnlySendComment(!jobEntry.isOnlySendComment());
+                    jobEntry.setChanged();
                 }
             }
         );
@@ -473,7 +475,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return jobmail;
+		return jobEntry;
 	}
 
     protected void setFlags()
@@ -497,62 +499,62 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		
 	public void getData()
 	{
-		if (jobmail.getName()!=null)          wName.setText(jobmail.getName());
-		if (jobmail.getDestination()!=null)   wDestination.setText(jobmail.getDestination());
-		if (jobmail.getServer()!=null)        wServer.setText(jobmail.getServer());
-		if (jobmail.getReplyAddress()!=null)  wReply.setText(jobmail.getReplyAddress());
-		if (jobmail.getSubject()!=null)       wSubject.setText(jobmail.getSubject());
-		if (jobmail.getContactPerson()!=null) wPerson.setText(jobmail.getContactPerson());
-		if (jobmail.getContactPhone()!=null)  wPhone.setText(jobmail.getContactPhone());
-		if (jobmail.getComment()!=null)       wComment.setText(jobmail.getComment());
+		if (jobEntry.getName()!=null)          wName.setText(jobEntry.getName());
+		if (jobEntry.getDestination()!=null)   wDestination.setText(jobEntry.getDestination());
+		if (jobEntry.getServer()!=null)        wServer.setText(jobEntry.getServer());
+		if (jobEntry.getReplyAddress()!=null)  wReply.setText(jobEntry.getReplyAddress());
+		if (jobEntry.getSubject()!=null)       wSubject.setText(jobEntry.getSubject());
+		if (jobEntry.getContactPerson()!=null) wPerson.setText(jobEntry.getContactPerson());
+		if (jobEntry.getContactPhone()!=null)  wPhone.setText(jobEntry.getContactPhone());
+		if (jobEntry.getComment()!=null)       wComment.setText(jobEntry.getComment());
         
-		wAddDate.setSelection(jobmail.getIncludeDate());
-		wIncludeFiles.setSelection(jobmail.isIncludingFiles());
+		wAddDate.setSelection(jobEntry.getIncludeDate());
+		wIncludeFiles.setSelection(jobEntry.isIncludingFiles());
 		
-		if (jobmail.getFileType()!=null)
+		if (jobEntry.getFileType()!=null)
 		{
-			int types[] = jobmail.getFileType();
+			int types[] = jobEntry.getFileType();
 			wTypes.setSelection(types);
 		}
 		
-		wZipFiles.setSelection(jobmail.isZipFiles());
-		if (jobmail.getZipFilename()!=null) wZipFilename.setText(jobmail.getZipFilename());
+		wZipFiles.setSelection(jobEntry.isZipFiles());
+		if (jobEntry.getZipFilename()!=null) wZipFilename.setText(jobEntry.getZipFilename());
         
-        wUseAuth.setSelection(jobmail.isUsingAuthentication());
-        if (jobmail.getAuthenticationUser()!=null)     wAuthUser.setText( jobmail.getAuthenticationUser() );
-        if (jobmail.getAuthenticationPassword()!=null) wAuthPass.setText( jobmail.getAuthenticationPassword() );
+        wUseAuth.setSelection(jobEntry.isUsingAuthentication());
+        if (jobEntry.getAuthenticationUser()!=null)     wAuthUser.setText( jobEntry.getAuthenticationUser() );
+        if (jobEntry.getAuthenticationPassword()!=null) wAuthPass.setText( jobEntry.getAuthenticationPassword() );
 
-        wOnlyComment.setSelection(jobmail.isOnlySendComment());
+        wOnlyComment.setSelection(jobEntry.isOnlySendComment());
 
 		setFlags();
 	}
 	
 	private void cancel()
 	{
-		jobmail.setChanged(backupChanged);
-		jobmail.setIncludeDate(backupDate);
+		jobEntry.setChanged(backupChanged);
+		jobEntry.setIncludeDate(backupDate);
 		
-		jobmail=null;
+		jobEntry=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		jobmail.setName( wName.getText() );
-		jobmail.setDestination( wDestination.getText() );
-		jobmail.setServer( wServer.getText() );
-		jobmail.setReplyAddress( wReply.getText() );
-		jobmail.setSubject( wSubject.getText() );
-		jobmail.setContactPerson( wPerson.getText() );
-		jobmail.setContactPhone( wPhone.getText() );
-		jobmail.setComment( wComment.getText() );
+		jobEntry.setName( wName.getText() );
+		jobEntry.setDestination( wDestination.getText() );
+		jobEntry.setServer( wServer.getText() );
+		jobEntry.setReplyAddress( wReply.getText() );
+		jobEntry.setSubject( wSubject.getText() );
+		jobEntry.setContactPerson( wPerson.getText() );
+		jobEntry.setContactPhone( wPhone.getText() );
+		jobEntry.setComment( wComment.getText() );
 
-		jobmail.setIncludeDate( wAddDate.getSelection() );
-		jobmail.setIncludingFiles( wIncludeFiles.getSelection() );
-		jobmail.setFileType(wTypes.getSelectionIndices());
-		jobmail.setZipFilename( wZipFilename.getText());
-        jobmail.setAuthenticationUser( wAuthUser.getText() );
-        jobmail.setAuthenticationPassword( wAuthPass.getText() );
+		jobEntry.setIncludeDate( wAddDate.getSelection() );
+		jobEntry.setIncludingFiles( wIncludeFiles.getSelection() );
+		jobEntry.setFileType(wTypes.getSelectionIndices());
+		jobEntry.setZipFilename( wZipFilename.getText());
+        jobEntry.setAuthenticationUser( wAuthUser.getText() );
+        jobEntry.setAuthenticationPassword( wAuthPass.getText() );
 		dispose();
 	}
 }
