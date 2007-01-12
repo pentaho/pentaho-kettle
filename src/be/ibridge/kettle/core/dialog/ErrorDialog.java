@@ -27,6 +27,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -59,9 +60,7 @@ public class ErrorDialog extends Dialog
 	private Text         wDesc;
     private FormData     fdlDesc, fdDesc;
 		
-	private Button wOK;
-	private FormData fdOK;
-	private Listener lsOK;
+	private Button wOK, wDetails;
 
 	private Shell  shell;
 	private SelectionAdapter lsDef;
@@ -94,6 +93,7 @@ public class ErrorDialog extends Dialog
 		this.props = Props.getInstance();
 
 		Display display  = parent.getDisplay();
+        final Font largeFont = GUIResource.getInstance().getFontLarge();
 		final Color gray = GUIResource.getInstance().getColorLightGray();
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
@@ -116,18 +116,19 @@ public class ErrorDialog extends Dialog
 		fdlDesc.left = new FormAttachment(0, 0);
 		fdlDesc.top  = new FormAttachment(0, margin);
 		wlDesc.setLayoutData(fdlDesc);
+        wlDesc.setFont(largeFont);
 		
-		wDesc=new Text(shell, SWT.MULTI  | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
+        wDesc=new Text(shell, SWT.MULTI  | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
+        
+        final StringBuffer text = new StringBuffer();
+        final StringBuffer details = new StringBuffer();
+        
 		if (exception!=null) 
 		{
-			String text = "";
-			
 			if (exception instanceof KettleException) // Normal error
 			{
 				KettleException ke = (KettleException) exception;
-				text = ke.getMessage();
-				text += Const.CR;
-				text += Const.CR;
+				text.append(ke.getMessage());
 			}
 			else
             // Error from somewhere else, what is the cause?
@@ -137,32 +138,25 @@ public class ErrorDialog extends Dialog
 				if (cause instanceof KettleException)
 				{
 					KettleException ke = (KettleException)cause;
-					text = ke.getMessage();
-					text += Const.CR;
-					text += Const.CR;
+                    text.append(ke.getMessage());
 				}
 				else
 				{
-					text = Const.NVL(cause.getMessage(), cause.toString());
+                    text.append(Const.NVL(cause.getMessage(), cause.toString()));
 					while (text==null && cause!=null)
 					{
 						cause = cause.getCause();
 						if (cause!=null) 
 						{
-							text = Const.NVL(cause.getMessage(), cause.toString());
+                            text.append(Const.NVL(cause.getMessage(), cause.toString()));
 						}
 					}
-					
-					text += Const.CR;
-					text += Const.CR;
 				}
 			}
 			else
 			if (exception instanceof Throwable) // Error from somewhere else...
 			{
-				text = exception.getMessage();
-				text += Const.CR;
-				text += Const.CR;
+                text.append(exception.getMessage());
 			}
 
 			
@@ -170,9 +164,9 @@ public class ErrorDialog extends Dialog
 			PrintWriter pw = new PrintWriter(sw);
 			exception.printStackTrace(pw);
 			
-			text+=sw.getBuffer().toString();
+			details.append(sw.getBuffer());
 			
-			wDesc.setText( text );
+			wDesc.setText( text.toString() );
 		}
 		wDesc.setBackground(gray);
 		fdDesc=new FormData();
@@ -185,14 +179,14 @@ public class ErrorDialog extends Dialog
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText("  &Close  ");
-		fdOK=new FormData();
-		fdOK.left       = new FormAttachment(50, 0);
-		fdOK.bottom     = new FormAttachment(100, 0);
-		wOK.setLayoutData(fdOK);
+        wDetails=new Button(shell, SWT.PUSH);
+        wDetails.setText("  &Details  ");
+        
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wDetails }, margin, null);
 
 		// Add listeners
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		wOK.addListener    (SWT.Selection, lsOK     );
+		wOK.addListener     (SWT.Selection, new Listener() { public void handleEvent(Event e) { ok(); } });
+        wDetails.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { showDetails(details.toString()); } });
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		wDesc.addSelectionListener(lsDef);
@@ -217,7 +211,14 @@ public class ErrorDialog extends Dialog
 		}
 	}
 
-	public void dispose()
+	protected void showDetails(String details)
+    {
+        EnterTextDialog dialog = new EnterTextDialog(shell, "Error details", "Here are the error details and trace:", details);
+        dialog.setReadOnly();
+        dialog.open();
+    }
+
+    public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();

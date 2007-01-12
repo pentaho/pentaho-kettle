@@ -77,6 +77,8 @@ import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TreeItemAccelerator;
+import be.ibridge.kettle.core.widget.DoubleClickInterface;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.ProfileMeta;
@@ -291,14 +293,6 @@ public class RepositoryExplorerDialog extends Dialog
     				}
     			}
     		);
-    		SelectionAdapter selAdapter=new SelectionAdapter()
-    			{
-    				public void widgetDefaultSelected(SelectionEvent e)
-    				{
-    					doubleClick();	
-    				}
-    			};
-    		wTree.addSelectionListener(selAdapter);
     		
     		wTree.addMouseListener(new MouseAdapter()
     			{
@@ -1052,12 +1046,14 @@ public class RepositoryExplorerDialog extends Dialog
 			// The Databases...				
 			TreeItem tiParent = new TreeItem(tiTree, SWT.NONE); 
 			tiParent.setText(STRING_DATABASES);
+            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newDatabase(); } });
 	
 			String names[] = rep.getDatabaseNames();			
 			for (int i=0;i<names.length;i++)
 			{
 				TreeItem newDB = new TreeItem(tiParent, SWT.NONE);
 				newDB.setText(Const.NVL(names[i], ""));
+                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newDB, new DoubleClickInterface() { public void action(TreeItem treeItem) { editDatabase(treeItem.getText()); } });
 			}
 	
             // The partition schemas...             
@@ -1074,12 +1070,14 @@ public class RepositoryExplorerDialog extends Dialog
             // The slaves...         
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setText(STRING_SLAVES);
-    
+            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, new DoubleClickInterface() { public void action(TreeItem treeItem) { newSlaveServer(); } });
+
             names = rep.getSlaveNames();          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setText(Const.NVL(names[i], ""));
+                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, new DoubleClickInterface() { public void action(TreeItem treeItem) { editSlaveServer(treeItem.getText()); } });
             }
             
             // The clusters ...
@@ -1096,10 +1094,10 @@ public class RepositoryExplorerDialog extends Dialog
 			// The transformations...				
 			if (userinfo.useTransformations())
 			{
-				TreeItem tiCat = new TreeItem(tiTree, SWT.NONE); 
-				tiCat.setText(STRING_TRANSFORMATIONS);
+				TreeItem tiTrans = new TreeItem(tiTree, SWT.NONE); 
+				tiTrans.setText(STRING_TRANSFORMATIONS);
 				
-				TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
+				TreeItem newCat = new TreeItem(tiTrans, SWT.NONE);
                 
 				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, sortColumn, ascending, true, false);
 			}
@@ -1119,6 +1117,7 @@ public class RepositoryExplorerDialog extends Dialog
 			//
 			TreeItem tiUser = new TreeItem(tiTree, SWT.NONE);
 			tiUser.setText(STRING_USERS);
+            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { newUser(); } });
 			
 			String users[] = rep.getUserLogins();
 			for (int i=0;i<users.length;i++)
@@ -1131,6 +1130,7 @@ public class RepositoryExplorerDialog extends Dialog
 						// The solution is to verify on saving a user.
 					    TreeItem newUser = new TreeItem(tiUser, SWT.NONE);
 					    newUser.setText(users[i]);
+                        if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newUser, new DoubleClickInterface() { public void action(TreeItem treeItem) { editUser(treeItem.getText()); } });
 					}
 				}
 			}
@@ -1142,12 +1142,14 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				TreeItem tiProf = new TreeItem(tiTree, SWT.NONE);
 				tiProf.setText(STRING_PROFILES);
-				
+                TreeItemAccelerator.addDoubleClick(tiProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { newProfile(); } });
+
 				String prof[] = rep.getProfiles();
 				for (int i=0;i<prof.length;i++)
 				{
 					TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
 					newProf.setText(prof[i]);
+                    TreeItemAccelerator.addDoubleClick(newProf, new DoubleClickInterface() { public void action(TreeItem treeItem) { editProfile(treeItem.getText()); } });
 				}
 			}
             
@@ -2224,68 +2226,6 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 
-	
-	// Open or edit the first entry in the list...
-	public void doubleClick()
-	{
-		TreeItem tis[] = wTree.getSelection();
-		if (tis.length>0)
-		{
-			TreeItem ti = tis[0];
-			TreeItem parent = ti.getParentItem();
-			
-			int level = Const.getTreeLevel(ti);
-			
-			if (level==0)
-			{
-				Const.flipExpanded(ti);
-			}
-
-            else
-			if (level==1 && ti.getText().equalsIgnoreCase(STRING_DATABASES))
-			{
-				if (!userinfo.isReadonly()) newDatabase();
-			}
-            else
-            if (level==2 && parent.getText().equalsIgnoreCase(STRING_DATABASES))
-            {
-                if (!userinfo.isReadonly()) editDatabase(ti.getText());
-            }
-
-            else
-            if (level==1 && ti.getText().equalsIgnoreCase(STRING_USERS))
-            {
-                if (!userinfo.isReadonly()) newUser();
-            }
-            else
-            if (level==1 && parent.getText().equalsIgnoreCase(STRING_USERS))
-			{
-                if (!userinfo.isReadonly()) editUser(ti.getText());
-			}
-            else
-            if (level==1 && ti.getText().equalsIgnoreCase(STRING_PROFILES))
-            {
-                if (!userinfo.isReadonly()) newProfile();
-            }
-            else
-			if (level==1 && parent.getText().equalsIgnoreCase(STRING_PROFILES))
-			{
-                if (!userinfo.isReadonly()) editProfile(ti.getText());
-			}
-            
-            else
-            if (level==1 && ti.getText().equalsIgnoreCase(STRING_SLAVES))
-            {
-                if (!userinfo.isReadonly()) newSlaveServer();
-            }
-            else
-            if (level==2 && parent.getText().equalsIgnoreCase(STRING_SLAVES))
-            {
-                if (!userinfo.isReadonly()) editSlaveServer(ti.getText());
-            }
-		}
-	}
-
 	public void editProfile(String profilename)
 	{
 		try
@@ -2712,7 +2652,7 @@ public class RepositoryExplorerDialog extends Dialog
     {
         try
         {
-            long id = rep.getDatabaseID(slaveName);
+            long id = rep.getSlaveID(slaveName);
             if (id>0)
             {
                 rep.delSlave(id);

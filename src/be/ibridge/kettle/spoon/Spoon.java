@@ -5050,6 +5050,8 @@ public class Spoon implements AddUndoPositionInterface
 
     private boolean editTransformationProperties(TransMeta transMeta)
     {
+        if (transMeta==null) return false;
+        
         TransDialog tid = new TransDialog(shell, SWT.NONE, transMeta, rep);
         TransMeta ti = tid.open();
         
@@ -7063,7 +7065,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    private void delSlaveServer(TransMeta transMeta, SlaveServer slaveServer)
+    public void delSlaveServer(TransMeta transMeta, SlaveServer slaveServer)
     {
         try
         {

@@ -189,6 +189,8 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         this();
         
+        setId(id_cluster_schema);
+        
         Row row = rep.getClusterSchema(id_cluster_schema);
         
         name = row.getString("NAME", null);

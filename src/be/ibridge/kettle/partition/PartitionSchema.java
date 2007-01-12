@@ -166,6 +166,10 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     
     public PartitionSchema(Repository rep, long id_partition_schema) throws KettleDatabaseException
     {
+        this();
+        
+        setId(id_partition_schema);
+        
         Row row = rep.getPartitionSchema(id_partition_schema);
         
         name = row.getString("NAME", null);
