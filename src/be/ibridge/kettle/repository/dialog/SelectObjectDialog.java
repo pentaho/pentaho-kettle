@@ -145,12 +145,12 @@ public class SelectObjectDialog extends Dialog
         userColumn = new TreeColumn(wTree, SWT.LEFT);
         userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
         userColumn.setWidth(100);
-        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
 
         changedColumn = new TreeColumn(wTree, SWT.LEFT);
         changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
         changedColumn.setWidth(100);
-        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
         
         
         props.setLook(wTree);
