@@ -763,7 +763,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         {
             for (int i=0;i<copies.length;i++)
             {
-                spoon.deleteChefGraphEntry(jobMeta, copies[i].getName());
+                spoon.deleteJobEntryCopies(jobMeta, copies[i]);
             }
             spoon.refreshTree();
             spoon.refreshGraph();
@@ -873,8 +873,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         }
         mPop = new Menu((Control) this);
         
-		final JobEntryCopy je = jobMeta.getChefGraphEntry(x, y, iconsize);
-		if (je != null) // We clicked on a Job Entry!
+		final JobEntryCopy jobEntry = jobMeta.getChefGraphEntry(x, y, iconsize);
+		if (jobEntry != null) // We clicked on a Job Entry!
 		{
 			MenuItem miNewHop = null;
 
@@ -885,9 +885,9 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				miNewHop.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.NewHop")); //$NON-NLS-1$
 			}
 
-			final JobEntryInterface entry = je.getEntry();
+			final JobEntryInterface entry = jobEntry.getEntry();
 
-			switch(je.getType())
+			switch(jobEntry.getType())
 			{
 			case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
 				{
@@ -1034,7 +1034,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				public void widgetSelected(SelectionEvent e) 
 				{
 					selected_entries = null;
-					editEntry(je);
+					editEntry(jobEntry);
 				}
 			});
 			miEditDesc.addSelectionListener(new SelectionAdapter() 
@@ -1043,16 +1043,16 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				{
 					String title = Messages.getString("ChefGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
 					String message = Messages.getString("ChefGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
-					EnterTextDialog dd = new EnterTextDialog(shell, title, message, je.getDescription());
+					EnterTextDialog dd = new EnterTextDialog(shell, title, message, jobEntry.getDescription());
 					String des = dd.open();
-					if (des != null) je.setDescription(des);
+					if (des != null) jobEntry.setDescription(des);
 				}
 			});
 			miDupeStep.addSelectionListener(new SelectionAdapter() 
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					spoon.dupeChefGraphEntry(jobMeta, je.getName());
+					spoon.dupeJobEntry(jobMeta, jobEntry);
 				}
 			});
 			miCopy.addSelectionListener(new SelectionAdapter() 
@@ -1063,7 +1063,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				}
 			});
 
-			if (jobMeta.isEntryUsedInHops(je))
+			if (jobMeta.isEntryUsedInHops(jobEntry))
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miDetach = new MenuItem(mPop, SWT.CASCADE);
@@ -1072,12 +1072,12 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						detach(je);
+						detach(jobEntry);
 						jobMeta.unselectAll();
 					}
 				});
 			}
-			if (je.isDrawn() && !jobMeta.isEntryUsedInHops(je)) 
+			if (jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry)) 
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miHide = new MenuItem(mPop, SWT.CASCADE);
@@ -1086,19 +1086,19 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				{
 					public void widgetSelected(SelectionEvent e) 
 					{
-						je.setDrawn(false);
+						jobEntry.setDrawn(false);
 						// nr > 1: delete
-						if (je.getNr() > 0) 
+						if (jobEntry.getNr() > 0) 
 						{
-							int ind = jobMeta.indexOfJobEntry(je);
+							int ind = jobMeta.indexOfJobEntry(jobEntry);
 							jobMeta.removeJobEntry(ind);
-							spoon.addUndoDelete(jobMeta, new JobEntryCopy[] {je}, new int[] {ind});
+							spoon.addUndoDelete(jobMeta, new JobEntryCopy[] {jobEntry}, new int[] {ind});
 						}
 						redraw();
 					}
 				});
 			}
-			if (je.isDrawn()) 
+			if (jobEntry.isDrawn()) 
 			{
 				MenuItem miDelete = new MenuItem(mPop, SWT.CASCADE);
 				miDelete.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Delete")); //$NON-NLS-1$
@@ -1106,7 +1106,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				{
 					public void widgetSelected(SelectionEvent e) 
 					{
-						spoon.deleteChefGraphEntry(jobMeta, je.getName());
+						spoon.deleteJobEntryCopies(jobMeta, jobEntry);
 						redraw();
 					}
 				});
