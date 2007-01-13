@@ -2415,6 +2415,7 @@ public class Spoon implements AddUndoPositionInterface
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
             if (selection instanceof DatabaseMeta) editConnection((HasDatabasesInterface) parent, (DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
+            if (selection instanceof JobEntryCopy) editChefGraphEntry((JobMeta)parent, (JobEntryCopy)selection);
             if (selection instanceof TransHopMeta) editHop((TransMeta)parent, (TransHopMeta)selection);
             if (selection instanceof PartitionSchema) editPartitionSchema((HasDatabasesInterface)parent, (PartitionSchema)selection);
             if (selection instanceof ClusterSchema) editClusterSchema((TransMeta)parent, (ClusterSchema)selection);
