@@ -669,6 +669,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wlLoglevel.setEnabled(wSetLogfile.getSelection());
 		wLoglevel.setEnabled(wSetLogfile.getSelection());
         
+        /*
 		if (jobEntry.setLogfile)
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -677,6 +678,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_GRAY));
 		}
+        */
 	}
 	
 	public void getData()
