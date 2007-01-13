@@ -2299,6 +2299,23 @@ public class Spoon implements AddUndoPositionInterface
                 MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Share"));
                 miShare.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { shareObject(stepMeta); } } );
             }
+            if (selection instanceof JobEntryCopy)
+            {
+                final JobMeta jobMeta = (JobMeta)parent;
+                final JobEntryCopy jobEntry = (JobEntryCopy)selection;
+                
+                // Edit
+                MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Edit"));
+                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editChefGraphEntry(jobMeta, jobEntry); } } );
+
+                // Duplicate
+                MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Duplicate"));
+                miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeJobEntry(jobMeta, jobEntry); } } );
+                
+                // Delete
+                MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Delete"));
+                miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { deleteJobEntryCopies(jobMeta, jobEntry); } } );
+            }
             if (selection instanceof TransHopMeta)
             {
                 final TransMeta transMeta = (TransMeta)parent;
@@ -8208,8 +8225,11 @@ public class Spoon implements AddUndoPositionInterface
         return je;
     }
 
-    public void deleteChefGraphEntry(JobMeta jobMeta, String name)
+    public void deleteJobEntryCopies(JobMeta jobMeta, JobEntryCopy jobEntry)
     {
+        String name = jobEntry.getName();
+        // TODO Show warning "Are you sure?  This operation can't be undone." + clear undo buffer.
+        
         // First delete all the hops using entry with name:
         JobHopMeta hi[] = jobMeta.getAllJobHopsUsing(name);
         if (hi.length>0)
@@ -8233,23 +8253,22 @@ public class Spoon implements AddUndoPositionInterface
         refreshTree();
     }
 
-    public void dupeChefGraphEntry(JobMeta jobMeta, String name)
+    public void dupeJobEntry(JobMeta jobMeta, JobEntryCopy jobEntry)
     {
-        JobEntryCopy jge = jobMeta.findJobEntry(name, 0, true);
-        if (jge!=null)
+        if (jobEntry!=null && !jobEntry.isStart())
         {
-            JobEntryCopy dupejge = (JobEntryCopy)jge.clone();
+            JobEntryCopy dupejge = (JobEntryCopy)jobEntry.clone();
             dupejge.setNr( jobMeta.findUnusedNr(dupejge.getName()) );
             if (dupejge.isDrawn())
             {
-                Point p = jge.getLocation();
+                Point p = jobEntry.getLocation();
                 dupejge.setLocation(p.x+10, p.y+10);
             }
             jobMeta.addJobEntry(dupejge);
             refreshGraph();
             refreshTree();
+            setShellText();
         }
-        setShellText();
     }
     
     
