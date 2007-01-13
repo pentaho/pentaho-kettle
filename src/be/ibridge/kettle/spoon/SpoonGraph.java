@@ -1449,7 +1449,6 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                         if (!multipleOK)
                         {
                             cop = 1;
-                            // dmsegbox
                             
                             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
                             mb.setMessage(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
