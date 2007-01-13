@@ -71,6 +71,12 @@ public class RowGenerator extends BaseStep implements StepInterface
                 if (stringValue==null || stringValue.length()==0)
                 {
                     value.setNull();
+                    
+                    if ( value.getType() == Value.VALUE_TYPE_NONE )
+                    {
+                        String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError", value.getName(), value.getString());
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));                    
+                    }
                 }
                 else
                 {
@@ -149,7 +155,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         break;
                         
                     default:
-                        String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError");
+                        String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError", value.getName(), value.getString());
                         remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                     }
                 }
