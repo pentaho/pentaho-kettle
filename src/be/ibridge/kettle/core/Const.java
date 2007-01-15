@@ -101,6 +101,11 @@ public class Const
 	 */
 	public static final String CR = System.getProperty("line.separator");
 
+    /**
+     * DOSCR: MS-DOS specific Cariage Return
+     */
+    public static final String DOSCR = "\n\r";
+
 	/**
 	 * The Java runtime version
 	 */

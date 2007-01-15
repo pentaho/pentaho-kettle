@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -355,17 +357,23 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         RequestEntity entity = new ByteArrayRequestEntity(content);
         
         post.setRequestEntity(entity);
+        post.setDoAuthentication(true);
+        
         // post.setContentChunked(true);
         
         // Get HTTP client
         // 
-        HttpClient httpclient = new HttpClient();
+        HttpClient client = new HttpClient();
+        client.getState().setCredentials(
+                new AuthScope(hostname, Const.toInt(port, 80), "Kettle"),
+                new UsernamePasswordCredentials(username, password)
+                );
         
         // Execute request
         // 
         try
         {
-            int result = httpclient.executeMethod(post);
+            int result = client.executeMethod(post);
             
             // The status code
             log.logDebug(toString(), "Response status code: " + result);
@@ -377,8 +385,20 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
             int c;
             while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
             inputStream.close();
+            String bodyTmp = bodyBuffer.toString();
             
+            switch(result)
+            {
+            case 401: // Security problem: authentication required
+                String message = "Authentication failed"+Const.DOSCR+Const.DOSCR+bodyTmp;
+                WebResult webResult = new WebResult(WebResult.STRING_ERROR, message);
+                bodyBuffer.setLength(0);
+                bodyBuffer.append(webResult.getXML());
+                break;
+            }
+
             String body = bodyBuffer.toString();
+            
 
             // String body = post.getResponseBodyAsString(); 
             log.logDebug(toString(), "Response body: "+body);
