@@ -1299,12 +1299,12 @@ public class Spoon implements AddUndoPositionInterface
         //
         miTransPaste = new MenuItem(msTrans, SWT.CASCADE); 
         miTransPaste.setText(Messages.getString("Spoon.Menu.Transformation.PasteTransformationFromClipboard"));//P&aste transformation from clipboard
-        miTransPaste.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTransformationImage(getActiveTransformation()); } });
+        miTransPaste.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { pasteTransformation(); } });
         // Copy image of transformation to clipboard
         //
         miTransImage = new MenuItem(msTrans, SWT.CASCADE); 
         miTransImage.setText(Messages.getString("Spoon.Menu.Transformation.CopyTransformationImageClipboard"));//Copy the transformation image clipboard \tCTRL-ALT-I
-        miTransImage.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { pasteTransformation(); } });
+        miTransImage.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyTransformationImage(getActiveTransformation()); } });
         new MenuItem(msTrans, SWT.SEPARATOR);
         // Edit transformation setttings
         //
@@ -4732,7 +4732,7 @@ public class Spoon implements AddUndoPositionInterface
         miLastCheck.setEnabled(enableTransMenu);
         miLastPreview.setEnabled(enableTransMenu);
         miTransCopy.setEnabled(enableTransMenu);
-        miTransPaste.setEnabled(enableTransMenu);
+        // miTransPaste.setEnabled(enableTransMenu);
         miTransImage.setEnabled(enableTransMenu);
         miTransDetails.setEnabled(enableTransMenu);
 

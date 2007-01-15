@@ -64,7 +64,6 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class Repository
 {
-
     private final String repositoryTableNames[] = new String[] 
          { 
             "R_REPOSITORY_LOG", "R_VERSION",

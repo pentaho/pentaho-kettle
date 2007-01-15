@@ -61,6 +61,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public FilterRowsMeta()
 	{
 		super(); // allocate BaseStepMeta
+        condition=new Condition();
 	}
 	
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
@@ -193,12 +194,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	private void readData(Node stepnode)
-		throws KettleXMLException
+	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try
 		{
-		    
 			sendFalseStepname = XMLHandler.getTagValue(stepnode, "send_false_to"); //$NON-NLS-1$
 			sendTrueStepname = XMLHandler.getTagValue(stepnode, "send_true_to"); //$NON-NLS-1$
 
@@ -328,8 +327,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
-		throws KettleException
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
 		try
 		{

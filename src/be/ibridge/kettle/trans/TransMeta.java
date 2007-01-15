@@ -1996,10 +1996,6 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
                 log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
 
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
-                loadRepTrans(rep);
-                if (monitor != null) monitor.worked(1);
-
                 // Load the common database connections
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
                 try
@@ -2011,6 +2007,11 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                     LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.ErrorReadingSharedObjects.Message", e.toString()));
                     LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                 }
+
+                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
+                loadRepTrans(rep);
+                if (monitor != null) monitor.worked(1);
+
                 if (monitor != null) monitor.worked(1);
 
                 // Load the notes...

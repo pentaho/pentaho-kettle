@@ -800,14 +800,12 @@ public class Condition implements Cloneable, XMLInterface
 		}
 	}
 
-	public long saveRep(Repository rep)
-		throws KettleException
+	public long saveRep(Repository rep) throws KettleException
 	{
 		return saveRep(0L, rep);
 	}
 	
-	public long saveRep(long id_condition_parent, Repository rep)
-		throws KettleException
+	public long saveRep(long id_condition_parent, Repository rep) throws KettleException
 	{
 		try
 		{
