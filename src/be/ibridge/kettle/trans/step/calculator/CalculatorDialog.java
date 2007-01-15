@@ -69,7 +69,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
     
-	private CalculatorMeta input;
+	private CalculatorMeta currentMeta;
+	private CalculatorMeta originalMeta;
     
     private Map      inputFields;
     private ColumnInfo[] colinf;
@@ -77,7 +78,10 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	public CalculatorDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(CalculatorMeta)in;
+		
+		// The order here is important... currentMeta is looked at for changes
+		currentMeta=(CalculatorMeta)in;
+		originalMeta=(CalculatorMeta)currentMeta.clone();
         inputFields =new HashMap();
 	}
 
@@ -88,16 +92,16 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
  		props.setLook(shell);
-        setShellImage(shell, input);
+        setShellImage(shell, currentMeta);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				input.setChanged();
+				currentMeta.setChanged();
 			}
 		};
-		changed = input.hasChanged();
+		changed = currentMeta.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -136,7 +140,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         fdlFields.top  = new FormAttachment(wStepname, margin);
         wlFields.setLayoutData(fdlFields);
         
-        final int FieldsRows=input.getCalculation()!=null ? input.getCalculation().length : 1;
+        final int FieldsRows=currentMeta.getCalculation()!=null ? currentMeta.getCalculation().length : 1;
         
         colinf=new ColumnInfo[]
                {
@@ -162,7 +166,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     {
                         TableView tv = (TableView)e.widget;
                         tv.setText(string, e.x, e.y);
-                        input.setChanged();
+                        currentMeta.setChanged();
                     }
                 }
             }
@@ -264,7 +268,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		setSize();
 		
 		getData();
-		input.setChanged(changed);
+		currentMeta.setChanged(changed);
 	
 		shell.open();
 		while (!shell.isDisposed())
@@ -280,7 +284,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         //
         final Map fields = new HashMap();
         
-        // Add the input fields...
+        // Add the currentMeta fields...
         fields.putAll(inputFields);
         
         shell.getDisplay().syncExec(new Runnable()
@@ -310,16 +314,16 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     /**
-	 * Copy information from the meta-data input to the dialog fields.
+	 * Copy information from the meta-data currentMeta to the dialog fields.
 	 */ 
 	public void getData()
 	{
 		wStepname.selectAll();
         
-        if (input.getCalculation()!=null)
-        for (int i=0;i<input.getCalculation().length;i++)
+        if (currentMeta.getCalculation()!=null)
+        for (int i=0;i<currentMeta.getCalculation().length;i++)
         {
-            CalculatorMetaFunction fn = input.getCalculation()[i];
+            CalculatorMetaFunction fn = currentMeta.getCalculation()[i];
             TableItem item = wFields.table.getItem(i);
             item.setText(1, Const.NVL(fn.getFieldName(), ""));
             item.setText(2, Const.NVL(fn.getCalcTypeLongDesc(), ""));
@@ -339,7 +343,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	private void cancel()
 	{
 		stepname=null;
-		input.setChanged(changed);
+		currentMeta.setChanged(changed);
 		dispose();
 	}
 	
@@ -347,7 +351,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		stepname = wStepname.getText(); // return value
 		
-        input.allocate(wFields.nrNonEmpty());
+        currentMeta.allocate(wFields.nrNonEmpty());
         
         for (int i=0;i<wFields.nrNonEmpty();i++)
         {
@@ -363,7 +367,13 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             int    valuePrecision  = Const.toInt( item.getText(8), -1 );
             boolean removed        = Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(9) );
                         
-            input.getCalculation()[i] = new CalculatorMetaFunction(fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed);
+            currentMeta.getCalculation()[i] = new CalculatorMetaFunction(fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed);
+        }
+        
+        if ( ! originalMeta.equals(currentMeta) )
+        {
+        	currentMeta.setChanged();
+        	changed = currentMeta.hasChanged();
         }
         
 		dispose();

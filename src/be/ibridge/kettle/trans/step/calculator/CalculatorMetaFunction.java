@@ -143,6 +143,17 @@ public class CalculatorMetaFunction implements Cloneable
         this.removedFromResult = removedFromResult;
     }
 
+    public boolean equals(Object obj)
+    {       
+        if (obj != null && (obj.getClass().equals(this.getClass())))
+        {
+        	CalculatorMetaFunction mf = (CalculatorMetaFunction)obj;
+            return (getXML() == mf.getXML());
+        }
+
+        return false;
+    }    
+    
     public Object clone()
     {
         try

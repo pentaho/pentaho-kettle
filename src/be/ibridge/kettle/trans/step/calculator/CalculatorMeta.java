@@ -96,6 +96,17 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         return retval.toString();
     }
 
+    public boolean equals(Object obj)
+    {       
+        if (obj != null && (obj.getClass().equals(this.getClass())))
+        {
+        	CalculatorMeta m = (CalculatorMeta)obj;
+            return (getXML() == m.getXML());
+        }
+
+        return false;
+    }        
+    
 	public Object clone()
 	{
 		CalculatorMeta retval = (CalculatorMeta) super.clone();
