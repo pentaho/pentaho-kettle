@@ -43,7 +43,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntryFileExists extends JobEntryBase implements JobEntryInterface
+public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String filename;
 	
@@ -65,6 +65,12 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 		super(jeb);
 	}
 
+    public Object clone()
+    {
+        JobEntryFileExists je = (JobEntryFileExists) super.clone();
+        return je;
+    }
+    
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();

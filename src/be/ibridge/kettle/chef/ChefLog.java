@@ -683,7 +683,7 @@ public class ChefLog extends Composite implements TabItemInterface
 					JobEntryCopy entryCopy = jobMeta.getJobEntry(i);
 					if (line.indexOf( entryCopy.getName() ) >=0 )
 					{
-						spoon.editChefGraphEntry(jobMeta, entryCopy );
+						spoon.editJobEntry(jobMeta, entryCopy );
 					}
 				}
 				// System.out.println("Error line selected: "+line);

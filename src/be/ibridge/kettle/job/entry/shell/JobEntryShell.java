@@ -82,6 +82,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		super(jeb);
 		setType(JobEntryInterface.TYPE_JOBENTRY_SHELL);
 	}
+    
+    public Object clone()
+    {
+        JobEntryShell je = (JobEntryShell) super.clone();
+        return je;
+    }
 
 	public String getXML()
 	{

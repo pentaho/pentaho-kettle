@@ -262,31 +262,34 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	
 	public Object clone()
 	{
-		JobEntryCopy ge=null;
-		try
-		{
-			ge = (JobEntryCopy)super.clone();
-		}
-		catch(CloneNotSupportedException cnse) { }
-		
+		JobEntryCopy ge=new JobEntryCopy();
+		ge.replaceMeta(this);
+        ge.setID(-1L);
 		return ge;
 	}
+    
+    public void replaceMeta(JobEntryCopy jobEntryCopy)
+    {
+        entry = jobEntryCopy.entry;
+        nr = jobEntryCopy.nr;          // Copy nr. 0 is the base copy...
+
+        selected = jobEntryCopy.selected;
+        if (jobEntryCopy.location!=null) location = new Point(jobEntryCopy.location.x, jobEntryCopy.location.y);
+        parallel = jobEntryCopy.parallel;
+        draw = jobEntryCopy.draw;
+        
+        id = jobEntryCopy.id;
+    }
 
 	public Object clone_deep()
 	{
-		JobEntryCopy ge=null;
-		try
-		{
-			ge = (JobEntryCopy)super.clone();
+		JobEntryCopy ge = (JobEntryCopy) clone();
 
-			// Copy underlying object as well...
-			ge.entry = (JobEntryInterface)entry.clone();
-		}
-		catch(CloneNotSupportedException cnse) { }
+		// Copy underlying object as well...
+		ge.entry = (JobEntryInterface)entry.clone();
 		
 		return ge;
 	}
-	
 
 	public void setID(long id)
 	{

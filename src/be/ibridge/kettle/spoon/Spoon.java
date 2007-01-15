@@ -2306,7 +2306,7 @@ public class Spoon implements AddUndoPositionInterface
                 
                 // Edit
                 MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Edit"));
-                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editChefGraphEntry(jobMeta, jobEntry); } } );
+                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editJobEntry(jobMeta, jobEntry); } } );
 
                 // Duplicate
                 MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Duplicate"));
@@ -2415,7 +2415,7 @@ public class Spoon implements AddUndoPositionInterface
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
             if (selection instanceof DatabaseMeta) editConnection((HasDatabasesInterface) parent, (DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
-            if (selection instanceof JobEntryCopy) editChefGraphEntry((JobMeta)parent, (JobEntryCopy)selection);
+            if (selection instanceof JobEntryCopy) editJobEntry((JobMeta)parent, (JobEntryCopy)selection);
             if (selection instanceof TransHopMeta) editHop((TransMeta)parent, (TransHopMeta)selection);
             if (selection instanceof PartitionSchema) editPartitionSchema((HasDatabasesInterface)parent, (PartitionSchema)selection);
             if (selection instanceof ClusterSchema) editClusterSchema((TransMeta)parent, (ClusterSchema)selection);
@@ -2681,7 +2681,7 @@ public class Spoon implements AddUndoPositionInterface
                                 
                                 // Not an existing entry: data refers to the type of step to create
                                 String steptype = container.getData();
-                                JobEntryCopy jobEntry = newChefGraphEntry(jobMeta, steptype, false);
+                                JobEntryCopy jobEntry = newJobEntry(jobMeta, steptype, false);
                                 jobEntry.setLocation(p);
                                 jobEntry.setDrawn(true);
                                 
@@ -2826,13 +2826,7 @@ public class Spoon implements AddUndoPositionInterface
 
             if (stepname != null)
             {
-                // OK, so the step has changed...
-                //
-                // First, backup the situation for undo/redo
-                StepMeta after = (StepMeta) stepMeta.clone();
-                addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta.indexOfStep(stepMeta) });
-
-                // Then, store the size of the
+                // 
                 // See if the new name the user enter, doesn't collide with another step.
                 // If so, change the stepname and warn the user!
                 //
@@ -2854,6 +2848,14 @@ public class Spoon implements AddUndoPositionInterface
                     mb.open();
                 }
                 stepMeta.setName(stepname);
+                
+                // 
+                // OK, so the step has changed...
+                // Backup the situation for undo/redo
+                //
+                StepMeta after = (StepMeta) stepMeta.clone();
+                addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta.indexOfStep(stepMeta) });
+                
                 refreshTree(); // Perhaps new connections were created in the step dialog.
             }
             else
@@ -5328,7 +5330,7 @@ public class Spoon implements AddUndoPositionInterface
                 // Delete the current step, insert previous version.
                 for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    StepMeta prev = (StepMeta)transAction.getPrevious()[i];
+                    StepMeta prev = (StepMeta) ((StepMeta)transAction.getPrevious()[i]).clone();
                     int idx = transAction.getCurrentIndex()[i];
 
                     transMeta.getStep(idx).replaceMeta(prev);
@@ -5345,7 +5347,7 @@ public class Spoon implements AddUndoPositionInterface
                     DatabaseMeta prev = (DatabaseMeta)transAction.getPrevious()[i];
                     int idx = transAction.getCurrentIndex()[i];
 
-                    transMeta.getDatabase(idx).replaceMeta(prev);
+                    transMeta.getDatabase(idx).replaceMeta((DatabaseMeta) prev.clone());
                 }
                 refreshTree();
                 refreshGraph();
@@ -5359,7 +5361,7 @@ public class Spoon implements AddUndoPositionInterface
                     int idx = transAction.getCurrentIndex()[i];
                     transMeta.removeNote(idx);
                     NotePadMeta prev = (NotePadMeta)transAction.getPrevious()[i];
-                    transMeta.addNote(idx, prev);
+                    transMeta.addNote(idx, (NotePadMeta) prev.clone());
                 }
                 refreshTree();
                 refreshGraph();
@@ -5374,7 +5376,7 @@ public class Spoon implements AddUndoPositionInterface
                     int idx = transAction.getCurrentIndex()[i];
 
                     transMeta.removeTransHop(idx);
-                    transMeta.addTransHop(idx, prev);
+                    transMeta.addTransHop(idx, (TransHopMeta) prev.clone());
                 }
                 refreshTree();
                 refreshGraph();
@@ -5509,13 +5511,10 @@ public class Spoon implements AddUndoPositionInterface
             case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
                 // Delete the current job entry, insert previous version.
                 {
-                    JobEntryCopy prev[] = (JobEntryCopy[])transAction.getPrevious();
-                    int idx[] = transAction.getCurrentIndex();
-                    
-                    for (int i=0;i<idx.length;i++)
+                    for (int i=0;i<transAction.getPrevious().length;i++)
                     {
-                        jobMeta.removeJobEntry(idx[i]);
-                        jobMeta.addJobEntry(idx[i], prev[i]);
+                        JobEntryCopy copy = (JobEntryCopy) ((JobEntryCopy)transAction.getPrevious()[i]).clone();
+                        jobMeta.getJobEntry(transAction.getCurrentIndex()[i]).replaceMeta(copy);
                     }
                     refreshTree();
                     refreshGraph();
@@ -5727,10 +5726,8 @@ public class Spoon implements AddUndoPositionInterface
             // Delete the current step, insert previous version.
             for (int i=0;i<transAction.getCurrent().length;i++)
             {
-                StepMeta stepMeta = (StepMeta)transAction.getCurrent()[i];
-                int idx = transAction.getCurrentIndex()[i];
-                
-                transMeta.getStep(idx).replaceMeta(stepMeta);
+                StepMeta stepMeta = (StepMeta) ((StepMeta)transAction.getCurrent()[i]).clone();
+                transMeta.getStep(transAction.getCurrentIndex()[i]).replaceMeta(stepMeta);
             }
             refreshTree();
             refreshGraph();
@@ -5744,7 +5741,7 @@ public class Spoon implements AddUndoPositionInterface
                 DatabaseMeta databaseMeta = (DatabaseMeta)transAction.getCurrent()[i];
                 int idx = transAction.getCurrentIndex()[i];
 
-                transMeta.getDatabase(idx).replaceMeta(databaseMeta);
+                transMeta.getDatabase(idx).replaceMeta((DatabaseMeta) databaseMeta.clone());
             }
             refreshTree();
             refreshGraph();
@@ -5759,7 +5756,7 @@ public class Spoon implements AddUndoPositionInterface
                 int idx = transAction.getCurrentIndex()[i];
 
                 transMeta.removeNote(idx);
-                transMeta.addNote(idx, ni);
+                transMeta.addNote(idx, (NotePadMeta) ni.clone());
             }
             refreshTree();
             refreshGraph();
@@ -5774,7 +5771,7 @@ public class Spoon implements AddUndoPositionInterface
                 int idx = transAction.getCurrentIndex()[i];
 
                 transMeta.removeTransHop(idx);
-                transMeta.addTransHop(idx, hi);
+                transMeta.addTransHop(idx, (TransHopMeta) hi.clone());
             }
             refreshTree();
             refreshGraph();
@@ -5891,15 +5888,12 @@ public class Spoon implements AddUndoPositionInterface
 
         // We changed a step : undo this...
         case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
-            // Delete the current step, insert previous version.
-            {
-                JobEntryCopy ce[] = (JobEntryCopy[])transAction.getCurrent();
-                int idx[] = transAction.getCurrentIndex();
-                
-                for (int i=0;i<idx.length;i++)
+            // replace with "current" version.
+            {    
+                for (int i=0;i<transAction.getCurrent().length;i++)
                 {
-                    jobMeta.removeJobEntry(idx[i]);
-                    jobMeta.addJobEntry(idx[i], ce[i]);
+                    JobEntryCopy copy = (JobEntryCopy) ((JobEntryCopy)(transAction.getCurrent()[i])).clone_deep();
+                    jobMeta.getJobEntry(transAction.getCurrentIndex()[i]).replaceMeta(copy);
                 }
                 refreshTree();
                 refreshGraph();
@@ -6045,7 +6039,7 @@ public class Spoon implements AddUndoPositionInterface
     // Change of step, connection, hop or note...
     public void addUndoChange(UndoInterface undoInterface, Object from[], Object to[], int[] pos, boolean nextAlso)
     {
-        undoInterface.addUndo(from, to, pos, null, null, TransMeta.TYPE_UNDO_CHANGE, nextAlso);
+        undoInterface.addUndo(from, to, pos, null, null, JobMeta.TYPE_UNDO_CHANGE, nextAlso);
         setUndoMenu(undoInterface);
     }
 
@@ -7790,7 +7784,7 @@ public class Spoon implements AddUndoPositionInterface
     //
     //////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public JobEntryCopy newChefGraphEntry(JobMeta jobMeta, String type_desc, boolean openit)
+    public JobEntryCopy newJobEntry(JobMeta jobMeta, String type_desc, boolean openit)
     {
         JobEntryLoader jobLoader = JobEntryLoader.getInstance();
         JobPlugin jobPlugin = null; 
@@ -8165,7 +8159,7 @@ public class Spoon implements AddUndoPositionInterface
     }
 
     
-    public void editChefGraphEntry(JobMeta jobMeta, JobEntryCopy je)
+    public void editJobEntry(JobMeta jobMeta, JobEntryCopy je)
     {
         try
         {
@@ -8192,7 +8186,8 @@ public class Spoon implements AddUndoPositionInterface
         
                 if (entry_changed)
                 {
-                    addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { je }, new int[] { jobMeta.indexOfJobEntry(je) } );
+                    JobEntryCopy after = (JobEntryCopy) je.clone();
+                    addUndoChange(jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { after }, new int[] { jobMeta.indexOfJobEntry(je) } );
                     refreshGraph();
                     refreshTree();
                 }

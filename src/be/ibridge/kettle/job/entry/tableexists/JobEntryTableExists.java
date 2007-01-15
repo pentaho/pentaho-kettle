@@ -45,7 +45,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntryTableExists extends JobEntryBase implements JobEntryInterface
+public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String tablename;
 	private DatabaseMeta connection;
@@ -68,6 +68,12 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 	{
 		super(jeb);
 	}
+    
+    public Object clone()
+    {
+        JobEntryTableExists je = (JobEntryTableExists) super.clone();
+        return je;
+    }
 
 	public String getXML()
 	{

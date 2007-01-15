@@ -579,7 +579,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                     {
                     case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: // Create a new Job Entry on the canvas
                         {
-                            JobEntryCopy jge = spoon.newChefGraphEntry(jobMeta, entry, false);
+                            JobEntryCopy jge = spoon.newJobEntry(jobMeta, entry, false);
                             if (jge != null) 
                             {
                                 jge.setLocation(p.x, p.y);
@@ -1852,7 +1852,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
 	private void editEntry(JobEntryCopy je) 
 	{
-		spoon.editChefGraphEntry(jobMeta, je);
+		spoon.editJobEntry(jobMeta, je);
 	}
 	
 	private void editNote(NotePadMeta ni)

@@ -43,7 +43,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
+public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	public final static int NOSCHEDULING = 0;
 	public final static int INTERVAL = 1;
@@ -78,6 +78,12 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 	{
 		super(jeb);
 	}
+    
+    public Object clone()
+    {
+        JobEntrySpecial je = (JobEntrySpecial) super.clone();
+        return je;
+    }
 
 	public String getXML()
 	{

@@ -89,6 +89,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		this("");
 		clear();
 	}
+    
+    public Object clone()
+    {
+        JobEntryTrans je = (JobEntryTrans) super.clone();
+        return je;
+    }
 	
 	public JobEntryTrans(JobEntryBase jeb)
 	{

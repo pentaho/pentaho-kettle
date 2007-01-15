@@ -53,7 +53,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  *
  */
 
-public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
+public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private static Logger log4j = Logger.getLogger(JobEntryFTP.class);
 	
@@ -87,6 +87,12 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		super(jeb);
 	}
 
+    public Object clone()
+    {
+        JobEntryFTP je = (JobEntryFTP) super.clone();
+        return je;
+    }
+    
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(128);

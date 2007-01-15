@@ -61,7 +61,7 @@ import be.ibridge.kettle.repository.Repository;
  * @since 05-11-2003
  * 
  */
-public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
+public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
     private static final String URL_FIELDNAME = "URL";
 
@@ -87,56 +87,6 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
     private String              username;
     private String              password;
 
-    public String getNonProxyHosts()
-    {
-        return nonProxyHosts;
-    }
-
-    public void setNonProxyHosts(String nonProxyHosts)
-    {
-        this.nonProxyHosts = nonProxyHosts;
-    }
-
-    public String getPassword()
-    {
-        return password;
-    }
-
-    public void setPassword(String password)
-    {
-        this.password = password;
-    }
-
-    public String getProxyHostname()
-    {
-        return proxyHostname;
-    }
-
-    public void setProxyHostname(String proxyHostname)
-    {
-        this.proxyHostname = proxyHostname;
-    }
-
-    public String getProxyPort()
-    {
-        return proxyPort;
-    }
-
-    public void setProxyPort(String proxyPort)
-    {
-        this.proxyPort = proxyPort;
-    }
-
-    public String getUsername()
-    {
-        return username;
-    }
-
-    public void setUsername(String username)
-    {
-        this.username = username;
-    }
-
     public JobEntryHTTP(String n)
     {
         super(n, "");
@@ -155,6 +105,12 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         super(jeb);
     }
 
+    public Object clone()
+    {
+        JobEntryHTTP je = (JobEntryHTTP) super.clone();
+        return je;
+    }
+    
     public String getXML()
     {
         StringBuffer retval = new StringBuffer();
@@ -318,6 +274,55 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         this.targetFilename = targetFilename;
     }
 
+    public String getNonProxyHosts()
+    {
+        return nonProxyHosts;
+    }
+
+    public void setNonProxyHosts(String nonProxyHosts)
+    {
+        this.nonProxyHosts = nonProxyHosts;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    public String getProxyHostname()
+    {
+        return proxyHostname;
+    }
+
+    public void setProxyHostname(String proxyHostname)
+    {
+        this.proxyHostname = proxyHostname;
+    }
+
+    public String getProxyPort()
+    {
+        return proxyPort;
+    }
+
+    public void setProxyPort(String proxyPort)
+    {
+        this.proxyPort = proxyPort;
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
     
     /**
      *  We made this one synchronized in the JVM because otherwise, this is not thread safe.

@@ -47,7 +47,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
+public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String serverName;
 	private String serverPort;
@@ -77,6 +77,12 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 		super(jeb);
 	}
 
+    public Object clone()
+    {
+        JobEntrySFTP je = (JobEntrySFTP) super.clone();
+        return je;
+    }
+    
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();

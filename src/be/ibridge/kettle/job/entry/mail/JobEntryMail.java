@@ -74,7 +74,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntryMail extends JobEntryBase implements JobEntryInterface
+public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String server;
 	private String destination;
@@ -116,6 +116,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		allocate(0);
 	}
 
+    public Object clone()
+    {
+        JobEntryMail je = (JobEntryMail) super.clone();
+        return je;
+    }
+    
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();

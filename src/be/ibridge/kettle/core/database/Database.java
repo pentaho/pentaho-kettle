@@ -1779,7 +1779,6 @@ public class Database
                     ps.executeBatch();
 					commit();
                     ps.clearBatch();
-                    // System.out.println("EXECUTE BATCH, testcounter is at "+testCounter);
 
 					batchCounter=0;
 				}
