@@ -109,7 +109,7 @@ public class AddTransServlet extends HttpServlet
             {
                 message = "Transformation '"+trans.getName()+"' was added to the list.";
             }
-            message+=" (session id = "+request.getSession(true).getId()+")";
+            // message+=" (session id = "+request.getSession(true).getId()+")";
             
             if (useXML)
             {

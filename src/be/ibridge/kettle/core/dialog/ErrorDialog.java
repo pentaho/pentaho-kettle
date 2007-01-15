@@ -93,7 +93,7 @@ public class ErrorDialog extends Dialog
 		this.props = Props.getInstance();
 
 		Display display  = parent.getDisplay();
-        final Font largeFont = GUIResource.getInstance().getFontLarge();
+        final Font largeFont = GUIResource.getInstance().getFontBold();
 		final Color gray = GUIResource.getInstance().getColorDemoGray();
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);

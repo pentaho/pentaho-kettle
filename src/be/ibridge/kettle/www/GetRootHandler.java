@@ -28,6 +28,8 @@ public class GetRootHandler extends AbstractHandler
     {
         if (!request.getPathInfo().equals(CONTEXT_PATH)) return;
         if (!isStarted()) return;
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
 
         if (log.isDebug()) log.logDebug(toString(), "Root requested");
 
@@ -46,12 +48,9 @@ public class GetRootHandler extends AbstractHandler
 
         out.println("<p>");
         out.println("</BODY>");
-        out.println("</HTML>");
+        out.println("</HTML>");        
         
         response.flushBuffer();
-        
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
     }
 
     public String toString()

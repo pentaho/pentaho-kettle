@@ -3,15 +3,16 @@ package be.ibridge.kettle.www;
 import interbase.interclient.UnknownHostException;
 
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -65,17 +66,63 @@ public class WebServer
         securityHandler.setUserRealm(userRealm);
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
         
-        ContextHandlerCollection contexts = new ContextHandlerCollection();
-        server.setHandler(contexts);
-        new ContextHandler(contexts, "/*").addHandler(securityHandler);
-        new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS).addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
-        new ContextHandler(contexts, GetRootHandler.CONTEXT_PATH).addHandler(new GetRootHandler());
-        new ContextHandler(contexts, GetStatusHandler.CONTEXT_PATH).addHandler(new GetStatusHandler(transformationMap));
-        new ContextHandler(contexts, GetTransStatusHandler.CONTEXT_PATH).addHandler(new GetTransStatusHandler(transformationMap));
-        new ContextHandler(contexts, StartTransHandler.CONTEXT_PATH).addHandler(new StartTransHandler(transformationMap));
-        new ContextHandler(contexts, StopTransHandler.CONTEXT_PATH).addHandler(new StopTransHandler(transformationMap));
-        new ContextHandler(contexts, PrepareExecutionTransHandler.CONTEXT_PATH).addHandler(new PrepareExecutionTransHandler(transformationMap));
-        new ContextHandler(contexts, StartExecutionTransHandler.CONTEXT_PATH).addHandler(new StartExecutionTransHandler(transformationMap));
+        HandlerCollection handlers = new HandlerCollection();
+
+        // Add trans
+        ServletHandler addTrans = new ServletHandler();
+        addTrans.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
+        
+        // Root
+        ContextHandler rootHandler = new ContextHandler(GetRootHandler.CONTEXT_PATH);
+        rootHandler.setHandler(new GetRootHandler());
+        
+        // Get status
+        ContextHandler getStatus = new ContextHandler(GetStatusHandler.CONTEXT_PATH);
+        getStatus.addHandler(new GetStatusHandler(transformationMap));
+        
+        // Get trans status
+        ContextHandler getTransStatus = new ContextHandler(GetTransStatusHandler.CONTEXT_PATH);
+        getTransStatus.addHandler(new GetTransStatusHandler(transformationMap));
+        
+        // Start transformation
+        ContextHandler startTrans = new ContextHandler(StartTransHandler.CONTEXT_PATH);
+        startTrans.addHandler(new StartTransHandler(transformationMap));
+        
+        // Stop transformation
+        ContextHandler stopTrans = new ContextHandler(StopTransHandler.CONTEXT_PATH);
+        stopTrans.addHandler(new StopTransHandler(transformationMap));
+        
+        // Prepare execution
+        ContextHandler prepareExecution = new ContextHandler(PrepareExecutionTransHandler.CONTEXT_PATH);
+        prepareExecution.addHandler(new PrepareExecutionTransHandler(transformationMap));
+        
+        // Start execution
+        ContextHandler startExecution = new ContextHandler(StartExecutionTransHandler.CONTEXT_PATH);
+        startExecution.addHandler(new StartExecutionTransHandler(transformationMap));
+        
+        // Set the handler collection
+        // 
+        handlers.setHandlers(
+                new Handler[] 
+                    { 
+                        securityHandler,
+                        rootHandler, 
+                        getStatus, 
+                        getTransStatus, 
+                        startTrans, 
+                        stopTrans, 
+                        prepareExecution, 
+                        startExecution, 
+                     } 
+                );
+        
+        HandlerCollection servlets = new HandlerCollection();
+        servlets.setHandlers(new Handler[] { securityHandler, addTrans, });
+        
+        HandlerCollection allHandlers = new HandlerCollection();
+        allHandlers.setHandlers(new Handler[] { handlers, servlets, });
+        
+        server.setHandler(allHandlers);       
 
         createListeners();
         

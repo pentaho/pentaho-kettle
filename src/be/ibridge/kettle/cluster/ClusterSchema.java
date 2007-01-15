@@ -57,6 +57,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         socketsBufferSize = "2000";
         socketsFlushInterval = "5000";
         socketsCompressed = true;
+        basePort = "40000";
     }
     
     /**
