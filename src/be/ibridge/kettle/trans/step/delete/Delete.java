@@ -176,7 +176,17 @@ public class Delete extends BaseStep implements StepInterface
 		
         try
         {
-            if (!data.dbupd.isAutoCommit()) data.dbupd.commit();
+            if (!data.dbupd.isAutoCommit())
+            {
+                if (getErrors()==0) 
+                {
+                    data.dbupd.commit();
+                }
+                else
+                {
+                    data.dbupd.rollback();
+                }
+            }
             data.dbupd.closeUpdate();
         }
         catch(KettleDatabaseException e)

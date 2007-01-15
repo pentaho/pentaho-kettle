@@ -616,7 +616,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     	boolean useBatch          = wBatch.getSelection() && !returnKeys;
     	
     	// Only enable batch option when not returning keys.
-    	boolean enableBatch       = !returnKeys;
+    	boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
     	
         // Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 

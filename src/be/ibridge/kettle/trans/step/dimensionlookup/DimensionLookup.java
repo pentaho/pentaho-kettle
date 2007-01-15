@@ -21,6 +21,7 @@ import java.util.Date;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
@@ -492,6 +493,25 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	    meta = (DimensionLookupMeta)smi;
 	    data = (DimensionLookupData)sdi;
 	    
+        try
+        {
+            if (!data.db.isAutoCommit())
+            {
+                if (getErrors()==0)
+                {
+                    data.db.commit();
+                }
+                else
+                {
+                    data.db.rollback();
+                }
+            }
+        }
+        catch(KettleDatabaseException e)
+        {
+            logError(Messages.getString("DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
+        }
+        
 	    data.db.disconnect();
 	    
 	    super.dispose(smi, sdi);

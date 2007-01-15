@@ -346,6 +346,25 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	    meta = (CombinationLookupMeta)smi;
 	    data = (CombinationLookupData)sdi;
 
+        try
+        {
+            if (!data.db.isAutoCommit())
+            {
+                if (getErrors()==0)
+                {
+                    data.db.commit();
+                }
+                else
+                {
+                    data.db.rollback();
+                }
+            }
+        }
+        catch(KettleDatabaseException e)
+        {
+            logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
 	    data.db.disconnect();
 
 	    super.dispose(smi, sdi);

@@ -301,10 +301,24 @@ public class TableOutput extends BaseStep implements StepInterface
 			setErrors(1);
 			stopAll();
 		}
-		
-		data.db.disconnect();
+		finally
+        {
+            if (getErrors()>0)
+            {
+                try
+                {
+                    data.db.rollback();
+                }
+                catch(KettleDatabaseException e)
+                {
+                    logError("Unexpected error rolling back the database connection: "+e.toString());
+                }
+            }
+            
+		    data.db.disconnect();
+            super.dispose(smi, sdi);
+        }
         
-        super.dispose(smi, sdi);
 	}
 	
 

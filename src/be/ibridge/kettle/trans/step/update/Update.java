@@ -249,7 +249,17 @@ public class Update extends BaseStep implements StepInterface
 		
         try
         {
-            if (!data.dbupd.isAutoCommit()) data.dbupd.commit();
+            if (!data.dbupd.isAutoCommit())
+            {
+                if (getErrors()==0)
+                {
+                    data.dbupd.commit();
+                }
+                else
+                {
+                    data.dbupd.rollback();                    
+                }
+            }
             data.dbupd.closeUpdate();
         }
         catch(KettleDatabaseException e)
@@ -257,6 +267,8 @@ public class Update extends BaseStep implements StepInterface
             log.logError(toString(), Messages.getString("Update.Log.UnableToCommitUpdateConnection")+data.dbupd+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
+        
+        
         
 		data.dblup.disconnect();
 		data.dbupd.disconnect();

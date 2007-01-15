@@ -6782,12 +6782,13 @@ public class Spoon implements AddUndoPositionInterface
                         else
                         if (lastUsedFile.isJob())
                         {
+                            // TODO: use JobLoadProgressDialog
                             JobMeta jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), repdir);
                             props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
                             jobMeta.clearChanged();
                             addChefGraph(jobMeta);
-                            refreshTree();
                         }
+                        refreshTree();
                     }
                 }
             }
@@ -6811,6 +6812,7 @@ public class Spoon implements AddUndoPositionInterface
                 props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), null, false, null);
                 addChefGraph(jobMeta);
             }
+            refreshTree();
         }                       
     }
 

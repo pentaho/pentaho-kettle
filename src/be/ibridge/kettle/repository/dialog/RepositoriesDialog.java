@@ -399,11 +399,12 @@ public class RepositoriesDialog
 	
 		shell.setSize(bounds.width+20, dialogBounds.height);
 
+        /*
         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
         mb.setText("Warning");
         mb.setMessage("Developers & beta-testers beware: you need to upgrade your repository because we are making additional last-minute changes to the repository.\n\n\nThank you for your understanding and help,\n\nMatt\n");
         mb.open();
-        
+        */
         
 		shell.open();
 		while (!shell.isDisposed())

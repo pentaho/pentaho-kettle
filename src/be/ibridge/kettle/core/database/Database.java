@@ -1738,13 +1738,16 @@ public class Database
      * @param batch True if you want to use batch inserts (size = commitsize)
      * @throws KettleDatabaseException
      */
-	public void insertRow(PreparedStatement ps, boolean batch)
-		throws KettleDatabaseException
+	public void insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{
 	    String debug="insertRow start";
 		try
 		{
-            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates();  
+            // Unique connections and Batch inserts don't mix when you want to roll back on certain databases.
+            // That's why we disable the batch insert in that case.
+            //
+            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates() && !Const.isEmpty(connectionGroup);
+            
 			//
 			// Add support for batch inserts...
 			//
@@ -1836,8 +1839,7 @@ public class Database
 		prepStatementInsert = null;
 	}
 	
-	public void insertFinished(PreparedStatement ps, boolean batch)
-		throws KettleDatabaseException
+	public void insertFinished(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{		
 		try
 		{
