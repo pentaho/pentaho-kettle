@@ -237,12 +237,15 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     public String getSQLUnlockTables(String tableNames[])
     {
+        return null;
+        /*
         String sql="";
         for (int i=0;i<tableNames.length;i++)
         {
             sql+="UNLOCK TABLE "+tableNames[i]+";"+Const.CR;
         }
         return sql;
+        */
     }
 
     public String[] getUsedLibraries()
