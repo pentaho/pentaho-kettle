@@ -23,6 +23,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
@@ -46,6 +47,8 @@ import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.cluster.TransSplitter;
+import be.ibridge.kettle.www.SlaveServerTransStatus;
+import be.ibridge.kettle.www.WebResult;
 
 
 /**
@@ -504,12 +507,110 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     executionConfiguration.setClusterShowingTransformation(false);
                     executionConfiguration.setSafeModeEnabled(false);
                     TransSplitter transSplitter = Trans.executeClustered(transMeta, executionConfiguration );
-                    // TODO: Figure out a way to see if the remote transformations are finished.
-                    // We could just look at the master, but I doubt that that is enough.
-                    transSplitter.getSlaveTargets(); // <-- ask these guys
-                    transSplitter.getMasterServer(); // <-- AND this one
+                    // 
+                    // See if the remote transformations have finished.
+                    // We could just look at the master, but I doubt that that is enough in all situations.
+                    //
+                    SlaveServer[] slaveServers = transSplitter.getSlaveTargets(); // <-- ask these guys
+                    TransMeta[] slaves = transSplitter.getSlaves();
+                    
+                    SlaveServer masterServer = transSplitter.getMasterServer(); // <-- AND this one
+                    TransMeta master = transSplitter.getMaster();
+                    
+                    boolean allFinished = false;
+                    long errors = 0L;
+                    
+                    while (!allFinished && !parentJob.isStopped() && errors==0)
+                    {
+                        allFinished = true;
+                        errors=0L;
+                        
+                        // Slaves first...
+                        //
+                        for (int s=0;s<slaveServers.length && allFinished && errors==0;s++)
+                        {
+                            try
+                            {
+                                SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName());
+                                if (transStatus.isRunning()) allFinished = false;
+                                errors+=transStatus.getNrStepErrors();
+                            }
+                            catch(Exception e)
+                            {
+                                errors+=1;
+                                log.logError(toString(), "Unable to contact slave server '"+slaveServers[s].getName()+"' to check slave transformation : "+e.toString());
+                            }
+                        }
+                        
+                        // Check the master too
+                        if (allFinished && errors==0)
+                        {
+                            try
+                            {
+                                SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName());
+                                if (transStatus.isRunning()) allFinished = false;
+                                errors+=transStatus.getNrStepErrors();
+                            }
+                            catch(Exception e)
+                            {
+                                errors+=1;
+                                log.logError(toString(), "Unable to contact slave server '"+masterServer.getName()+"' to check master transformation : "+e.toString());
+                            }
+                        }
+
+                        if (parentJob.isStopped() || errors != 0)
+                        {
+                            //
+                            // Stop all slaves and the master on the slave servers
+                            //
+                            for (int s=0;s<slaveServers.length && allFinished && errors==0;s++)
+                            {
+                                try
+                                {
+                                    WebResult webResult = slaveServers[s].stopTransformation(slaves[s].getName());
+                                    if (!WebResult.STRING_OK.equals(webResult.getResult()))
+                                    {
+                                        log.logError(toString(), "Unable to stop slave transformation '"+slaves[s].getName()+"' : "+webResult.getMessage());
+                                    }
+                                }
+                                catch(Exception e)
+                                {
+                                    errors+=1;
+                                    log.logError(toString(), "Unable to contact slave server '"+slaveServers[s].getName()+"' to stop transformation : "+e.toString());
+                                }
+                            }
+
+                            try
+                            {
+                                WebResult webResult = masterServer.stopTransformation(master.getName());
+                                if (!WebResult.STRING_OK.equals(webResult.getResult()))
+                                {
+                                    log.logError(toString(), "Unable to stop master transformation '"+masterServer.getName()+"' : "+webResult.getMessage());
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                errors+=1;
+                                log.logError(toString(), "Unable to contact master server '"+masterServer.getName()+"' to stop the master : "+e.toString());
+                            }
+                        }
+
+                        //
+                        // Keep waiting until all transformations have finished
+                        // If needed, we stop them again and again until they yield.
+                        //
+                        if (!allFinished)
+                        {
+                            // Not finished or error: wait a bit longer
+                            log.logDetailed(toString(), "Clustered transformation is still running, waiting 10 seconds...");
+                            try { Thread.sleep(10000); } catch(Exception e) {} // Check all slaves every 10 seconds. TODO: add 10s as parameter
+                        }
+                    }
+                    
+                    result.setNrErrors(errors);
+                    
                 }
-                else
+                else // Local execution...
                 {
                     // Create the transformation from meta-data
                     Trans trans = new Trans(logwriter, transMeta);

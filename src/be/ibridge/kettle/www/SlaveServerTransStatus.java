@@ -195,4 +195,14 @@ public class SlaveServerTransStatus
         return getStatusDescription().equalsIgnoreCase(Trans.STRING_RUNNING) || getStatusDescription().equalsIgnoreCase(Trans.STRING_INITIALIZING);
     }
 
+    public long getNrStepErrors()
+    {
+        long errors = 0L;
+        for (int i=0;i<stepStatusList.size();i++)
+        {
+            StepStatus stepStatus = (StepStatus) stepStatusList.get(i);
+            errors+=stepStatus.getErrors();
+        }
+        return errors;
+    }
 }
