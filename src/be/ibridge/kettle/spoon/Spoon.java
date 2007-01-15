@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -321,71 +320,17 @@ public class Spoon implements AddUndoPositionInterface
 
     private SashForm leftSash;
 
-    private MenuItem miWizardCopyTable;
-
     private TransExecutionConfiguration executionConfiguration;
 
     private TreeItem tiTrans, tiJobs;
 
-    // private TreeItem tiBlocks;
-
-    private Menu mCSH;
-
-    private MenuItem miFileClose;
-
-    private MenuItem miFileSave;
-
-    private MenuItem miFileSaveAs;
-
-    private MenuItem miFilePrint;
-
-    private MenuItem miEditSelectAll;
-
-    private MenuItem miEditUnselectAll;
-
-    private MenuItem miEditCopy;
-
-    private MenuItem miEditPaste;
-
-    private MenuItem miTransRun;
-
-    private MenuItem miTransPreview;
-
-    private MenuItem miTransCheck;
-
-    private MenuItem miTransImpact;
-
-    private MenuItem miTransSQL;
-
-    private MenuItem miLastImpact;
-
-    private MenuItem miLastCheck;
-
-    private MenuItem miLastPreview;
-
-    private MenuItem miTransCopy;
-
-    private MenuItem miTransPaste;
-
-    private MenuItem miTransImage;
-
-    private MenuItem miTransDetails;
-
-    private MenuItem miWizardNewConnection;
-
-    private MenuItem miRepDisconnect;
-
-    private MenuItem miRepUser;
-
-    private MenuItem miRepExplore;
-
-    private MenuItem miJobRun;
-
-    private MenuItem miJobCopy;
-
-    private MenuItem miJobInfo;
-
-    private MenuItem miWizardRipDatabase;
+    private Menu spoonMenu; // Connections, Steps & hops
+    private MenuItem miFileClose, miFileSave, miFileSaveAs, miFilePrint;
+    private MenuItem miEditSelectAll, miEditUnselectAll, miEditCopy, miEditPaste;
+    private MenuItem miTransRun, miTransPreview, miTransCheck, miTransImpact, miTransSQL, miLastImpact, miLastCheck, miLastPreview, miTransCopy, miTransPaste, miTransImage, miTransDetails;
+    private MenuItem miWizardCopyTable, miWizardNewConnection, miWizardRipDatabase;
+    private MenuItem miRepDisconnect, miRepUser, miRepExplore;
+    private MenuItem miJobRun, miJobCopy, miJobPaste, miJobInfo;
 
     private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
     
@@ -1332,13 +1277,22 @@ public class Spoon implements AddUndoPositionInterface
         
         // Copy to clipboard
         //
-        miJobCopy = new MenuItem(msJob, SWT.CASCADE);            miJobCopy.setText(Messages.getString("Spoon.Menu.Job.CopyToClipboard")); //$NON-NLS-1$
-        new MenuItem(msJob, SWT.SEPARATOR);
+        miJobCopy = new MenuItem(msJob, SWT.CASCADE);            
+        miJobCopy.setText(Messages.getString("Spoon.Menu.Job.CopyToClipboard")); //$NON-NLS-1$
         miJobCopy.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { copyJob(getActiveJob()); } });
+
+        // Paste job from the clipboard
+        //
+        miJobPaste = new MenuItem(msJob, SWT.CASCADE);            
+        miJobPaste.setText(Messages.getString("Spoon.Menu.Job.PasteJobFromClipboard"));//P&aste job from clipboard
+        miJobPaste.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { pasteJob(); } });
+        
+        new MenuItem(msJob, SWT.SEPARATOR);
 
         // Edit job properties
         //
-        miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText(Messages.getString("Spoon.Menu.Job.Settings")); //$NON-NLS-1$
+        miJobInfo = new MenuItem(msJob, SWT.CASCADE);   
+        miJobInfo.setText(Messages.getString("Spoon.Menu.Job.Settings")); //$NON-NLS-1$
         miJobInfo.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { editJobProperties(getActiveJob());  } });
 
         
@@ -2137,13 +2091,13 @@ public class Spoon implements AddUndoPositionInterface
     
     private void setMenu()
     {
-        if (mCSH==null)
+        if (spoonMenu==null)
         {
-            mCSH = new Menu(shell, SWT.POP_UP);
+            spoonMenu = new Menu(shell, SWT.POP_UP);
         }
         else
         {
-            MenuItem[] items = mCSH.getItems();
+            MenuItem[] items = spoonMenu.getItems();
             for (int i=0;i<items.length;i++) items[i].dispose();
         }
         
@@ -2162,54 +2116,54 @@ public class Spoon implements AddUndoPositionInterface
             if (selection.equals(TransMeta.class))
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newTransFile(); }} );
             }
             if (selection.equals(JobMeta.class))
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newJobFile(); }} );
             }
             if (selection.equals(TransHopMeta.class))
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newHop((TransMeta)parent); }} );
 
                 // Sort hops
-                MenuItem miSort  = new MenuItem(mCSH, SWT.PUSH); miSort.setText(Messages.getString("Spoon.Menu.Popup.HOPS.SortHops"));
+                MenuItem miSort  = new MenuItem(spoonMenu, SWT.PUSH); miSort.setText(Messages.getString("Spoon.Menu.Popup.HOPS.SortHops"));
                 miSort.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ((TransMeta)parent).sortHops(); refreshTree(); } });
             }
             if (selection.equals(DatabaseMeta.class))
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection((HasDatabasesInterface)parent); }} );
 
                 // New Connection Wizard
-                MenuItem miWizard  = new MenuItem(mCSH, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
+                MenuItem miWizard  = new MenuItem(spoonMenu, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
                 miWizard.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard((HasDatabasesInterface)parent); } } );
                 
                 // Clear complete DB Cache
-                MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));
+                MenuItem miCache  = new MenuItem(spoonMenu, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));
                 miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache(); } } );
             }
             if (selection.equals(PartitionSchema.class))
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newDatabasePartitioningSchema((TransMeta)parent); }} );
             }
             if (selection.equals(ClusterSchema.class))
             {
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miNew.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.New"));//New clustering schema
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newClusteringSchema((TransMeta)parent); } } );
             }
             if (selection.equals(SlaveServer.class))
             {
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miNew.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.New"));// New slave server
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer((TransMeta)parent); } } );
             }
@@ -2219,23 +2173,23 @@ public class Spoon implements AddUndoPositionInterface
             if (selection instanceof TransMeta)
             {
                 // Open log window
-                MenuItem miLog  = new MenuItem(mCSH, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
+                MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
                 miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonLog((TransMeta)selection); }} );
-                MenuItem miHistory  = new MenuItem(mCSH, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
+                MenuItem miHistory  = new MenuItem(spoonMenu, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
                 miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonHistory((TransMeta)selection, true); }} );
             }
             if (selection instanceof JobMeta)
             {
                 // Open log window
-                MenuItem miLog  = new MenuItem(mCSH, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
+                MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
                 miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefLog((JobMeta)selection); }} );
-                MenuItem miHistory  = new MenuItem(mCSH, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
+                MenuItem miHistory  = new MenuItem(spoonMenu, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
                 miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefHistory((JobMeta)selection, true); }} );
             }
             if (selection instanceof StepPlugin)
             {
                 // New
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newStep(getActiveTransformation()); }} );
             }
 
@@ -2244,35 +2198,35 @@ public class Spoon implements AddUndoPositionInterface
                 final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
                 final HasDatabasesInterface transMeta = (HasDatabasesInterface) parent;
                 
-                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.New"));//New
+                MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.New"));//New
                 miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection(transMeta); } } );
 
-                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Edit"));//Edit
+                MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Edit"));//Edit
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editConnection(transMeta, databaseMeta); } } );
                 
-                MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Duplicate"));//Duplicate
+                MenuItem miDupe = new MenuItem(spoonMenu, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Duplicate"));//Duplicate
                 miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeConnection(transMeta, databaseMeta); } } );
                 
-                MenuItem miCopy = new MenuItem(mCSH, SWT.PUSH); miCopy.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard"));//Copy to clipboard
+                MenuItem miCopy = new MenuItem(spoonMenu, SWT.PUSH); miCopy.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard"));//Copy to clipboard
                 miCopy.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clipConnection(databaseMeta); } } );
                 
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Delete"));//Delete
+                MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delConnection(transMeta, databaseMeta); } } );
                 
-                new MenuItem(mCSH, SWT.SEPARATOR);
+                new MenuItem(spoonMenu, SWT.SEPARATOR);
                 
-                MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
+                MenuItem miSQL  = new MenuItem(spoonMenu, SWT.PUSH); miSQL.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
                 miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { sqlConnection(databaseMeta); } } );
                 
-                MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+databaseMeta.getName());//Clear DB Cache of 
+                MenuItem miCache= new MenuItem(spoonMenu, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+databaseMeta.getName());//Clear DB Cache of 
                 miCache.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearDBCache(databaseMeta); } } );
                 
-                new MenuItem(mCSH, SWT.SEPARATOR);
-                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
+                new MenuItem(spoonMenu, SWT.SEPARATOR);
+                MenuItem miShare = new MenuItem(spoonMenu, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
                 miShare.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { shareObject(databaseMeta); } } );
                 
-                new MenuItem(mCSH, SWT.SEPARATOR);
-                MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Explore"));//Explore
+                new MenuItem(spoonMenu, SWT.SEPARATOR);
+                MenuItem miExpl = new MenuItem(spoonMenu, SWT.PUSH); miExpl.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Explore"));//Explore
                 miExpl.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exploreDB(transMeta, databaseMeta); } } );
                 
                 // disable for now if the connection is an SAP R/3 type of database...
@@ -2285,18 +2239,18 @@ public class Spoon implements AddUndoPositionInterface
                 final StepMeta stepMeta = (StepMeta)selection;
                 
                 // Edit
-                MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Edit"));
+                MenuItem miEdit   = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Edit"));
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editStep(transMeta, stepMeta); } } );
 
                 // Duplicate
-                MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Duplicate"));
+                MenuItem miDupe   = new MenuItem(spoonMenu, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Duplicate"));
                 miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeStep(transMeta, stepMeta); } } );
                 
                 // Delete
-                MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Delete"));
+                MenuItem miDel    = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Delete"));
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delStep(transMeta, stepMeta); } } );
                 
-                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Share"));
+                MenuItem miShare = new MenuItem(spoonMenu, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Share"));
                 miShare.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { shareObject(stepMeta); } } );
             }
             if (selection instanceof JobEntryCopy)
@@ -2305,15 +2259,15 @@ public class Spoon implements AddUndoPositionInterface
                 final JobEntryCopy jobEntry = (JobEntryCopy)selection;
                 
                 // Edit
-                MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Edit"));
+                MenuItem miEdit   = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Edit"));
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editJobEntry(jobMeta, jobEntry); } } );
 
                 // Duplicate
-                MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Duplicate"));
+                MenuItem miDupe   = new MenuItem(spoonMenu, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Duplicate"));
                 miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeJobEntry(jobMeta, jobEntry); } } );
                 
                 // Delete
-                MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Delete"));
+                MenuItem miDel    = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.JOBENTRIES.Delete"));
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { deleteJobEntryCopies(jobMeta, jobEntry); } } );
             }
             if (selection instanceof TransHopMeta)
@@ -2321,10 +2275,10 @@ public class Spoon implements AddUndoPositionInterface
                 final TransMeta transMeta = (TransMeta)parent;
                 final TransHopMeta transHopMeta = (TransHopMeta)selection;
                 
-                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.HOPS.Edit"));//Edit
+                MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.HOPS.Edit"));//Edit
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editHop(transMeta, transHopMeta); } } );
                 
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.HOPS.Delete"));//Delete
+                MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.HOPS.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delHop(transMeta, transHopMeta); } } );
             }
             if (selection instanceof PartitionSchema)
@@ -2332,13 +2286,13 @@ public class Spoon implements AddUndoPositionInterface
                 final TransMeta transMeta = (TransMeta)parent;
                 final PartitionSchema partitionSchema = (PartitionSchema)selection;
                 
-                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Edit"));//Edit
+                MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Edit"));//Edit
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editPartitionSchema(transMeta, partitionSchema); } } );
                 
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Delete"));//Delete
+                MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delPartitionSchema(transMeta, partitionSchema); } } );
                 
-                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Share"));
+                MenuItem miShare = new MenuItem(spoonMenu, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Share"));
                 miShare.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { shareObject(partitionSchema); } } );
             }
             if (selection instanceof ClusterSchema)
@@ -2346,19 +2300,19 @@ public class Spoon implements AddUndoPositionInterface
                 final TransMeta transMeta = (TransMeta)parent;
                 final ClusterSchema clusterSchema = (ClusterSchema)selection;
                 
-                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); 
                 miEdit.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Edit"));//Edit
                 miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editClusterSchema(transMeta, clusterSchema); } } );
 
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miDel.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delClusterSchema(transMeta, clusterSchema); } } );
                 
-                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miShare = new MenuItem(spoonMenu, SWT.PUSH); 
                 miShare.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Share"));
                 miShare.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { shareObject(clusterSchema); } } );
                 
-                MenuItem miMonitor  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miMonitor  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miMonitor.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Monitor"));//New
                 miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { monitorClusterSchema(clusterSchema); } } );   
             }
@@ -2369,21 +2323,21 @@ public class Spoon implements AddUndoPositionInterface
                 final TransMeta transMeta = (TransMeta)parent;
                 final SlaveServer slaveServer = (SlaveServer)selection;
                 
-                MenuItem miEdit  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miEdit  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miEdit.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Edit"));//New
                 miEdit.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { editSlaveServer(slaveServer); } } );   
 
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miDel.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Delete"));//Delete
                 miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delSlaveServer(transMeta, slaveServer); } } );
 
-                MenuItem miMonitor  = new MenuItem(mCSH, SWT.PUSH); 
+                MenuItem miMonitor  = new MenuItem(spoonMenu, SWT.PUSH); 
                 miMonitor.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Monitor"));//New
                 miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { addSpoonSlave(slaveServer); } } );   
 
             }
         }
-        selectionTree.setMenu(mCSH);
+        selectionTree.setMenu(spoonMenu);
     }
     
     /**
@@ -5071,25 +5025,6 @@ public class Spoon implements AddUndoPositionInterface
         return (JobMeta[]) list.toArray(new JobMeta[list.size()]);
     }
 
-    public SpoonGraph getSpoonGraph(TransMeta transMeta)
-    {
-        Set set = tabMap.entrySet();
-        for (Iterator iter = set.iterator(); iter.hasNext();)
-        {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof SpoonGraph) 
-            {
-                SpoonGraph spoonGraph = (SpoonGraph)mapEntry.getObject(); 
-                TransMeta look = spoonGraph.getTransMeta(); 
-                if ( (Const.isEmpty(look.getName()) && Const.isEmpty(transMeta.getName())) ||  look.getName().equals(transMeta.getName()) )
-                {
-                    return spoonGraph; 
-                }
-            }
-        }
-        return null;
-    }
-
     private boolean editTransformationProperties(TransMeta transMeta)
     {
         if (transMeta==null) return false;
@@ -6243,7 +6178,7 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             Document doc = XMLHandler.loadXMLString(xml);
-            TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, "transformation"));
+            TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG));
             addSpoonGraph(transMeta); // create a new tab
             refreshGraph();
             refreshTree();
@@ -6253,6 +6188,28 @@ public class Spoon implements AddUndoPositionInterface
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Title"),  Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Message"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
         }
     }
+    
+    /**
+     * Paste job from the clipboard...
+     *
+     */
+    public void pasteJob()
+    {
+        String xml = fromClipboard();
+        try
+        {
+            Document doc = XMLHandler.loadXMLString(xml);
+            JobMeta jobMeta = new JobMeta(log, XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep);
+            addChefGraph(jobMeta); // create a new tab
+            refreshGraph();
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorPastingJob.Title"),  Messages.getString("Spoon.Dialog.ErrorPastingJob.Message"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
+        }
+    }
+
     
     public void copyTransformation(TransMeta transMeta)
     {
@@ -6268,7 +6225,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void copyTransformationImage(TransMeta transMeta)
     {
-        SpoonGraph spoonGraph = getSpoonGraph(transMeta);
+        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
         
         Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
