@@ -117,8 +117,14 @@ public class WebServer
                 );
         
         HandlerCollection servlets = new HandlerCollection();
-        servlets.setHandlers(new Handler[] { securityHandler, addTrans, });
-        
+        servlets.setHandlers(
+                new Handler[] 
+                    { 
+                        securityHandler, 
+                        addTrans, 
+                    }
+                );
+                    
         HandlerCollection allHandlers = new HandlerCollection();
         allHandlers.setHandlers(new Handler[] { handlers, servlets, });
         

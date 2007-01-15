@@ -184,6 +184,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.proxyHostname = slaveServer.proxyHostname;
         this.proxyPort = slaveServer.proxyPort;
         this.nonProxyHosts = slaveServer.nonProxyHosts;
+        this.master = slaveServer.master;
         
         this.id = slaveServer.id;
         this.shared = slaveServer.shared;
@@ -364,10 +365,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // Get HTTP client
         // 
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(
-                new AuthScope(hostname, Const.toInt(port, 80), "Kettle"),
-                new UsernamePasswordCredentials(username, password)
-                );
+        addCredentials(client);
         
         // Execute request
         // 
@@ -414,6 +412,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
 
 
+    private void addCredentials(HttpClient client)
+    {
+        client.getState().setCredentials
+              (
+                new AuthScope(hostname, Const.toInt(StringUtil.environmentSubstitute(port), 80), "Kettle"),
+                new UsernamePasswordCredentials(username, password)
+              );
+    }
+
     /**
      * @return the master
      */
@@ -434,14 +441,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         // Prepare HTTP get
         // 
-        HttpClient httpclient = new HttpClient();
+        HttpClient client = new HttpClient();
+        addCredentials(client);
         HttpMethod method = new GetMethod(constructUrl(service));
         
         // Execute request
         // 
         try
         {
-            int result = httpclient.executeMethod(method);
+            int result = client.executeMethod(method);
             
             // The status code
             log.logDebug(toString(), "Response status code: " + result);

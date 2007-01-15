@@ -80,10 +80,8 @@ public class SlaveServerTransStatus
         {
             Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
             stepStatusList.add(new StepStatus(stepStatusNode));
-            LogWriter.getInstance().logBasic("SlaveServerTransStatus", "7-"+i);
         }
         
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "8");
         String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
         // This is a Base64 encoded GZIP compressed stream of data.
         try
@@ -96,7 +94,6 @@ public class SlaveServerTransStatus
             while ( (c=gzip.read())!=-1) buffer.append((char)c);
             gzip.close();
             loggingString = buffer.toString();
-            // System.out.println("Found logging: "+Const.CR+loggingString);
         }
         catch(IOException e)
         {
