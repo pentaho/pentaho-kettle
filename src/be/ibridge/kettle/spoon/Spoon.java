@@ -2824,12 +2824,15 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
             refreshGraph(); // name is displayed on the graph too.
+            
+            // TODO: verify "double pathway" steps for bug #4365
+            // After the step was edited we can complain about the possible deadlock here.
+            //
         }
         catch (Throwable e)
         {
             if (shell.isDisposed()) return null;
-            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages
-                    .getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
         }
         
         if (refresh) refreshTree(); // Perhaps new connections were created in the step dialog or the step name changed.
@@ -8616,6 +8619,6 @@ public class Spoon implements AddUndoPositionInterface
     public int getCoreObjectsState()
     {
     	return coreObjectsState;
-    }    
+    }
 }
 
