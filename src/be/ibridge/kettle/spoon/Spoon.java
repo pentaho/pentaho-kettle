@@ -2767,6 +2767,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public String editStep(TransMeta transMeta, StepMeta stepMeta)
     {
+        boolean refresh = false;
         try
         {
             String name = stepMeta.getName();
@@ -2801,6 +2802,9 @@ public class Spoon implements AddUndoPositionInterface
                     mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
                     mb.open();
                 }
+                
+                if (!stepname.equals(name)) refresh=true;
+                
                 stepMeta.setName(stepname);
                 
                 // 
@@ -2809,8 +2813,6 @@ public class Spoon implements AddUndoPositionInterface
                 //
                 StepMeta after = (StepMeta) stepMeta.clone();
                 addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta.indexOfStep(stepMeta) });
-                
-                refreshTree(); // Perhaps new connections were created in the step dialog.
             }
             else
             {
@@ -2818,11 +2820,10 @@ public class Spoon implements AddUndoPositionInterface
                 // Perhaps new connections were created in the step dialog?
                 if (transMeta.haveConnectionsChanged())
                 {
-                    refreshTree();
+                    refresh=true;
                 }
             }
             refreshGraph(); // name is displayed on the graph too.
-            setShellText();
         }
         catch (Throwable e)
         {
@@ -2830,6 +2831,8 @@ public class Spoon implements AddUndoPositionInterface
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages
                     .getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
         }
+        
+        if (refresh) refreshTree(); // Perhaps new connections were created in the step dialog or the step name changed.
         
         return stepMeta.getName();
     }
