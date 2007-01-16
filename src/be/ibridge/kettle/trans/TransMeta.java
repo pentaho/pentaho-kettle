@@ -833,7 +833,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     {
         return findTransHop(hi.getFromStep(), hi.getToStep());
     }
-
+    
     /**
      * Search all hops for a hop where a certain step is at the start and another is at the end.
      *
@@ -843,12 +843,24 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      */
     public TransHopMeta findTransHop(StepMeta from, StepMeta to)
     {
+        return findTransHop(from, to, false);
+    }    
+
+    /**
+     * Search all hops for a hop where a certain step is at the start and another is at the end.
+     *
+     * @param from The step at the start of the hop.
+     * @param to The step at the end of the hop.
+     * @return The hop or null if no hop was found.
+     */
+    public TransHopMeta findTransHop(StepMeta from, StepMeta to, boolean disabledToo)
+    {
 
         int i;
         for (i = 0; i < nrTransHops(); i++)
         {
             TransHopMeta hi = getTransHop(i);
-            if (hi.isEnabled())
+            if (hi.isEnabled() || disabledToo)
             {
                 if (hi.getFromStep() != null && hi.getToStep() != null && hi.getFromStep().equals(from) && hi.getToStep().equals(to)) { return hi; }
             }

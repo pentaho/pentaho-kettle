@@ -3014,7 +3014,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 if (i!=j)
                 {
-                    TransHopMeta hop = transMeta.findTransHop(stepMeta[i], stepMeta[j]); 
+                    TransHopMeta hop = transMeta.findTransHop(stepMeta[i], stepMeta[j], true); 
                     if (hop!=null) // Ok, we found one...
                     {
                         xml+=hop.getXML()+Const.CR;
