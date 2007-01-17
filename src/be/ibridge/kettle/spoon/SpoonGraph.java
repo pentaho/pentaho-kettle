@@ -272,7 +272,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 setToolTipText(null);
 
                 // Set the pop-up menu
-                setMenu(real.x, real.y);
+                if (e.button==3) setMenu(real.x, real.y);
 
                 // Did we click on a step?
                 StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
@@ -1149,9 +1149,16 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         // Re-use the popup menu if it was allocated beforehand...
         if (mPop!=null && !mPop.isDisposed())
         {
-            mPop.dispose();
+            MenuItem[] items = mPop.getItems();
+            for (int i = 0; i < items.length; i++)
+            {
+                items[i].dispose();
+            }
         }
-        mPop = new Menu((Control) this);
+        else
+        {
+            mPop = new Menu((Control) this);
+        }
 
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
