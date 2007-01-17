@@ -754,8 +754,8 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 				if (input.getRename()[i]!=null && !input.getName()[i].equals(input.getRename()[i]))
 					item.setText(2, input.getRename()[i]);
 				item.setText(3, Value.getTypeDesc(input.getType()[i]));
-				item.setText(4, ""+input.getLength()[i]); //$NON-NLS-1$
-				item.setText(5, ""+input.getPrecision()[i]); //$NON-NLS-1$
+				if (input.getLength()[i]>=0) item.setText(4, ""+input.getLength()[i]); //$NON-NLS-1$
+                if (input.getPrecision()[i]>=0) item.setText(5, ""+input.getPrecision()[i]); //$NON-NLS-1$
 			}
 		}
 
