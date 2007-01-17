@@ -471,7 +471,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			boolean nextsheet = false;
 
 			// What sheet were we handling?
-			if (log.isDetailed()) logDetailed("Get sheet #" + data.filenr + "." + data.sheetnr);
+			if (log.isDebug()) logDetailed("Get sheet #" + data.filenr + "." + data.sheetnr);
 			String sheetName = meta.getSheetName()[data.sheetnr];
 			Sheet sheet = data.workbook.getSheet(sheetName);
 			if (sheet != null)
