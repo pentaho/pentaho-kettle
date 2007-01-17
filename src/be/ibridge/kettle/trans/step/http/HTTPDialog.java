@@ -215,6 +215,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
+        wUrl.addSelectionListener( lsDef );
+        wResult.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
