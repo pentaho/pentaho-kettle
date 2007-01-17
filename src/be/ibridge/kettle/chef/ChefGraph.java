@@ -222,7 +222,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 				setToolTipText(null);
 
 				// Set the pop-up menu
-				if (e.button==3) setMenu(real.x, real.y);
+				if (e.button==3)
+                {
+                    setMenu(real.x, real.y);
+                    return;
+                }
 				
 				JobEntryCopy je = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
 				if (je != null) 
