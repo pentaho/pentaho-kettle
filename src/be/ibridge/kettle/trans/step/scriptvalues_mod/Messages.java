@@ -1,10 +1,10 @@
 package be.ibridge.kettle.trans.step.scriptvalues_mod;
 
+import be.ibridge.kettle.i18n.BaseMessages;
+
 
 public class Messages
 {
-	/*
-
 	public static final String packageName = Messages.class.getPackage().getName();
 
 	public static String getString(String key)
@@ -41,6 +41,4 @@ public class Messages
 	{
 		return BaseMessages.getString(packageName, key, param1, param2, param3, param4, param5, param6);
 	}
-	*/
-
 }

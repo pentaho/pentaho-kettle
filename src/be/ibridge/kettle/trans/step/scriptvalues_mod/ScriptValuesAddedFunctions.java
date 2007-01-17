@@ -84,7 +84,15 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	public static final int SPECIAL_FUNCTION = 4;
 	
 		
-	public static  String[] jsFunctionList = {"appendToFile", "getTransformationName","writeToLog","getFiscalDate", "getProcessCount", "ceil","floor", "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay", "quarter", "dateDiff", "dateAdd", "fillString","isCodepage", "ltrim", "rtrim", "lpad","rpad","week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str","str2date","sendMail","replace","decode", "isNum","isDate", "lower", "upper", "str2num","num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", "print", "println", "resolveIP"};
+	public static  String[] jsFunctionList = {
+        "appendToFile", "getTransformationName","writeToLog","getFiscalDate", "getProcessCount", 
+        "ceil","floor", "abs", "getDayNumber", "isWorkingDay", "fireToDB", "getNextWorkingDay", 
+        "quarter", "dateDiff", "dateAdd", "fillString","isCodepage", "ltrim", "rtrim", "lpad", 
+        "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
+        "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
+        "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
+        "print", "println", "resolveIP", "substr", "trim"
+        };
 	
 
 	// Functions to Add
