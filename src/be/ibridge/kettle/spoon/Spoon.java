@@ -4225,6 +4225,7 @@ public class Spoon implements AddUndoPositionInterface
                 TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
                 tiStep.setText(stepMeta.getName());
                 if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold());
+                if (!stepMeta.isDrawn()) tiStep.setForeground(guiResource.getColorGray());
                 tiStep.setImage(guiResource.getImageBol());
             }
             

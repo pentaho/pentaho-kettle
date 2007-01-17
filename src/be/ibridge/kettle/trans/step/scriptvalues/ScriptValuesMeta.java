@@ -563,7 +563,7 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						else
 						{
-							res.setValue( ((String)result) ); 
+							res.setValue( result.toString() ); 
 						}
 						break;
 					case Value.VALUE_TYPE_DATE:

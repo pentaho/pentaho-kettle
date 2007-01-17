@@ -391,10 +391,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
             std.setSplitSchemaAndTable(true);
 			if (std.open()!= null)
 			{
-                String tableName = inf.quoteField(std.getTableName());
-                String schemaName = inf.quoteField(std.getSchemaName());
-                
-				String sql = "SELECT *"+Const.CR+"FROM "+inf.getSchemaTableCombination(schemaName, tableName)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
@@ -420,7 +417,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
 								sql+=inf.quoteField(field.getName())+Const.CR;
 							}
-							sql+="FROM "+inf.getSchemaTableCombination(schemaName, tableName)+Const.CR; //$NON-NLS-1$
+							sql+="FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$
 							wSQL.setText(sql);
 						}
 						else
