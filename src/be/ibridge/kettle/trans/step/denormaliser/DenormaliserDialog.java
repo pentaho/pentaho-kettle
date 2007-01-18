@@ -219,6 +219,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
           };
         
         ciTarget[ciTarget.length-1].setToolTip(Messages.getString("DenormaliserDialog.CiTarget.Title")); //$NON-NLS-1$
+        ciTarget[2].setUsingVariables(true);
 		
 		wTarget=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

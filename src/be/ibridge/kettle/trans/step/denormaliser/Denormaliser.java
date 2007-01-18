@@ -25,6 +25,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -102,13 +103,14 @@ public class Denormaliser extends BaseStep implements StepInterface
                 // Fill a hashtable with the key strings and the position(s) of the field(s) in the row to take.
                 // Store the indexes in a List so that we can accommodate multiple key/value pairs...
                 // 
-                List indexes = (List) data.keyValue.get(field.getKeyValue());
+                String keyValue = StringUtil.environmentSubstitute(field.getKeyValue());
+                List indexes = (List) data.keyValue.get(keyValue);
                 if (indexes==null)
                 {
                     indexes = new ArrayList(2);
                 }
                 indexes.add(new Integer(i)); // Add the index to the list...
-				data.keyValue.put(field.getKeyValue(), indexes); // store the list
+				data.keyValue.put(keyValue, indexes); // store the list
 			}
             
             Set subjectSet = subjects.keySet();
