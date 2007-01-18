@@ -258,7 +258,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     public String getExtraOptionsHelpText()
     {
-        return "See:  http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release=&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
+        return "http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release=&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
     }
 
     public String[] getUsedLibraries()

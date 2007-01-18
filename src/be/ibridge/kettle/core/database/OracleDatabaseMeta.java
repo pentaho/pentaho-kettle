@@ -388,42 +388,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      */
     public String getExtraOptionsHelpText()
     {
-        return 
-            "Source of information: http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm"+Const.CR+
-            Const.CR+
-            "Key                            Value       Comment"+Const.CR+
-            "-----------------------------  ----------  ------------------------------------------------------------------------------------"+Const.CR+
-            "user                           String      The value of this property is used as the user name when connecting to the database."+Const.CR+
-            "password                       String      The value of this property is used as the password when connecting to the database."+Const.CR+
-            "database                       String      The value of this property is used as the SID of the database."+Const.CR+
-            "server                         String      The value of this property is used as the host name of the database."+Const.CR+
-            "internal_logon                 String      The value of this property is used as the user name when performing an internal logon. Usually this will be SYS or SYSDBA."+Const.CR+
-            "defaultRowPrefetch             int         The value of this property is used as the default number of rows to prefetch."+Const.CR+
-            "defaultExecuteBatch            int         The value of this property is used as the default batch size when using Oracle style batching."+Const.CR+
-            "processEscapes                 boolean     If the value of this property is 'false' then the default setting for Statement.setEscapeProccessing is false."+Const.CR+
-            "disableDefineColumnType        boolean     When this connection property has the value true, the method defineColumnType is has no effect. This is highly recommended when using the Thin driver, especially when the database character set contains four byte characters that expand to two UCS2 surrogate characters, e.g. AL32UTF8. The method defineColumnType provides no performance benefit (or any other benefit) when used with the 10.1.0 Thin driver. This property is provided so that you do not have to remove the calls from your code. This is especially valuable if you use the same code with Thin driver and either the OCI or Server Internal driver."+Const.CR+
-            "DMSName                        String      Set the name of the DMS Noun that is the parent of all JDBC DMS metrics."+Const.CR+
-            "DMSType                        String      Set the type of the DMS Noun that is the parent of all JDBC DMS metrics."+Const.CR+
-            "AccumulateBatchResult          boolean     When using Oracle style batching, JDBC determines when to flush a batch to the database. If this property is true, then the number of modified rows accumulated across all batches flushed from a single statement. The default is to count each batch separately."+Const.CR+
-            "oracle.jdbc.J2EE13Compliant    boolean     If the value of this property is 'true', JDBC uses strict compliance for some edge cases. " +Const.CR+
-            "                                           In general Oracle's JDBC drivers will allow some operations that are not permitted in the strict interpretation of J2EE 1.3. " +Const.CR+
-            "                                           Setting this property to true will cause those cases to throw SQLExceptions. " +Const.CR+
-            "                                           There are some other edge cases where Oracle's JDBC drivers have slightly different behavior than defined in J2EE 1.3. " +Const.CR+
-            "                                           This results from Oracle having defined the behavior prior to the J2EE 1.3 specification and the resultant need for compatibility with existing customer code. " +Const.CR+
-            "                                           Setting this property will result in full J2EE 1.3 compliance at the cost of incompatibility with some customer code. " +Const.CR+
-            "                                           Can be either a system property or a connection property. The default value of this property is 'false' in classes12.jar and ojdbc12.jar. " +Const.CR+
-            "                                           The default value is 'true' in classes12dms.jar and ojdbc14dms.jar. " +Const.CR+
-            "                                           It is true in the dms jars because they are used almost exclusively in Oracle Application Server and so J2EE compatibility is more important than compatibility with previous Oracle versions."+Const.CR+
-            "oracle.jdbc.TcpNoDelay         boolean     If the value of this property is 'true', the TCP_NODELAY property is set on the socket when using the Thin driver. See java.net.SocketOptions.TCP_NODELAY. Can be either a system property or a connection property."+Const.CR+
-            "defaultNChar                   boolean     If the value of this property is 'true', the default mode for all character data columns will be NCHAR."+Const.CR+
-            "useFetchSizeWithLongColumn     boolean     If the value of this property is 'true', then JDBC will prefetch rows even though there is a LONG or LONG RAW column in the result. By default JDBC fetches only one row at a time if there are LONG or LONG RAW columns in the result. Setting this property to true can improve performance but can also cause SQLExceptions if the results are too big."+Const.CR+
-            "remarksReporting               boolean     If the value of this property is 'true', OracleDatabaseMetaData will include remarks in the metadata. This can result in a substantial reduction in performance."+Const.CR+
-            "includeSynonyms                boolean     If the value of this property is 'true', JDBC will include synonyms when getting information about a column."+Const.CR+
-            "restrictGetTables              boolean     If the value of this property is 'true', JDBC will return a more refined value for DatabaseMetaData.getTables. By default JDBC will return things that are not accessible tables. These can be non-table objects or accessible synonymns for inaccessible tables. If this property is true JDBC will return only accessible tables. This has a substantial performance penalty."+Const.CR+
-            "fixedString                    boolean     If the value of this property is 'true', JDBC will use FIXED CHAR semantic when setObject is called with a String argument. By default JDBC uses VARCHAR semantics. The difference is in blank padding. With the default there is no blank padding so, for example, 'a' does not equal 'a ' in a CHAR(4). If true these two will be equal."+Const.CR+
-            "oracle.jdbc.ocinativelibrary   String      Set the name of the native library for the oci driver. If not set, the default name, libocijdbcX (X is a version number), is used."+Const.CR+
-            "SetBigStringTryClob            boolean     Setting this property to 'true' forces PreparedStatement.setString() method to use setStringForClob() if the data is larger than 32765 bytes. Please note that using this method with VARCHAR and LONG columns may cause large data to be truncated silently, or cause other errors differing from the normal behavior of setString()."+Const.CR
-            ;
+        return  "http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm#05_00";
     }
 
     public String[] getUsedLibraries()

@@ -222,6 +222,11 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
         return new String[] { "hsqldb.jar" };
     }
     
+    public String getExtraOptionsHelpText()
+    {
+        return "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA";
+    }
+    
     public String[] getReservedWords()
     {
         return new String[] 

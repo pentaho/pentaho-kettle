@@ -326,4 +326,9 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     {
         return new String[] { "jtds-1.2.jar" };
     }
+    
+    public String getExtraOptionsHelpText()
+    {
+        return "http://jtds.sourceforge.net/faq.html#urlFormat";
+    }
 }
