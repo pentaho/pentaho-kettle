@@ -1632,11 +1632,11 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
-                DatabaseMeta ci = getDatabase(i);
+                DatabaseMeta databaseMeta = getDatabase(i);
                 // ONLY save the database connection if it has changed and nothing was saved in the repository
-                if(ci.hasChanged() || ci.getID()<=0)
+                if(databaseMeta.hasChanged() || databaseMeta.getID()<=0)
                 {
-                    ci.saveRep(rep);
+                    databaseMeta.saveRep(rep);
                 }
                 if (monitor != null) monitor.worked(1);
             }
@@ -1679,22 +1679,34 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             // Save the partition schemas
             for (int i=0;i<partitionSchemas.size();i++)
             {
-                PartitionSchema schema = (PartitionSchema) partitionSchemas.get(i);
-                schema.saveRep(rep, getID());
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
+                PartitionSchema partitionSchema = (PartitionSchema) partitionSchemas.get(i);
+                // See if this transformation really is a consumer of this object
+                // It might be simply loaded as a shared object from the repository
+                //
+                boolean isUsedByTransformation = isUsingPartitionSchema(partitionSchema);
+                partitionSchema.saveRep(rep, getID(), isUsedByTransformation);
             }
 
             // Save the slaves
             for (int i=0;i<slaveServers.size();i++)
             {
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
                 SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-                slaveServer.saveRep(rep, getID());
+                boolean isUsedByTransformation = isUsingSlaveServer(slaveServer);
+                slaveServer.saveRep(rep, getID(), isUsedByTransformation);
             }
             
             // Save the clustering schemas
             for (int i=0;i<clusterSchemas.size();i++)
             {
-                ClusterSchema schema = (ClusterSchema) clusterSchemas.get(i);
-                schema.saveRep(rep, getID());
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
+                ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+                boolean isUsedByTransformation = isUsingClusterSchema(clusterSchema);
+                clusterSchema.saveRep(rep, getID(), isUsedByTransformation);
             }
             
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
@@ -1733,6 +1745,60 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             // there...
             rep.unlockRepository();
         }
+    }
+
+    public boolean isUsingPartitionSchema(PartitionSchema partitionSchema)
+    {
+        // Loop over all steps and see if the partition schema is used.
+        for (int i=0;i<nrSteps();i++)
+        {
+            StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
+            if (stepPartitioningMeta!=null)
+            {
+                PartitionSchema check = stepPartitioningMeta.getPartitionSchema();
+                if (check!=null && check.equals(partitionSchema))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean isUsingClusterSchema(ClusterSchema clusterSchema)
+    {
+        // Loop over all steps and see if the partition schema is used.
+        for (int i=0;i<nrSteps();i++)
+        {
+            ClusterSchema check = getStep(i).getClusterSchema();
+            if (check!=null && check.equals(clusterSchema))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isUsingSlaveServer(SlaveServer slaveServer)
+    {
+        // Loop over all steps and see if the slave server is used.
+        for (int i=0;i<nrSteps();i++)
+        {
+            ClusterSchema clusterSchema = getStep(i).getClusterSchema();
+            if (clusterSchema!=null)
+            {
+                for (Iterator iter = clusterSchema.getSlaveServers().iterator(); iter.hasNext();)
+                {
+                    SlaveServer check = (SlaveServer) iter.next();
+                    if (check.equals(slaveServer))
+                    {
+                        return true;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /* (non-Javadoc)

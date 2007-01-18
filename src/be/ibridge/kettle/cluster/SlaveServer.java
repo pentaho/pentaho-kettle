@@ -124,10 +124,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
     public void saveRep(Repository rep) throws KettleDatabaseException
     {
-        saveRep(rep, -1L);
+        saveRep(rep, -1L, false);
     }
     
-    public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
     {
         setId(rep.getSlaveID(name));
         
@@ -141,7 +141,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         }
         
         // Save the trans-slave relationship too.
-        if (id_transformation>=0) rep.insertTransformationSlave(id_transformation, getId());
+        if (id_transformation>=0 && isUsedByTransformation) rep.insertTransformationSlave(id_transformation, getId());
     }
     
     public SlaveServer(Repository rep, long id_slave_server) throws KettleDatabaseException

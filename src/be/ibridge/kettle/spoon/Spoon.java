@@ -7019,7 +7019,7 @@ public class Spoon implements AddUndoPositionInterface
             if (rep!=null && partitionSchema.getId()>0)
             {
                 // remove the partition schema from the repository too...
-                rep.delPartitionSchemas(partitionSchema.getId());
+                rep.delPartitionSchema(partitionSchema.getId());
             }
             
             int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
@@ -7028,7 +7028,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingClusterSchema.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingClusterSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -7059,9 +7059,22 @@ public class Spoon implements AddUndoPositionInterface
 
     private void delClusterSchema(TransMeta transMeta, ClusterSchema clusterSchema)
     {
-        int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);
-        transMeta.getClusterSchemas().remove(idx);
-        refreshTree();
+        try
+        {
+            if (rep!=null && clusterSchema.getId()>0)
+            {
+                // remove the partition schema from the repository too...
+                rep.delClusterSchema(clusterSchema.getId());
+            }
+            
+            int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);
+            transMeta.getClusterSchemas().remove(idx);
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
     
     /**

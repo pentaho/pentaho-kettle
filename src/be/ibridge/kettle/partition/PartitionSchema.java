@@ -57,7 +57,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         this.partitionIDs = partitionSchema.partitionIDs;
         
         // this.shared = partitionSchema.shared;
-        this.setId(partitionSchema.getId());
+        this.setId(partitionSchema.id);
         this.setChanged(true);
     }
     
@@ -138,7 +138,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         }
     }
     
-    public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
     {
         // see if this partitioning schema is already in the repository...
         setId( rep.getPartitionSchemaID(name) );
@@ -160,7 +160,12 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         }
         
         // Save a link to the transformation to keep track of the use of this partition schema
-        rep.insertTransformationPartitionSchema(id_transformation, getId());
+        // Otherwise, we shouldn't bother with this
+        //
+        if (isUsedByTransformation)
+        {
+            rep.insertTransformationPartitionSchema(id_transformation, getId());
+        }
 
     }
     

@@ -2358,28 +2358,7 @@ public class Repository
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleDatabaseException
 	{
 		String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_STEP_DATABASE WHERE ID_DATABASE = " + id_database;
-
-		ArrayList list = database.getRows(sql, 100);
-		String[] transList = new String[list.size()];
-		for (int i=0;i<list.size();i++)
-		{
-			long id_transformation = ((Row)list.get(i)).getInteger("ID_TRANSFORMATION", -1L); 
-			if (id_transformation > 0)
-			{
-				Row transRow =  getTransformation(id_transformation);
-				if (transRow!=null)
-				{
-					String transName = transRow.getString("NAME", "<name not found>");
-					long id_directory = transRow.getInteger("ID_DIRECTORY", -1L);
-					RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
-					
-					transList[i]=dir.getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
-				}
-			}
-			
-		}
-
-		return transList;
+        return getTransformationsWithIDList( database.getRows(sql, 100) );
 	}
     
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleDatabaseException
@@ -2409,8 +2388,23 @@ public class Repository
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleDatabaseException
     {
         String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave;
+        return getTransformationsWithIDList( database.getRows(sql, 100) );
+    }
+    
+    public synchronized String[] getTransformationsUsingPartitionSchema(long id_partition_schema) throws KettleDatabaseException
+    {
+        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_PARTITION_SCHEMA WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
+        return getTransformationsWithIDList( database.getRows(sql, 100) );
+    }
+    
+    public synchronized String[] getTransformationsUsingCluster(long id_cluster) throws KettleDatabaseException
+    {
+        String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_CLUSTER WHERE ID_CLUSTER = " + id_cluster;
+        return getTransformationsWithIDList( database.getRows(sql, 100) );
+    }
 
-        ArrayList list = database.getRows(sql, 100);
+	private String[] getTransformationsWithIDList(ArrayList list) throws KettleDatabaseException
+    {
         String[] transList = new String[list.size()];
         for (int i=0;i<list.size();i++)
         {
@@ -2424,16 +2418,15 @@ public class Repository
                     long id_directory = transRow.getInteger("ID_DIRECTORY", -1L);
                     RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
                     
-                    transList[i]=dir.getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
+                    transList[i]=dir.getPathObjectCombination(transName);
                 }
-            }
-            
+            }            
         }
 
         return transList;
     }
 
-	public long[] getTransHopIDs(long id_transformation) throws KettleDatabaseException
+    public long[] getTransHopIDs(long id_transformation) throws KettleDatabaseException
 	{
 		return getIDs("SELECT ID_TRANS_HOP FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
@@ -3124,8 +3117,9 @@ public class Repository
 
     public synchronized void delPartitions(long id_partition_schema) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
-        database.execStatement(sql);
+        // First see if the partition is used by a step, transformation etc.
+        // 
+        database.execStatement("DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
     }
     
     public synchronized void delClusterSlaves(long id_cluster) throws KettleDatabaseException
@@ -3271,9 +3265,10 @@ public class Repository
     
     public synchronized void delSlave(long id_slave) throws KettleDatabaseException
     {
-        // First, see if the database connection is still used by other connections...
+        // First, see if the slave is still used by other objects...
         // If so, generate an error!!
-        // We look in table R_STEP_DATABASE to see if there are any steps using this database.
+        // We look in table R_TRANS_SLAVE to see if there are any transformations using this slave.
+        // We obviously also look in table R_CLUSTER_SLAVE to see if there are any clusters that use this slave.
         String[] transList = getTransformationsUsingSlave(id_slave);
         String[] clustList = getClustersUsingSlave(id_slave);
 
@@ -3309,6 +3304,63 @@ public class Repository
         }
     }
    
+    public synchronized void delPartitionSchema(long id_partition_schema) throws KettleDatabaseException
+    {
+        // First, see if the schema is still used by other objects...
+        // If so, generate an error!!
+        //
+        // We look in table R_TRANS_PARTITION_SCHEMA to see if there are any transformations using this schema.
+        String[] transList = getTransformationsUsingPartitionSchema(id_partition_schema);
+
+        if (transList.length==0)
+        {
+            database.execStatement("DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
+            database.execStatement("DELETE FROM R_PARTITION_SCHEMA WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
+        }
+        else
+        {
+            StringBuffer message = new StringBuffer();
+            
+            message.append("The partition schema is used by the following transformations:").append(Const.CR);
+            for (int i = 0; i < transList.length; i++)
+            {
+                message.append("  ").append(transList[i]).append(Const.CR);
+            }
+            message.append(Const.CR);
+            
+            KettleDependencyException e = new KettleDependencyException(message.toString());
+            throw new KettleDependencyException("This partition schema is still in use by one or more transformations ("+transList.length+") :", e);
+        }
+    }
+    
+    public synchronized void delClusterSchema(long id_cluster) throws KettleDatabaseException
+    {
+        // First, see if the schema is still used by other objects...
+        // If so, generate an error!!
+        //
+        // We look in table R_TRANS_CLUSTER to see if there are any transformations using this schema.
+        String[] transList = getTransformationsUsingCluster(id_cluster);
+
+        if (transList.length==0)
+        {
+            database.execStatement("DELETE FROM R_CLUSTER WHERE ID_CLUSTER = " + id_cluster);
+        }
+        else
+        {
+            StringBuffer message = new StringBuffer();
+            
+            message.append("The cluster schema is used by the following transformations:").append(Const.CR);
+            for (int i = 0; i < transList.length; i++)
+            {
+                message.append("  ").append(transList[i]).append(Const.CR);
+            }
+            message.append(Const.CR);
+            
+            KettleDependencyException e = new KettleDependencyException(message.toString());
+            throw new KettleDependencyException("This cluster schema is still in use by one or more transformations ("+transList.length+") :", e);
+        }
+    }
+
 
 	public synchronized void delAllFromTrans(long id_transformation) throws KettleDatabaseException
 	{

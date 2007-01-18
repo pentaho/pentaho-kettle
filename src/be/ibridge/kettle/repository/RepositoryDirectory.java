@@ -716,4 +716,16 @@ public class RepositoryDirectory
 	{
 		return getPath();
 	}
+
+    public String getPathObjectCombination(String transName)
+    {
+        if (isRoot())
+        {
+            return getPath()+transName;
+        }
+        else
+        {
+            return getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
+        }
+    }
 }

@@ -158,7 +158,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
     }
     
-    public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
     {
         setId(rep.getClusterID(name));
         if (getId()<0)
@@ -177,13 +177,17 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
             if (slaveServer.getId()<0) // oops, not yet saved!
             {
-                slaveServer.saveRep(rep, id_transformation);
+                slaveServer.saveRep(rep, id_transformation, isUsedByTransformation);
             }
             rep.insertClusterSlave(this, slaveServer);
         }
         
         // Save a link to the transformation to keep track of the use of this partition schema
-        rep.insertTransformationCluster(id_transformation, getId());
+        // Only save it if it's really used by the transformation
+        if (isUsedByTransformation)
+        {
+            rep.insertTransformationCluster(id_transformation, getId());
+        }
     }
     
     public ClusterSchema(Repository rep, long id_cluster_schema, List slaveServers) throws KettleDatabaseException
