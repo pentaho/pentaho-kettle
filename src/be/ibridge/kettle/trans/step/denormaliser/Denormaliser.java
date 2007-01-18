@@ -63,7 +63,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 			// Don't forget the last set of rows...
 			if (data.previous!=null) 
 			{
-                deNormalise(data.previous);
+                // deNormalise(data.previous); // That would overdo it.
                 buildResult(data.previous);
 				putRow(data.previous);
                 //System.out.println("Wrote row: "+data.previous);
