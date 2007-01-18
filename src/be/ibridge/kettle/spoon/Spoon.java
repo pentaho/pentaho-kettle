@@ -3469,56 +3469,7 @@ public class Spoon implements AddUndoPositionInterface
             String fname = dialog.open();
             if (fname!=null)
             {
-                // Open the XML and see what's in there.
-                // We expect a single <transformation> or <job> root at this time...
-                try
-                {
-                    Document document = XMLHandler.loadXMLFile(fname);
-                    boolean loaded = false;
-                    // Check for a transformation...
-                    Node transNode = XMLHandler.getSubNode(document, TransMeta.XML_TAG);
-                    if (transNode!=null) // yep, found a transformation
-                    {
-                        TransMeta transMeta = new TransMeta();
-                        transMeta.loadXML(transNode, rep, true);
-                        props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
-                        addMenuLast();
-                        if (!importfile) transMeta.clearChanged();
-                        transMeta.setFilename(fname);
-                        addSpoonGraph(transMeta);
-
-                        refreshTree();
-                        refreshHistory();
-                        loaded=true;
-                    }
-                    
-                    // Check for a job...
-                    Node jobNode = XMLHandler.getSubNode(document, JobMeta.XML_TAG);
-                    if (jobNode!=null) // Indeed, found a job
-                    {
-                        JobMeta jobMeta = new JobMeta(log);
-                        jobMeta.loadXML(jobNode, rep);
-                        props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
-                        addMenuLast();
-                        if (!importfile) jobMeta.clearChanged();
-                        jobMeta.setFilename(fname);
-                        addChefGraph(jobMeta);
-                        loaded=true;
-                    }
-                    
-                    if (!loaded)
-                    {
-                        // Give error back
-                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                        mb.setMessage(Messages.getString("Spoon.UnknownFileType.Message", fname));
-                        mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
-                        mb.open();
-                    }
-                }
-                catch(KettleException e)
-                {
-                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname, e);
-                }
+                openFile(fname, importfile);
             }
         }
         else
@@ -3568,6 +3519,60 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    public void openFile(String fname, boolean importfile)
+    {
+        // Open the XML and see what's in there.
+        // We expect a single <transformation> or <job> root at this time...
+        try
+        {
+            Document document = XMLHandler.loadXMLFile(fname);
+            boolean loaded = false;
+            // Check for a transformation...
+            Node transNode = XMLHandler.getSubNode(document, TransMeta.XML_TAG);
+            if (transNode!=null) // yep, found a transformation
+            {
+                TransMeta transMeta = new TransMeta();
+                transMeta.loadXML(transNode, rep, true);
+                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
+                addMenuLast();
+                if (!importfile) transMeta.clearChanged();
+                transMeta.setFilename(fname);
+                addSpoonGraph(transMeta);
+
+                refreshTree();
+                refreshHistory();
+                loaded=true;
+            }
+            
+            // Check for a job...
+            Node jobNode = XMLHandler.getSubNode(document, JobMeta.XML_TAG);
+            if (jobNode!=null) // Indeed, found a job
+            {
+                JobMeta jobMeta = new JobMeta(log);
+                jobMeta.loadXML(jobNode, rep);
+                props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
+                addMenuLast();
+                if (!importfile) jobMeta.clearChanged();
+                jobMeta.setFilename(fname);
+                addChefGraph(jobMeta);
+                loaded=true;
+            }
+            
+            if (!loaded)
+            {
+                // Give error back
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage(Messages.getString("Spoon.UnknownFileType.Message", fname));
+                mb.setText(Messages.getString("Spoon.UnknownFileType.Title"));
+                mb.open();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorOpening.Title"), Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname, e);
+        }
+    }
+
     public void newFile()
     {
         String[] choices = new String[] { STRING_TRANSFORMATION, STRING_JOB };
@@ -6678,10 +6683,7 @@ public class Spoon implements AddUndoPositionInterface
                 else
                 if (!Const.isEmpty(optionFilename))
                 {
-                    TransMeta transMeta = new TransMeta(optionFilename.toString());
-                    transMeta.setFilename(optionFilename.toString());
-                    transMeta.clearChanged();
-                    spoon.addSpoonGraph(transMeta);
+                    spoon.openFile(optionFilename.toString(), false);
                 }
             }
             else // Normal operations, nothing on the commandline...
@@ -7012,9 +7014,22 @@ public class Spoon implements AddUndoPositionInterface
 
     private void delPartitionSchema(TransMeta transMeta, PartitionSchema partitionSchema)
     {
-        int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
-        transMeta.getPartitionSchemas().remove(idx);
-        refreshTree();
+        try
+        {
+            if (rep!=null && partitionSchema.getId()>0)
+            {
+                // remove the partition schema from the repository too...
+                rep.delPartitionSchemas(partitionSchema.getId());
+            }
+            
+            int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
+            transMeta.getPartitionSchemas().remove(idx);
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingPartitionSchema.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
     }
 
     /**
