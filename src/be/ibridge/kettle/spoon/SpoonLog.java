@@ -1002,10 +1002,12 @@ public class SpoonLog extends Composite implements TabItemInterface
     public int showChangedWarning()
     {
         // show running error.
-        MessageBox mb = new MessageBox(shell,  SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
+        MessageBox mb = new MessageBox(shell,  SWT.YES | SWT.NO | SWT.ICON_QUESTION);
         mb.setMessage(Messages.getString("Spoon.Message.Warning.PromptExitWhenRunTransformation"));// There is a running transformation.  Do you want to stop it and quit Spoon?
         mb.setText(Messages.getString("System.Warning")); //Warning
-        return mb.open();
+        int answer = mb.open();
+        if (answer==SWT.NO) return SWT.CANCEL;
+        return answer;
     }
     
     public boolean applyChanges()
