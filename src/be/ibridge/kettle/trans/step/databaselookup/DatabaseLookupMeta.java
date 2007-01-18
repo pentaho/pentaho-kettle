@@ -50,6 +50,9 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterface
 {
+    /** what's the lookup schema name? */
+    private String schemaName;
+    
 	/** what's the lookup table? */
 	private String tablename;            
 	
@@ -387,7 +390,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			cached      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache")); //$NON-NLS-1$ //$NON-NLS-2$
 			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
 			cacheSize=Const.toInt(csize, 0);
-			tablename      = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
+            schemaName = XMLHandler.getTagValue(stepnode, "lookup", "schema"); //$NON-NLS-1$ //$NON-NLS-2$
+			tablename = XMLHandler.getTagValue(stepnode, "lookup", "table"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
 			
@@ -440,6 +444,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		databaseMeta     = null;
 		cached           = false;
 		cacheSize        = 0;
+        schemaName       = ""; //$NON-NLS-1$
 		tablename        = Messages.getString("DatabaseLookupMeta.Default.TableName"); //$NON-NLS-1$
 
 		int nrkeys   = 0;
@@ -508,6 +513,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		retval.append("    "+XMLHandler.addTagValue("cache", cached)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
+        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("orderby", orderByClause)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      "+XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -549,6 +555,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			
 			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); //$NON-NLS-1$
 			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
+            schemaName               =      rep.getStepAttributeString (id_step, "lookup_schema");  //$NON-NLS-1$
 			tablename                =      rep.getStepAttributeString (id_step, "lookup_table");  //$NON-NLS-1$
 			orderByClause            =      rep.getStepAttributeString (id_step, "lookup_orderby");  //$NON-NLS-1$
             failingOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple");  //$NON-NLS-1$
@@ -590,6 +597,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection",      databaseMeta==null?-1:databaseMeta.getID()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "cache",              cached); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "cache_size",         cacheSize); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "lookup_schema",      schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",       tablename); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "lookup_orderby",     orderByClause); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "fail_on_multiple",   failingOnMultipleResults); //$NON-NLS-1$
@@ -636,13 +644,14 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			{
 				db.connect();
 				
-				if (tablename!=null && tablename.length()!=0)
+				if (!Const.isEmpty(tablename))
 				{
 					boolean first=true;
 					boolean error_found=false;
 					error_message = ""; //$NON-NLS-1$
 					
-					Row r = db.getTableFields(tablename);
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                    Row r = db.getTableFields( schemaTable );
 					if (r!=null)
 					{
 						// Check the keys used to do the lookup...
@@ -791,7 +800,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			try
 			{
 				db.connect();
-				fields = db.getTableFields(tablename);
+                String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                fields = db.getTableFields(schemaTable);
 			}
 			catch(KettleDatabaseException dbe)
 			{
@@ -826,17 +836,19 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		for (int i=0;i<streamKeyField1.length;i++)
 		{
 			Value v = prev.searchValue(streamKeyField1[i]);
-			DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, 
-											transMeta.getName(),
-											stepinfo.getName(),
-											databaseMeta.getDatabaseName(),
-											tablename,
-											tableKeyField[i],
-											streamKeyField1[i],
-											v!=null?v.getOrigin():"?", //$NON-NLS-1$
-											"", //$NON-NLS-1$
-											Messages.getString("DatabaseLookupMeta.Impact.Key") //$NON-NLS-1$
-											);
+			DatabaseImpact ii = new DatabaseImpact
+                ( 
+                    DatabaseImpact.TYPE_IMPACT_READ, 
+					transMeta.getName(),
+					stepinfo.getName(),
+					databaseMeta.getDatabaseName(),
+					tablename,
+					tableKeyField[i],
+					streamKeyField1[i],
+					v!=null?v.getOrigin():"?", //$NON-NLS-1$
+					"", //$NON-NLS-1$
+					Messages.getString("DatabaseLookupMeta.Impact.Key") //$NON-NLS-1$
+				);
 			impact.add(ii);
 		}
 
@@ -885,4 +897,20 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
 		this.eatingRowOnLookupFailure = eatingRowOnLookupFailure;
 	}
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
+    }
 }

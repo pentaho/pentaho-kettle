@@ -506,7 +506,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 				if (!Const.isEmpty(tablename))
 				{
-                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
 					// Check if this table exists...
 					if (db.checkTableExists(schemaTable))
 					{
@@ -699,7 +699,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 					{
 						db.connect();
 						
-                        String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
                         String cr_table = db.getDDL(schemaTable, prev);
 						
 						// Empty string means: nothing to do: set it to null...
@@ -745,7 +745,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
                 
                 if (!Const.isEmpty(tablename))
                 {
-                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tablename));
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
                     
                     // Check if this table exists...
                     if (db.checkTableExists(schemaTable))

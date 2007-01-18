@@ -77,7 +77,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				}
 			}
 
-			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
+			data.db.setLookup(meta.getSchemaName(), meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
@@ -123,7 +123,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 			// Determine the types...
 			data.keytypes = new int[meta.getTableKeyField().length];
-			Row fields = data.db.getTableFields(meta.getTablename());
+            String schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+			Row fields = data.db.getTableFields(schemaTable);
 			if (fields!=null)
 			{
 				// Fill in the types...
@@ -142,7 +143,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 			else
 			{
-				throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+meta.getTablename()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+schemaTable+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 

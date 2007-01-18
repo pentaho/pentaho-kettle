@@ -75,6 +75,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	private TableView    wKey;
 	private FormData     fdlKey, fdKey;
 
+    private Label        wlSchema;
+    private Text         wSchema;
+    private FormData     fdlSchema, fdSchema;
+
 	private Label        wlTable;
 	private Button       wbTable;
 	private Text         wTable;
@@ -159,6 +163,24 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
+        // Schema line...
+        wlSchema=new Label(shell, SWT.RIGHT);
+        wlSchema.setText(Messages.getString("DatabaseLookupDialog.TargetSchema.Label")); //$NON-NLS-1$
+        props.setLook(wlSchema);
+        fdlSchema=new FormData();
+        fdlSchema.left = new FormAttachment(0, 0);
+        fdlSchema.right= new FormAttachment(middle, -margin);
+        fdlSchema.top  = new FormAttachment(wConnection, margin*2);
+        wlSchema.setLayoutData(fdlSchema);
+
+        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSchema);
+        wSchema.addModifyListener(lsMod);
+        fdSchema=new FormData();
+        fdSchema.left = new FormAttachment(middle, 0);
+        fdSchema.top  = new FormAttachment(wConnection, margin*2);
+        fdSchema.right= new FormAttachment(100, 0);
+        wSchema.setLayoutData(fdSchema);
 
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
@@ -167,7 +189,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
-		fdlTable.top  = new FormAttachment(wConnection, margin*2);
+		fdlTable.top  = new FormAttachment(wSchema, margin*2);
 		wlTable.setLayoutData(fdlTable);
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -175,7 +197,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wbTable.setText(Messages.getString("DatabaseLookupDialog.Browse.Button")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wConnection, margin);
+		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -183,7 +205,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.top  = new FormAttachment(wConnection, margin*2);
+		fdTable.top  = new FormAttachment(wSchema, margin*2);
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
@@ -465,7 +487,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			item.setText(4, Value.getTypeDesc(input.getReturnValueDefaultType()[i]));
 		}
 		
-		if (input.getTablename()!=null)        wTable.setText( input.getTablename() );
+        if (input.getSchemaName()!=null) wSchema.setText( input.getSchemaName() );
+		if (input.getTablename()!=null) wTable.setText( input.getTablename() );
 		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
 		else if (transMeta.nrDatabases()==1)
 		{
@@ -529,6 +552,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			}
 		}
 		
+        input.setSchemaName( wSchema.getText() ); 
 		input.setTablename( wTable.getText() ); 
 		input.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		input.setOrderByClause( wOrderBy.getText() );
@@ -560,11 +584,13 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
+            std.setSplitSchemaAndTable(true);
+            std.setSelectedSchema(wSchema.getText());
 			std.setSelectedTable(wTable.getText());
-			String tableName = (String)std.open();
-			if (tableName != null)
+			if (std.open() != null)
 			{
-				wTable.setText(tableName);
+                wSchema.setText(std.getSchemaName());
+				wTable.setText(std.getTableName());
 			}
 		}
 		else
@@ -611,13 +637,13 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			{
 				db.connect();
 				
-				String tablename = wTable.getText();
-				if (tablename!=null && tablename.length()!=0)
+				if (!Const.isEmpty( wTable.getText()) )
 				{
-					Row r = db.getTableFields(tablename);
+                    String schemaTable = ci.getQuotedSchemaTableCombination(wSchema.getText(), wTable.getText());
+					Row r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-                        log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundTableFields")+tablename+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
+                        log.logDebug(toString(), Messages.getString("DatabaseLookupDialog.Log.FoundTableFields")+schemaTable+" --> "+r.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$
                         BaseStepDialog.getFieldsFromPrevious(r, wReturn, 1, new int[] { 1, 2}, new int[] { 4 }, -1, -1, null);
 					}
 					else

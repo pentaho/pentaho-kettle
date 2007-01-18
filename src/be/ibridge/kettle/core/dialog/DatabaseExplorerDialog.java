@@ -431,7 +431,7 @@ public class DatabaseExplorerDialog extends Dialog
 					}
 					else
 					{
-						tab = dbMeta.getSchemaTableCombination(dbMeta.quoteField(schemaName), dbMeta.quoteField(tableName));
+						tab = dbMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 					}
 					final String table = tab;
 					
@@ -650,7 +650,7 @@ public class DatabaseExplorerDialog extends Dialog
                     else
                     {
                         schemaName = null;
-                        tableName = dbMeta.getSchemaTableCombination(path[2], path[3]);
+                        tableName = dbMeta.getQuotedSchemaTableCombination(path[2], path[3]);
                     }
                     dispose();
 				}

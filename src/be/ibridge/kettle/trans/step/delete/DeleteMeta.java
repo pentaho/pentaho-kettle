@@ -402,7 +402,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 					error_message = ""; //$NON-NLS-1$
 					
 					// Check fields in table
-                    String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tableName));
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 					Row r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
@@ -552,7 +552,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 					{
 						db.connect();
 						
-                        String schemaTable = databaseMeta.getSchemaTableCombination(databaseMeta.quoteField(schemaName), databaseMeta.quoteField(tableName));
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 						String cr_table = db.getDDL(schemaTable, 
 													prev, 
 													null, 

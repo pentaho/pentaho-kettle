@@ -2368,7 +2368,7 @@ public class Database
 	 */
 	public boolean checkIndexExists(String schemaName, String tableName, String idx_fields[]) throws KettleDatabaseException
 	{
-        String tablename = databaseMeta.getSchemaTableCombination(schemaName, tableName);
+        String tablename = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		if (!checkTableExists(tablename)) return false;
 		
 		log.logDebug(toString(), "CheckIndexExists() tablename = "+tablename+" type = "+databaseMeta.getDatabaseTypeDesc());
