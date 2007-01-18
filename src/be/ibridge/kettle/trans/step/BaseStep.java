@@ -44,6 +44,7 @@ import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.StepPluginMeta;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.XMLInputSax.XMLInputSaxMeta;
 import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
 import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
 import be.ibridge.kettle.trans.step.addxml.AddXMLMeta;
@@ -208,6 +209,8 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
             new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
+            new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages
+                    .getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
             new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages
