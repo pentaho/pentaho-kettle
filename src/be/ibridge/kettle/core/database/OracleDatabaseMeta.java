@@ -266,9 +266,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         sql+=getAddColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
         // copy the data from the tmp column to the wanted column (again)  
         // All this to avoid the rename clause as this is not supported on all Oracle versions
-        sql+="UPDATE "+tablename+" SET "+v.getName()+"="+tmpColumn.getName();
+        sql+="UPDATE "+tablename+" SET "+v.getName()+"="+tmpColumn.getName()+";"+Const.CR;
+        // drop the temp column
+        sql+=getDropColumnStatement(tablename, tmpColumn, tk, use_autoinc, pk, semicolon);
         
-        return sql; // "ALTER TABLE "+tablename+" MODIFY ("+getFieldDefinition(v, tk, pk, use_autoinc, true, false)+" )";
+        return sql;
 	}
 
 	public String getFieldDefinition(Value v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
