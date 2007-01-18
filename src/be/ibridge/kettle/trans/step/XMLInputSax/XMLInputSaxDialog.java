@@ -445,8 +445,11 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
+        String positionHelp="Element/position\n------------------------\nA: still specify an attribute\nEp: specify an element defined by its position (equivalent to E in original XMLInput).\nEa: specify an element defined by an attribute and allow value parsing.\n\nExample:\n-------------------\nEp=element/1 this is the first element called 'element'\nEa=element/att:val this is the element called 'element' that have an attribute called 'att' with 'val' value\n";
+        
         wlPosition=new Label(wContentComp, SWT.RIGHT);
-        wlPosition.setText("Location ");
+        wlPosition.setText("Location (see also: tooltip help)");
+        wlPosition.setToolTipText(positionHelp);
         props.setLook(wlPosition);
         fdlPosition=new FormData();
         fdlPosition.left = new FormAttachment(0, 0);
@@ -458,6 +461,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         { 
             new ColumnInfo("Elements", ColumnInfo.COLUMN_TYPE_TEXT, false)
         };
+        locationColumns[0].setToolTip(positionHelp);
         
         int nrElements = input.getInputPosition()!=null ? input.getInputPosition().length : 0;
 
@@ -469,6 +473,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
         fdPosition.bottom = new FormAttachment(100, -50);
         fdPosition.right  = new FormAttachment(100, 0);
         wPosition.setLayoutData(fdPosition);
+        wPosition.setToolTipText(positionHelp);
 
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
