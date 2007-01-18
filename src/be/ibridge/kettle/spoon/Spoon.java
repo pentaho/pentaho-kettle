@@ -2612,6 +2612,8 @@ public class Spoon implements AddUndoPositionInterface
                                 stepMeta.setLocation(p);
                                 stepMeta.setDraw(true);
                                 
+                                addUndoNew(transMeta, new StepMeta[] { stepMeta }, new int[] { 0 });
+                                
                                 refreshTree();
                             }
                             break;
@@ -5125,7 +5127,6 @@ public class Spoon implements AddUndoPositionInterface
             chefGraph.forceFocus();
         }
     }
-    
 
     private void undoTransformationAction(TransMeta transMeta, TransAction transAction)
     {
@@ -5954,7 +5955,7 @@ public class Spoon implements AddUndoPositionInterface
     {
         undoInterface.addUndo(obj, null, position, null, null, TransMeta.TYPE_UNDO_NEW, nextAlso);
         setUndoMenu(undoInterface);
-    }   
+    }
 
     // Undo delete object
     public void addUndoDelete(UndoInterface undoInterface, Object obj[], int position[])
@@ -7408,6 +7409,9 @@ public class Spoon implements AddUndoPositionInterface
             }
             // keep the focus on the graph
             tabfolder.setSelection(idx);
+            
+            setUndoMenu(transMeta);
+            enableMenus();
         }
     }
     
@@ -7442,6 +7446,9 @@ public class Spoon implements AddUndoPositionInterface
             }
             // keep the focus on the graph
             tabfolder.setSelection(idx);
+            
+            setUndoMenu(jobMeta);
+            enableMenus();
         }
     }
     
