@@ -7696,12 +7696,16 @@ public class Spoon implements AddUndoPositionInterface
             }
             
             String before = entry.getTabItem().getText();
-            if (entry.getObject() instanceof SpoonGraph) entry.getTabItem().setText( makeGraphTabName( (TransMeta) entry.getObject().getManagedObject() ) );
-            if (entry.getObject() instanceof SpoonLog) entry.getTabItem().setText( makeLogTabName( (TransMeta) entry.getObject().getManagedObject() ) );
-            if (entry.getObject() instanceof SpoonHistory) entry.getTabItem().setText( makeHistoryTabName( (TransMeta) entry.getObject().getManagedObject() ) );
-            if (entry.getObject() instanceof ChefGraph) entry.getTabItem().setText( makeJobGraphTabName( (JobMeta) entry.getObject().getManagedObject() ) );
-            if (entry.getObject() instanceof ChefLog) entry.getTabItem().setText( makeJobLogTabName( (JobMeta) entry.getObject().getManagedObject() ) );
-            if (entry.getObject() instanceof ChefHistory) entry.getTabItem().setText( makeJobHistoryTabName( (JobMeta) entry.getObject().getManagedObject() ) );
+            Object managedObject = entry.getObject().getManagedObject();
+            if (managedObject!=null)
+            {
+                if (entry.getObject() instanceof SpoonGraph) entry.getTabItem().setText( makeGraphTabName( (TransMeta) managedObject ) );
+                if (entry.getObject() instanceof SpoonLog) entry.getTabItem().setText( makeLogTabName( (TransMeta) managedObject ) );
+                if (entry.getObject() instanceof SpoonHistory) entry.getTabItem().setText( makeHistoryTabName( (TransMeta) managedObject ) );
+                if (entry.getObject() instanceof ChefGraph) entry.getTabItem().setText( makeJobGraphTabName( (JobMeta) managedObject ) );
+                if (entry.getObject() instanceof ChefLog) entry.getTabItem().setText( makeJobLogTabName( (JobMeta) managedObject ) );
+                if (entry.getObject() instanceof ChefHistory) entry.getTabItem().setText( makeJobHistoryTabName( (JobMeta) managedObject) );
+            }
 
             String after = entry.getTabItem().getText();
 
