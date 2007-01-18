@@ -2733,16 +2733,6 @@ public class Repository
 		return r.searchValue("VALUE_NUM").getInteger();
 	}
 
-	public double getStepAttributeNumber(long id_step, int nr, String code) throws KettleDatabaseException
-	{
-		Row r = null;
-		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
-		else                            r = getStepAttributeRow(id_step, nr, code);
-		if (r == null)
-			return 0.0;
-		return r.searchValue("VALUE_NUM").getNumber();
-	}
-
 	public synchronized String getStepAttributeString(long id_step, int nr, String code) throws KettleDatabaseException
 	{
 		Row r = null;
@@ -2774,11 +2764,6 @@ public class Repository
             return false;
         return r.searchValue("VALUE_STR").getBoolean();
     }
-
-	public double getStepAttributeNumber(long id_step, String code) throws KettleDatabaseException
-	{
-		return getStepAttributeNumber(id_step, 0, code);
-	}
 
 	public synchronized long getStepAttributeInteger(long id_step, String code) throws KettleDatabaseException
 	{
@@ -4385,9 +4370,8 @@ public class Repository
 		table.addValue(new Value("ID_STEP", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
 		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
+		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_INTEGER, 18, 0));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
-		sql = database.getDDL(tablename, table, null, false, "ID_STEP_ATTRIBUTE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
