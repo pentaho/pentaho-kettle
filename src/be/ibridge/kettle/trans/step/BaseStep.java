@@ -210,7 +210,7 @@ public class BaseStep extends Thread
             new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_EXPERIMENTAL),
+                    .getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
             new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages
