@@ -3701,6 +3701,7 @@ public class Repository
 		table.addValue(new Value("GUI_LOCATION_WIDTH", Value.VALUE_TYPE_INTEGER, 6, 0));
 		table.addValue(new Value("GUI_LOCATION_HEIGHT", Value.VALUE_TYPE_INTEGER, 6, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_NOTE", false);
+        
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
@@ -3733,8 +3734,8 @@ public class Repository
 		table.addValue(new Value("SERVERNAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DATA_TBS", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("INDEX_TBS", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE", false);
+        
 		if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
@@ -3759,8 +3760,8 @@ public class Repository
         table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
-
         sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
+        
         if (sql != null && sql.length() > 0)
         {
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
@@ -4372,7 +4373,8 @@ public class Repository
 		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_INTEGER, 18, 0));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
-
+        sql = database.getDDL(tablename, table, null, false, "ID_STEP_ATTRIBUTE", false);
+        
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
@@ -4417,6 +4419,7 @@ public class Repository
 		table.addValue(new Value("ID_STEP", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, null, false);
+        
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
@@ -4604,7 +4607,6 @@ public class Repository
         table.addValue(new Value("PASS_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));
         table.addValue(new Value("USE_LOGFIELD", Value.VALUE_TYPE_BOOLEAN, 0, 0));
         table.addValue(new Value("SHARED_FILE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
-
 		sql = database.getDDL(tablename, table, null, false, "ID_JOB", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4775,7 +4777,6 @@ public class Repository
 		table.addValue(new Value("ENABLED", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("EVALUATION", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("UNCONDITIONAL", Value.VALUE_TYPE_BOOLEAN, 1, 0));
-
 		sql = database.getDDL(tablename, table, null, false, "ID_JOB_HOP", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
