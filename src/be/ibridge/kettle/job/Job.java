@@ -298,7 +298,7 @@ public class Job extends Thread
         }
 
         // Execute this entry...
-        Result result = jei.execute(prevResult, nr, rep, this);
+        Result result = ((JobEntryInterface)jei.clone()).execute(prevResult, nr, rep, this);
 		addErrors((int)result.getNrErrors());
 		
         // Save this result as well...
