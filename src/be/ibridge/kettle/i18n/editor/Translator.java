@@ -428,7 +428,7 @@ public class Translator
                                 String value = properties.getProperty(entry, "");
                                 String locale = getLocale(filename);
                                 String classname = getClassname(entry);
-                                String key = entry.substring(classname.length()+1);
+                                String key = entry.length()>classname.length() ? entry.substring(classname.length()+1) : entry;
                                 boolean systemKey = entry.startsWith(SYSTEM_KEY_PREFIX); 
                                 String fileContent = "";
                                 
@@ -576,6 +576,8 @@ public class Translator
 
     private String loadJava(String javaFile, String propertiesFilename, String entry) throws KettleFileException
     {
+        if (Const.isEmpty(entry)) return "";
+        
         try
         {
             String filename = ROOT+"/"+javaFile;
@@ -599,7 +601,7 @@ public class Translator
         }
         catch(Exception e)
         {
-            throw new KettleFileException("Unable to load file ["+javaFile+"] for key ["+entry+"] in properties file ["+propertiesFilename+"]", e);
+            throw new KettleFileException(propertiesFilename+": Unable to load file ["+javaFile+"] for key ["+entry+"]", e);
         }
     }
 

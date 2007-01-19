@@ -108,13 +108,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			//
 			String valname = row.getValue(i).getName();
 			if (strTransformScript.indexOf(valname)>=0){
-				if (log.isDetailed()) logDetailed(Messages.getString("ScriptValues.Log.UsedValueName",String.valueOf(i),valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsedValueName",String.valueOf(i),valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				data.fields_used[nr]=i;
 				nr++;
 			}
 		}
 		
-		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValues.Log.UsingValuesFromInputStream"+data.fields_used.length)); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream"+data.fields_used.length)); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	
@@ -156,7 +156,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 						data.scope.put(val.getName(), data.scope, tranVars[i]);
 					}
 				}catch(Exception e){
-					logError(Messages.getString("ScriptValues.Log.CouldNotAttachTransVars")+e.toString()); //$NON-NLS-1$
+					logError(Messages.getString("ScriptValuesMod.Log.CouldNotAttachTransVars")+e.toString()); //$NON-NLS-1$
                     logError(Const.getStackTracker(e));
 					setErrors(1);
 					stopAll();
@@ -174,7 +174,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
     					}
                     }
 				}catch(Exception e){
-					logError(Messages.getString("ScriptValues.Log.CouldNotAttachAdditionalScripts")+e.toString()); //$NON-NLS-1$
+					logError(Messages.getString("ScriptValuesMod.Log.CouldNotAttachAdditionalScripts")+e.toString()); //$NON-NLS-1$
                     logError(Const.getStackTracker(e));
 					setErrors(1);
 					stopAll();
@@ -187,7 +187,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					((ScriptableObject)data.scope).defineFunctionProperties(ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
 					//System.out.println(ex.toString());
-					logError(Messages.getString("ScriptValues.Log.CouldNotAddDefaultFunctions")+ex.toString()); //$NON-NLS-1$
+					logError(Messages.getString("ScriptValuesMod.Log.CouldNotAddDefaultFunctions")+ex.toString()); //$NON-NLS-1$
 					setErrors(1);
 					stopAll();
 					return ERROR_TRANSFORMATION;
@@ -203,7 +203,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 
 				} catch (Exception ex) {
 					//System.out.println("Exception Adding the Constants " + ex.toString());
-					logError(Messages.getString("ScriptValues.Log.CouldNotAddDefaultConstants")+ex.toString());
+					logError(Messages.getString("ScriptValuesMod.Log.CouldNotAddDefaultConstants")+ex.toString());
 					setErrors(1);
 					stopAll();
 					return ERROR_TRANSFORMATION;
@@ -220,7 +220,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					}
 				}catch(Exception es){
 					//System.out.println("Exception processing StartScript " + es.toString());
-					logError(Messages.getString("ScriptValues.Log.ErrorProcessingStartScript")+es.toString());
+					logError(Messages.getString("ScriptValuesMod.Log.ErrorProcessingStartScript")+es.toString());
 					setErrors(1);
 					stopAll();
 					return ERROR_TRANSFORMATION;
@@ -230,7 +230,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				data.script=data.cx.compileString(strTransformScript, "script", 1, null);
 			}
 			catch(Exception e){
-				logError(Messages.getString("ScriptValues.Log.CouldNotCompileJavascript")+e.toString()); //$NON-NLS-1$
+				logError(Messages.getString("ScriptValuesMod.Log.CouldNotCompileJavascript")+e.toString()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return ERROR_TRANSFORMATION;
@@ -284,13 +284,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				}
 			}
 		}catch(JavaScriptException jse){
-            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
+            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
             setErrors(1);
 			stopAll();
 			return ERROR_TRANSFORMATION;
 		}catch(Exception e)	{
-			logError(Messages.getString("ScriptValues.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
-            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+			logError(Messages.getString("ScriptValuesMod.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
+            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			return ERROR_TRANSFORMATION;
@@ -458,7 +458,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
             break;
         }
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("ScriptValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("ScriptValuesMod.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		return bRC;
 	}
 		
@@ -495,14 +495,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 	public void run()
 	{
 		try{
-			logBasic(Messages.getString("ScriptValues.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("ScriptValuesMod.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}catch(Exception e){
 			try{
 				if (data.cx!=null) Context.exit();
 			}catch(Exception er){};
-			logError(Messages.getString("ScriptValues.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+			logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 		}finally{
