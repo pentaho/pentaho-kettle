@@ -2467,6 +2467,16 @@ public class Spoon implements AddUndoPositionInterface
 				}        	
             });
         
+        tabfolder.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent selectionEvent)
+                {
+                    enableMenus();
+                }
+            }
+        );
+        
+        
         tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() 
             {                               
                 public void close(CTabFolderEvent event) 
