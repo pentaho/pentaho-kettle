@@ -261,4 +261,49 @@ public class ConstTest extends TestCase
 		assertEquals("CC", a[0]);
 		assertEquals("BB", a[1]);
 	}
+	
+	/**
+	 *  Test splitPath.
+	 */
+	public void testSplitPath()
+	{
+		String a[] = Const.splitPath("", "/");
+		assertEquals(0, a.length);
+		
+		a = Const.splitPath(null, "/");
+		assertEquals(0, a.length);
+
+		a = Const.splitPath("/", "/");
+		assertEquals(0, a.length);
+	
+		a = Const.splitPath("/level1", "/");
+		assertEquals(1, a.length);
+		assertEquals("level1", a[0]);
+
+		a = Const.splitPath("level1", "/");
+		assertEquals(1, a.length);
+		assertEquals("level1", a[0]);
+
+		a = Const.splitPath("/level1/level2", "/");
+		assertEquals(2, a.length);
+		assertEquals("level1", a[0]);
+		assertEquals("level2", a[1]);
+
+		a = Const.splitPath("level1/level2", "/");
+		assertEquals(2, a.length);
+		assertEquals("level1", a[0]);
+		assertEquals("level2", a[1]);
+
+		a = Const.splitPath("/level1/level2/lvl3", "/");
+		assertEquals(3, a.length);
+		assertEquals("level1", a[0]);
+		assertEquals("level2", a[1]);
+		assertEquals("lvl3", a[2]);
+
+		a = Const.splitPath("level1/level2/lvl3", "/");
+		assertEquals(3, a.length);
+		assertEquals("level1", a[0]);
+		assertEquals("level2", a[1]);
+		assertEquals("lvl3", a[2]);
+	}	
 }

@@ -194,7 +194,7 @@ public class RepositoryImportProgressDialog extends Dialog
 	    wLogging.setSelection(wLogging.getText().length()); // make it scroll
 	}
 	
-	private void importAll()
+    private void importAll()
 	{
 		wLabel.setText("Importing repository objects from an XML file");
 		try
@@ -256,11 +256,11 @@ public class RepositoryImportProgressDialog extends Dialog
 										 !askDirectory
 										 );
 								int answer = mb.open();
-								makeDirectory = answer==0;
+								makeDirectory = (answer&0xFF)==0;
 								askDirectory = !mb.getToggleState();
 								
 								// Cancel?
-								if ( (answer&0xFF)==2) return;
+								if ( (answer&0xFF)==1) return;
 						    }
 
 						    if (makeDirectory)

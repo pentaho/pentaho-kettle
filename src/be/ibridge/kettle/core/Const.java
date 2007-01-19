@@ -1672,10 +1672,8 @@ public class Const
 			return new String[] {};
 		}
 		int sepLen = separator.length();
-		int nr_separators = 0;
+		int nr_separators = 1;
 		int from = path.startsWith(separator) ? sepLen : 0;
-		if (from != 0)
-			nr_separators++;
 
 		for (int i = from; i < path.length(); i += sepLen)
 		{

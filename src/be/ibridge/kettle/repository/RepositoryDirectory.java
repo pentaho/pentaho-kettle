@@ -706,7 +706,7 @@ public class RepositoryDirectory
 	        }
 	        else
 	        {
-	            
+	            parent = rd;   
 	        }
 	    }
 	    return parent;
