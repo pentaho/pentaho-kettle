@@ -7998,8 +7998,8 @@ public class Spoon implements AddUndoPositionInterface
                     if (jobMeta.showReplaceWarning(rep))
                     {
                         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                        mb.setMessage(Messages.getString("Chef.Dialog.JobExistsOverwrite.Message1")+jobMeta.getName()+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message2")+Const.CR+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        mb.setText(Messages.getString("Chef.Dialog.JobExistsOverwrite.Title")); //$NON-NLS-1$
+                        mb.setMessage("'"+jobMeta.getName()+"'"+Const.CR+Const.CR+Messages.getString("Chef.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        mb.setText(Messages.getString("Chef.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
                         response = mb.open();
                     }
                     
