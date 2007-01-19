@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.filesfromresult;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -50,16 +51,14 @@ public class FilesFromResult extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-        if (data.result==null ||
-		    data.result.getResultFiles()==null ||
-			linesRead>=data.result.getResultFiles().size())
+        if (data.resultFilesList==null ||
+			linesRead>=data.resultFilesList.size())
 		{
 			setOutputDone();
 			return false;
 		}
 		
-		
-        ResultFile resultFile = (ResultFile) data.result.getResultFiles().get((int)linesRead);
+        ResultFile resultFile = (ResultFile) data.resultFilesList.get((int)linesRead);
         Row r = resultFile.getRow();
         
         linesRead++;
@@ -78,7 +77,16 @@ public class FilesFromResult extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.result = getTransMeta().getPreviousResult();
+            Result result = getTransMeta().getPreviousResult();
+            
+            if (result!=null)
+            {
+                data.resultFilesList = result.getResultFilesList();
+            }
+            else
+            {
+                data.resultFilesList = null;
+            }
 			
 		    // Add init code here.
 		    return true;

@@ -16,7 +16,11 @@
  
 package be.ibridge.kettle.core;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Result describes the result of the execution of a Transformation or a Job.
@@ -42,7 +46,7 @@ public class Result implements Cloneable
 
 	private int exitStatus;
 	private ArrayList rows;
-	private List resultFiles;
+	private Map resultFiles;
 	
 	public boolean stopped;
 	
@@ -58,7 +62,7 @@ public class Result implements Cloneable
 		
 		exitStatus=0;
 		rows=new ArrayList();
-		resultFiles = new ArrayList();
+		resultFiles = new Hashtable();
 		
 		stopped=false;
 		entryNr=0;
@@ -89,11 +93,13 @@ public class Result implements Cloneable
 
 			if (resultFiles!=null)
 			{
-				ArrayList clonedFiles = new ArrayList();
-				for (int i=0;i<resultFiles.size();i++)
-				{
-					clonedFiles.add( ((ResultFile)resultFiles.get(i)).clone() );
-				}
+				Map clonedFiles = new Hashtable();
+                Collection files = resultFiles.values();
+                for (Iterator iter = files.iterator(); iter.hasNext();)
+                {
+                    ResultFile file = (ResultFile) iter.next();
+                    clonedFiles.put(file.getFile().toString(), file.clone());
+                }
 				result.setResultFiles(clonedFiles);
 			}
 
@@ -350,21 +356,28 @@ public class Result implements Cloneable
         nrLinesDeleted+=res.getNrLinesDeleted();
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
-        resultFiles.addAll(res.getResultFiles());
+        resultFiles.putAll(res.getResultFiles());
     }
 
-	/**
-	 * @return Returns the result files.  This is a list of type ResultFile
-	 */
-	public List getResultFiles()
-	{
-		return resultFiles;
-	}
+    /**
+     * @return Returns the result files.  This is a Map with String as key and ResultFile as value.
+     */
+    public Map getResultFiles()
+    {
+        return resultFiles;
+    }
 
+    /**
+     * @return Returns the result files.  This is a list of type ResultFile
+     */
+    public List getResultFilesList()
+    {
+        return new ArrayList(resultFiles.values());
+    }
 	/**
 	 * @param usedFiles The list of result files to set. This is a list of type ResultFile
 	 */
-	public void setResultFiles(List usedFiles)
+	public void setResultFiles(Map usedFiles)
 	{
 		this.resultFiles = usedFiles;
 	}

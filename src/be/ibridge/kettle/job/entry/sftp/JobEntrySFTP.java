@@ -361,7 +361,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					
 					// Add to the result files...
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFilename), parentJob.getJobname(), toString());
-					result.getResultFiles().add(resultFile);
+                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
 					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
 					

@@ -57,7 +57,7 @@ public class XMLHandlerCache
        hashtable.put(entry, new Integer(lastChildNr));
        list.add(entry);
        
-       if (hashtable.size()>MAX_NUMBER_OF_ENTRIES)
+       if (list.size()>MAX_NUMBER_OF_ENTRIES)
        {
            // Simple: the oldest is the first in the list
            XMLHandlerCacheEntry cacheEntry = (XMLHandlerCacheEntry) list.get(0);

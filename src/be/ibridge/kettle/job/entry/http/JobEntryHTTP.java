@@ -473,7 +473,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                 
 				// Add to the result files...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(realTargetFile), parentJob.getJobname(), toString());
-				result.getResultFiles().add(resultFile);
+                result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
                 result.setResult( true );
             }

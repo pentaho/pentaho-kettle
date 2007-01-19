@@ -408,9 +408,10 @@ public class BaseStep extends Thread
                                                                                                                 // interfaces
 
     /**
-     * List of files that are generated or used by this step. After execution, these can be added to result.
+     * Map of files that are generated or used by this step. After execution, these can be added to result.
+     * The entry to the map is the filename
      */
-    private List                         resultFiles;
+    private Map                          resultFiles;
 
     /**
      * Set this to true if you want to have extra checking enabled on the rows that are entering this step. All too
@@ -537,7 +538,7 @@ public class BaseStep extends Thread
             if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
 
         rowListeners = new ArrayList();
-        resultFiles = new ArrayList();
+        resultFiles = new Hashtable();
 
         repartitioning = false;
         partitionColumnIndex = -1;
@@ -1812,10 +1813,10 @@ public class BaseStep extends Thread
 
     public void addResultFile(ResultFile resultFile)
     {
-        resultFiles.add(resultFile);
+        resultFiles.put(resultFile.getFile().toString(), resultFile);
     }
 
-    public List getResultFiles()
+    public Map getResultFiles()
     {
         return resultFiles;
     }

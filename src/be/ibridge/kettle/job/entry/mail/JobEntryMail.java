@@ -622,7 +622,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			parts.addBodyPart(part1);
 			if (includingFiles && result != null)
 		    {
-				List resultFiles = result.getResultFiles();
+				List resultFiles = result.getResultFilesList();
 				if (resultFiles!=null && resultFiles.size() > 0) 
 				{
 					if (!zipFiles)

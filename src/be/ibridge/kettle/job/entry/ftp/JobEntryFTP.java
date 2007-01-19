@@ -464,7 +464,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     					// Add to the result files...
     					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
                         resultFile.setComment("Downloaded from ftp server "+serverName);
-    					result.getResultFiles().add(resultFile);
+    					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
     					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
                     }

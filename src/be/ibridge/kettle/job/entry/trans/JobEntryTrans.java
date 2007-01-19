@@ -661,7 +661,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         if (setLogfile) 
                         {
                         	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, new File(getLogFilename()), parentJob.getName(), toString());
-        					result.getResultFiles().add(resultFile);
+                            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
         			}
                 }

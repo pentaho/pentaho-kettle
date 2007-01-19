@@ -16,7 +16,8 @@
 
 package be.ibridge.kettle.trans.step.filesfromresult;
 
-import be.ibridge.kettle.core.Result;
+import java.util.List;
+
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
@@ -26,7 +27,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class FilesFromResultData extends BaseStepData implements StepDataInterface
 {
-	public Result result;
+	public List resultFilesList;
 
 	/**
 	 * 

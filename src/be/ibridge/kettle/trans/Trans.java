@@ -1210,7 +1210,7 @@ public class Trans
 			BaseStep rt = (BaseStep)sid.step;
 
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
-			result.getResultFiles().addAll(rt.getResultFiles());
+			result.getResultFiles().putAll(rt.getResultFiles());
 
 			if (transMeta.getReadStep()  !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))   result.setNrLinesRead(result.getNrLinesRead()+ rt.linesRead);
 			if (transMeta.getInputStep() !=null && rt.getStepname().equals(transMeta.getInputStep().getName()))  result.setNrLinesInput(result.getNrLinesInput() + rt.linesInput);
