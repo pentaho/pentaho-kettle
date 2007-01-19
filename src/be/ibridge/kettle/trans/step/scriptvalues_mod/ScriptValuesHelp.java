@@ -84,7 +84,7 @@ public class ScriptValuesHelp {
 	private static void xparseXmlFile(String strFileName) throws KettleXMLException{
         try
         {
-            InputStream is = strFileName.getClass().getResourceAsStream(strFileName);
+            InputStream is = ScriptValuesHelp.class.getResourceAsStream(strFileName);
             int c;
             StringBuffer buffer = new StringBuffer();
             while ( (c=is.read())!=-1 ) buffer.append((char)c);
