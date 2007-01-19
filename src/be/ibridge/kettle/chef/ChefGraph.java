@@ -1507,7 +1507,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                 
 				newJobMeta.setFilename( exactFilename );
                 newJobMeta.clearChanged();
-                spoon.addChefGraph(jobMeta);
+                spoon.addChefGraph(newJobMeta);
 			}
 			catch(Throwable e)
 			{
