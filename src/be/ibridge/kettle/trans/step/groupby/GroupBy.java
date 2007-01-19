@@ -297,7 +297,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     v = new Value(meta.getAggregateField()[i], subj.isNumeric()?subj.getType():Value.VALUE_TYPE_NUMBER);
                     switch(subj.getType())
                     {
-                    case Value.VALUE_TYPE_BIGNUMBER: v.setValue(new BigDecimal(0)); break;
+                    case Value.VALUE_TYPE_BIGNUMBER: v.setValue(new BigDecimal("0")); break;
                     case Value.VALUE_TYPE_INTEGER:   v.setValue(0L); break;
                     case Value.VALUE_TYPE_NUMBER:    
                     default:                         v.setValue(0.0); break;
