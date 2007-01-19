@@ -8218,7 +8218,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(Exception e)
         {
-            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Spoon.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -8365,7 +8365,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Spoon.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
