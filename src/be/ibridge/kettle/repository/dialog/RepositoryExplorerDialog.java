@@ -792,7 +792,7 @@ public class RepositoryExplorerDialog extends Dialog
 							}
 						}
 					);
-					if (level>3) // Can't rename or delete root directory...
+					if (level>2) // Can't rename or delete root directory...
 					{
 						// Rename directory
 						MenuItem miRename  = new MenuItem(mTree, SWT.PUSH); 
