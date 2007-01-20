@@ -559,7 +559,7 @@ public class RepositoryExplorerDialog extends Dialog
 		int level = Const.getTreeLevel(ti);
 		String path[] = Const.getTreeStrings(ti);
 		
-		if (level>2)
+		if (level>1)
 		{
 			int cat = getItemCategory(ti);
 			switch(cat)
