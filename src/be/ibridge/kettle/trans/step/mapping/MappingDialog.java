@@ -115,7 +115,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(MappingMeta )in;
+		input=(MappingMeta)in;
         transModified=false;
 	}
 

@@ -1,8 +1,5 @@
 package be.ibridge.kettle.core.hash;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 /*
  * IDEAS
  *  - maybe we could use double linked entry lists and have keys 

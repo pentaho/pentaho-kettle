@@ -643,7 +643,7 @@ public class Condition implements Cloneable, XMLInterface
 			for (int i=0;i<list.size();i++)
 			{
 				Condition cb = (Condition)list.get(i);
-				retval+=cb.toString(level+1, true, true && i>0);
+				retval+=cb.toString(level+1, true, i>0);
 			}
 			for (int i=0;i<level;i++) retval+="  "; retval+=")"+Const.CR;
 		}

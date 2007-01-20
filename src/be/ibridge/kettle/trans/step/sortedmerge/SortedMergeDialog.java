@@ -64,7 +64,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 	public SortedMergeDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(SortedMergeMeta )in;
+		input=(SortedMergeMeta)in;
 	}
 
 	public String open()

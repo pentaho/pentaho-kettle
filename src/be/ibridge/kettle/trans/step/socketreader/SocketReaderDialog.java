@@ -57,7 +57,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 	public SocketReaderDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(SocketReaderMeta )in;
+		input=(SocketReaderMeta)in;
 	}
 
 	public String open()

@@ -1,8 +1,5 @@
 package be.ibridge.kettle.core.hash;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import be.ibridge.kettle.core.Row;
 
 /*

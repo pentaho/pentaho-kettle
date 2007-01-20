@@ -60,7 +60,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 	public MappingInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(MappingInputMeta )in;
+		input=(MappingInputMeta)in;
 	}
 
 	public String open()

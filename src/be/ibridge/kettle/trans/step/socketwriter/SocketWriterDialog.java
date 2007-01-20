@@ -57,7 +57,7 @@ public class SocketWriterDialog extends BaseStepDialog implements StepDialogInte
 	public SocketWriterDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(SocketWriterMeta )in;
+		input=(SocketWriterMeta)in;
 	}
 
 	public String open()

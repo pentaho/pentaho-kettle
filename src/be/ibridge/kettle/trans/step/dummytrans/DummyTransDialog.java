@@ -52,7 +52,7 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 	public DummyTransDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(DummyTransMeta )in;
+		input=(DummyTransMeta)in;
 	}
 
 	public String open()
