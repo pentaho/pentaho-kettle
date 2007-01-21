@@ -5,6 +5,7 @@ package be.ibridge.kettle.core.database;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -213,7 +214,8 @@ public class DatabaseMetaInformation
 								{
 									schemaItems.add(table_name);
 								}
-							}							
+							}
+							Collections.sort(schemaItems);
 						}
 						catch(Exception e)
 						{
@@ -231,7 +233,7 @@ public class DatabaseMetaInformation
 				finally 
 				{
 				    if ( schemas != null ) schemas.close();
-				}
+				}				
 				
 				// Save for later...
 				setSchemas((Schema[])schemaList.toArray(new Schema[schemaList.size()]));
