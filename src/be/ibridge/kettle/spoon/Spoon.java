@@ -6803,8 +6803,11 @@ public class Spoon implements AddUndoPositionInterface
                         else
                         if (lastUsedFile.isJob())
                         {
-                            // TODO: use JobLoadProgressDialog
-                            JobMeta jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), repdir);
+                            // JobMeta jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), repdir);
+                            // Use progress dialog instead.
+                            //
+                            JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
+                            JobMeta jobMeta = progressDialog.open();
                             props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
                             jobMeta.clearChanged();
                             addChefGraph(jobMeta);

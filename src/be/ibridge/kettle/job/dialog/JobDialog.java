@@ -57,6 +57,7 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectDirectoryDialog;
+import be.ibridge.kettle.trans.dialog.Messages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -153,14 +154,14 @@ public class JobDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Job properties");
+		shell.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.JobProperties.ShellText")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Transformation name:
 		wlJobname=new Label(shell, SWT.RIGHT);
-		wlJobname.setText("Job name :");
+		wlJobname.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.JobName.Label")); //$NON-NLS-1$
  		props.setLook(		wlJobname);
 		fdlJobname=new FormData();
 		fdlJobname.left = new FormAttachment(0, 0);
@@ -178,7 +179,7 @@ public class JobDialog extends Dialog
 
 		// Directory:
 		wlDirectory=new Label(shell, SWT.RIGHT);
-		wlDirectory.setText("Directory :");
+		wlDirectory.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Directory.Label")); //$NON-NLS-1$
  		props.setLook(wlDirectory);
 		fdlDirectory=new FormData();
 		fdlDirectory.left = new FormAttachment(0, 0);
@@ -187,7 +188,7 @@ public class JobDialog extends Dialog
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(shell, SWT.PUSH);
-		wbDirectory.setText("...");
+		wbDirectory.setText("..."); //$NON-NLS-1$
  		props.setLook(wbDirectory);
 		fdbDirectory=new FormData();
 		fdbDirectory.top  = new FormAttachment(wJobname, margin);
@@ -209,7 +210,7 @@ public class JobDialog extends Dialog
 					 	try
 						{
 					 		rep.moveJob(jobMeta.getName(), idDirectoryFrom, rd.getID() );
-					 		log.logDetailed(getClass().getName(), "Moved directory to ["+rd.getPath()+"]");
+					 		log.logDetailed(getClass().getName(), "Moved directory to ["+rd.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 							jobMeta.setDirectory( rd );
 							wDirectory.setText(jobMeta.getDirectory().getPath());
 						}
@@ -218,8 +219,8 @@ public class JobDialog extends Dialog
 					 		jobMeta.setDirectory( directoryFrom );
 					 		
 							MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-							mb.setText("Error!");
-							mb.setMessage("There was an error moving the jobMeta to another directory!");
+							mb.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Title")); //$NON-NLS-1$
+							mb.setMessage(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.ErrorChangingDirectory.Message")); //$NON-NLS-1$
 							mb.open();
 					 	}
 					}
@@ -242,7 +243,7 @@ public class JobDialog extends Dialog
 
 		// Log table connection...
 		wlLogconnection=new Label(shell, SWT.RIGHT);
-		wlLogconnection.setText("Log Connection: ");
+		wlLogconnection.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.LogConnection.Label")); //$NON-NLS-1$
  		props.setLook(wlLogconnection);
 		fdlLogconnection=new FormData();
 		fdlLogconnection.top  = new FormAttachment(wDirectory, margin*4);
@@ -251,7 +252,7 @@ public class JobDialog extends Dialog
 		wlLogconnection.setLayoutData(fdlLogconnection);
 
 		wbLogconnection=new Button(shell, SWT.PUSH);
-		wbLogconnection.setText("&Edit...");
+		wbLogconnection.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.System.Button.Edit")); //$NON-NLS-1$
 		fdbLogconnection=new FormData();
 		fdbLogconnection.top   = new FormAttachment(wDirectory, margin*4);
 		fdbLogconnection.right = new FormAttachment(100, 0);
@@ -292,7 +293,7 @@ public class JobDialog extends Dialog
 
 		// Log table...:
 		wlLogtable=new Label(shell, SWT.RIGHT);
-		wlLogtable.setText("Log table:");
+		wlLogtable.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.LogTable.Label")); //$NON-NLS-1$
  		props.setLook(wlLogtable);
 		fdlLogtable=new FormData();
         fdlLogtable.left = new FormAttachment(0, 0);
@@ -309,7 +310,7 @@ public class JobDialog extends Dialog
 		wLogtable.setLayoutData(fdLogtable);
 
         wlBatch=new Label(shell, SWT.RIGHT);
-        wlBatch.setText("Use Batch-ID? ");
+        wlBatch.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.UseBatchID.Label")); //$NON-NLS-1$
         props.setLook(wlBatch);
         fdlBatch=new FormData();
         fdlBatch.left = new FormAttachment(0, 0);
@@ -325,7 +326,7 @@ public class JobDialog extends Dialog
         wBatch.setLayoutData(fdBatch);
 
         wlBatchTrans=new Label(shell, SWT.RIGHT);
-        wlBatchTrans.setText("Pass the batch ID to job entries");
+        wlBatchTrans.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.PassBatchID.Label")); //$NON-NLS-1$
         props.setLook(wlBatchTrans);
         fdlBatchTrans=new FormData();
         fdlBatchTrans.left = new FormAttachment(0, 0);
@@ -341,7 +342,7 @@ public class JobDialog extends Dialog
         wBatchTrans.setLayoutData(fdBatchTrans);
 
         wlLogfield=new Label(shell, SWT.RIGHT);
-        wlLogfield.setText("Use logfield to store logging in? ");
+        wlLogfield.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.UseLogField.Label")); //$NON-NLS-1$
         props.setLook(wlLogfield);
         fdlLogfield=new FormData();
         fdlLogfield.left = new FormAttachment(0, 0);
@@ -385,11 +386,11 @@ public class JobDialog extends Dialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.System.Button.OK")); //$NON-NLS-1$
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(" &SQL ");
+		wSQL.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.System.Button.SQL")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.System.Button.Cancel")); //$NON-NLS-1$
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, margin, wSharedObjectsFile);
         
@@ -433,7 +434,7 @@ public class JobDialog extends Dialog
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), "getting transformation info...");
+		log.logDebug(toString(), "getting transformation info..."); //$NON-NLS-1$
 	
 		if (jobMeta.getName()!=null)           wJobname.setText      ( jobMeta.getName());
 		if (jobMeta.getDirectory()!=null)      wDirectory.setText    ( jobMeta.getDirectory().getPath() );
@@ -444,7 +445,7 @@ public class JobDialog extends Dialog
         wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
         wLogfield.setSelection(jobMeta.isLogfieldUsed());
         
-        wSharedObjectsFile.setText(Const.NVL(jobMeta.getSharedObjectsFile(), ""));
+        wSharedObjectsFile.setText(Const.NVL(jobMeta.getSharedObjectsFile(), "")); //$NON-NLS-1$
         sharedObjectsFileChanged=false;
         
         changed = jobMeta.hasChanged();
@@ -503,16 +504,27 @@ public class JobDialog extends Dialog
                         
                         // Get the DDL for the specified tablename and fields...
 						String createTable = db.getDDL(tablename, r);
-						log.logBasic(toString(), createTable);
-	
-						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, createTable);
-						sqledit.open();
+                        
+                        if (!Const.isEmpty(createTable))
+                        {
+    						log.logBasic(toString(), createTable);
+    	
+    						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, createTable);
+    						sqledit.open();
+                        }
+                        else
+                        {
+                            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+                            mb.setText(Messages.getString("TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
+                            mb.setMessage(Messages.getString("TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
+                            mb.open(); 
+                        }
 					}
 					catch(KettleDatabaseException dbe)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("An error occured creating the SQL:"+Const.CR+dbe.getMessage());
-						mb.setText("ERROR");
+						mb.setMessage(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.ErrorCreatingSQL.Message")+Const.CR+dbe.getMessage()); //$NON-NLS-1$
+						mb.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.ErrorCreatingSQL.Title")); //$NON-NLS-1$
 						mb.open();
 					}
                     finally
@@ -523,24 +535,24 @@ public class JobDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("Please enter a logtable-name!");
-					mb.setText("ERROR");
+					mb.setMessage(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.PleaseEnterALogTable.Message")); //$NON-NLS-1$
+					mb.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.PleaseEnterALogTable.Title")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("I couldn't find any fields to create the logtable!");
-				mb.setText("ERROR");
+				mb.setMessage(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.CouldNotFindFieldsToCreateLogTable.Message")); //$NON-NLS-1$
+				mb.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.CouldNotFindFieldsToCreateLogTable.Title")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select/create a valid logtable connection!");
-			mb.setText("ERROR");
+			mb.setMessage(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.SelectCreateValidLogConnection.Message")); //$NON-NLS-1$
+			mb.setText(be.ibridge.kettle.job.dialog.Messages.getString("JobDialog.Dialog.SelectCreateValidLogConnection.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 	}

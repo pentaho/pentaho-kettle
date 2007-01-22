@@ -476,7 +476,10 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             DatabaseMeta dbMeta = getDatabase(i);
             if (props!=null && props.areOnlyUsedConnectionsSavedToXML())
             {
-                if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
+                if (isDatabaseConnectionUsed(dbMeta)) 
+                {
+                    retval.append(dbMeta.getXML());
+                }
             }
             else
             {
