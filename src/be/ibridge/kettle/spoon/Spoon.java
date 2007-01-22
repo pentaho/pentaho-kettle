@@ -3389,14 +3389,15 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     try
                     {
-                        TransMeta transMeta = new TransMeta(rep, objname, repdir);
+                        TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objname, repdir);
+                        TransMeta transMeta = progressDialog.open();
                         transMeta.clearChanged();
                         transMeta.setFilename(objname);
                         addSpoonGraph(transMeta);
                         refreshTree();
                         refreshGraph();
                     }
-                    catch(KettleException e)
+                    catch(Exception e)
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
                         mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
@@ -3410,14 +3411,15 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     try
                     {
-                        JobMeta jobMeta = new JobMeta(log, rep, objname, repdir);
+                        JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objname, repdir);
+                        JobMeta jobMeta = progressDialog.open();
                         jobMeta.clearChanged();
                         jobMeta.setFilename(objname);
                         addChefGraph(jobMeta);
                         refreshTree();
                         refreshGraph();
                     }
-                    catch(KettleException e)
+                    catch(Exception e)
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
                         mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
@@ -6803,9 +6805,6 @@ public class Spoon implements AddUndoPositionInterface
                         else
                         if (lastUsedFile.isJob())
                         {
-                            // JobMeta jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), repdir);
-                            // Use progress dialog instead.
-                            //
                             JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), repdir);
                             JobMeta jobMeta = progressDialog.open();
                             props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
