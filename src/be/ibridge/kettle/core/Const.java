@@ -111,6 +111,11 @@ public class Const
 	 */
 	public static final String JAVA_VERSION = System.getProperty("java.vm.version");
 
+    /**
+     * Path to the users home directory (keep this entry above references to getKettleDirectory())
+     */
+    public static final String USER_HOME_DIRECTORY = Const.isEmpty(System.getProperty("KETTLE_HOME"))?System.getProperty("user.home"):System.getProperty("KETTLE_HOME");
+
 	/**
 	 * The images directory
 	 */
@@ -356,11 +361,6 @@ public class Const
 	 * The default undo level for Kettle
 	 */
 	public static final int MAX_UNDO = 100;
-
-	/**
-	 * Path to the users home directory
-	 */
-	public static final String USER_HOME_DIRECTORY = Const.isEmpty(System.getProperty("KETTLE_HOME"))?System.getProperty("user.home"):System.getProperty("KETTLE_HOME");
 
 	/**
 	 * The base name of the Chef logfile
