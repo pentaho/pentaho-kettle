@@ -28,7 +28,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 	public String getDatabaseTypeDescLong()
 	{
-		return "CA Ingres";
+		return "Ingres";
 	}
 	
 	/**
@@ -58,7 +58,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 		else
 		{
-			return "ca.edbc.jdbc.EdbcDriver";
+			return "com.ingres.jdbc.IngresDriver";
 		}
 	}
 
@@ -247,7 +247,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "edbc.jar" };
+        return new String[] { "iijdbc.jar" };
     }
 
 

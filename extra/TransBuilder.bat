@@ -44,7 +44,7 @@ set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\mysql-connector-java-3.1.7-bin.jar
 set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\ojdbc14.jar
 set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\orai18n.jar
 set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\pg74.215.jdbc3.jar
-set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\edbc.jar
+set CLASSPATH=%CLASSPATH%;%BASEDIR%\libext\iijdbc.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

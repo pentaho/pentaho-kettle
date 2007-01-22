@@ -20,12 +20,11 @@
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libext/sapdbc.jar"/>
-	<classpathentry kind="lib" path="libext/edbc.jar"/>
 	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="libext/jtds-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="lib" path="libext/interclient.jar"/>
-	<classpathentry output="testClasses" kind="src" path="test/useCases/replay"/>
+	<classpathentry kind="src" output="testClasses" path="test/useCases/replay"/>
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/xdbjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-407.jdbc3.jar"/>
@@ -39,7 +38,7 @@
 	<classpathentry kind="lib" path="libext/commons-dbcp-1.2.1.jar"/>
 	<classpathentry kind="lib" path="libext/rdbthin.jar"/>
 	<classpathentry kind="lib" path="libext/commons-pool-1.3.jar"/>
-	<classpathentry sourcepath="/Jackcess-1.1.5" kind="lib" path="libext/jackcess-1.1.5.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.1.5.jar" sourcepath="/Jackcess-1.1.5"/>
 	<classpathentry kind="lib" path="libext/nzjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/commons-fileupload-1.0.jar"/>
 	<classpathentry kind="lib" path="libext/commons-httpclient-3.0.1.jar"/>
@@ -59,5 +58,6 @@
 	<classpathentry kind="lib" path="libext/commons-net-1.4.1.jar"/>
 	<classpathentry kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="libext/sqlitejdbc-v032-nested.jar"/>
+	<classpathentry kind="lib" path="libext/iijdbc.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
