@@ -454,7 +454,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F10 && !ctrl && !alt)   { executeFile(true, false, false, true, null);  }
 
                     // CTRL-F10 --> ripDB wizard
-                    if (e.keyCode == SWT.F12 && ctrl && !alt)    { ripDBWizard(); }
+                    if (e.keyCode == SWT.F10 && ctrl && !alt)    { ripDBWizard(); }
 
                     // F11 --> Verify
                     if (e.keyCode == SWT.F11 && !ctrl && !alt) { checkTrans(transMeta); }
