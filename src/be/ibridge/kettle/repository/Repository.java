@@ -5491,4 +5491,21 @@ public class Repository
             
         return list;
     }
+    
+    /**
+     * @return a list of all the slave servers in the repository.
+     * @throws KettleException
+     */
+    public List getSlaveServers() throws KettleException
+    {
+        List list = new ArrayList();
+        long[] slaveIDs = getSlaveIDs();
+        for (int i=0;i<slaveIDs.length;i++)
+        {
+            SlaveServer slaveServer = new SlaveServer(this, slaveIDs[i]);
+            list.add(slaveServer);
+        }
+            
+        return list;
+    }
 }

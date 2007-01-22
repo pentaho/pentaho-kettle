@@ -57,7 +57,6 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectDirectoryDialog;
-import be.ibridge.kettle.trans.dialog.Messages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 

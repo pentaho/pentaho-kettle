@@ -157,7 +157,12 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             }
         }
     }
-    
+
+    public void saveRep(Repository rep) throws KettleDatabaseException
+    {
+        saveRep(rep, -1L, false);
+    }
+
     public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
     {
         setId(rep.getClusterID(name));

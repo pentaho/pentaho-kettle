@@ -63,7 +63,9 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 
+import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
+import be.ibridge.kettle.cluster.dialog.ClusterSchemaDialog;
 import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
@@ -81,6 +83,8 @@ import be.ibridge.kettle.core.widget.TreeItemAccelerator;
 import be.ibridge.kettle.core.widget.DoubleClickInterface;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.partition.PartitionSchema;
+import be.ibridge.kettle.partition.dialog.PartitionSchemaDialog;
 import be.ibridge.kettle.repository.ProfileMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -457,8 +461,8 @@ public class RepositoryExplorerDialog extends Dialog
                                     else
                                     {
                                         MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
-                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Message")); //$NON-NLS-1$
-                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Title")); //$NON-NLS-1$
+                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Move.UnableToMove.Message")); //$NON-NLS-1$
+                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Move.UnableToMove.Title")); //$NON-NLS-1$
                                         mb.open();
                                     }
         						}
@@ -479,8 +483,8 @@ public class RepositoryExplorerDialog extends Dialog
                                     else
                                     {
                                         MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
-                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnableToMove.Message")); //$NON-NLS-1$
-                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnableToMove.Title")); //$NON-NLS-1$
+                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Move.UnableToMove.Message")); //$NON-NLS-1$
+                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Move.UnableToMove.Title")); //$NON-NLS-1$
                                         mb.open();
                                     }
         						}
@@ -488,15 +492,15 @@ public class RepositoryExplorerDialog extends Dialog
                             else
                             {
                                 MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
-                                mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.SorryOneItemAtATime.Message")); //$NON-NLS-1$
-                                mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.SorryOneItemAtATime.Title")); //$NON-NLS-1$
+                                mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Message")); //$NON-NLS-1$
+                                mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Move.SorryOneItemAtATime.Title")); //$NON-NLS-1$
                                 mb.open();
                             }
         				}
                     }
                     catch(Throwable e)
                     {
-                        new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
     			}
     
@@ -525,7 +529,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 		return objectName;
 
@@ -701,13 +705,13 @@ public class RepositoryExplorerDialog extends Dialog
                     SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newSlaveServer(); } };
                     miNew.addSelectionListener( lsNew );
                     miNew.setEnabled(!userinfo.isReadonly());
-                    // Edit database info
+                    // Edit slave
                     MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
                     miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Edit")); //$NON-NLS-1$
                     SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editSlaveServer(item); } };
                     miEdit.addSelectionListener( lsEdit );
                     miEdit.setEnabled(!userinfo.isReadonly());
-                    // Delete database info
+                    // Delete slave
                     MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
                     miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Delete")); //$NON-NLS-1$
                     SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delSlaveServer(item); } };
@@ -715,7 +719,75 @@ public class RepositoryExplorerDialog extends Dialog
                     miDel.setEnabled(!userinfo.isReadonly());
                 }
                 break;
-                
+
+
+            case ITEM_CATEGORY_PARTITIONS_ROOT :
+                {
+                    // New partition schema
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.PartitionSchema.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newPartitionSchema(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                }
+                break;
+
+            case ITEM_CATEGORY_PARTITION :
+                {
+                    // New partition schema
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.PartitionSchema.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newPartitionSchema(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                    // Edit partition schema
+                    MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
+                    miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.PartitionSchema.Edit")); //$NON-NLS-1$
+                    SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editPartitionSchema(item); } };
+                    miEdit.addSelectionListener( lsEdit );
+                    miEdit.setEnabled(!userinfo.isReadonly());
+                    // Delete partition schema
+                    MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
+                    miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.PartitionSchema.Delete")); //$NON-NLS-1$
+                    SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delPartitionSchema(item); } };
+                    miDel.addSelectionListener( lsDel );
+                    miDel.setEnabled(!userinfo.isReadonly());
+                }
+                break;
+
+            case ITEM_CATEGORY_CLUSTERS_ROOT :
+                {
+                    // New cluster
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Cluster.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newCluster(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                }
+                break;
+
+            case ITEM_CATEGORY_CLUSTER:
+                {
+                    // New cluster
+                    MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
+                    miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Cluster.New")); //$NON-NLS-1$
+                    SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newCluster(); } };
+                    miNew.addSelectionListener( lsNew );
+                    miNew.setEnabled(!userinfo.isReadonly());
+                    // Edit cluster
+                    MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
+                    miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Cluster.Edit")); //$NON-NLS-1$
+                    SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editCluster(item); } };
+                    miEdit.addSelectionListener( lsEdit );
+                    miEdit.setEnabled(!userinfo.isReadonly());
+                    // Delete cluster
+                    MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
+                    miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Cluster.Delete")); //$NON-NLS-1$
+                    SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delCluster(item); } };
+                    miDel.addSelectionListener( lsDel );
+                    miDel.setEnabled(!userinfo.isReadonly());
+                }
+                break;
 			case ITEM_CATEGORY_TRANSFORMATIONS_ROOT        :
 				break;
 			case ITEM_CATEGORY_TRANSFORMATION              :
@@ -1202,8 +1274,8 @@ public class RepositoryExplorerDialog extends Dialog
 		boolean error = false;
 
 		MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-		mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message1")+(tiSel.length>1?Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message2")+tiSel.length+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message3"):Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message4"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Title")); //$NON-NLS-1$
+		mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Delete.Confirm.Message1")+(tiSel.length>1?Messages.getString("RepositoryExplorerDialog.Trans.Delete.Confirm.Message2")+tiSel.length+Messages.getString("RepositoryExplorerDialog.Trans.Delete.Confirm.Message3"):Messages.getString("RepositoryExplorerDialog.Trans.Delete.Confirm.Message4"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Delete.Confirm.Title")); //$NON-NLS-1$
 		int answer = mb.open();
 		
 		if (answer!=SWT.YES)
@@ -1236,15 +1308,15 @@ public class RepositoryExplorerDialog extends Dialog
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Title"), Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						error=true;
 					}
 				}
 				else
 				{
 					mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 					error=true;
 				}
@@ -1257,7 +1329,7 @@ public class RepositoryExplorerDialog extends Dialog
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorDeleting.Title"), Messages.getString("RepositoryExplorerDialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 				error=true;
 			}
 		}
@@ -1349,14 +1421,14 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1391,15 +1463,15 @@ public class RepositoryExplorerDialog extends Dialog
     			else
     			{
     				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.ErrorMoving.Title")); //$NON-NLS-1$
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Trans.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Trans.Move.ErrorMoving.Title")); //$NON-NLS-1$
     				mb.open();
     			}
             }
 		}
 		catch(Exception dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Trans.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1434,15 +1506,15 @@ public class RepositoryExplorerDialog extends Dialog
     			else
     			{
     				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorMoving.Title")); //$NON-NLS-1$
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorMoving.Title")); //$NON-NLS-1$
     				mb.open();
     			}
             }
 		}
 		catch(Exception dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1534,14 +1606,14 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Move.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		return retval;
@@ -1560,7 +1632,7 @@ public class RepositoryExplorerDialog extends Dialog
 			if (id>0)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.Confirmation.Message")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Delete.Confirmation.Message")); //$NON-NLS-1$
 				mb.setText("["+name+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 				int answer = mb.open();
 				
@@ -1573,15 +1645,15 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Job.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Delete.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 				error=true;
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Job.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			error=true;
 		}
 			
@@ -1665,15 +1737,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Job.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Job.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}								
 			}
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1696,8 +1768,8 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.NotAllowed.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.NotAllowed.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.User.Edit.NotAllowed.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.User.Edit.NotAllowed.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 			if(ui!=null && !login.equalsIgnoreCase(ui.getLogin())) refreshTree();
@@ -1705,7 +1777,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.User.Edit.UnexpectedError.Message.Title"), Messages.getString("RepositoryExplorerDialog.User.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1728,8 +1800,8 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 ****************************/					
@@ -1750,7 +1822,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.User.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.User.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		refreshTree();
@@ -1838,15 +1910,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.User.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.User.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.User.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.User.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.User.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1935,15 +2007,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Profile.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Profile.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1970,8 +2042,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.NotAllowed.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.NotAllowed.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Connection.Edit.NotAllowed.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Connection.Edit.NotAllowed.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 				if(!databasename.equalsIgnoreCase(name)) refreshTree();
@@ -1979,7 +2051,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
         finally
         {
@@ -2014,8 +2086,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 					// Refresh tree...
@@ -2024,7 +2096,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
         finally
         {
@@ -2055,7 +2127,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Connection.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -2143,15 +2215,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Connection.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Connection.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -2229,8 +2301,8 @@ public class RepositoryExplorerDialog extends Dialog
     			if (!repdir.renameInRep(rep))
     			{
     				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
     				mb.open();
     			}
     			else
@@ -2241,7 +2313,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
 		return retval;
@@ -2267,7 +2339,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Profile.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -2289,8 +2361,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.AlreadyExists.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.AlreadyExists.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Profile.Create.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Profile.Create.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 					
@@ -2300,7 +2372,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Profile.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2319,13 +2391,13 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Profile.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
 	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
-		EnterStringDialog esd = new EnterStringDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		EnterStringDialog esd = new EnterStringDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String newdir = esd.open();
 		if (newdir!=null)
 		{
@@ -2342,16 +2414,16 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Message2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Title")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Directory.Create.UnexpectedError.Message2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Directory.Create.UnexpectedError.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message2")+repdir.getPath()+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message2")+repdir.getPath()+Messages.getString("RepositoryExplorerDialog.Directory.Create.AlreadyExists.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Directory.Create.AlreadyExists.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -2367,8 +2439,8 @@ public class RepositoryExplorerDialog extends Dialog
 		catch(KettleException e)
 		{
 			new ErrorDialog(shell,
-					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Title"), //$NON-NLS-1$
-					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message1"), //$NON-NLS-1$
+					Messages.getString("RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title"), //$NON-NLS-1$
+					Messages.getString("RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1"), //$NON-NLS-1$
 					e
 			); 
 		}
@@ -2422,7 +2494,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2475,7 +2547,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -2611,8 +2683,8 @@ public class RepositoryExplorerDialog extends Dialog
                 else
                 {
                     MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Create.AlreadyExists.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Slave.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.Slave.Create.AlreadyExists.Title")); //$NON-NLS-1$
                     mb.open();
                 }
                     // Refresh tree...
@@ -2621,7 +2693,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         finally
         {
@@ -2654,7 +2726,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Edit.UnexpectedError.Message")+slaveName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message")+slaveName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         finally
         {
@@ -2683,8 +2755,203 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Slave.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
+    public void newPartitionSchema()
+    {
+        try
+        {
+            PartitionSchema partitionSchema = new PartitionSchema();
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases());
+            if (dd.open())
+            {
+                // See if this slave server already exists...
+                long idPartitionSchema = rep.getPartitionSchemaID(partitionSchema.getName());
+                if (idPartitionSchema<=0)
+                {
+                    rep.lockRepository();
+                    rep.insertLogEntry("Creating new partition schema '"+partitionSchema.getName()+"'");
+                    partitionSchema.saveRep(rep);
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+                    // Refresh tree...
+                refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void editPartitionSchema(String partitionSchemaName)
+    {
+        try
+        {
+            long id = rep.getPartitionSchemaID(partitionSchemaName);
+            PartitionSchema partitionSchema = new PartitionSchema(rep, id);
+
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases());
+            if (dd.open())
+            {
+                rep.lockRepository();
+                rep.insertLogEntry("Updating partition schema '"+partitionSchema.getName()+"'");
+                partitionSchema.saveRep(rep);
+                if(!partitionSchemaName.equalsIgnoreCase(partitionSchema.getName())) refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Edit.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Edit.UnexpectedError.Message")+partitionSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void delPartitionSchema(String partitionSchemaName)
+    {
+        try
+        {
+            long id = rep.getPartitionSchemaID(partitionSchemaName);
+            if (id>0)
+            {
+                rep.delPartitionSchema(id);
+            }
+    
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Delete.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+
+    public void newCluster()
+    {
+        try
+        {
+            ClusterSchema cluster = new ClusterSchema();
+            ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
+            if (dd.open())
+            {
+                // See if this slave server already exists...
+                long idCluster = rep.getClusterID(cluster.getName());
+                if (idCluster<=0)
+                {
+                    rep.lockRepository();
+                    rep.insertLogEntry("Creating new cluster '"+cluster.getName()+"'");
+                    cluster.saveRep(rep);
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+                    // Refresh tree...
+                refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void editCluster(String clusterName)
+    {
+        try
+        {
+            long id = rep.getClusterID(clusterName);
+            ClusterSchema cluster = new ClusterSchema(rep, id, rep.getSlaveServers());
+
+            ClusterSchemaDialog dd = new ClusterSchemaDialog(shell, cluster, rep.getSlaveServers());
+            if (dd.open())
+            {
+                rep.lockRepository();
+                rep.insertLogEntry("Updating cluster '"+cluster.getName()+"'");
+                cluster.saveRep(rep);
+                if(!clusterName.equalsIgnoreCase(cluster.getName())) refreshTree();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Edit.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Edit.UnexpectedError.Message")+clusterName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        finally
+        {
+            try
+            {
+                rep.unlockRepository();
+            }
+            catch(KettleDatabaseException e)
+            {
+                new ErrorDialog(shell, "Error", "Unexpected error unlocking the repository database", e);
+            }
+        }
+    }
+    
+    public void delCluster(String clusterName)
+    {
+        try
+        {
+            long id = rep.getClusterID(clusterName);
+            if (id>0)
+            {
+                rep.delClusterSchema(id);
+            }
+    
+            refreshTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Delete.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
 }

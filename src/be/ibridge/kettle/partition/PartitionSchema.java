@@ -137,7 +137,12 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
             partitionIDs[i] = XMLHandler.getTagValue(partitionNode, "id");
         }
     }
-    
+
+    public void saveRep(Repository rep) throws KettleDatabaseException
+    {
+        saveRep(rep, -1L, false);
+    }
+
     public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
     {
         // see if this partitioning schema is already in the repository...
