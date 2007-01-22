@@ -147,6 +147,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
+import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
@@ -1655,10 +1656,12 @@ public class Spoon implements AddUndoPositionInterface
             //////////////////////////////////////////////////////////////////////////////////////////////////
             // TRANSFORMATIONS
             //////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
     
             StepLoader steploader = StepLoader.getInstance();
             StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-            String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL);
+            String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale);
             
             for (int i=0;i<basecat.length;i++)
             {
@@ -1668,10 +1671,10 @@ public class Spoon implements AddUndoPositionInterface
                 
                 for (int j=0;j<basesteps.length;j++)
                 {
-                    if (basesteps[j].getCategory().equalsIgnoreCase(basecat[i]))
+                    if (basesteps[j].getCategory(locale).equalsIgnoreCase(basecat[i]))
                     {
                         TreeItem treeItem = new TreeItem(tiBaseCat, 0);
-                        treeItem.setText(basesteps[j].getDescription());
+                        treeItem.setText(basesteps[j].getDescription(locale));
                         if (basesteps[j].isPlugin()) treeItem.setFont(GUIResource.getInstance().getFontBold());
                         
                         Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(basesteps[j].getID()[0]);
@@ -1905,11 +1908,12 @@ public class Spoon implements AddUndoPositionInterface
                     TreeItem item = tree.getItem(new org.eclipse.swt.graphics.Point(e.x, e.y));
                     if (item!=null)
                     {
+                        String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
                         StepLoader steploader = StepLoader.getInstance();
-                        StepPlugin sp = steploader.findStepPluginWithDescription(item.getText());
+                        StepPlugin sp = steploader.findStepPluginWithDescription(item.getText(), locale);
                         if (sp!=null)
                         {
-                            tooltip = sp.getTooltip();
+                            tooltip = sp.getTooltip(locale);
                         }
                         else
                         {
@@ -1973,7 +1977,7 @@ public class Spoon implements AddUndoPositionInterface
                     {
                         StepPlugin stepPlugin = (StepPlugin)object;
                     	type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
-                        data=stepPlugin.getDescription(); // Step type
+                        data=stepPlugin.getDescription(); // Step type description
                     }
                     else
                     if (object instanceof DatabaseMeta)
@@ -4486,9 +4490,11 @@ public class Spoon implements AddUndoPositionInterface
         StepLoader steploader = StepLoader.getInstance();
         StepPlugin stepPlugin = null;
         
+        String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+        
         try
         {
-            stepPlugin = steploader.findStepPluginWithDescription(description);
+            stepPlugin = steploader.findStepPluginWithDescription(description, locale);
             if (stepPlugin!=null)
             {
                 StepMetaInterface info = BaseStep.getStepInfo(stepPlugin, steploader);

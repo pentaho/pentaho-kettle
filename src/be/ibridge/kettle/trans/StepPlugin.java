@@ -19,6 +19,11 @@
  */
 package be.ibridge.kettle.trans;
 
+import java.util.Hashtable;
+import java.util.Map;
+
+import be.ibridge.kettle.i18n.LanguageChoice;
+
 /**
  * @author Matt
  *
@@ -53,6 +58,10 @@ public class StepPlugin
     
     private boolean         separateClassloaderNeeded;
 
+    private Map             localizedCategories;
+    private Map             localizedDescriptions;
+    private Map             localizedTooltips;
+
     public StepPlugin(int type, String id[], String description, String tooltip, String directory, String jarfiles[], String icon_filename,
             String classname, String category, String errorHelpFile)
     {
@@ -67,6 +76,10 @@ public class StepPlugin
         this.category = category;
         this.errorHelpFile = errorHelpFile;
         this.separateClassloaderNeeded = false;
+        
+        this.localizedCategories = new Hashtable();
+        this.localizedDescriptions = new Hashtable();
+        this.localizedTooltips = new Hashtable();
     }
 
     public int getType()
@@ -94,11 +107,31 @@ public class StepPlugin
 
     public String getDescription()
     {
+        return getDescription(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    public String getDescription(String locale)
+    {
+        String localizedDescription = (String) localizedDescriptions.get(locale.toLowerCase());
+        if (localizedDescription!=null) 
+        {
+            return localizedDescription;
+        }
         return description;
     }
 
     public String getTooltip()
     {
+        return getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    public String getTooltip(String locale)
+    {
+        String localizedTooltip = (String) localizedTooltips.get(locale.toLowerCase());
+        if (localizedTooltip!=null)
+        {
+            return localizedTooltip;
+        }
         return tooltip;
     }
 
@@ -124,6 +157,16 @@ public class StepPlugin
 
     public String getCategory()
     {
+        return getCategory(LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    public String getCategory(String locale)
+    {
+        String localizedCategory = (String) localizedCategories.get(locale.toLowerCase());
+        if (localizedCategory!=null)
+        {
+            return localizedCategory;
+        }
         if (category == null) return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
         return category;
     }
@@ -197,4 +240,48 @@ public class StepPlugin
     {
         this.jarfiles = jarfiles;
     }
+
+    public void setLocalizedCategories(Map localizedCategories)
+    {
+        this.            localizedCategories = localizedCategories;
+        
+    }
+
+    /**
+     * @return the localized categories map.
+     */
+    public Map getLocalizedCategories()
+    {
+        return localizedCategories;
+    }
+
+    public void setLocalizedDescriptions(Map localizedDescriptions)
+    {
+        this.localizedDescriptions = localizedDescriptions;
+    }
+
+    /**
+     * @return the localized descriptions map.
+     */
+    public Map getLocalizedDescriptions()
+    {
+        return localizedDescriptions;
+    }
+
+    /**
+     * @return the localizedTooltips
+     */
+    public Map getLocalizedTooltips()
+    {
+        return localizedTooltips;
+    }
+
+    /**
+     * @param localizedTooltips the localizedTooltips to set
+     */
+    public void setLocalizedTooltips(Map localizedTooltips)
+    {
+        this.localizedTooltips = localizedTooltips;
+    }
+    
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
 <plugin
    id="DummyPlugin"
    iconfile="DPL.png"
@@ -10,4 +9,21 @@
    <libraries>
     <library name="dummy.jar"/>
     </libraries>
+    
+   <localized_category>
+     <category locale="en_US">Transform</category>
+     <category locale="nl_NL">Transformation</category>
+     <category locale="fr_FR">Transformation</category>
+   </localized_category>
+   <localized_description>
+     <description locale="en_US">Dummy plugin</description>
+     <description locale="nl_NL">Plugin voorbeeld</description>
+     <description locale="fr_FR">Example de plugin</description>
+   </localized_description>
+   <localized_tooltip>
+     <tooltip locale="en_US">This is a dummy plugin test step</tooltip>
+     <tooltip locale="nl_NL">Dit is een voorbeeld plugin ook wel 'dummy plugin' geheten</tooltip>
+     <tooltip locale="fr_FR">Ceçi est une example de plugin</tooltip>
+   </localized_tooltip>
+   
 </plugin>

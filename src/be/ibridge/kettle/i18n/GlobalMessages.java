@@ -10,6 +10,8 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import be.ibridge.kettle.trans.StepLoader;
+
 public class GlobalMessages
 {
     private static final ThreadLocal threadLocales         = new ThreadLocal();
@@ -76,7 +78,12 @@ public class GlobalMessages
     	    ResourceBundle bundle = (ResourceBundle) locales.get(filename);
             if (bundle == null)
             {
-            	InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);
+                InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);
+                if (inputStream==null) // Try in the step plugin list: look in the jars over there
+                {
+                    inputStream = StepLoader.getInstance().getInputStreamForFile(filename);
+                }
+                
             	if (inputStream!=null)
             	{
             		bundle = new PropertyResourceBundle(inputStream);

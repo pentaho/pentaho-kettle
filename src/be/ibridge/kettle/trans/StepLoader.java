@@ -16,12 +16,16 @@
 package be.ibridge.kettle.trans;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +37,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
+import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
@@ -45,18 +50,15 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class StepLoader
 {
     private static StepLoader stepLoader = null;
-
     private String            pluginDirectory[];
-
     private ArrayList         pluginList;
-    
-    private Hashtable         classLoaders;
+    private Map               classLoaders;
 
     private StepLoader(String pluginDirectory[])
     {
         this.pluginDirectory = pluginDirectory;
-        pluginList   = new ArrayList();
-        classLoaders = new Hashtable();
+        pluginList           = new ArrayList();
+        classLoaders         = new Hashtable();
     }
 
     public static final StepLoader getInstance(String pluginDirectory[])
@@ -180,10 +182,7 @@ public class StepLoader
 		                            // iconfile="+iconfile+", classname="+classname);
 		
 		                            Node libsnode = XMLHandler.getSubNode(plugin, "libraries"); //$NON-NLS-1$
-		                            //System.out.println("libsnode="+Const.CR+libsnode);
-		
 		                            int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
-		                            //System.out.println("nrlibs="+nrlibs);
 		
 		                            String jarfiles[] = new String[nrlibs];
 		                            for (int j = 0; j < nrlibs; j++)
@@ -192,10 +191,67 @@ public class StepLoader
 		                                String jarfile = XMLHandler.getTagAttribute(libnode, "name"); //$NON-NLS-1$
 		                                jarfiles[j] = pi.toString() + Const.FILE_SEPARATOR + jarfile;
 		                            }
-		                            
+                                    
+                                    // Localized categories
+                                    //
+                                    Node locCatsNode = XMLHandler.getSubNode(plugin, "localized_category");
+                                    int nrLocCats = XMLHandler.countNodes(locCatsNode, "category");
+                                    Map localizedCategories = new Hashtable();              
+                                    for (int j=0 ; j < nrLocCats ; j++)
+                                    {
+                                        Node locCatNode = XMLHandler.getSubNodeByNr(locCatsNode, "category", j);
+                                        String locale = XMLHandler.getTagAttribute(locCatNode, "locale");
+                                        String locCat = XMLHandler.getNodeValue(locCatNode);
+                                        
+                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locCat))
+                                        {
+                                            localizedCategories.put(locale.toLowerCase(), locCat);
+                                        }
+                                    }
+
+                                    // Localized descriptions
+                                    //
+                                    Node locDescsNode = XMLHandler.getSubNode(plugin, "localized_description");
+                                    int nrLocDescs = XMLHandler.countNodes(locDescsNode, "description");
+                                    Map localizedDescriptions = new Hashtable();              
+                                    for (int j=0 ; j < nrLocDescs; j++)
+                                    {
+                                        Node locDescNode = XMLHandler.getSubNodeByNr(locDescsNode, "description", j);
+                                        String locale = XMLHandler.getTagAttribute(locDescNode, "locale");
+                                        String locDesc = XMLHandler.getNodeValue(locDescNode);
+                                        
+                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locDesc))
+                                        {
+                                            localizedDescriptions.put(locale.toLowerCase(), locDesc);
+                                        }
+                                    }
+
+                                    // Localized tooltips
+                                    //
+                                    Node locTipsNode = XMLHandler.getSubNode(plugin, "localized_tooltip");
+                                    int nrLocTips = XMLHandler.countNodes(locTipsNode, "tooltip");
+                                    Map localizedTooltips = new Hashtable();              
+                                    for (int j=0 ; j < nrLocTips; j++)
+                                    {
+                                        Node locTipNode = XMLHandler.getSubNodeByNr(locTipsNode, "tooltip", j);
+                                        String locale = XMLHandler.getTagAttribute(locTipNode, "locale");
+                                        String locTip = XMLHandler.getNodeValue(locTipNode);
+                                        
+                                        if (!Const.isEmpty(locale) && !Const.isEmpty(locTip))
+                                        {
+                                            localizedTooltips.put(locale.toLowerCase(), locTip);
+                                        }
+                                    }
+                                    
 		                            String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
                                     
 		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, new String[] { id }, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile);
+                                    
+                                    // Add localized information too...
+                                    sp.setLocalizedCategories(localizedCategories);
+                                    sp.setLocalizedDescriptions(localizedDescriptions);
+                                    sp.setLocalizedTooltips(localizedTooltips);
+                                    
 		                            
 		                            /*
 		                             * If the step plugin is not yet in the list with the specified ID, just add it.
@@ -216,8 +272,8 @@ public class StepLoader
 		                        }
 		                        catch (Exception e)
 		                        {
-                                    e.printStackTrace();
-		                            System.out.println(Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
+                                    LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
+                                    LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
 		                            return false;
 		                        }
 		                    }
@@ -227,7 +283,7 @@ public class StepLoader
             }
             catch(Exception e)
             {
-                System.out.println(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr])); //$NON-NLS-1$ //$NON-NLS-2$
+                LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr])); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         return true;
@@ -396,10 +452,18 @@ public class StepLoader
 
     public StepPlugin findStepPluginWithDescription(String description)
     {
+        return findStepPluginWithDescription(description, LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    public StepPlugin findStepPluginWithDescription(String description, String locale)
+    {
         for (int i = 0; i < pluginList.size(); i++)
         {
             StepPlugin sp = (StepPlugin) pluginList.get(i);
-            if (sp.getDescription().equalsIgnoreCase(description)) return sp;
+            if (sp.getDescription(locale).equalsIgnoreCase(description)) 
+            {
+                return sp;
+            }
         }
         return null;
     }
@@ -407,11 +471,21 @@ public class StepLoader
     /**
      * Get a unique list of categories. We can use this to display in trees etc.
      * 
-     * @param type
-     *            The type of step plugins for which we want to categories...
+     * @param type The type of step plugins for which we want to categories...
      * @return a unique list of categories
      */
     public String[] getCategories(int type)
+    {
+        return getCategories(type, LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase());
+    }
+    
+    /**
+     * Get a unique list of categories. We can use this to display in trees etc.
+     * 
+     * @param type The type of step plugins for which we want to categories...
+     * @return a unique list of categories
+     */
+    public String[] getCategories(int type, String locale)
     {
         Hashtable cat = new Hashtable();
         for (int i = 0; i < nrStepsWithType(type); i++)
@@ -419,7 +493,7 @@ public class StepLoader
             StepPlugin sp = getStepWithType(type, i);
             if (sp != null)
             {
-                cat.put(sp.getCategory(), sp.getCategory());
+                cat.put(sp.getCategory(locale), sp.getCategory(locale));
             }
         }
         Enumeration keys = cat.keys();
@@ -504,6 +578,55 @@ public class StepLoader
         {
             StepPlugin sp = getStepWithType(StepPlugin.TYPE_ALL, i);
             if (sp.getClassname() == sii.getClass().getName()) return sp.getID()[0]; // return the first = default
+        }
+        return null;
+    }
+    
+    /**
+     * Search through all jarfiles in all steps and try to find a certain file in it.
+     * 
+     * @param filename
+     * @return an inputstream for the given file.
+     */
+    public InputStream getInputStreamForFile(String filename)
+    {
+        StepPlugin[] stepPlugins = getStepsWithType(StepPlugin.TYPE_PLUGIN);
+        for (int i = 0; i < stepPlugins.length; i++)
+        {
+            try
+            {
+                StepPlugin stepPlugin = stepPlugins[i];
+                
+                String[] jarfiles = stepPlugin.getJarfiles();
+                if (jarfiles!=null)
+                {
+                    for (int j=0;j<jarfiles.length;j++)
+                    {
+                        JarFile jarFile = new JarFile(jarfiles[j]);
+                        JarEntry jarEntry;
+                        if (filename.startsWith("/"))
+                        {
+                            jarEntry = jarFile.getJarEntry(filename.substring(1));
+                        }
+                        else
+                        {
+                            jarEntry = jarFile.getJarEntry(filename);
+                        }
+                        if (jarEntry!=null)
+                        {
+                            InputStream inputStream = jarFile.getInputStream(jarEntry);
+                            if (inputStream!=null) 
+                            {
+                                return inputStream;
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                // Just look for the next one...
+            }
         }
         return null;
     }
