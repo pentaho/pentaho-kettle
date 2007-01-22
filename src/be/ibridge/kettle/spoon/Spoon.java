@@ -2143,7 +2143,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 // New
                 MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));
-                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection((HasDatabasesInterface)parent); }} );
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection(); }} );
 
                 // New Connection Wizard
                 MenuItem miWizard  = new MenuItem(spoonMenu, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
@@ -2200,22 +2200,22 @@ public class Spoon implements AddUndoPositionInterface
             if (selection instanceof DatabaseMeta)
             {
                 final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
-                final HasDatabasesInterface transMeta = (HasDatabasesInterface) parent;
+                final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) parent;
                 
                 MenuItem miNew  = new MenuItem(spoonMenu, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.New"));//New
-                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection(transMeta); } } );
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newConnection(); } } );
 
                 MenuItem miEdit = new MenuItem(spoonMenu, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Edit"));//Edit
-                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editConnection(transMeta, databaseMeta); } } );
+                miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editConnection(databaseMeta); } } );
                 
                 MenuItem miDupe = new MenuItem(spoonMenu, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Duplicate"));//Duplicate
-                miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeConnection(transMeta, databaseMeta); } } );
+                miDupe.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dupeConnection(hasDatabasesInterface, databaseMeta); } } );
                 
                 MenuItem miCopy = new MenuItem(spoonMenu, SWT.PUSH); miCopy.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.CopyToClipboard"));//Copy to clipboard
                 miCopy.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clipConnection(databaseMeta); } } );
                 
                 MenuItem miDel  = new MenuItem(spoonMenu, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Delete"));//Delete
-                miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delConnection(transMeta, databaseMeta); } } );
+                miDel.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delConnection(hasDatabasesInterface, databaseMeta); } } );
                 
                 new MenuItem(spoonMenu, SWT.SEPARATOR);
                 
@@ -2231,7 +2231,7 @@ public class Spoon implements AddUndoPositionInterface
                 
                 new MenuItem(spoonMenu, SWT.SEPARATOR);
                 MenuItem miExpl = new MenuItem(spoonMenu, SWT.PUSH); miExpl.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Explore"));//Explore
-                miExpl.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exploreDB(transMeta, databaseMeta); } } );
+                miExpl.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exploreDB(databaseMeta); } } );
                 
                 // disable for now if the connection is an SAP R/3 type of database...
                 if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SAPR3) miExpl.setEnabled(false);
@@ -2363,7 +2363,7 @@ public class Spoon implements AddUndoPositionInterface
             if (selection.equals(TransMeta.class)) newTransFile();
             if (selection.equals(JobMeta.class)) newJobFile();
             if (selection.equals(TransHopMeta.class)) newHop((TransMeta)parent);
-            if (selection.equals(DatabaseMeta.class)) newConnection((HasDatabasesInterface)parent);
+            if (selection.equals(DatabaseMeta.class)) newConnection();
             if (selection.equals(PartitionSchema.class)) newDatabasePartitioningSchema((TransMeta)parent);
             if (selection.equals(ClusterSchema.class)) newClusteringSchema((TransMeta)parent);
             if (selection.equals(SlaveServer.class)) newSlaveServer((TransMeta)parent);
@@ -2371,7 +2371,7 @@ public class Spoon implements AddUndoPositionInterface
         else
         {
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
-            if (selection instanceof DatabaseMeta) editConnection((HasDatabasesInterface) parent, (DatabaseMeta) selection);
+            if (selection instanceof DatabaseMeta) editConnection((DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
             if (selection instanceof JobEntryCopy) editJobEntry((JobMeta)parent, (JobEntryCopy)selection);
             if (selection instanceof TransHopMeta) editHop((TransMeta)parent, (TransHopMeta)selection);
@@ -2686,8 +2686,11 @@ public class Spoon implements AddUndoPositionInterface
         sql.open();
     }
     
-    public void editConnection(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
+    public void editConnection(DatabaseMeta databaseMeta)
     {
+        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
+        if (hasDatabasesInterface==null) return; // program error, exit just to make sure.
+        
         DatabaseMeta before = (DatabaseMeta)databaseMeta.clone();
 
         DatabaseDialog con = new DatabaseDialog(shell, databaseMeta);
@@ -3206,8 +3209,11 @@ public class Spoon implements AddUndoPositionInterface
         newHop(transMeta, null, null);
     }
     
-    public void newConnection(HasDatabasesInterface hasDatabasesInterface)
+    public void newConnection()
     {
+        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
+        if (hasDatabasesInterface==null) return;
+        
         DatabaseMeta databaseMeta = new DatabaseMeta(); 
         DatabaseDialog con = new DatabaseDialog(shell, databaseMeta);
         String con_name = con.open(); 
@@ -6078,9 +6084,13 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    public void exploreDB(HasDatabasesInterface hasDatabasesInterface, DatabaseMeta databaseMeta)
+    public void exploreDB(DatabaseMeta databaseMeta)
     {
-        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, databaseMeta, hasDatabasesInterface.getDatabases(), true );
+        List databases = null;
+        HasDatabasesInterface activeHasDatabasesInterface = getActiveHasDatabasesInterface();
+        if (activeHasDatabasesInterface!=null) databases = activeHasDatabasesInterface.getDatabases();
+        
+        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, databaseMeta, databases, true );
         std.open();
     }
     
@@ -6270,7 +6280,7 @@ public class Spoon implements AddUndoPositionInterface
     /**
      * @return Either a TransMeta or JobMeta object
      */
-    public HasDatabasesInterface getActiveHasDatabaseInterface()
+    public HasDatabasesInterface getActiveHasDatabasesInterface()
     {
         TransMeta transMeta = getActiveTransformation();
         if (transMeta!=null) return transMeta;
@@ -6283,7 +6293,9 @@ public class Spoon implements AddUndoPositionInterface
 	 */
     private void createDatabaseWizard()
     {
-        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabaseInterface();
+        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
+        if (hasDatabasesInterface==null) return; // nowhere to put the new database
+        
     	CreateDatabaseWizard cdw=new CreateDatabaseWizard();
     	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, hasDatabasesInterface.getDatabases());
     	if(newDBInfo!=null){ //finished
@@ -6297,20 +6309,12 @@ public class Spoon implements AddUndoPositionInterface
     {
         Map map = new Hashtable();
         
-        HasDatabasesInterface transMeta = getActiveTransformation();
-        if (transMeta!=null)
+        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
+        if (hasDatabasesInterface!=null)
         {
-            for (int i=0;i<transMeta.nrDatabases();i++)
+            for (int i=0;i<hasDatabasesInterface.nrDatabases();i++)
             {
-                map.put(transMeta.getDatabase(i).getName(), transMeta.getDatabase(i));
-            }
-        }
-        HasDatabasesInterface jobMeta = getActiveJob();
-        if (jobMeta!=null)
-        {
-            for (int i=0;i<jobMeta.nrDatabases();i++)
-            {
-                map.put(jobMeta.getDatabase(i).getName(), jobMeta.getDatabase(i));
+                map.put(hasDatabasesInterface.getDatabase(i).getName(), hasDatabasesInterface.getDatabase(i));
             }
         }
         if (rep!=null)
