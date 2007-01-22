@@ -219,4 +219,9 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryTableExistsDialog(shell,this,jobMeta);
     }
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        return new DatabaseMeta[] { connection, };
+    }
 }

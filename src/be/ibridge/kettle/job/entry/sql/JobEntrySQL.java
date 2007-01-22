@@ -245,4 +245,9 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
         return new JobEntrySQLDialog(shell,this,jobMeta);
     }
     
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        return new DatabaseMeta[] { connection, };
+    }
+
 }

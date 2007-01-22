@@ -431,9 +431,35 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         }
         return false;
     }
+    
+    /**
+     * This method asks all steps in the transformation whether or not the specified database connection is used.
+     * The connection is used in the transformation if any of the steps uses it or if it is being used to log to.
+     * @param databaseMeta The connection to check
+     * @return true if the connection is used in this transformation.
+     */
+    public boolean isDatabaseConnectionUsed(DatabaseMeta databaseMeta)
+    {
+        for (int i=0;i<nrJobEntries();i++)
+        {
+            JobEntryCopy jobEntry = getJobEntry(i);
+            DatabaseMeta dbs[] = jobEntry.getEntry().getUsedDatabaseConnections();
+            for (int d=0;d<dbs.length;d++)
+            {
+                if (dbs[d].equals(databaseMeta)) return true;
+            }
+        }
+
+        if (logconnection!=null && logconnection.equals(databaseMeta)) return true;
+
+        return false;
+    }
 
     public String getXML()
     {
+        Props props = null;
+        if (Props.isInitialized()) props=Props.getInstance();
+
         DatabaseMeta ci = getLogConnection();
         StringBuffer retval = new StringBuffer();
 
@@ -444,12 +470,20 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         retval.append("  " + XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("  " + XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
+        // Save the database connections...
         for (int i = 0; i < nrDatabases(); i++)
         {
-            DatabaseMeta dbinfo = getDatabase(i);
-            retval.append(dbinfo.getXML());
+            DatabaseMeta dbMeta = getDatabase(i);
+            if (props!=null && props.areOnlyUsedConnectionsSavedToXML())
+            {
+                if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
+            }
+            else
+            {
+                retval.append(dbMeta.getXML());
+            }
         }
-
+        
         retval.append("  " + XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("  " + XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
 

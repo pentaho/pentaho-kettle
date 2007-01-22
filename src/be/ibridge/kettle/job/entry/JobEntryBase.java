@@ -20,6 +20,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
@@ -329,4 +330,15 @@ public class JobEntryBase implements Cloneable
     {
         return null;
     }
+    
+    /**
+     * This method returns all the database connections that are used by the job entry.
+     * @return an array of database connections meta-data.
+     *         Return an empty array if no connections are used.
+     */
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        return new DatabaseMeta[] {};
+    }
+
 }

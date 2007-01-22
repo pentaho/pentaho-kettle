@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
@@ -167,5 +168,12 @@ public interface JobEntryInterface
     
     public String getFilename();
     public String getRealFilename();
+    
+    /**
+     * This method returns all the database connections that are used by the job entry.
+     * @return an array of database connections meta-data.
+     *         Return an empty array if no connections are used.
+     */
+    public DatabaseMeta[] getUsedDatabaseConnections();
 }
 
