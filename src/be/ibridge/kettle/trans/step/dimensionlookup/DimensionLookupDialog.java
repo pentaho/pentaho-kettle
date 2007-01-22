@@ -787,14 +787,19 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		setSequence();
 		setTableMax();
                 
-        gTechGroup.setEnabled( update );
-        wlAutoinc.setEnabled( update );
-        wAutoinc.setEnabled( update );        
-        wlTableMax.setEnabled( update );
-        wTableMax.setEnabled( update );
-        wlSeqButton.setEnabled( update );
-        wSeqButton.setEnabled( update );
-        wSeq.setEnabled( update );      
+        // Surpisingly we can't disable these fields as they influence the calculation of the "Unknown" key
+        // If we have a MySQL database with Auto-increment for example, the "unknown" is 1.
+        // If we have a MySQL database with Table-max the "unknown" is 0.
+        //
+        
+        // gTechGroup.setEnabled( update );
+        // wlAutoinc.setEnabled( update );
+        // wAutoinc.setEnabled( update );        
+        // wlTableMax.setEnabled( update );
+        // wTableMax.setEnabled( update );
+        // wlSeqButton.setEnabled( update );
+        // wSeqButton.setEnabled( update );
+        // wSeq.setEnabled( update );      
         
         if ( update )
         {
