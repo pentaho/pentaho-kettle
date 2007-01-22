@@ -84,13 +84,22 @@ public class SelectObjectDialog extends Dialog
     private boolean ascending;
     private TreeColumn typeColumn;
     private String objectType;
-		
-	public SelectObjectDialog(Shell parent, Repository rep)
+    private boolean showTrans;
+    private boolean showJobs;
+
+    public SelectObjectDialog(Shell parent, Repository rep)
+    {
+        this(parent, rep, true, true);
+    }
+    
+	public SelectObjectDialog(Shell parent, Repository rep, boolean showTransformations, boolean showJobs)
 	{
 		super(parent, SWT.NONE);
 		
-		this.props          = Props.getInstance();
-		this.rep            = rep;
+		this.props     = Props.getInstance();
+		this.rep       = rep;
+        this.showTrans = showTransformations;
+        this.showJobs  = showJobs;
 		
 		shellText = Messages.getString("SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
 		lineText = Messages.getString("SelectObjectDialog.Dialog.Object.Title"); //$NON-NLS-1$
@@ -241,7 +250,7 @@ public class SelectObjectDialog extends Dialog
             TreeItem ti = new TreeItem(wTree, SWT.NONE);
             ti.setExpanded(true);
             
-            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, true, true);
+            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, sortColumn, ascending, showTrans, showJobs);
         }
         catch(KettleDatabaseException e)
         {

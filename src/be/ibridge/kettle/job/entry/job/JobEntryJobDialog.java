@@ -526,7 +526,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 				{
                     if (repository!=null)
                     {
-    					SelectObjectDialog sod = new SelectObjectDialog(shell, repository);
+    					SelectObjectDialog sod = new SelectObjectDialog(shell, repository, false, true);
     					String jobname = sod.open();
     					if (jobname!=null)
     					{
