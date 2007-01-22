@@ -4719,8 +4719,9 @@ public class Spoon implements AddUndoPositionInterface
         miJobCopy.setEnabled(enableJobMenu);
         miJobInfo.setEnabled(enableJobMenu);
 
-        miWizardNewConnection.setEnabled(enableTransMenu || enableJobMenu || enableRepositoryMenu);
-        miWizardCopyTable.setEnabled(enableTransMenu || enableJobMenu || enableRepositoryMenu);
+        miWizardNewConnection.setEnabled(enableTransMenu || enableJobMenu);
+        miWizardCopyTable.setEnabled(enableTransMenu || enableJobMenu);
+        miWizardRipDatabase.setEnabled(enableRepositoryMenu);
         
         miRepDisconnect.setEnabled(enableRepositoryMenu);
         miRepExplore.setEnabled(enableRepositoryMenu);
