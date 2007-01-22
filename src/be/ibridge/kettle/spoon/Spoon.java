@@ -427,7 +427,7 @@ public class Spoon implements AddUndoPositionInterface
                     };
 
                     // F3 --> createDatabaseWizard
-                    if (e.keyCode == SWT.F3 && !ctrl && !alt)    { createDatabaseWizard(transMeta); }
+                    if (e.keyCode == SWT.F3 && !ctrl && !alt)    { createDatabaseWizard(); }
 
                     // F4 --> copyTableWizard
                     if (e.keyCode == SWT.F4 && !ctrl && !alt)    { copyTableWizard(); }
@@ -1311,7 +1311,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         miWizardNewConnection = new MenuItem(msWizard, SWT.CASCADE); 
         miWizardNewConnection.setText(Messages.getString("Spoon.Menu.Wizard.CreateDatabaseConnectionWizard"));//&Create database connection wizard...\tF3
-        miWizardNewConnection.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { createDatabaseWizard(getActiveTransformation()); }});
+        miWizardNewConnection.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { createDatabaseWizard(); }});
 
         // Copy table wizard
         //
@@ -2147,7 +2147,7 @@ public class Spoon implements AddUndoPositionInterface
 
                 // New Connection Wizard
                 MenuItem miWizard  = new MenuItem(spoonMenu, SWT.PUSH); miWizard.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));
-                miWizard.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard((HasDatabasesInterface)parent); } } );
+                miWizard.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard(); } } );
                 
                 // Clear complete DB Cache
                 MenuItem miCache  = new MenuItem(spoonMenu, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));
@@ -6266,13 +6266,24 @@ public class Spoon implements AddUndoPositionInterface
         Image image = spoonGraph.getTransformationImage(Display.getCurrent(), area.x, area.y);
         clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[]{ImageDataTransfer.getInstance()});
     }
+    
+    /**
+     * @return Either a TransMeta or JobMeta object
+     */
+    public HasDatabasesInterface getActiveHasDatabaseInterface()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return transMeta;
+        return getActiveJob();
+    }
 
 	/**
 	 * Shows a wizard that creates a new database connection...
 	 *
 	 */
-    private void createDatabaseWizard(HasDatabasesInterface hasDatabasesInterface)
+    private void createDatabaseWizard()
     {
+        HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabaseInterface();
     	CreateDatabaseWizard cdw=new CreateDatabaseWizard();
     	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, hasDatabasesInterface.getDatabases());
     	if(newDBInfo!=null){ //finished
