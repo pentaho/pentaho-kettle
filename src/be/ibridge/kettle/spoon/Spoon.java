@@ -307,7 +307,7 @@ public class Spoon implements AddUndoPositionInterface
     private static final String APPL_TITLE         = APP_NAME;
 
     private static final String STRING_WELCOME_TAB_NAME = "Welcome!";
-    private static final String URL_WELCOME_PAGE        = "http://kettle.pentaho.org";
+    private static final String FILE_WELCOME_PAGE       = "docs/English/welcome/kettle_document_map.html";
     
     public static final int STATE_CORE_OBJECTS_NONE     = 1;   // No core objects
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
@@ -579,15 +579,7 @@ public class Spoon implements AddUndoPositionInterface
         // Add a browser widget
         if (props.showWelcomePageOnStartup())
         {
-            try
-            {
-                File file = new File("docs/English/welcome/kettle_document_map.html");
-                addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString()); // ./docs/English/tips/index.htm
-            }
-            catch (MalformedURLException e1)
-            {
-                log.logError(toString(), Const.getStackTracker(e1));
-            } 
+            showWelcomePage();
         }
 
         shell.layout();
@@ -1357,7 +1349,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         MenuItem miHelpWelcome = new MenuItem(msHelp, SWT.CASCADE); 
         miHelpWelcome.setText(Messages.getString("Spoon.Menu.Help.Welcome")); //&Welcome screen
-        miHelpWelcome.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { addSpoonBrowser(STRING_WELCOME_TAB_NAME, URL_WELCOME_PAGE); }});
+        miHelpWelcome.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { showWelcomePage(); }});
         new MenuItem(msHelp, SWT.SEPARATOR);
         // About
         //
@@ -1366,6 +1358,19 @@ public class Spoon implements AddUndoPositionInterface
         miHelpAbout.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { helpAbout(); } });
     }
 
+
+    protected void showWelcomePage()
+    {
+        try
+        {
+            File file = new File(FILE_WELCOME_PAGE);
+            addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString()); // ./docs/English/tips/index.htm
+        }
+        catch (MalformedURLException e1)
+        {
+            log.logError(toString(), Const.getStackTracker(e1));
+        } 
+    }
 
     private void addMenuLast()
     {
