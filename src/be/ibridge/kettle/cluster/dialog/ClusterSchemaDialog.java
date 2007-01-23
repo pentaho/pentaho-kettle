@@ -86,11 +86,7 @@ public class ClusterSchemaDialog extends Dialog
 		this.clusterSchema=(ClusterSchema) clusterSchema.clone();
         this.originalSchema=clusterSchema;
         this.slaveServers = slaveServers;
-        
-        System.out.println("# shared slave servers: "+slaveServers.size());
-        System.out.println("# used slave servers: "+clusterSchema.getSlaveServers().size());
-        
-        
+                
 		props=Props.getInstance();
         ok=false;
 	}
