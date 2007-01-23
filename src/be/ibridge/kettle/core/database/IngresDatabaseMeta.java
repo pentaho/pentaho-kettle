@@ -70,7 +70,14 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 		else
 		{
-			return "jdbc:ingres://"+hostname+":"+port+"/"+databaseName;
+            if (Const.isEmpty(port))
+            {
+                return "jdbc:ingres://"+hostname+":II7/"+databaseName;
+            }
+            else
+            {
+                return "jdbc:ingres://"+hostname+":"+port+"/"+databaseName;
+            }
 		}
 	}
 
