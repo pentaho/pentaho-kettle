@@ -582,13 +582,12 @@ public class Spoon implements AddUndoPositionInterface
             try
             {
                 File file = new File("docs/English/welcome/kettle_document_map.html");
-                addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString());
+                addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString()); // ./docs/English/tips/index.htm
             }
             catch (MalformedURLException e1)
             {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            } // ./docs/English/tips/index.htm
+                log.logError(toString(), Const.getStackTracker(e1));
+            } 
         }
 
         shell.layout();
