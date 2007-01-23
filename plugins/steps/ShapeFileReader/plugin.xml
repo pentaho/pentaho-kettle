@@ -14,7 +14,7 @@
    <localized_category>
      <category locale="en_US">Input</category>
      <category locale="nl_NL">Input</category>
-     <category locale="fr_FR">Entrée</category>
+     <category locale="fr_FR">Extraction</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">ESRI Shapefile Reader</description>
