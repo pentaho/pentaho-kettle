@@ -15,6 +15,8 @@ Basically, what it comes down to is:
 As you will note, the graphical job editor Chef is no longer present as a separate program.
 All functionality that was in Chef (and then some) is taken over by Spoon.
 
+If you are looking for sample transformations and jobs, you will be pleased to know that there are a bunch of these in the samples/ directory.
+
 We really hope you will find Pentaho Data Integration useful in your daily work.
 
 Best regards,

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -578,7 +579,16 @@ public class Spoon implements AddUndoPositionInterface
         // Add a browser widget
         if (props.showWelcomePageOnStartup())
         {
-            addSpoonBrowser(STRING_WELCOME_TAB_NAME, "http://kettle.pentaho.org"); // ./docs/English/tips/index.htm
+            try
+            {
+                File file = new File("docs/English/welcome/kettle_document_map.html");
+                addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString());
+            }
+            catch (MalformedURLException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } // ./docs/English/tips/index.htm
         }
 
         shell.layout();
