@@ -86,8 +86,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		return true;
 	}
 
-	private boolean writeToTable(Row r)
-		throws KettleException
+	private boolean writeToTable(Row r) throws KettleException
 	{
 		if (r==null) // Stop: last line or error encountered 
 		{
@@ -151,7 +150,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 throw new KettleStepException("Sorry, the partitioning field needs to contain a data value and can't be empty!");
             }
             
-            tableName+="_"+data.dateFormater.format(partitioningValue.getDate());
+            tableName=StringUtil.environmentSubstitute(meta.getTablename())+"_"+data.dateFormater.format(partitioningValue.getDate());
         }
         else
         {
