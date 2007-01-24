@@ -7796,6 +7796,7 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
         }
+        setShellText();
     }
     
     /**
