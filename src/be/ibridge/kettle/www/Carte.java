@@ -1,5 +1,6 @@
 package be.ibridge.kettle.www;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
@@ -15,6 +16,15 @@ public class Carte
 {
     public static void main(String[] args) throws Exception
     {
+        if (args.length<2 || (Const.isEmpty(args[0]) && Const.isEmpty(args[1])) )
+        {
+            System.err.println("Usage: Carte [Interface address] [Port]");
+            System.err.println();
+            System.err.println("Example1: Carte 127.0.0.1 8080");
+            System.err.println("Example2: Carte 192.168.1.221 8081");
+            System.exit(1);
+        }
+        
         init();
         
         TransformationMap map = new TransformationMap(Thread.currentThread().getName());
