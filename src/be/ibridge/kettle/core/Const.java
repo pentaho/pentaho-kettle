@@ -381,15 +381,17 @@ public class Const
 	 * A number of tips that are shown when the application first starts.
 	 */
 	public static final String tips[] = {
-			"You can create a new step, simply by dragging the step onto the graph view." + Const.CR
-					+ "You can find steps and plugins to use in the tree on the left side of the screen under 'Base step types'",
+            "To create a new transformation or job select File/New or simply double click on the 'Transformations' or 'Jobs' tree entries on the upper left of the screen."+Const.CR,
+            
+			"When designing a transformation you can create a new step, simply by dragging the step onto the graphical view." + Const.CR
+					+ "You can find steps and plugins to use in the tree on the left lower side of the screen under 'Core steps'",
 
-			"You can define a new hop between 2 steps by using the middle or scrollwheel button." + Const.CR
-					+ "Middle-click on the first step and drag onto the second." + Const.CR + "You can also: " + Const.CR
+			"When designing a transformation (or job) you can define a new hop between 2 steps by using the middle or scrollwheel button." + Const.CR
+					+ "Middle-click on the first step and drag onto the second." + Const.CR + "You can also: " + Const.CR + Const.CR
 					+ " - use SHIFT+Click and drag from one step to another" + Const.CR
 					+ " - Select 2 steps and right click on one of them, then select 'new hop'" + Const.CR + " - Drag 'Hops' onto the canvas",
 
-			"Inserting a step between 2 steps that are already connected with a hop:" + Const.CR
+			"Inserting a step (or job entry) between 2 steps that are already connected with a hop:" + Const.CR
 					+ "simply move the step over the arrow until the arrow becomes drawn in bold." + Const.CR
 					+ "Release the mouse-button and you'll be asked if you want to insert the step.",
 
