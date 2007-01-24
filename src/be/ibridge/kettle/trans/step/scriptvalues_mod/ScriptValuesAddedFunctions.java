@@ -91,7 +91,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
-        "print", "println", "resolveIP", "substr", "trim"
+        "print", "println", "resolveIP",
         };
 	
 
