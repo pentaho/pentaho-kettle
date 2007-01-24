@@ -186,10 +186,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         setChanged(false);
 
         modifiedUser = "-"; //$NON-NLS-1$
-
         modifiedDate = new Value("modifiedDate", Value.VALUE_TYPE_DATE).sysdate(); //$NON-NLS-1$
-
         directory = new RepositoryDirectory();
+        
+        useBatchId=true;
+        logfieldUsed=true;
 
         // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruines the previews
         // etc.
