@@ -6547,13 +6547,14 @@ public class Spoon implements AddUndoPositionInterface
         
         Splash splash = new Splash(display);
         
-        StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionFilename, optionDirname, optionLogfile, optionLoglevel;
+        StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionTransname, optionFilename, optionDirname, optionLogfile, optionLoglevel;
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
 			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
 			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
 			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
+			    new CommandLineOption("job", "The name of the job to launch", optionJobname=new StringBuffer()),
 			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname=new StringBuffer()),
 			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
 			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
@@ -6688,24 +6689,48 @@ public class Spoon implements AddUndoPositionInterface
                                 
                                 if (spoon.rep.userinfo.getID()>0)
                                 {
-                                    // OK, if we have a specified transformation, try to load it...
-                                    // If not, keep the repository logged in.
-                                    if (!Const.isEmpty(optionTransname))
-                                    {
-                                        RepositoryDirectory repdir = spoon.rep.getDirectoryTree().findDirectory(optionDirname.toString());
-                                        if (repdir!=null)
-                                        {
-                                            TransMeta transMeta = new TransMeta(spoon.rep, optionTransname.toString(), repdir);
-                                            transMeta.setFilename(optionRepname.toString());
-                                            transMeta.clearChanged();
-                                            
-                                            spoon.addSpoonGraph(transMeta);
+                                	// Options /file, /job and /trans are mutually exclusive
+                                	int t = (Const.isEmpty(optionFilename) ? 0 : 1) +
+                                			(Const.isEmpty(optionJobname) ? 0 : 1) +
+                                			(Const.isEmpty(optionTransname) ? 0 : 1);
+                                	if (t > 1)
+                                	{
+                                        log.logError(APP_NAME, Messages.getString("Spoon.Log.MutuallyExcusive")); // "More then one mutually exclusive options /file, /job and /trans are specified."                              		
+                                	}
+                                	else if (t == 1)
+                                	{
+                                		if (!Const.isEmpty(optionFilename))
+                                		{
+                                            spoon.openFile(optionFilename.toString(), false);
+                                		}
+                                		else
+                                		{
+                                			// OK, if we have a specified job or transformation, try to load it...
+                                			// If not, keep the repository logged in.
+                                			RepositoryDirectory repdir = spoon.rep.getDirectoryTree().findDirectory(optionDirname.toString());
+                                			if (repdir == null)
+                                			{
+                                				log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory", optionDirname.toString())); //"Can't find directory ["+dirname+"] in the repository."
+                                			}
+                                			else {
+                                				if (!Const.isEmpty(optionTransname))
+                                				{
+                                					TransMeta transMeta = new TransMeta(spoon.rep, optionTransname.toString(), repdir);
+                                					transMeta.setFilename(optionRepname.toString());
+                                					transMeta.clearChanged();   
+                                					spoon.addSpoonGraph(transMeta);
+                                				}
+                                				else
+                                        		{
+                                					// Try to load a specified job if any
+                                					JobMeta jobMeta = new JobMeta(log, spoon.rep, optionJobname.toString(), repdir);
+                                					jobMeta.setFilename(optionRepname.toString());
+                                					jobMeta.clearChanged();
+                                					spoon.addChefGraph(jobMeta);
+                                        		}
+                                			}
                                         }
-                                        else
-                                        {
-                                            log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory",optionDirname.toString()));//"Can't find directory ["+dirname+"] in the repository."
-                                        }
-                                    }
+                                	}
                                 }
                                 else
                                 {
