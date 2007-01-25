@@ -31,6 +31,11 @@ public class LanguageChoice
         {
             defaultLocale = Const.DEFAULT_LOCALE;
             failoverLocale = Locale.US;
+            
+            if (defaultLocale.equals(Locale.GERMAN))
+            {
+                defaultLocale = Const.DEFAULT_LOCALE;
+            }
         }
     }
     
