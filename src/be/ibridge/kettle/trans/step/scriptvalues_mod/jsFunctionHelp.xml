@@ -1087,6 +1087,53 @@ appendToFile(strFile, strContent);</sample>
       <Arguments>
       <argument id="1">var,var</argument>
       </Arguments>
+      
    </jsFunction>     
   
+     <jsFunction name="trim">
+     <help>Removed leading and trailing white space characters, such as spaces and tabs, from a string.</help>
+     <sample>// Trims the given string
+// 
+// Usage:
+// trim(var);
+//
+// 2007-01-25
+//
+var str1= "  Hello World!   ";
+var str2= trim(str1);
+Alert("Input:" + str1);
+Alert("Trimmed input:" + str2);</sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var</argument>
+      </Arguments>
+   </jsFunction>   
+
+     <jsFunction name="substr">
+     <help>Gets part of a string, a sub-string.</help>
+     <sample>// Perform the substring function
+// 
+// Usage:
+// substr(var, from);
+// substr(var, from, to);
+//
+// 2007-01-25
+//
+var str1= "Hello Pentaho!";
+var str2= substr(str1, 6);
+var str3= substr(str1, 6, 13);
+Alert("Input : " + str1);
+Alert("From position 6: " + str2);
+Alert("From position 6 until 13 : " + str2);
+</sample>
+      <type>0</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+         <argument id="2">var,var,var</argument>
+      </Arguments>
+   </jsFunction>   
+
+
+ 
+   
 </jsFunctions>
