@@ -259,7 +259,7 @@
 	  		<mkdir dir="${distrib}/docs"/>
 	  		<copy todir="${distrib}/docs">
 	  			<fileset dir="${docs}" 
-	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip"
+	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css"
 	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
 	  			</copy>
 
