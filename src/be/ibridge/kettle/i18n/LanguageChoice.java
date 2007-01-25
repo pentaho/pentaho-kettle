@@ -34,7 +34,7 @@ public class LanguageChoice
             
             if (defaultLocale.equals(Locale.GERMAN))
             {
-                defaultLocale = Const.DEFAULT_LOCALE;
+                defaultLocale = Locale.US;
             }
         }
     }
