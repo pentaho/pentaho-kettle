@@ -138,7 +138,7 @@ public class DatabaseMetaInformation
 			monitor.beginTask("Getting information from the database...", 8);
 		}
 
-		Database db = new Database(dbInfo);
+		Database db = new Database(dbInfo);	
 		try
 		{
 			if (monitor!=null) monitor.subTask("Connecting to database");
@@ -160,9 +160,10 @@ public class DatabaseMetaInformation
 				{
 					String catalogName = catalogs.getString(1);
 					ArrayList catalogItems = new ArrayList();
+					ResultSet tables = null;
 					try
 					{
-						ResultSet tables = dbmd.getTables(catalogName, null,  null, null );
+						tables = dbmd.getTables(catalogName, null,  null, null );
 						while (tables.next())
 						{
 							String table_name = tables.getString(3);
@@ -178,6 +179,10 @@ public class DatabaseMetaInformation
 					{
 						// Obviously, we're not allowed to snoop around in this catalog.
 						// Just ignore it!
+					}
+					finally 
+					{
+						if ( tables != null ) tables.close();
 					}
 					
 					Catalog catalog = new Catalog(catalogName, (String[])catalogItems.toArray(new String[catalogItems.size()]));

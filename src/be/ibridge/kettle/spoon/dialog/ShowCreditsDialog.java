@@ -134,7 +134,6 @@ public class ShowCreditsDialog extends Dialog
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return;
 	}
 
 	public void dispose()

@@ -642,19 +642,7 @@ public class Job extends Thread
 	{
 		return rep;
 	}	
-		
-	public String toString()
-	{
-        return super.toString();
-        /*
-        if (jobMeta!=null)
-        {
-            return Const.NVL(jobMeta.getName(), Const.NVL(jobMeta.getFilename(), super.getName()) );
-        }
-		return this.getClass().getName();
-        */
-	}
-    
+		    
     public Thread getThread()
     {
         return (Thread)this;
