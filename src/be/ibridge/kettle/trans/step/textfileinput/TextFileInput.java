@@ -1293,10 +1293,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 				
 			data.files = meta.getTextFileList();
             
-            // If there are missing files, fail
+            // If there are missing files, fail if we don't ignore errors
             //
 			if ( (transmeta.getPreviousResult()==null || transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && 
-                  data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames()
+                  data.files.nrOfMissingFiles() > 0 && !meta.isAcceptingFilenames() && !meta.isErrorIgnored()
                )
 			{
 				logError(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));

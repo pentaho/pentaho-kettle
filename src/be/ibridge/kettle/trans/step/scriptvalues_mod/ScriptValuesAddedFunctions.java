@@ -91,13 +91,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
-        "print", "println", "resolveIP",
+        "print", "println", "resolveIP", "trim", "substr", 
         };
 	
 
 	// Functions to Add
 	// date2num, num2date,  
-	// fisc_date, isNull,  substr
+	// fisc_date, isNull
 	// 
 	
 	public static Object getTransformationName(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
@@ -933,7 +933,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		}
 		return sRC;
 	}
-	
+    
 	// Converts the given Numeric to a JScript String
 	public static String num2str(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		String sRC="";
@@ -1166,6 +1166,54 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		}
 		return sRC;
 	}
+    
+    public static String trim(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+        String sRC="";
+        if(ArgList.length==1){
+            try{
+                if(isNull(ArgList[0])) return null;
+                else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
+                sRC = Context.toString(ArgList[0]);
+                sRC = Const.trim(sRC);
+            }catch(Exception e){
+                throw Context.reportRuntimeError("The function call trim is not valid");
+            }
+        }else{
+            throw Context.reportRuntimeError("The function call trim is not valid");
+        }
+        return sRC;
+    }
+
+    public static String substr(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+        String sRC="";
+        if(ArgList.length==2) {
+            try{
+                if(isNull(ArgList[0])) return null;
+                else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
+                sRC = Context.toString(ArgList[0]);
+                int from = (int)Math.round(Context.toNumber(ArgList[1]));
+                sRC = sRC.substring(from);
+            }catch(Exception e){
+                throw Context.reportRuntimeError("The function call substr is not valid");
+            }
+        } 
+        else if(ArgList.length==3) {
+            try{
+                if(isNull(ArgList[0])) return null;
+                else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
+                sRC = Context.toString(ArgList[0]);
+                int from = (int)Math.round(Context.toNumber(ArgList[1]));
+                int to   = (int)Math.round(Context.toNumber(ArgList[2]));
+                sRC = sRC.substring(from, to);
+            }catch(Exception e){
+                throw Context.reportRuntimeError("The function call substr is not valid");
+            }
+        } 
+        else {
+            throw Context.reportRuntimeError("The function call substr is not valid");
+        }
+        return sRC;
+    }
 	
 	// Loading additional JS Files inside the JavaScriptCode
 	public static String resolveIP(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {

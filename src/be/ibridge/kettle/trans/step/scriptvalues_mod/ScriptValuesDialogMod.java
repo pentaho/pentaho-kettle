@@ -237,7 +237,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("ScriptValuesDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(Messages.getString("ScriptValuesDialogMod.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
