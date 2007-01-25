@@ -171,18 +171,6 @@
 	  	     excludes="**/Thumbs.db"
 	  		/>
 	  </target>
-	
-	  <!-- Make the javadoc zip file available on javaForge -->
-	  <target name="javadoc_zip_javaforge" depends="javadoc_zip" description="make the javadoc zip archive available on Javaforge">
-		<echo>Putting javadoc zip file on javaforge...</echo>
-		
-		  <CBRelease 
-		  	file="Kettle-javadoc-${version}.zip" 
-		  	todir="Development packages"
-		    description="kettle javadoc for version ${version}" 
-			keywords="Kettle, library, Spoon, Chef" 
-		  />
-	  </target>
 
 	
 	  <!--
@@ -200,21 +188,7 @@
 	  		/>
 	  	
 
-	  </target>
-	  	
-	  <!-- Make the kettle.jar file available on javaForge -->
-	  <target name="kettle_javaforge" depends="kettle" description="make the ${kettlejar} archive available on Javaforge">
-		<echo>Putting kettle.jar on javaforge...</echo>
-		
-		  <CBRelease 
-		  	file="${lib}/kettle.jar" 
-		  	todir="Development packages"
-		    description="kettle base library" 
-			keywords="Kettle, library, Spoon, Chef" 
-		  />
-	  </target>
-
-	
+	  </target>	
 	
 	<!--
 	       ==========================
@@ -256,7 +230,7 @@
 	  		<mkdir dir="${distrib}/docs"/>
 	  		<copy todir="${distrib}/docs">
 	  			<fileset dir="${docs}" 
-	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip"
+	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css"
 	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
 	  			</copy>
 
@@ -303,17 +277,6 @@
 	  		/>
 	  </target>
 
-	  <!-- Make the kettle.zip file available on javaForge -->
-	  <target name="zip_javaforge" depends="zip" description="Put the Kettle zip file on javaforge">
-	  	<echo>Putting the kettle distribution on javaforge...</echo>
-		 <CBRelease 
-		 	file="Kettle-${version}.zip" 
-		  	todir="Development packages"
- 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
- 	 		keywords="Kettle, binary, Spoon, Chef" 
-		 />
-	  </target>
-
 	  <!--
 	       ==========================
 	             Source zipfile
@@ -327,18 +290,6 @@
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
 	  		/>
-	  </target>
-
-	  <!-- Make the kettle-src.zip file available on javaForge -->
-	  <target name="sourcezip_javaforge" depends="sourcezip" description="Put the Kettle source zip file on javaforge">
-	  	<echo>Putting the kettle source zip file on javaforge (Kettle-src-${version}.zip)...</echo>
-		 <CBRelease 
-		 	file="Kettle-src-${version}.zip" 
-		 	todir="Development packages"
- 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
- 	 		keywords="Kettle, binary, Spoon, Chef source files" 
-		 />
-
 	  </target>
 
 	<!--
