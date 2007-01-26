@@ -32,7 +32,7 @@ public class LanguageChoice
             defaultLocale = Const.DEFAULT_LOCALE;
             failoverLocale = Locale.US;
             
-            if (defaultLocale.equals(Locale.GERMAN))
+            if (defaultLocale.getLanguage().equals(Locale.GERMAN.getLanguage()))
             {
                 defaultLocale = Locale.US;
             }
