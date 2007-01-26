@@ -8519,9 +8519,10 @@ public class Spoon implements AddUndoPositionInterface
         final Point location = new Point(50, 50);
 
         // The start entry...
-        final JobEntryCopy start = jobMeta.findStart();
+        final JobEntryCopy start = JobMeta.createStartEntry();
         start.setLocation(new Point(location.x, location.y));
         start.setDrawn();
+        jobMeta.addJobEntry(start);
 
         // final Thread parentThread = Thread.currentThread();
 
