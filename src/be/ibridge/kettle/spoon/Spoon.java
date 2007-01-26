@@ -7794,6 +7794,12 @@ public class Spoon implements AddUndoPositionInterface
                     transformationMap.remove(before);
                     transformationMap.put(after, entry.getObject().getManagedObject());
                 }
+                // Also change the job map
+                if (entry.getObject() instanceof ChefGraph)
+                {
+                    jobMap.remove(before);
+                    jobMap.put(after, entry.getObject().getManagedObject());
+                }            
             }
         }
         setShellText();
@@ -8132,10 +8138,12 @@ public class Spoon implements AddUndoPositionInterface
         {
             jobMeta.setID(-1L);
             saved=saveJobRepository(jobMeta, true);
+            renameTabs();
         }
         else
         {
             saved=saveJobXMLFile(jobMeta);
+            renameTabs();
         }
         
         return saved;
