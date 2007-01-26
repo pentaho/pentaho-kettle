@@ -30,11 +30,9 @@ import java.util.zip.ZipOutputStream;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
-import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -96,6 +94,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     private String authenticationPassword;
     
     private boolean onlySendComment;
+    private boolean usingSecureAuthentication;
+    private String port;
     
 	public JobEntryMail(String n)
 	{
@@ -129,6 +129,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append(super.getXML());
 
         retval.append("      ").append(XMLHandler.addTagValue("server", server));
+        retval.append("      ").append(XMLHandler.addTagValue("port", port));
         retval.append("      ").append(XMLHandler.addTagValue("destination", destination));
         retval.append("      ").append(XMLHandler.addTagValue("replyto", replyAddress));
         retval.append("      ").append(XMLHandler.addTagValue("subject", subject));
@@ -141,6 +142,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         retval.append("      ").append(XMLHandler.addTagValue("zip_name", zipFilename));
 
         retval.append("      ").append(XMLHandler.addTagValue("use_auth", usingAuthentication));
+        retval.append("      ").append(XMLHandler.addTagValue("use_secure_auth", usingSecureAuthentication));
         retval.append("      ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
         retval.append("      ").append(XMLHandler.addTagValue("auth_password", authenticationPassword));
 
@@ -168,6 +170,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		{
 			super.loadXML(entrynode, databases);
 			setServer       ( XMLHandler.getTagValue(entrynode, "server") );
+            setPort         ( XMLHandler.getTagValue(entrynode, "port") );
 			setDestination  ( XMLHandler.getTagValue(entrynode, "destination") );
 			setReplyAddress ( XMLHandler.getTagValue(entrynode, "replyto") );
 			setSubject      ( XMLHandler.getTagValue(entrynode, "subject") );
@@ -178,6 +181,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			setIncludingFiles ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")) );
 
             setUsingAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_auth")) );
+            setUsingSecureAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_secure_auth")) );
             setAuthenticationUser( XMLHandler.getTagValue(entrynode, "auth_user") );
             setAuthenticationPassword( XMLHandler.getTagValue(entrynode, "auth_password") );
 
@@ -212,16 +216,18 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         	// First load the common parts like name & description, then the attributes...
 			//
 			server          = rep.getJobEntryAttributeString (id_jobentry, "server");
+            port            = rep.getJobEntryAttributeString (id_jobentry, "port");
 			destination     = rep.getJobEntryAttributeString (id_jobentry, "destination");
-			replyAddress         = rep.getJobEntryAttributeString (id_jobentry, "replyto");
+			replyAddress    = rep.getJobEntryAttributeString (id_jobentry, "replyto");
 			subject         = rep.getJobEntryAttributeString (id_jobentry, "subject");
-			includeDate    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
-			contactPerson  = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
-			contactPhone   = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
+			includeDate     = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
+			contactPerson   = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
+			contactPhone    = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
 			comment         = rep.getJobEntryAttributeString (id_jobentry, "comment");
-			includingFiles    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
+			includingFiles  = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
 			
             usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
+            usingSecureAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_secure_auth");
             authenticationUser = rep.getJobEntryAttributeString(id_jobentry, "auth_user");
             authenticationPassword = rep.getJobEntryAttributeString(id_jobentry, "auth_password");
 
@@ -254,6 +260,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "server", server);
+            rep.saveJobEntryAttribute(id_job, getID(), "port", port);
 			rep.saveJobEntryAttribute(id_job, getID(), "destination", destination);
 			rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyAddress);
 			rep.saveJobEntryAttribute(id_job, getID(), "subject", subject);
@@ -263,6 +270,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includingFiles);
             rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
+            rep.saveJobEntryAttribute(id_job, getID(), "use_secure_auth", usingSecureAuthentication);
             rep.saveJobEntryAttribute(id_job, getID(), "auth_user", authenticationUser);
             rep.saveJobEntryAttribute(id_job, getID(), "auth_password", authenticationPassword);
             
@@ -507,16 +515,23 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             return result;
         }
         
-		props.put("mail.smtp.host", StringUtil.environmentSubstitute(server));
-		boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
+        String protocol = "smtp";
+        if (usingSecureAuthentication)
+        {
+            protocol="smtps";
+        }
+        
+		props.put("mail."+protocol+".host", StringUtil.environmentSubstitute(server));
+        if (!Const.isEmpty(port)) props.put("mail."+protocol+".port", StringUtil.environmentSubstitute(port));
+        boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
 		
 		if (debug) props.put("mail.debug", "true");
         
-        Authenticator authenticator = null;
-        
         if (usingAuthentication)
         {
-        	props.put("mail.smtp.auth","true"); 
+        	props.put("mail."+protocol+".auth", "true"); 
+
+            /*
             authenticator = new Authenticator()
             {
                 protected PasswordAuthentication getPasswordAuthentication()
@@ -527,9 +542,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                             );
                 }
             };
+            */
         }
 
-		Session session = Session.getInstance(props, authenticator);
+		Session session = Session.getInstance(props);
 		session.setDebug(debug);
 		
 		try 
@@ -716,7 +732,40 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			}
 		    msg.setContent(parts);
 
-		    Transport.send(msg);
+            Transport transport = null;
+            try
+            {
+                transport = session.getTransport(protocol);
+                if (usingAuthentication)
+                {
+                    if (!Const.isEmpty(port))
+                    {
+                        transport.connect(
+                                StringUtil.environmentSubstitute(Const.NVL(server, "")), 
+                                Integer.parseInt( StringUtil.environmentSubstitute(Const.NVL(port, "")) ), 
+                                StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")), 
+                                StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) 
+                                );
+                    }
+                    else
+                    {
+                        transport.connect(
+                            StringUtil.environmentSubstitute(Const.NVL(server, "")), 
+                            StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")), 
+                            StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) 
+                            );
+                    }
+                }
+                else
+                {
+                    transport.connect();
+                }
+                transport.sendMessage(msg, msg.getAllRecipients());
+            }
+            finally
+            {
+                if (transport!=null) transport.close();
+            }
 		} 
 		catch (MessagingException mex) 
 		{
@@ -779,7 +828,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			{
 				masterZipfile.delete();
 			}
-		}
+        }
 
 		if (result.getNrErrors() > 0)
 		{
@@ -856,5 +905,37 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryMailDialog(shell,this);
+    }
+
+    /**
+     * @return the usingSecureAuthentication
+     */
+    public boolean isUsingSecureAuthentication()
+    {
+        return usingSecureAuthentication;
+    }
+
+    /**
+     * @param usingSecureAuthentication the usingSecureAuthentication to set
+     */
+    public void setUsingSecureAuthentication(boolean usingSecureAuthentication)
+    {
+        this.usingSecureAuthentication = usingSecureAuthentication;
+    }
+
+    /**
+     * @return the port
+     */
+    public String getPort()
+    {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public void setPort(String port)
+    {
+        this.port = port;
     }
 }

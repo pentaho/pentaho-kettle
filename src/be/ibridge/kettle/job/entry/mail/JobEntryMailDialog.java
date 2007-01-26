@@ -65,9 +65,16 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private LabelTextVar wServer;
 	private FormData     fdServer;
 
+    private LabelTextVar wPort;
+    private FormData     fdPort;
+
     private Label        wlUseAuth;
     private Button       wUseAuth;
     private FormData     fdlUseAuth, fdUseAuth;
+
+    private Label        wlUseSecAuth;
+    private Button       wUseSecAuth;
+    private FormData     fdlUseSecAuth, fdUseSecAuth;
 
     private LabelTextVar wAuthUser;
     private FormData     fdAuthUser;
@@ -189,28 +196,35 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		fdServer.right= new FormAttachment(100, 0);
 		wServer.setLayoutData(fdServer);
 
+        // Port line
+        wPort=new LabelTextVar(shell, "Port", "SMTP or SMTPS Port");
+        wPort.addModifyListener(lsMod);
+        fdPort=new FormData();
+        fdPort.left = new FormAttachment(0, 0);
+        fdPort.top  = new FormAttachment(wServer, margin);
+        fdPort.right= new FormAttachment(100, 0);
+        wPort.setLayoutData(fdPort);
         
-        // Include Files?
+        // Use authentication?
         wlUseAuth=new Label(shell, SWT.RIGHT);
         wlUseAuth.setText("Use authentication?");
         props.setLook(wlUseAuth);
         fdlUseAuth=new FormData();
         fdlUseAuth.left = new FormAttachment(0, 0);
-        fdlUseAuth.top  = new FormAttachment(wServer, margin);
+        fdlUseAuth.top  = new FormAttachment(wPort, margin);
         fdlUseAuth.right= new FormAttachment(middle, -margin);
         wlUseAuth.setLayoutData(fdlUseAuth);
         wUseAuth=new Button(shell, SWT.CHECK);
         props.setLook(wUseAuth);
         fdUseAuth=new FormData();
         fdUseAuth.left = new FormAttachment(middle, margin);
-        fdUseAuth.top  = new FormAttachment(wServer, margin);
+        fdUseAuth.top  = new FormAttachment(wPort, margin);
         fdUseAuth.right= new FormAttachment(100, 0);
         wUseAuth.setLayoutData(fdUseAuth);
         wUseAuth.addSelectionListener(new SelectionAdapter() 
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    jobEntry.setUsingAuthentication(!jobEntry.isUsingAuthentication());
                     jobEntry.setChanged();
                     setFlags();
                 }
@@ -236,12 +250,40 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdAuthPass.right= new FormAttachment(100, 0);
         wAuthPass.setLayoutData(fdAuthPass);
 
+        // Use authentication?
+        wlUseSecAuth=new Label(shell, SWT.RIGHT);
+        wlUseSecAuth.setText("Use secure authentication?");
+        props.setLook(wlUseSecAuth);
+        fdlUseSecAuth=new FormData();
+        fdlUseSecAuth.left = new FormAttachment(0, 0);
+        fdlUseSecAuth.top  = new FormAttachment(wAuthPass, margin);
+        fdlUseSecAuth.right= new FormAttachment(middle, -margin);
+        wlUseSecAuth.setLayoutData(fdlUseSecAuth);
+        wUseSecAuth=new Button(shell, SWT.CHECK);
+        props.setLook(wUseSecAuth);
+        fdUseSecAuth=new FormData();
+        fdUseSecAuth.left = new FormAttachment(middle, margin);
+        fdUseSecAuth.top  = new FormAttachment(wAuthPass, margin);
+        fdUseSecAuth.right= new FormAttachment(100, 0);
+        wUseSecAuth.setLayoutData(fdUseSecAuth);
+        wUseSecAuth.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    jobEntry.setChanged();
+                    setFlags();
+                }
+            }
+        );
+
+        
+        
 		// Reply line
 		wReply=new LabelTextVar(shell, "Reply address", "Reply address");
 		wReply.addModifyListener(lsMod);
 		fdReply=new FormData();
 		fdReply.left = new FormAttachment(0, 0);
-		fdReply.top  = new FormAttachment(wAuthPass, margin);
+		fdReply.top  = new FormAttachment(wUseSecAuth, margin);
 		fdReply.right= new FormAttachment(100, 0);
 		wReply.setLayoutData(fdReply);
 
@@ -274,7 +316,6 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobEntry.setIncludeDate(!jobEntry.getIncludeDate());
 					jobEntry.setChanged();
 				}
 			}
@@ -300,7 +341,6 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobEntry.setIncludingFiles(!jobEntry.isIncludingFiles());
 					jobEntry.setChanged();
 					setFlags();
 				}
@@ -349,7 +389,6 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobEntry.setZipFiles(!jobEntry.isZipFiles());
 					jobEntry.setChanged();
 					setFlags();
 				}
@@ -411,7 +450,6 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             {
                 public void widgetSelected(SelectionEvent e) 
                 {
-                    jobEntry.setOnlySendComment(!jobEntry.isOnlySendComment());
                     jobEntry.setChanged();
                 }
             }
@@ -488,6 +526,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         
         wAuthUser.setEnabled(wUseAuth.getSelection());
         wAuthPass.setEnabled(wUseAuth.getSelection());
+        wUseSecAuth.setEnabled(wUseAuth.getSelection());
 	}
 
 	public void dispose()
@@ -502,6 +541,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		if (jobEntry.getName()!=null)          wName.setText(jobEntry.getName());
 		if (jobEntry.getDestination()!=null)   wDestination.setText(jobEntry.getDestination());
 		if (jobEntry.getServer()!=null)        wServer.setText(jobEntry.getServer());
+        if (jobEntry.getPort()!=null)          wPort.setText(jobEntry.getPort());
 		if (jobEntry.getReplyAddress()!=null)  wReply.setText(jobEntry.getReplyAddress());
 		if (jobEntry.getSubject()!=null)       wSubject.setText(jobEntry.getSubject());
 		if (jobEntry.getContactPerson()!=null) wPerson.setText(jobEntry.getContactPerson());
@@ -521,6 +561,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		if (jobEntry.getZipFilename()!=null) wZipFilename.setText(jobEntry.getZipFilename());
         
         wUseAuth.setSelection(jobEntry.isUsingAuthentication());
+        wUseSecAuth.setSelection(jobEntry.isUsingSecureAuthentication());
         if (jobEntry.getAuthenticationUser()!=null)     wAuthUser.setText( jobEntry.getAuthenticationUser() );
         if (jobEntry.getAuthenticationPassword()!=null) wAuthPass.setText( jobEntry.getAuthenticationPassword() );
 
@@ -543,6 +584,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		jobEntry.setName( wName.getText() );
 		jobEntry.setDestination( wDestination.getText() );
 		jobEntry.setServer( wServer.getText() );
+        jobEntry.setPort( wPort.getText() );
 		jobEntry.setReplyAddress( wReply.getText() );
 		jobEntry.setSubject( wSubject.getText() );
 		jobEntry.setContactPerson( wPerson.getText() );
@@ -553,8 +595,13 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		jobEntry.setIncludingFiles( wIncludeFiles.getSelection() );
 		jobEntry.setFileType(wTypes.getSelectionIndices());
 		jobEntry.setZipFilename( wZipFilename.getText());
+        jobEntry.setZipFiles( wZipFiles.getSelection() );
         jobEntry.setAuthenticationUser( wAuthUser.getText() );
         jobEntry.setAuthenticationPassword( wAuthPass.getText() );
+        jobEntry.setUsingAuthentication( wUseAuth.getSelection() );
+        jobEntry.setUsingSecureAuthentication( wUseSecAuth.getSelection() );
+        jobEntry.setOnlySendComment( wOnlyComment.getSelection() );
+        
 		dispose();
 	}
 }
