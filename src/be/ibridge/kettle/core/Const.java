@@ -1993,4 +1993,41 @@ public class Const
     
         return change.toString();
     }
+ 
+    /**
+     * Create a valid filename using a name
+     * We remove all special characters, spaces, etc.
+     * @param name The name to use as a base for the filename
+     * @return a valid filename
+     */
+    public static final String createFilename(String name)
+    {
+        StringBuffer filename = new StringBuffer();
+        for (int i=0;i<name.length();i++)
+        {
+            char c = name.charAt(i);
+            if ( Character.isUnicodeIdentifierPart(c) )
+            {
+                filename.append(c);
+            }
+            else
+            if (Character.isWhitespace(c))
+            {
+                filename.append("_");
+            }
+        }
+        return filename.toString().toLowerCase();
+    }
+    
+    public static final String createFilename(String directory, String name, String extention)
+    {
+        if (directory.endsWith(Const.FILE_SEPARATOR))
+        {
+            return directory+createFilename(name)+extention;
+        }
+        else
+        {
+            return directory+Const.FILE_SEPARATOR+createFilename(name)+extention;
+        }
+    }
 }

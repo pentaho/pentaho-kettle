@@ -14,7 +14,7 @@
  **********************************************************************/
 
  
-package be.ibridge.kettle.chef.wizards;
+package be.ibridge.kettle.spoon.wizards;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardContainer;

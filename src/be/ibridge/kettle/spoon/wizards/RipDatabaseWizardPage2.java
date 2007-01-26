@@ -15,7 +15,7 @@
 
  
 
-package be.ibridge.kettle.chef.wizards;
+package be.ibridge.kettle.spoon.wizards;
 
 import java.util.Hashtable;
 import java.util.StringTokenizer;

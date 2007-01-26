@@ -95,9 +95,6 @@ import be.ibridge.kettle.chef.ChefGraph;
 import be.ibridge.kettle.chef.ChefHistory;
 import be.ibridge.kettle.chef.ChefHistoryRefresher;
 import be.ibridge.kettle.chef.ChefLog;
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.cluster.dialog.ClusterSchemaDialog;
@@ -185,6 +182,9 @@ import be.ibridge.kettle.spoon.dialog.ShowCreditsDialog;
 import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage1;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage2;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.trans.DatabaseImpact;
 import be.ibridge.kettle.trans.HasDatabasesInterface;
 import be.ibridge.kettle.trans.StepLoader;
@@ -4749,7 +4749,7 @@ public class Spoon implements AddUndoPositionInterface
 
         miWizardNewConnection.setEnabled(enableTransMenu || enableJobMenu);
         miWizardCopyTable.setEnabled(enableTransMenu || enableJobMenu);
-        miWizardRipDatabase.setEnabled(enableRepositoryMenu);
+        miWizardRipDatabase.setEnabled(enableRepositoryMenu || enableTransMenu || enableJobMenu);
         
         miRepDisconnect.setEnabled(enableRepositoryMenu);
         miRepExplore.setEnabled(enableRepositoryMenu);
@@ -8471,8 +8471,24 @@ public class Spoon implements AddUndoPositionInterface
         {
             public boolean performFinish()
             {
-                JobMeta jobMeta = ripDB(databases, page3.getJobname(), page3.getDirectory(), page1.getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection());
+                JobMeta jobMeta = ripDB(databases, 
+                        page3.getJobname(), 
+                        page3.getRepositoryDirectory(),
+                        page3.getDirectory(),
+                        page1.getSourceDatabase(), 
+                        page1.getTargetDatabase(), 
+                        page2.getSelection()
+                      );
                 if (jobMeta==null) return false;
+                
+                if (page3.getRepositoryDirectory()!=null)
+                {
+                    saveJobRepository(jobMeta);
+                }
+                else
+                {
+                    saveJobFile(jobMeta);
+                }
                 
                 addChefGraph(jobMeta);
                 return true;
@@ -8500,6 +8516,7 @@ public class Spoon implements AddUndoPositionInterface
                 final ArrayList databases, 
                 final String jobname, 
                 final RepositoryDirectory repdir, 
+                final String directory,
                 final DatabaseMeta sourceDbInfo, 
                 final DatabaseMeta targetDbInfo, 
                 final String[] tables
@@ -8512,7 +8529,16 @@ public class Spoon implements AddUndoPositionInterface
         jobMeta.setDatabases(databases);
         jobMeta.setFilename(null);
         jobMeta.setName(jobname);
-        jobMeta.setDirectory(repdir);
+
+        if (rep!=null)
+        {
+            jobMeta.setDirectory(repdir);
+        }
+        else
+        {
+            jobMeta.setFilename(Const.createFilename(directory, jobname, Const.STRING_JOB_DEFAULT_EXT));
+        }
+
         refreshTree();
         refreshGraph();
 
@@ -8548,9 +8574,16 @@ public class Spoon implements AddUndoPositionInterface
                     //
                     String transname = Messages.getString("Spoon.RipDB.Monitor.Transname1") + sourceDbInfo + "].[" + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Transname2") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
-                    TransMeta ti = new TransMeta((String) null, transname, null);
+                    TransMeta transMeta = new TransMeta((String) null, transname, null);
 
-                    ti.setDirectory(repdir);
+                    if (repdir!=null)
+                    {
+                        transMeta.setDirectory(repdir);
+                    }
+                    else
+                    {
+                        transMeta.setFilename(Const.createFilename(directory, transname, Const.STRING_TRANS_DEFAULT_EXT));
+                    }
 
                     //
                     // Add a note
@@ -8558,7 +8591,7 @@ public class Spoon implements AddUndoPositionInterface
                     String note = Messages.getString("Spoon.RipDB.Monitor.Note1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note2") + sourceDbInfo + "]" + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     note += Messages.getString("Spoon.RipDB.Monitor.Note3") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.Note4") + targetDbInfo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
-                    ti.addNote(ni);
+                    transMeta.addNote(ni);
 
                     //
                     // Add the TableInputMeta step...
@@ -8572,9 +8605,8 @@ public class Spoon implements AddUndoPositionInterface
                     StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
                     fromstep.setLocation(150, 100);
                     fromstep.setDraw(true);
-                    fromstep
-                            .setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    ti.addStep(fromstep);
+                    fromstep.setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    transMeta.addStep(fromstep);
 
                     //
                     // Add the TableOutputMeta step...
@@ -8590,15 +8622,14 @@ public class Spoon implements AddUndoPositionInterface
                     StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
                     tostep.setLocation(500, 100);
                     tostep.setDraw(true);
-                    tostep
-                            .setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    ti.addStep(tostep);
+                    tostep.setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    transMeta.addStep(tostep);
 
                     //
                     // Add a hop between the two steps...
                     //
                     TransHopMeta hi = new TransHopMeta(fromstep, tostep);
-                    ti.addTransHop(hi);
+                    transMeta.addTransHop(hi);
 
                     //
                     // Now we generate the SQL needed to run for this transformation.
@@ -8609,12 +8640,12 @@ public class Spoon implements AddUndoPositionInterface
                     String sql = ""; //$NON-NLS-1$
                     try
                     {
-                        sql = ti.getSQLStatementsString();
+                        sql = transMeta.getSQLStatementsString();
                     }
                     catch (KettleStepException kse)
                     {
                         throw new InvocationTargetException(kse,
-                                Messages.getString("Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation") + ti + "] : " + kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+                                Messages.getString("Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation") + transMeta + "] : " + kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                     // remove the limit
                     tii.setSQL(tmpSql);
@@ -8622,13 +8653,18 @@ public class Spoon implements AddUndoPositionInterface
                     //
                     // Now, save the transformation...
                     //
-                    try
+                    boolean ok;
+                    if (rep!=null)
                     {
-                        ti.saveRep(rep);
+                        ok=saveTransRepository(transMeta);
                     }
-                    catch (KettleException dbe)
+                    else
                     {
-                        throw new InvocationTargetException(dbe, Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
+                        ok=saveTransFile(transMeta);
+                    }
+                    if (!ok)
+                    {
+                        throw new InvocationTargetException(new Exception(Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")), Messages.getString("Spoon.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
                     }
 
                     // We can now continue with the population of the job...
@@ -8668,12 +8704,18 @@ public class Spoon implements AddUndoPositionInterface
                     //
                     String jetransname = Messages.getString("Spoon.RipDB.JobEntryTrans.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
                     JobEntryTrans jetrans = new JobEntryTrans(jetransname);
-                    jetrans.setTransname(ti.getName());
-                    jetrans.setDirectory(ti.getDirectory());
+                    jetrans.setTransname(transMeta.getName());
+                    if (rep!=null)
+                    {
+                        jetrans.setDirectory(transMeta.getDirectory());
+                    }
+                    else
+                    {
+                        jetrans.setFileName( Const.createFilename("${"+Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY+"}", transMeta.getName(), Const.STRING_TRANS_DEFAULT_EXT) );
+                    }
 
                     JobEntryCopy jectrans = new JobEntryCopy(log, jetrans);
-                    jectrans
-                            .setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+                    jectrans.setDescription(Messages.getString("Spoon.RipDB.JobEntryTrans.Description1") + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description2") + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + Messages.getString("Spoon.RipDB.JobEntryTrans.Description3") + targetDbInfo + "].[" + tables[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
                     jectrans.setDrawn();
                     location.x += 400;
                     jectrans.setLocation(new Point(location.x, location.y));

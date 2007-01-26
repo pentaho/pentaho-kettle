@@ -74,9 +74,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
-import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -134,6 +131,9 @@ import be.ibridge.kettle.repository.dialog.UserDialog;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage1;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage2;
+import be.ibridge.kettle.spoon.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
@@ -2765,7 +2765,7 @@ public class Chef implements AddUndoPositionInterface
 		{
 			public boolean performFinish() 
 			{
-				return ripDB(page3.getJobname(), page3.getDirectory(),
+				return ripDB(page3.getJobname(), page3.getRepositoryDirectory(),
 					  page1.getSourceDatabase(), page1.getTargetDatabase(),
 					  page2.getSelection()
 					  );

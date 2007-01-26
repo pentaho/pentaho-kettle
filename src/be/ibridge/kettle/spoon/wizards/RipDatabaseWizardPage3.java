@@ -14,7 +14,7 @@
  **********************************************************************/
 
 
-package be.ibridge.kettle.chef.wizards;
+package be.ibridge.kettle.spoon.wizards;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -27,12 +27,12 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -59,15 +59,10 @@ public class RipDatabaseWizardPage3 extends WizardPage
 
 	private Props props;
 	private Repository rep;
-	private RepositoryDirectory directory;
+	private RepositoryDirectory repositoryDirectory;
+    private String directory;
 	private Shell shell;
 
-    /** @deprecated */
-    public RipDatabaseWizardPage3(String arg, LogWriter log, Props props, Repository rep)
-    {
-        this(arg, rep);
-    }
-    
 	public RipDatabaseWizardPage3(String arg, Repository rep)
 	{
 		super(arg);
@@ -143,13 +138,30 @@ public class RipDatabaseWizardPage3 extends WizardPage
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-				directory = sdd.open();
-				if (directory!=null)
-				{
-					wDirectory.setText(directory.getPath());
-					setPageComplete(canFlipToNextPage());
-				}
+                if (rep!=null)
+                {
+    				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
+    				repositoryDirectory = sdd.open();
+    				if (repositoryDirectory!=null)
+    				{
+    					wDirectory.setText(repositoryDirectory.getPath());
+    					setPageComplete(canFlipToNextPage());
+    				}
+                }
+                else
+                {
+                    DirectoryDialog directoryDialog = new DirectoryDialog(shell, SWT.NONE);
+                    directoryDialog.setFilterPath(wDirectory.getText());
+                    directoryDialog.setText("Select a target directory");
+                    directoryDialog.setMessage("Select the target directory of the job and transformations:");
+                    String target = directoryDialog.open();
+                    if (target!=null)
+                    {
+                        wDirectory.setText(target);
+                        directory = target;
+                        setPageComplete(canFlipToNextPage());
+                    }
+                }
 			}
 		});
 
@@ -182,13 +194,21 @@ public class RipDatabaseWizardPage3 extends WizardPage
 	/**
 	 * @return Returns the directory.
 	 */
-	public RepositoryDirectory getDirectory()
+	public RepositoryDirectory getRepositoryDirectory()
 	{
-		return directory;
+		return repositoryDirectory;
 	}
 	
 	public boolean canFinish()
 	{
-		return getJobname()!=null && getDirectory()!=null;
+		return !Const.isEmpty(getJobname()) && ( getRepositoryDirectory()!=null || !Const.isEmpty(getDirectory()) );
 	}
+
+    /**
+     * @return the directory
+     */
+    public String getDirectory()
+    {
+        return directory;
+    }
 }
