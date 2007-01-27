@@ -2700,7 +2700,7 @@ public class TableView extends Composite
 				boolean keep = cond.evaluate(r);
 				if (keep)
 				{
-					tokeep.add( new Integer(i) );
+					tokeep.add( Integer.valueOf(i) );
 				}
 			}
 

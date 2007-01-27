@@ -143,7 +143,7 @@ public class ReportTable
             ReportTableField field = (ReportTableField) xAxisFields.get(i);
             if (field.getSortType()!=ReportTableField.SORT_TYPE_NONE)
             {
-                fieldNrs.add(new Integer(row.searchValueIndex( field.getFieldName() )));
+                fieldNrs.add(Integer.valueOf(row.searchValueIndex( field.getFieldName() )));
                 ascending.add(Boolean.valueOf(field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING));
             }
         }
@@ -153,7 +153,7 @@ public class ReportTable
             ReportTableField field = (ReportTableField) yAxisFields.get(i);
             if (field.getSortType()!=ReportTableField.SORT_TYPE_NONE)
             {
-                fieldNrs.add(new Integer(row.searchValueIndex( field.getFieldName() )));
+                fieldNrs.add(Integer.valueOf(row.searchValueIndex( field.getFieldName() )));
                 ascending.add(Boolean.valueOf(field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING));
             }
         }

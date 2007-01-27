@@ -54,7 +54,7 @@ public class XMLHandlerCache
     */
    public synchronized void storeCache(XMLHandlerCacheEntry entry, int lastChildNr)
    {
-       hashtable.put(entry, new Integer(lastChildNr));
+       hashtable.put(entry, Integer.valueOf(lastChildNr));
        list.add(entry);
        
        if (list.size()>MAX_NUMBER_OF_ENTRIES)

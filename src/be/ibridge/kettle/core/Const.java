@@ -1515,7 +1515,7 @@ public class Const
         for (int i=0;i<lookup.length;i++)
         {
             int idx = indexOfString(lookup[i], array);
-            if (idx>=0) indexesList.add(new Integer(idx));
+            if (idx>=0) indexesList.add(Integer.valueOf(idx));
         }
         int[] indexes = new int[indexesList.size()];
         for (int i=0;i<indexesList.size();i++) indexes[i] = ((Integer)indexesList.get(i)).intValue();

@@ -151,7 +151,7 @@ public class Mapping extends BaseStep implements StepInterface
 								data.trans.stopAll();
 								return false;
 							}
-							data.renameFieldIndexes.add(new Integer(idx));
+							data.renameFieldIndexes.add(Integer.valueOf(idx));
 							data.renameFieldNames.add(meta.getInputMapping()[i]);
 							if (log.isRowLevel()) logRowlevel(Messages.getString("Mapping.Log.RenameFieldInfo",data.renameFieldIndexes.size()+"",i+"",meta.getInputMapping()[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						}
