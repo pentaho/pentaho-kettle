@@ -611,13 +611,13 @@ public class XMLHandler
 		{
             value = new StringBuffer("<");
             value.append(tag);
-            value.append(">");
+            value.append('>');
             
             appendReplacedChars(value, val);
             
             value.append("</");
             value.append(tag);
-            value.append(">");
+            value.append('>');
 		}
 		else
 		{

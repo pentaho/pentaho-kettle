@@ -2013,7 +2013,7 @@ public class Const
             else
             if (Character.isWhitespace(c))
             {
-                filename.append("_");
+                filename.append('_');
             }
         }
         return filename.toString().toLowerCase();

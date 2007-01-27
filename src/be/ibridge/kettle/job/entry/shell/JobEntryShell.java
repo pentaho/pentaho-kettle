@@ -452,7 +452,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 StringBuffer command = new StringBuffer();
                 for (int i=0;i<cmd.length;i++)
                 {
-                    if (i>0) command.append(" ");
+                    if (i>0) command.append(' ');
                     command.append(cmd[i]);
                 }
                 log.logBasic(toString(), "Executing command : "+command.toString());

@@ -1669,7 +1669,7 @@ public class Database
 		StringBuffer ins=new StringBuffer(128);
 		
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-		ins.append("INSERT INTO ").append(schemaTable).append("(");
+		ins.append("INSERT INTO ").append(schemaTable).append('(');
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
@@ -1686,7 +1686,7 @@ public class Database
 			if (i>0) ins.append(", ");
 			ins.append(" ?");
 		}
-		ins.append(")");
+		ins.append(')');
 		
 		return ins.toString();
 	}
@@ -3189,11 +3189,11 @@ public class Database
 			else
 			if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i]))
 			{
-				sql.append(" ").append(condition[i]).append(" ");
+				sql.append(' ').append(condition[i]).append(' ');
 			}
 			else
 			{
-				sql.append(" ").append(condition[i]).append(" ? ");
+				sql.append(' ').append(condition[i]).append(" ? ");
 			}
 		}
 

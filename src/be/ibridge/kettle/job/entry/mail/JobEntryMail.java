@@ -881,7 +881,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
            {
                messageText.append(" (");
                messageText.append(new Value("time", jer.getLogDate()).getString()); // $NON-NLS-1$
-               messageText.append(")");
+               messageText.append(')');
            }
        }
        messageText.append(Const.CR);

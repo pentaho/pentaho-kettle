@@ -128,14 +128,14 @@ public class HTTP extends BaseStep implements StepInterface
         {
             if (i==0)
             {
-                url.append("?");
+                url.append('?');
             }
             else
             {
-                url.append("&");
+                url.append('&');
             }
             url.append(meta.getArgumentParameter()[i]);
-            url.append("=");
+            url.append('=');
             
             Value v = new Value(row.getValue(data.argnrs[i])).replace(" ", "%20");
             url.append(v.toString(false));

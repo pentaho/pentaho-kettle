@@ -287,7 +287,7 @@ public class TextFileCSVImportProgressDialog
                     // See if the field has only numeric fields
                     if (isNumber[i])
                     {
-                        if (log.isDebug()) debug = "Number checking of [" + fieldValue.toString() + "] on line #" + linenr;
+                        if (log.isDebug()) debug = "Number checking of [" + fieldValue + "] on line #" + linenr;
 
                         boolean containsDot = false;
                         boolean containsComma = false;
@@ -351,7 +351,7 @@ public class TextFileCSVImportProgressDialog
                                     {
                                         df2.setDecimalFormatSymbols(dfs2);
                                         df2.applyPattern(Const.numberFormats[x]);
-                                        double d = df2.parse(fieldValue.toString()).doubleValue();
+                                        double d = df2.parse(fieldValue).doubleValue();
 
                                         // System.out.println("("+i+","+x+") : Converted ["+field.toString()+"]
                                         // to ["+d+"] with format ["+numberFormats[x]+"] and dfs2
@@ -399,7 +399,7 @@ public class TextFileCSVImportProgressDialog
                                 try
                                 {
                                     daf2.applyPattern(Const.dateFormats[x]);
-                                    Date date = daf2.parse(fieldValue.toString());
+                                    Date date = daf2.parse(fieldValue);
 
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTime(date);
@@ -439,11 +439,11 @@ public class TextFileCSVImportProgressDialog
                     if (firststr[i])
                     {
                         firststr[i] = false;
-                        minstr[i] = fieldValue.toString();
-                        maxstr[i] = fieldValue.toString();
+                        minstr[i] = fieldValue;
+                        maxstr[i] = fieldValue;
                     }
-                    if (minstr[i].compareTo(fieldValue.toString()) > 0) minstr[i] = fieldValue.toString();
-                    if (maxstr[i].compareTo(fieldValue.toString()) < 0) maxstr[i] = fieldValue.toString();
+                    if (minstr[i].compareTo(fieldValue) > 0) minstr[i] = fieldValue;
+                    if (maxstr[i].compareTo(fieldValue) < 0) maxstr[i] = fieldValue;
 
                     debug = "End of for loop";
                 } else

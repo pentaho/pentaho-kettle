@@ -62,10 +62,10 @@ public class DatabaseConnectionMap
     {
         StringBuffer key = new StringBuffer(connectionGroup);
         
-        key.append(":").append(database.getDatabaseMeta().getName());
+        key.append(':').append(database.getDatabaseMeta().getName());
         if (!Const.isEmpty(partitionID))
         {
-            key.append(":").append(partitionID);
+            key.append(':').append(partitionID);
         }
 
         return key.toString();
