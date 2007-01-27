@@ -898,23 +898,23 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(250);
 		
-		retval.append("  <"+XML_TAG+">"+Const.CR);
-		retval.append("    "+XMLHandler.addTagValue("name",       getName()));
-		retval.append("    "+XMLHandler.addTagValue("server",     getHostname()));
-		retval.append("    "+XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
-		retval.append("    "+XMLHandler.addTagValue("access",     getAccessTypeDesc()));
-		retval.append("    "+XMLHandler.addTagValue("database",   getDatabaseName()));
-		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
-		retval.append("    "+XMLHandler.addTagValue("username",   getUsername()));
+		retval.append("  <").append(XML_TAG).append('>').append(Const.CR);
+		retval.append("    ").append(XMLHandler.addTagValue("name",       getName()));
+		retval.append("    ").append(XMLHandler.addTagValue("server",     getHostname()));
+		retval.append("    ").append(XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
+		retval.append("    ").append(XMLHandler.addTagValue("access",     getAccessTypeDesc()));
+		retval.append("    ").append(XMLHandler.addTagValue("database",   getDatabaseName()));
+		retval.append("    ").append(XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
+		retval.append("    ").append(XMLHandler.addTagValue("username",   getUsername()));
         
-        retval.append("    "+XMLHandler.addTagValue("password",         Encr.encryptPasswordIfNotUsingVariables(getPassword())));	
-		retval.append("    "+XMLHandler.addTagValue("servername",       getServername()));
-		retval.append("    "+XMLHandler.addTagValue("data_tablespace",  getDataTablespace()));
-		retval.append("    "+XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
+        retval.append("    ").append(XMLHandler.addTagValue("password",         Encr.encryptPasswordIfNotUsingVariables(getPassword())));	
+		retval.append("    ").append(XMLHandler.addTagValue("servername",       getServername()));
+		retval.append("    ").append(XMLHandler.addTagValue("data_tablespace",  getDataTablespace()));
+		retval.append("    ").append(XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
         
-        retval.append("    <attributes>"+Const.CR);
+        retval.append("    <attributes>").append(Const.CR);
         List list = new ArrayList( getAttributes().keySet() );
         Collections.sort(list);  // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.  
         
@@ -930,9 +930,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
                                "</attribute>"+Const.CR);
             }
         }
-        retval.append("    </attributes>"+Const.CR);
+        retval.append("    </attributes>").append(Const.CR);
         
-		retval.append("  </"+XML_TAG+">"+Const.CR);
+		retval.append("  </"+XML_TAG+">").append(Const.CR);
 		return retval.toString();
 	}
 	
@@ -1638,7 +1638,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public boolean hasSpacesInField(String fieldname)
     {
     		if( fieldname == null ) return false;
-    		if (fieldname.indexOf(" ")>=0) return true; 
+    		if (fieldname.indexOf(' ')>=0) return true; 
         return false;
     }
     

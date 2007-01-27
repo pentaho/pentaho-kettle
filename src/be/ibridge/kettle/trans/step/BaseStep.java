@@ -754,7 +754,7 @@ public class BaseStep extends Thread
             terminator_rows.add(new Row(row));
         }
 
-        if (outputRowSets.size() == 0)
+        if (outputRowSets.isEmpty())
         {
             // No more output rowsets!
             return; // we're done here!
@@ -972,7 +972,7 @@ public class BaseStep extends Thread
             terminator_rows.add(new Row(row));
         }
 
-        if (outputRowSets.size() == 0) return; // nothing to do here!
+        if (outputRowSets.isEmpty()) return; // nothing to do here!
 
         RowSet rs = (RowSet) outputRowSets.get(output_rowset_nr);
         sleeptime = transMeta.getSleepTimeFull();
@@ -1052,7 +1052,7 @@ public class BaseStep extends Thread
         }
 
         // If everything is finished, we can stop immediately!
-        if (inputRowSets.size() == 0) 
+        if (inputRowSets.isEmpty()) 
         {
             return null; 
         }
@@ -1069,7 +1069,7 @@ public class BaseStep extends Thread
                 if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
                 {
                     inputRowSets.remove(in_handling);
-                    if (inputRowSets.size() == 0) // nothing more to be found!
+                    if (inputRowSets.isEmpty()) // nothing more to be found!
                     {
                         return null; 
                     }

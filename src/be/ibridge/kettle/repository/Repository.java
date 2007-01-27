@@ -2178,13 +2178,22 @@ public class Repository
         ResultSet rs = database.openQuery(sql);
         if (rs != null)
         {
-            Row r = database.getRow(rs);
-            while (r != null)
-            {
-                repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate(), objectType));
-                r = database.getRow(rs);
-            }
-            database.closeQuery(rs);
+        	try
+        	{
+                Row r = database.getRow(rs);
+                while (r != null)
+                {
+                    repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate(), objectType));
+                    r = database.getRow(rs);
+                }
+        	}
+        	finally 
+        	{
+        		if ( rs != null )
+        		{
+        			database.closeQuery(rs);
+        		}
+        	}                
         }
 
         return repositoryObjects;
@@ -2286,16 +2295,22 @@ public class Repository
         List ids = new ArrayList();
         
         ResultSet rs = database.openQuery(sql);
-        Row r = database.getRow(rs);
-        int i = 0;
-        while (r != null)
+        try 
         {
-            ids.add(new Long(r.getValue(0).getInteger()));
-            r = database.getRow(rs);
-            i++;
+            Row r = database.getRow(rs);
+            while (r != null)
+            {
+                ids.add(new Long(r.getValue(0).getInteger()));
+                r = database.getRow(rs);
+            }
         }
-        database.closeQuery(rs);
-
+        finally
+        {
+        	if ( rs != null )
+        	{
+        		database.closeQuery(rs);        		
+        	}
+        }
         return convertLongList(ids);
     }
     
@@ -2304,15 +2319,22 @@ public class Repository
         List ids = new ArrayList();
         
         ResultSet rs = database.openQuery(sql);
-        Row r = database.getRow(rs);
-        int i = 0;
-        while (r != null)
+        try 
         {
-            ids.add( r.getValue(0).getString() );
-            r = database.getRow(rs);
-            i++;
+            Row r = database.getRow(rs);
+            while (r != null)
+            {
+                ids.add( r.getValue(0).getString() );
+                r = database.getRow(rs);
+            }
         }
-        database.closeQuery(rs);
+        finally 
+        {
+        	if ( rs != null )
+        	{
+        		database.closeQuery(rs);        		
+        	}
+        }            
 
         return (String[]) ids.toArray(new String[ids.size()]);
 

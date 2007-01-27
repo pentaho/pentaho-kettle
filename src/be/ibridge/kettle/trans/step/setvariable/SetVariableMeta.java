@@ -239,19 +239,19 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(150);
 
-		retval.append("    <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("field_name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("variable_name", variableName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        "+XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); //$NON-NLS-1$
-			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("field_name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("variable_name", variableName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); //$NON-NLS-1$
+			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}

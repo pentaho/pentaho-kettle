@@ -505,8 +505,8 @@ public class TextFileInputField implements Cloneable
 					if (contains_dot && contains_comma)  // Both appear!
 					{
 						// What's the last occurance: decimal point!
-						int idx_dot = field.indexOf(".");
-						int idx_com = field.indexOf(",");
+						int idx_dot = field.indexOf('.');
+						int idx_com = field.indexOf(',');
 						if (idx_dot > idx_com)
 						{
 							dfs.setDecimalSeparator('.');  decimalSymbol=".";

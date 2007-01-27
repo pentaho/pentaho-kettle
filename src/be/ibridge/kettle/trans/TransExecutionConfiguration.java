@@ -361,7 +361,7 @@ public class TransExecutionConfiguration implements Cloneable
     
     public String getXML()
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuffer xml = new StringBuffer(160);
         
         xml.append("  <"+XML_TAG+">").append(Const.CR);
         

@@ -1,6 +1,5 @@
  /**********************************************************************
  **                                                                   **
- **               This code belongs to the KETTLE project.            **
  **                                                                   **
  ** Kettle, from version 2.2 on, is released into the public domain   **
  ** under the Lesser GNU Public License (LGPL).                       **
@@ -1730,7 +1729,7 @@ public class Database
         return batchCounter;
     }
     
-    private long testCounter = 0;
+    //private long testCounter = 0;
 
     /**
      * Insert a row into the database using a prepared statement that has all values set.
@@ -1758,7 +1757,7 @@ public class Database
 				    debug="insertRow add batch";
 				    batchCounter++;
 					ps.addBatch(); // Add the batch, but don't forget to run the batch
-                    testCounter++;
+                    //testCounter++;
                     // System.out.println("testCounter is at "+testCounter);
 				}
 				else

@@ -837,7 +837,7 @@ public class Const
                     //System.out.println("  hostname         : "+in.getHostName());
                     //System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
                     //System.out.println("  ip string        : "+in.toString());
-                    if (!lastHostname.equalsIgnoreCase("localhost") && !(lastHostname.indexOf(":")>=0) )
+                    if (!lastHostname.equalsIgnoreCase("localhost") && !(lastHostname.indexOf(':')>=0) )
                     {
                         return lastHostname;
                     }
@@ -914,7 +914,7 @@ public class Const
 						// System.out.println("NBTSTAT> "+s);
 						if (s.indexOf("MAC") >= 0)
 						{
-							int idx = s.indexOf("=");
+							int idx = s.indexOf('=');
 							mac = s.substring(idx + 2);
 						}
 					}

@@ -661,10 +661,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public boolean equals(Object r)
 	{
 		Row row=(Row)r;
-		if (compare(row)==0)
-			return true;
-		else
-			return false;
+		return (compare(row) == 0);
 	}
 
 	public int hashCode()
