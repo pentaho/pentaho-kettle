@@ -496,7 +496,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
                 values[i] = value.getBytes();
                 break;
             case Value.VALUE_TYPE_BOOLEAN:
-                values[i] = new Boolean(value.getBoolean());
+                values[i] = Boolean.valueOf(value.getBoolean());
                 break;
             case Value.VALUE_TYPE_BIGNUMBER:
                 values[i] = new Double(value.getNumber());

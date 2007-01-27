@@ -1053,9 +1053,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				double sArg1 = Context.toNumber(ArgList[0]);
 				if(Double.isNaN(sArg1)) return Boolean.FALSE;
-				else return new Boolean(true);
+				else return Boolean.TRUE;
 			}catch(Exception e){
-				return new Boolean(false);
+				return Boolean.FALSE;
 			}
 		}else{
 			throw Context.reportRuntimeError("The function call isNum is not valid");

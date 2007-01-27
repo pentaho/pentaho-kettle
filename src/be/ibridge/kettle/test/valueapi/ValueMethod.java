@@ -76,7 +76,7 @@ public class ValueMethod
             if (p>0) ret.append(", ");
             ret.append(parameters[p].getName());
         }
-        ret.append(")");
+        ret.append(')');
         
         return ret.toString();
     }

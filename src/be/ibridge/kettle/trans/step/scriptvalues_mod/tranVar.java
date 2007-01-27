@@ -100,7 +100,7 @@ public class tranVar extends ScriptableObject {
     	 		case Value.VALUE_TYPE_BIGNUMBER:   
     	 			return new Double(tValue.getNumber()); 
     	 		case Value.VALUE_TYPE_BOOLEAN:
-    	 			return new Boolean(tValue.getBoolean());
+    	 			return Boolean.valueOf(tValue.getBoolean());
     	 		case Value.VALUE_TYPE_DATE:
     	 			return tValue.getDate();
     	 		case Value.VALUE_TYPE_INTEGER:
@@ -203,7 +203,7 @@ public class tranVar extends ScriptableObject {
      
      public Object jsFunction_getBool(){
     	 if(tValue.isNull()) return null;
-    	 return new Boolean(this.tValue.getBoolean());
+    	 return Boolean.valueOf(this.tValue.getBoolean());
      }
      
      public void jsFunction_setBool(Object bIn){
