@@ -178,7 +178,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 			scope.put("files_retrieved", scope, files_retrieved);
 			scope.put("exit_status", scope, exit_status);
 			scope.put("nr", scope, nr);
-            scope.put("is_windows", scope, new Boolean(Const.isWindows()));
+            scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows()));
             
 			Object array[] = null;
 			if (result.getRows()!=null)

@@ -154,7 +154,7 @@ public class Translator
                 
                 // What's the locale?
                 String locale = getLocale(entry);
-                locales.put(locale, new Boolean(true));
+                locales.put(locale, Boolean.TRUE);
                 
                 if (locale.charAt(2)!='_')
                 {
@@ -670,8 +670,8 @@ public class Translator
         String[] selection = eld.open();
         if (selection!=null)
         {
-            for (int i=0;i<available.length;i++) locales.put(available[i], new Boolean(false));
-            for (int i=0;i<selection.length;i++) locales.put(selection[i], new Boolean(true));
+            for (int i=0;i<available.length;i++) locales.put(available[i], Boolean.FALSE);
+            for (int i=0;i<selection.length;i++) locales.put(selection[i], Boolean.TRUE);
         }
     }
 

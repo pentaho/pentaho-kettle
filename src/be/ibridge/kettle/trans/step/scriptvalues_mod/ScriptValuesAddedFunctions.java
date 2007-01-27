@@ -325,8 +325,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
 					Calendar startDate = Calendar.getInstance(); 
 					startDate.setTime(dIn);
-					if(startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SATURDAY &&startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SUNDAY) return new Boolean(true);
-					return new Boolean(false);
+					if(startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SATURDAY &&startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SUNDAY) return Boolean.TRUE;
+					return Boolean.FALSE;
 				}
 			}catch(Exception e){
 				return null;
@@ -526,7 +526,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		}else{
 			throw Context.reportRuntimeError("The function call isCodepage is not valid.");		
 		}
-		return new Boolean(bRC);
+		return Boolean.valueOf(bRC);
 	}
 	
 	public static String ltrim(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
@@ -717,7 +717,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			if(ArgList.length==1 && !isNull(ArgList[0]) && !isUndefined(ArgList[0])){
 				if(ArgList[0].equals(null)) return null;
 				File file = new File(Context.toString(ArgList[0]));
-		        return new Boolean(file.isFile());
+		        return Boolean.valueOf(file.isFile());
 			}else{
 				throw Context.reportRuntimeError("The function call fileExists is not valid.");
 			}
@@ -1052,7 +1052,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList[0])) return null;
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				double sArg1 = Context.toNumber(ArgList[0]);
-				if(Double.isNaN(sArg1)) return new Boolean(false);
+				if(Double.isNaN(sArg1)) return Boolean.FALSE;
 				else return new Boolean(true);
 			}catch(Exception e){
 				return new Boolean(false);
@@ -1069,9 +1069,9 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList[0])) return null;
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				/* java.util.Date d = (java.util.Date)*/ Context.toType(ArgList[0], java.util.Date.class); 
-				return new Boolean(true);
+				return Boolean.TRUE;
 			}catch(Exception e){
-				return new Boolean(false);
+				return Boolean.FALSE;
 			}
 		}else{
 			throw Context.reportRuntimeError("The function call isDate is not valid");

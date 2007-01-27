@@ -144,7 +144,7 @@ public class ReportTable
             if (field.getSortType()!=ReportTableField.SORT_TYPE_NONE)
             {
                 fieldNrs.add(new Integer(row.searchValueIndex( field.getFieldName() )));
-                ascending.add(new Boolean( field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING ) );
+                ascending.add(Boolean.valueOf(field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING));
             }
         }
         
@@ -154,7 +154,7 @@ public class ReportTable
             if (field.getSortType()!=ReportTableField.SORT_TYPE_NONE)
             {
                 fieldNrs.add(new Integer(row.searchValueIndex( field.getFieldName() )));
-                ascending.add(new Boolean( field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING ) );
+                ascending.add(Boolean.valueOf(field.getSortType()==ReportTableField.SORT_TYPE_ASCENDING));
             }
         }
     }

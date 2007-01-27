@@ -81,7 +81,7 @@ public class TreeMemory
     {
         if (expanded)
         {
-            map.put(new TreeMemoryEntry(treeName, path), new Boolean(expanded));
+            map.put(new TreeMemoryEntry(treeName, path), Boolean.valueOf(expanded));
         }
         else
         {
