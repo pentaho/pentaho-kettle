@@ -196,10 +196,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				// Adding some Constants to the JavaScript
 				try {
 					
-					data.scope.put("SKIP_TRANSFORMATION", data.scope, Integer.valueOf(SKIP_TRANSFORMATION));
-					data.scope.put("ABORT_TRANSFORMATION", data.scope, Integer.valueOf(ABORT_TRANSFORMATION));
-					data.scope.put("ERROR_TRANSFORMATION", data.scope, Integer.valueOf(ERROR_TRANSFORMATION));
-					data.scope.put("CONTINUE_TRANSFORMATION", data.scope, Integer.valueOf(CONTINUE_TRANSFORMATION));
+					data.scope.put("SKIP_TRANSFORMATION", data.scope, new Integer(SKIP_TRANSFORMATION));
+					data.scope.put("ABORT_TRANSFORMATION", data.scope, new Integer(ABORT_TRANSFORMATION));
+					data.scope.put("ERROR_TRANSFORMATION", data.scope, new Integer(ERROR_TRANSFORMATION));
+					data.scope.put("CONTINUE_TRANSFORMATION", data.scope, new Integer(CONTINUE_TRANSFORMATION));
 
 				} catch (Exception ex) {
 					//System.out.println("Exception Adding the Constants " + ex.toString());

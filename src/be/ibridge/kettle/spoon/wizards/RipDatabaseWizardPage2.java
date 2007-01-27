@@ -417,7 +417,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		{
 			for (int i=0;i<input.length;i++)
 			{
-				Integer idx = Integer.valueOf(i);
+				Integer idx = new Integer(i);
 				String str = (String)selection.get(idx);
 				if (str==null) // Not selected: show in source!
 				{
@@ -443,7 +443,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		for (int i=0;i<input.length;i++) 
 		{
 			wListDest.add(input[i]);
-			selection.put(Integer.valueOf(i), input[i]);
+			selection.put(new Integer(i), input[i]);
 		}
 		
 		setPageComplete(canFlipToNextPage());
@@ -479,7 +479,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 	public void addToDestination(String string)
 	{
 		int idxInput = Const.indexOfString(string, input);
-		selection.put(Integer.valueOf(idxInput), string);
+		selection.put(new Integer(idxInput), string);
 		
 		getData();
 	}
@@ -487,7 +487,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 	public void delFromDestination(String string)
 	{
 		int idxInput = Const.indexOfString(string, input);
-		selection.remove(Integer.valueOf(idxInput));
+		selection.remove(new Integer(idxInput));
 		
 		getData();
 	}

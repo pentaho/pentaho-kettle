@@ -62,7 +62,7 @@ public class ExampleCellModifier implements ICellModifier
             int i = choices.length - 1;
             while (!stringValue.equals(choices[i]) && i > 0)
                 --i;
-            result = Integer.valueOf(i);
+            result = new Integer(i);
             break;
         case 3: // PERCENT_COLUMN 
             result = task.getPercentComplete() + "";

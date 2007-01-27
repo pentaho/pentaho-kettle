@@ -952,10 +952,10 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 
 				// Adding some Constants to the JavaScript
 				try {
-					jsscope.put("SKIP_TRANSFORMATION", jsscope, Integer.valueOf(SKIP_TRANSFORMATION));
-					jsscope.put("ABORT_TRANSFORMATION", jsscope, Integer.valueOf(ABORT_TRANSFORMATION));
-					jsscope.put("ERROR_TRANSFORMATION", jsscope, Integer.valueOf(ERROR_TRANSFORMATION));
-					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, Integer.valueOf(CONTINUE_TRANSFORMATION));
+					jsscope.put("SKIP_TRANSFORMATION", jsscope, new Integer(SKIP_TRANSFORMATION));
+					jsscope.put("ABORT_TRANSFORMATION", jsscope, new Integer(ABORT_TRANSFORMATION));
+					jsscope.put("ERROR_TRANSFORMATION", jsscope, new Integer(ERROR_TRANSFORMATION));
+					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
 					errorMessage="Coundln't not add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 					retval = false;

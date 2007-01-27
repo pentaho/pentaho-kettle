@@ -134,7 +134,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             int pos = len-1;
             while (pos>=0)
             {
-                if (sql.charAt(pos)=='?') data.markerPositions.add(Integer.valueOf(pos)); // save the marker position
+                if (sql.charAt(pos)=='?') data.markerPositions.add(new Integer(pos)); // save the marker position
                 pos--;
             }
 		}

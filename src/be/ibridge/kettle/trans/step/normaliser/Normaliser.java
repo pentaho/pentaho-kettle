@@ -92,7 +92,7 @@ public class Normaliser extends BaseStep implements StepInterface
 				}
 				if (!found) 
 				{
-					data.copy_fieldnrs.add(Integer.valueOf(i));
+					data.copy_fieldnrs.add(new Integer(i));
 				} 
 			}
 			

@@ -153,7 +153,7 @@ public class TransSplitter
         if (port==null)
         {
             p = getNextPort(clusterSchema);
-            clusterStepPortMap.put(key, Integer.valueOf(p));
+            clusterStepPortMap.put(key, new Integer(p));
         }
         else
         {
@@ -180,7 +180,7 @@ public class TransSplitter
         {
             p = port.intValue()+1;
         }
-        clusterPortMap.put(clusterSchema, Integer.valueOf(p));
+        clusterPortMap.put(clusterSchema, new Integer(p));
         return p;
     }
     

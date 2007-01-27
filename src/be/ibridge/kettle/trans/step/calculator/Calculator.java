@@ -92,7 +92,7 @@ public class Calculator extends BaseStep implements StepInterface
                     if (!Const.isEmpty(fn.getFieldA()))
                     {
                         Integer idxA = (Integer)data.indexCache.get(fn.getFieldA());
-                        if (idxA==null) idxA = Integer.valueOf( r.searchValueIndex(fn.getFieldA()) );
+                        if (idxA==null) idxA = new Integer( r.searchValueIndex(fn.getFieldA()) );
                         if (idxA.intValue()<0) throw new KettleValueException("Field ["+fn.getFieldA()+"] can't be found in the input row!");
                         data.indexCache.put(fn.getFieldA(), idxA);
                         fieldA = r.getValue(idxA.intValue());
@@ -101,7 +101,7 @@ public class Calculator extends BaseStep implements StepInterface
                     if (!Const.isEmpty(fn.getFieldB()))
                     {
                         Integer idxB = (Integer)data.indexCache.get(fn.getFieldB());
-                        if (idxB==null) idxB = Integer.valueOf( r.searchValueIndex(fn.getFieldB()) );
+                        if (idxB==null) idxB = new Integer( r.searchValueIndex(fn.getFieldB()) );
                         if (idxB.intValue()<0) throw new KettleValueException("Field ["+fn.getFieldB()+"] can't be found in the input row!");
                         data.indexCache.put(fn.getFieldB(), idxB);
                         fieldB = r.getValue(idxB.intValue());
@@ -110,7 +110,7 @@ public class Calculator extends BaseStep implements StepInterface
                     if (!Const.isEmpty(fn.getFieldC()))
                     {
                         Integer idxC = (Integer)data.indexCache.get(fn.getFieldC());
-                        if (idxC==null) idxC = Integer.valueOf( r.searchValueIndex(fn.getFieldC()) );
+                        if (idxC==null) idxC = new Integer( r.searchValueIndex(fn.getFieldC()) );
                         if (idxC.intValue()<0) throw new KettleValueException("Field ["+fn.getFieldC()+"] can't be found in the input row!");
                         data.indexCache.put(fn.getFieldC(), idxC);
                         fieldC = r.getValue(idxC.intValue());

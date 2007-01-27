@@ -2394,7 +2394,7 @@ public class CopyOfTableView extends Composite
 				boolean keep = cond.evaluate(r);
 				if (keep)
 				{
-					tokeep.add( Integer.valueOf(i) );
+					tokeep.add( new Integer(i) );
 				}
 			}
 

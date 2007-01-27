@@ -81,7 +81,7 @@ public class TextFileImporter
 					{
 						Character chr = new Character(line.charAt(i));
 						Integer occ = (Integer)positions[i].get(chr);
-						if (occ==null) occ=Integer.valueOf(1); else occ=Integer.valueOf(occ.intValue()+1);
+						if (occ==null) occ=new Integer(1); else occ=new Integer(occ.intValue()+1);
 						
 						positions[i].put(chr, occ);
 					}
@@ -127,7 +127,7 @@ public class TextFileImporter
 				if (valey) 
 				{
 					System.out.print("x");
-					retval.add(Integer.valueOf(i));
+					retval.add(new Integer(i));
 				} 
 				else 
 				{

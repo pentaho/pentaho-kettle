@@ -34,7 +34,7 @@ public class RowMapTest
                 Value value = new Value(fieldNames[f], "dummy");
 
                 row.addValue(value);
-                map.put(fieldNames[f], Integer.valueOf(f));
+                map.put(fieldNames[f], new Integer(f));
             }
             
             rows.add(row);

@@ -144,11 +144,11 @@ public class Translator
                 Integer num = (Integer)directories.get(path);
                 if (num!=null) 
                 { 
-                    num = Integer.valueOf(num.intValue()+1); 
+                    num = new Integer(num.intValue()+1); 
                 }
                 else
                 {
-                    num = Integer.valueOf(1);
+                    num = new Integer(1);
                 }
                 directories.put(path, num);
                 
