@@ -62,7 +62,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private CCombo       wConnection;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar      wSchema;
     private FormData     fdlSchema, fdSchema;
 
 	private Label        wlTable;
@@ -192,7 +192,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         fdSchema=new FormData();
