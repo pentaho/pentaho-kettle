@@ -165,7 +165,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get files by HTTP...");
+		shell.setText("Get a file using HTTP...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
