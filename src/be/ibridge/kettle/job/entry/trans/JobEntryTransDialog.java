@@ -183,14 +183,14 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Job entry details for this transformation:");
+		shell.setText("Execute a transformation...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Name of job entry: ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -209,7 +209,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 
 		// Transname line
 		wlTransname=new Label(shell, SWT.RIGHT);
-		wlTransname.setText("Name of transformation: ");
+		wlTransname.setText("Name of transformation ");
  		props.setLook(wlTransname);
 		fdlTransname=new FormData();
 		fdlTransname.top  = new FormAttachment(wName, margin*2);
@@ -237,7 +237,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 
 		// Directory line
 		wlDirectory=new Label(shell, SWT.RIGHT);
-		wlDirectory.setText("Repository directory: ");
+		wlDirectory.setText("Repository directory ");
  		props.setLook(wlDirectory);
 		fdlDirectory=new FormData();
 		fdlDirectory.top  = new FormAttachment(wTransname, margin*2);
@@ -257,7 +257,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText("Filename : ");
+		wlFilename.setText("Filename ");
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.top  = new FormAttachment(wDirectory, margin);

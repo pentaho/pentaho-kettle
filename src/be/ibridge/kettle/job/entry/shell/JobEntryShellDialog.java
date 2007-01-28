@@ -155,14 +155,14 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Job entry details for this shell script:");
+		shell.setText("Execute a shell script...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Name of shell script: ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -181,7 +181,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText("Filename : ");
+		wlFilename.setText("Filename ");
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);

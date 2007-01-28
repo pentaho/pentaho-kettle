@@ -126,7 +126,7 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 
 		// Filename line
 		wlName=new Label(shell, SWT.NONE);
-		wlName.setText("Step name : ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);

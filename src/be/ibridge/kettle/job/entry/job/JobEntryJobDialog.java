@@ -174,14 +174,14 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Job entry details for this job:");
+		shell.setText("Execute a job...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Name of job entry: ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -200,7 +200,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
 		// Jobname line
 		wlJobname=new Label(shell, SWT.RIGHT);
-		wlJobname.setText("Name of job: ");
+		wlJobname.setText("Name of job ");
  		props.setLook(wlJobname);
 		fdlJobname=new FormData();
 		fdlJobname.top  = new FormAttachment(wName, margin*2);
@@ -228,7 +228,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
 		// Directory line
 		wlDirectory=new Label(shell, SWT.RIGHT);
-		wlDirectory.setText("Repository directory: ");
+		wlDirectory.setText("Repository directory ");
  		props.setLook(wlDirectory);
 		fdlDirectory=new FormData();
 		fdlDirectory.top  = new FormAttachment(wJobname, margin*2);
@@ -248,7 +248,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText("Filename : ");
+		wlFilename.setText("Filename ");
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.top  = new FormAttachment(wDirectory, margin);

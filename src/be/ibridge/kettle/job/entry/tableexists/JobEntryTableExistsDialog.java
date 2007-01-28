@@ -121,14 +121,14 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Check if database table exists");
+		shell.setText("Check if database table exists...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Job Entry name ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left  = new FormAttachment(0, 0);

@@ -142,7 +142,7 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Job Entry name ");
+		wlName.setText("Job entry name ");
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);

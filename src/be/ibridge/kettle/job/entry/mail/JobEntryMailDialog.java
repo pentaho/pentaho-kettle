@@ -164,13 +164,13 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Job mail details");
+		shell.setText("Send a mail...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
-		wName=new LabelText(shell, "Name of mail job entry", "Name of mail job entry");
+		wName=new LabelText(shell, "Job entry name", "Name of this job entry");
  		wName.addModifyListener(lsMod);
 		fdName=new FormData();
 		fdName.top  = new FormAttachment(0, 0);
@@ -457,7 +457,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         
         // Comment line
         wlComment=new Label(shell, SWT.RIGHT);
-        wlComment.setText("Comment: ");
+        wlComment.setText("Comment ");
         props.setLook(wlComment);
         fdlComment=new FormData();
         fdlComment.left = new FormAttachment(0, 0);
@@ -477,9 +477,6 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
         wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
         
-
-
-
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };

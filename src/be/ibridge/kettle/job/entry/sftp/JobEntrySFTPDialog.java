@@ -138,7 +138,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get files by SFTP");
+		shell.setText("Get files by SFTP...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;

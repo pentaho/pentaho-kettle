@@ -139,7 +139,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
 
-		if (this.jobEntry.getName() == null) this.jobEntry.setName("FTP Files");
+		if (this.jobEntry.getName() == null) this.jobEntry.setName("Get file by HTTP");
 	}
 
 	public JobEntryInterface open()
@@ -165,7 +165,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get files by FTP");
+		shell.setText("Get files by HTTP...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;

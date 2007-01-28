@@ -145,13 +145,13 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get files by FTP");
+		shell.setText("Get files by FTP...");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Job entry name line
-        wName=new LabelText(shell, "Name of the job entry", "The unique name of job entry");
+        wName=new LabelText(shell, "Job entry name ", "Name of this job entry");
         wName.addModifyListener(lsMod);
         fdName=new FormData();
         fdName.top  = new FormAttachment(0, 0);
@@ -160,7 +160,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wName.setLayoutData(fdName);
 
 		// ServerName line
-		wServerName=new LabelTextVar(shell, "FTP-server name (IP)", "The FTP server name or IP address");
+		wServerName=new LabelTextVar(shell, "FTP-server name (IP) ", "The FTP server name or IP address");
  		props.setLook(wServerName);
 		wServerName.addModifyListener(lsMod);
 		fdServerName=new FormData();
@@ -170,7 +170,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wServerName.setLayoutData(fdServerName);
 
 		// UserName line
-		wUserName=new LabelTextVar(shell, "Username", "Enter the FTP server username");
+		wUserName=new LabelTextVar(shell, "Username ", "Enter the FTP server username");
  		props.setLook(wUserName);
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
@@ -180,7 +180,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wUserName.setLayoutData(fdUserName);
 
 		// Password line
-		wPassword=new LabelTextVar(shell, "Password", "The FTP server password");
+		wPassword=new LabelTextVar(shell, "Password ", "The FTP server password");
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
@@ -202,7 +202,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 
         
 		// FtpDirectory line
-		wFtpDirectory=new LabelTextVar(shell, "Remote directory", "The directory on the FTP server");
+		wFtpDirectory=new LabelTextVar(shell, "Remote directory ", "The directory on the FTP server");
  		props.setLook(wFtpDirectory);
 		wFtpDirectory.addModifyListener(lsMod);
 		fdFtpDirectory=new FormData();
@@ -212,7 +212,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wFtpDirectory.setLayoutData(fdFtpDirectory);
 
 		// TargetDirectory line
-		wTargetDirectory=new LabelTextVar(shell, "Target directory", "The target directory on the local server");
+		wTargetDirectory=new LabelTextVar(shell, "Target directory ", "The target directory on the local server");
  		props.setLook(wTargetDirectory);
 		wTargetDirectory.addModifyListener(lsMod);
 		fdTargetDirectory=new FormData();
@@ -222,7 +222,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wTargetDirectory.setLayoutData(fdTargetDirectory);
 
 		// Wildcard line
-		wWildcard=new LabelTextVar(shell, "Wildcard (regular expression)", "Enter a regular expression to specify the filenames to retrieve.\nFor example .*\\.txt$ : get all text files.");
+		wWildcard=new LabelTextVar(shell, "Wildcard (regular expression) ", "Enter a regular expression to specify the filenames to retrieve.\nFor example .*\\.txt$ : get all text files.");
  		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
@@ -249,7 +249,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wBinaryMode.setLayoutData(fdBinaryMode);
 
 		// Timeout line
-		wTimeout=new LabelTextVar(shell, "Timeout", "The timeout in seconds");
+		wTimeout=new LabelTextVar(shell, "Timeout ", "The timeout in seconds");
  		props.setLook(wTimeout);
 		wTimeout.addModifyListener(lsMod);
 		fdTimeout=new FormData();
@@ -294,7 +294,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 
         // active connection?
         wlActive=new Label(shell, SWT.RIGHT);
-        wlActive.setText("Use active FTP connection");
+        wlActive.setText("Use active FTP connection ");
         props.setLook(wlActive);
         fdlActive=new FormData();
         fdlActive.left = new FormAttachment(0, 0);
