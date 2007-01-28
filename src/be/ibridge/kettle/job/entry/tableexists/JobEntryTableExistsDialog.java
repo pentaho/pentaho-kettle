@@ -164,6 +164,10 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				if (cid.open()!=null)
 				{
+					jobMeta.addDatabase(databaseMeta);
+					
+					// SB: Maybe do the same her as in BaseStepDialog: remove
+					//     all db connections and add them again.
 					wConnection.add(databaseMeta.getName());
 					wConnection.select(wConnection.getItemCount()-1);
 				}
