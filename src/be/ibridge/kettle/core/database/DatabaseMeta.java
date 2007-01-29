@@ -1770,9 +1770,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 * @param tableName The tablename to be truncated
 	 * @return The SQL statement to remove all rows from the specified statement, if possible without using transactions
 	 */
-	public String getTruncateTableStatement(String tableName)
-	{
-	    return databaseInterface.getTruncateTableStatement( quoteField(tableName) );
+	public String getTruncateTableStatement(String schema, String tableName)
+	{		
+	    return databaseInterface.getTruncateTableStatement(getQuotedSchemaTableCombination(schema, tableName));
 	}
 
     /**
@@ -1918,7 +1918,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             // SQL: get list of procedures?
             r = new Row(); r.addValue(new Value(par, "SQL: list of procedures")); r.addValue(new Value(val, getSQLListOfProcedures())); list.add(r);
             // SQL: get truncate table statement?
-            r = new Row(); r.addValue(new Value(par, "SQL: truncate table")); r.addValue(new Value(val, getTruncateTableStatement("TABLE"))); list.add(r);
+            r = new Row(); r.addValue(new Value(par, "SQL: truncate table")); r.addValue(new Value(val, getTruncateTableStatement(null, "TABLE"))); list.add(r);
             // supports float rounding on update?
             r = new Row(); r.addValue(new Value(par, "supports floating point rounding on update/insert")); r.addValue(new Value(val, supportsFloatRoundingOnUpdate())); list.add(r);
             // supports time stamp to date conversion

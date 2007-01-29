@@ -3917,20 +3917,31 @@ public class Database
 			throw new KettleDatabaseException("Sequences are only available for Oracle databases.");
 		}
 	}
-	
+
 	public void truncateTable(String tablename) throws KettleDatabaseException
 	{
         if (Const.isEmpty(connectionGroup))
         {
-            execStatement(databaseMeta.getTruncateTableStatement(tablename));
+            execStatement(databaseMeta.getTruncateTableStatement(null, tablename));
         }
         else
         {
             execStatement("DELETE FROM "+databaseMeta.quoteField(tablename));
         }
 	}
-
-
+	
+	public void truncateTable(String schema, String tablename) throws KettleDatabaseException
+	{
+        if (Const.isEmpty(connectionGroup))
+        {
+            execStatement(databaseMeta.getTruncateTableStatement(schema, tablename));
+        }
+        else
+        {
+            execStatement("DELETE FROM "+databaseMeta.getQuotedSchemaTableCombination(schema, tablename));
+        }
+	}
+	
 	/**
 	 * Execute a query and return at most one row from the resultset
 	 * @param sql The SQL for the query

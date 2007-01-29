@@ -252,14 +252,16 @@ public class TableOutput extends BaseStep implements StepInterface
 				data.db.setCommit(meta.getCommitSize());
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
-                {
-                	data.tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination( StringUtil.environmentSubstitute( meta.getSchemaName() ),  StringUtil.environmentSubstitute( meta.getTablename()) );
-                    
+                {    
+                	data.tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination( StringUtil.environmentSubstitute( meta.getSchemaName() ),  
+                			                                                                 StringUtil.environmentSubstitute( meta.getTablename()) );                
+                	
                     // Only the first one truncates in a non-partitioned step copy
                     //
                     if (meta.truncateTable() && ( getCopy()==0 || !Const.isEmpty(getPartitionID())) )
-    				{
-    					data.db.truncateTable(data.tableName);
+    				{                	
+    					data.db.truncateTable(StringUtil.environmentSubstitute(meta.getSchemaName()), 
+    							              StringUtil.environmentSubstitute(meta.getTablename()));
     				}
                 }
                 
