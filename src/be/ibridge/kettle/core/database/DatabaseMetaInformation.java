@@ -173,7 +173,6 @@ public class DatabaseMetaInformation
 								catalogItems.add(table_name);
 							}
 						}
-						tables.close();
 					}
 					catch(Exception e)
 					{
