@@ -1103,7 +1103,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         }
         catch (KettleException dbe)
         {
-            throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob1") + jobname + Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob2"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new KettleException(Messages.getString("JobMeta.Exception.AnErrorOccuredReadingJob", jobname), dbe);
         }
         finally
         {

@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
- 
 /*
  * Created on 19-jun-2003
  *
@@ -47,315 +46,372 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
-
 /**
- * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql script to be executed)
- *  
+ * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
+ * script to be executed)
+ * 
  * @author Matt
- * @since  19-06-2003
+ * @since 19-06-2003
  */
 public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 {
-	private LabelText    wName;
-    private FormData     fdName;
+    private LabelText wName;
 
-	private LabelTextVar wServerName;
-	private FormData     fdServerName;
-	
-	private LabelTextVar wUserName;
-	private FormData     fdUserName;
-	
-	private LabelTextVar wPassword;
-	private FormData     fdPassword;
-	
-	private LabelTextVar wFtpDirectory;
-	private FormData     fdFtpDirectory;
-	
-	private LabelTextVar wTargetDirectory;
-	private FormData     fdTargetDirectory;
-	
-	private LabelTextVar wWildcard;
-	private FormData     fdWildcard;
-	
-	private Label        wlBinaryMode;
-	private Button       wBinaryMode;
-	private FormData     fdlBinaryMode, fdBinaryMode;
-	
-	private LabelTextVar wTimeout;
-	private FormData     fdTimeout;
-	
-	private Label        wlRemove;
-	private Button       wRemove;
-	private FormData     fdlRemove, fdRemove;
+    private FormData fdName;
 
-    private Label        wlOnlyNew;
-    private Button       wOnlyNew;
-    private FormData     fdlOnlyNew, fdOnlyNew;
+    private LabelTextVar wServerName;
 
-    private Label        wlActive;
-    private Button       wActive;
-    private FormData     fdlActive, fdActive;
+    private FormData fdServerName;
 
-	private Button wOK, wCancel;
-	private Listener lsOK, lsCancel;
+    private LabelTextVar wUserName;
 
-	private JobEntryFTP     jobEntry;
-	private Shell       	shell;
-	private Props       	props;
+    private FormData fdUserName;
 
-	private SelectionAdapter lsDef;
+    private LabelTextVar wPassword;
 
-	private boolean changed;
-	
-	public JobEntryFTPDialog(Shell parent, JobEntryFTP jobEntry, JobMeta jobMeta)
-	{
-		super(parent, SWT.NONE);
-		props=Props.getInstance();
-		this.jobEntry=jobEntry;
+    private FormData fdPassword;
 
-		if (this.jobEntry.getName() == null) this.jobEntry.setName("FTP Files");
-	}
+    private LabelTextVar wFtpDirectory;
 
-	public JobEntryInterface open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+    private FormData fdFtpDirectory;
 
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(shell);
+    private LabelTextVar wTargetDirectory;
+
+    private FormData fdTargetDirectory;
+
+    private LabelTextVar wWildcard;
+
+    private FormData fdWildcard;
+
+    private Label wlBinaryMode;
+
+    private Button wBinaryMode;
+
+    private FormData fdlBinaryMode, fdBinaryMode;
+
+    private LabelTextVar wTimeout;
+
+    private FormData fdTimeout;
+
+    private Label wlRemove;
+
+    private Button wRemove;
+
+    private FormData fdlRemove, fdRemove;
+
+    private Label wlOnlyNew;
+
+    private Button wOnlyNew;
+
+    private FormData fdlOnlyNew, fdOnlyNew;
+
+    private Label wlActive;
+
+    private Button wActive;
+
+    private FormData fdlActive, fdActive;
+
+    private Button wOK, wCancel;
+
+    private Listener lsOK, lsCancel;
+
+    private JobEntryFTP jobEntry;
+
+    private Shell shell;
+
+    private Props props;
+
+    private SelectionAdapter lsDef;
+
+    private boolean changed;
+
+    public JobEntryFTPDialog(Shell parent, JobEntryFTP jobEntry, JobMeta jobMeta)
+    {
+        super(parent, SWT.NONE);
+        props = Props.getInstance();
+        this.jobEntry = jobEntry;
+
+        if (this.jobEntry.getName() == null)
+            this.jobEntry.setName(Messages.getString("JobFTP.Name.Default"));
+    }
+
+    public JobEntryInterface open()
+    {
+        Shell parent = getParent();
+        Display display = parent.getDisplay();
+
+        shell = new Shell(parent, props.getJobsDialogStyle());
+        props.setLook(shell);
         JobDialog.setShellImage(shell, jobEntry);
 
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				jobEntry.setChanged();
-			}
-		};
-		changed = jobEntry.hasChanged();
+        ModifyListener lsMod = new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                jobEntry.setChanged();
+            }
+        };
+        changed = jobEntry.hasChanged();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+        FormLayout formLayout = new FormLayout();
+        formLayout.marginWidth = Const.FORM_MARGIN;
+        formLayout.marginHeight = Const.FORM_MARGIN;
 
-		shell.setLayout(formLayout);
-		shell.setText("Get files by FTP...");
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+        shell.setLayout(formLayout);
+        shell.setText(Messages.getString("JobFTP.Title"));
 
-		// Job entry name line
-        wName=new LabelText(shell, "Job entry name ", "Name of this job entry");
+        int middle = props.getMiddlePct();
+        int margin = Const.MARGIN;
+
+        // Job entry name line
+        wName = new LabelText(shell, Messages.getString("JobFTP.Name.Label"), Messages
+            .getString("JobFTP.Name.Tooltip"));
         wName.addModifyListener(lsMod);
-        fdName=new FormData();
-        fdName.top  = new FormAttachment(0, 0);
+        fdName = new FormData();
+        fdName.top = new FormAttachment(0, 0);
         fdName.left = new FormAttachment(0, 0);
-        fdName.right= new FormAttachment(100, 0);
+        fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
 
-		// ServerName line
-		wServerName=new LabelTextVar(shell, "FTP-server name (IP) ", "The FTP server name or IP address");
- 		props.setLook(wServerName);
-		wServerName.addModifyListener(lsMod);
-		fdServerName=new FormData();
-		fdServerName.left = new FormAttachment(0, 0);
-		fdServerName.top  = new FormAttachment(wName, margin);
-		fdServerName.right= new FormAttachment(100, 0);
-		wServerName.setLayoutData(fdServerName);
+        // ServerName line
+        wServerName = new LabelTextVar(shell, Messages.getString("JobFTP.Server.Label"), Messages
+            .getString("JobFTP.Server.Tooltip"));
+        props.setLook(wServerName);
+        wServerName.addModifyListener(lsMod);
+        fdServerName = new FormData();
+        fdServerName.left = new FormAttachment(0, 0);
+        fdServerName.top = new FormAttachment(wName, margin);
+        fdServerName.right = new FormAttachment(100, 0);
+        wServerName.setLayoutData(fdServerName);
 
-		// UserName line
-		wUserName=new LabelTextVar(shell, "Username ", "Enter the FTP server username");
- 		props.setLook(wUserName);
-		wUserName.addModifyListener(lsMod);
-		fdUserName=new FormData();
-		fdUserName.left = new FormAttachment(0, 0);
-		fdUserName.top  = new FormAttachment(wServerName, margin);
-		fdUserName.right= new FormAttachment(100, 0);
-		wUserName.setLayoutData(fdUserName);
+        // UserName line
+        wUserName = new LabelTextVar(shell, Messages.getString("JobFTP.User.Label"), Messages
+            .getString("JobFTP.User.Tooltip"));
+        props.setLook(wUserName);
+        wUserName.addModifyListener(lsMod);
+        fdUserName = new FormData();
+        fdUserName.left = new FormAttachment(0, 0);
+        fdUserName.top = new FormAttachment(wServerName, margin);
+        fdUserName.right = new FormAttachment(100, 0);
+        wUserName.setLayoutData(fdUserName);
 
-		// Password line
-		wPassword=new LabelTextVar(shell, "Password ", "The FTP server password");
- 		props.setLook(wPassword);
+        // Password line
+        wPassword = new LabelTextVar(shell, Messages.getString("JobFTP.Password.Label"), Messages
+            .getString("JobFTP.Password.Tooltip"));
+        props.setLook(wPassword);
         wPassword.setEchoChar('*');
-		wPassword.addModifyListener(lsMod);
-		fdPassword=new FormData();
-		fdPassword.left = new FormAttachment(0, 0);
-		fdPassword.top  = new FormAttachment(wUserName, margin);
-		fdPassword.right= new FormAttachment(100, 0);
-		wPassword.setLayoutData(fdPassword);
+        wPassword.addModifyListener(lsMod);
+        fdPassword = new FormData();
+        fdPassword.left = new FormAttachment(0, 0);
+        fdPassword.top = new FormAttachment(wUserName, margin);
+        fdPassword.right = new FormAttachment(100, 0);
+        wPassword.setLayoutData(fdPassword);
 
         // OK, if the password contains a variable, we don't want to have the password hidden...
         wPassword.getTextWidget().addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
             {
-                public void modifyText(ModifyEvent e)
-                {
-                    checkPasswordVisible();
-                }
+                checkPasswordVisible();
             }
-        );
+        });
 
-        
-		// FtpDirectory line
-		wFtpDirectory=new LabelTextVar(shell, "Remote directory ", "The directory on the FTP server");
- 		props.setLook(wFtpDirectory);
-		wFtpDirectory.addModifyListener(lsMod);
-		fdFtpDirectory=new FormData();
-		fdFtpDirectory.left = new FormAttachment(0, 0);
-		fdFtpDirectory.top  = new FormAttachment(wPassword, margin);
-		fdFtpDirectory.right= new FormAttachment(100, 0);
-		wFtpDirectory.setLayoutData(fdFtpDirectory);
+        // FtpDirectory line
+        wFtpDirectory = new LabelTextVar(shell, Messages.getString("JobFTP.RemoteDir.Label"),
+            Messages.getString("JobFTP.RemoteDir.Tooltip"));
+        props.setLook(wFtpDirectory);
+        wFtpDirectory.addModifyListener(lsMod);
+        fdFtpDirectory = new FormData();
+        fdFtpDirectory.left = new FormAttachment(0, 0);
+        fdFtpDirectory.top = new FormAttachment(wPassword, margin);
+        fdFtpDirectory.right = new FormAttachment(100, 0);
+        wFtpDirectory.setLayoutData(fdFtpDirectory);
 
-		// TargetDirectory line
-		wTargetDirectory=new LabelTextVar(shell, "Target directory ", "The target directory on the local server");
- 		props.setLook(wTargetDirectory);
-		wTargetDirectory.addModifyListener(lsMod);
-		fdTargetDirectory=new FormData();
-		fdTargetDirectory.left = new FormAttachment(0, 0);
-		fdTargetDirectory.top  = new FormAttachment(wFtpDirectory, margin);
-		fdTargetDirectory.right= new FormAttachment(100, 0);
-		wTargetDirectory.setLayoutData(fdTargetDirectory);
+        // TargetDirectory line
+        wTargetDirectory = new LabelTextVar(shell, Messages.getString("JobFTP.TargetDir.Label"),
+            Messages.getString("JobFTP.TargetDir.Tooltip"));
+        props.setLook(wTargetDirectory);
+        wTargetDirectory.addModifyListener(lsMod);
+        fdTargetDirectory = new FormData();
+        fdTargetDirectory.left = new FormAttachment(0, 0);
+        fdTargetDirectory.top = new FormAttachment(wFtpDirectory, margin);
+        fdTargetDirectory.right = new FormAttachment(100, 0);
+        wTargetDirectory.setLayoutData(fdTargetDirectory);
 
-		// Wildcard line
-		wWildcard=new LabelTextVar(shell, "Wildcard (regular expression) ", "Enter a regular expression to specify the filenames to retrieve.\nFor example .*\\.txt$ : get all text files.");
- 		props.setLook(wWildcard);
-		wWildcard.addModifyListener(lsMod);
-		fdWildcard=new FormData();
-		fdWildcard.left = new FormAttachment(0, 0);
-		fdWildcard.top  = new FormAttachment(wTargetDirectory, margin);
-		fdWildcard.right= new FormAttachment(100, 0);
-		wWildcard.setLayoutData(fdWildcard);
+        // Wildcard line
+        wWildcard = new LabelTextVar(shell, Messages.getString("JobFTP.Wildcard.Label"), Messages
+            .getString("JobFTP.Wildcard.Tooltip"));
+        props.setLook(wWildcard);
+        wWildcard.addModifyListener(lsMod);
+        fdWildcard = new FormData();
+        fdWildcard.left = new FormAttachment(0, 0);
+        fdWildcard.top = new FormAttachment(wTargetDirectory, margin);
+        fdWildcard.right = new FormAttachment(100, 0);
+        wWildcard.setLayoutData(fdWildcard);
 
-		// Binary mode selection...
-		wlBinaryMode=new Label(shell, SWT.RIGHT);
-		wlBinaryMode.setText("Use binary mode? ");
- 		props.setLook(wlBinaryMode);
-		fdlBinaryMode=new FormData();
-		fdlBinaryMode.left = new FormAttachment(0, 0);
-		fdlBinaryMode.top  = new FormAttachment(wWildcard, margin);
-		fdlBinaryMode.right= new FormAttachment(middle, 0);
-		wlBinaryMode.setLayoutData(fdlBinaryMode);
-		wBinaryMode=new Button(shell, SWT.CHECK);
- 		props.setLook(wBinaryMode);
-		fdBinaryMode=new FormData();
-		fdBinaryMode.left = new FormAttachment(middle, margin);
-		fdBinaryMode.top  = new FormAttachment(wWildcard, margin);
-		fdBinaryMode.right= new FormAttachment(100, 0);
-		wBinaryMode.setLayoutData(fdBinaryMode);
+        // Binary mode selection...
+        wlBinaryMode = new Label(shell, SWT.RIGHT);
+        wlBinaryMode.setText(Messages.getString("JobFTP.BinaryMode.Label"));
+        props.setLook(wlBinaryMode);
+        fdlBinaryMode = new FormData();
+        fdlBinaryMode.left = new FormAttachment(0, 0);
+        fdlBinaryMode.top = new FormAttachment(wWildcard, margin);
+        fdlBinaryMode.right = new FormAttachment(middle, 0);
+        wlBinaryMode.setLayoutData(fdlBinaryMode);
+        wBinaryMode = new Button(shell, SWT.CHECK);
+        props.setLook(wBinaryMode);
+        wBinaryMode.setToolTipText(Messages.getString("JobFTP.BinaryMode.Tooltip"));
+        fdBinaryMode = new FormData();
+        fdBinaryMode.left = new FormAttachment(middle, margin);
+        fdBinaryMode.top = new FormAttachment(wWildcard, margin);
+        fdBinaryMode.right = new FormAttachment(100, 0);
+        wBinaryMode.setLayoutData(fdBinaryMode);
 
-		// Timeout line
-		wTimeout=new LabelTextVar(shell, "Timeout ", "The timeout in seconds");
- 		props.setLook(wTimeout);
-		wTimeout.addModifyListener(lsMod);
-		fdTimeout=new FormData();
-		fdTimeout.left = new FormAttachment(0, 0);
-		fdTimeout.top  = new FormAttachment(wlBinaryMode, margin);
-		fdTimeout.right= new FormAttachment(100, 0);
-		wTimeout.setLayoutData(fdTimeout);
-		
-		// Remove files after retrieval...
-		wlRemove=new Label(shell, SWT.RIGHT);
-		wlRemove.setText("Remove files after retrieval? ");
- 		props.setLook(wlRemove);
-		fdlRemove=new FormData();
-		fdlRemove.left = new FormAttachment(0, 0);
-		fdlRemove.top  = new FormAttachment(wTimeout, margin);
-		fdlRemove.right= new FormAttachment(middle, 0);
-		wlRemove.setLayoutData(fdlRemove);
-		wRemove=new Button(shell, SWT.CHECK);
- 		props.setLook(wRemove);
-		fdRemove=new FormData();
-		fdRemove.left = new FormAttachment(middle, margin);
-		fdRemove.top  = new FormAttachment(wTimeout, margin);
-		fdRemove.right= new FormAttachment(100, 0);
-		wRemove.setLayoutData(fdRemove);
+        // Timeout line
+        wTimeout = new LabelTextVar(shell, Messages.getString("JobFTP.Timeout.Label"), Messages
+            .getString("JobFTP.Timeout.Tooltip"));
+        props.setLook(wTimeout);
+        wTimeout.addModifyListener(lsMod);
+        fdTimeout = new FormData();
+        fdTimeout.left = new FormAttachment(0, 0);
+        fdTimeout.top = new FormAttachment(wlBinaryMode, margin);
+        fdTimeout.right = new FormAttachment(100, 0);
+        wTimeout.setLayoutData(fdTimeout);
+
+        // Remove files after retrieval...
+        wlRemove = new Label(shell, SWT.RIGHT);
+        wlRemove.setText(Messages.getString("JobFTP.RemoveFiles.Label"));
+        props.setLook(wlRemove);
+        fdlRemove = new FormData();
+        fdlRemove.left = new FormAttachment(0, 0);
+        fdlRemove.top = new FormAttachment(wTimeout, margin);
+        fdlRemove.right = new FormAttachment(middle, 0);
+        wlRemove.setLayoutData(fdlRemove);
+        wRemove = new Button(shell, SWT.CHECK);
+        wRemove.setToolTipText(Messages.getString("JobFTP.RemoveFiles.Tooltip"));
+        props.setLook(wRemove);
+        fdRemove = new FormData();
+        fdRemove.left = new FormAttachment(middle, margin);
+        fdRemove.top = new FormAttachment(wTimeout, margin);
+        fdRemove.right = new FormAttachment(100, 0);
+        wRemove.setLayoutData(fdRemove);
 
         // OnlyNew files after retrieval...
-        wlOnlyNew=new Label(shell, SWT.RIGHT);
-        wlOnlyNew.setText("Don't overwrite files");
+        wlOnlyNew = new Label(shell, SWT.RIGHT);
+        wlOnlyNew.setText(Messages.getString("JobFTP.DontOverwrite.Label"));
         props.setLook(wlOnlyNew);
-        fdlOnlyNew=new FormData();
+        fdlOnlyNew = new FormData();
         fdlOnlyNew.left = new FormAttachment(0, 0);
-        fdlOnlyNew.top  = new FormAttachment(wRemove, margin);
-        fdlOnlyNew.right= new FormAttachment(middle, 0);
+        fdlOnlyNew.top = new FormAttachment(wRemove, margin);
+        fdlOnlyNew.right = new FormAttachment(middle, 0);
         wlOnlyNew.setLayoutData(fdlOnlyNew);
-        wOnlyNew=new Button(shell, SWT.CHECK);
+        wOnlyNew = new Button(shell, SWT.CHECK);
+        wOnlyNew.setToolTipText(Messages.getString("JobFTP.DontOverwrite.Tooltip"));
         props.setLook(wOnlyNew);
-        fdOnlyNew=new FormData();
+        fdOnlyNew = new FormData();
         fdOnlyNew.left = new FormAttachment(middle, margin);
-        fdOnlyNew.top  = new FormAttachment(wRemove, margin);
-        fdOnlyNew.right= new FormAttachment(100, 0);
+        fdOnlyNew.top = new FormAttachment(wRemove, margin);
+        fdOnlyNew.right = new FormAttachment(100, 0);
         wOnlyNew.setLayoutData(fdOnlyNew);
 
         // active connection?
-        wlActive=new Label(shell, SWT.RIGHT);
-        wlActive.setText("Use active FTP connection ");
+        wlActive = new Label(shell, SWT.RIGHT);
+        wlActive.setText(Messages.getString("JobFTP.ActiveConns.Label"));
         props.setLook(wlActive);
-        fdlActive=new FormData();
+        fdlActive = new FormData();
         fdlActive.left = new FormAttachment(0, 0);
-        fdlActive.top  = new FormAttachment(wOnlyNew, margin);
-        fdlActive.right= new FormAttachment(middle, 0);
+        fdlActive.top = new FormAttachment(wOnlyNew, margin);
+        fdlActive.right = new FormAttachment(middle, 0);
         wlActive.setLayoutData(fdlActive);
-        wActive=new Button(shell, SWT.CHECK);
+        wActive = new Button(shell, SWT.CHECK);
+        wActive.setToolTipText(Messages.getString("JobFTP.ActiveConns.Tooltip"));
         props.setLook(wActive);
-        fdActive=new FormData();
+        fdActive = new FormData();
         fdActive.left = new FormAttachment(middle, margin);
-        fdActive.top  = new FormAttachment(wOnlyNew, margin);
-        fdActive.right= new FormAttachment(100, 0);
+        fdActive.top = new FormAttachment(wOnlyNew, margin);
+        fdActive.right = new FormAttachment(100, 0);
         wActive.setLayoutData(fdActive);
 
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wActive);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wActive);
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+        // Add listeners
+        lsCancel = new Listener()
+        {
+            public void handleEvent(Event e)
+            {
+                cancel();
+            }
+        };
+        lsOK = new Listener()
+        {
+            public void handleEvent(Event e)
+            {
+                ok();
+            }
+        };
 
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
+        wCancel.addListener(SWT.Selection, lsCancel);
+        wOK.addListener(SWT.Selection, lsOK);
 
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+        lsDef = new SelectionAdapter()
+        {
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                ok();
+            }
+        };
 
-		wName.addSelectionListener( lsDef );
-        wServerName.addSelectionListener( lsDef );
-        wUserName.addSelectionListener( lsDef );
-        wPassword.addSelectionListener( lsDef );
-        wFtpDirectory.addSelectionListener( lsDef );
-        wTargetDirectory.addSelectionListener( lsDef );
-        wFtpDirectory.addSelectionListener( lsDef );
-        wWildcard.addSelectionListener( lsDef );
-        wTimeout.addSelectionListener( lsDef );
+        wName.addSelectionListener(lsDef);
+        wServerName.addSelectionListener(lsDef);
+        wUserName.addSelectionListener(lsDef);
+        wPassword.addSelectionListener(lsDef);
+        wFtpDirectory.addSelectionListener(lsDef);
+        wTargetDirectory.addSelectionListener(lsDef);
+        wFtpDirectory.addSelectionListener(lsDef);
+        wWildcard.addSelectionListener(lsDef);
+        wTimeout.addSelectionListener(lsDef);
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+        // Detect X or ALT-F4 or something that kills this window...
+        shell.addShellListener(new ShellAdapter()
+        {
+            public void shellClosed(ShellEvent e)
+            {
+                cancel();
+            }
+        });
 
-		getData();
+        getData();
 
-		BaseStepDialog.setSize(shell);
+        BaseStepDialog.setSize(shell);
 
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return jobEntry;
-	}
-    
+        shell.open();
+        props.setDialogSize(shell, "JobFTPDialogSize");
+        while (!shell.isDisposed())
+        {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        return jobEntry;
+    }
+
     public void checkPasswordVisible()
     {
         String password = wPassword.getText();
         java.util.List list = new ArrayList();
         StringUtil.getUsedVariables(password, list, true);
-        if (list.size()==0)
+        if (list.size() == 0)
         {
             wPassword.setEchoChar('*');
         }
@@ -364,73 +420,74 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
             wPassword.setEchoChar('\0'); // Show it all...
         }
     }
-    
-	public void dispose()
-	{
-		WindowProperty winprop = new WindowProperty(shell);
-		props.setScreen(winprop);
-		shell.dispose();
-	}
 
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (jobEntry.getName()    != null) wName.setText( jobEntry.getName() );
-		wName.getTextWidget().selectAll();
+    public void dispose()
+    {
+        WindowProperty winprop = new WindowProperty(shell);
+        props.setScreen(winprop);
+        shell.dispose();
+    }
 
-		wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
-		wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
-		wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
-		wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
-		wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
-		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-		wBinaryMode.setSelection(jobEntry.isBinaryMode());
-		wTimeout.setText(""+jobEntry.getTimeout());
-		wRemove.setSelection(jobEntry.getRemove());
+    /**
+     * Copy information from the meta-data input to the dialog fields.
+     */
+    public void getData()
+    {
+        if (jobEntry.getName() != null)
+            wName.setText(jobEntry.getName());
+        wName.getTextWidget().selectAll();
+
+        wServerName.setText(Const.NVL(jobEntry.getServerName(), ""));
+        wUserName.setText(Const.NVL(jobEntry.getUserName(), ""));
+        wPassword.setText(Const.NVL(jobEntry.getPassword(), ""));
+        wFtpDirectory.setText(Const.NVL(jobEntry.getFtpDirectory(), ""));
+        wTargetDirectory.setText(Const.NVL(jobEntry.getTargetDirectory(), ""));
+        wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
+        wBinaryMode.setSelection(jobEntry.isBinaryMode());
+        wTimeout.setText("" + jobEntry.getTimeout());
+        wRemove.setSelection(jobEntry.getRemove());
         wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
         wActive.setSelection(jobEntry.isActiveConnection());
-	}
+    }
 
-	private void cancel()
-	{
-		jobEntry.setChanged(changed);
-		jobEntry=null;
-		dispose();
-	}
+    private void cancel()
+    {
+        jobEntry.setChanged(changed);
+        jobEntry = null;
+        dispose();
+    }
 
-	private void ok()
-	{
-		jobEntry.setName(wName.getText());
-		jobEntry.setServerName(wServerName.getText());
-		jobEntry.setUserName(wUserName.getText());
-		jobEntry.setPassword(wPassword.getText());
-		jobEntry.setFtpDirectory(wFtpDirectory.getText());
-		jobEntry.setTargetDirectory(wTargetDirectory.getText());
-		jobEntry.setWildcard(wWildcard.getText());
-		jobEntry.setBinaryMode(wBinaryMode.getSelection());
-		jobEntry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
-		jobEntry.setRemove(wRemove.getSelection());
+    private void ok()
+    {
+        jobEntry.setName(wName.getText());
+        jobEntry.setServerName(wServerName.getText());
+        jobEntry.setUserName(wUserName.getText());
+        jobEntry.setPassword(wPassword.getText());
+        jobEntry.setFtpDirectory(wFtpDirectory.getText());
+        jobEntry.setTargetDirectory(wTargetDirectory.getText());
+        jobEntry.setWildcard(wWildcard.getText());
+        jobEntry.setBinaryMode(wBinaryMode.getSelection());
+        jobEntry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
+        jobEntry.setRemove(wRemove.getSelection());
         jobEntry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
         jobEntry.setActiveConnection(wActive.getSelection());
 
-		dispose();
-	}
+        dispose();
+    }
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
+    public String toString()
+    {
+        return this.getClass().getName();
+    }
 
-	public boolean evaluates()
-	{
-		return true;
-	}
+    public boolean evaluates()
+    {
+        return true;
+    }
 
-	public boolean isUnconditional()
-	{
-		return false;
-	}
+    public boolean isUnconditional()
+    {
+        return false;
+    }
 
 }

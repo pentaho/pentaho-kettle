@@ -66,12 +66,36 @@ public interface JobEntryInterface
 
 	public final static String typeCode[] =
 		{
-			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL", "SFTP", "HTTP"
+			"-",
+            "TRANS",
+            "JOB",
+            "SHELL",
+            "MAIL",
+            "SQL",
+            "FTP",
+            "TABLE_EXISTS",
+            "FILE_EXISTS",
+            "EVAL",
+            "SPECIAL",
+            "SFTP",
+            "HTTP"
 		};
 
 	public final static String typeDesc[] =
 		{
-			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries", "SFTP files", "Get a file using HTTP"
+			"-",
+            Messages.getString("JobEntry.Trans.TypeDesc"),
+            Messages.getString("JobEntry.Job.TypeDesc"),
+            Messages.getString("JobEntry.Shell.TypeDesc"),
+            Messages.getString("JobEntry.Mail.TypeDesc"),
+            Messages.getString("JobEntry.SQL.TypeDesc"),
+            Messages.getString("JobEntry.FTP.TypeDesc"),
+            Messages.getString("JobEntry.TableExists.TypeDesc"),
+            Messages.getString("JobEntry.FileExists.TypeDesc"),
+            Messages.getString("JobEntry.Evaluation.TypeDesc"),
+            Messages.getString("JobEntry.Special.TypeDesc"),
+            Messages.getString("JobEntry.SFTP.TypeDesc"),
+            Messages.getString("JobEntry.HTTP.TypeDesc")
 		};
 
 	public final static String icon_filename[] = 
@@ -94,18 +118,18 @@ public interface JobEntryInterface
 	public final static String type_tooltip_desc[] = 
 		{
 			"", 
-			"Executes a transformation", 
-			"Executes a job", 
-			"Executes a shell script", 
-			"Sends an e-Mail", 
-			"Executes SQL on a certain database connection", 
-			"Get files using FTP (File Transfer Protocol)", 
-			"Checks if a table exists on a database connection", 
-			"Checks if a file exists", 
-			"Evaluates the result of the execution of a previous job entry", 
-			"Special entries: start and dummy",
-            "Get files using SFTP (Secure File Transfer Protocol)",
-            "Get a file using the HTTP (HyperText Transfer Protocol)",
+            Messages.getString("JobEntry.Trans.Tooltip"),
+            Messages.getString("JobEntry.Job.Tooltip"),
+            Messages.getString("JobEntry.Shell.Tooltip"),
+            Messages.getString("JobEntry.Mail.Tooltip"),
+            Messages.getString("JobEntry.SQL.Tooltip"),
+            Messages.getString("JobEntry.FTP.Tooltip"),
+            Messages.getString("JobEntry.TableExists.Tooltip"),
+            Messages.getString("JobEntry.FileExists.Tooltip"),
+            Messages.getString("JobEntry.Evaluation.Tooltip"),
+            Messages.getString("JobEntry.Special.Tooltip"),
+            Messages.getString("JobEntry.SFTP.Tooltip"),
+            Messages.getString("JobEntry.HTTP.Tooltip")
  		};
 	
 	public final static Class type_classname[] = 

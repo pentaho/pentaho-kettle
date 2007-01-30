@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.util.SortedFileOutputStream;
 import be.ibridge.kettle.core.value.Value;
@@ -244,6 +245,7 @@ public class Props implements Cloneable
         pluginHistory = new ArrayList();
 
         loadProps();
+        addDefaultEntries();
         
         loadLastUsedFiles();
         loadScreens();
@@ -404,6 +406,12 @@ public class Props implements Cloneable
 		}
 		return true;
 	}
+
+    private void addDefaultEntries()
+    {
+        if (!properties.containsKey("JobDialogStyle"))
+            properties.setProperty("JobDialogStyle", "RESIZE,MAX,MIN");
+    }
 
 	public void storeScreens()
 	{
@@ -1429,5 +1437,51 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, show?"Y":"N");
     }
+
+    public int getJobsDialogStyle()
+    {
+        String prop = properties.getProperty("JobDialogStyle");
+        return parseStyle(prop);
+    }
     
+    public int getDialogStyle(String styleProperty)
+    {
+        String prop = properties.getProperty(styleProperty);
+        if (Const.isEmpty(prop))
+            return SWT.NONE;
+
+        return parseStyle(prop);
+    }
+
+    private int parseStyle(String sStyle)
+    {
+        int style = SWT.DIALOG_TRIM;
+        String[] styles = sStyle.split(",");
+        for (int i = 0; i < styles.length; i++)
+        {
+            if ("APPLICATION_MODAL".equals(styles[i]))
+                style |= SWT.APPLICATION_MODAL;
+            else if ("RESIZE".equals(styles[i]))
+                style |= SWT.RESIZE;
+            else if ("MIN".equals(styles[i]))
+                style |= SWT.MIN;
+            else if ("MAX".equals(styles[i]))
+                style |= SWT.MAX;
+        }
+        
+        return style;
+    }
+
+    public void setDialogSize(Shell shell, String styleProperty)
+    {
+        String prop = properties.getProperty(styleProperty);
+        if (Const.isEmpty(prop))
+            return;
+
+        String[] xy = prop.split(",");
+        if (xy.length != 2)
+            return;
+
+        shell.setSize(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
+    }    
 }

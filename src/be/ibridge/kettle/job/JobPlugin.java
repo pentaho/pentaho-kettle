@@ -107,6 +107,11 @@ public class JobPlugin
         return icon_filename;
     }
 
+    public void setIconFilename(String filename)
+    {
+        icon_filename = filename;
+    }
+
     public String getClassname()
     {
         return classname;
