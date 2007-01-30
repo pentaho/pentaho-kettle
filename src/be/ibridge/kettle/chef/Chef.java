@@ -138,7 +138,6 @@ import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.version.BuildVersion;
@@ -275,49 +274,49 @@ public class Chef implements AddUndoPositionInterface
 					if (e.keyCode == SWT.F10)    { ripDBWizard(); }
 					
                     // CTRL-A --> Select All steps
-					if ((int)e.character ==  1) { jobMeta.selectAll(); refreshGraph(); };
+					if (e.character ==  1) { jobMeta.selectAll(); refreshGraph(); };
 					
                     // CTRL-D --> Disconnect from repository
-					if ((int)e.character ==  4) { closeRepository(); };
+					if (e.character ==  4) { closeRepository(); };
                     
 					// CTRL-E --> Explore the repository
-					if ((int)e.character ==  5) { exploreRepository(); };
+					if (e.character ==  5) { exploreRepository(); };
 
                     // CTRL-F --> Java examination
-                    if ((int)e.character ==  6 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { searchMetaData(); chefgraph.clearSettings(); };
+                    if (e.character ==  6 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { searchMetaData(); chefgraph.clearSettings(); };
 
                     // CTRL-I --> Import file from XML
-					if ((int)e.character ==  9) { openFile(true); };
+					if (e.character ==  9) { openFile(true); };
 
                     // CTRL-J --> Job Dialog : edit job settings
-                    if ((int)e.character == 10) { setJob(); };
+                    if (e.character == 10) { setJob(); };
 
                     // CTRL-K --> Get variables
-                    if ((int)e.character == 11 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); chefgraph.clearSettings(); };
+                    if (e.character == 11 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); chefgraph.clearSettings(); };
 
                     // CTRL-L --> Show variables
-                    if ((int)e.character == 12 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { showVariables(); chefgraph.clearSettings(); };
+                    if (e.character == 12 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { showVariables(); chefgraph.clearSettings(); };
 
 					// CTRL-N --> new
-                    if ((int)e.character == 14) { newFile();         }
+                    if (e.character == 14) { newFile();         }
                     
 					// CTRL-O --> open
-					if ((int)e.character == 15) { openFile(false);    }
+					if (e.character == 15) { openFile(false);    }
                     
 					// CTRL-P --> print
-					if ((int)e.character == 16) { printFile();   }
+					if (e.character == 16) { printFile();   }
                     
 					// CTRL-R --> Connect to repository
-					if ((int)e.character == 18) { openRepository(); };
+					if (e.character == 18) { openRepository(); };
                     
 					// CTRL-S --> save
-					if ((int)e.character == 19) { saveFile();    } 
+					if (e.character == 19) { saveFile();    } 
                     
 					// CTRL-Y --> save
-					if ((int)e.character == 25) { redoAction();  } 
+					if (e.character == 25) { redoAction();  } 
                     
 					// CTRL-Z --> save
-					if ((int)e.character == 26) { undoAction();  } 
+					if (e.character == 26) { undoAction();  } 
 				}
 			};
 
@@ -2270,7 +2269,7 @@ public class Chef implements AddUndoPositionInterface
 	{
 		JobEntryTrans je = new JobEntryTrans();
 		je.setType(type);
-		String basename = JobEntryTrans.typeDesc[type]; 
+		String basename = JobEntryInterface.typeDesc[type]; 
 		int nr = jobMeta.generateJobEntryNameNr(basename);
 		je.setName(basename+" "+nr); //$NON-NLS-1$
 
@@ -2597,7 +2596,7 @@ public class Chef implements AddUndoPositionInterface
 					tii.setSQL( "SELECT * FROM "+srcDbInfo.quoteField(tables[i]) ); //$NON-NLS-1$
 					
 					String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
-					StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface)tii );
+					StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii );
 					fromstep.setLocation(150,100);
 					fromstep.setDraw(true);
 					fromstep.setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2")+sourceDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2614,7 +2613,7 @@ public class Chef implements AddUndoPositionInterface
 					toi.setTruncateTable( true );
 					
 					String tostepid = StepLoader.getInstance().getStepPluginID(toi);
-					StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface)toi );
+					StepMeta tostep = new StepMeta(tostepid, tostepname, toi );
 					tostep.setLocation(500,100);
 					tostep.setDraw(true);
 					tostep.setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1")+tables[i]+Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2")+targetDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
