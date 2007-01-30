@@ -21,8 +21,14 @@ public class ResultFile implements Cloneable
 	
 	public static final String[] fileTypeCode = { "GENERAL", "LOG", "ERRORLINE", "ERROR", "WARNING" };
 	
-	public static final String[] fileTypeDesc = { "General", "Log", "Error line", "Error", "Warning" };
-	
+	public static final String[] fileTypeDesc = {
+                                                 Messages.getString("ResultFile.FileType.General"),
+                                                 Messages.getString("ResultFile.FileType.Log"),
+                                                 Messages.getString("ResultFile.FileType.ErrorLine"),
+                                                 Messages.getString("ResultFile.FileType.Error"),
+                                                 Messages.getString("ResultFile.FileType.Warning")
+    };
+    
 	private int type;
 	private File   file;
 	private String originParent;
