@@ -87,19 +87,19 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("start",      start));
-		retval.append("      "+XMLHandler.addTagValue("dummy",      dummy));
-		retval.append("      "+XMLHandler.addTagValue("repeat",        repeat));
-		retval.append("      "+XMLHandler.addTagValue("schedulerType", schedulerType));
-		retval.append("      "+XMLHandler.addTagValue("interval",      interval));
-		retval.append("      "+XMLHandler.addTagValue("hour",         hour));
-		retval.append("      "+XMLHandler.addTagValue("minutes",         minutes));
-		retval.append("      "+XMLHandler.addTagValue("weekDay",         weekDay));
-		retval.append("      "+XMLHandler.addTagValue("DayOfMonth",         dayOfMonth));
+		retval.append("      ").append(XMLHandler.addTagValue("start",         start));
+		retval.append("      ").append(XMLHandler.addTagValue("dummy",         dummy));
+		retval.append("      ").append(XMLHandler.addTagValue("repeat",        repeat));
+		retval.append("      ").append(XMLHandler.addTagValue("schedulerType", schedulerType));
+		retval.append("      ").append(XMLHandler.addTagValue("interval",      interval));
+		retval.append("      ").append(XMLHandler.addTagValue("hour",          hour));
+		retval.append("      ").append(XMLHandler.addTagValue("minutes",       minutes));
+		retval.append("      ").append(XMLHandler.addTagValue("weekDay",       weekDay));
+		retval.append("      ").append(XMLHandler.addTagValue("DayOfMonth",    dayOfMonth));
 
 		return retval.toString();
 	}
@@ -191,7 +191,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		{
 			try {
 				long sleepTime = getNextExecutionTime();
-                parentJob.getLog().logDebug(parentJob.toString(), "Sleeping: " + (sleepTime/1000/60) + " minutes");
+                parentJob.getLog().logMinimal(parentJob.toString(), "Sleeping: " + (sleepTime/1000/60) + " minutes");
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				throw new KettleJobException(e);
