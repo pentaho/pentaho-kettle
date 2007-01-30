@@ -58,24 +58,24 @@ public class LogWriter
 	
 	public static final String logLevelDescription[] = 
 		{
-			"Error",
-			"Nothing",
-			"Minimal",
-			"Basic",
-			"Detailed",
-			"Debug",
-			"Rowlevel"
+			Messages.getString("LogWriter.Level.Error"),
+			Messages.getString("LogWriter.Level.Nothing"),
+			Messages.getString("LogWriter.Level.Minimal"),
+			Messages.getString("LogWriter.Level.Basic"),
+			Messages.getString("LogWriter.Level.Detailed"),
+			Messages.getString("LogWriter.Level.Debug"),
+			Messages.getString("LogWriter.Level.Rowlevel")
 		};
 
 	public static final String log_level_desc_long[] = 
 		{
-			"Error logging only",
-			"Nothing at all",
-			"Minimal logging",
-			"Basic logging",
-			"Detailed logging",
-			"Debugging",
-			"Rowlevel (very detailed)"
+			Messages.getString("LogWriter.Level.Error.LongDesc"),
+            Messages.getString("LogWriter.Level.Nothing.LongDesc"),
+            Messages.getString("LogWriter.Level.Minimal.LongDesc"),
+            Messages.getString("LogWriter.Level.Basic.LongDesc"),
+            Messages.getString("LogWriter.Level.Detailed.LongDesc"),
+            Messages.getString("LogWriter.Level.Debug.LongDesc"),
+            Messages.getString("LogWriter.Level.Rowlevel.LongDesc")
 		};
 	
 	// String...
