@@ -127,7 +127,9 @@ public class DatabaseDialog extends Dialog
     // Generic
     private Label          wlURL, wlDriverClass;
 
-    private Text           wURL, wDriverClass;
+    private Text           wDriverClass;
+    
+    private TextVar        wURL;
 
     // Options
     private TableView      wOptions;
@@ -1005,7 +1007,7 @@ public class DatabaseDialog extends Dialog
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
 
-        wURL = new Text(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wURL = new TextVar(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         FormData fdURL = new FormData();
