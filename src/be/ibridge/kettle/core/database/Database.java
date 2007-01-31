@@ -2178,10 +2178,13 @@ public class Database
 
 	private boolean canWeSetFetchSize(Statement statement) throws SQLException
     {
-        return databaseMeta.isFetchSizeSupported() && ( statement.getMaxRows()>0 || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL);     
+        return databaseMeta.isFetchSizeSupported() && 
+            ( statement.getMaxRows()>0 || 
+              databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || 
+              ( databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL && databaseMeta.isStreamingResults() ) 
+            );     
     }
     
-
     public ResultSet openQuery(PreparedStatement ps, Row params) throws KettleDatabaseException
 	{
 		ResultSet res;
