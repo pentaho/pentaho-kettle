@@ -96,14 +96,6 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	{
 		return false;
 	}
-
-	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
-	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
-	{
-		return "\""+schema_name+"\".\""+table_part+"\"";
-	}
 	
 	/**
 	 * @return true if the database supports bitmap indexes
