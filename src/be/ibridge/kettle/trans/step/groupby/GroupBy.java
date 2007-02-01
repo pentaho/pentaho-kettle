@@ -261,7 +261,10 @@ public class GroupBy extends BaseStep implements StepInterface
                     if (!subj.isNull()) value.setValue(subj);
                     break; 
                 case GroupByMeta.TYPE_GROUP_FIRST_INCL_NULL:
-                    if (linesWritten==0) value.setValue(subj);
+                	// This is on purpose. The calculation of the 
+                	// first field is done when setting up a new group
+                	// This is just the field of the first row
+                    // if (linesWritten==0) value.setValue(subj);
                     break; 
                 case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL : 
                     value.setValue(subj);
@@ -303,8 +306,12 @@ public class GroupBy extends BaseStep implements StepInterface
                     default:                         v.setValue(0.0); break;
                     }
 					break; 
-				case GroupByMeta.TYPE_GROUP_MIN            : 
-				case GroupByMeta.TYPE_GROUP_MAX            : 
+				case GroupByMeta.TYPE_GROUP_FIRST :
+				case GroupByMeta.TYPE_GROUP_LAST  :
+				case GroupByMeta.TYPE_GROUP_FIRST_INCL_NULL :
+				case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL  :					
+				case GroupByMeta.TYPE_GROUP_MIN             : 
+				case GroupByMeta.TYPE_GROUP_MAX             : 
 					v = new Value(meta.getAggregateField()[i], subj.getType());
 					v.setValue(subj);
 					break;
@@ -362,34 +369,6 @@ public class GroupBy extends BaseStep implements StepInterface
         return result;
 
     }
-
-    /*
-	private Row buildRegular(Row r)
-	{
-		debug="buildRegular start";
-		
-		Row result = new Row();
-
-        // Group
-		for (int i=0;i<data.groupnrs.length;i++)
-		{
-			Value gr = r.getValue(data.groupnrs[i]);
-			result.addValue(gr);
-		}
-
-        // Subjects
-		for (int i=0;i<data.subjectnrs.length;i++)
-		{
-			Value ag = r.getValue(data.subjectnrs[i]);
-			// Rename to the new aggregate names!
-			ag.setName(meta.getAggregateField()[i]);
-			result.addValue(ag);
-		}
-
-		debug="buildRegular end";
-		return result;
-	}
-    */
 		
     private void addToBuffer(Row row) throws KettleFileException
     {
