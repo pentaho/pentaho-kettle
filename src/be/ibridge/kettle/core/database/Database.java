@@ -1667,15 +1667,7 @@ public class Database
 	{
 		StringBuffer ins=new StringBuffer(128);
 		
-        String schemaTable = null;
-        if ( schemaName == null )
-        {
-        	schemaTable = tableName;
-        }
-        else
-        {
-            schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-        }
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 		ins.append("INSERT INTO ").append(schemaTable).append('(');
 		
 		// now add the names in the row:
@@ -2559,15 +2551,8 @@ public class Database
 		
 		cr_index += "INDEX "+databaseMeta.quoteField(indexname)+Const.CR+" ";
 		cr_index += "ON ";
-		if ( schemaname == null )
-		{
-			// assume table has already been quoted (and possibly includes schema)
-			cr_index += tablename;
-		}
-		else
-		{
-			cr_index += databaseMeta.getQuotedSchemaTableCombination(schemaname,tablename);
-		}
+  	    // assume table has already been quoted (and possibly includes schema)
+		cr_index += tablename;
 		cr_index += Const.CR + "( "+Const.CR;
 		for (int i=0;i<idx_fields.length;i++)
 		{

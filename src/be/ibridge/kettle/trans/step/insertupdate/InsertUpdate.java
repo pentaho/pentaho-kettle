@@ -60,7 +60,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		{
 			first=false;
 			
-			data.db.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
+			data.db.setLookup(meta.getSchemaName(), meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
             
             Row ins = new Row();
             // Insert the update fields: just names.  Type doesn't matter!
