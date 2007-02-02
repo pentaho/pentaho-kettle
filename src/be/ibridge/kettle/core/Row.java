@@ -267,7 +267,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 		{
 			Value v = getValue(i);
 
-			if ( v.getName().equalsIgnoreCase(name) )
+			String nm = v.getName();
+			if ( nm != null && nm.equalsIgnoreCase(name) )
 			{
 				return v;
 			}

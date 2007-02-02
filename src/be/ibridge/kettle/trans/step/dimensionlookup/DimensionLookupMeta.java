@@ -1437,9 +1437,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			{
 				if (prev != null && prev.size() > 0)
 				{
-					if (!Const.isEmpty(tableName))
-					{
-                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName); 
+					String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+					if (!Const.isEmpty(schemaTable))
+					{                       
 						Database db = new Database(databaseMeta);
 						try
 						{

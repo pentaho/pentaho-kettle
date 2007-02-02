@@ -3783,11 +3783,11 @@ public class Database
 		for (int i=0;i<tabFields.size();i++)
 		{
 			Value v = tabFields.getValue(i);
-			// Found in table, not in input ?
-			if (fields.searchValue( v.getName() )==null )
-			{
-				surplus.addValue(v); // yes --> surplus!
-			}
+		    // Found in table, not in input ?        
+		    if (fields.searchValue( v.getName() )==null )
+		    {
+			    surplus.addValue(v); // yes --> surplus!
+		    }
 		}
 
 		if (surplus.size()!=0)
