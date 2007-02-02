@@ -1085,9 +1085,9 @@ public class Database
 			for (int i=0;i<fieldlookup.length;i++)
 			{
 				if (i>0) sql+=", "; else sql+="  ";
-				sql+=fieldlookup[i]+" = ?"+Const.CR;
+				sql+= databaseMeta.quoteField(fieldlookup[i])+" = ?"+Const.CR;
 			}
-			sql+="WHERE  "+returnkey+" = ?";
+			sql+="WHERE  "+databaseMeta.quoteField(returnkey)+" = ?";
 
 			try
 			{
