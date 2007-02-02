@@ -380,35 +380,35 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("update_bypassed", updateBypassed)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
-        retval.append("      "+XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("update_bypassed", updateBypassed)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int i=0;i<keyStream.length;i++)
 		{
-			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("name2", keyStream2[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </key>").append(Const.CR); //$NON-NLS-1$
 		}
 
 		for (int i=0;i<updateLookup.length;i++)
 		{
-			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("update", update[i].booleanValue())); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </value>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <value>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("update", update[i].booleanValue())); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </value>").append(Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("      </lookup>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </lookup>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -433,17 +433,17 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				keyStream[i]          = rep.getStepAttributeString(id_step, i, "key_name"); //$NON-NLS-1$
+				keyStream[i]    = rep.getStepAttributeString(id_step, i, "key_name"); //$NON-NLS-1$
 				keyLookup[i]    = rep.getStepAttributeString(id_step, i, "key_field"); //$NON-NLS-1$
 				keyCondition[i] = rep.getStepAttributeString(id_step, i, "key_condition"); //$NON-NLS-1$
-				keyStream2[i]         = rep.getStepAttributeString(id_step, i, "key_name2"); //$NON-NLS-1$
+				keyStream2[i]   = rep.getStepAttributeString(id_step, i, "key_name2"); //$NON-NLS-1$
 			}
 			
 			for (int i=0;i<nrvalues;i++)
 			{
-				updateLookup[i]        = rep.getStepAttributeString(id_step, i, "value_name"); //$NON-NLS-1$
-				updateStream[i]    = rep.getStepAttributeString(id_step, i, "value_rename"); //$NON-NLS-1$
-				update[i]    = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "value_update",true)); //$NON-NLS-1$
+				updateLookup[i]  = rep.getStepAttributeString(id_step, i, "value_name"); //$NON-NLS-1$
+				updateStream[i]  = rep.getStepAttributeString(id_step, i, "value_rename"); //$NON-NLS-1$
+				update[i]        = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "value_update",true)); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -911,8 +911,6 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 
     }
 
-
-
     /**
      * @return the schemaName
      */
@@ -921,8 +919,6 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
         return schemaName;
     }
 
-
-
     /**
      * @param schemaName the schemaName to set
      */
@@ -930,5 +926,4 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.schemaName = schemaName;
     }
-
 }
