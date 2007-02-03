@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
-
 package be.ibridge.kettle.trans.step.insertupdate;
 
 import java.util.ArrayList;
@@ -44,12 +43,10 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
-
 /*
  * Created on 26-apr-2003
  *
  */
-
 public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** what's the lookup schema? */

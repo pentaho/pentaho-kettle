@@ -33,9 +33,9 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
-
 /**
- * Performs a lookup in a database table.  If the key doesn't exist it inserts values into the table, otherwise it performs an update of the changed values.
+ * Performs a lookup in a database table.  If the key doesn't exist it inserts values 
+ * into the table, otherwise it performs an update of the changed values.
  * If nothing changed, do nothing.
  *  
  * @author Matt
@@ -218,7 +218,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		data=(InsertUpdateData)sdi;
 
 		Row r=getRow();       // Get row from input rowset & set row busy!
-		if (r==null)  // no more input to be expected...
+		if (r==null)          // no more input to be expected...
 		{
 			setOutputDone();
 			return false;
@@ -250,7 +250,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-		    
 		    try
 		    {
 				data.db=new Database(meta.getDatabaseMeta());
@@ -306,9 +305,9 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	    super.dispose(smi, sdi);
 	}
 
-
 	//
 	// Run is were the action happens!
+	//
 	public void run()
 	{
 		try

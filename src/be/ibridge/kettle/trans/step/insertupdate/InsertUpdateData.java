@@ -13,18 +13,17 @@
  **                                                                   **
  **********************************************************************/
  
-
 package be.ibridge.kettle.trans.step.insertupdate;
 
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
-
 /**
+ * Stores data for the Insert/Update step.
+ * 
  * @author Matt
  * @since 24-jan-2005
- *
  */
 public class InsertUpdateData extends BaseStepData implements StepDataInterface
 {
@@ -35,7 +34,7 @@ public class InsertUpdateData extends BaseStepData implements StepDataInterface
 	public int    valuenrs[];       // Stream valuename nrs to prevent searches.
 	
 	/**
-	 * 
+	 *  Default constructor.
 	 */
 	public InsertUpdateData()
 	{
@@ -43,5 +42,4 @@ public class InsertUpdateData extends BaseStepData implements StepDataInterface
 
 		db=null;
 	}
-
 }
