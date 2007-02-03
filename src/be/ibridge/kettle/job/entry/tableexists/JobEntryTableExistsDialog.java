@@ -166,7 +166,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
         wlConnection.setLayoutData(fdlConnection);
 
         wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText("+");
+        wbConnection.setText(be.ibridge.kettle.job.entry.Messages.getString("JobEntryDialog.NewConnectionButton.Label"));
         wbConnection.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)

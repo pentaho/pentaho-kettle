@@ -150,13 +150,13 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<name.length;i++)
         {
             retval.append("      <field>"); //$NON-NLS-1$
-            retval.append("        "+XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        "+XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        "+XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-            retval.append("        </field>"); //$NON-NLS-1$
+            retval.append("        ").append(XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("      </field>"); //$NON-NLS-1$
         }
-        retval.append("      </fields>"); //$NON-NLS-1$
+        retval.append("    </fields>"); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -194,7 +194,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
     
             for (int i=0;i<nrfields;i++)
             {
-                name[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+                name[i]      = rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
                 type[i]      = Value.getType( rep.getStepAttributeString (id_step, i, "field_type")); //$NON-NLS-1$
                 length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
                 precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
@@ -266,5 +266,4 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new InjectorData();
 	}
-
 }
