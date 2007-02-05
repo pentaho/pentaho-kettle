@@ -4035,8 +4035,8 @@ public class Repository
         tablename = "R_TRANS_PARTITION_SCHEMA";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_TRANS_PARTITION_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-        table.addValue(new Value("ID_PARTITION_SCHEMA", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_PARTITION_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_TRANS_PARTITION_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)
