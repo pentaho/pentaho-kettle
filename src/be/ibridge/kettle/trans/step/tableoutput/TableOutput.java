@@ -161,15 +161,17 @@ public class TableOutput extends BaseStep implements StepInterface
         {
             throw new KettleStepException("The tablename is not defined (empty)");
         }
-
-        insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
+          
+        String schemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), tableName);
+        insertStatement = (PreparedStatement) data.preparedStatements.get(schemaTable);
         if (insertStatement==null)
         {
-        						// tableName already includes schema (from the initialization)
-            String sql = data.db.getInsertStatement(null, tableName, r);
+            String sql = data.db.getInsertStatement(
+            		              StringUtil.environmentSubstitute(meta.getSchemaName()), 
+            		              tableName, r);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
-            data.preparedStatements.put(tableName, insertStatement);
+            data.preparedStatements.put(schemaTable, insertStatement);
         }
         
 		try
@@ -253,15 +255,14 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    
-                	data.tableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination( StringUtil.environmentSubstitute( meta.getSchemaName() ),  
-                			                                                                 StringUtil.environmentSubstitute( meta.getTablename()) );                
+                	data.tableName = StringUtil.environmentSubstitute(meta.getTablename());                
                 	
                     // Only the first one truncates in a non-partitioned step copy
                     //
                     if (meta.truncateTable() && ( getCopy()==0 || !Const.isEmpty(getPartitionID())) )
     				{                	
     					data.db.truncateTable(StringUtil.environmentSubstitute(meta.getSchemaName()), 
-    							              StringUtil.environmentSubstitute(meta.getTablename()));
+    							              data.tableName);
     				}
                 }
                 
