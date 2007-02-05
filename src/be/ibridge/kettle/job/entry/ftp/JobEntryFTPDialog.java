@@ -33,6 +33,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -129,8 +130,33 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
     private Props props;
 
     private SelectionAdapter lsDef;
+    
+    private Label        wlControlEncoding;
+    
+    private Combo        wControlEncoding;
+    
+    private FormData     fdlControlEncoding, fdControlEncoding;
 
     private boolean changed;
+    
+    // These should not be translated, they are required to exist on all
+    // platforms according to the documentation of "Charset".
+    private static String[] encodings = { "US-ASCII",
+    	                                  "ISO-8859-1",
+    	                                  "UTF-8",
+    	                                  "UTF-16BE",
+    	                                  "UTF-16LE",
+    	                                  "UTF-16" }; 
+
+    //
+    // Original code used to fill encodings, this display all possibilities but
+    // takes 10 seconds on my pc to fill.
+    //
+    // static {
+    //     SortedMap charsetMap = Charset.availableCharsets();
+    //    Set charsetSet = charsetMap.keySet();
+    //    encodings = (String [])charsetSet.toArray(new String[0]);
+    // }
 
     public JobEntryFTPDialog(Shell parent, JobEntryFTP jobEntry, JobMeta jobMeta)
     {
@@ -338,13 +364,36 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         fdActive.top = new FormAttachment(wOnlyNew, margin);
         fdActive.right = new FormAttachment(100, 0);
         wActive.setLayoutData(fdActive);
+        
+        // Control encoding line
+        //
+        // The drop down is editable as it may happen an encoding may not be present
+        // on one machine, but you may want to use it on your execution server
+        //
+        wlControlEncoding=new Label(shell, SWT.RIGHT);
+        wlControlEncoding.setText(Messages.getString("JobFTP.ControlEncoding.Label"));
+        props.setLook(wlControlEncoding);
+        fdlControlEncoding=new FormData();
+        fdlControlEncoding.left  = new FormAttachment(0, 0);
+        fdlControlEncoding.top   = new FormAttachment(wActive, margin);
+        fdlControlEncoding.right = new FormAttachment(middle, 0);
+        wlControlEncoding.setLayoutData(fdlControlEncoding);
+        wControlEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wActive.setToolTipText(Messages.getString("JobFTP.ControlEncoding.Tooltip"));
+        wControlEncoding.setItems(encodings);
+        props.setLook(wControlEncoding);
+        fdControlEncoding=new FormData();
+        fdControlEncoding.left = new FormAttachment(middle, margin);
+        fdControlEncoding.top  = new FormAttachment(wActive, margin);
+        fdControlEncoding.right= new FormAttachment(100, 0);        
+        wControlEncoding.setLayoutData(fdControlEncoding);       
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wActive);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wControlEncoding);
 
         // Add listeners
         lsCancel = new Listener()
@@ -448,6 +497,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wRemove.setSelection(jobEntry.getRemove());
         wOnlyNew.setSelection(jobEntry.isOnlyGettingNewFiles());
         wActive.setSelection(jobEntry.isActiveConnection());
+        wControlEncoding.setText(jobEntry.getControlEncoding());
     }
 
     private void cancel()
@@ -471,6 +521,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         jobEntry.setRemove(wRemove.getSelection());
         jobEntry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
         jobEntry.setActiveConnection(wActive.getSelection());
+        jobEntry.setControlEncoding(wControlEncoding.getText());
 
         dispose();
     }

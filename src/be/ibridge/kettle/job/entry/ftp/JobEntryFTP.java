@@ -52,7 +52,6 @@ import com.enterprisedt.net.ftp.FTPTransferType;
  * @since 05-11-2003
  *
  */
-
 public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private static Logger log4j = Logger.getLogger(JobEntryFTP.class);
@@ -68,6 +67,17 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 	private boolean remove;
     private boolean onlyGettingNewFiles;  /* Don't overwrite files */
     private boolean activeConnection;
+    private String  controlEncoding;      /* how to convert list of filenames e.g. */
+    
+    /**
+     * Implicit encoding used before PDI v2.4.1
+     */
+    static private String LEGACY_CONTROL_ENCODING = "US-ASCII";
+    
+    /**
+     * Default encoding when making a new ftp job entry instance.
+     */
+    static private String DEFAULT_CONTROL_ENCODING = "ISO-8859-1";    
 	
 	public JobEntryFTP(String n)
 	{
@@ -75,6 +85,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		serverName=null;
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_FTP);
+		setControlEncoding(DEFAULT_CONTROL_ENCODING);
 	}
 
 	public JobEntryFTP()
@@ -110,6 +121,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
         retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
         retval.append("      ").append(XMLHandler.addTagValue("active",       activeConnection));
+        retval.append("      ").append(XMLHandler.addTagValue("control_encoding",  controlEncoding));
 		
 		return retval.toString();
 	}
@@ -131,10 +143,17 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			remove              = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
             onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
             activeConnection    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "active") );
+            controlEncoding     = XMLHandler.getTagValue(entrynode, "control_encoding");
+            if ( controlEncoding == null )
+            {
+            	// if we couldn't retrieve an encoding, assume it's an old instance and
+            	// put in the the encoding used before v 2.4.0
+            	controlEncoding = LEGACY_CONTROL_ENCODING;
+            }                       
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load file exists job entry from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'ftp' from XML node", xe);
 		}
 	}
 
@@ -155,10 +174,17 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             remove              = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
 			onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
             activeConnection    = rep.getJobEntryAttributeBoolean(id_jobentry, "active");
+            controlEncoding     = rep.getJobEntryAttributeString(id_jobentry, "control_encoding");
+            if ( controlEncoding == null )
+            {
+            	// if we couldn't retrieve an encoding, assume it's an old instance and
+            	// put in the the encoding used before v 2.4.0
+            	controlEncoding = LEGACY_CONTROL_ENCODING;
+            }
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry for type file exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'ftp' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -180,10 +206,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
 			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
             rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
+            rep.saveJobEntryAttribute(id_job, getID(), "control_encoding",controlEncoding);
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'ftp' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
@@ -346,6 +373,28 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     {
         this.onlyGettingNewFiles = onlyGettingNewFiles;
     }
+    
+    /**
+     * Get the control encoding to be used for ftp'ing
+     * 
+     * @return the used encoding
+     */
+    public String getControlEncoding()
+    {
+        return controlEncoding;
+    }
+    
+    /**
+     *  Set the encoding to be used for ftp'ing. This determines how
+     *  names are translated in dir e.g. It does impact the contents
+     *  of the files being ftp'ed.
+     *  
+     *  @param encoding The encoding to be used.
+     */
+    public void setControlEncoding(String encoding)
+    {
+    	this.controlEncoding = encoding;
+    }    
 	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
@@ -385,6 +434,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// Set the timeout
 			ftpclient.setTimeout(timeout);
 			log.logDetailed(toString(), "set timeout to "+timeout);
+			
+			ftpclient.setControlEncoding(controlEncoding);
+			log.logDetailed(toString(), "set control encoding to "+controlEncoding);
 
 			// login to ftp host ...
             ftpclient.connect();
@@ -392,7 +444,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             String realPassword = StringUtil.environmentSubstitute(password);
 			ftpclient.login(realUsername, realPassword);
 			//  Remove password from logging, you don't know where it ends up.
-			log.logDetailed(toString(), "logged in using "+realPassword);
+			log.logDetailed(toString(), "logged in with user "+realUsername);
 
 			// move to spool dir ...
 			if (!Const.isEmpty(ftpDirectory))
@@ -553,5 +605,4 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     {
         this.activeConnection = passive;
     }
-
 }
