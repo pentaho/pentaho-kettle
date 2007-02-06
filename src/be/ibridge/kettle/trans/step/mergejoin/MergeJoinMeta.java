@@ -279,8 +279,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            int nrKeys1 = rep.countNrStepAttributes(id_step, "keys_1"); //$NON-NLS-1$
-            int nrKeys2 = rep.countNrStepAttributes(id_step, "keys_2"); //$NON-NLS-1$
+            int nrKeys1 = rep.countNrStepAttributes(id_step, "key1_field"); //$NON-NLS-1$
+            int nrKeys2 = rep.countNrStepAttributes(id_step, "key2_field"); //$NON-NLS-1$
             
 			allocate(nrKeys1, nrKeys2);
             
