@@ -279,18 +279,18 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            int nrKeys1 = rep.countNrStepAttributes(id_step, "key1_field"); //$NON-NLS-1$
-            int nrKeys2 = rep.countNrStepAttributes(id_step, "key2_field"); //$NON-NLS-1$
+            int nrKeys1 = rep.countNrStepAttributes(id_step, "keys_1"); //$NON-NLS-1$
+            int nrKeys2 = rep.countNrStepAttributes(id_step, "keys_2"); //$NON-NLS-1$
             
 			allocate(nrKeys1, nrKeys2);
             
             for (int i=0;i<nrKeys1;i++)
             {
-                keyFields1[i] = rep.getStepAttributeString(id_step, i, "key1_field"); //$NON-NLS-1$
+                keyFields1[i] = rep.getStepAttributeString(id_step, i, "keys_1"); //$NON-NLS-1$
             }
             for (int i=0;i<nrKeys2;i++)
             {
-                keyFields2[i] = rep.getStepAttributeString(id_step, i, "key2_field"); //$NON-NLS-1$
+                keyFields2[i] = rep.getStepAttributeString(id_step, i, "keys_2"); //$NON-NLS-1$
             }
 
 			stepName1 = rep.getStepAttributeString (id_step, "step1");  //$NON-NLS-1$
@@ -310,12 +310,12 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		{
             for (int i=0;i<keyFields1.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "key1_field", keyFields1[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "keys_1", keyFields1[i]); //$NON-NLS-1$
             }
 
             for (int i=0;i<keyFields2.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "key2_field", keyFields2[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "keys_2", keyFields2[i]); //$NON-NLS-1$
             }
 
 			rep.saveStepAttribute(id_transformation, id_step, "step1", getStepName1()); //$NON-NLS-1$
