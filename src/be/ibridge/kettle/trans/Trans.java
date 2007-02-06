@@ -968,6 +968,13 @@ public class Trans
 				DatabaseMeta logcon = transMeta.getLogConnection();
     			if (logcon!=null)
     			{
+    				if ( transMeta.getLogTable() == null )
+    				{
+    				    // It doesn't make sense to start database logging without a table
+    					// to log to.
+    					throw new KettleTransException(Messages.getString("Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
+    				}
+    				
     			    ldb = new Database(logcon);
 				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
