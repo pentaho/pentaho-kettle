@@ -184,7 +184,7 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
         wlConnection.setLayoutData(fdlConnection);
 
         wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText(be.ibridge.kettle.job.entry.Messages.getString("JobEntryDialog.NewConnectionButton.Label"));
+        wbConnection.setText(GlobalMessages.getSystemString("System.Button.New") + "...");
         wbConnection.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)

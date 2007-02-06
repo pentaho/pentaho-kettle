@@ -223,7 +223,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 
         wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
         props.setLook(wbFilename);
-        wbFilename.setText("...");
+        wbFilename.setText(GlobalMessages.getSystemString("System.Button.Browse"));
         fdbFilename = new FormData();
         fdbFilename.top = new FormAttachment(wName, margin);
         fdbFilename.right = new FormAttachment(100, 0);
