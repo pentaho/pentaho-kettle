@@ -2791,7 +2791,10 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
     public void readSharedObjects(Repository rep) throws KettleException
     {
-        sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
+    	if ( rep != null )
+    	{
+            sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
+    	}
         
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
