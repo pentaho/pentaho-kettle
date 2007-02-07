@@ -1980,9 +1980,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, "UNIQUE_CONNECTIONS");
                 feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
-                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );
-                
-                sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
+                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );                
             }
         }
         catch (KettleDatabaseException dbe)
@@ -2086,10 +2084,6 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                     LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                 }
 
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
-                loadRepTrans(rep);
-                if (monitor != null) monitor.worked(1);
-
                 if (monitor != null) monitor.worked(1);
 
                 // Load the notes...
@@ -2124,6 +2118,10 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                     sii.searchInfoAndTargetSteps(steps);
                 }
 
+                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
+                loadRepTrans(rep);
+                if (monitor != null) monitor.worked(1);
+                                                
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingHopTask.Title")); //$NON-NLS-1$
                 for (int i = 0; i < hopids.length; i++)
                 {
@@ -2793,6 +2791,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
     public void readSharedObjects(Repository rep) throws KettleException
     {
+        sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
+        
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
         String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
