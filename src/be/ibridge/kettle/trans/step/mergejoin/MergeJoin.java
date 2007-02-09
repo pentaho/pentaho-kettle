@@ -135,7 +135,7 @@ public class MergeJoin extends BaseStep implements StepInterface
          *   b) First stream is empty and join type is INNER or LEFT OUTER
          *   c) Second stream is empty and join type is INNER or RIGHT OUTER
          */
-        if ((data.one==null && data.two==null) ||
+        if ((data.one == null && data.two == null) ||
         	(data.one == null && data.one_optional == false) ||
         	(data.two == null && data.two_optional == false))
         {
@@ -144,12 +144,22 @@ public class MergeJoin extends BaseStep implements StepInterface
         }
 
         if (data.one == null)
+        {
         	compare = -1;
-        else if (data.two == null)
-        	compare = 1;
-        else
-        	compare = data.one.compare(data.two, data.keyNrs1, data.keyNrs2, null, null);
-
+        }
+        else 
+        {
+            if (data.two == null)
+            {
+                compare = 1;
+            }
+            else
+        	{
+                int cmp = data.one.compare(data.two, data.keyNrs1, data.keyNrs2, null, null);
+                compare = cmp>0?1 : cmp<0?-1 : 0;
+            }
+        }
+        
         switch (compare)
         {
         case 0:
