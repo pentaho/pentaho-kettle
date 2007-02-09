@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import java.util.regex.Pattern;
 
 import be.ibridge.kettle.core.Const;
@@ -34,9 +35,24 @@ public class FileInputList
         return buffer.toString();
     }
 
+    private static boolean[] includeSubdirsFalse(int iLength)
+    {
+        boolean[] includeSubdirs = new boolean[iLength];
+        for (int i = 0; i < iLength; i++)
+            includeSubdirs[i] = false;
+        return includeSubdirs;
+    }
+    
     public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired)
     {
-        List fileList = createFileList(fileName, fileMask, fileRequired).getFiles();
+        boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
+        return createFilePathList(fileName, fileMask, fileRequired, includeSubdirs);
+    }
+    
+    public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired,
+        boolean[] includeSubdirs)
+    {
+        List fileList = createFileList(fileName, fileMask, fileRequired, includeSubdirs).getFiles();
         String[] filePaths = new String[fileList.size()];
         for (int i = 0; i < filePaths.length; i++)
         {
@@ -46,6 +62,13 @@ public class FileInputList
     }
 
     public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired)
+    {
+        boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
+        return createFileList(fileName, fileMask, fileRequired, includeSubdirs);
+    }
+    
+    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired,
+        boolean[] includeSubdirs)
     {
         FileInputList fileInputList = new FileInputList();
 
@@ -58,17 +81,18 @@ public class FileInputList
             final String onefile = realfile[i];
             final String onemask = realmask[i];
             final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
-
+            boolean subdirs = includeSubdirs[i];
             // System.out.println("Checking file ["+onefile+"] mask
             // ["+onemask+"]");
             if (onefile == null) continue;
 
-            if (onemask != null && onemask.length() > 0) // A directory & a
-            // wildcard
+            if (!Const.isEmpty(onemask))
+            // If wildcard is set we assume it's a directory
             {
                 File file = new File(onefile);
                 try
                 {
+                    // Find all file names that match the wildcard in this directory
                     String[] fileNames = file.list(new FilenameFilter()
                     {
                         public boolean accept(File dir, String name)
@@ -76,6 +100,14 @@ public class FileInputList
                             return Pattern.matches(onemask, name);
                         }
                     });
+                    if (subdirs)
+                    {
+                        Vector matchingFilenames = new Vector();
+                        appendToVector(matchingFilenames, fileNames, "");
+                        findMatchingFiles(file, onemask, matchingFilenames, "");
+                        fileNames = new String[matchingFilenames.size()];
+                        matchingFilenames.copyInto(fileNames);
+                    }
 
                     if (fileNames != null) 
                     {
@@ -126,7 +158,53 @@ public class FileInputList
 
         return fileInputList;
     }
+    
+    /**
+     * Copies all elements of a String array into a Vector
+     * @param sArray The string array
+     * @return The Vector.
+     */
+    private static void appendToVector(Vector v, String[] sArray, String sPrefix)
+    {
+        if (sArray == null || sArray.length == 0)
+            return;
 
+        for (int i = 0; i < sArray.length; i++)
+            v.add(sPrefix + sArray[i]);
+    }
+    
+    /**
+     * 
+     * @param dir
+     * @param onemask
+     * @param matchingFileNames
+     * @param sPrefix
+     */
+    private static void findMatchingFiles(File dir, final String onemask, Vector matchingFileNames, String sPrefix)
+    {
+        if (!Const.isEmpty(sPrefix))
+        {
+            String[] fileNames = dir.list(new FilenameFilter()
+            {
+                public boolean accept(File dir, String name)
+                {
+                    return Pattern.matches(onemask, name);
+                }
+            });
+            appendToVector(matchingFileNames, fileNames, sPrefix);
+        }
+        
+        String[] files = dir.list();
+        for (int i = 0; i < files.length; i++)
+        {
+            File f = new File(dir.getAbsolutePath() + Const.FILE_SEPARATOR + files[i]);
+            if (f.isDirectory())
+            {
+                findMatchingFiles(f, onemask, matchingFileNames, sPrefix + files[i] + Const.FILE_SEPARATOR);
+            }
+        }
+    }
+    
     public List getFiles()
     {
         return files;
