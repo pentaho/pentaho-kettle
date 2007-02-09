@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -13,8 +13,8 @@
  **                                                                   **
  **********************************************************************/
 
- 
 package be.ibridge.kettle.core;
+
 import be.ibridge.kettle.trans.step.StepMeta;
 
 /**
@@ -22,64 +22,74 @@ import be.ibridge.kettle.trans.step.StepMeta;
  * 
  * @author Matt
  * @since 11-01-04
- *
+ * 
  */
 public class CheckResult
 {
-	public static final int TYPE_RESULT_NONE    = 0;
-	public static final int TYPE_RESULT_OK      = 1;
-	public static final int TYPE_RESULT_COMMENT = 2;
-	public static final int TYPE_RESULT_WARNING = 3;
-	public static final int TYPE_RESULT_ERROR   = 4;
-	
-	public static final String typeDesc[] =
-		{
-			"",
-			"OK",
-			"Remark",
-			"Warning",
-			"Error"	
-		};
-	
-	private int    type;
-	private String text;
-	private StepMeta stepMeta;
-	
-	public CheckResult()
-	{
-		this(TYPE_RESULT_NONE, "", null);
-	}
-	
-	public CheckResult(int t, String s, StepMeta stepMeta)
-	{
-		type = t;
-		text = s;
-		this.stepMeta=stepMeta;
-	}
-	
-	public int getType()
-	{
-		return type;
-	}
-	
-	public String getTypeDesc()
-	{
-		return typeDesc[type];
-	}
-	
-	public String getText()
-	{
-		return text;
-	}
-	
-	public StepMeta getStepInfo()
-	{
-		return stepMeta;
-	}
-	
-	public String toString()
-	{
-		if (stepMeta!=null) return typeDesc[type]+" : "+text+" ("+stepMeta.getName()+")";
-		return typeDesc[type]+" : "+text;
-	}
+    public static final int TYPE_RESULT_NONE = 0;
+
+    public static final int TYPE_RESULT_OK = 1;
+
+    public static final int TYPE_RESULT_COMMENT = 2;
+
+    public static final int TYPE_RESULT_WARNING = 3;
+
+    public static final int TYPE_RESULT_ERROR = 4;
+
+    public static final String typeDesc[] = {
+                                             "",
+                                             Messages.getString("CheckResult.OK"),
+                                             Messages.getString("CheckResult.Remark"),
+                                             Messages.getString("CheckResult.Warning"),
+                                             Messages.getString("CheckResult.Error")
+                                             };
+
+    private int type;
+
+    private String text;
+
+    private StepMeta stepMeta;
+
+    public CheckResult()
+    {
+        this(TYPE_RESULT_NONE, "", null);
+    }
+
+    public CheckResult(int t, String s, StepMeta stepMeta)
+    {
+        type = t;
+        text = s;
+        this.stepMeta = stepMeta;
+    }
+
+    public int getType()
+    {
+        return type;
+    }
+
+    public String getTypeDesc()
+    {
+        return typeDesc[type];
+    }
+
+    public String getText()
+    {
+        return text;
+    }
+
+    public StepMeta getStepInfo()
+    {
+        return stepMeta;
+    }
+
+    public String toString()
+    {
+        StringBuffer sb = new StringBuffer();
+        sb.append(typeDesc[type]).append(": ").append(text);
+
+        if (stepMeta != null)
+            sb.append(" (").append(stepMeta.getName()).append(")");
+
+        return sb.toString();
+    }
 }

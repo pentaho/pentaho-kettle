@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -62,17 +63,30 @@ public class EnterPasswordDialog extends Dialog
 	
 	private String description;
 	private boolean readonly, modal;
-	
-	public EnterPasswordDialog(Shell parent, Props pr, String t, String m, String desc)
+
+    /**
+     * @deprecated Use CT without the <i>props</i> parameter (at 2nd position)
+     */
+	public EnterPasswordDialog(Shell parent, Props props, String title, String message, String description)
 	{
 		super(parent, SWT.NONE);
-		props=pr;
-		title=t;
-		message=m;
-		description=desc;
-		readonly=false;
+		this.props=props;
+        this.title=title;
+        this.message=message;
+        this.description=description;
+        this.readonly=false;
 	}
 	
+    public EnterPasswordDialog(Shell parent, String title, String message, String description)
+    {
+        super(parent, SWT.NONE);
+        this.props=Props.getInstance();
+        this.title=title;
+        this.message=message;
+        this.description=description;
+        this.readonly=false;
+    }
+    
 	public void setReadOnly()
 	{
 		readonly=true;
@@ -124,9 +138,9 @@ public class EnterPasswordDialog extends Dialog
 		if (!readonly)
 		{
 			wOK=new Button(shell, SWT.PUSH);
-			wOK.setText("  &OK  ");
+			wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 			wCancel=new Button(shell, SWT.PUSH);
-			wCancel.setText("  &Cancel  ");
+			wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 			fdOK=new FormData();
 			fdOK.left       = new FormAttachment(33, 0);
 			fdOK.bottom     = new FormAttachment(100, 0);
@@ -146,7 +160,7 @@ public class EnterPasswordDialog extends Dialog
 		else
 		{
 			wOK=new Button(shell, SWT.PUSH);
-			wOK.setText("  &Close  ");
+			wOK.setText(GlobalMessages.getSystemString("System.Button.Close"));
 			fdOK=new FormData();
 			fdOK.left       = new FormAttachment(50, 0);
 			fdOK.bottom     = new FormAttachment(100, 0);

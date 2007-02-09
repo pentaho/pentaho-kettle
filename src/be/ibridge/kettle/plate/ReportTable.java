@@ -3,8 +3,6 @@ package be.ibridge.kettle.plate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.graphics.GC;
-
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -136,7 +134,7 @@ public class ReportTable
         return fieldNrs;
     }
     
-    private void getSortFieldNrs(Row row, List fieldNrs, List ascending) throws KettleException
+    private void getSortFieldNrs(Row row, List fieldNrs, List ascending)
     {
         for ( int i=0 ; i<xAxisFields.size() ; i++)
         {
@@ -159,7 +157,7 @@ public class ReportTable
         }
     }
    
-    public void draw(GC gc, List rows) throws KettleException
+    public void draw(List rows) throws KettleException
     {
         if (rows.size()==0) return; // Nothing to do ;-)
         

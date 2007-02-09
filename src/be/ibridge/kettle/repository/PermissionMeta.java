@@ -49,14 +49,14 @@ public class PermissionMeta
 		};
 
 	public static final String permissionTypeDesc[] =
-		{
-			"-",
-			"Read only access",
-			"Administrator",
-			"Use transformations",
-			"Use jobs",
-			"Use schema's"
-		};
+	{
+		 "-",
+		 Messages.getString("PermissionMeta.Permission.ReadOnly"),
+		 Messages.getString("PermissionMeta.Permission.Administrator"),
+		 Messages.getString("PermissionMeta.Permission.UseTransformations"),
+		 Messages.getString("PermissionMeta.Permission.UseJobs"),
+		 Messages.getString("PermissionMeta.Permission.UseSchemas")
+	};
 	
 	public PermissionMeta(int type)
 	{
@@ -80,7 +80,7 @@ public class PermissionMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load permission information from the repository with id_premission="+id_permission, dbe);
+			throw new KettleException(Messages.getString("PermissionMeta.Error.LoadPermisson", Long.toString(id_permission)), dbe);
 		}
 	}
 	

@@ -20,7 +20,7 @@ public class Log4jPipedAppender implements Appender
     
     private PipedOutputStream pipedOutputStream;
     
-    public Log4jPipedAppender() throws IOException
+    public Log4jPipedAppender()
     {
         pipedOutputStream = new PipedOutputStream();
     }

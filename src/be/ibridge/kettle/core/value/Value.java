@@ -829,8 +829,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		case VALUE_TYPE_NUMBER :  retval=toStringNumber(pad);  break;
 		case VALUE_TYPE_DATE   :  retval=toStringDate();    break;
 		case VALUE_TYPE_BOOLEAN:  retval=toStringBoolean(); break;
-        case VALUE_TYPE_BIGNUMBER: retval=toStringBigNumber(pad); break;
-        case VALUE_TYPE_BINARY :  retval=toStringBinary(pad); break;
+        case VALUE_TYPE_BIGNUMBER: retval=toStringBigNumber(); break;
+        case VALUE_TYPE_BINARY :  retval=toStringBinary(); break;
 		default: retval=""; break; 
 		}
 
@@ -1112,7 +1112,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
      * @param pad true if you want to pad the resulting string to length.
      * @return a String optionally padded to the specified length.
      */
-    private String toStringBigNumber(boolean pad)
+    private String toStringBigNumber()
     {
         if (value==null) return null;
         String retval;
@@ -1147,7 +1147,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
      *
 	 * @return a String representing the binary value.
 	 */
-	private String toStringBinary(boolean pad)
+	private String toStringBinary()
 	{
 		String retval;
 		if (value==null) return null;
@@ -1318,7 +1318,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
         writeObj(new DataOutputStream(out));
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    private void readObject(java.io.ObjectInputStream in) throws IOException
     {
         readObj(new DataInputStream(in));
     }
@@ -2547,7 +2547,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
             }
             else
             {
-                setValue( (double)Const.round(getNumber(), decimalPlaces) );
+                setValue(Const.round(getNumber(), decimalPlaces));
             }
         }
         else
@@ -3349,7 +3349,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			Calendar cal=Calendar.getInstance();
 			cal.setTime(getDate());
 			
-			switch((int)level)
+			switch(level)
 			{
 			// MONTHS
 			case 5: cal.set(Calendar.MONTH, 1);

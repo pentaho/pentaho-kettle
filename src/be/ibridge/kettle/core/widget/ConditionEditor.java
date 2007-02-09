@@ -390,7 +390,7 @@ public class ConditionEditor extends Composite
 									v=new Value("constant", Value.VALUE_TYPE_STRING);
 								}
 							}
-							EnterValueDialog evd = new EnterValueDialog(shell, SWT.NONE, props, v);
+							EnterValueDialog evd = new EnterValueDialog(shell, SWT.NONE, v);
 							Value newval = evd.open();
 							if (newval!=null)
 							{

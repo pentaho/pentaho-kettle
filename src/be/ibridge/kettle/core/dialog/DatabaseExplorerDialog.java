@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.DatabaseMetaInformation;
 import be.ibridge.kettle.core.database.Schema;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.test.EditDatabaseTable;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -75,11 +76,11 @@ public class DatabaseExplorerDialog extends Dialog
 	private DatabaseMeta dbMeta;
 	private DBCache dbcache;
 	
-	private static final String STRING_CATALOG  = "Catalogs";
-	private static final String STRING_SCHEMAS  = "Schema's";
-	private static final String STRING_TABLES   = "Tables";
-	private static final String STRING_VIEWS    = "Views";
-	private static final String STRING_SYNONYMS = "Synonyms";
+	private static final String STRING_CATALOG  = Messages.getString("DatabaseExplorerDialog.Catalogs.Label");
+	private static final String STRING_SCHEMAS  = Messages.getString("DatabaseExplorerDialog.Schemas.Label");
+	private static final String STRING_TABLES   = Messages.getString("DatabaseExplorerDialog.Tables.Label");
+	private static final String STRING_VIEWS    = Messages.getString("DatabaseExplorerDialog.Views.Label");
+	private static final String STRING_SYNONYMS = Messages.getString("DatabaseExplorerDialog.Synonyms.Label");
 	
 	private Shell     shell;
 	private Tree      wTree;
@@ -162,7 +163,7 @@ public class DatabaseExplorerDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText("Database Explorer on ["+dbMeta.toString()+"]");
+		shell.setText(Messages.getString("DatabaseExplorerDialog.Title", dbMeta.toString()));
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -178,15 +179,15 @@ public class DatabaseExplorerDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 
 		wRefresh = new Button(shell, SWT.PUSH); 
-		wRefresh.setText("  &Refresh  ");
+		wRefresh.setText(GlobalMessages.getSystemString("System.Button.Refresh"));
 		
 		if (!justLook) 
 		{
 			wCancel = new Button(shell, SWT.PUSH);
-			wCancel.setText("  &Cancel  ");
+			wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 		}
 		
 		FormData fdTree      = new FormData(); 
@@ -440,25 +441,25 @@ public class DatabaseExplorerDialog extends Dialog
                         mTree.dispose();
                     }
                     mTree = new Menu(shell, SWT.POP_UP);
-					MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText("&Preview first 100 rows of ["+table+"]");
+					MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", table));
 					miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
-					MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText("Preview &first ... rows of ["+table+"]");
+					MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText(Messages.getString("DatabaseExplorerDialog.Menu.PreviewN", table));
 					miPrevN.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, true); }});
 					//MenuItem miEdit   = new MenuItem(mTree, SWT.PUSH); miEdit.setText("Open ["+table+"] for editing");
 					//miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTable(table); }});
-					MenuItem miCount = new MenuItem(mTree, SWT.PUSH); miCount.setText("Show size of ["+table+"]");
+					MenuItem miCount = new MenuItem(mTree, SWT.PUSH); miCount.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowSize", table));
 					miCount.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showCount(table); }});
 
 					new MenuItem(mTree, SWT.SEPARATOR);
 					
-					MenuItem miShow  = new MenuItem(mTree, SWT.PUSH); miShow.setText("Show layout of ["+table+"]");
+					MenuItem miShow  = new MenuItem(mTree, SWT.PUSH); miShow.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowLayout", table));
 					miShow.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showTable(table); }});
-					MenuItem miDDL  = new MenuItem(mTree, SWT.PUSH); miDDL.setText("Generate DDL");
+					MenuItem miDDL  = new MenuItem(mTree, SWT.PUSH); miDDL.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDL"));
 					miDDL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDL(table); }});
-					MenuItem miDDL2  = new MenuItem(mTree, SWT.PUSH); miDDL2.setText("Generate DDL for other connection");
+                    MenuItem miDDL2  = new MenuItem(mTree, SWT.PUSH); miDDL2.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDLOtherConn"));
 					miDDL2.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDLForOther(table); }});
                     miDDL2.setEnabled(databases!=null);
-					MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText("Open SQL for ["+table+"]");
+					MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", table));
 					miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(table); }});
 				}
 			}
@@ -472,9 +473,9 @@ public class DatabaseExplorerDialog extends Dialog
 		if (asklimit)
 		{
 			// Ask how many lines we should preview.
-			String shellText = "Preview limit";
-			String lineText = "Number of lines to preview (0=all lines)";
-			EnterNumberDialog end = new EnterNumberDialog(shell, props, limit, shellText, lineText);
+			String shellText = Messages.getString("DatabaseExplorerDialog.PreviewTable.Title");
+			String lineText = Messages.getString("DatabaseExplorerDialog.PreviewTable.Message");
+			EnterNumberDialog end = new EnterNumberDialog(shell, limit, shellText, lineText);
 			int samples = end.open();
 			if (samples>=0) limit=samples;
 		}
@@ -491,8 +492,8 @@ public class DatabaseExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-				mb.setMessage("This table contains no rows!");
-				mb.setText("Sorry");
+				mb.setMessage(Messages.getString("DatabaseExplorerDialog.NoRows.Message"));
+				mb.setText(Messages.getString("DatabaseExplorerDialog.NoRows.Title"));
 				mb.open();
 			}
 	    }
@@ -511,7 +512,7 @@ public class DatabaseExplorerDialog extends Dialog
 	    Row result = pd.open();         
 		if (result!=null)
 		{
-			StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, log, tableName, result, props);
+			StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, tableName, result);
 			sfd.open();
 		}
 	}
@@ -522,10 +523,10 @@ public class DatabaseExplorerDialog extends Dialog
 		Row r = pd.open();
 		if (r!=null)
 		{
-			String result = "Table ["+tableName+"] has "+r.getValue(0).getInteger()+" rows.";
-			
-			EnterTextDialog etd = new EnterTextDialog(shell, "Count", "# rows in "+tableName, result, true);
-			etd.open();
+            MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+            mb.setMessage(Messages.getString("DatabaseExplorerDialog.TableSize.Message", tableName, Long.toString(r.getValue(0).getInteger())));
+            mb.setText(Messages.getString("DatabaseExplorerDialog.TableSize.Title"));
+            mb.open();
 		}
 	}
 
@@ -542,7 +543,8 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, "Error", "Couldn't retrieve the table layout.", dbe);
+			new ErrorDialog(shell, Messages.getString("Dialog.Error.Header"),
+                Messages.getString("DatabaseExplorerDialog.Error.RetrieveLayout"), dbe);
 		}
 		finally
 		{
@@ -571,7 +573,8 @@ public class DatabaseExplorerDialog extends Dialog
                 String conn[] = new String[dbs.size()];
     			for (int i=0;i<conn.length;i++) conn[i] = ((DatabaseMeta)dbs.get(i)).getName();
     			
-    			EnterSelectionDialog esd = new EnterSelectionDialog(shell, conn, "Target database:", "Select the target database:");
+    			EnterSelectionDialog esd = new EnterSelectionDialog(shell, conn, Messages.getString("DatabaseExplorerDialog.TargetDatabase.Title"),
+                    Messages.getString("DatabaseExplorerDialog.TargetDatabase.Message"));
     			String target = esd.open();
     			if (target!=null)
     			{
@@ -585,7 +588,8 @@ public class DatabaseExplorerDialog extends Dialog
     		}
     		catch(KettleDatabaseException dbe)
     		{
-    			new ErrorDialog(shell, "Error", "Couldn't generate the DDL", dbe);
+    			new ErrorDialog(shell, Messages.getString("Dialog.Error.Header"),
+                    Messages.getString("DatabaseExplorerDialog.Error.GenDDL"), dbe);
     		}
     		finally
     		{
@@ -595,8 +599,8 @@ public class DatabaseExplorerDialog extends Dialog
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.NONE | SWT.ICON_INFORMATION);
-            mb.setMessage("I'm unable to perform this operation as I don't know the other available connections at this point.");
-            mb.setText("Sorry");
+            mb.setMessage(Messages.getString("DatabaseExplorerDialog.NoConnectionsKnown.Message"));
+            mb.setText(Messages.getString("DatabaseExplorerDialog.NoConnectionsKnown.Title"));
             mb.open();
         }
 	}

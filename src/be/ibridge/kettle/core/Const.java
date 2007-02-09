@@ -380,72 +380,46 @@ public class Const
 	/**
 	 * A number of tips that are shown when the application first starts.
 	 */
-	public static final String tips[] = {
-            "To create a new transformation or job select File/New or simply double click on the 'Transformations' or 'Jobs' tree entries on the upper left of the screen."+Const.CR,
-            
-			"When designing a transformation you can create a new step, simply by dragging the step onto the graphical view." + Const.CR
-					+ "You can find steps and plugins to use in the tree on the left lower side of the screen under 'Core steps'",
-
-			"When designing a transformation (or job) you can define a new hop between 2 steps by using the middle or scrollwheel button." + Const.CR
-					+ "Middle-click on the first step and drag onto the second." + Const.CR + "You can also: " + Const.CR + Const.CR
-					+ " - use SHIFT+Click and drag from one step to another" + Const.CR
-					+ " - Select 2 steps and right click on one of them, then select 'new hop'" + Const.CR + " - Drag 'Hops' onto the canvas",
-
-			"Inserting a step (or job entry) between 2 steps that are already connected with a hop:" + Const.CR
-					+ "simply move the step over the arrow until the arrow becomes drawn in bold." + Const.CR
-					+ "Release the mouse-button and you'll be asked if you want to insert the step.",
-
-			"Edit the step description by double clicking on a step using the middle-button",
-
-			"Explore a database by clicking right on a connection and selecting 'explore database'",
-
-			"Preview the rows that are passing throuqh a step (output) by selecting the step and by pressing F10 (preview)",
-
-			"Check the settings of steps by first selecting one or more of them." + Const.CR
-					+ "Then by using the right-click option 'Check selected steps'",
-
-			"Click right on the first column in any dialog table (grid) for a list of all the options." };
+	private static String tips[];
 
 	/**
 	 * An array of date conversion formats
 	 */
-	public static final String dateFormats[] = new String[] { "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss", "yyyyMMddHHmmss", "dd/MM/yyyy",
-			"dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy", "d/M/yy", };
+	private static String dateFormats[];
 
 	/**
 	 * An array of number conversion formats
 	 */
-	public static final String numberFormats[] = new String[] { DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "#.#", "#", "###,###,###.#######",
-			"###############.###############", "#####.###############%", };
+	private static String numberFormats[];
 
 	/**
 	 * Default we store our information in Unicode UTF-8 character set.
 	 */
 	public static final String XML_ENCODING = "UTF-8";
 
-    /** The possible extentions a transformation XML file can have. */
+    /** The possible extensions a transformation XML file can have. */
     public static final String STRING_TRANS_AND_JOB_FILTER_EXT[] = new String[] { "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
 
-    /** The discriptions of the possible extentions a transformation XML file can have. */
-    public static final String STRING_TRANS_AND_JOB_FILTER_NAMES[] = new String[] { "Kettle transformations and jobs", "Kettle transformations", "Kettle jobs", "XML Files", "All files" };
+    /** The discriptions of the possible extensions a transformation XML file can have. */
+    private static String STRING_TRANS_AND_JOB_FILTER_NAMES[];
 
-	/** The extention of a Kettle transformation XML file */
+	/** The extension of a Kettle transformation XML file */
 	public static final String STRING_TRANS_DEFAULT_EXT = ".ktr";
 
-	/** The possible extentions a transformation XML file can have. */
+	/** The possible extensions a transformation XML file can have. */
 	public static final String STRING_TRANS_FILTER_EXT[] = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
 
-	/** The discriptions of the possible extentions a transformation XML file can have. */
-	public static final String STRING_TRANS_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
+	/** The discriptions of the possible extensions a transformation XML file can have. */
+	private static String STRING_TRANS_FILTER_NAMES[];
 
-	/** The extention of a Kettle job XML file */
+	/** The extension of a Kettle job XML file */
 	public static final String STRING_JOB_DEFAULT_EXT = ".kjb";
 
-	/** The possible extentions a job XML file can have. */
+	/** The possible extensions a job XML file can have. */
 	public static final String STRING_JOB_FILTER_EXT[] = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
 
-	/** The discriptions of the possible extentions a job XML file can have. */
-	public static final String STRING_JOB_FILTER_NAMES[] = new String[] { "Kettle Jobs", "XML Files", "All files" };
+	/** The discriptions of the possible extensions a job XML file can have. */
+	private static String STRING_JOB_FILTER_NAMES[];
 
 	/** Name of the kettle parameters file */
 	public static final String KETTLE_PROPERTIES = "kettle.properties";
@@ -1843,8 +1817,8 @@ public class Const
 	 */
 	public static String[] getConversionFormats()
 	{
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x = 0; x < dats.length; x++)
@@ -2019,15 +1993,110 @@ public class Const
         return filename.toString().toLowerCase();
     }
     
-    public static final String createFilename(String directory, String name, String extention)
+    public static final String createFilename(String directory, String name, String extension)
     {
         if (directory.endsWith(Const.FILE_SEPARATOR))
         {
-            return directory+createFilename(name)+extention;
+            return directory+createFilename(name)+extension;
         }
         else
         {
-            return directory+Const.FILE_SEPARATOR+createFilename(name)+extention;
+            return directory+Const.FILE_SEPARATOR+createFilename(name)+extension;
         }
+    }
+
+    /**
+     * Returning the internationalized tips of the days. They get created once on first
+     * request.
+     * 
+     * @return
+     */
+    public static String[] getTips()
+    {
+        if (tips == null)
+        {
+            int tipsOfDayCount = toInt(Messages.getString("Const.TipOfDay.Count"), 0);
+            tips = new String[tipsOfDayCount];
+            for (int i = 1; i <= tipsOfDayCount; i++)
+                tips[i - 1] = Messages.getString("Const.TipOfDay" + Integer.toString(i));
+        }
+
+        return tips;
+    }
+
+    /**
+     * Returning the localized date conversion formats. They get created once on first request.
+     * 
+     * @return
+     */
+    public static String[] getDateFormats()
+    {
+        if (dateFormats == null)
+        {
+            int dateFormatsCount = toInt(Messages.getString("Const.DateFormat.Count"), 0);
+            dateFormats = new String[dateFormatsCount];
+            for (int i = 1; i <= dateFormatsCount; i++)
+                dateFormats[i - 1] = Messages.getString("Const.DateFormat" + Integer.toString(i));
+        }
+        return dateFormats;
+    }
+
+    /**
+     * Returning the localized number conversion formats. They get created once on first request.
+     * 
+     * @return
+     */
+    public static String[] getNumberFormats()
+    {
+        if (numberFormats == null)
+        {
+            int numberFormatsCount = toInt(Messages.getString("Const.NumberFormat.Count"), 0);
+            numberFormats = new String[numberFormatsCount + 1];
+            numberFormats[0] = DEFAULT_NUMBER_FORMAT;
+            for (int i = 1; i <= numberFormatsCount; i++)
+                numberFormats[i] = Messages.getString("Const.NumberFormat" + Integer.toString(i));
+        }
+        return numberFormats;
+    }
+
+    public static String[] getTransformationAndJobFilterNames()
+    {
+        if (STRING_TRANS_AND_JOB_FILTER_NAMES == null)
+        {
+            STRING_TRANS_AND_JOB_FILTER_NAMES = new String[] {
+                                                            Messages.getString("Const.FileFilter.TransformationJob"),
+                                                            Messages.getString("Const.FileFilter.Transformations"),
+                                                            Messages.getString("Const.FileFilter.Jobs"),
+                                                            Messages.getString("Const.FileFilter.XML"),
+                                                            Messages.getString("Const.FileFilter.All")
+            };
+        }
+        return STRING_TRANS_AND_JOB_FILTER_NAMES;
+    }
+                                                                                   
+    public static String[] getTransformationFilterNames()
+    {
+        if (STRING_TRANS_FILTER_NAMES == null)
+        {
+            STRING_TRANS_FILTER_NAMES = new String[] {
+                                                            Messages.getString("Const.FileFilter.Transformations"),
+                                                            Messages.getString("Const.FileFilter.XML"),
+                                                            Messages.getString("Const.FileFilter.All")
+            };
+        }
+        return STRING_TRANS_FILTER_NAMES;
+    }
+
+    public static String[] getJobFilterNames()
+    {
+        if (STRING_JOB_FILTER_NAMES == null)
+        {
+            STRING_JOB_FILTER_NAMES = new String[] {
+                                                            Messages.getString("Const.FileFilter.Jobs"),
+                                                            Messages.getString("Const.FileFilter.XML"),
+                                                            Messages.getString("Const.FileFilter.All")
+            };
+        }
+        return STRING_JOB_FILTER_NAMES;
     }
 }

@@ -404,7 +404,7 @@ public class Row implements XMLInterface, Comparable, Serializable
         writeObj(new DataOutputStream(out));
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    private void readObject(java.io.ObjectInputStream in) throws IOException
     {
         readObj(new DataInputStream(in));
     }

@@ -85,7 +85,7 @@ public class AccessOutput extends BaseStep implements StepInterface
 		return true;
 	}
 
-	private boolean writeToTable(Row r) throws KettleException
+	private boolean writeToTable(Row r)
 	{
 		if (r==null) // Stop: last line or error encountered 
 		{

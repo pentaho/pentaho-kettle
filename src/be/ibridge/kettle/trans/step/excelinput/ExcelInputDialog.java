@@ -778,8 +778,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		int FieldsHeight=150;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
@@ -1548,7 +1548,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
 
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("ExcelInputDialog.PreviewSize.DialogTitle"), Messages.getString("ExcelInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("ExcelInputDialog.PreviewSize.DialogTitle"), Messages.getString("ExcelInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {

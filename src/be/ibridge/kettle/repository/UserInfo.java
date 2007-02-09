@@ -83,19 +83,19 @@ public class UserInfo
 				else
 				{
 					setID(-1L);
-					throw new KettleDatabaseException("User ["+login+"] couldn't be found!");
+					throw new KettleDatabaseException(Messages.getString("UserInfo.Error.UserNotFound", login));
 				}
 			}
             else
             {
                 setID(-1L);
-                throw new KettleDatabaseException("User ["+login+"] couldn't be found!");
+                throw new KettleDatabaseException(Messages.getString("UserInfo.Error.UserNotFound", login));
             }
 		}
 		catch(KettleDatabaseException dbe)
 		{
-            rep.log.logError(toString(), "Unable to load user with login ["+login+"] from the repository: "+dbe.getMessage());
-			throw new KettleException("Unable to load user with login ["+login+"] from the repository", dbe);
+            rep.log.logError(toString(), Messages.getString("UserInfo.Error.UserNotLoaded", login, dbe.getMessage()));
+			throw new KettleException(Messages.getString("UserInfo.Error.UserNotLoaded", login, ""), dbe);
 		}
 	}
 	
@@ -109,7 +109,7 @@ public class UserInfo
 		// Verify the password:
 		if ( getID()<0 || !passwd.equals(getPassword()) )
 		{
-            throw new KettleDatabaseException("Incorrect password or login!");
+            throw new KettleDatabaseException(Messages.getString("UserInfo.Error.IncorrectPasswortLogin"));
 		}
 	}
 	
@@ -139,7 +139,7 @@ public class UserInfo
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Error saving User in repository", dbe);
+			throw new KettleException(Messages.getString("UserInfo.Error.SavingUser", login), dbe);
 		}
 		
 	}

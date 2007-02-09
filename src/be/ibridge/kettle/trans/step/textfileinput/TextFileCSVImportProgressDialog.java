@@ -158,19 +158,19 @@ public class TextFileCSVImportProgressDialog
         // Date info
         boolean isDate[] = new boolean[nrfields]; // is the field perhaps a Date?
         int dateFormatCount[] = new int[nrfields]; // How many date formats work?
-        boolean dateFormat[][] = new boolean[nrfields][Const.dateFormats.length]; // What are the date formats that
+        boolean dateFormat[][] = new boolean[nrfields][Const.getDateFormats().length]; // What are the date formats that
         // work?
-        Date minDate[][] = new Date[nrfields][Const.dateFormats.length]; // min date value
-        Date maxDate[][] = new Date[nrfields][Const.dateFormats.length]; // max date value
+        Date minDate[][] = new Date[nrfields][Const.getDateFormats().length]; // min date value
+        Date maxDate[][] = new Date[nrfields][Const.getDateFormats().length]; // max date value
 
         // Number info
         boolean isNumber[] = new boolean[nrfields]; // is the field perhaps a Number?
         int numberFormatCount[] = new int[nrfields]; // How many number formats work?
-        boolean numberFormat[][] = new boolean[nrfields][Const.numberFormats.length]; // What are the number format that work?
-        double minValue[][] = new double[nrfields][Const.dateFormats.length]; // min number value
-        double maxValue[][] = new double[nrfields][Const.dateFormats.length]; // max number value
-        int numberPrecision[][] = new int[nrfields][Const.numberFormats.length]; // remember the precision?
-        int numberLength[][] = new int[nrfields][Const.numberFormats.length]; // remember the length?
+        boolean numberFormat[][] = new boolean[nrfields][Const.getNumberFormats().length]; // What are the number format that work?
+        double minValue[][] = new double[nrfields][Const.getDateFormats().length]; // min number value
+        double maxValue[][] = new double[nrfields][Const.getDateFormats().length]; // max number value
+        int numberPrecision[][] = new int[nrfields][Const.getNumberFormats().length]; // remember the precision?
+        int numberLength[][] = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
 
         for (int i = 0; i < nrfields; i++)
         {
@@ -199,17 +199,17 @@ public class TextFileCSVImportProgressDialog
 
             // Init data guess
             isDate[i] = true;
-            for (int j = 0; j < Const.dateFormats.length; j++)
+            for (int j = 0; j < Const.getDateFormats().length; j++)
             {
                 dateFormat[i][j] = true;
                 minDate[i][j] = Const.MAX_DATE;
                 maxDate[i][j] = Const.MIN_DATE;
             }
-            dateFormatCount[i] = Const.dateFormats.length;
+            dateFormatCount[i] = Const.getDateFormats().length;
 
             // Init number guess
             isNumber[i] = true;
-            for (int j = 0; j < Const.numberFormats.length; j++)
+            for (int j = 0; j < Const.getNumberFormats().length; j++)
             {
                 numberFormat[i][j] = true;
                 minValue[i][j] = Double.MAX_VALUE;
@@ -217,7 +217,7 @@ public class TextFileCSVImportProgressDialog
                 numberPrecision[i][j] = -1;
                 numberLength[i][j] = -1;
             }
-            numberFormatCount[i] = Const.numberFormats.length;
+            numberFormatCount[i] = Const.getNumberFormats().length;
         }
 
         TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
@@ -343,14 +343,14 @@ public class TextFileCSVImportProgressDialog
                                     }
 
                             // Try the remaining possible number formats!
-                            for (int x = 0; x < Const.numberFormats.length; x++)
+                            for (int x = 0; x < Const.getNumberFormats().length; x++)
                             {
                                 if (numberFormat[i][x])
                                 {
                                     try
                                     {
                                         df2.setDecimalFormatSymbols(dfs2);
-                                        df2.applyPattern(Const.numberFormats[x]);
+                                        df2.applyPattern(Const.getNumberFormats()[x]);
                                         double d = df2.parse(fieldValue).doubleValue();
 
                                         // System.out.println("("+i+","+x+") : Converted ["+field.toString()+"]
@@ -392,13 +392,13 @@ public class TextFileCSVImportProgressDialog
                     // Check it as long as we found a format that works...
                     if (isDate[i])
                     {
-                        for (int x = 0; x < Const.dateFormats.length; x++)
+                        for (int x = 0; x < Const.getDateFormats().length; x++)
                         {
                             if (dateFormat[i][x])
                             {
                                 try
                                 {
-                                    daf2.applyPattern(Const.dateFormats[x]);
+                                    daf2.applyPattern(Const.getDateFormats()[x]);
                                     Date date = daf2.parse(fieldValue);
 
                                     Calendar cal = Calendar.getInstance();
@@ -478,11 +478,11 @@ public class TextFileCSVImportProgressDialog
                 if (isDate[i])
                 {
                     field.setType(Value.VALUE_TYPE_DATE);
-                    for (int x = Const.dateFormats.length - 1; x >= 0; x--)
+                    for (int x = Const.getDateFormats().length - 1; x >= 0; x--)
                     {
                         if (dateFormat[i][x])
                         {
-                            field.setFormat(Const.dateFormats[x]);
+                            field.setFormat(Const.getDateFormats()[x]);
                             field.setLength(TextFileInputDialog.dateLengths[x]);
                             field.setPrecision(-1);
                         }
@@ -491,11 +491,11 @@ public class TextFileCSVImportProgressDialog
                     if (isNumber[i])
                     {
                         field.setType(Value.VALUE_TYPE_NUMBER);
-                        for (int x = Const.numberFormats.length - 1; x >= 0; x--)
+                        for (int x = Const.getNumberFormats().length - 1; x >= 0; x--)
                         {
                             if (numberFormat[i][x])
                             {
-                                field.setFormat(Const.numberFormats[x]);
+                                field.setFormat(Const.getNumberFormats()[x]);
                                 field.setLength(numberLength[i][x]);
                                 field.setPrecision(numberPrecision[i][x]);
 
@@ -539,11 +539,11 @@ public class TextFileCSVImportProgressDialog
                 {
                     message += Messages.getString("TextFileCSVImportProgressDialog.Info.WarnNumberFormat");
                 }
-                for (int x = 0; x < Const.numberFormats.length; x++)
+                for (int x = 0; x < Const.getNumberFormats().length; x++)
                 {
                     if (numberFormat[i][x])
                     {
-                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberFormat2", Const.numberFormats[x]);
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberFormat2", Const.getNumberFormats()[x]);
                         Value minnum = new Value("minnum", minValue[i][x]);
                         Value maxnum = new Value("maxnum", maxValue[i][x]);
                         minnum.setLength(numberLength[i][x], numberPrecision[i][x]);
@@ -553,16 +553,16 @@ public class TextFileCSVImportProgressDialog
 
                         try
                         {
-                            df2.applyPattern(Const.numberFormats[x]);
+                            df2.applyPattern(Const.getNumberFormats()[x]);
                             df2.setDecimalFormatSymbols(dfs2);
                             double mn = df2.parse(minstr[i]).doubleValue();
                             Value val = new Value("min", mn);
                             val.setLength(numberLength[i][x], numberPrecision[i][x]);
-                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberExample", Const.numberFormats[x], minstr[i], val.toString());
+                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberExample", Const.getNumberFormats()[x], minstr[i], val.toString());
                         }
                         catch (Exception e)
                         {
-                            log.logBasic(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.numberFormats[x]
+                            log.logBasic(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getNumberFormats()[x]
                                     + "] did not work.");
                         }
                     }
@@ -582,27 +582,27 @@ public class TextFileCSVImportProgressDialog
                 {
                     message += Messages.getString("TextFileCSVImportProgressDialog.Info.WarnDateFormat");
                 }
-                for (int x = 0; x < Const.dateFormats.length; x++)
+                for (int x = 0; x < Const.getDateFormats().length; x++)
                 {
                     if (dateFormat[i][x])
                     {
-                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat2", Const.dateFormats[x]);
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat2", Const.getDateFormats()[x]);
                         Value mindate = new Value("mindate", minDate[i][x]);
                         Value maxdate = new Value("maxdate", maxDate[i][x]);
                         message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMinValue", mindate.toString());
                         message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMaxValue", maxdate.toString());
 
-                        daf2.applyPattern(Const.dateFormats[x]);
+                        daf2.applyPattern(Const.getDateFormats()[x]);
                         try
                         {
                             Date md = daf2.parse(minstr[i]);
                             Value val = new Value("min", md);
                             val.setLength(field.getLength());
-                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateExample", Const.dateFormats[x], minstr[i], val.toString());
+                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateExample", Const.getDateFormats()[x], minstr[i], val.toString());
                         }
                         catch (Exception e)
                         {
-                            log.logError(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.dateFormats[x]
+                            log.logError(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getDateFormats()[x]
                                     + "] did not work.");
                         }
                     }

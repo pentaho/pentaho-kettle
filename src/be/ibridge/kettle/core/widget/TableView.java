@@ -720,7 +720,7 @@ public class TableView extends Composite
 					}
 
 					// CTRL-A --> Select All lines
-					if ((int)e.character ==  1 ) 
+					if (e.character ==  1 ) 
 					{
 						selectAll(); 
                         return;
@@ -735,28 +735,28 @@ public class TableView extends Composite
 					} 
 
 					// CTRL-C --> Copy selected lines to clipboard
-					if ((int)e.character ==  3 ) 
+					if (e.character ==  3 ) 
 					{
 						clipSelected();
                         return;
 					}
 
 					// CTRL-K --> keep only selected lines
-					if (!readonly && (int)e.character == 11  ) 
+					if (!readonly && e.character == 11  ) 
 					{
 						keepSelected();
                         return;
 					}
 
 					// CTRL-X --> Cut selected infomation...
-					if (!readonly && (int)e.character ==  24  ) 
+					if (!readonly && e.character ==  24  ) 
 					{
 						cutSelected();
                         return;
 					}
 
                     // CTRL-V --> Paste selected infomation...
-					if (!readonly && (int)e.character ==  22  ) 
+					if (!readonly && e.character ==  22  ) 
 					{
 						pasteSelected();
                         return;
@@ -784,14 +784,14 @@ public class TableView extends Composite
 					}
 
 					// CTRL-Y --> redo action
-					if ((int)e.character == 25  ) 
+					if (e.character == 25  ) 
                     { 
                         redoAction(); 
                         return;
                     }
 
 					// CTRL-Z --> undo action
-					if ((int)e.character == 26  ) 
+					if (e.character == 26  ) 
                     { 
                         undoAction(); 
                         return;
@@ -1364,7 +1364,7 @@ public class TableView extends Composite
 	private void copyToAll()
 	{
         TableItem row = activeTableItem;
-        if (row==null) return;
+        if (row==null || row.isDisposed()) return;
         int colnr = activeTableColumn;
         
 		if (colnr==0) return;
@@ -2686,7 +2686,7 @@ public class TableView extends Composite
 	{
 		if (condition==null) condition=new Condition();
 		Row f = getRowWithoutValues();
-		EnterConditionDialog ecd = new EnterConditionDialog(parent.getShell(), props, SWT.NONE, f, condition);
+		EnterConditionDialog ecd = new EnterConditionDialog(parent.getShell(), SWT.NONE, f, condition);
 		Condition cond = ecd.open(); 
 		if (cond!=null)
 		{

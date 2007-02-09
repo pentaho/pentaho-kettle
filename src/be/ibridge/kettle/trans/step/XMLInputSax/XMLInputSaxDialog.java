@@ -501,8 +501,8 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		final int FieldsRows=input.getInputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
@@ -1020,7 +1020,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("XMLInputSaxDialog.Dialog.EnterPreviewSize.Title"), Messages.getString("XMLInputSaxDialog.Dialog.EnterPreviewSize.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XMLInputSaxDialog.Dialog.EnterPreviewSize.Title"), Messages.getString("XMLInputSaxDialog.Dialog.EnterPreviewSize.Message")); //$NON-NLS-1$ //$NON-NLS-2$
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {

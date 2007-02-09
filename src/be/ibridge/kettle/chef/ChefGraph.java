@@ -40,7 +40,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -669,11 +668,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		{
 			public void keyPressed(KeyEvent e) 
 			{
-                if ((int) e.character == 3) // CTRL-C
+                if (e.character == 3) // CTRL-C
                 {
                     spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
                 }
-                if ((int) e.character == 22) // CTRL-V
+                if (e.character == 22) // CTRL-V
                 {
                     String clipcontent = spoon.fromClipboard();
                     if (clipcontent != null)
@@ -881,7 +880,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         }
         else
         {
-            mPop = new Menu((Control) this);
+            mPop = new Menu(this);
         }
         
 		final JobEntryCopy jobEntry = jobMeta.getChefGraphEntry(x, y, iconsize);
@@ -1602,7 +1601,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		if (hi==null || hi.from_entry==null || hi.to_entry==null) return;
 		if (!hi.from_entry.isDrawn() || !hi.to_entry.isDrawn())	return;
 		
-		if (shadowsize>0) drawLineShadow(gc, hi, false);
+		if (shadowsize>0) drawLineShadow(gc, hi);
 		drawLine(gc, hi, candidate);
 	}
 	
@@ -1792,7 +1791,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 	}
 
-	private void drawLineShadow(GC gc, JobHopMeta hi, boolean is_candidate)
+	private void drawLineShadow(GC gc, JobHopMeta hi)
 	{
 		int line[] = getLine(hi.from_entry, hi.to_entry);
 		int s = shadowsize;
@@ -1830,9 +1829,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		Point area = getArea();
 		Point max = jobMeta.getMaximum();
 		Point thumb = getThumb(area, max);
-		Point offset = getOffset(thumb, area);
 
-		return offset;
+		return getOffset(thumb, area);
 
 	}
 	

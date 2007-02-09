@@ -526,8 +526,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getInputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
@@ -1020,7 +1020,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     		// check if the path is given
     		if (!checkInputPositionsFilled(meta)) return;
 
-            EnterNumberDialog dialog = new EnterNumberDialog(shell, props, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
+            EnterNumberDialog dialog = new EnterNumberDialog(shell, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
             int maxElements = dialog.open();
 
             // OK, let's try to walk through the complete tree
@@ -1235,7 +1235,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {

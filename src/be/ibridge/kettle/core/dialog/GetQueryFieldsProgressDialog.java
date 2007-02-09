@@ -34,9 +34,7 @@ public class GetQueryFieldsProgressDialog
     private Thread parentThread;
 
     /**
-     * Creates a new dialog that will handle the wait while we're 
-     * finding out what tables, views etc we can reach in the database.
-     * @deprecated please use the constructor version without log or props
+     * @deprecated Use the constructor version without <i>log</i> and <i>props</i> parameter
      */
     public GetQueryFieldsProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo, String sql)
     {
@@ -114,15 +112,26 @@ public class GetQueryFieldsProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+		    showErrorDialog(e);
 			return null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+		    showErrorDialog(e);
 			return null;
 		}
 		
 		return result;
 	}
+
+    /**
+     * Showing an error dialog
+     * 
+     * @param e
+    */
+    private void showErrorDialog(Exception e)
+    {
+        new ErrorDialog(shell, Messages.getString("GetQueryFieldsProgressDialog.Error.Title"),
+            Messages.getString("GetQueryFieldsProgressDialog.Error.Message"), e);
+    }
 }

@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -13,8 +13,8 @@
  **                                                                   **
  **********************************************************************/
 
- 
 package be.ibridge.kettle.repository.dialog;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.DisposeEvent;
@@ -69,158 +69,165 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  * This dialog allows you to select, create or update a repository and log in to it.
  * 
  * @author Matt
- * @since  19-jun-2003
+ * @since 19-jun-2003
  */
 public class RepositoriesDialog
 {
-	private LogWriter    log;
+    private LogWriter log;
 
-	private Label        wlKettle;
-	private FormData     fdlKettle;
-	
-	private Label        wlRepository;
-	private Button       wnRepository, weRepository, wdRepository;
-	private CCombo       wRepository;
-	private FormData     fdlRepository, fdRepository, fdnRepository, fdeRepository, fddRepository;
+    private Label wlKettle;
+    private FormData fdlKettle;
 
-    private LabelText    wUsername;
-    private FormData     fdUsername;
+    private Label wlRepository;
+    private Button wnRepository, weRepository, wdRepository;
+    private CCombo wRepository;
+    private FormData fdlRepository, fdRepository, fdnRepository, fdeRepository, fddRepository;
 
-	private LabelText    wPassword;
-	private FormData     fdPassword;
-	
-	private Canvas       wCanvas;
-	private FormData     fdCanvas;
+    private LabelText wUsername;
+    private FormData fdUsername;
 
-	private Button wOK, wNorep, wCancel;
-	private Listener lsOK, lsNorep, lsCancel;
-	
-	private SelectionListener lsDef;
-	private KeyListener       lsRepo, lsJmp;
+    private LabelText wPassword;
+    private FormData fdPassword;
 
-	private   Display       display;
-	private   Shell         shell;
-	private   Props         props;
-	
-	private RepositoriesMeta input;
-	private RepositoryMeta   repinfo;
-	private UserInfo         userinfo;
-	private String           prefRepositoryName;
-	private boolean          cancelled;
-	private String   		 toolName;
-	
-	private int toolsPermissions[];
-	private StepLoader steploader;
+    private Canvas wCanvas;
+    private FormData fdCanvas;
 
-    /** @deprecated */
-    public RepositoriesDialog(Display disp, int style, LogWriter l, Props pr, int perm[], String toolName)
+    private Button wOK, wNorep, wCancel;
+    private Listener lsOK, lsNorep, lsCancel;
+
+    private SelectionListener lsDef;
+    private KeyListener lsRepo, lsJmp;
+
+    private Display display;
+    private Shell shell;
+    private Props props;
+    private RepositoriesMeta input;
+    private RepositoryMeta repinfo;
+    private UserInfo userinfo;
+    private String prefRepositoryName;
+    private boolean cancelled;
+    private String toolName;
+    private int toolsPermissions[];
+    private StepLoader steploader;
+
+    /**
+     * @deprecated Use CT without <i>style</i>, <i>log</i> and <i>props</i> parameter
+     */
+    public RepositoriesDialog(Display display, int style, LogWriter log, Props props, int perm[], String toolName)
     {
-        this(disp, style, perm, toolName);
+        this(display, perm, toolName);
+        this.log = log;
+        this.props = props;
+    }
+    
+    public RepositoriesDialog(Display disp, int perm[], String toolName)
+    {
+        display = disp;
+        toolsPermissions = perm;
+        steploader = StepLoader.getInstance();
+        this.toolName = toolName;
+
+        shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE);
+        shell.setText(Messages.getString("RepositoriesDialog.Dialog.Main.Title"));
+
+        log = LogWriter.getInstance();
+        props = Props.getInstance();
+        input = new RepositoriesMeta(log);
+        repinfo = null;
+        userinfo = null;
+        cancelled = false;
+
+        input.readData();
     }
 
-	public RepositoriesDialog(Display disp, int style, int perm[], String toolName)
-	{
-		display = disp;
-		toolsPermissions = perm;
-		steploader = StepLoader.getInstance();
-		this.toolName = toolName;
-		
-		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE );
-		shell.setText(Messages.getString("RepositoriesDialog.Dialog.Main.Title")); //$NON-NLS-1$
+    public void setRepositoryName(String repname)
+    {
+        prefRepositoryName = repname;
+    }
 
-		log=LogWriter.getInstance();
-		props=Props.getInstance();
-		input=new RepositoriesMeta(log);
-		repinfo=null;
-		userinfo=null;
-		cancelled = false;
-			
-		input.readData();
-	}
-	
-	public void setRepositoryName(String repname)
-	{
-		prefRepositoryName = repname;
-	}
+    public boolean open()
+    {
+        props.setLook(shell);
 
-	public boolean open()
-	{
-		props.setLook(shell);
+        FormLayout formLayout = new FormLayout();
+        formLayout.marginWidth = Const.FORM_MARGIN;
+        formLayout.marginHeight = Const.FORM_MARGIN;
 
-		FormLayout formLayout = new FormLayout();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
-
-		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("RepositoriesDialog.Label.SelectRepository")); //$NON-NLS-1$
+        shell.setLayout(formLayout);
+        shell.setText(Messages.getString("RepositoriesDialog.Label.SelectRepository"));
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 
-		int middle = 20;
-		int margin = Const.MARGIN;
-		int right  = 30;
+        int middle = 20;
+        int margin = Const.MARGIN;
+        int right = 30;
 
-		final Image logo = GUIResource.getInstance().getImagePentaho();
-		final Rectangle bounds = logo.getBounds();
+        final Image logo = GUIResource.getInstance().getImagePentaho();
+        final Rectangle bounds = logo.getBounds();
 
-		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
-		fdCanvas = new FormData();
-		fdCanvas.left   = new FormAttachment(0, 0); 
-		fdCanvas.right  = new FormAttachment(100, 0);
-		fdCanvas.top    = new FormAttachment(0, 0);
-		fdCanvas.bottom = new FormAttachment(60, 0);
-		wCanvas.setLayoutData(fdCanvas);
-		wCanvas.setSize(bounds.width, bounds.height);
-        
+        wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
+        fdCanvas = new FormData();
+        fdCanvas.left = new FormAttachment(0, 0);
+        fdCanvas.right = new FormAttachment(100, 0);
+        fdCanvas.top = new FormAttachment(0, 0);
+        fdCanvas.bottom = new FormAttachment(60, 0);
+        wCanvas.setLayoutData(fdCanvas);
+        wCanvas.setSize(bounds.width, bounds.height);
 
-		wCanvas.addPaintListener(new PaintListener()
-			{
-				public void paintControl(PaintEvent pe)
-				{
-                    Rectangle canvasBounds = wCanvas.getBounds();
-                    if (canvasBounds.width>0 && canvasBounds.height>0)
+        wCanvas.addPaintListener(new PaintListener()
+        {
+            public void paintControl(PaintEvent pe)
+            {
+                Rectangle canvasBounds = wCanvas.getBounds();
+                if (canvasBounds.width > 0 && canvasBounds.height > 0)
+                {
+                    Image image = new Image(display, canvasBounds.width, canvasBounds.height);
+                    GC gc = new GC(image);
+                    if (!props.isOSLookShown())
+                        gc.setBackground(GUIResource.getInstance().getColorBackground());
+                    gc.fillRectangle(0, 0, canvasBounds.width, canvasBounds.height);
+                    if (canvasBounds.width > bounds.width && canvasBounds.height > bounds.height)
                     {
-                        Image image = new Image(display, canvasBounds.width, canvasBounds.height);
-                        GC gc = new GC(image);
-    					if (!props.isOSLookShown()) gc.setBackground(GUIResource.getInstance().getColorBackground());
-    					gc.fillRectangle(0,0, canvasBounds.width, canvasBounds.height);
-                        if (canvasBounds.width>bounds.width && canvasBounds.height>bounds.height)
-                        {
-                            gc.drawImage(logo, (canvasBounds.width-bounds.width)/2, (canvasBounds.height-bounds.height)/2);
-                        }
-                        else
-                        {
-                            gc.drawImage(logo, 0,0, bounds.width, bounds.height, 0, 0, canvasBounds.width, canvasBounds.height);
-                        }
-                        pe.gc.drawImage(image, 0, 0); // no flicker anymore!
-                        gc.dispose();
-                        image.dispose();
+                        gc.drawImage(logo, (canvasBounds.width - bounds.width) / 2, (canvasBounds.height - bounds.height) / 2);
                     }
-				}
-			}
-		);
-		
-		// Kettle welcome
-		wlKettle = new Label(shell, SWT.CENTER);
-		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome", toolName, Const.VERSION)); //$NON-NLS-1$ $NON-NLS-2$
-		props.setLook(wlKettle);
-        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.NORMAL); //$NON-NLS-1$
-        wlKettle.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) {  f.dispose(); } });
-        wlKettle.setFont(f);
-        fdlKettle=new FormData();
-		fdlKettle.left = new FormAttachment(0, 0);
-		fdlKettle.right= new FormAttachment(100, -right);
-		fdlKettle.top  = new FormAttachment(wCanvas, margin);
-		wlKettle.setLayoutData(fdlKettle);
+                    else
+                    {
+                        gc.drawImage(logo, 0, 0, bounds.width, bounds.height, 0, 0, canvasBounds.width, canvasBounds.height);
+                    }
+                    pe.gc.drawImage(image, 0, 0); // no flicker anymore!
+                    gc.dispose();
+                    image.dispose();
+                }
+            }
+        });
 
-		// First add the buttons at the bottom
-        
-        wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-        wNorep=new Button(shell, SWT.PUSH);
-        wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
-        wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-        
+        // Kettle welcome
+        wlKettle = new Label(shell, SWT.CENTER);
+        wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome", toolName, Const.VERSION));
+        props.setLook(wlKettle);
+        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.NORMAL);
+        wlKettle.addDisposeListener(new DisposeListener()
+        {
+            public void widgetDisposed(DisposeEvent e)
+            {
+                f.dispose();
+            }
+        });
+        wlKettle.setFont(f);
+        fdlKettle = new FormData();
+        fdlKettle.left = new FormAttachment(0, 0);
+        fdlKettle.right = new FormAttachment(100, -right);
+        fdlKettle.top = new FormAttachment(wCanvas, margin);
+        wlKettle.setLayoutData(fdlKettle);
+
+        // First add the buttons at the bottom
+
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wNorep = new Button(shell, SWT.PUSH);
+        wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
 
         // Password
@@ -228,392 +235,389 @@ public class RepositoriesDialog
         props.setLook(wPassword);
         wPassword.getTextWidget().setEchoChar('*');
         fdPassword = new FormData();
-        fdPassword.left   = new FormAttachment(0, 0); 
-        fdPassword.right  = new FormAttachment(100, -right);
-        fdPassword.bottom = new FormAttachment(wOK, -margin*3);
+        fdPassword.left = new FormAttachment(0, 0);
+        fdPassword.right = new FormAttachment(100, -right);
+        fdPassword.bottom = new FormAttachment(wOK, -margin * 3);
         wPassword.setLayoutData(fdPassword);
 
         // Username
-        wUsername = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Login"), Messages.getString("RepositoriesDialog.Label.Login"), middle, margin); 
+        wUsername = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Login"), Messages.getString("RepositoriesDialog.Label.Login"), middle, margin);
         props.setLook(wUsername);
         fdUsername = new FormData();
-        fdUsername.left = new FormAttachment(0, 0); 
-        fdUsername.right= new FormAttachment(100, -right);
+        fdUsername.left = new FormAttachment(0, 0);
+        fdUsername.right = new FormAttachment(100, -right);
         fdUsername.bottom = new FormAttachment(wPassword, -margin);
         wUsername.setLayoutData(fdUsername);
 
-		wRepository=new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
+        wRepository = new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
 
-		// Add the Repository buttons :
-		wnRepository = new Button(shell, SWT.PUSH);  wnRepository.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
-		weRepository = new Button(shell, SWT.PUSH);  weRepository.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
-		wdRepository = new Button(shell, SWT.PUSH);  wdRepository.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
+        // Add the Repository buttons :
+        wnRepository = new Button(shell, SWT.PUSH);
+        wnRepository.setText(Messages.getString("System.Button.New"));
+        weRepository = new Button(shell, SWT.PUSH);
+        weRepository.setText(Messages.getString("System.Button.Edit"));
+        wdRepository = new Button(shell, SWT.PUSH);
+        wdRepository.setText(Messages.getString("System.Button.Delete"));
 
         int repMargin = -margin; // -margin*3
-        
-		// Button positions...
-		fddRepository = new FormData();		
-		fddRepository.right  = new FormAttachment(100, -right);
-		fddRepository.bottom = new FormAttachment(wUsername, repMargin);
-		wdRepository.setLayoutData(fddRepository);
 
-		fdeRepository = new FormData();		
-		fdeRepository.right = new FormAttachment(wdRepository, -margin);
+        // Button positions...
+        fddRepository = new FormData();
+        fddRepository.right = new FormAttachment(100, -right);
+        fddRepository.bottom = new FormAttachment(wUsername, repMargin);
+        wdRepository.setLayoutData(fddRepository);
+
+        fdeRepository = new FormData();
+        fdeRepository.right = new FormAttachment(wdRepository, -margin);
         fdeRepository.bottom = new FormAttachment(wUsername, repMargin);
-		weRepository.setLayoutData(fdeRepository);
+        weRepository.setLayoutData(fdeRepository);
 
-		fdnRepository = new FormData();		
-		fdnRepository.right= new FormAttachment(weRepository, -margin);
+        fdnRepository = new FormData();
+        fdnRepository.right = new FormAttachment(weRepository, -margin);
         fdnRepository.bottom = new FormAttachment(wUsername, repMargin);
-		wnRepository.setLayoutData(fdnRepository);
+        wnRepository.setLayoutData(fdnRepository);
 
- 		props.setLook(wRepository);
-		fdRepository=new FormData();
-		fdRepository.left = new FormAttachment(middle, -margin);
-		fdRepository.right= new FormAttachment(wnRepository, -margin);
+        props.setLook(wRepository);
+        fdRepository = new FormData();
+        fdRepository.left = new FormAttachment(middle, -margin);
+        fdRepository.right = new FormAttachment(wnRepository, -margin);
         fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
         fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
-		wRepository.setLayoutData(fdRepository);
+        wRepository.setLayoutData(fdRepository);
 
         // Repository selector
-        wlRepository=new Label(shell, SWT.RIGHT);
-        wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository")); //$NON-NLS-1$
+        wlRepository = new Label(shell, SWT.RIGHT);
+        wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository"));
         props.setLook(wlRepository);
-        fdlRepository=new FormData();
-        fdlRepository.left   = new FormAttachment(0, 0);
-        fdlRepository.right  = new FormAttachment(middle, -margin);
+        fdlRepository = new FormData();
+        fdlRepository.left = new FormAttachment(0, 0);
+        fdlRepository.right = new FormAttachment(middle, -margin);
         fdlRepository.bottom = new FormAttachment(wnRepository, 0, SWT.CENTER);
         wlRepository.setLayoutData(fdlRepository);
 
-		// Add the listeners
-		// New repository
-		wnRepository.addSelectionListener(
-            new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					RepositoryMeta ri = new RepositoryMeta();
-					RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
-					if (dd.open()!=null)
-					{
-						input.addRepository(ri);
-						fillRepositories();
-						int idx = input.indexOfRepository(ri);
-						wRepository.select(idx);
-					}
-				}
-			}
-		);
+        // Add the listeners
+        // New repository
+        wnRepository.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                RepositoryMeta ri = new RepositoryMeta();
+                RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
+                if (dd.open() != null)
+                {
+                    input.addRepository(ri);
+                    fillRepositories();
+                    int idx = input.indexOfRepository(ri);
+                    wRepository.select(idx);
+                }
+            }
+        });
 
-		// Edit repository
-		weRepository.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					RepositoryMeta ri = input.searchRepository(wRepository.getText());
-					if (ri!=null)
-					{
-						RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
-						if (dd.open()!=null)
-						{
-							fillRepositories();
-							int idx = input.indexOfRepository(ri);
-							wRepository.select(idx);
-						}
-					}
-				}
-			}
-		);
+        // Edit repository
+        weRepository.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                RepositoryMeta ri = input.searchRepository(wRepository.getText());
+                if (ri != null)
+                {
+                    RepositoryDialog dd = new RepositoryDialog(shell, SWT.APPLICATION_MODAL, log, props, ri, input, steploader);
+                    if (dd.open() != null)
+                    {
+                        fillRepositories();
+                        int idx = input.indexOfRepository(ri);
+                        wRepository.select(idx);
+                    }
+                }
+            }
+        });
 
-		// Delete connection
-		wdRepository.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					RepositoryMeta ri = input.searchRepository(wRepository.getText());
-					if (ri!=null)
-					{
-						int idx = input.indexOfRepository(ri);
-						input.removeRepository(idx);
-						fillRepositories();
-					}
-				}
-			}
-		);
-		
-		wRepository.addTraverseListener(new TraverseListener()
-			{
-				public void keyTraversed(TraverseEvent e)
-				{
-					wUsername.setFocus();
-					e.doit=false;
-				}
-			}
-		);
+        // Delete connection
+        wdRepository.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                RepositoryMeta ri = input.searchRepository(wRepository.getText());
+                if (ri != null)
+                {
+                    int idx = input.indexOfRepository(ri);
+                    input.removeRepository(idx);
+                    fillRepositories();
+                }
+            }
+        });
 
-				
-		// Add listeners
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsNorep    = new Listener() { public void handleEvent(Event e) { norep(); } };
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		
-		wOK.addListener    (SWT.Selection, lsOK    );
-		wNorep.addListener (SWT.Selection, lsNorep);
-		wCancel.addListener(SWT.Selection, lsCancel);
+        wRepository.addTraverseListener(new TraverseListener()
+        {
+            public void keyTraversed(TraverseEvent e)
+            {
+                wUsername.setFocus();
+                e.doit = false;
+            }
+        });
 
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-		// Clean up used resources!
+        // Add listeners
+        lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+        lsNorep    = new Listener() { public void handleEvent(Event e) { norep(); } };
+        lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 
-		
-		lsDef = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		lsRepo = new KeyAdapter() { public void keyPressed(KeyEvent e) 
-				{ 
-					if (e.character == SWT.CR) wUsername.setFocus(); 
-				} 
-			};
-		lsJmp = new KeyAdapter() { public void keyPressed(KeyEvent e) 
-				{ 
-					if (e.character == SWT.CR)
-					{
-						if (wPassword.getText().length()!=0) ok();
-						else 
-						{
-							wPassword.getTextWidget().setFocus();
-							wPassword.getTextWidget().selectAll();
-						}
-					}
-				} 
-			};
+        wOK.addListener(SWT.Selection, lsOK);
+        wNorep.addListener(SWT.Selection, lsNorep);
+        wCancel.addListener(SWT.Selection, lsCancel);
 
-		wRepository.addKeyListener(lsRepo);
-		wUsername.getTextWidget().addKeyListener( lsJmp );
-		wPassword.getTextWidget().addSelectionListener( lsDef );
+        // Detect X or ALT-F4 or something that kills this window...
+        shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-		getData();
-		
-		shell.layout();
-        
-        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 3*margin);
+        // Clean up used resources!
+
+        lsDef = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+        lsRepo = new KeyAdapter()      { public void keyPressed(KeyEvent e) { if (e.character == SWT.CR) wUsername.setFocus(); } };
+        lsJmp = new KeyAdapter()
+        {
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.character == SWT.CR)
+                {
+                    if (wPassword.getText().length() != 0)
+                        ok();
+                    else
+                    {
+                        wPassword.getTextWidget().setFocus();
+                        wPassword.getTextWidget().selectAll();
+                    }
+                }
+            }
+        };
+
+        wRepository.addKeyListener(lsRepo);
+        wUsername.getTextWidget().addKeyListener(lsJmp);
+        wPassword.getTextWidget().addSelectionListener(lsDef);
+
+        getData();
+
+        shell.layout();
+
+        BaseStepDialog.setMinimalShellHeight(shell, new Control[] { wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 3 * margin);
         Rectangle dialogBounds = shell.getBounds();
-	
-		shell.setSize(bounds.width+20, dialogBounds.height);
 
-        /*
-        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-        mb.setText("Warning");
-        mb.setMessage("Developers & beta-testers beware: you need to upgrade your repository because we are making additional last-minute changes to the repository.\n\n\nThank you for your understanding and help,\n\nMatt\n");
-        mb.open();
-        */
-        
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return repinfo!=null;
-	}
+        shell.setSize(bounds.width + 20, dialogBounds.height);
 
-	public void dispose()
-	{
-		props.setScreen(new WindowProperty(shell));
-		shell.dispose();
-	}
-	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{	
-		fillRepositories();
-	
-		String repname = props.getLastRepository();
-		if (repname!=null)
-		{
-			int idx =wRepository.indexOf(repname); 
-			if (idx>=0)
-			{
-				wRepository.select(idx);
-				wRepository.setFocus();
-				
-				// fillUsernames();
-				
-				String username = props.getLastRepositoryLogin();
-				if (username!=null)
-				{
-					wUsername.setText(username);
-					wPassword.getTextWidget().setFocus();
-				}
-			}
-		}
+        // MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+        // mb.setText("Warning");
+        // mb.setMessage("Developers & beta-testers beware: you need to upgrade your repository because we are making additional last-minute changes to the repository.\n\n\nThank you for your understanding and help,\n\nMatt\n");
+        // mb.open();
 
-		//Do we have a preferred repository name to select
-		if (prefRepositoryName!=null)
-		{
-			int idx = wRepository.indexOf(prefRepositoryName);
-			if (idx>=0) wRepository.select(idx);
-		}
+        shell.open();
+        while (!shell.isDisposed())
+        {
+            if (!display.readAndDispatch()) display.sleep();
+        }
+        return repinfo != null;
+    }
 
-	}
-	
-	private void norep()
-	{
-		repinfo = null;
-		dispose();
-	}
+    public void dispose()
+    {
+        props.setScreen(new WindowProperty(shell));
+        shell.dispose();
+    }
 
-	private void cancel()
-	{
-		repinfo = null;
-		cancelled = true;
-		dispose();
-	}	
-		
-	private void ok()
-	{
-		if (wRepository.getItemCount()!=0)
-		{
-			int idx=wRepository.getSelectionIndex();
-			
-			if (idx>=0)
-			{
-				repinfo = input.getRepository(idx);
-				
-				// OK, now try the username and password
-				Repository rep = new Repository(log, repinfo, userinfo);
-                
+    /**
+     * Copy information from the meta-data input to the dialog fields.
+     */
+    public void getData()
+    {
+        fillRepositories();
+
+        String repname = props.getLastRepository();
+        if (repname != null)
+        {
+            int idx = wRepository.indexOf(repname);
+            if (idx >= 0)
+            {
+                wRepository.select(idx);
+                wRepository.setFocus();
+
+                // fillUsernames();
+
+                String username = props.getLastRepositoryLogin();
+                if (username != null)
+                {
+                    wUsername.setText(username);
+                    wPassword.getTextWidget().setFocus();
+                }
+            }
+        }
+
+        // Do we have a preferred repository name to select
+        if (prefRepositoryName != null)
+        {
+            int idx = wRepository.indexOf(prefRepositoryName);
+            if (idx >= 0)
+                wRepository.select(idx);
+        }
+
+    }
+
+    private void norep()
+    {
+        repinfo = null;
+        dispose();
+    }
+
+    private void cancel()
+    {
+        repinfo = null;
+        cancelled = true;
+        dispose();
+    }
+
+    private void ok()
+    {
+        if (wRepository.getItemCount() != 0)
+        {
+            int idx = wRepository.getSelectionIndex();
+
+            if (idx >= 0)
+            {
+                repinfo = input.getRepository(idx);
+
+                // OK, now try the username and password
+                Repository rep = new Repository(log, repinfo, userinfo);
+
                 try
                 {
                     rep.connect(getClass().getName());
                 }
-                catch(KettleException ke)
+                catch (KettleException ke)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+ke.getSuperMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-                    mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
-                    mb.open(); 
-                    
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                    mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1") + Const.CR + ke.getSuperMessage());
+                    mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title"));
+                    mb.open();
+
                     return;
                 }
-                
-				try
-				{
+
+                try
+                {
                     userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
-					props.setLastRepository(repinfo.getName());
-					props.setLastRepositoryLogin(wUsername.getText());
-				}
-				catch(KettleException e)
-				{
-					userinfo=null;
-					repinfo=null;
-                    
+                    props.setLastRepository(repinfo.getName());
+                    props.setLastRepositoryLogin(wUsername.getText());
+                }
+                catch (KettleException e)
+                {
+                    userinfo = null;
+                    repinfo = null;
+
                     if (!(e instanceof KettleDatabaseException))
                     {
-                        new ErrorDialog(shell, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(shell, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e);
                     }
-				}
-				finally
-				{
-					rep.disconnect();
-				}
-			}
-			else
-			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Message")); // $NON-NLS-1$
-				mb.setText(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Title")); //$NON-NLS-1$
-				mb.open(); 
-				
-				return;
-			}
-		}
+                }
+                finally
+                {
+                    rep.disconnect();
+                }
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Message"));
+                mb.setText(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Title"));
+                mb.open();
 
-		input.writeData(); // Save changes to disk!
-		
-		if (userinfo==null)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Message")); //$NON-NLS-1$
-			mb.setText(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Title")); //$NON-NLS-1$
-			mb.open(); 
-		}
-		else
-		{
-			// Check the permissions of the user
-			boolean ok = true;
-			String mess = ""; //$NON-NLS-1$
-			for (int i=0;i<toolsPermissions.length;i++)
-			{
-				switch(toolsPermissions[i])
-				{
-				case PermissionMeta.TYPE_PERMISSION_TRANSFORMATION:
-					ok = ok && userinfo.useTransformations();
-					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
-					mess+="Spoon";  //$NON-NLS-1$
-					break;
-				case PermissionMeta.TYPE_PERMISSION_SCHEMA:
-					ok = ok && userinfo.useSchemas(); 
-					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
-					mess+="Menu";  //$NON-NLS-1$
-					break;
-				case PermissionMeta.TYPE_PERMISSION_JOB:
-					ok = ok && userinfo.useJobs(); 
-					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
-					mess+="Chef";  //$NON-NLS-1$
-					break;
-				default: break;
-				}
-			}
-					
-			// Sorry, you can't use all these tools...
-			if (!ok)
-			{
-				int idx = mess.lastIndexOf(',');
-				if (idx>0) mess = mess.substring(0, idx) + "and"+ mess.substring(idx+1); //$NON-NLS-1$
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Message")+mess); //$NON-NLS-1$
-				mb.setText(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Title")); //$NON-NLS-1$
-				mb.open(); 
+                return;
+            }
+        }
 
-				userinfo=null;
-				repinfo=null;
-			}
-			else
-			{
-				dispose();
-			}
-		}
-	}
-	
-	public void fillRepositories()
-	{
-		wRepository.removeAll();
-		// Fill in the available repositories...
-		for (int i=0;i<input.nrRepositories();i++)
+        input.writeData(); // Save changes to disk!
+
+        if (userinfo == null)
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Message"));
+            mb.setText(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Title"));
+            mb.open();
+        }
+        else
+        {
+            // Check the permissions of the user
+            boolean ok = true;
+            String mess = "";
+            for (int i = 0; i < toolsPermissions.length; i++)
+            {
+                switch (toolsPermissions[i])
+                {
+                    case PermissionMeta.TYPE_PERMISSION_TRANSFORMATION:
+                        ok = ok && userinfo.useTransformations();
+                        mess += mess.length() > 0 ? ", " : "";
+                        mess += "Spoon";
+                        break;
+                    case PermissionMeta.TYPE_PERMISSION_SCHEMA:
+                        ok = ok && userinfo.useSchemas();
+                        mess += mess.length() > 0 ? ", " : "";
+                        mess += "Menu";
+                        break;
+                    case PermissionMeta.TYPE_PERMISSION_JOB:
+                        ok = ok && userinfo.useJobs();
+                        mess += mess.length() > 0 ? ", " : "";
+                        mess += "Chef";
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Sorry, you can't use all these tools...
+            if (!ok)
+            {
+                int idx = mess.lastIndexOf(',');
+                if (idx > 0)
+                    mess = mess.substring(0, idx) + "and" + mess.substring(idx + 1);
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Message") + mess);
+                mb.setText(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Title"));
+                mb.open();
+
+                userinfo = null;
+                repinfo = null;
+            }
+            else
+            {
+                dispose();
+            }
+        }
+    }
+
+    public void fillRepositories()
+    {
+        wRepository.removeAll();
+        // Fill in the available repositories...
+        for (int i = 0; i < input.nrRepositories(); i++)
         {
             String name = input.getRepository(i).getName();
-            if (name!=null) wRepository.add( name );
+            if (name != null)
+                wRepository.add(name);
         }
-	}
+    }
 
-	
-	public RepositoryMeta getRepository()
-	{
-		return repinfo;
-	}
-	
-	public UserInfo getUser()
-	{
-		return userinfo;
-	}
-	
-	public boolean isCancelled()
-	{
-		return cancelled;
-	}
-	
-	public Shell getShell()
-	{
-		return shell;
-	}
+    public RepositoryMeta getRepository()
+    {
+        return repinfo;
+    }
+
+    public UserInfo getUser()
+    {
+        return userinfo;
+    }
+
+    public boolean isCancelled()
+    {
+        return cancelled;
+    }
+
+    public Shell getShell()
+    {
+        return shell;
+    }
 }

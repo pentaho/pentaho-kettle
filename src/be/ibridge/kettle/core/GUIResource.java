@@ -1,5 +1,6 @@
 package be.ibridge.kettle.core;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -89,6 +90,9 @@ public class GUIResource
     private Image     imageChefGraph;
     
     private Image     imageSplash;
+
+    private Image     imageEditOptionButton;
+    private Image     imageResetOptionButton;
 
     private ManagedFont fontBold;
 
@@ -210,23 +214,28 @@ public class GUIResource
             imageVariable    .dispose();
             imageSpoonGraph  .dispose();
             imageChefGraph   .dispose();
+            
+            disposeImage(imageEditOptionButton);
+            disposeImage(imageResetOptionButton);
      
             // big images
-            Collection images = imagesSteps.values();
-            for (Iterator iter = images.iterator(); iter.hasNext();)
-            {
-                Image image = (Image) iter.next();
-                if (image!=null && !image.isDisposed()) image.dispose();
-            }
-            
+            disposeImages(imagesSteps.values());
+
             // Small images
-            Collection smallImages = imagesStepsSmall.values();
-            for (Iterator iter = smallImages.iterator(); iter.hasNext();)
-            {
-                Image smallImage = (Image) iter.next();
-                if (smallImage!=null && !smallImage.isDisposed()) smallImage.dispose();
-            }
+            disposeImages(imagesStepsSmall.values());
         }
+    }
+    
+    private void disposeImages(Collection c)
+    {
+        for (Iterator iter = c.iterator(); iter.hasNext();)
+            disposeImage((Image) iter.next());
+    }
+
+    private void disposeImage(Image image)
+    {
+        if (image != null && !image.isDisposed())
+            image.dispose();
     }
     
     /**
@@ -338,8 +347,31 @@ public class GUIResource
         imageVariable    = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "variable.png"));
         imageSpoonGraph  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png"));
         imageChefGraph   = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png"));
+        imageEditOptionButton  = loadImage(Const.IMAGE_DIRECTORY + "edit_option.png");
+        imageResetOptionButton = loadImage(Const.IMAGE_DIRECTORY + "reset_option.png");
     }
 
+    /**
+     * Loading an image, checking whether it exists before
+     * 
+     * @param filename A package-like name to the image as resource. E.g.
+     *            <code>/be/ibridge/kettle/images/SCR.png</code>
+     * @return The image or <code>null</code>
+     */
+    private Image loadImage(String filename)
+    {
+        InputStream is = getClass().getResourceAsStream(filename);
+        if (is != null)
+        {
+            return new Image(display, is);
+        }
+        else
+        {
+            log.logBasic(GUIResource.class.toString(), "Did not find image '" + filename + "'");
+            return null;
+        }
+    }
+    
     /**
      * Load all step images from files. 
      *
@@ -792,5 +824,15 @@ public class GUIResource
     public Image getImageChefGraph()
     {
         return imageChefGraph;
+    }
+
+    public Image getEditOptionButton()
+    {
+        return imageEditOptionButton;
+    }
+    
+    public Image getResetOptionButton()
+    {
+        return imageResetOptionButton;
     }
 }

@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.i18n.GlobalMessages;
 
 /**
  * Displays an HTML page.
@@ -99,7 +100,7 @@ public class ShowBrowserDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(50, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);

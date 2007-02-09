@@ -40,6 +40,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 
@@ -54,11 +55,11 @@ import be.ibridge.kettle.trans.step.StepMeta;
 
 public class CheckResultDialog extends Dialog
 {
-	private static final String STRING_HIDE_SUCESSFUL = " Hide &successful results ";
-	private static final String STRING_SHOW_SUCESSFUL = " Show &successful results ";
+	private static final String STRING_HIDE_SUCESSFUL = Messages.getString("CheckResultDialog.HideSuccessful.Label");
+	private static final String STRING_SHOW_SUCESSFUL = Messages.getString("CheckResultDialog.ShowSuccessful.Label");
 
-	private static final String STRING_HIDE_REMARKS = "Remarks: ";
-	private static final String STRING_SHOW_REMARKS = "Warnings and errors: ";
+	private static final String STRING_HIDE_REMARKS = Messages.getString("CheckResultDialog.Remarks.Label");
+	private static final String STRING_SHOW_REMARKS = Messages.getString("CheckResultDialog.WarningsErrors.Label");
 
 	private ArrayList    remarks;
 		
@@ -78,10 +79,13 @@ public class CheckResultDialog extends Dialog
 	
 	private String stepname;
 	
-    /** @deprecated */
-    public CheckResultDialog(Shell parent, int style, LogWriter l, Props pr, ArrayList rem)
+    /**
+     * @deprecated Use the CT without the <i>log</i> and <i>props</i> parameter (at 3rd and 4th position)
+     */
+    public CheckResultDialog(Shell parent, int style, LogWriter log, Props props, ArrayList rem)
     {
         this(parent, style, rem);
+        this.props = props;
     }
 
 	public CheckResultDialog(Shell parent, int style, ArrayList rem)
@@ -109,13 +113,13 @@ public class CheckResultDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Results of transformation checks");
+		shell.setText(Messages.getString("CheckResultDialog.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.LEFT);
-		wlFields.setText("Remarks: ");
+		wlFields.setText(Messages.getString("CheckResultDialog.Remarks.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -127,9 +131,9 @@ public class CheckResultDialog extends Dialog
 		int FieldsRows=1;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname", ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[1]=new ColumnInfo("Result",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[2]=new ColumnInfo("Remark",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[0]=new ColumnInfo(Messages.getString("CheckResultDialog.Stepname.Label"), ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo(Messages.getString("CheckResultDialog.Result.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo(Messages.getString("CheckResultDialog.Remark.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -147,19 +151,23 @@ public class CheckResultDialog extends Dialog
 		fdFields.bottom = new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
 
+		wNoOK=new Button(shell, SWT.CHECK);
+		wNoOK.setText(STRING_SHOW_SUCESSFUL);
+		FormData fd = new FormData();
+		fd.left   = new FormAttachment(0, 0);
+		fd.top    = new FormAttachment(wFields, margin);
+		wNoOK.setLayoutData(fd);
+        
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(" &Close ");
+		wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
 
 		wView=new Button(shell, SWT.PUSH);
-		wView.setText(" &View message");
+		wView.setText(Messages.getString("CheckResultDialog.Button.ViewMessage"));
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(" &Edit origin step");
+		wEdit.setText(Messages.getString("CheckResultDialog.Button.EditOriginStep"));
 
-		wNoOK=new Button(shell, SWT.PUSH);
-		wNoOK.setText(STRING_SHOW_SUCESSFUL);
-
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wView, wEdit, wNoOK }, margin, null);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wView, wEdit }, margin, null);
 
 		// Add listeners
 		lsClose = new Listener() { public void handleEvent(Event e) { close(); } };
@@ -254,14 +262,13 @@ public class CheckResultDialog extends Dialog
 			wNoOK.setText(STRING_SHOW_SUCESSFUL);
 		}
 
-		
+		shell.layout();
 	}
 	
 	// View message:
 	private void view()
 	{
-		String message="";
-		
+		StringBuffer message=new StringBuffer();
 		TableItem item[] = wFields.table.getSelection();
 		
 		// None selected: don't waste users time: select them all!
@@ -269,12 +276,17 @@ public class CheckResultDialog extends Dialog
 		
 		for (int i=0;i<item.length;i++)
 		{
-			if (i>0) message+="_______________________________________________________________________________"+Const.CR+Const.CR;
-			message+="["+item[i].getText(2)+"] "+item[i].getText(1)+Const.CR;
-			message+="  "+item[i].getText(3)+Const.CR+Const.CR;
+			if (i>0)
+			    message.append("_______________________________________________________________________________").append(Const.CR).append(Const.CR);
+			message.append("[").append(item[i].getText(2)).append("] ").append(item[i].getText(1)).append(Const.CR);
+			message.append("  ").append(item[i].getText(3)).append(Const.CR).append(Const.CR);
 		}
 		
-		EnterTextDialog etd = new EnterTextDialog(shell, "View message", "Message"+(item.length!=1?"s":"")+" : ", message);
+		String subtitle = (item.length != 1 ?
+		    Messages.getString("CheckResultDialog.TextDialog.SubtitlePlural") :
+		    Messages.getString("CheckResultDialog.TextDialog.Subtitle"));
+		EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("CheckResultDialog.TextDialog.Title"),
+		    subtitle, message.toString());
 		etd.setReadOnly();
 		etd.open();
 	}

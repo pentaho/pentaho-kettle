@@ -430,7 +430,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
         dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
-        dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
+        dialog.setFilterNames(Const.getTransformationFilterNames());
         String fname = dialog.open();
         if (fname!=null)
         {

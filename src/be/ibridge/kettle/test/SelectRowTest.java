@@ -73,7 +73,7 @@ public class SelectRowTest
         // Load Spoon properties
         Props.init(display, Props.TYPE_PROPERTIES_SPOON);
 
-        SelectRowDialog d = new SelectRowDialog(shell, SWT.NONE, "Select a row", rows);
+        SelectRowDialog d = new SelectRowDialog(shell, SWT.NONE, rows);
         Row selected = d.open();
         if (selected!=null)
         {

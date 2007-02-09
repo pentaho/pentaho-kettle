@@ -77,12 +77,12 @@ public class ProfileMeta
 			}
 			else
 			{
-				throw new KettleException("Unable to find profile with id="+id_profile);
+				throw new KettleException(Messages.getString("ProfileMeta.Error.NotFound", Long.toString(id_profile)));
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Couldn't create profile with id="+id_profile, dbe);
+			throw new KettleException(Messages.getString("ProfileMeta.Error.NotCreated", Long.toString(id_profile)), dbe);
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class ProfileMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save profile to repository", dbe);
+			throw new KettleException(Messages.getString("ProfileMeta.Error.NotSaved", Long.toString(getID())), dbe);
 		}
 		return true;
 	}
@@ -155,7 +155,7 @@ public class ProfileMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Error saving profile permissions.", dbe);
+			throw new KettleException(Messages.getString("ProfileMeta.Error.PermissionNotSaved", Long.toString(getID())), dbe);
 		}
 	}
 	

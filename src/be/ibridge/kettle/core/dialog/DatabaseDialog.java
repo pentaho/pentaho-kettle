@@ -169,14 +169,9 @@ public class DatabaseDialog extends Dialog
     private long           database_id;
 
     /**
-     * @deprecated Please use the simple version (w/ just the parent and the databaseMeta object)
-     * @param parent
-     * @param style
-     * @param lg
-     * @param databaseMeta
-     * @param pr
+     * @deprecated Use the simple version without <i>style</i>, <i>log</i> and <i>props</i> parameters
      */
-    public DatabaseDialog(Shell parent, int style, LogWriter lg, DatabaseMeta databaseMeta, Props pr)
+    public DatabaseDialog(Shell parent, int style, LogWriter log, DatabaseMeta databaseMeta, Props props)
     {
         this(parent, databaseMeta);
     }
@@ -701,8 +696,7 @@ public class DatabaseDialog extends Dialog
         {
             public void widgetSelected(SelectionEvent e)
             {
-                SelectRowDialog dialog = new SelectRowDialog(shell, SWT.NONE, Messages.getString("DatabaseDialog.column.SelectPoolParameter"),
-                        parameters);
+                SelectRowDialog dialog = new SelectRowDialog(shell, SWT.NONE, parameters);
                 Row row = dialog.open();
                 if (row != null)
                 {
@@ -1254,7 +1248,7 @@ public class DatabaseDialog extends Dialog
                 Spoon spoon = Spoon.getInstance();
                 if (spoon != null)
                 {
-                    openedTab = spoon.addSpoonBrowser(meta.getDatabaseTypeDesc() + " : JDBC Options help", helpText);
+                    openedTab = spoon.addSpoonBrowser(Messages.getString("DatabaseDialog.JDBCOptions.Tab", meta.getDatabaseTypeDesc()), helpText);
                 }
             }
             catch (Throwable t)
@@ -1698,7 +1692,7 @@ public class DatabaseDialog extends Dialog
         {
             DatabaseMeta dbinfo = new DatabaseMeta();
             getInfo(dbinfo);
-            test(shell, dbinfo, props);
+            test(shell, dbinfo);
         }
         catch (KettleException e)
         {
@@ -1711,7 +1705,7 @@ public class DatabaseDialog extends Dialog
     /**
      * Test the database connection
      */
-    public static final void test(Shell shell, DatabaseMeta dbinfo, Props props)
+    public static final void test(Shell shell, DatabaseMeta dbinfo)
     {
         String[] remarks = dbinfo.checkParameters();
         if (remarks.length == 0)

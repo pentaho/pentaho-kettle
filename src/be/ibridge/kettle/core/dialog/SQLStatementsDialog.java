@@ -43,6 +43,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -71,18 +72,15 @@ public class SQLStatementsDialog extends Dialog
 	private Color    red;
 	
 	private String stepname;
-	
+    
     /**
-     * @deprecated
+     * @deprecated Use CT without <i>props</i> parameter
      */
-	public SQLStatementsDialog(Shell parent, int style, LogWriter log, Props props, ArrayList stats)
-	{
-			super(parent, style);
-			this.stats=stats;
-			this.props=props;
-			
-			this.stepname = null;
-	}
+    public SQLStatementsDialog(Shell parent, int style, LogWriter log, Props props, ArrayList stats)
+    {
+        this(parent, style, stats);
+        this.props = props;
+    }
     
     public SQLStatementsDialog(Shell parent, int style, ArrayList stats)
     {
@@ -108,7 +106,7 @@ public class SQLStatementsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("List of SQL statements to execute");
+		shell.setText(Messages.getString("SQLStatementDialog.Title"));
 		
 		int margin = Const.MARGIN;
 		
@@ -116,10 +114,10 @@ public class SQLStatementsDialog extends Dialog
 		int FieldsRows=stats.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[1]=new ColumnInfo("Connection",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[2]=new ColumnInfo("SQL",          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
-		colinf[3]=new ColumnInfo("Error",        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[0]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Stepname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Connection"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.SQL"),          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[3]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Error"),        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -138,28 +136,28 @@ public class SQLStatementsDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(" &Close ");
+		wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
 		fdClose=new FormData();
 		fdClose.left   =new FormAttachment(25, 0);
 		fdClose.bottom =new FormAttachment(100, 0);
 		wClose.setLayoutData(fdClose);
 
 		wView=new Button(shell, SWT.PUSH);
-		wView.setText(" &View SQL");
+		wView.setText(Messages.getString("SQLStatementDialog.Button.ViewSQL"));
 		fdView=new FormData();
 		fdView.left=new FormAttachment(wClose, margin);
 		fdView.bottom =new FormAttachment(100, 0);
 		wView.setLayoutData(fdView);
 
 		wExec=new Button(shell, SWT.PUSH);
-		wExec.setText(" E&xecute SQL");
+		wExec.setText(Messages.getString("SQLStatementDialog.Button.ExecSQL"));
 		fdExec=new FormData();
 		fdExec.left=new FormAttachment(wView, margin);
 		fdExec.bottom =new FormAttachment(100, 0);
 		wExec.setLayoutData(fdExec);
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(" &Edit origin step");
+		wEdit.setText(Messages.getString("SQLStatementDialog.Button.EditStep"));
 		fdEdit=new FormData();
 		fdEdit.left=new FormAttachment(wExec, margin);
 		fdEdit.bottom =new FormAttachment(100, 0);
@@ -227,7 +225,7 @@ public class SQLStatementsDialog extends Dialog
 	
 	private String getSQL()
 	{
-		String sql="";
+		StringBuffer sql = new StringBuffer();
 		
 		int idx[] = wFields.table.getSelectionIndices();
 		
@@ -242,28 +240,30 @@ public class SQLStatementsDialog extends Dialog
 		{
 			SQLStatement stat = (SQLStatement)stats.get(idx[i]);
 			DatabaseMeta di = stat.getDatabase();
-			if (i>0) sql+="-------------------------------------------------------------------------------------------"+Const.CR;
-			sql+="-- Step                : "+stat.getStepname()+Const.CR;
-			sql+="-- Database Connection : "+(di!=null?di.getName():"<not defined>")+Const.CR;
+			if (i > 0)
+			    sql.append("-------------------------------------------------------------------------------------------").append(Const.CR);
+			sql.append(Messages.getString("SQLStatementDialog.Log.Step", stat.getStepname()));
+			sql.append(Messages.getString("SQLStatementDialog.Log.Connection", (di != null ? di.getName() : Messages.getString("SQLStatementDialog.Log.Undefined"))));
 			if (stat.hasSQL())
 			{
-				sql+="-- SQL                 : "+Const.CR+Const.CR;
-				sql+=stat.getSQL()+Const.CR;
+				sql.append("-- SQL                  : ");
+				sql.append(stat.getSQL()).append(Const.CR);
 			}
 			if (stat.hasError())
 			{
-				sql+="-- Error message       : "+stat.getError()+Const.CR;
+				sql.append(Messages.getString("SQLStatementDialog.Log.Error", stat.getError()));
 			}
 		}
 
-		return sql;
+		return sql.toString();
 	}
 	
 	// View SQL statement:
 	private void view()
 	{
 		String sql = getSQL();
-		EnterTextDialog etd = new EnterTextDialog(shell, "View SQL statements", "Statements:", sql, true);
+		EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("SQLStatementDialog.ViewSQL.Title"),
+		    Messages.getString("SQLStatementDialog.ViewSQL.Message"), sql, true);
 		etd.setReadOnly();
 		etd.open();
 	}
@@ -305,12 +305,14 @@ public class SQLStatementsDialog extends Dialog
 						catch(KettleDatabaseException dbe)
 						{
 							errors++;
-							new ErrorDialog(shell, "Error", "The following statement could not be executed: "+Const.CR+stat.getSQL(), dbe);
+							new ErrorDialog(shell, Messages.getString("SQLStatementDialog.Error.Title"),
+							    Messages.getString("SQLStatementDialog.Error.CouldNotExec", stat.getSQL()), dbe);
 						}
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, "Error", "I was unable to connect to database connection ["+(di==null?"":di.getName())+"]", dbe);
+						new ErrorDialog(shell, Messages.getString("SQLStatementDialog.Error.Title"),
+						    Messages.getString("SQLStatementDialog.Error.CouldNotConnect", (di == null ? "" : di.getName())), dbe);
 					}
 					finally
 					{
@@ -321,16 +323,16 @@ public class SQLStatementsDialog extends Dialog
 			if (errors==0)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage("All "+idx.length+" SQL statements were executed.");
-				mb.setText("OK!");
+				mb.setMessage(Messages.getString("SQLStatementDialog.Success.Message", Integer.toString(idx.length)));
+				mb.setText(Messages.getString("SQLStatementDialog.Success.Title"));
 				mb.open();
 			}
 		}
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("We can't execute the selected statetements as there are "+errors+" with errors.");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("SQLStatementDialog.Error.Message", Integer.toString(errors)));
+			mb.setText(Messages.getString("SQLStatementDialog.Error.Title"));
 			mb.open();
 		}
 	}

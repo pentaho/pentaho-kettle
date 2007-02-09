@@ -97,7 +97,7 @@ public class ConditionTest
 		
 		LogWriter log = LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
 		
-		EnterConditionDialog ecd = new EnterConditionDialog(shell, props, SWT.NONE, r, cb1);
+		EnterConditionDialog ecd = new EnterConditionDialog(shell, SWT.NONE, r, cb1);
 		ecd.open();
 		
 		System.out.println("XML="+Const.CR+cb1.getXML());

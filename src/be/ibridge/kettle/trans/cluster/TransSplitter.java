@@ -233,7 +233,7 @@ public class TransSplitter
         return transMeta;
     }
     
-    private void verifySlavePartitioningConfiguration(TransMeta slave, StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    private void verifySlavePartitioningConfiguration(TransMeta slave, StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
         Map stepPartitionFlag = (Map) slaveStepPartitionFlag.get(slave); 
         if (stepPartitionFlag==null)

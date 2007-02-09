@@ -100,7 +100,7 @@ public class PrintSpool
 		return palette;
 	}
 	
-	public void printImage(Shell sh, Props props, Image img)
+	public void printImage(Shell sh, Image img)
 	{
 		if (printerdata!=null)
 		{
@@ -125,19 +125,19 @@ public class PrintSpool
 			double margin_top    = 0.40;
 			double margin_bottom = 0.40; 
 
-			EnterPrintDialog epd = new EnterPrintDialog(sh, props,
+			EnterPrintDialog epd = new EnterPrintDialog(sh,
 				1, 1, 100, factorx, factory, page,
 				margin_left, margin_right, margin_top, margin_bottom, 
 				img
 				);
 			if (epd.open()==SWT.OK)
 			{
-				double page_left      = (double)epd.leftMargin*dpi_printer.x;
-				double page_right     = (double)epd.rightMargin *dpi_printer.x;
-				double page_top       = (double)epd.topMargin *dpi_printer.y;
-				double page_bottom    = (double)epd.bottomMargin*dpi_printer.y;
-				double page_sizex     = (double)page.width - page_left - page_right;
-				double page_sizey     = (double)page.height- page_top  - page_bottom;
+				double page_left      = epd.leftMargin*dpi_printer.x;
+				double page_right     = epd.rightMargin *dpi_printer.x;
+				double page_top       = epd.topMargin *dpi_printer.y;
+				double page_bottom    = epd.bottomMargin*dpi_printer.y;
+				double page_sizex     = page.width - page_left - page_right;
+				double page_sizey     = page.height- page_top  - page_bottom;
 				
 				double size_on_paperx = max.x * factorx;
 				double size_on_papery = max.y * factory;

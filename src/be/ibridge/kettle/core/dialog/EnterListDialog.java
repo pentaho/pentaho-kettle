@@ -58,6 +58,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -86,10 +87,14 @@ public class EnterListDialog extends Dialog
     
     private boolean opened;
 	
-    /** @deprecated */
+    /**
+     * @deprecated Use CT without <i>log</i> and <i>props</i> parameter
+     */
     public EnterListDialog(Shell parent, int style, LogWriter log, Props props, String input[])
     {
         this(parent, style, input);
+        this.log = log;
+        this.props = props;
     }
 
 	public EnterListDialog(Shell parent, int style, String input[])
@@ -111,7 +116,7 @@ public class EnterListDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText("Enter list");
+		shell.setText(Messages.getString("EnterListDialog.Title"));
 		
 		shell.setLayout(new FormLayout());
 		
@@ -173,7 +178,7 @@ public class EnterListDialog extends Dialog
 
  		// Source list to the left...
 		wlListSource  = new Label(leftsplit, SWT.NONE);
-		wlListSource.setText("Available items:");
+		wlListSource.setText(Messages.getString("EnterListDialog.AvailableItems.Label"));
  		props.setLook(wlListSource);
 		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
@@ -208,10 +213,10 @@ public class EnterListDialog extends Dialog
 		GridLayout gridLayout = new GridLayout(1, false);
 		gButtonGroup.setLayout(gridLayout);
  			
-		wAddOne    = new Button(gButtonGroup, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText("Add the selected items on the left.");
-		wAddAll    = new Button(gButtonGroup, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText("Add all items on the left.");
-		wRemoveOne = new Button(gButtonGroup, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText("Remove the selected items on the right.");
-		wRemoveAll = new Button(gButtonGroup, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText("Add all items on the right.");
+		wAddOne    = new Button(gButtonGroup, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText(Messages.getString("EnterListDialog.AddOne.Tooltip"));
+		wAddAll    = new Button(gButtonGroup, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText(Messages.getString("EnterListDialog.AddAll.Tooltip"));
+		wRemoveOne = new Button(gButtonGroup, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText(Messages.getString("EnterListDialog.RemoveOne.Tooltip"));
+		wRemoveAll = new Button(gButtonGroup, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText(Messages.getString("EnterListDialog.RemoveAll.Tooltip"));
 
  		GridData gdAddOne = new GridData(GridData.FILL_BOTH);
 		wAddOne.setLayoutData(gdAddOne);
@@ -246,7 +251,7 @@ public class EnterListDialog extends Dialog
  		props.setLook(rightsplit);
 				
 		wlListDest = new Label(rightsplit, SWT.NONE);
-		wlListDest.setText("Your selection:");
+		wlListDest.setText(Messages.getString("EnterListDialog.Selection.Label"));
  		props.setLook(wlListDest);
 		FormData fdlListDest = new FormData();
 		fdlListDest.left   = new FormAttachment(0, 0); 
@@ -270,10 +275,10 @@ public class EnterListDialog extends Dialog
  		////////////////////////////////////////////////////////////////
  		
  		wOK = new Button(bottom, SWT.PUSH); 
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		
 		wCancel = new Button(bottom, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();

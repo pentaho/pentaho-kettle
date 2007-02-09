@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -70,21 +71,15 @@ public class EnterSelectionDialog extends Dialog
     private boolean multi;
     private int[] indices;
     private boolean fixed;
-		
-	/**
-	 * Create a new dialog allow someone to pick one value out of a list of values
-	 * @param parent
-	 * @param pr
-	 * @param lst The list of options
-	 * @param st The shell text
-	 * @param lt the line text to display as information
-     * 
-     * @deprecated use the constructor version without Props
-	 */
-	public EnterSelectionDialog(Shell parent, Props pr, String lst[], String st, String lt)
-	{
-	    this(parent, lst, st, lt);
-	}
+    
+    /**
+     * @deprecated Use CT without <i>props</i> parameter
+     */
+    public EnterSelectionDialog(Shell parent, Props props, String choices[], String shellText, String lineText)
+    {
+        this(parent, choices, shellText, lineText);
+        this.props=props;
+    }
     
     /**
      * Create a new dialog allow someone to pick one value out of a list of values
@@ -176,11 +171,11 @@ public class EnterSelectionDialog extends Dialog
 		wOK=new Button(shell, SWT.PUSH);
 		if (viewOnly) 
 		{
-			wOK.setText(" Cl&ose ");
+			wOK.setText(GlobalMessages.getSystemString("System.Button.Close"));
 		} 
 		else
 		{
-			wOK.setText("  &OK  ");
+			wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		}
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
@@ -190,7 +185,7 @@ public class EnterSelectionDialog extends Dialog
 		if (!viewOnly)
 		{
 			wCancel=new Button(shell, SWT.PUSH);
-			wCancel.setText("  &Cancel  ");
+			wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 			lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 			wCancel.addListener(SWT.Selection, lsCancel );
             

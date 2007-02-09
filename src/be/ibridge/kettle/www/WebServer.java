@@ -1,7 +1,5 @@
 package be.ibridge.kettle.www;
 
-import interbase.interclient.UnknownHostException;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -136,7 +134,7 @@ public class WebServer
         server.join();
     }
 
-    private void createListeners() throws UnknownHostException 
+    private void createListeners() 
     {
         SocketConnector connector = new SocketConnector();
         connector.setPort(port);

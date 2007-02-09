@@ -44,6 +44,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -73,16 +74,20 @@ public class StepFieldsDialog extends Dialog
 	
 	private SelectionAdapter lsDef;
 	
-    public StepFieldsDialog(Shell parent, int style, LogWriter l, String sn, Row in, Props pr)
+    /**
+     * @deprecated Use CT without <i>log</i> and <i>props</i> parameter
+     */
+    public StepFieldsDialog(Shell parent, int style, LogWriter log, String stepname, Row input, Props props)
     {
-        this(parent, style, sn, in);
+        this(parent, style, stepname, input);
+        this.props = props;
     }
     
-	public StepFieldsDialog(Shell parent, int style, String sn, Row in)
+	public StepFieldsDialog(Shell parent, int style, String stepname, Row input)
 	{
 			super(parent, style);
-			stepname=sn;
-			input=in;
+			this.stepname=stepname;
+            this.input=input;
 			props=Props.getInstance();
 	}
 
@@ -99,13 +104,13 @@ public class StepFieldsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Step fields and their origin");
+		shell.setText(Messages.getString("StepFieldsDialog.Title"));
 		
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.NONE);
-		wlStepname.setText("Step name : ");
+		wlStepname.setText(Messages.getString("StepFieldsDialog.Name.Label"));
 		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -121,7 +126,7 @@ public class StepFieldsDialog extends Dialog
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields : ");
+		wlFields.setText(Messages.getString("StepFieldsDialog.Fields.Label"));
 		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -132,11 +137,11 @@ public class StepFieldsDialog extends Dialog
 		final int FieldsRows=input.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[1]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[2]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[3]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[4]=new ColumnInfo("Step origin", ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[0]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[1]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Type"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[2]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Length"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[3]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[4]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -156,9 +161,9 @@ public class StepFieldsDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wEdit=new Button(shell, SWT.PUSH);
-		wEdit.setText(" &Edit origin step ");
+		wEdit.setText(Messages.getString("StepFieldsDialog.Buttons.EditOrigin"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wEdit, wCancel }, margin, wFields);
 		

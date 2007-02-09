@@ -42,6 +42,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -81,8 +82,8 @@ public class EnterStringsDialog extends Dialog
 		props=Props.getInstance();
         readOnly=false;
         
-        title = "Enter string values";
-        message = "Enter values for the Strings specified below : ";
+        title = Messages.getString("EnterStringsDialog.Title");
+        message = Messages.getString("EnterStringsDialog.Message");
 	}
 
 	public Row open()
@@ -117,8 +118,8 @@ public class EnterStringsDialog extends Dialog
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
-                new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
+                new ColumnInfo(Messages.getString("EnterStringsDialog.StringName.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
+                new ColumnInfo(Messages.getString("EnterStringsDialog.StringValue.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
             };
         
         wFields=new TableView(shell, 
@@ -139,10 +140,10 @@ public class EnterStringsDialog extends Dialog
         
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 

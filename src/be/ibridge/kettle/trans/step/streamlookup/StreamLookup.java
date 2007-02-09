@@ -274,7 +274,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		return true;
 	}
 	
-    private void addToCache(Row keyPart, Row valuePart) throws KettleException
+    private void addToCache(Row keyPart, Row valuePart)
     {
         if (meta.isMemoryPreservationActive())
         {
@@ -322,7 +322,7 @@ public class StreamLookup extends BaseStep implements StepInterface
         }
     }
     
-	private Row getFromCache(Row keyRow) throws KettleException
+	private Row getFromCache(Row keyRow)
     {
         if (meta.isMemoryPreservationActive())
         {

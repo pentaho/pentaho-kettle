@@ -35,8 +35,7 @@ public class GetTableSizeProgressDialog
     private Thread parentThread;
 
     /**
-     * Creates a new dialog that will handle the wait while we're doing the hard work.
-     * @deprecated please use the constructor version without log or props
+     * @deprecated Use the constructor version without <i>log</i> and <i>props</i> parameter
      */
     public GetTableSizeProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo, String tableName)
     {
@@ -114,15 +113,26 @@ public class GetTableSizeProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+			showErrorDialog(e);
 			return null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+            showErrorDialog(e);
 			return null;
 		}
 		
 		return row;
 	}
+
+    /**
+     * Showing an error dialog
+     * 
+     * @param e
+    */
+    private void showErrorDialog(Exception e)
+    {
+        new ErrorDialog(shell, Messages.getString("GetTableSizeProgressDialog.Error.Title"),
+            Messages.getString("GetTableSizeProgressDialog.Error.Message"), e);
+    }
 }

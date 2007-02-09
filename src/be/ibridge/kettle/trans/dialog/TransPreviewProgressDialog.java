@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -58,22 +57,14 @@ public class TransPreviewProgressDialog
 	
 	public TransMeta open()
     {
-		IRunnableWithProgress op = new IRunnableWithProgress()
-		{
-			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
-			{
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
-				try
-				{
-					doPreview(monitor);
-				}
-				catch(KettleException e)
-				{
-					throw new InvocationTargetException(e, Messages.getString("TransPreviewProgressDialog.Exception.ErrorLoadingTransformation")); //$NON-NLS-1$
-				}
-			}
-		};
+	    IRunnableWithProgress op = new IRunnableWithProgress()
+	    {
+	        public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+	        {
+	            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+	            doPreview(monitor);
+	        }
+	    };
 		
 		try
 		{
@@ -116,7 +107,7 @@ public class TransPreviewProgressDialog
 		return transMeta;
 	}
     
-    private void doPreview(IProgressMonitor progressMonitor) throws KettleException
+    private void doPreview(IProgressMonitor progressMonitor)
     {
         LogWriter log = LogWriter.getInstance();
         

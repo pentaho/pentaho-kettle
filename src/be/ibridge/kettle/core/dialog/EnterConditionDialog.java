@@ -39,6 +39,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.ConditionEditor;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -60,11 +61,22 @@ public class EnterConditionDialog extends Dialog
 	
 	private Condition condition;
 	private Row       fields;				
-	
-	public EnterConditionDialog(Shell parent, Props props, int style, Row fields, Condition condition)
+
+    /**
+     * @deprecated Use the CT without the <i>props</i> parameter (2nd position)
+     */
+    public EnterConditionDialog(Shell parent, Props props, int style, Row fields, Condition condition)
+    {
+        super(parent, style);
+        this.props     = props;
+        this.fields    = fields;
+        this.condition = condition;
+    }
+    
+	public EnterConditionDialog(Shell parent, int style, Row fields, Condition condition)
 	{
 		super(parent, style);
-		this.props     = props;
+		this.props     = Props.getInstance();
 		this.fields    = fields;
 		this.condition = condition;
 	}
@@ -74,7 +86,7 @@ public class EnterConditionDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText("Enter Condition");
+		shell.setText(Messages.getString("EnterConditionDialog.Title"));
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -90,10 +102,10 @@ public class EnterConditionDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 	
 		FormData fdCond      = new FormData(); 
 		

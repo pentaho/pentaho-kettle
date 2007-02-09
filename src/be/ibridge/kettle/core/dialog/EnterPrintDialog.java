@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -105,20 +106,20 @@ public class EnterPrintDialog extends Dialog
 	public  double factorx, factory;
 	public  double leftMargin, rightMargin, topMargin, bottomMargin; 
 		
-	public EnterPrintDialog(Shell parent, Props pr, int c, int r, int s, double fx, double fy, Rectangle m, double ml, double mr, double mt, double mb, Image img)
+	public EnterPrintDialog(Shell parent, int nrcols, int nrrows, int scale, double factorX, double factorY, Rectangle m, double marginLeft, double marginRigth, double marginTop, double marginBottom, Image image)
 	{
 		super(parent, SWT.NONE);
-		props=pr;
-		nrcols = c;
-		nrrows = r;
-		scale  = s;
-		image  = img;
-		factorx = fx;
-		factory = fy;
-		leftMargin   = ml;
-		rightMargin  = mr;
-		topMargin    = mt;
-		bottomMargin = mb;
+		props = Props.getInstance();
+		this.nrcols = nrcols;
+        this.nrrows = nrrows;
+        this.scale  = scale;
+        this.image  = image;
+        this.factorx = factorX;
+        this.factory = factorY;
+        this.leftMargin   = marginLeft;
+        this.rightMargin  = marginRigth;
+        this.topMargin    = marginTop;
+        this.bottomMargin = marginBottom;
 		
 		page = new Point(m.width, m.height);
 	}
@@ -138,14 +139,14 @@ public class EnterPrintDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Print pages selection");
+		shell.setText(Messages.getString("EnterPrintDialog.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Canvas
 		wlCanvas=new Label(shell, SWT.NONE);
-		wlCanvas.setText("Printing area:");
+		wlCanvas.setText(Messages.getString("EnterPrintDialog.PrintArea.Label"));
  		props.setLook(wlCanvas);
 		fdlCanvas=new FormData();
 		fdlCanvas.left = new FormAttachment(0, 0);
@@ -171,7 +172,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Rows
 		wlRows=new Label(shell, SWT.NONE);
-		wlRows.setText("Rows");
+		wlRows.setText(Messages.getString("EnterPrintDialog.Rows.Label"));
  		props.setLook(wlRows);
 		fdlRows=new FormData();
 		fdlRows.left = new FormAttachment(0, 0);
@@ -202,7 +203,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Cols
 		wlCols=new Label(shell, SWT.NONE);
-		wlCols.setText("Columns");
+		wlCols.setText(Messages.getString("EnterPrintDialog.Cols.Label"));
  		props.setLook(wlCols);
 		fdlCols=new FormData();
 		fdlCols.left = new FormAttachment(0, 0);
@@ -233,7 +234,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Scale
 		wlScale=new Label(shell, SWT.NONE);
-		wlScale.setText("Scaling (10-100%)");
+		wlScale.setText(Messages.getString("EnterPrintDialog.Scaling.Label"));
  		props.setLook(wlScale);
 		fdlScale=new FormData();
 		fdlScale.left = new FormAttachment(0, 0);
@@ -265,7 +266,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Left
 		wlLeft=new Label(shell, SWT.NONE);
-		wlLeft.setText("Left margin (inch)");
+		wlLeft.setText(Messages.getString("EnterPrintDialog.LeftMargin.Label"));
  		props.setLook(wlLeft);
 		fdlLeft=new FormData();
 		fdlLeft.left = new FormAttachment(0, 0);
@@ -292,7 +293,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Right
 		wlRight=new Label(shell, SWT.NONE);
-		wlRight.setText("Right margin (inch)");
+		wlRight.setText(Messages.getString("EnterPrintDialog.RightMargin.Label"));
  		props.setLook(wlRight);
 		fdlRight=new FormData();
 		fdlRight.left = new FormAttachment(0, 0);
@@ -318,7 +319,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Top
 		wlTop=new Label(shell, SWT.NONE);
-		wlTop.setText("Top margin (inch)");
+		wlTop.setText(Messages.getString("EnterPrintDialog.TopMargin.Label"));
  		props.setLook(wlTop);
 		fdlTop=new FormData();
 		fdlTop.left = new FormAttachment(0, 0);
@@ -344,7 +345,7 @@ public class EnterPrintDialog extends Dialog
 
 		// Bottom
 		wlBottom=new Label(shell, SWT.NONE);
-		wlBottom.setText("Bottom margin (inch)");
+		wlBottom.setText(Messages.getString("EnterPrintDialog.BottomMargin.Label"));
  		props.setLook(wlBottom);
 		fdlBottom=new FormData();
 		fdlBottom.left = new FormAttachment(0, 0);
@@ -371,9 +372,9 @@ public class EnterPrintDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(33, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);
@@ -453,7 +454,10 @@ public class EnterPrintDialog extends Dialog
 		gc.drawImage(image, 0, 0, imd.width, imd.height,
 		                  0, 0, (int)(width*percentScreenX), (int)(height*percentScreenY)
 		            );
-		gc.drawText( ""+nrcols+"x"+nrrows+"@"+scale+"%", 0, 0);
+
+		StringBuffer text = new StringBuffer();
+		text.append(nrcols).append("x").append(nrrows).append(" @ ").append(scale).append("%");
+		gc.drawText(text.toString(), 0, 0);
 		for (int c=1;c<nrcols;c++)
 		{
 			gc.drawLine(c*(width/nrcols), 0, c*(width/nrcols), height);		

@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -67,26 +68,14 @@ public class ErrorDialog extends Dialog
 	private Props props;
 	
     /**
-     * @deprecated it is not longer required to specify the Props object (it's a singleton now)
+     * @deprecated Use CT without <i>props</i> parameter
      */
-	public ErrorDialog(Shell parent, Props props, String title, String message)
-	{
-		this(parent, title, message, null);
-	}
-
-    public ErrorDialog(Shell parent, String title, String message)
+    public ErrorDialog(Shell parent, Props props, String title, String message)
     {
         this(parent, title, message, null);
+        this.props = props;
     }
-
-    /**
-     * @deprecated it is not longer required to specify the Props object (it's a singleton now)
-     */
-    public ErrorDialog(Shell parent, Props props, String title, String message, Exception exception)
-    {
-        this(parent, title, message, exception);
-    }
-   
+    
 	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
@@ -153,8 +142,7 @@ public class ErrorDialog extends Dialog
 					}
 				}
 			}
-			else
-			if (exception instanceof Throwable) // Error from somewhere else...
+			else // Error from somewhere else...
 			{
                 text.append(exception.getMessage());
 			}
@@ -178,9 +166,9 @@ public class ErrorDialog extends Dialog
 		wDesc.setEditable(false);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &Close  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
         wDetails=new Button(shell, SWT.PUSH);
-        wDetails.setText("  &Details  ");
+        wDetails.setText(GlobalMessages.getSystemString("System.Button.Details"));
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wDetails }, margin, null);
 
@@ -213,7 +201,8 @@ public class ErrorDialog extends Dialog
 
 	protected void showDetails(String details)
     {
-        EnterTextDialog dialog = new EnterTextDialog(shell, "Error details", "Here are the error details and trace:", details);
+        EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("ErrorDialog.ShowDetails.Title"),
+            Messages.getString("ErrorDialog.ShowDetails.Message"), details);
         dialog.setReadOnly();
         dialog.open();
     }

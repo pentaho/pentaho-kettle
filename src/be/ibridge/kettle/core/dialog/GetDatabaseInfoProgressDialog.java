@@ -33,9 +33,7 @@ public class GetDatabaseInfoProgressDialog
     private Thread parentThread;
 
     /**
-     * Creates a new dialog that will handle the wait while we're 
-     * finding out what tables, views etc we can reach in the database.
-     * @deprecated please use the constructor version without log or props
+     * @deprecated Use the constructor version without <i>log</i> and <i>props</i> parameter
      */
     public GetDatabaseInfoProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo)
     {
@@ -83,15 +81,26 @@ public class GetDatabaseInfoProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+		    showErrorDialog(e);
 			return null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
+		    showErrorDialog(e);
 			return null;
 		}
 		
 		return dmi;
 	}
+
+    /**
+     * Showing an error dialog
+     * 
+     * @param e
+    */
+    private void showErrorDialog(Exception e)
+    {
+        new ErrorDialog(shell, Messages.getString("GetDatabaseInfoProgressDialog.Error.Title"),
+            Messages.getString("GetDatabaseInfoProgressDialog.Error.Message"), e);
+    }
 }

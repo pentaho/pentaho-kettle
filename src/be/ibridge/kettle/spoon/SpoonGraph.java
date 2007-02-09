@@ -50,7 +50,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -848,16 +847,16 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 // F2 --> rename step
                 if (e.keyCode == SWT.F2)    { renameStep(); }
 
-                if ((int) e.character == 1) // CTRL-A
+                if (e.character == 1) // CTRL-A
                 {
                     transMeta.selectAll();
                     redraw();
                 }
-                if ((int) e.character == 3) // CTRL-C
+                if (e.character == 3) // CTRL-C
                 {
                     spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
                 }
-                if ((int) e.character == 22) // CTRL-V
+                if (e.character == 22) // CTRL-V
                 {
                     spoon.pasteSteps();
                 }
@@ -1161,7 +1160,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         }
         else
         {
-            mPop = new Menu((Control) this);
+            mPop = new Menu(this);
         }
 
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
@@ -1451,7 +1450,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     selected_steps = null;
                     String tt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
                     String mt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
-                    EnterNumberDialog nd = new EnterNumberDialog(shell, spoon.props, stepMeta.getCopies(), tt, mt);
+                    EnterNumberDialog nd = new EnterNumberDialog(shell, stepMeta.getCopies(), tt, mt);
                     int cop = nd.open();
                     if (cop >= 0)
                     {
@@ -1909,7 +1908,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
         if (fields != null && fields.size() > 0)
         {
-            StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, log, stepMeta.getName(), fields, spoon.props);
+            StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, stepMeta.getName(), fields);
             String sn = (String) sfd.open();
             if (sn != null)
             {
@@ -1982,9 +1981,8 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         Point area = getArea();
         Point max = transMeta.getMaximum();
         Point thumb = getThumb(area, max);
-        Point offset = getOffset(thumb, area);
 
-        return offset;
+        return getOffset(thumb, area);
     }
 
     private Point getOffset(Point thumb, Point area)

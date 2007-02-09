@@ -3,7 +3,6 @@ package be.ibridge.kettle.test.value;
 import java.util.Date;
 
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -15,7 +14,7 @@ public class ValueSpeedTest3
     // private static final int ITERATIONS = 250000;
     private static final int ITERATIONS = 10000000;
     
-    public static void main(String[] args) throws KettleException
+    public static void main(String[] args)
     {
         EnvUtil.environmentInit();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);

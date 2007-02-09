@@ -461,71 +461,71 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F11 && !ctrl && !alt) { checkTrans(transMeta); }
                     
                     // CTRL-A --> Select All steps
-                    if ((int)e.character ==  1 && ctrl && !alt) 
+                    if (e.character ==  1 && ctrl && !alt) 
                     {
                         if (transMeta!=null) { transMeta.selectAll(); refreshGraph(); } 
                         if (jobMeta!=null) { jobMeta.selectAll(); refreshGraph(); } 
                     };
                     
                     // CTRL-D --> Disconnect from repository
-                    if ((int)e.character ==  4 && ctrl && !alt) { closeRepository();  };
+                    if (e.character ==  4 && ctrl && !alt) { closeRepository();  };
                     
                     // CTRL-E --> Explore the repository
-                    if ((int)e.character ==  5 && ctrl && !alt) { exploreRepository(); };
+                    if (e.character ==  5 && ctrl && !alt) { exploreRepository(); };
 
                     // CTRL-F --> Java examination
-                    if ((int)e.character ==  6 && ctrl && !alt ) { searchMetaData(); };
+                    if (e.character ==  6 && ctrl && !alt ) { searchMetaData(); };
 
                     // CTRL-I --> Import from XML file         && (e.keyCode&SWT.CONTROL)!=0
-                    if ((int)e.character ==  9 && ctrl && !alt ) { openFile(true);  };
+                    if (e.character ==  9 && ctrl && !alt ) { openFile(true);  };
 
                     // CTRL-ALT-I --> Copy Transformation Image to clipboard
-                    if ((int)e.character ==  9 && ctrl && alt) { if (transMeta!=null) { copyTransformationImage(transMeta); } }
+                    if (e.character ==  9 && ctrl && alt) { if (transMeta!=null) { copyTransformationImage(transMeta); } }
 
                     // CTRL-J --> Edit job properties
-                    if ((int)e.character == 10 && ctrl && !alt ) { editJobProperties(jobMeta); };
+                    if (e.character == 10 && ctrl && !alt ) { editJobProperties(jobMeta); };
 
                     // CTRL-ALT-J --> Get variables
-                    if ((int)e.character == 10 && ctrl && alt ) { getVariables(); };
+                    if (e.character == 10 && ctrl && alt ) { getVariables(); };
 
                     // CTRL-K --> Create Kettle archive
-                    if ((int)e.character == 11 && ctrl && !alt ) { if (transMeta!=null) { createKettleArchive(transMeta); } };
+                    if (e.character == 11 && ctrl && !alt ) { if (transMeta!=null) { createKettleArchive(transMeta); } };
 
                     // CTRL-L --> Show variables
-                    if ((int)e.character == 12 && ctrl && !alt ) { showVariables(); };
+                    if (e.character == 12 && ctrl && !alt ) { showVariables(); };
 
                     // CTRL-N --> new
-                    if ((int)e.character == 14 && ctrl && !alt) { newFile();  }
+                    if (e.character == 14 && ctrl && !alt) { newFile();  }
                         
                     // CTRL-O --> open
-                    if ((int)e.character == 15 && ctrl && !alt) { openFile(false);  }
+                    if (e.character == 15 && ctrl && !alt) { openFile(false);  }
                     
                     // CTRL-P --> print
-                    if ((int)e.character == 16 && ctrl && !alt) { printFile();  }
+                    if (e.character == 16 && ctrl && !alt) { printFile();  }
                     
                     // CTRL-Q --> Impact analyses
-                    if ((int)e.character == 17 && ctrl && !alt) { analyseImpact(transMeta);}
+                    if (e.character == 17 && ctrl && !alt) { analyseImpact(transMeta);}
                     
                     // CTRL-R --> Connect to repository
-                    if ((int)e.character == 18 && ctrl && !alt) { openRepository(); };
+                    if (e.character == 18 && ctrl && !alt) { openRepository(); };
 
                     // CTRL-S --> save
-                    if ((int)e.character == 19 && ctrl && !alt) { saveFile();  }
+                    if (e.character == 19 && ctrl && !alt) { saveFile();  }
                     
                     // CTRL-ALT-S --> send to slave server
-                    if ((int)e.character == 19 && ctrl && alt) { executeFile(false, true, false, false, null);  }
+                    if (e.character == 19 && ctrl && alt) { executeFile(false, true, false, false, null);  }
 
                     // CTRL-T --> transformation
-                    if ((int)e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta);  }
+                    if (e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta);  }
 
                     // CTRL-U --> transformation replay
-                    if ((int)e.character == 21 && ctrl && !alt) { executeFile(false, false, true, false, null);  }
+                    if (e.character == 21 && ctrl && !alt) { executeFile(false, false, true, false, null);  }
 
                     // CTRL-Y --> redo action
-                    if ((int)e.character == 25 && ctrl && !alt) { redoAction(undoInterface);  }
+                    if (e.character == 25 && ctrl && !alt) { redoAction(undoInterface);  }
                     
                     // CTRL-Z --> undo action
-                    if ((int)e.character == 26 && ctrl && !alt) { undoAction(undoInterface);  }
+                    if (e.character == 26 && ctrl && !alt) { undoAction(undoInterface);  }
                 }
             };
         modKeys = new KeyAdapter() 
@@ -809,7 +809,7 @@ public class Spoon implements AddUndoPositionInterface
 
         if (rows.size()!=0)
         {
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("Spoon.StringSearchResult.Title"), rows);
             prd.open();
         }
         else
@@ -925,7 +925,7 @@ public class Spoon implements AddUndoPositionInterface
         
         if (props.showTips()) 
         {
-            TipsDialog tip = new TipsDialog(shell, props);
+            TipsDialog tip = new TipsDialog(shell);
             tip.open();
         }
     }
@@ -1344,7 +1344,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         MenuItem miHelpTOTD = new MenuItem(msHelp, SWT.CASCADE); 
         miHelpTOTD.setText(Messages.getString("Spoon.Menu.Help.Tip"));//&Tip of the day
-        miHelpTOTD.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { new TipsDialog(shell, props).open(); }});
+        miHelpTOTD.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { new TipsDialog(shell).open(); }});
         // Welcome screen
         //
         MenuItem miHelpWelcome = new MenuItem(msHelp, SWT.CASCADE); 
@@ -1427,7 +1427,7 @@ public class Spoon implements AddUndoPositionInterface
                         // Ask for a username password to get the required repository access
                         //
                         int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-                        RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
+                        RepositoriesDialog rd = new RepositoriesDialog(disp, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
                         rd.setRepositoryName(lastUsedFile.getRepositoryName());
                         if (rd.open())
                         {
@@ -2899,7 +2899,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    public void clipStep(TransMeta transMeta, StepMeta stepMeta)
+    public void clipStep(StepMeta stepMeta)
     {
         String xml = stepMeta.getXML();
         toClipboard(xml);
@@ -3289,7 +3289,7 @@ public class Spoon implements AddUndoPositionInterface
     public void openRepository()
     {
         int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-        RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, APP_NAME);
+        RepositoriesDialog rd = new RepositoriesDialog(disp, perms, APP_NAME);
         rd.getShell().setImage(GUIResource.getInstance().getImageSpoon());
         if (rd.open())
         {
@@ -3461,7 +3461,7 @@ public class Spoon implements AddUndoPositionInterface
         if (rep!=null)
         {
             UserInfo userinfo = rep.getUserInfo();
-            UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, userinfo);
+            UserDialog ud = new UserDialog(shell, SWT.NONE, rep, userinfo);
             UserInfo ui = ud.open();
             if (!userinfo.isReadonly())
             {
@@ -3503,7 +3503,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             FileDialog dialog = new FileDialog(shell, SWT.OPEN);
             dialog.setFilterExtensions(Const.STRING_TRANS_AND_JOB_FILTER_EXT);
-            dialog.setFilterNames(Const.STRING_TRANS_AND_JOB_FILTER_NAMES);
+            dialog.setFilterNames(Const.getTransformationAndJobFilterNames());
             String fname = dialog.open();
             if (fname!=null)
             {
@@ -4081,7 +4081,7 @@ public class Spoon implements AddUndoPositionInterface
         
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
-        dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
+        dialog.setFilterNames(Const.getTransformationFilterNames());
         String fname = dialog.open();
         if (fname!=null) 
         {
@@ -4183,7 +4183,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void editOptions()
     {
-        EnterOptionsDialog eod = new EnterOptionsDialog(shell, props);
+        EnterOptionsDialog eod = new EnterOptionsDialog(shell);
         if (eod.open()!=null)
         {
             props.saveProps();
@@ -4818,7 +4818,7 @@ public class Spoon implements AddUndoPositionInterface
         
         Image img = spoonGraph.getTransformationImage(printer, max.x, max.y);
 
-        ps.printImage(shell, props, img);
+        ps.printImage(shell, img);
         
         img.dispose();
         ps.dispose();
@@ -4849,7 +4849,7 @@ public class Spoon implements AddUndoPositionInterface
         // Draw the transformation...
         chefGraph.drawJob(img_gc);
         
-        ps.printImage(shell, props, img);
+        ps.printImage(shell, img);
         
         img_gc.dispose();
         img.dispose();
@@ -6429,7 +6429,7 @@ public class Spoon implements AddUndoPositionInterface
             StepLoader steploader = StepLoader.getInstance();
             
             String fromstepid = steploader.getStepPluginID(tii);
-            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface)tii );
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
             fromstep.setLocation(150,100);
             fromstep.setDraw(true);
             fromstep.setDescription(Messages.getString("Spoon.Message.Note.ReadInformationFromTableOnDB",tablename,sourceDBInfo.getDatabaseName() ));
@@ -6465,7 +6465,7 @@ public class Spoon implements AddUndoPositionInterface
                 
                 String selstepname =Messages.getString("Spoon.Message.Note.HandleReservedWords"); //"Handle reserved words";
                 String selstepid = steploader.getStepPluginID(svi);
-                StepMeta selstep = new StepMeta(selstepid, selstepname, (StepMetaInterface)svi );
+                StepMeta selstep = new StepMeta(selstepid, selstepname, svi );
                 selstep.setLocation(350,100);
                 selstep.setDraw(true);
                 selstep.setDescription(Messages.getString("Spoon.Message.Note.RenamesReservedWords",targetDBInfo.getDatabaseTypeDesc()) );//"Renames reserved words for "+targetDBInfo.getDatabaseTypeDesc()
@@ -6490,7 +6490,7 @@ public class Spoon implements AddUndoPositionInterface
             toi.setTruncateTable( true );
             
             String tostepid = steploader.getStepPluginID(toi);
-            StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface)toi );
+            StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
             tostep.setLocation(550,100);
             tostep.setDraw(true);
             tostep.setDescription(Messages.getString("Spoon.Message.Note.WriteInformationToTableOnDB2",tablename,targetDBInfo.getDatabaseName() ));//"Write information to table ["+tablename+"] on database ["+targetDBInfo+"]"
@@ -6637,7 +6637,7 @@ public class Spoon implements AddUndoPositionInterface
 
             int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
             splash.hide();
-            RepositoriesDialog rd = new RepositoriesDialog(spoon.disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+            RepositoriesDialog rd = new RepositoriesDialog(spoon.disp, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
             if (rd.open())
             {
                 repositoryMeta = rd.getRepository();
@@ -6986,7 +6986,7 @@ public class Spoon implements AddUndoPositionInterface
             case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
             case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
                 // ask for a fieldname
-                EnterStringDialog stringDialog = new EnterStringDialog(shell, props, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
+                EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
                 String fieldName = stringDialog.open();
                 stepPartitioningMeta.setFieldName(fieldName);
 
@@ -7995,7 +7995,7 @@ public class Spoon implements AddUndoPositionInterface
         
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-        dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+        dialog.setFilterNames(Const.getJobFilterNames());
         String fname = dialog.open();
         if (fname!=null) 
         {
@@ -8157,7 +8157,7 @@ public class Spoon implements AddUndoPositionInterface
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
         dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-        dialog.setFilterNames     (Const.STRING_JOB_FILTER_NAMES);
+        dialog.setFilterNames     (Const.getJobFilterNames());
         String fname = dialog.open();
         if (fname!=null) 
         {
@@ -8299,7 +8299,7 @@ public class Spoon implements AddUndoPositionInterface
     {
         JobEntryTrans je = new JobEntryTrans();
         je.setType(type);
-        String basename = JobEntryTrans.typeDesc[type]; 
+        String basename = JobEntryInterface.typeDesc[type]; 
         int nr = jobMeta.generateJobEntryNameNr(basename);
         je.setName(basename+" "+nr); //$NON-NLS-1$
 
@@ -8610,7 +8610,7 @@ public class Spoon implements AddUndoPositionInterface
                     tii.setSQL("SELECT * FROM " + sourceDbInfo.quoteField(tables[i])); //$NON-NLS-1$
 
                     String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
-                    StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
+                    StepMeta fromstep = new StepMeta(fromstepid, fromstepname, tii);
                     fromstep.setLocation(150, 100);
                     fromstep.setDraw(true);
                     fromstep.setDescription(Messages.getString("Spoon.RipDB.Monitor.FromStep.Description") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.FromStep.Description2") + sourceDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -8627,7 +8627,7 @@ public class Spoon implements AddUndoPositionInterface
                     toi.setTruncateTable(true);
 
                     String tostepid = StepLoader.getInstance().getStepPluginID(toi);
-                    StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
+                    StepMeta tostep = new StepMeta(tostepid, tostepname, toi);
                     tostep.setLocation(500, 100);
                     tostep.setDraw(true);
                     tostep.setDescription(Messages.getString("Spoon.RipDB.Monitor.ToStep.Description1") + tables[i] + Messages.getString("Spoon.RipDB.Monitor.ToStep.Description2") + targetDbInfo + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

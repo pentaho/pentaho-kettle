@@ -41,6 +41,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -64,13 +65,16 @@ public class SelectRowDialog extends Dialog
 	private String        title;
 	private Row			  selection;
 	
-    /** @deprecated */
-    public SelectRowDialog(Shell parent, int style, LogWriter l, Props pr, String nam, ArrayList buf)
+    /**
+     * @deprecated Use CT without <i>log</i>, <i>props</i> and <i>nam</i> parameter
+     */
+    public SelectRowDialog(Shell parent, int style, LogWriter log, Props props, String nam, ArrayList buf)
     {
-        this(parent, style, nam, buf);
+        this(parent, style, buf);
+        this.props = props;
     }
     
-	public SelectRowDialog(Shell parent, int style, String nam, ArrayList buf)
+	public SelectRowDialog(Shell parent, int style, ArrayList buf)
 	{
 		super(parent, style);
 		buffer=buf;
@@ -96,7 +100,8 @@ public class SelectRowDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
-		if (title==null)   title="Select a row of data";
+		if (title==null)
+		    title = Messages.getString("SelectRowDialog.Title");
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
@@ -127,9 +132,9 @@ public class SelectRowDialog extends Dialog
 						      );
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 

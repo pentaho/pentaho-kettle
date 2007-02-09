@@ -38,6 +38,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -144,14 +145,14 @@ public class EnterMappingDialog extends Dialog
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText("Enter the mapping");
+        shell.setText(Messages.getString("EnterMappingDialog.Title"));
 
         int margin = Const.MARGIN;
         int buttonSpace = 90;
 
         // Source table
         wlSource = new Label(shell, SWT.NONE);
-        wlSource.setText("Source fields: ");
+        wlSource.setText(Messages.getString("EnterMappingDialog.SourceFields.Label"));
         props.setLook(wlSource);
         fdlSource = new FormData();
         fdlSource.left = new FormAttachment(0, 0);
@@ -170,7 +171,7 @@ public class EnterMappingDialog extends Dialog
 
         // Automatic target selection
         wlSourceAuto = new Label(shell, SWT.NONE);
-        wlSourceAuto.setText("Auto target selection?");
+        wlSourceAuto.setText(Messages.getString("EnterMappingDialog.AutoTargetSelection.Label"));
         props.setLook(wlSourceAuto);
         fdlSourceAuto = new FormData();
         fdlSourceAuto.left = new FormAttachment(0, 0);
@@ -187,7 +188,7 @@ public class EnterMappingDialog extends Dialog
 
         // Hide used source fields?
         wlSourceHide = new Label(shell, SWT.NONE);
-        wlSourceHide.setText("Hide used sources?");
+        wlSourceHide.setText(Messages.getString("EnterMappingDialog.HideUsedSources"));
         props.setLook(wlSourceHide);
         fdlSourceHide = new FormData();
         fdlSourceHide.left = new FormAttachment(0, 0);
@@ -212,7 +213,7 @@ public class EnterMappingDialog extends Dialog
 
         // Target table
         wlTarget = new Label(shell, SWT.NONE);
-        wlTarget.setText("Target fields: ");
+        wlTarget.setText(Messages.getString("EnterMappingDialog.TargetFields.Label"));
         props.setLook(wlTarget);
         fdlTarget = new FormData();
         fdlTarget.left = new FormAttachment(wSource, margin * 2);
@@ -231,7 +232,7 @@ public class EnterMappingDialog extends Dialog
 
         // Automatic target selection
         wlTargetAuto = new Label(shell, SWT.NONE);
-        wlTargetAuto.setText("Auto source selection?");
+        wlTargetAuto.setText(Messages.getString("EnterMappingDialog.AutoSourceSelection.Label"));
         props.setLook(wlTargetAuto);
         fdlTargetAuto = new FormData();
         fdlTargetAuto.left = new FormAttachment(wSource, margin * 2);
@@ -248,7 +249,7 @@ public class EnterMappingDialog extends Dialog
 
         // Automatic target selection
         wlTargetHide = new Label(shell, SWT.NONE);
-        wlTargetHide.setText("Hide used targets?");
+        wlTargetHide.setText(Messages.getString("EnterMappingDialog.HideUsedTargets"));
         props.setLook(wlTargetHide);
         fdlTargetHide = new FormData();
         fdlTargetHide.left = new FormAttachment(wSource, margin * 2);
@@ -275,7 +276,7 @@ public class EnterMappingDialog extends Dialog
         // Add a couple of buttons:
         wAdd = new Button(shell, SWT.PUSH);
         fdAdd = new FormData();
-        wAdd.setText("  &Add  ");
+        wAdd.setText(Messages.getString("EnterMappingDialog.Button.Add"));
         fdAdd.left = new FormAttachment(wTarget, margin * 2);
         fdAdd.top = new FormAttachment(wTarget, 0, SWT.CENTER);
         wAdd.setLayoutData(fdAdd);
@@ -291,7 +292,7 @@ public class EnterMappingDialog extends Dialog
         // Delete a couple of buttons:
         wDelete = new Button(shell, SWT.PUSH);
         fdDelete = new FormData();
-        wDelete.setText("  &Delete  ");
+        wDelete.setText(Messages.getString("EnterMappingDialog.Button.Delete"));
         fdDelete.left = new FormAttachment(wTarget, margin * 2);
         fdDelete.top = new FormAttachment(wAdd, margin * 2);
         wDelete.setLayoutData(fdDelete);
@@ -306,7 +307,7 @@ public class EnterMappingDialog extends Dialog
 
         // Result table
         wlResult = new Label(shell, SWT.NONE);
-        wlResult.setText("Result mappings: ");
+        wlResult.setText(Messages.getString("EnterMappingDialog.ResultMappings.Label"));
         props.setLook(wlResult);
         fdlResult = new FormData();
         fdlResult.left = new FormAttachment(wDelete, margin * 2);
@@ -325,7 +326,7 @@ public class EnterMappingDialog extends Dialog
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText("  &OK  ");
+        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
         lsOK = new Listener()
         {
             public void handleEvent(Event e)
@@ -337,7 +338,7 @@ public class EnterMappingDialog extends Dialog
 
         // Some buttons
         wGuess = new Button(shell, SWT.PUSH);
-        wGuess.setText("  &Guess  ");
+        wGuess.setText(Messages.getString("EnterMappingDialog.Button.Guess"));
         lsGuess = new Listener()
         {
             public void handleEvent(Event e)
@@ -348,7 +349,7 @@ public class EnterMappingDialog extends Dialog
         wGuess.addListener(SWT.Selection, lsGuess);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText("  &Cancel  ");
+        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
         lsCancel = new Listener()
         {
             public void handleEvent(Event e)

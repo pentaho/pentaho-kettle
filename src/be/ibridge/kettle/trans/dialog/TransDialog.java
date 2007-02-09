@@ -895,7 +895,7 @@ public class TransDialog extends Dialog
 
         // Show feedback in transformations steps?
         Label wlShowFeedback = new Label(wMiscComp, SWT.RIGHT);
-        wlShowFeedback.setText("Show a feedback row in transformation steps? ");
+        wlShowFeedback.setText(Messages.getString("TransDialog.ShowFeedbackRow.Label"));
         props.setLook(wlShowFeedback);
         FormData fdlShowFeedback = new FormData();
         fdlShowFeedback.left = new FormAttachment(0, 0);
@@ -912,7 +912,7 @@ public class TransDialog extends Dialog
 
         // Feedback size
         Label wlFeedbackSize = new Label(wMiscComp, SWT.RIGHT);
-        wlFeedbackSize.setText("The feedback size ");
+        wlFeedbackSize.setText(Messages.getString("TransDialog.FeedbackSize.Label"));
         props.setLook(wlFeedbackSize);
         FormData fdlFeedbackSize = new FormData();
         fdlFeedbackSize.left = new FormAttachment(0, 0);
@@ -973,7 +973,7 @@ public class TransDialog extends Dialog
 
         // Show feedback in transformations steps?
         Label wlManageThreads = new Label(wMiscComp, SWT.RIGHT);
-        wlManageThreads.setText("Manage thread priorities? ");
+        wlManageThreads.setText(Messages.getString("TransDialog.ManageThreadPriorities.Label"));
         props.setLook(wlManageThreads);
         FormData fdlManageThreads = new FormData();
         fdlManageThreads.left = new FormAttachment(0, 0);
@@ -1138,7 +1138,9 @@ public class TransDialog extends Dialog
         
         if (dbNames.length>0)
         {
-            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames, "Select the database", "Select the partitioned database to import from");
+            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames,
+                Messages.getString("TransDialog.SelectPartitionedDatabase.Title"),
+                Messages.getString("TransDialog.SelectPartitionedDatabase.Message"));
             String dbName = dialog.open();
             if (dbName!=null)
             {
@@ -1206,8 +1208,10 @@ public class TransDialog extends Dialog
 
     protected void newSchema()
     {
-        String name = "Partition schema #"+(schemas.size()+1);
-        EnterStringDialog askName = new EnterStringDialog(shell, props, name, "New partition schema", "Enter a partition schema name:");
+        String name = Messages.getString("TransDialog.NewPartitionSchema.Name", Integer.toString(schemas.size() + 1));
+        EnterStringDialog askName = new EnterStringDialog(shell, name,
+            Messages.getString("TransDialog.NewPartitionSchema.Title"),
+            Messages.getString("TransDialog.NewPartitionSchema.Message"));
         name = askName.open();
         if (name!=null)
         {
@@ -1253,8 +1257,8 @@ public class TransDialog extends Dialog
 		if (transMeta.getMaxDateConnection()!=null) wMaxdateconnection.setText( transMeta.getMaxDateConnection().getName());
 		if (transMeta.getMaxDateTable()!=null)      wMaxdatetable.setText     ( transMeta.getMaxDateTable());
 		if (transMeta.getMaxDateField()!=null)      wMaxdatefield.setText     ( transMeta.getMaxDateField());
-		wMaxdateoffset.setText(""+transMeta.getMaxDateOffset()); //$NON-NLS-1$
-		wMaxdatediff.setText(""+transMeta.getMaxDateDifference()); //$NON-NLS-1$
+		wMaxdateoffset.setText(Double.toString(transMeta.getMaxDateOffset()));
+		wMaxdatediff.setText(Double.toString(transMeta.getMaxDateDifference()));
 		
 		for (i=0;i<transMeta.nrDependencies();i++)
 		{
@@ -1269,10 +1273,10 @@ public class TransDialog extends Dialog
 			if (field!=null) item.setText(3, field);
 		}
 		
-		wSizeRowset.setText(""+transMeta.getSizeRowset()); //$NON-NLS-1$
+		wSizeRowset.setText(Integer.toString(transMeta.getSizeRowset()));
 		wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
 		wShowFeedback.setSelection(transMeta.isFeedbackShown());
-        wFeedbackSize.setText(""+transMeta.getFeedbackSize());
+        wFeedbackSize.setText(Integer.toString(transMeta.getFeedbackSize()));
         wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
         wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
         

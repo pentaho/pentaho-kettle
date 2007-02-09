@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.repository.PermissionMeta;
@@ -63,12 +62,21 @@ public class ProfileDialog extends Dialog
 	
 	private Props   props;
 
-	public ProfileDialog(Shell par, int style, LogWriter lg, ProfileMeta prof, Props pr)
+    /**
+     * @deprecated Use CT without <i>props</i> parameter
+     */
+    public ProfileDialog(Shell parent, int style, ProfileMeta profile, Props props)
+    {
+        this(parent, style, profile);
+        this.props = props;
+    }
+    
+	public ProfileDialog(Shell parent, int style, ProfileMeta profile)
 	{
-		super(par, style);
-		profile=prof;
-		profileName=prof.getName();
-		props=pr;
+		super(parent, style);
+		this.profile=profile;
+		profileName=profile.getName();
+		props=Props.getInstance();
 	}
 	
 	public String open() 

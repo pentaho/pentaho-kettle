@@ -79,8 +79,8 @@ import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.widget.TreeItemAccelerator;
 import be.ibridge.kettle.core.widget.DoubleClickInterface;
+import be.ibridge.kettle.core.widget.TreeItemAccelerator;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.partition.PartitionSchema;
@@ -1756,7 +1756,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			UserInfo uinfo = new UserInfo(rep, login); // Get UserInfo from repository...
-			UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, uinfo);
+			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, uinfo);
 			UserInfo ui = ud.open();
 			if (!userinfo.isReadonly())
 			{
@@ -1783,7 +1783,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void newUser()
 	{
-		UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, new UserInfo());
+		UserDialog ud = new UserDialog(shell, SWT.NONE, rep, new UserInfo());
 		UserInfo ui = ud.open();
 		if (ui!=null)
 		{
@@ -2328,7 +2328,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
 	
-			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, log, profinfo, props);
+			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, profinfo);
 			String name = pd.open();
 			if (name!=null)
 			{
@@ -2348,7 +2348,7 @@ public class RepositoryExplorerDialog extends Dialog
 		try
 		{
 			ProfileMeta profinfo = new ProfileMeta();
-			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, log, profinfo, props);
+			ProfileDialog pd = new ProfileDialog(shell, SWT.NONE, profinfo);
 			String name = pd.open();
 			if (name!=null)
 			{
@@ -2397,7 +2397,7 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
-		EnterStringDialog esd = new EnterStringDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		EnterStringDialog esd = new EnterStringDialog(shell, Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String newdir = esd.open();
 		if (newdir!=null)
 		{

@@ -2380,7 +2380,7 @@ public class CopyOfTableView extends Composite
 	{
 		if (condition==null) condition=new Condition();
 		Row f = getRowWithoutValues();
-		EnterConditionDialog ecd = new EnterConditionDialog(parent.getShell(), props, SWT.NONE, f, condition);
+		EnterConditionDialog ecd = new EnterConditionDialog(parent.getShell(), SWT.NONE, f, condition);
 		Condition cond = ecd.open(); 
 		if (cond!=null)
 		{

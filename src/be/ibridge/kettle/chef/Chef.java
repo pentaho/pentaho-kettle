@@ -616,7 +616,7 @@ public class Chef implements AddUndoPositionInterface
 				      	if (lastUsedFile.isSourceRepository() && (rep==null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()) ))
 				      	{
 				      		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_JOB };
-				      		RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, APP_NAME);
+				      		RepositoriesDialog rd = new RepositoriesDialog(disp, perms, APP_NAME);
 				      		rd.setRepositoryName(lastUsedFile.getRepositoryName());
 				      		if (rd.open())
 				      		{
@@ -1277,7 +1277,7 @@ public class Chef implements AddUndoPositionInterface
                 }
                 else
                 {
-                    new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Title"),  Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message")+db+Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Title"),  Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message")+db+Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message2"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
 
@@ -1319,7 +1319,7 @@ public class Chef implements AddUndoPositionInterface
 	public void openRepository()
 	{
 		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-		RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, APP_NAME);
+		RepositoriesDialog rd = new RepositoriesDialog(disp, perms, APP_NAME);
 		rd.getShell().setImage(GUIResource.getInstance().getImageSpoon());
 		if (rd.open())
 		{
@@ -1423,7 +1423,7 @@ public class Chef implements AddUndoPositionInterface
 		if (rep!=null)
 		{
 			UserInfo userinfo = rep.getUserInfo();
-			UserDialog ud = new UserDialog(shell, SWT.NONE, log, props, rep, userinfo);
+			UserDialog ud = new UserDialog(shell, SWT.NONE, rep, userinfo);
 			UserInfo ui = ud.open();
 			if (!userinfo.isReadonly())
 			{
@@ -1524,7 +1524,7 @@ public class Chef implements AddUndoPositionInterface
                 FileDialog dialog = new FileDialog(shell, SWT.OPEN);
                 // dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
                 dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-                dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+                dialog.setFilterNames(Const.getJobFilterNames());
                 String fname = dialog.open();
                 if (fname!=null)
                 {
@@ -1715,7 +1715,7 @@ public class Chef implements AddUndoPositionInterface
         
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-        dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+        dialog.setFilterNames(Const.getJobFilterNames());
         String fname = dialog.open();
         if (fname!=null) 
         {
@@ -1968,7 +1968,7 @@ public class Chef implements AddUndoPositionInterface
 	
 	public void editOptions()
 	{
-		EnterOptionsDialog eod = new EnterOptionsDialog(shell, props);
+		EnterOptionsDialog eod = new EnterOptionsDialog(shell);
 		if (eod.open()!=null)
 		{
 			props.saveProps();
@@ -2498,7 +2498,7 @@ public class Chef implements AddUndoPositionInterface
 		//ShowImageDialog sid = new ShowImageDialog(shell, jobMeta.props, img);
 		//sid.open();
 		
-		ps.printImage(shell, props, img);
+		ps.printImage(shell, img);
 		
 		img_gc.dispose();
 		img.dispose();

@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -75,10 +76,14 @@ public class SQLEditor extends Dialog
 	private Shell            shell;
 	private DBCache          dbcache;
 	
-    /** @deprecated */
-    public SQLEditor(Shell parent, Props pr, int style, LogWriter l, DatabaseMeta ci, DBCache dbc, String sql)
+    /**
+     * @deprecated Use CT withouth <i>props</i> and <i>log</i> parameter
+     */
+    public SQLEditor(Shell parent, Props props, int style, LogWriter log, DatabaseMeta ci, DBCache dbc, String sql)
     {
         this(parent, style, ci, dbc, sql);
+        this.props = props;
+        this.log = log;
     }
     
 	public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
@@ -104,13 +109,13 @@ public class SQLEditor extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Simple SQL Editor");
+		shell.setText(Messages.getString("SQLEditor.Title"));
 		
 		int margin = Const.MARGIN;
 
 		// Script line
 		wlScript=new Label(shell, SWT.NONE);
-		wlScript.setText("SQL statements, separated by ; ");
+		wlScript.setText(Messages.getString("SQLEditor.Editor.Label"));
  		props.setLook(wlScript);
 
 		fdlScript=new FormData();
@@ -128,7 +133,7 @@ public class SQLEditor extends Dialog
 		wScript.setLayoutData(fdScript);
 
 		wlPosition=new Label(shell, SWT.NONE);
-		wlPosition.setText("Linenr: 0        ");
+		wlPosition.setText(Messages.getString("SQLEditor.LineNr.Label", "0"));
  		props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
@@ -136,13 +141,13 @@ public class SQLEditor extends Dialog
 		wlPosition.setLayoutData(fdlPosition);
 
 		wExec=new Button(shell, SWT.PUSH);
-		wExec.setText(" &Execute ");
+		wExec.setText(Messages.getString("SQLEditor.Button.Execute"));
         wClear=new Button(shell, SWT.PUSH);
-        wClear.setText(" &Clear cache ");
+        wClear.setText(Messages.getString("SQLEditor.Button.ClearCache"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Close ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Close"));
 
-        wClear.setToolTipText("Use this button if you find that the results above do not correspond with the actual situation in the database.\nThe database cache becomes invalid if you use other tools besides Kettle to create or alter tables in the database.");
+        wClear.setToolTipText(Messages.getString("SQLEditor.Button.ClearCache.Tooltip"));
         
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wExec, wClear, wCancel }, margin, null);
 		
@@ -163,7 +168,7 @@ public class SQLEditor extends Dialog
 			public void keyReleased(KeyEvent e) 
 			{
 				int linenr = wScript.getCaretLineNumber()+1;
-				wlPosition.setText("Linenr: "+linenr+"   ");
+				wlPosition.setText(Messages.getString("SQLEditor.LineNr.Label", Integer.toString(linenr)));
 			}
 		})
 		;
@@ -182,8 +187,8 @@ public class SQLEditor extends Dialog
 	private void clearCache()
     {
         MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES | SWT.CANCEL);
-        mb.setMessage("Do you want to clear the complete cache?"+Const.CR+"'NO' means we only clear the cache for database connection ["+connection.getName()+"]");
-        mb.setText("Clear the whole cache?");
+        mb.setMessage(Messages.getString("SQLEditor.ClearWholeCache.Message", connection.getName()));
+        mb.setText(Messages.getString("SQLEditor.ClearWholeCache.Title"));
         int answer = mb.open();
 
         switch(answer)
@@ -192,8 +197,8 @@ public class SQLEditor extends Dialog
             DBCache.getInstance().clear(connection.getName());
             
             mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            mb.setMessage("The database cache for connection ["+connection.getName()+"] was cleared.");
-            mb.setText("Cache cleared");
+            mb.setMessage(Messages.getString("SQLEditor.ConnectionCacheCleared.Message", connection.getName()));
+            mb.setText(Messages.getString("SQLEditor.ConnectionCacheCleared.Title"));
             mb.open();
             
             break;
@@ -201,8 +206,8 @@ public class SQLEditor extends Dialog
             DBCache.getInstance().clear(null);
             
             mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            mb.setMessage("The complete database cache was cleared.");
-            mb.setText("Cache cleared");
+            mb.setMessage(Messages.getString("SQLEditor.WholeCacheCleared.Message"));
+            mb.setText(Messages.getString("SQLEditor.WholeCacheCleared.Title"));
             mb.open();
         
             break;
@@ -296,20 +301,20 @@ public class SQLEditor extends Dialog
     								ArrayList rows = db.getRows(sql, 1000);
     								if (rows.size()>0)
     								{
-    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "SQL statement #"+nrstats, rows);
+    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rows);
     									prd.open();
     								}
     								else
     								{
     									MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-    									mb.setMessage("Couldn't find any rows for statement #"+nrstats+Const.CR+Const.CR+sql);
-    									mb.setText("Sorry");
+    									mb.setMessage(Messages.getString("SQLEditor.NoRows.Message", sql));
+    									mb.setText(Messages.getString("SQLEditor.NoRows.Title"));
     									mb.open();
     								}
     							}
     							catch(KettleDatabaseException dbe)
     							{
-    								new ErrorDialog(shell, "Error", "I encountered an error executing statement #"+nrstats, dbe);
+    								new ErrorDialog(shell, Messages.getString("SQLEditor.ErrorExecSQL.Title"), Messages.getString("SQLEditor.ErrorExecSQL.Message", sql), dbe);
     							}
     						}
     						else
@@ -322,16 +327,16 @@ public class SQLEditor extends Dialog
     							{
     							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
     								db.execStatement(sql);
-                                    message.append("Executed SQL : "+Const.CR+sql+Const.CR+Const.CR);
+                                    message.append(Messages.getString("SQLEditor.Log.SQLExecuted", sql));
                                     
     								// Clear the database cache, in case we're using one...
     								if (dbcache!=null) dbcache.clear(ci.getName());
     							}
     							catch(Exception dbe)
     							{
-                                    String error = "Error executing SQL statement nr "+nrstats+" : "+dbe.toString();
-                                    message.append(error+Const.CR);
-    								new ErrorDialog(shell, "Error", error, dbe);
+                                    String error = Messages.getString("SQLEditor.Log.SQLExecError", sql, dbe.toString());
+                                    message.append(error).append(Const.CR);
+    								new ErrorDialog(shell, Messages.getString("SQLEditor.ErrorExecSQL.Title"), error, dbe);
     							}
     						}
     					}
@@ -343,17 +348,18 @@ public class SQLEditor extends Dialog
     					to++;
     				}
     			}
-                message.append( nrstats+" statement"+(nrstats==1?"":"s")+" executed" );
-                if (partitionId!=null) message.append(" on partition "+partitionId);
+                message.append(Messages.getString("SQLEditor.Log.StatsExecuted", Integer.toString(nrstats)));
+                if (partitionId!=null)
+                    message.append(Messages.getString("SQLEditor.Log.OnPartition", partitionId));
                 message.append(Const.CR);
     		}
     		catch(KettleDatabaseException dbe)
     		{
     			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                String error = "Unable to connect to the database!"+Const.CR+"Please check the connection setting for connection["+(connection==null?"":connection.getName())+"]"+Const.CR+dbe.getMessage();
-                message.append(error+Const.CR);
+                String error = Messages.getString("SQLEditor.Error.CouldNotConnect.Message", (connection==null ? "" : connection.getName()), dbe.getMessage());
+                message.append(error).append(Const.CR);
     			mb.setMessage(error);
-    			mb.setText("ERROR");
+    			mb.setText(Messages.getString("SQLEditor.Error.CouldNotConnect.Title"));
     			mb.open(); 
     		}
     		finally
@@ -362,7 +368,8 @@ public class SQLEditor extends Dialog
     		}
         }
         
-        EnterTextDialog dialog = new EnterTextDialog(shell, "SQL Result", "The result of the SQL statement(s):", message.toString(), true);
+        EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SQLEditor.Result.Title"),
+            Messages.getString("SQLEditor.Result.Message"), message.toString(), true);
         dialog.open();
 	}
 	

@@ -69,13 +69,24 @@ public class UserDialog extends Dialog
 	
 	private boolean    newUser = false;
 
-	/** This dialog grabs a UserMeta structure, valid for the specified repository.*/
-	public UserDialog(Shell par, int style, LogWriter lg, Props pr, Repository rep, UserInfo ui)
+    /**
+     * @deprecated Use the CT without <i>props</i> and <i>log</i> parameters
+     */
+    public UserDialog(Shell parent, int style, LogWriter log, Props props, Repository rep, UserInfo userInfo)
+    {
+        this(parent, style, rep, userInfo);
+        this.props = props;
+    }
+    
+	/**
+     * This dialog grabs a UserMeta structure, valid for the specified repository.
+     */
+	public UserDialog(Shell parent, int style, Repository rep, UserInfo userInfo)
 	{
-		super(par, style);
-		props=pr;
+		super(parent, style);
+		props=Props.getInstance();
 		this.rep = rep;
-		userinfo=ui;
+		userinfo=userInfo;
 	}
 	
 	public UserInfo open() 

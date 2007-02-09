@@ -414,7 +414,7 @@ public class RepositoryDialog
 					
 					if (!goAhead)
 					{
-						EnterPasswordDialog etd = new EnterPasswordDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.EnterPassword.Title"), Messages.getString("RepositoryDialog.Dialog.EnterPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						EnterPasswordDialog etd = new EnterPasswordDialog(shell, Messages.getString("RepositoryDialog.Dialog.EnterPassword.Title"), Messages.getString("RepositoryDialog.Dialog.EnterPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						String pwd = etd.open();
 						if (pwd!=null)
 						{
@@ -489,7 +489,7 @@ public class RepositoryDialog
 			
 			if (answer == SWT.YES)
 			{
-				EnterPasswordDialog etd = new EnterPasswordDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.AskAdminPassword.Title"), Messages.getString("RepositoryDialog.Dialog.AskAdminPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				EnterPasswordDialog etd = new EnterPasswordDialog(shell, Messages.getString("RepositoryDialog.Dialog.AskAdminPassword.Title"), Messages.getString("RepositoryDialog.Dialog.AskAdminPassword.Message"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				String pwd = etd.open();
 				if (pwd!=null)
 				{

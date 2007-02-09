@@ -828,8 +828,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		final int FieldsRows=input.getOutputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
+		String dats[] = Const.getDateFormats();
+		String nums[] = Const.getNumberFormats();
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];

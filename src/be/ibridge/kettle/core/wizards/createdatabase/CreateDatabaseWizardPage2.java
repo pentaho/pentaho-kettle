@@ -155,7 +155,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 	public void test()
 	{
 		Shell shell = getWizard().getContainer().getShell();
-		DatabaseDialog.test(shell, info, props);
+		DatabaseDialog.test(shell, info);
 	}
 
 	public boolean canFlipToNextPage()

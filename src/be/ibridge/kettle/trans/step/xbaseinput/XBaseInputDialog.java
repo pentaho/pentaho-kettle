@@ -463,7 +463,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 			wFilename.setText(input.getDbfFileName());
 			wFilename.setToolTipText(StringUtil.environmentSubstitute(input.getDbfFileName()));
 		}
-		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
+		wLimit.setText(Integer.toString(input.getRowLimit())); //$NON-NLS-1$
 		wAddRownr.setSelection(input.isRowNrAdded());
 		if (input.getRowNrField()!=null) wFieldRownr.setText(input.getRowNrField());
 
@@ -548,7 +548,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
             
 	        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
 	        
-	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("XBaseInputDialog.PreviewSize.DialogTitle"), Messages.getString("XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("XBaseInputDialog.PreviewSize.DialogTitle"), Messages.getString("XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
 	        int previewSize = numberDialog.open();
 	        if (previewSize>0)
 	        {

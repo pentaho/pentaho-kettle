@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -59,7 +60,10 @@ public class EnterStringDialog extends Dialog
 	private String shellText;
 	private String lineText;
 	private Props props;
-		
+	
+    /**
+     * @deprecated Use CT without <i>props</i> parameter
+     */
 	public EnterStringDialog(Shell parent, Props props, String string, String shellText, String lineText)
 	{
 		super(parent, SWT.NONE);
@@ -69,6 +73,15 @@ public class EnterStringDialog extends Dialog
 		this.lineText   = lineText;
 	}
 
+    public EnterStringDialog(Shell parent, String string, String shellText, String lineText)
+    {
+        super(parent, SWT.NONE);
+        this.props      = Props.getInstance();
+        this.string     = string;
+        this.shellText  = shellText;
+        this.lineText   = lineText;
+    }
+    
 	public String open()
 	{
 		Shell parent = getParent();
@@ -105,9 +118,9 @@ public class EnterStringDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wString);
         

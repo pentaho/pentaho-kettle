@@ -46,6 +46,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -96,10 +97,19 @@ public class EnterValueDialog extends Dialog
 	private DecimalFormat df;
 	private SimpleDateFormat daf;
 
-	public EnterValueDialog(Shell parent, int style, Props props, Value value)
+    /**
+     * @deprecated Use CT witout <i>props</i> parameter
+     */
+    public EnterValueDialog(Shell parent, int style, Props props, Value value)
+    {
+        this(parent, style, value);
+        this.props = props;
+    }
+    
+	public EnterValueDialog(Shell parent, int style, Value value)
 	{
 		super(parent, style);
-		this.props = props;
+		this.props = Props.getInstance();
 		this.value = value;
 		
 		nf = NumberFormat.getInstance();
@@ -120,14 +130,14 @@ public class EnterValueDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Enter a value");
+		shell.setText(Messages.getString("EnterValueDialog.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Type of value
 		wlValueType=new Label(shell, SWT.RIGHT);
-		wlValueType.setText("Type ");
+		wlValueType.setText(Messages.getString("EnterValueDialog.Type.Label"));
  		props.setLook(wlValueType);
 		fdlValueType=new FormData();
 		fdlValueType.left = new FormAttachment(0, 0);
@@ -153,7 +163,7 @@ public class EnterValueDialog extends Dialog
 		
 		// Iconsize line
 		wlInputString=new Label(shell, SWT.RIGHT);
-		wlInputString.setText("Value ");
+		wlInputString.setText(Messages.getString("EnterValueDialog.Value.Label"));
  		props.setLook(wlInputString);
 		fdlInputString=new FormData();
 		fdlInputString.left = new FormAttachment(0, 0);
@@ -170,7 +180,7 @@ public class EnterValueDialog extends Dialog
 
 		// Format mask
 		wlFormat=new Label(shell, SWT.RIGHT);
-		wlFormat.setText("Conversion format ");
+		wlFormat.setText(Messages.getString("EnterValueDialog.ConversionFormat.Label"));
  		props.setLook(wlFormat);
 		fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(0, 0);
@@ -187,7 +197,7 @@ public class EnterValueDialog extends Dialog
 
 		// Length line
 		wlLength=new Label(shell, SWT.RIGHT);
-		wlLength.setText("Length ");
+		wlLength.setText(Messages.getString("EnterValueDialog.Length.Label"));
  		props.setLook(wlLength);
 		fdlLength=new FormData();
 		fdlLength.left = new FormAttachment(0, 0);
@@ -204,7 +214,7 @@ public class EnterValueDialog extends Dialog
 		
 		// Precision line
 		wlPrecision=new Label(shell, SWT.RIGHT);
-		wlPrecision.setText("Precision ");
+		wlPrecision.setText(Messages.getString("EnterValueDialog.Precision.Label"));
  		props.setLook(wlPrecision);
 		fdlPrecision=new FormData();
 		fdlPrecision.left = new FormAttachment(0, 0);
@@ -223,11 +233,11 @@ public class EnterValueDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH );
-		wOK.setText("  &OK  ");
+		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
 		wTest=new Button(shell, SWT.PUSH );
-		wTest.setText("  &Test ");
+		wTest.setText(GlobalMessages.getSystemString("System.Button.Test"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
 
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(25, 0);
@@ -285,15 +295,15 @@ public class EnterValueDialog extends Dialog
 		
 		if (value.isNumber())
 		{
-			wFormat.setText(Const.numberFormats[0]);
+			wFormat.setText(Const.getNumberFormats()[0]);
 		}
 		if (value.isDate())
 		{
-			wFormat.setText(Const.dateFormats[0]);
+			wFormat.setText(Const.getDateFormats()[0]);
 		}
 		
-		wLength.setText(""+value.getLength());
-		wPrecision.setText(""+value.getPrecision());
+		wLength.setText(Integer.toString(value.getLength()));
+		wPrecision.setText(Integer.toString(value.getPrecision()));
 		
 		wInputString.setFocus();
 		wInputString.selectAll();
@@ -307,12 +317,12 @@ public class EnterValueDialog extends Dialog
 		{
 		case Value.VALUE_TYPE_NUMBER:
 			
-			for (int i=0;i<Const.numberFormats.length;i++) 
-				wFormat.add(Const.numberFormats[i]);
+			for (int i=0;i<Const.getNumberFormats().length;i++) 
+				wFormat.add(Const.getNumberFormats()[i]);
 			break;
 		case Value.VALUE_TYPE_DATE:
-			for (int i=0;i<Const.dateFormats.length;i++) 
-				wFormat.add(Const.dateFormats[i]);
+			for (int i=0;i<Const.getDateFormats().length;i++) 
+				wFormat.add(Const.getDateFormats()[i]);
 			break;
 		case Value.VALUE_TYPE_STRING  : 
 		case Value.VALUE_TYPE_BOOLEAN : 
@@ -401,8 +411,15 @@ public class EnterValueDialog extends Dialog
 	{
 		Value v = getValue(value.getName());
 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-		mb.setMessage("The resulting value is : "+Const.CR+Const.CR+"    "+v.toString()+Const.CR+"    "+v.toStringMeta()+(v.getOrigin()!=null?Const.CR+"    "+v.getOrigin():""));
-		mb.setText("Value");
+
+		StringBuffer result = new StringBuffer();
+		result.append(Const.CR).append(Const.CR).append("    ").append(v.toString());
+		result.append(Const.CR).append("    ").append(v.toStringMeta());
+		if (v.getOrigin() != null)
+		    result.append(Const.CR).append("    ").append(v.getOrigin());
+
+		mb.setMessage(Messages.getString("EnterValueDialog.TestResult.Message", result.toString()));
+		mb.setText(Messages.getString("EnterValueDialog.TestResult.Title"));
 		mb.open();
 	}
 }

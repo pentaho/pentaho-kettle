@@ -2378,7 +2378,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     // Sample a few lines to determine the correct type of the fields...
                     String shellText = Messages.getString("TextFileInputDialog.LinesToSample.DialogTitle");
                     String lineText = Messages.getString("TextFileInputDialog.LinesToSample.DialogMessage");
-                    EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
+                    EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
                     int samples = end.open();
                     if (samples >= 0)
                     {
@@ -2516,7 +2516,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -2554,7 +2554,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     		{
     			String shellText = Messages.getString("TextFileInputDialog.LinesToView.DialogTitle");
     			String lineText = Messages.getString("TextFileInputDialog.LinesToView.DialogMessage");
-    			EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
+    			EnterNumberDialog end = new EnterNumberDialog(shell, 100, shellText, lineText);
     			int nrLines = end.open();
     			if (nrLines>=0)
     			{
