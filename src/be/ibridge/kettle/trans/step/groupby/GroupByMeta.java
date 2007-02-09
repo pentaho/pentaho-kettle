@@ -373,15 +373,6 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     			}
     			if (!found) r.removeValue(i);
     		}
-            
-    		// If we pass all rows, we can add a line nr in the group...
-            if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
-            {
-                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
-                lineNr.setLength(9);
-                lineNr.setOrigin(name);
-                r.addValue(lineNr);
-            }
         }
 		
 		// Re-add aggregates
@@ -426,6 +417,18 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				}
 			}
 		}
+        
+        if (passAllRows)
+        {
+            // If we pass all rows, we can add a line nr in the group...
+            if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
+            {
+                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
+                lineNr.setLength(9);
+                lineNr.setOrigin(name);
+                r.addValue(lineNr);
+            }
+        }
 
 		return row;
 	}
