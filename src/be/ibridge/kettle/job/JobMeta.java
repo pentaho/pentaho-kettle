@@ -447,7 +447,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             DatabaseMeta dbs[] = jobEntry.getEntry().getUsedDatabaseConnections();
             for (int d=0;d<dbs.length;d++)
             {
-                if (dbs[d].equals(databaseMeta)) return true;
+                if (dbs[d]!=null && dbs[d].equals(databaseMeta)) return true;
             }
         }
 
