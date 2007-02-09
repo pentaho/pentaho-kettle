@@ -167,34 +167,34 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("filename",          filename));
-		retval.append("      "+XMLHandler.addTagValue("jobname",           jobname));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
+		retval.append("      ").append(XMLHandler.addTagValue("jobname",           jobname));
         if (directory!=null)
         {
-            retval.append("      "+XMLHandler.addTagValue("directory",         directory.getPath()));
+            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory.getPath()));
         }
         else
         if (directoryPath!=null)
         {
-            retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
+            retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
-		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      "+XMLHandler.addTagValue("exec_per_row", execPerRow));
-		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
-		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
-		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
-		retval.append("      "+XMLHandler.addTagValue("add_date",          addDate));
-		retval.append("      "+XMLHandler.addTagValue("add_time",          addTime));
-		retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
+		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logfile",           logfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
+		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
+		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
-			retval.append("      "+XMLHandler.addTagValue("argument"+i, arguments[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 	
 		return retval.toString();
@@ -253,14 +253,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "file_name");
 			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+            execPerRow        = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
 			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile           = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext            = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel          = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
+			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
 	
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -552,8 +552,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
         return result;
 	}
-	
-
 
     public void clear()
 	{
@@ -621,4 +619,3 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         return new JobEntryJobDialog(shell,this,rep);
     }
 }
-

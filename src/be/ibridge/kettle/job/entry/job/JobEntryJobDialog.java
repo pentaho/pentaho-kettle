@@ -761,6 +761,8 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         jobEntry.logfile = wLogfile.getText();
         jobEntry.logext = wLogext.getText();
         jobEntry.loglevel = wLoglevel.getSelectionIndex() - 1;
+    	jobEntry.argFromPrevious = wPrevious.getSelection();
+        jobEntry.execPerRow = wEveryRow.getSelection();
         dispose();
     }
 }
