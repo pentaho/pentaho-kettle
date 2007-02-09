@@ -155,13 +155,10 @@ public class MergeRows extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    if (compareValues > 0){
-                        data.one.addValue(VALUE_CHANGED.Clone());
-                        putRow(data.one);
-                    } else {
-                        data.two.addValue(VALUE_CHANGED.Clone());
-                        putRow(data.two);
-                    }
+                    // Return the compare (most recent) row
+                    //
+                    data.two.addValue(VALUE_CHANGED.Clone());
+                    putRow(data.two);
                 }
 
                 // Get a new row from both streams...
