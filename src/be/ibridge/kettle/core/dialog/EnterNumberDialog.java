@@ -140,6 +140,7 @@ public class EnterNumberDialog extends Dialog
         }
 
         // Add listeners
+        lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
         if (!hideCancelButton)
         {
             lsCancel = new Listener() { public void handleEvent(Event e) { cancel(); } };
