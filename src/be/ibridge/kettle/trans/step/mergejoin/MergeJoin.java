@@ -111,14 +111,14 @@ public class MergeJoin extends BaseStep implements StepInterface
             }
 
             Value v;
-            data.one_dummy = new Row(data.one);
+            data.one_dummy = data.one!=null ? new Row(data.one) : new Row();
             for (int i=0; i < data.one_dummy.size(); ++i)
             {
             	v = data.one_dummy.getValue(i);
             	v.setNull();
             	data.one_dummy.setValue(i, v);
             }
-            data.two_dummy = new Row(data.two);
+            data.two_dummy = data.two!=null ? new Row(data.two) : new Row();
             for (int i=0; i < data.two_dummy.size(); ++i)
             {
             	v = data.two_dummy.getValue(i);
