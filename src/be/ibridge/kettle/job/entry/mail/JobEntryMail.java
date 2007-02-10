@@ -76,6 +76,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 {
 	private String server;
 	private String destination;
+	private String destinationCc;
+	private String destinationBCc;
 	private String replyAddress;
 	private String subject;
 	private boolean includeDate;
@@ -131,6 +133,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         retval.append("      ").append(XMLHandler.addTagValue("server", server));
         retval.append("      ").append(XMLHandler.addTagValue("port", port));
         retval.append("      ").append(XMLHandler.addTagValue("destination", destination));
+		retval.append("      ").append(XMLHandler.addTagValue("destinationCc", destinationCc));
+		retval.append("      ").append(XMLHandler.addTagValue("destinationBCc", destinationBCc));
         retval.append("      ").append(XMLHandler.addTagValue("replyto", replyAddress));
         retval.append("      ").append(XMLHandler.addTagValue("subject", subject));
         retval.append("      ").append(XMLHandler.addTagValue("include_date", includeDate));
@@ -172,6 +176,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			setServer       ( XMLHandler.getTagValue(entrynode, "server") );
             setPort         ( XMLHandler.getTagValue(entrynode, "port") );
 			setDestination  ( XMLHandler.getTagValue(entrynode, "destination") );
+			setDestinationCc  ( XMLHandler.getTagValue(entrynode, "destinationCc") );
+			setDestinationBCc  ( XMLHandler.getTagValue(entrynode, "destinationBCc") );
 			setReplyAddress ( XMLHandler.getTagValue(entrynode, "replyto") );
 			setSubject      ( XMLHandler.getTagValue(entrynode, "subject") );
 			setIncludeDate  ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_date")) );
@@ -218,6 +224,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			server          = rep.getJobEntryAttributeString (id_jobentry, "server");
             port            = rep.getJobEntryAttributeString (id_jobentry, "port");
 			destination     = rep.getJobEntryAttributeString (id_jobentry, "destination");
+			destinationCc     = rep.getJobEntryAttributeString (id_jobentry, "destinationCc");
+			destinationBCc     = rep.getJobEntryAttributeString (id_jobentry, "destinationBCc");
 			replyAddress    = rep.getJobEntryAttributeString (id_jobentry, "replyto");
 			subject         = rep.getJobEntryAttributeString (id_jobentry, "subject");
 			includeDate     = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
@@ -262,6 +270,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "server", server);
             rep.saveJobEntryAttribute(id_job, getID(), "port", port);
 			rep.saveJobEntryAttribute(id_job, getID(), "destination", destination);
+			rep.saveJobEntryAttribute(id_job, getID(), "destinationCc", destinationCc);
+			rep.saveJobEntryAttribute(id_job, getID(), "destinationBCc", destinationBCc);
 			rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyAddress);
 			rep.saveJobEntryAttribute(id_job, getID(), "subject", subject);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_date", includeDate);
@@ -309,12 +319,26 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		destination=dest;
 	}
-	
+	public void setDestinationCc(String destCc)
+	{
+		destinationCc=destCc;
+	}
+	public void setDestinationBCc(String destBCc)
+	{
+		destinationBCc=destBCc;
+	}
 	public String getDestination()
 	{
 		return destination;
 	}
-
+	public String getDestinationCc()
+	{
+		return destinationCc;
+	}
+	public String getDestinationBCc()
+	{
+		return destinationBCc;
+	}
 	public void setReplyAddress(String reply)
 	{
 		replyAddress=reply;
@@ -569,9 +593,27 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             for (int i=0;i<destinations.length;i++) address[i] = new InternetAddress(destinations[i]);
             
 		    msg.setRecipients(Message.RecipientType.TO, address);
-		    msg.setSubject(StringUtil.environmentSubstitute(subject));
-		    msg.setSentDate(new Date());
-		    StringBuffer messageText = new StringBuffer();
+		
+
+			// Split the mail-address Cc: space separated
+			String destinationsCc[] = StringUtil.environmentSubstitute(destinationCc).split(" ");
+			InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
+			for (int i=0;i<destinationsCc.length;i++) addressCc[i] = new InternetAddress(destinationsCc[i]);
+            
+			msg.setRecipients(Message.RecipientType.CC, addressCc);
+
+			// Split the mail-address BCc: space separated
+			String destinationsBCc[] = StringUtil.environmentSubstitute(destinationBCc).split(" ");
+			InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
+			for (int i=0;i<destinationsBCc.length;i++) addressBCc[i] = new InternetAddress(destinationsBCc[i]);
+            
+			msg.setRecipients(Message.RecipientType.BCC, addressBCc);
+
+		
+			msg.setSubject(StringUtil.environmentSubstitute(subject));
+			msg.setSentDate(new Date());
+			StringBuffer messageText = new StringBuffer();
+
 
 		    if (comment!=null)
 		    {

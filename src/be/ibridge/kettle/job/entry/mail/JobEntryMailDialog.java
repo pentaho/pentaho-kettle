@@ -63,7 +63,15 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
     private LabelTextVar wDestination;
 
+	private LabelTextVar wDestinationCc;
+
+	private LabelTextVar wDestinationBCc;
+
     private FormData fdDestination;
+
+	private FormData fdDestinationCc;
+
+	private FormData fdDestinationBCc;
 
     private LabelTextVar wServer;
 
@@ -222,13 +230,37 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdDestination.right = new FormAttachment(100, 0);
         wDestination.setLayoutData(fdDestination);
 
+
+		// Destination Cc
+		wDestinationCc = new LabelTextVar(shell, Messages
+			.getString("JobMail.DestinationAddressCc.Label"), Messages
+			.getString("JobMail.DestinationAddressCc.Tooltip"));
+		wDestinationCc.addModifyListener(lsMod);
+		fdDestinationCc = new FormData();
+		fdDestinationCc.left = new FormAttachment(0, 0);
+		fdDestinationCc.top = new FormAttachment(wDestination, margin);
+		fdDestinationCc.right = new FormAttachment(100, 0);
+		wDestinationCc.setLayoutData(fdDestinationCc);
+
+		// Destination BCc
+		wDestinationBCc = new LabelTextVar(shell, Messages
+			.getString("JobMail.DestinationAddressBCc.Label"), Messages
+			.getString("JobMail.DestinationAddressBCc.Tooltip"));
+		wDestinationBCc.addModifyListener(lsMod);
+		fdDestinationBCc = new FormData();
+		fdDestinationBCc.left = new FormAttachment(0, 0);
+		fdDestinationBCc.top = new FormAttachment(wDestinationCc, margin);
+		fdDestinationBCc.right = new FormAttachment(100, 0);
+		wDestinationBCc.setLayoutData(fdDestinationBCc);
+
+
         // Server line
         wServer = new LabelTextVar(shell, Messages.getString("JobMail.SMTPServer.Label"), Messages
             .getString("JobMail.SMTPServer.Tooltip"));
         wServer.addModifyListener(lsMod);
         fdServer = new FormData();
         fdServer.left = new FormAttachment(0, 0);
-        fdServer.top = new FormAttachment(wDestination, margin);
+        fdServer.top = new FormAttachment(wDestinationBCc, margin);
         fdServer.right = new FormAttachment(100, 0);
         wServer.setLayoutData(fdServer);
 
@@ -544,6 +576,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wServer.addSelectionListener(lsDef);
         wSubject.addSelectionListener(lsDef);
         wDestination.addSelectionListener(lsDef);
+		wDestinationCc.addSelectionListener(lsDef);
+		wDestinationBCc.addSelectionListener(lsDef);
         wReply.addSelectionListener(lsDef);
         wPerson.addSelectionListener(lsDef);
         wPhone.addSelectionListener(lsDef);
@@ -603,6 +637,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             wName.setText(jobEntry.getName());
         if (jobEntry.getDestination() != null)
             wDestination.setText(jobEntry.getDestination());
+		if (jobEntry.getDestinationCc() != null)
+			wDestinationCc.setText(jobEntry.getDestinationCc());
+		if (jobEntry.getDestinationBCc() != null)
+			wDestinationBCc.setText(jobEntry.getDestinationBCc());
         if (jobEntry.getServer() != null)
             wServer.setText(jobEntry.getServer());
         if (jobEntry.getPort() != null)
@@ -656,6 +694,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
     {
         jobEntry.setName(wName.getText());
         jobEntry.setDestination(wDestination.getText());
+		jobEntry.setDestinationCc(wDestinationCc.getText());
+		jobEntry.setDestinationBCc(wDestinationBCc.getText());
         jobEntry.setServer(wServer.getText());
         jobEntry.setPort(wPort.getText());
         jobEntry.setReplyAddress(wReply.getText());
