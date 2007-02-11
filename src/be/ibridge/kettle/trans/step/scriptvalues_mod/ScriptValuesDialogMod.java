@@ -106,7 +106,6 @@ import de.proconis.StyledText.StyledTextComp;
 
 public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogInterface
 {
-	
 	private ModifyListener lsMod;
 	private SashForm     wSash;
 	private FormData     fdSash;
@@ -1585,7 +1584,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		lastItem [0] = item;
 	}
 	
-	// This Could be useful for further improvements
+	// This could be useful for further improvements
 	public static ScriptOrFnNode parseVariables(Context cx, Scriptable scope, String source, String sourceName, int lineno, Object securityDomain){
     	// Interpreter compiler = new Interpreter();
     	CompilerEnvirons evn = new CompilerEnvirons();
@@ -1599,4 +1598,3 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
     	return tree;
 	}
 }
-

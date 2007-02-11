@@ -69,7 +69,7 @@ public class ScriptValuesHelp {
 	}
 	
 	public String getSample(String strFunctionName, String strFunctionNameWithArgs){
-		String sRC="// Sorry, no Script availabel for "+ strFunctionNameWithArgs;
+		String sRC="// Sorry, no Script available for "+ strFunctionNameWithArgs;
 		
 		NodeList nl = dom.getElementsByTagName("jsFunction");
 		for(int i=0;i<nl.getLength();i++){
@@ -95,7 +95,5 @@ public class ScriptValuesHelp {
         {
             throw new KettleXMLException("Unable to read script values help file from file ["+strFileName+"]", e);
         }
-	}
-	
-	
+	}	
 }

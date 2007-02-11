@@ -62,10 +62,8 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  * Created on 2-jun-2003
  *
  */
-
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface
-{
-	
+{	
 	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	

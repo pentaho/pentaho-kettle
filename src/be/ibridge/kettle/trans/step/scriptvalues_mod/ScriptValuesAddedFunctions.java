@@ -81,8 +81,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	public static final int NUMERIC_FUNCTION = 1;
 	public static final int DATE_FUNCTION = 2;
 	public static final int LOGIC_FUNCTION = 3;
-	public static final int SPECIAL_FUNCTION = 4;
-	
+	public static final int SPECIAL_FUNCTION = 4;	
 		
 	public static  String[] jsFunctionList = {
         "appendToFile", "getTransformationName","writeToLog","getFiscalDate", "getProcessCount", 
@@ -1277,7 +1276,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	      InStream = new FileReader(FileName);
 	      actualContext.evaluateReader(eval_scope, InStream, FileName, 1, null);
 	    } catch (FileNotFoundException Signal) {
-	    	Context.reportError("unable to open file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
+	    	Context.reportError("Unable to open file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (WrappedException Signal) {
 	    	Context.reportError("WrappedException while evaluating file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (EvaluatorException Signal) {
@@ -1285,7 +1284,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    } catch (JavaScriptException Signal) {
 	    	Context.reportError("JavaScriptException while evaluating file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")");
 	    } catch (IOException Signal) {
-	    	Context.reportError("error while reading file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
+	    	Context.reportError("Error while reading file \"" + FileName + "\" (reason: \"" + Signal.getMessage() + "\")"	      );
 	    } finally {
 	      try {
 	        if (InStream != null) InStream.close();

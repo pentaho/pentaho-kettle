@@ -33,7 +33,6 @@ public class ScriptValuesAddClasses {
 	
 	// private String strJarFile;
 	
-	
 	public ScriptValuesAddClasses(Class addClass, Object addObject, String strJSName){
 		super();
 		this.addClass = addClass;
@@ -51,7 +50,5 @@ public class ScriptValuesAddClasses {
 	
 	public String getJSName(){
 		return this.strJSName;
-	}
-	
-	
+	}	
 }

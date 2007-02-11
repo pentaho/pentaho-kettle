@@ -57,7 +57,5 @@ public class ScriptValuesDataMod extends BaseStepData implements StepDataInterfa
 	
 	public void check(int i){
 		System.out.println(i);
-	}
-	
-
+	}	
 }

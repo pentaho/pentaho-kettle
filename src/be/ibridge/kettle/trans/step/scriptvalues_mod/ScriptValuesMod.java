@@ -25,7 +25,6 @@
  
 package be.ibridge.kettle.trans.step.scriptvalues_mod;
 
-
 import java.util.Date;
 
 import org.mozilla.javascript.Context;
@@ -45,7 +44,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-
 
 /**
  * Executes a javascript on the values in the input stream. 
@@ -256,7 +254,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					bWithTransStat = true;
 					if (log.isDetailed()) logDetailed(("tran_Status found. Checking transformation status while script execution.")); //$NON-NLS-1$ //$NON-NLS-2$
 				}else{
-					if (log.isDetailed()) logDetailed(("No tran_Status found. Transformation status checking not availabel.")); //$NON-NLS-1$ //$NON-NLS-2$
+					if (log.isDetailed()) logDetailed(("No tran_Status found. Transformation status checking not available.")); //$NON-NLS-1$ //$NON-NLS-2$
 					bWithTransStat = false;
 				}
 			}
@@ -512,4 +510,3 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		}
 	}
 }
-
