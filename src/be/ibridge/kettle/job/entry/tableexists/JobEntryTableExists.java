@@ -44,7 +44,6 @@ import be.ibridge.kettle.repository.Repository;
  * @since 05-11-2003
  *
  */
-
 public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String tablename;
@@ -77,12 +76,12 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("tablename",  tablename));
-		retval.append("      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
+		retval.append("      ").append(XMLHandler.addTagValue("tablename",  tablename));
+		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
 		return retval.toString();
 	}
@@ -99,7 +98,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load table exists job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'table exists' from XML node", e);
 		}
 	}
 
@@ -125,7 +124,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type table exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'table exists' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -141,7 +140,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type 'table exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to load job entry of type 'table exists' to the repository for id_job="+id_job, dbe);
 		}
 	}
 

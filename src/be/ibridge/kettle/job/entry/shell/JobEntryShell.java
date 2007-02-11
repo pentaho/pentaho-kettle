@@ -50,7 +50,6 @@ import be.ibridge.kettle.repository.Repository;
  * @since 01-10-2003, rewritten on 18-06-2004
  * 
  */
-
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
 	private String  filename;
@@ -91,24 +90,24 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("filename",          filename));
-		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      "+XMLHandler.addTagValue("exec_per_row",      execPerRow));
-		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
-		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
-		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
-		retval.append("      "+XMLHandler.addTagValue("add_date",          addDate));
-		retval.append("      "+XMLHandler.addTagValue("add_time",          addTime));
-		retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
+		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logfile",           logfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
+		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
+		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
+		retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
-			retval.append("      "+XMLHandler.addTagValue("argument"+i, arguments[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 
 		return retval.toString();
@@ -139,7 +138,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load shell job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'shell' from XML node", e);			
 		}
 	}
 	
@@ -174,7 +173,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type shell from the repository with id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'shell' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -208,7 +207,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Error save shell job entry attributes.", dbe);
+			throw new KettleException("Unable to save job entry of type 'shell' to the repository", dbe);
 		}
 	}
 	

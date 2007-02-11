@@ -121,7 +121,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load special job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'special' from XML node", e);
 		}
 	}
 
@@ -144,7 +144,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type special from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'special' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -169,7 +169,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type special to the repository with id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'special' to the repository with id_job="+id_job, dbe);
 		}
 	}
 

@@ -71,7 +71,6 @@ import be.ibridge.kettle.repository.Repository;
  * Created on 17-06-2003
  *
  */
-
 public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String server;
@@ -126,7 +125,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());
 
@@ -208,7 +207,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleException xe)
 		{
-			throw new KettleXMLException("Unable to load mail job entry from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'mail' from XML node", xe);			
 		}
 	}
 
@@ -255,7 +254,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type mail from the repository with id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'mail' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 
 	}
@@ -300,7 +299,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type mail to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'mail' to the repository for id_job="+id_job, dbe);
 		}
 			
 	}

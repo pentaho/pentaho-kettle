@@ -92,7 +92,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load evaluation job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'evaluation' from XML node", e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load evaluation job entry from the repository with id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'evaluation' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -124,7 +124,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save job entry of type transMeta to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'evaluation' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
@@ -251,5 +251,4 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryEvalDialog(shell,this);
     }
-
 }

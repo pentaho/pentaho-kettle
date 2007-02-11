@@ -113,29 +113,29 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 
         retval.append(super.getXML() );
 
-        retval.append("      " + XMLHandler.addTagValue("url", url));
-        retval.append("      " + XMLHandler.addTagValue("targetfilename", targetFilename));
-        retval.append("      " + XMLHandler.addTagValue("file_appended", fileAppended));
-        retval.append("      " + XMLHandler.addTagValue("date_time_added", dateTimeAdded));
-        retval.append("      " + XMLHandler.addTagValue("targetfilename_extention", targetFilenameExtention));
-        retval.append("      " + XMLHandler.addTagValue("uploadfilename", uploadFilename));
+        retval.append("      ").append(XMLHandler.addTagValue("url", url));
+        retval.append("      ").append(XMLHandler.addTagValue("targetfilename", targetFilename));
+        retval.append("      ").append(XMLHandler.addTagValue("file_appended", fileAppended));
+        retval.append("      ").append(XMLHandler.addTagValue("date_time_added", dateTimeAdded));
+        retval.append("      ").append(XMLHandler.addTagValue("targetfilename_extention", targetFilenameExtention));
+        retval.append("      ").append(XMLHandler.addTagValue("uploadfilename", uploadFilename));
 
-        retval.append("      " + XMLHandler.addTagValue("url_fieldname", urlFieldname));
-        retval.append("      " + XMLHandler.addTagValue("run_every_row", runForEveryRow));
+        retval.append("      ").append(XMLHandler.addTagValue("url_fieldname", urlFieldname));
+        retval.append("      ").append(XMLHandler.addTagValue("run_every_row", runForEveryRow));
 
-        retval.append("      " + XMLHandler.addTagValue("username", username));
+        retval.append("      ").append(XMLHandler.addTagValue("username", username));
         if (password != null && password.length() > 0)
         {
-            retval.append("      " + XMLHandler.addTagValue("password", "Encrypted: " + Encr.encryptPassword(password)));
+            retval.append("      ").append(XMLHandler.addTagValue("password", "Encrypted: " + Encr.encryptPassword(password)));
         }
 
-        retval.append("      " + XMLHandler.addTagValue("proxy_host", proxyHostname));
-        retval.append("      " + XMLHandler.addTagValue("proxy_port", proxyPort));
-        retval.append("      " + XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts));
+        retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHostname));
+        retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));
+        retval.append("      ").append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts));
 
         return retval.toString();
     }
@@ -169,7 +169,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
         catch (KettleXMLException xe)
         {
-            throw new KettleXMLException("Unable to load HTTP job entry from XML node", xe);
+            throw new KettleXMLException("Unable to load job entry of type 'HTTP' from XML node", xe);
         }
     }
 
@@ -205,7 +205,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
         catch (KettleException dbe)
         {
-            throw new KettleException("Unable to load job entry for type HTTP from the repository for id_jobentry=" + id_jobentry, dbe);
+            throw new KettleException("Unable to load job entry of type 'HTTP' from the repository for id_jobentry=" + id_jobentry, dbe);
         }
     }
 
@@ -238,7 +238,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         }
         catch (KettleDatabaseException dbe)
         {
-            throw new KettleException("unable to save jobentry of type HTTP to the repository for id_job=" + id_job, dbe);
+            throw new KettleException("Unable to load job entry of type 'HTTP' to the repository for id_job=" + id_job, dbe);
         }
     }
 

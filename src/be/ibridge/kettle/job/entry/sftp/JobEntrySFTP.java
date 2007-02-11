@@ -46,7 +46,6 @@ import be.ibridge.kettle.repository.Repository;
  * @since 05-11-2003
  *
  */
-
 public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String serverName;
@@ -85,7 +84,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
 		
@@ -117,7 +116,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load file exists job entry from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'SFTP' from XML node", xe);			
 		}
 	}
 
@@ -141,7 +140,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry for type file exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'SFTP' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -163,11 +162,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'SFTP' to the repository for id_job="+id_job, dbe);
 		}
 	}
-
-	
 	
 	/**
 	 * @return Returns the directory.

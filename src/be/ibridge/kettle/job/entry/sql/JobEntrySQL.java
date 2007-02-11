@@ -44,7 +44,6 @@ import be.ibridge.kettle.repository.Repository;
  * @since 05-11-2003
  *
  */
-
 public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String sql;
@@ -78,13 +77,13 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("sql",      sql));
-		retval.append("      "+XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
-		retval.append("      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
+		retval.append("      ").append(XMLHandler.addTagValue("sql",      sql));
+		retval.append("      ").append(XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
+		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
 		return retval.toString();
 	}
@@ -96,14 +95,14 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			super.loadXML(entrynode, databases);
 			sql           = XMLHandler.getTagValue(entrynode, "sql");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
-			String sSubs = XMLHandler.getTagValue(entrynode, "useVariableSubstitution");
+			String sSubs  = XMLHandler.getTagValue(entrynode, "useVariableSubstitution");
 			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
 				useVariableSubstitution = true;
 			connection    = Const.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load SQL job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'sql' from XML node", e);
 		}
 	}
 
@@ -131,7 +130,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to load job entry of type SQL to the repository with id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'sql' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -150,7 +149,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type SQL to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'sql' to the repository for id_job="+id_job, dbe);
 		}
 	}
 

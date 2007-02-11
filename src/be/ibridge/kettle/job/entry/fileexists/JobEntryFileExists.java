@@ -76,7 +76,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         StringBuffer retval = new StringBuffer();
 		
 		retval.append(super.getXML());		
-		retval.append("      "+XMLHandler.addTagValue("filename",   filename));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));
 		
 		return retval.toString();
 	}
@@ -91,7 +91,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load file exists job entry from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'file exists' from XML node", xe);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry for type file exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'file exists' exists from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'file exists' to the repository for id_job="+id_job, dbe);
 		}
 	}
 

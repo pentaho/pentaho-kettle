@@ -58,7 +58,6 @@ import be.ibridge.kettle.www.WebResult;
  * @since 1-10-2003, rewritten on 18-06-2004
  * 
  */
-
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
 	private String              transname;
@@ -175,37 +174,37 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("filename",          filename));
-		retval.append("      "+XMLHandler.addTagValue("transname",         transname));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
+		retval.append("      ").append(XMLHandler.addTagValue("transname",         transname));
         if (directory!=null)
         {
-            retval.append("      "+XMLHandler.addTagValue("directory",         directory.getPath()));
+            retval.append("      ").append(XMLHandler.addTagValue("directory",         directory.getPath()));
         }
         else
         if (directoryPath!=null)
         {
-            retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
+            retval.append("      ").append(XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
-		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      "+XMLHandler.addTagValue("exec_per_row",      execPerRow));
-        retval.append("      "+XMLHandler.addTagValue("clear_rows",        clearResultRows));
-        retval.append("      "+XMLHandler.addTagValue("clear_files",       clearResultFiles));
-		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
-		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
-		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
-		retval.append("      "+XMLHandler.addTagValue("add_date",          addDate));
-		retval.append("      "+XMLHandler.addTagValue("add_time",          addTime));
-        retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
-        retval.append("      "+XMLHandler.addTagValue("cluster",           clustering));
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
+        retval.append("      ").append(XMLHandler.addTagValue("clear_rows",        clearResultRows));
+        retval.append("      ").append(XMLHandler.addTagValue("clear_files",       clearResultFiles));
+		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logfile",           logfile));
+		retval.append("      ").append(XMLHandler.addTagValue("logext",            logext));
+		retval.append("      ").append(XMLHandler.addTagValue("add_date",          addDate));
+		retval.append("      ").append(XMLHandler.addTagValue("add_time",          addTime));
+        retval.append("      ").append(XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
+        retval.append("      ").append(XMLHandler.addTagValue("cluster",           clustering));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
-			retval.append("      "+XMLHandler.addTagValue("argument"+i, arguments[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 
 		return retval.toString();
@@ -248,7 +247,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load transformation job entry from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'trans' from XML node", e);
 		}
 	}
     
@@ -289,7 +288,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type transMeta from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'trans' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -329,7 +328,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save job entry of type transMeta to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'trans' to the repository for id_job="+id_job, dbe);
 		}
 	}
 	
