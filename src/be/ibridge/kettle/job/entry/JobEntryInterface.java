@@ -25,6 +25,8 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.job.entry.createfile.JobEntryCreateFile;
+import be.ibridge.kettle.job.entry.deletefile.JobEntryDeleteFile;
 import be.ibridge.kettle.job.entry.eval.JobEntryEval;
 import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
@@ -37,6 +39,7 @@ import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
+import be.ibridge.kettle.job.entry.waitforfile.JobEntryWaitForFile;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -63,6 +66,9 @@ public interface JobEntryInterface
 	public final static int TYPE_JOBENTRY_SPECIAL        = 10;
     public static final int TYPE_JOBENTRY_SFTP           = 11;
     public static final int TYPE_JOBENTRY_HTTP           = 12;
+    public static final int TYPE_JOBENTRY_CREATE_FILE    = 13;
+    public static final int TYPE_JOBENTRY_DELETE_FILE    = 14;
+    public static final int TYPE_JOBENTRY_WAIT_FOR_FILE  = 15;
 
 	public final static String typeCode[] =
 		{
@@ -78,7 +84,10 @@ public interface JobEntryInterface
             "EVAL",
             "SPECIAL",
             "SFTP",
-            "HTTP"
+            "HTTP",
+            "CREATE_FILE",
+            "DELETE_FILE",
+            "WAIT_FOR_FILE",
 		};
 
 	public final static String typeDesc[] =
@@ -95,7 +104,10 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.Evaluation.TypeDesc"),
             Messages.getString("JobEntry.Special.TypeDesc"),
             Messages.getString("JobEntry.SFTP.TypeDesc"),
-            Messages.getString("JobEntry.HTTP.TypeDesc")
+            Messages.getString("JobEntry.HTTP.TypeDesc"),
+            Messages.getString("JobEntry.CreateFile.TypeDesc"),
+            Messages.getString("JobEntry.DeleteFile.TypeDesc"),
+            Messages.getString("JobEntry.WaitForFile.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -113,6 +125,9 @@ public interface JobEntryInterface
             "",
             "SFT.png",
             "WEB.png",
+            "CFJ.png",
+            "DFJ.png",
+            "WFF.png"
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -129,7 +144,10 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.Evaluation.Tooltip"),
             Messages.getString("JobEntry.Special.Tooltip"),
             Messages.getString("JobEntry.SFTP.Tooltip"),
-            Messages.getString("JobEntry.HTTP.Tooltip")
+            Messages.getString("JobEntry.HTTP.Tooltip"),
+            Messages.getString("JobEntry.CreateFile.Tooltip"),
+            Messages.getString("JobEntry.DeleteFile.Tooltip"),
+            Messages.getString("JobEntry.WaitForFile.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -147,6 +165,9 @@ public interface JobEntryInterface
 	        JobEntrySpecial.class,
             JobEntrySFTP.class,
             JobEntryHTTP.class,
+            JobEntryCreateFile.class,
+            JobEntryDeleteFile.class,
+            JobEntryWaitForFile.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
@@ -200,4 +221,3 @@ public interface JobEntryInterface
      */
     public DatabaseMeta[] getUsedDatabaseConnections();
 }
-

@@ -201,18 +201,16 @@ public class JobEntryBase implements Cloneable
     {
         return getType()==JobEntryInterface.TYPE_JOBENTRY_HTTP;
     }
-
+    
+    // Add here for the new types?
+    
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-        //Tom modify these for performance
-//		retval.append("      "+XMLHandler.addTagValue("name",              getName()));
-		retval.append("      ").append(XMLHandler.addTagValue("name",              getName()));
-//		retval.append("      "+XMLHandler.addTagValue("description",       getDescription()));
-		retval.append("      ").append(XMLHandler.addTagValue("description",       getDescription()));
-//		retval.append("      "+XMLHandler.addTagValue("type",              getTypeDesc()));
+		retval.append("      ").append(XMLHandler.addTagValue("name",         getName()));
+		retval.append("      ").append(XMLHandler.addTagValue("description",  getDescription()));
         if (type!=JobEntryInterface.TYPE_JOBENTRY_NONE)
-            retval.append("      ").append(XMLHandler.addTagValue("type",              getTypeCode()));
+            retval.append("      ").append(XMLHandler.addTagValue("type",     getTypeCode()));
 	
 		return retval.toString();
 	}	
@@ -340,5 +338,4 @@ public class JobEntryBase implements Cloneable
     {
         return new DatabaseMeta[] {};
     }
-
 }
