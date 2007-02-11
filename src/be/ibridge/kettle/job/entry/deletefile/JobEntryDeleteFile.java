@@ -212,4 +212,9 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 	public void setFailIfFileNotExists(boolean failIfFileExists) {
 		this.failIfFileNotExists = failIfFileExists;
 	}
+	
+	public boolean evaluates()
+	{
+		return true;
+	}	
 }
