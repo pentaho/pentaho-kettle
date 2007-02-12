@@ -1635,6 +1635,12 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         if (undo == null) return 0;
         return undo.size();
     }
+    
+    public void clearUndo()
+    {
+        undo = new ArrayList();
+        undo_position = -1;
+    }
 
     public void addUndo(Object from[], Object to[], int pos[], Point prev[], Point curr[], int type_of_change, boolean nextAlso)
     {

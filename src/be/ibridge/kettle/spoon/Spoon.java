@@ -8329,11 +8329,13 @@ public class Spoon implements AddUndoPositionInterface
         int jex[] = new int[je.length];
         for (int i=0;i<je.length;i++) jex[i] = jobMeta.indexOfJobEntry(je[i]);
 
-        addUndoDelete(jobMeta, je, jex);
+        if (je.length>0) addUndoDelete(jobMeta, je, jex);
         for (int i=jex.length-1;i>=0;i--) jobMeta.removeJobEntry(jex[i]);
         
+        jobMeta.clearUndo();
+        setUndoMenu(jobMeta);
         refreshGraph();
-        refreshTree();
+        refreshTree();        
     }
 
     public void dupeJobEntry(JobMeta jobMeta, JobEntryCopy jobEntry)
