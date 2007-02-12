@@ -15,7 +15,6 @@
 
 package be.ibridge.kettle.job;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.VFS;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -2079,23 +2082,26 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
     {
         KettleVariables variables = KettleVariables.getInstance();
 
-        if (filename != null) // we have a finename that's defined.
+        if (filename!=null) // we have a finename that's defined.
         {
-            File file = new File(filename);
             try
             {
-                file = file.getCanonicalFile();
+                FileSystemManager fsManager = VFS.getManager();
+                FileObject fileObject = fsManager.resolveFile( filename );
+                FileName fileName = fileObject.getName();
+                
+                // The filename of the transformation
+                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
             }
-            catch (IOException e)
+            catch(IOException e)
             {
-                file = file.getAbsoluteFile();
+                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
+                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
             }
-
-            // The directory of the transformation
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, file.getParent());
-
-            // The filename of the transformation
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, file.getName());
         }
         else
         {
