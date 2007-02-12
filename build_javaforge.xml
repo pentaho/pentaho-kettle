@@ -30,6 +30,7 @@
 	  <property name="api"					location="${docs}/api/"/>
 	  <property name="tips"					location="${docs}/tips/"/>
 	  <property name="web"					location="web"/>
+	  <property name="pwd"					location="pwd"/>
 	  <property name="extra"        		location="extra"/>
 	  <property name="webstart"				location="webstart"/>
 	  <property name="keystore"				location="keystore"/>
