@@ -299,66 +299,23 @@ public class BaseStep extends Thread
 
     public int                           previewSize;
 
-    public long                          linesRead;                                                           // #
-                                                                                                                // lines
-                                                                                                                // read
-                                                                                                                // from
-                                                                                                                // previous
-                                                                                                                // step(s)
-
-    public long                          linesWritten;                                                        // #
-                                                                                                                // lines
-                                                                                                                // written
-                                                                                                                // to
-                                                                                                                // next
-                                                                                                                // step(s)
-
-    public long                          linesInput;                                                          // #
-                                                                                                                // lines
-                                                                                                                // read
-                                                                                                                // from
-                                                                                                                // file
-                                                                                                                // or
-                                                                                                                // database
-
-    public long                          linesOutput;                                                         // #
-                                                                                                                // lines
-                                                                                                                // written
-                                                                                                                // to
-                                                                                                                // file
-                                                                                                                // or
-                                                                                                                // database
-
-    public long                          linesUpdated;                                                        // #
-                                                                                                                // lines
-                                                                                                                // updated
-                                                                                                                // in
-                                                                                                                // database
-                                                                                                                // (dimension)
-
-    public long                          linesSkipped;                                                        // #
-                                                                                                                // lines
-                                                                                                                // passed
-                                                                                                                // without
-                                                                                                                // alteration
-                                                                                                                // (dimension)
-
-    private long                         nrGetSleeps;                                                         // #
-                                                                                                                // total
-                                                                                                                // get
-                                                                                                                // sleep
-                                                                                                                // time
-                                                                                                                // in
-                                                                                                                // nano-seconds
-
-    private long                         nrPutSleeps;                                                         // #
-                                                                                                                // total
-                                                                                                                // put
-                                                                                                                // sleep
-                                                                                                                // time
-                                                                                                                // in
-                                                                                                                // nano-seconds
-
+    /**  nr of lines read from previous step(s) */
+    public long                          linesRead;
+    /** nr of lines written to next step(s) */
+    public long                          linesWritten;
+    /** nr of lines read from file or database */
+    public long                          linesInput;
+    /** nr of lines written to file or database */
+    public long                          linesOutput;
+    /** nr of updates in a database table or file */
+    public long                          linesUpdated;
+    /** nr of lines skipped */
+    public long                          linesSkipped;
+    /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
+    private long                         nrGetSleeps;
+    /** total sleep time in ns cause by a full output buffer (next step is slow) */
+    private long                         nrPutSleeps;
+    
     private boolean                      distributed;
 
     private long                         errors;
@@ -371,28 +328,23 @@ public class BaseStep extends Thread
 
     public ArrayList                     thr;
 
+    /** The rowsets on the input, size() == nr of source steps */
     public List inputRowSets;
+    
+    /** the rowsets on the output, size() == nr of target steps */
     public List outputRowSets;
-
+    
     public boolean                       stopped;
 
     public boolean                       waiting;
 
     public boolean                       init;
 
-    private int                          stepcopy;                                                            // The
-                                                                                                                // copy
-                                                                                                                // number
-                                                                                                                // of
-                                                                                                                // THIS
-                                                                                                                // thread.
-
-    private int                          output_rowset_nr;                                                    // for
-                                                                                                                // fixed
-                                                                                                                // input
-                                                                                                                // channel:
-                                                                                                                // StreamLookup
-
+    /** the copy number of this thread */
+    private int                          stepcopy;
+    /** the output rowset nr, for fixed input channels like Stream Lookup */
+    private int                          output_rowset_nr;
+    
     private Date                         start_time, stop_time;
 
     public boolean                       first;
@@ -405,11 +357,9 @@ public class BaseStep extends Thread
 
     private StepDataInterface            stepDataInterface;
 
-    private List                         rowListeners;                                                        // List
-                                                                                                                // of
-                                                                                                                // RowListener
-                                                                                                                // interfaces
-
+    /** The list of RowListener interfaces */
+    private List                         rowListeners;
+    
     /**
      * Map of files that are generated or used by this step. After execution, these can be added to result.
      * The entry to the map is the filename
