@@ -61,5 +61,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/xdbjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/jsr173_api.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/sjsxp.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-vfs-1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

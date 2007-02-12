@@ -15,7 +15,6 @@
 
  
 package be.ibridge.kettle.chef;
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -60,6 +59,7 @@ import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
@@ -1440,9 +1440,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                 {
                     throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
                 }
-                File file = new File(exactFilename);
                 TransMeta launchTransMeta = null;
-                if (file.exists())
+                if (KettleVFS.fileExists(exactFilename))
                 {
                     launchTransMeta = new TransMeta( exactFilename ); 
                 }
@@ -1492,10 +1491,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                     throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
                 }
 
-                File file = new File(exactFilename);
-                
                 JobMeta newJobMeta;
-                if (file.exists())
+                if (KettleVFS.fileExists(exactFilename))
                 {
                     newJobMeta = new JobMeta(log, exactFilename, spoon.rep);
                 }

@@ -64,6 +64,7 @@ import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.reflection.StringSearcher;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -2408,7 +2409,18 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
       */
     public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
-        Document doc = XMLHandler.loadXMLFile(fname);
+        // OK, try to load using the VFS stuff...
+        String xml = null;
+        try
+        {
+            xml = KettleVFS.getFileContent(fname);
+        }
+        catch (IOException e)
+        {
+            throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname));
+        }
+        
+        Document doc = XMLHandler.loadXMLString(xml);
         if (doc != null)
         {
             // Clear the transformation

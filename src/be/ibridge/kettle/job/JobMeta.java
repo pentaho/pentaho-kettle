@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.reflection.StringSearcher;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
@@ -62,6 +63,7 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.trans.HasDatabasesInterface;
+import be.ibridge.kettle.trans.Messages;
 
 /**
  * Defines a Job and provides methods to load, save, verify, etc.
@@ -539,7 +541,9 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         this.log = log;
         try
         {
-            Document doc = XMLHandler.loadXMLFile(fname);
+            // OK, try to load using the VFS stuff...
+            String xml = KettleVFS.getFileContent(fname);
+            Document doc = XMLHandler.loadXMLString(xml);
             if (doc != null)
             {
                 // Clear the job
