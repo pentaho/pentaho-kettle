@@ -8,14 +8,37 @@ import java.security.ProtectionDomain;
 
 public class KettleURLClassLoader extends URLClassLoader
 {
+    private String name;
+    
     public KettleURLClassLoader(URL[] url, ClassLoader classLoader)
     {
         super(url, classLoader);
     }
     
+    public KettleURLClassLoader(URL[] url, ClassLoader classLoader, String name)
+    {
+        this(url, classLoader);
+        this.name = name;
+    }
+    
+    public String toString()
+    {
+        return super.toString()+" : "+name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
+    public String getName()
+    {
+        return name;
+    }
+    
     /*
-            Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke "defineClass", 
-            but you can call protected method in subclass without problems:
+        Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke "defineClass", 
+        but you can call protected method in subclass without problems:
     */
     public Class loadClass(String name, ProtectionDomain protectionDomain) 
     {
