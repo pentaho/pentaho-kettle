@@ -22,7 +22,7 @@
 	  <property name="plugins"        		location="plugins"/>
 	  <property name="homepage"        		location="homepage"/>
 	  <property name="samples"        		location="samples"/>
-	  <property name="libext"     			location="libext"/>
+	  <property name="libext"     	          	location="libext"/>
 	  <property name="testlibext"     		location="${test}/libext"/>
 	  <property name="libswt"     			location="libswt"/>
 	  <property name="distrib"				location="distrib"/>
@@ -71,6 +71,10 @@
 
 	    	<classpath id="cp-kettle">
 				<fileset dir="${libext}" 		includes="*.jar"/>
+				<fileset dir="${libext}/commons"	includes="*.jar"/>
+				<fileset dir="${libext}/JDBC" 		includes="*.jar"/>
+				<fileset dir="${libext}/web" 		includes="*.jar"/>
+				<fileset dir="${libext}/webservices"    includes="*.jar"/>
 				<fileset dir="${libswt}" 		includes="*.jar"/>
 				<fileset dir="${libswt}/win32/" includes="*.jar"/>
 		  		</classpath>
