@@ -335,7 +335,7 @@ public class StepLoader
                     URLClassLoader ucl = null;
                     if (sp.isSeparateClassloaderNeeded())
                     {
-                        ucl = new URLClassLoader(urls, classLoader);
+                        ucl = new KettleURLClassLoader(urls, classLoader, sp.getDescription());
                     }
                     else
                     {
@@ -343,7 +343,7 @@ public class StepLoader
                         ucl = (URLClassLoader) classLoaders.get(sp.getID()); 
                         if (ucl==null)
                         {
-                            ucl = new URLClassLoader(urls, classLoader);
+                            ucl = new KettleURLClassLoader(urls, classLoader, sp.getDescription());
                             classLoaders.put(sp.getID(), ucl); // save for later use...
                         }
                     }
