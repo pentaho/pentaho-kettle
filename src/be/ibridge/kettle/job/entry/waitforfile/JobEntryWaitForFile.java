@@ -205,7 +205,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 
 			if ( iMaximumTimeout == 0 )
 			{
-			    log.logBasic(toString(), "Waiting infinitely for file [" +
+			    log.logBasic(toString(), "Waiting indefinitely for file [" +
 			                 realFilename + "]");
 			}
 			else 
@@ -215,13 +215,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 			}
 
 			boolean continueLoop = true;
-			while ( continueLoop )
+			while ( continueLoop && !parentJob.isStopped() )
 			{
-				if ( parentJob.isStopped() )
-				{					
-					result.setResult( false );
-					continueLoop = false;
-				}
 				if ( file.exists() )
 				{
 					// file exists, we're happy to exit
