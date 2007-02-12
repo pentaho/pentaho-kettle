@@ -8,7 +8,7 @@
 
 	  <!-- system properties to use -->
 	  <property name="cr" value="${line.separator}"/> 
-	  <property name="version" value="2.4.0"/>      
+	  <property name="version" value="2.4.1-M1"/>      
 		
 	  <!-- set global properties for this build -->
 	
