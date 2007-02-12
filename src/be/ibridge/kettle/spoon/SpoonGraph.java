@@ -266,6 +266,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 
                 last_button = e.button;
                 Point real = screen2real(e.x, e.y);
+                lastclick = new Point(real.x, real.y);
 
                 // Clear the tooltip!
                 setToolTipText(null);
@@ -311,7 +312,6 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                         if (!control) selrect = new Rectangle(real.x, real.y, 0, 0);
                     }
                 }
-                lastclick = new Point(real.x, real.y);
                 redraw();
             }
 
