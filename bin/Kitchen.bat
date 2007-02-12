@@ -35,6 +35,11 @@ REM The following command would only add the last jar: FOR %%F IN (libext\*.jar)
 REM So the circumvention with a subroutine solves this ;-)
 
 FOR %%F IN (libext\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
+
 goto extlibe
 
 :addcp

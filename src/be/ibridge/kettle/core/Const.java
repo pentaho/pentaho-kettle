@@ -2099,4 +2099,9 @@ public class Const
         }
         return STRING_JOB_FILTER_NAMES;
     }
+    
+    public static long nanoTime()
+    {
+        return new Date().getTime()*1000;
+    }
 }

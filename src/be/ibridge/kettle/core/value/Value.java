@@ -497,6 +497,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else value.setBoolean(bool);
 		setNull(false);
 	}
+    
+    public void setValue(Boolean b)
+    {
+        setValue(b.booleanValue());
+    }
+
 
 	/**
 	 * Sets the Value to a long integer
@@ -3761,4 +3767,5 @@ public class Value implements Cloneable, XMLInterface, Serializable
     {
         this.value = valueInterface;
     }
+
 }

@@ -92,7 +92,7 @@ public class ConditionEditor extends Composite
 	private   Shell     shell;
 	private   Display   display;
 	private   Condition active_condition;
-	private   Props     props;
+	// private   Props     props;
 	private   Color     bg, white, black, red, green, blue, gray;
 	private   Font      fixed;
 
@@ -135,7 +135,7 @@ public class ConditionEditor extends Composite
 		widget = this;
 		
 		this.active_condition = co;
-		this.props            = pr;
+		// this.props            = pr;
 		this.fields           = input_fields;
 
 		imageAdd = new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));

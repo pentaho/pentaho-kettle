@@ -28,6 +28,11 @@ REM The following command would only add the last jar: FOR %%F IN (libext\*.jar)
 REM So the circumvention with a subroutine solves this ;-)
 
 FOR %%F IN (libext\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
+
 goto extlibe
 
 :addcp
@@ -44,7 +49,7 @@ set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
-REM ** Change 128m to higher values in case you run out of memory.  **
+REM ** Change 512m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
 set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%"

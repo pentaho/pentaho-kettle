@@ -240,7 +240,23 @@
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
 	  		<copy todir="${distrib}/libext">
-	  			<fileset dir="${libext}" includes="*.jar" excludes="**/.vpn"/>
+	  			<fileset dir="${libext}" includes="*.jar *.zip" excludes="**/.vpn"/>
+	  			</copy>
+	  		<mkdir dir="${distrib}/libext/JDBC"/>
+	  		<copy todir="${distrib}/libext/JDBC">
+	  			<fileset dir="${libext}/JDBC" includes="*.jar *.zip" excludes="**/.vpn"/>
+	  			</copy>
+	  		<mkdir dir="${distrib}/libext/commons"/>
+	  		<copy todir="${distrib}/libext/commons">
+	  			<fileset dir="${libext}/commons" includes="*.jar *.zip" excludes="**/.vpn"/>
+	  			</copy>
+	  		<mkdir dir="${distrib}/libext/webservices"/>
+	  		<copy todir="${distrib}/libext/webservices">
+	  			<fileset dir="${libext}/webservices" includes="*.jar *.zip" excludes="**/.vpn"/>
+	  			</copy>
+	  		<mkdir dir="${distrib}/libext/web"/>
+	  		<copy todir="${distrib}/libext/web">
+	  			<fileset dir="${libext}/web" includes="*.jar *.zip" excludes="**/.vpn"/>
 	  			</copy>
 
 	        <!-- swt libs (jdbc etc) -->
@@ -261,6 +277,14 @@
 	  			<fileset dir="${docs}" 
 	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css"
 	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
+	  			</copy>
+
+	        <!-- pwd -->
+	  		<mkdir dir="${distrib}/pwd"/>
+	  		<copy todir="${distrib}/pwd">
+	  			<fileset dir="${pwd}" 
+	  				     includes="**/*.pwd"
+	  			         excludes="**/*.vpn" />
 	  			</copy>
 
 	        <!-- samples -->
