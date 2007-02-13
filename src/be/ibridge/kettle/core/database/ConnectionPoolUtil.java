@@ -106,7 +106,7 @@ public class ConnectionPoolUtil
         // Get the list of pool properties
         Properties originalProperties = databaseMeta.getConnectionPoolingProperties();
         //Add user/pass
-        originalProperties.setProperty("username", Const.NVL(userName, ""));
+        originalProperties.setProperty("user",     Const.NVL(userName, ""));
         originalProperties.setProperty("password", Const.NVL(password, ""));
         
         // Now, replace the environment variables in there...

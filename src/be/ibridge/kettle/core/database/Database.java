@@ -264,8 +264,7 @@ public class Database
                 } 
                 catch (Exception e)
                 {
-                    throw new KettleDatabaseException(
-                            "Error occured while trying to connect to the database", e);
+                    throw new KettleDatabaseException("Error occured while trying to connect to the database", e);
                 }
             }
             else
