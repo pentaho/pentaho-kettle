@@ -1374,9 +1374,40 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      */
     public Row getStepFields(StepMeta stepMeta, IProgressMonitor monitor) throws KettleStepException
     {
+        return getStepFields(stepMeta, null, monitor);
+    }
+    
+    /**
+     * Returns the fields that are emitted by a certain step
+     *
+     * @param stepMeta The step to be queried.
+     * @param targetStep the target step 
+     * @param monitor The progress monitor for progress dialog. (null if not used!)
+     * @return A row containing the fields emitted.
+     */
+    public Row getStepFields(StepMeta stepMeta, StepMeta targetStep, IProgressMonitor monitor) throws KettleStepException
+    {
+        
         Row row = new Row();
 
         if (stepMeta == null) return row;
+
+        // See if the step is sending ERROR rows to the specified target step.
+        //
+        if (targetStep!=null && stepMeta.isSendingErrorRowsToStep(targetStep))
+        {
+            // The error rows are the same as the input rows for 
+            // the step but with the selected error fields added
+            //
+            row = getPrevStepFields(stepMeta);
+            
+            // Add to this the error fields...
+            StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+            row.addRow(stepErrorMeta.getErrorFields());
+            return row;
+        }
+        
+        // Resume the regular program...
 
         log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
@@ -1388,7 +1419,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
-            Row add = getStepFields(prevStepMeta, monitor);
+            Row add = getStepFields(prevStepMeta, stepMeta, monitor);
             if (add == null) add = new Row();
             log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd") + add.toString()); //$NON-NLS-1$
             if (i == 0)
@@ -1457,8 +1488,9 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             {
                 monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
             }
-
-            Row add = getStepFields(prevStepMeta, monitor);
+            
+            Row add = getStepFields(prevStepMeta, stepMeta, monitor);
+            
             log.logDebug(toString(), Messages.getString("TransMeta.Log.FoundFieldsToAdd2") + add.toString()); //$NON-NLS-1$
             if (i == 0) // we expect all input streams to be of the same layout!
             {

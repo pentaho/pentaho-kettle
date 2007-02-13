@@ -973,30 +973,9 @@ public class BaseStep extends Thread
     
     public synchronized void putError(Row row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
-        if (errorRowSet==null) return; // nothing to do here ;-)
-        
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-        if (!Const.isEmpty(stepErrorMeta.getNrErrorsValuename()))
-        {
-            Value v = new Value(stepErrorMeta.getNrErrorsValuename(), nrErrors);
-            v.setLength(3);
-            row.addValue(v);
-        }
-        if (!Const.isEmpty(stepErrorMeta.getErrorDescriptionsValuename()))
-        {
-            Value v = new Value(stepErrorMeta.getErrorDescriptionsValuename(), errorDescriptions);
-            row.addValue(v);
-        }
-        if (!Const.isEmpty(stepErrorMeta.getErrorFieldsValuename()))
-        {
-            Value v = new Value(stepErrorMeta.getErrorFieldsValuename(), fieldNames);
-            row.addValue(v);
-        }
-        if (!Const.isEmpty(stepErrorMeta.getErrorCodesValuename()))
-        {
-            Value v = new Value(stepErrorMeta.getErrorCodesValuename(), errorCodes);
-            row.addValue(v);
-        }
+        Row add = stepErrorMeta.getErrorFields(nrErrors, errorDescriptions, fieldNames, errorCodes);
+        row.addRow(add);
         
         // call all rowlisteners...
         for (int i = 0; i < rowListeners.size(); i++)
@@ -1005,7 +984,7 @@ public class BaseStep extends Thread
             rowListener.errorRowWrittenEvent(row);
         }
 
-        errorRowSet.putRow(row);
+        if (errorRowSet!=null) errorRowSet.putRow(row);
     }
     
 

@@ -6,8 +6,10 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.value.Value;
 
 /**
  * This class contains the metadata to handle proper error handling on a step level.
@@ -232,5 +234,38 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    public Row getErrorFields()
+    {
+        return getErrorFields(0L, null, null, null);
+    }
+    
+    public Row getErrorFields(long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    {
+        Row row = new Row();
+        if (!Const.isEmpty(getNrErrorsValuename()))
+        {
+            Value v = new Value(getNrErrorsValuename(), nrErrors);
+            v.setLength(3);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(getErrorDescriptionsValuename()))
+        {
+            Value v = new Value(getErrorDescriptionsValuename(), errorDescriptions);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(getErrorFieldsValuename()))
+        {
+            Value v = new Value(getErrorFieldsValuename(), fieldNames);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(getErrorCodesValuename()))
+        {
+            Value v = new Value(getErrorCodesValuename(), errorCodes);
+            row.addValue(v);
+        }
+        
+        return row;
     }
 }
