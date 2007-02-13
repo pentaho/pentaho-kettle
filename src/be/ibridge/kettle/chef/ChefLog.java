@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -464,7 +465,7 @@ public class ChefLog extends Composite implements TabItemInterface
     public void readLog()
 	{
 		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
-		try		
+		try
 		{
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
             String line;
@@ -485,7 +486,17 @@ public class ChefLog extends Composite implements TabItemInterface
 			wText.setSelection(wText.getText().length());
 			wText.clearSelection();
 			wText.insert(message.toString());
-		} 
+            
+            int maxLines = Props.getInstance().getMaxNrLinesInLog();
+            if (maxLines>0 && wText.getLineCount()>maxLines)
+            {
+                // OK, remove the extra amount of character + 20 from 
+                // Remove the oldest ones.
+                StringBuffer buffer = new StringBuffer(wText.getText());
+                buffer.delete(0, message.length()+20);
+                wText.setText(buffer.toString());
+            }
+		}
 	}
 	
 

@@ -469,6 +469,9 @@ public class Const
     /** The step copy nr */
     public static final String INTERNAL_VARIABLE_STEP_COPYNR = INTERNAL_VARIABLE_PREFIX+".Step.CopyNr";
 
+    /** The default maximum for the nr of lines in the GUI logs */
+    public static final int MAX_NR_LOG_LINES = 5000;
+
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding

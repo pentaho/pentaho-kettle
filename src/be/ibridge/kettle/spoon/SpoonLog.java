@@ -678,9 +678,17 @@ public class SpoonLog extends Composite implements TabItemInterface
 			wText.setSelection(mess.length());
 			wText.clearSelection();
 			wText.insert(message.toString());
-			mess = wText.getText();
+            
+            int maxLines = Props.getInstance().getMaxNrLinesInLog();
+            if (maxLines>0 && wText.getLineCount()>maxLines)
+            {
+                // OK, remove the extra amount of character + 20 from 
+                // Remove the oldest ones.
+                StringBuffer buffer = new StringBuffer(mess);
+                buffer.delete(0, message.length()+20);
+                wText.setText(buffer.toString());
+            }
 		}
-
 	}
 
 	private boolean refresh_busy;

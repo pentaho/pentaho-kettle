@@ -94,128 +94,101 @@ public class EnterOptionsDialog extends Dialog
 	private Label        wlFFont;
 	private Canvas       wFFont;
 	private Button       wbFFont, wdFFont;
-    private FormData     fdlFFont, fdbFFont, fddFFont, fdFFont;
 
 	private Label        wlGFont;
 	private Canvas       wGFont;
 	private Button       wbGFont, wdGFont;
-	private FormData     fdlGFont, fdbGFont, fddGFont, fdGFont;
 
 	private Label        wlNFont;
 	private Canvas       wNFont;
 	private Button       wbNFont, wdNFont;
-	private FormData     fdlNFont, fdbNFont, fddNFont, fdNFont;
 
 	private Label        wlBGColor;
 	private Canvas       wBGColor;
 	private Button       wbBGColor, wdBGcolor;
-	private FormData     fdlBGColor, fdbBGColor, fddBGColor, fdBGColor;
 
 	private Label        wlGrColor;
 	private Canvas       wGrColor;
 	private Button       wbGrColor, wdGrColor;
-	private FormData     fdlGrColor, fdbGrColor, fddGrColor, fdGrColor;
 
 	private Label        wlTabColor;
 	private Canvas       wTabColor;
 	private Button       wbTabColor, wdTabColor;
-	private FormData     fdlTabColor, fdbTabColor, fddTabColor, fdTabColor;
 
 	private Label        wlIconsize;
 	private Text         wIconsize;
-	private FormData     fdlIconsize, fdIconsize;
 
 	private Label        wlLineWidth;
 	private Text         wLineWidth;
-	private FormData     fdlLineWidth, fdLineWidth;
 
 	private Label        wlShadowSize;
 	private Text         wShadowSize;
-	private FormData     fdlShadowSize, fdShadowSize;
 		
 	private Label        wlMaxUndo;
 	private Text         wMaxUndo;
-	private FormData     fdlMaxUndo, fdMaxUndo;
 
     private Label        wlDefaultPreview;
     private Text         wDefaultPreview;
-    private FormData     fdlDefaultPreview, fdDefaultPreview;
+
+    private Label        wlMaxNrLogLines;
+    private Text         wMaxNrLogLines;
 
 	private Label        wlMiddlePct;
 	private Text         wMiddlePct;
-	private FormData     fdlMiddlePct, fdMiddlePct;
     
     private Label        wlAntiAlias;
     private Button       wAntiAlias;
-    private FormData     fdlAntiAlias, fdAntiAlias;
 
     private Label        wlOriginalLook;
     private Button       wOriginalLook;
-    private FormData     fdlOriginalLook, fdOriginalLook;
 
 	private Label        wlShowTips;
 	private Button       wShowTips;
-	private FormData     fdlShowTips, fdShowTips;
 
     private Label        wlShowWelcome;
     private Button       wShowWelcome;
-    private FormData     fdlShowWelcome, fdShowWelcome;
 
 	private Label        wlUseCache;
 	private Button       wUseCache;
-	private FormData     fdlUseCache, fdUseCache;
 
 	private Label        wlOpenLast;
 	private Button       wOpenLast;
-	private FormData     fdlOpenLast, fdOpenLast;
 		
 	private Label        wlAutoSave;
 	private Button       wAutoSave;
-	private FormData     fdlAutoSave, fdAutoSave;
 
     private Label        wlDBConnXML;
     private Button       wDBConnXML;
-    private FormData     fdlDBConnXML, fdDBConnXML;
 
     private Label        wlAskReplaceDB;
     private Button       wAskReplaceDB;
-    private FormData     fdlAskReplaceDB, fdAskReplaceDB;
 
     private Label        wlReplaceDB;
     private Button       wReplaceDB;
-    private FormData     fdlReplaceDB, fdReplaceDB;
 
 	private Label        wlSaveConf;
 	private Button       wSaveConf;
-	private FormData     fdlSaveConf, fdSaveConf;
 
 	private Label        wlAutoSplit;
 	private Button       wAutoSplit;
-	private FormData     fdlAutoSplit, fdAutoSplit;
     
     private Label        wlCopyDistrib;
     private Button       wCopyDistrib;
-    private FormData     fdlCopyDistrib, fdCopyDistrib;
 
     private Label        wlShowRep;
     private Button       wShowRep;
-    private FormData     fdlShowRep, fdShowRep;
 
     private Label        wlExitWarning;
     private Button       wExitWarning;
-    private FormData     fdlExitWarning, fdExitWarning;
 
     private Label        wlClearCustom;
     private Button       wClearCustom;
-    private FormData     fdlClearCustom, fdClearCustom;
 
     private Label        wlDefaultLocale;
     private Combo        wDefaultLocale;
-    private FormData     fdlDefaultLocale, fdDefaultLocale;
 
     private Label        wlFailoverLocale;
     private Combo        wFailoverLocale;
-    private FormData     fdlFailoverLocale, fdFailoverLocale;
 
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
@@ -347,7 +320,7 @@ public class EnterOptionsDialog extends Dialog
         wlFFont=new Label(wLookComp, SWT.RIGHT);
         wlFFont.setText(Messages.getString("EnterOptionsDialog.FixedWidthFont.Label"));
         props.setLook(wlFFont);
-        fdlFFont=new FormData();
+        FormData fdlFFont = new FormData();
         fdlFFont.left  = new FormAttachment(0, 0);
         fdlFFont.right = new FormAttachment(middle, -margin);
         fdlFFont.top   = new FormAttachment(0, nr*h + margin+10);
@@ -356,7 +329,7 @@ public class EnterOptionsDialog extends Dialog
         wdFFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wdFFont);
 
-        fddFFont = layoutResetOptionButton(wdFFont);
+        FormData fddFFont = layoutResetOptionButton(wdFFont);
         fddFFont.right= new FormAttachment(100, 0);
         fddFFont.top  = new FormAttachment(0, nr*h + margin);
         fddFFont.bottom  = new FormAttachment(0, (nr+1)*h + margin);
@@ -376,7 +349,7 @@ public class EnterOptionsDialog extends Dialog
         wbFFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbFFont);
 
-        fdbFFont = layoutEditOptionButton(wbFFont);
+        FormData fdbFFont = layoutEditOptionButton(wbFFont);
         fdbFFont.right= new FormAttachment(wdFFont, -margin);
         fdbFFont.top  = new FormAttachment(0, nr*h + margin);
         fdbFFont.bottom  = new FormAttachment(0, (nr+1)*h + margin);
@@ -401,7 +374,7 @@ public class EnterOptionsDialog extends Dialog
 
         wFFont = new Canvas(wLookComp, SWT.BORDER );
         props.setLook(wFFont);
-        fdFFont=new FormData();
+        FormData fdFFont = new FormData();
         fdFFont.left   = new FormAttachment(middle, 0);
         fdFFont.right  = new FormAttachment(wbFFont, -margin);
         fdFFont.top    = new FormAttachment(0, margin);
@@ -426,7 +399,7 @@ public class EnterOptionsDialog extends Dialog
         wlGFont=new Label(wLookComp, SWT.RIGHT);
         wlGFont.setText(Messages.getString("EnterOptionsDialog.GraphFont.Label"));
         props.setLook(wlGFont);
-        fdlGFont=new FormData();
+        FormData fdlGFont = new FormData();
         fdlGFont.left  = new FormAttachment(0, 0);
         fdlGFont.right = new FormAttachment(middle, -margin);
         fdlGFont.top   = new FormAttachment(0, nr*h+margin+10);
@@ -435,7 +408,7 @@ public class EnterOptionsDialog extends Dialog
         wdGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wdGFont);
 
-        fddGFont=layoutResetOptionButton(wdGFont);
+        FormData fddGFont = layoutResetOptionButton(wdGFont);
         fddGFont.right= new FormAttachment(100, 0);
         fddGFont.top  = new FormAttachment(0, nr*h+margin);
         fddGFont.bottom = new FormAttachment(0, (nr+1)*h+margin);
@@ -456,7 +429,7 @@ public class EnterOptionsDialog extends Dialog
         wbGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbGFont);
 
-        fdbGFont=layoutEditOptionButton(wbGFont);
+        FormData fdbGFont = layoutEditOptionButton(wbGFont);
         fdbGFont.right= new FormAttachment(wdGFont, -margin);
         fdbGFont.top  = new FormAttachment(0, nr*h+margin);
         fdbGFont.bottom = new FormAttachment(0, (nr+1)*h+margin);
@@ -481,7 +454,7 @@ public class EnterOptionsDialog extends Dialog
 
         wGFont = new Canvas(wLookComp, SWT.BORDER );
         props.setLook(wGFont);
-        fdGFont=new FormData();
+        FormData fdGFont = new FormData();
         fdGFont.left   = new FormAttachment(middle, 0);
         fdGFont.right  = new FormAttachment(wbGFont, -margin);
         fdGFont.top    = new FormAttachment(0, nr*h+margin);
@@ -508,7 +481,7 @@ public class EnterOptionsDialog extends Dialog
         wlNFont = new Label(wLookComp, SWT.RIGHT);
         wlNFont.setText(Messages.getString("EnterOptionsDialog.NoteFont.Label"));
         props.setLook(wlNFont);
-        fdlNFont = new FormData();
+        FormData fdlNFont = new FormData();
         fdlNFont.left  = new FormAttachment(0, 0);
         fdlNFont.right = new FormAttachment(middle, -margin);
         fdlNFont.top   = new FormAttachment(0, nr*h + margin + 10);
@@ -517,7 +490,7 @@ public class EnterOptionsDialog extends Dialog
         wdNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wdNFont);
 
-        fddNFont = layoutResetOptionButton(wdNFont);
+        FormData fddNFont = layoutResetOptionButton(wdNFont);
         fddNFont.right = new FormAttachment(100, 0);
         fddNFont.top = new FormAttachment(0, nr*h + margin);
         fddNFont.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -537,7 +510,7 @@ public class EnterOptionsDialog extends Dialog
         wbNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbNFont);
 
-        fdbNFont = layoutEditOptionButton(wbNFont);
+        FormData fdbNFont = layoutEditOptionButton(wbNFont);
         fdbNFont.right = new FormAttachment(wdNFont, -margin);
         fdbNFont.top = new FormAttachment(0, nr*h + margin);
         fdbNFont.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -562,7 +535,7 @@ public class EnterOptionsDialog extends Dialog
 
         wNFont = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wNFont);
-        fdNFont = new FormData();
+        FormData fdNFont = new FormData();
         fdNFont.left = new FormAttachment(middle, 0);
         fdNFont.right = new FormAttachment(wbNFont, -margin);
         fdNFont.top    = new FormAttachment(0, nr*h + margin);
@@ -588,7 +561,7 @@ public class EnterOptionsDialog extends Dialog
         wlBGColor = new Label(wLookComp, SWT.RIGHT);
         wlBGColor.setText(Messages.getString("EnterOptionsDialog.BackgroundColor.Label"));
         props.setLook(wlBGColor);
-        fdlBGColor = new FormData();
+        FormData fdlBGColor = new FormData();
         fdlBGColor.left = new FormAttachment(0, 0);
         fdlBGColor.right = new FormAttachment(middle, -margin);
         fdlBGColor.top = new FormAttachment(0, nr*h + margin + 10);
@@ -597,7 +570,7 @@ public class EnterOptionsDialog extends Dialog
         wdBGcolor = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wdBGcolor);
 
-        fddBGColor = layoutResetOptionButton(wdBGcolor);
+        FormData fddBGColor = layoutResetOptionButton(wdBGcolor);
         fddBGColor.right = new FormAttachment(100, 0);  // to the right of the dialog
         fddBGColor.top = new FormAttachment(0, nr*h + margin);
         fddBGColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -619,7 +592,7 @@ public class EnterOptionsDialog extends Dialog
         wbBGColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbBGColor);
 
-        fdbBGColor = layoutEditOptionButton(wbBGColor);
+        FormData fdbBGColor = layoutEditOptionButton(wbBGColor);
         fdbBGColor.right = new FormAttachment(wdBGcolor, -margin); // to the left of the "default" button
         fdbBGColor.top = new FormAttachment(0, nr*h + margin);
         fdbBGColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -646,7 +619,7 @@ public class EnterOptionsDialog extends Dialog
         wBGColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wBGColor);
         wBGColor.setBackground(background);
-        fdBGColor = new FormData();
+        FormData fdBGColor = new FormData();
         fdBGColor.left = new FormAttachment(middle, 0);
         fdBGColor.right = new FormAttachment(wbBGColor, -margin);
         fdBGColor.top    = new FormAttachment(0, nr*h + margin);
@@ -658,7 +631,7 @@ public class EnterOptionsDialog extends Dialog
         wlGrColor = new Label(wLookComp, SWT.RIGHT);
         wlGrColor.setText(Messages.getString("EnterOptionsDialog.BackgroundColorGraph.Label"));
         props.setLook(wlGrColor);
-        fdlGrColor = new FormData();
+        FormData fdlGrColor = new FormData();
         fdlGrColor.left = new FormAttachment(0, 0);
         fdlGrColor.right = new FormAttachment(middle, -margin);
         fdlGrColor.top = new FormAttachment(0, nr*h + margin + 10);
@@ -667,7 +640,7 @@ public class EnterOptionsDialog extends Dialog
         wdGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wdGrColor);
 
-        fddGrColor = layoutResetOptionButton(wdGrColor);
+        FormData fddGrColor = layoutResetOptionButton(wdGrColor);
         fddGrColor.right = new FormAttachment(100, 0);
         fddGrColor.top = new FormAttachment(0, nr*h + margin);
         fddGrColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -689,7 +662,7 @@ public class EnterOptionsDialog extends Dialog
         wbGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbGrColor);
 
-        fdbGrColor = layoutEditOptionButton(wbGrColor);
+        FormData fdbGrColor = layoutEditOptionButton(wbGrColor);
         fdbGrColor.right = new FormAttachment(wdGrColor, -margin);
         fdbGrColor.top = new FormAttachment(0, nr*h + margin);
         fdbGrColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -716,7 +689,7 @@ public class EnterOptionsDialog extends Dialog
         wGrColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wGrColor);
         wGrColor.setBackground(graphColor);
-        fdGrColor = new FormData();
+        FormData fdGrColor = new FormData();
         fdGrColor.left = new FormAttachment(middle, 0);
         fdGrColor.right = new FormAttachment(wbGrColor, -margin);
         fdGrColor.top    = new FormAttachment(0, nr*h + margin);
@@ -728,7 +701,7 @@ public class EnterOptionsDialog extends Dialog
         wlTabColor = new Label(wLookComp, SWT.RIGHT);
         wlTabColor.setText(Messages.getString("EnterOptionsDialog.TabColor.Label"));
         props.setLook(wlTabColor);
-        fdlTabColor = new FormData();
+        FormData fdlTabColor = new FormData();
         fdlTabColor.left = new FormAttachment(0, 0);
         fdlTabColor.right = new FormAttachment(middle, -margin);
         fdlTabColor.top = new FormAttachment(0, nr*h + margin + 10);
@@ -737,7 +710,7 @@ public class EnterOptionsDialog extends Dialog
         wdTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         props.setLook(wdTabColor);
 
-        fddTabColor = layoutResetOptionButton(wdTabColor);
+        FormData fddTabColor = layoutResetOptionButton(wdTabColor);
         fddTabColor.right = new FormAttachment(100, 0);
         fddTabColor.top = new FormAttachment(0, nr*h + margin);
         fddTabColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -759,7 +732,7 @@ public class EnterOptionsDialog extends Dialog
         wbTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wbTabColor);
 
-        fdbTabColor = layoutEditOptionButton(wbTabColor);
+        FormData fdbTabColor = layoutEditOptionButton(wbTabColor);
         fdbTabColor.right = new FormAttachment(wdTabColor, -margin);
         fdbTabColor.top = new FormAttachment(0, nr*h + margin);
         fdbTabColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
@@ -786,7 +759,7 @@ public class EnterOptionsDialog extends Dialog
         wTabColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wTabColor);
         wTabColor.setBackground(tabColor);
-        fdTabColor = new FormData();
+        FormData fdTabColor = new FormData();
         fdTabColor.left = new FormAttachment(middle, 0);
         fdTabColor.right = new FormAttachment(wbTabColor, -margin);
         fdTabColor.top    = new FormAttachment(0, nr*h + margin);
@@ -797,7 +770,7 @@ public class EnterOptionsDialog extends Dialog
         wlIconsize=new Label(wLookComp, SWT.RIGHT);
         wlIconsize.setText(Messages.getString("EnterOptionsDialog.IconSize.Label"));
         props.setLook(wlIconsize);
-        fdlIconsize=new FormData();
+        FormData fdlIconsize = new FormData();
         fdlIconsize.left = new FormAttachment(0, 0);
         fdlIconsize.right= new FormAttachment(middle, -margin);
         fdlIconsize.top  = new FormAttachment(wTabColor, margin);
@@ -805,7 +778,7 @@ public class EnterOptionsDialog extends Dialog
         wIconsize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wIconsize.setText(Integer.toString(props.getIconSize()));
         props.setLook(wIconsize);
-        fdIconsize=new FormData();
+        FormData fdIconsize = new FormData();
         fdIconsize.left = new FormAttachment(middle, 0);
         fdIconsize.right= new FormAttachment(100, -margin);
         fdIconsize.top  = new FormAttachment(wTabColor, margin);
@@ -815,7 +788,7 @@ public class EnterOptionsDialog extends Dialog
         wlLineWidth=new Label(wLookComp, SWT.RIGHT);
         wlLineWidth.setText(Messages.getString("EnterOptionsDialog.LineWidth.Label"));
         props.setLook(wlLineWidth);
-        fdlLineWidth=new FormData();
+        FormData fdlLineWidth = new FormData();
         fdlLineWidth.left = new FormAttachment(0, 0);
         fdlLineWidth.right= new FormAttachment(middle, -margin);
         fdlLineWidth.top  = new FormAttachment(wIconsize, margin);
@@ -823,7 +796,7 @@ public class EnterOptionsDialog extends Dialog
         wLineWidth=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLineWidth.setText(Integer.toString(props.getLineWidth()));
         props.setLook(wLineWidth);
-        fdLineWidth=new FormData();
+        FormData fdLineWidth = new FormData();
         fdLineWidth.left = new FormAttachment(middle, 0);
         fdLineWidth.right= new FormAttachment(100, -margin);
         fdLineWidth.top  = new FormAttachment(wIconsize, margin);
@@ -833,7 +806,7 @@ public class EnterOptionsDialog extends Dialog
         wlShadowSize=new Label(wLookComp, SWT.RIGHT);
         wlShadowSize.setText(Messages.getString("EnterOptionsDialog.ShadowSize.Label"));
         props.setLook(wlShadowSize);
-        fdlShadowSize=new FormData();
+        FormData fdlShadowSize = new FormData();
         fdlShadowSize.left = new FormAttachment(0, 0);
         fdlShadowSize.right= new FormAttachment(middle, -margin);
         fdlShadowSize.top  = new FormAttachment(wLineWidth, margin);
@@ -841,7 +814,7 @@ public class EnterOptionsDialog extends Dialog
         wShadowSize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wShadowSize.setText(Integer.toString(props.getShadowSize()));
         props.setLook(wShadowSize);
-        fdShadowSize=new FormData();
+        FormData fdShadowSize = new FormData();
         fdShadowSize.left = new FormAttachment(middle, 0);
         fdShadowSize.right= new FormAttachment(100, -margin);
         fdShadowSize.top  = new FormAttachment(wLineWidth, margin);
@@ -851,7 +824,7 @@ public class EnterOptionsDialog extends Dialog
         wlMiddlePct=new Label(wLookComp, SWT.RIGHT);
         wlMiddlePct.setText(Messages.getString("EnterOptionsDialog.DialogMiddlePercentage.Label"));
         props.setLook(wlMiddlePct);
-        fdlMiddlePct=new FormData();
+        FormData fdlMiddlePct = new FormData();
         fdlMiddlePct.left = new FormAttachment(0, 0);
         fdlMiddlePct.right= new FormAttachment(middle, -margin);
         fdlMiddlePct.top  = new FormAttachment(wShadowSize, margin);
@@ -859,7 +832,7 @@ public class EnterOptionsDialog extends Dialog
         wMiddlePct=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wMiddlePct.setText(Integer.toString(props.getMiddlePct()));
         props.setLook(wMiddlePct);
-        fdMiddlePct=new FormData();
+        FormData fdMiddlePct = new FormData();
         fdMiddlePct.left = new FormAttachment(middle, 0);
         fdMiddlePct.right= new FormAttachment(100, -margin);
         fdMiddlePct.top  = new FormAttachment(wShadowSize, margin);
@@ -870,7 +843,7 @@ public class EnterOptionsDialog extends Dialog
         wlAntiAlias=new Label(wLookComp, SWT.RIGHT);
         wlAntiAlias.setText(Messages.getString("EnterOptionsDialog.CanvasAntiAliasing.Label"));
         props.setLook(wlAntiAlias);
-        fdlAntiAlias=new FormData();
+        FormData fdlAntiAlias = new FormData();
         fdlAntiAlias.left = new FormAttachment(0, 0);
         fdlAntiAlias.top  = new FormAttachment(wMiddlePct, margin);
         fdlAntiAlias.right= new FormAttachment(middle, -margin);
@@ -878,7 +851,7 @@ public class EnterOptionsDialog extends Dialog
         wAntiAlias=new Button(wLookComp, SWT.CHECK);
         props.setLook(wAntiAlias);
         wAntiAlias.setSelection(props.isAntiAliasingEnabled());
-        fdAntiAlias=new FormData();
+        FormData fdAntiAlias = new FormData();
         fdAntiAlias.left = new FormAttachment(middle, 0);
         fdAntiAlias.top  = new FormAttachment(wMiddlePct, margin);
         fdAntiAlias.right= new FormAttachment(100, 0);
@@ -888,7 +861,7 @@ public class EnterOptionsDialog extends Dialog
         wlOriginalLook=new Label(wLookComp, SWT.RIGHT);
         wlOriginalLook.setText(Messages.getString("EnterOptionsDialog.UseOSLook.Label"));
         props.setLook(wlOriginalLook);
-        fdlOriginalLook=new FormData();
+        FormData fdlOriginalLook = new FormData();
         fdlOriginalLook.left = new FormAttachment(0, 0);
         fdlOriginalLook.top  = new FormAttachment(wAntiAlias, margin);
         fdlOriginalLook.right= new FormAttachment(middle, -margin);
@@ -896,7 +869,7 @@ public class EnterOptionsDialog extends Dialog
         wOriginalLook=new Button(wLookComp, SWT.CHECK);
         props.setLook(wOriginalLook);
         wOriginalLook.setSelection(props.isOSLookShown());
-        fdOriginalLook=new FormData();
+        FormData fdOriginalLook = new FormData();
         fdOriginalLook.left = new FormAttachment(middle, 0);
         fdOriginalLook.top  = new FormAttachment(wAntiAlias, margin);
         fdOriginalLook.right= new FormAttachment(100, 0);
@@ -906,7 +879,7 @@ public class EnterOptionsDialog extends Dialog
         wlDefaultLocale=new Label(wLookComp, SWT.RIGHT);
         wlDefaultLocale.setText(Messages.getString("EnterOptionsDialog.DefaultLocale.Label"));
         props.setLook(wlDefaultLocale);
-        fdlDefaultLocale=new FormData();
+        FormData fdlDefaultLocale = new FormData();
         fdlDefaultLocale.left = new FormAttachment(0, 0);
         fdlDefaultLocale.right= new FormAttachment(middle, -margin);
         fdlDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
@@ -914,7 +887,7 @@ public class EnterOptionsDialog extends Dialog
         wDefaultLocale=new Combo(wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER);
         wDefaultLocale.setItems(GlobalMessages.localeDescr);
         props.setLook(wDefaultLocale);
-        fdDefaultLocale=new FormData();
+        FormData fdDefaultLocale = new FormData();
         fdDefaultLocale.left = new FormAttachment(middle, 0);
         fdDefaultLocale.right= new FormAttachment(100, -margin);
         fdDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
@@ -927,7 +900,7 @@ public class EnterOptionsDialog extends Dialog
         wlFailoverLocale=new Label(wLookComp, SWT.RIGHT);
         wlFailoverLocale.setText(Messages.getString("EnterOptionsDialog.FailoverLocale.Label"));
         props.setLook(wlFailoverLocale);
-        fdlFailoverLocale=new FormData();
+        FormData fdlFailoverLocale = new FormData();
         fdlFailoverLocale.left = new FormAttachment(0, 0);
         fdlFailoverLocale.right= new FormAttachment(middle, -margin);
         fdlFailoverLocale.top  = new FormAttachment(wDefaultLocale, margin);
@@ -935,7 +908,7 @@ public class EnterOptionsDialog extends Dialog
         wFailoverLocale=new Combo(wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER);
         wFailoverLocale.setItems(GlobalMessages.localeDescr);
         props.setLook(wFailoverLocale);
-        fdFailoverLocale=new FormData();
+        FormData fdFailoverLocale = new FormData();
         fdFailoverLocale.left = new FormAttachment(middle, 0);
         fdFailoverLocale.right= new FormAttachment(100, -margin);
         fdFailoverLocale.top  = new FormAttachment(wDefaultLocale, margin);
@@ -990,7 +963,7 @@ public class EnterOptionsDialog extends Dialog
         wlMaxUndo=new Label(wGeneralComp, SWT.RIGHT);
         wlMaxUndo.setText(Messages.getString("EnterOptionsDialog.MaximumUndo.Label"));
         props.setLook(wlMaxUndo);
-        fdlMaxUndo=new FormData();
+        FormData fdlMaxUndo = new FormData();
         fdlMaxUndo.left = new FormAttachment(0, 0);
         fdlMaxUndo.right= new FormAttachment(middle, -margin);
         fdlMaxUndo.top  = new FormAttachment(0, 0);
@@ -998,7 +971,7 @@ public class EnterOptionsDialog extends Dialog
         wMaxUndo=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wMaxUndo.setText(Integer.toString(props.getMaxUndo()));
         props.setLook(wMaxUndo);
-        fdMaxUndo=new FormData();
+        FormData fdMaxUndo = new FormData();
         fdMaxUndo.left = new FormAttachment(middle, 0);
         fdMaxUndo.right= new FormAttachment(100, -margin);
         fdMaxUndo.top  = new FormAttachment(0, 0);
@@ -1008,7 +981,7 @@ public class EnterOptionsDialog extends Dialog
         wlDefaultPreview=new Label(wGeneralComp, SWT.RIGHT);
         wlDefaultPreview.setText(Messages.getString("EnterOptionsDialog.DefaultPreviewSize.Label"));
         props.setLook(wlDefaultPreview);
-        fdlDefaultPreview=new FormData();
+        FormData fdlDefaultPreview = new FormData();
         fdlDefaultPreview.left = new FormAttachment(0, 0);
         fdlDefaultPreview.right= new FormAttachment(middle, -margin);
         fdlDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
@@ -1016,27 +989,45 @@ public class EnterOptionsDialog extends Dialog
         wDefaultPreview=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wDefaultPreview.setText(Integer.toString(props.getDefaultPreviewSize()));
         props.setLook(wDefaultPreview);
-        fdDefaultPreview=new FormData();
+        FormData fdDefaultPreview = new FormData();
         fdDefaultPreview.left = new FormAttachment(middle, 0);
         fdDefaultPreview.right= new FormAttachment(100, -margin);
         fdDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
         wDefaultPreview.setLayoutData(fdDefaultPreview);
 
+        // Max Nr of log lines
+        wlMaxNrLogLines=new Label(wGeneralComp, SWT.RIGHT);
+        wlMaxNrLogLines.setText(Messages.getString("EnterOptionsDialog.MaxNrLogLinesSize.Label"));
+        props.setLook(wlMaxNrLogLines);
+        FormData fdlMaxNrLogLines = new FormData();
+        fdlMaxNrLogLines.left = new FormAttachment(0, 0);
+        fdlMaxNrLogLines.right= new FormAttachment(middle, -margin);
+        fdlMaxNrLogLines.top  = new FormAttachment(wDefaultPreview, margin);
+        wlMaxNrLogLines.setLayoutData(fdlMaxNrLogLines);
+        wMaxNrLogLines=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wMaxNrLogLines.setText(Integer.toString(props.getMaxNrLinesInLog()));
+        props.setLook(wMaxNrLogLines);
+        FormData fdMaxNrLogLines = new FormData();
+        fdMaxNrLogLines.left = new FormAttachment(middle, 0);
+        fdMaxNrLogLines.right= new FormAttachment(100, -margin);
+        fdMaxNrLogLines.top  = new FormAttachment(wDefaultPreview, margin);
+        wMaxNrLogLines.setLayoutData(fdMaxNrLogLines);
+
         // Show tips on startup?
         wlShowTips=new Label(wGeneralComp, SWT.RIGHT);
         wlShowTips.setText(Messages.getString("EnterOptionsDialog.ShowTipsStartup.Label"));
         props.setLook(wlShowTips);
-        fdlShowTips=new FormData();
+        FormData fdlShowTips = new FormData();
         fdlShowTips.left = new FormAttachment(0, 0);
-        fdlShowTips.top  = new FormAttachment(wDefaultPreview, margin);
+        fdlShowTips.top  = new FormAttachment(wMaxNrLogLines, margin);
         fdlShowTips.right= new FormAttachment(middle, -margin);
         wlShowTips.setLayoutData(fdlShowTips);
         wShowTips=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wShowTips);
         wShowTips.setSelection(props.showTips());
-        fdShowTips=new FormData();
+        FormData fdShowTips = new FormData();
         fdShowTips.left = new FormAttachment(middle, 0);
-        fdShowTips.top  = new FormAttachment(wDefaultPreview, margin);
+        fdShowTips.top  = new FormAttachment(wMaxNrLogLines, margin);
         fdShowTips.right= new FormAttachment(100, 0);
         wShowTips.setLayoutData(fdShowTips);
 
@@ -1044,7 +1035,7 @@ public class EnterOptionsDialog extends Dialog
         wlShowWelcome=new Label(wGeneralComp, SWT.RIGHT);
         wlShowWelcome.setText(Messages.getString("EnterOptionsDialog.ShowWelcomePage.Label"));
         props.setLook(wlShowWelcome);
-        fdlShowWelcome=new FormData();
+        FormData fdlShowWelcome = new FormData();
         fdlShowWelcome.left = new FormAttachment(0, 0);
         fdlShowWelcome.top  = new FormAttachment(wShowTips, margin);
         fdlShowWelcome.right= new FormAttachment(middle, -margin);
@@ -1052,7 +1043,7 @@ public class EnterOptionsDialog extends Dialog
         wShowWelcome=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wShowWelcome);
         wShowWelcome.setSelection(props.showWelcomePageOnStartup());
-        fdShowWelcome=new FormData();
+        FormData fdShowWelcome = new FormData();
         fdShowWelcome.left = new FormAttachment(middle, 0);
         fdShowWelcome.top  = new FormAttachment(wShowTips, margin);
         fdShowWelcome.right= new FormAttachment(100, 0);
@@ -1062,7 +1053,7 @@ public class EnterOptionsDialog extends Dialog
         wlUseCache=new Label(wGeneralComp, SWT.RIGHT);
         wlUseCache.setText(Messages.getString("EnterOptionsDialog.UseDatabaseCache.Label"));
         props.setLook(wlUseCache);
-        fdlUseCache=new FormData();
+        FormData fdlUseCache = new FormData();
         fdlUseCache.left = new FormAttachment(0, 0);
         fdlUseCache.top  = new FormAttachment(wShowWelcome, margin);
         fdlUseCache.right= new FormAttachment(middle, -margin);
@@ -1070,7 +1061,7 @@ public class EnterOptionsDialog extends Dialog
         wUseCache=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wUseCache);
         wUseCache.setSelection(props.useDBCache());
-        fdUseCache=new FormData();
+        FormData fdUseCache = new FormData();
         fdUseCache.left = new FormAttachment(middle, 0);
         fdUseCache.top  = new FormAttachment(wShowWelcome, margin);
         fdUseCache.right= new FormAttachment(100, 0);
@@ -1081,7 +1072,7 @@ public class EnterOptionsDialog extends Dialog
         wlOpenLast=new Label(wGeneralComp, SWT.RIGHT);
         wlOpenLast.setText(Messages.getString("EnterOptionsDialog.OpenLastFileStartup.Label"));
         props.setLook(wlOpenLast);
-        fdlOpenLast=new FormData();
+        FormData fdlOpenLast = new FormData();
         fdlOpenLast.left = new FormAttachment(0, 0);
         fdlOpenLast.top  = new FormAttachment(wUseCache, margin);
         fdlOpenLast.right= new FormAttachment(middle, -margin);
@@ -1089,7 +1080,7 @@ public class EnterOptionsDialog extends Dialog
         wOpenLast=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wOpenLast);
         wOpenLast.setSelection(props.openLastFile());
-        fdOpenLast=new FormData();
+        FormData fdOpenLast = new FormData();
         fdOpenLast.left = new FormAttachment(middle, 0);
         fdOpenLast.top  = new FormAttachment(wUseCache, margin);
         fdOpenLast.right= new FormAttachment(100, 0);
@@ -1099,7 +1090,7 @@ public class EnterOptionsDialog extends Dialog
         wlAutoSave=new Label(wGeneralComp, SWT.RIGHT);
         wlAutoSave.setText(Messages.getString("EnterOptionsDialog.AutoSave.Label"));
         props.setLook(wlAutoSave);
-        fdlAutoSave=new FormData();
+        FormData fdlAutoSave = new FormData();
         fdlAutoSave.left = new FormAttachment(0, 0);
         fdlAutoSave.top  = new FormAttachment(wOpenLast, margin);
         fdlAutoSave.right= new FormAttachment(middle, -margin);
@@ -1107,7 +1098,7 @@ public class EnterOptionsDialog extends Dialog
         wAutoSave=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wAutoSave);
         wAutoSave.setSelection(props.getAutoSave());
-        fdAutoSave=new FormData();
+        FormData fdAutoSave = new FormData();
         fdAutoSave.left = new FormAttachment(middle, 0);
         fdAutoSave.top  = new FormAttachment(wOpenLast, margin);
         fdAutoSave.right= new FormAttachment(100, 0);
@@ -1117,7 +1108,7 @@ public class EnterOptionsDialog extends Dialog
         wlDBConnXML=new Label(wGeneralComp, SWT.RIGHT);
         wlDBConnXML.setText(Messages.getString("EnterOptionsDialog.OnlySaveUsedConnections.Label"));
         props.setLook(wlDBConnXML);
-        fdlDBConnXML=new FormData();
+        FormData fdlDBConnXML = new FormData();
         fdlDBConnXML.left = new FormAttachment(0, 0);
         fdlDBConnXML.top  = new FormAttachment(wAutoSave, margin);
         fdlDBConnXML.right= new FormAttachment(middle, -margin);
@@ -1125,7 +1116,7 @@ public class EnterOptionsDialog extends Dialog
         wDBConnXML=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wDBConnXML);
         wDBConnXML.setSelection(props.areOnlyUsedConnectionsSavedToXML());
-        fdDBConnXML=new FormData();
+        FormData fdDBConnXML = new FormData();
         fdDBConnXML.left = new FormAttachment(middle, 0);
         fdDBConnXML.top  = new FormAttachment(wAutoSave, margin);
         fdDBConnXML.right= new FormAttachment(100, 0);
@@ -1135,7 +1126,7 @@ public class EnterOptionsDialog extends Dialog
         wlAskReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
         wlAskReplaceDB.setText(Messages.getString("EnterOptionsDialog.ReplaceDBAsk.Label"));
         props.setLook(wlAskReplaceDB);
-        fdlAskReplaceDB=new FormData();
+        FormData fdlAskReplaceDB = new FormData();
         fdlAskReplaceDB.left = new FormAttachment(0, 0);
         fdlAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
         fdlAskReplaceDB.right= new FormAttachment(middle, -margin);
@@ -1144,7 +1135,7 @@ public class EnterOptionsDialog extends Dialog
         props.setLook(wAskReplaceDB);
         wAskReplaceDB.setToolTipText(Messages.getString("EnterOptionsDialog.ReplaceDBAsk.Tooltip"));
         wAskReplaceDB.setSelection(props.askAboutReplacingDatabaseConnections());
-        fdAskReplaceDB=new FormData();
+        FormData fdAskReplaceDB = new FormData();
         fdAskReplaceDB.left = new FormAttachment(middle, 0);
         fdAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
         fdAskReplaceDB.right= new FormAttachment(100, 0);
@@ -1154,7 +1145,7 @@ public class EnterOptionsDialog extends Dialog
         wlReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
         wlReplaceDB.setText(Messages.getString("EnterOptionsDialog.ReplaceDB.Label"));
         props.setLook(wlReplaceDB);
-        fdlReplaceDB=new FormData();
+        FormData fdlReplaceDB = new FormData();
         fdlReplaceDB.left = new FormAttachment(0, 0);
         fdlReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
         fdlReplaceDB.right= new FormAttachment(middle, -margin);
@@ -1163,7 +1154,7 @@ public class EnterOptionsDialog extends Dialog
         props.setLook(wReplaceDB);
         wReplaceDB.setToolTipText(Messages.getString("EnterOptionsDialog.ReplaceDB.Tooltip"));
         wReplaceDB.setSelection(props.replaceExistingDatabaseConnections());
-        fdReplaceDB=new FormData();
+        FormData fdReplaceDB = new FormData();
         fdReplaceDB.left = new FormAttachment(middle, 0);
         fdReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
         fdReplaceDB.right= new FormAttachment(100, 0);
@@ -1173,7 +1164,7 @@ public class EnterOptionsDialog extends Dialog
         wlSaveConf=new Label(wGeneralComp, SWT.RIGHT);
         wlSaveConf.setText(Messages.getString("EnterOptionsDialog.ShowSaveConfirmation.Label"));
         props.setLook(wlSaveConf);
-        fdlSaveConf=new FormData();
+        FormData fdlSaveConf = new FormData();
         fdlSaveConf.left = new FormAttachment(0, 0);
         fdlSaveConf.top  = new FormAttachment(wReplaceDB, margin);
         fdlSaveConf.right= new FormAttachment(middle, -margin);
@@ -1181,7 +1172,7 @@ public class EnterOptionsDialog extends Dialog
         wSaveConf=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wSaveConf);
         wSaveConf.setSelection(props.getSaveConfirmation());
-        fdSaveConf=new FormData();
+        FormData fdSaveConf = new FormData();
         fdSaveConf.left = new FormAttachment(middle, 0);
         fdSaveConf.top  = new FormAttachment(wReplaceDB, margin);
         fdSaveConf.right= new FormAttachment(100, 0);
@@ -1191,7 +1182,7 @@ public class EnterOptionsDialog extends Dialog
         wlAutoSplit=new Label(wGeneralComp, SWT.RIGHT);
         wlAutoSplit.setText(Messages.getString("EnterOptionsDialog.AutoSplitHops.Label"));
         props.setLook(wlAutoSplit);
-        fdlAutoSplit=new FormData();
+        FormData fdlAutoSplit = new FormData();
         fdlAutoSplit.left = new FormAttachment(0, 0);
         fdlAutoSplit.top  = new FormAttachment(wSaveConf, margin);
         fdlAutoSplit.right= new FormAttachment(middle, -margin);
@@ -1200,7 +1191,7 @@ public class EnterOptionsDialog extends Dialog
         props.setLook(wAutoSplit);
         wAutoSplit.setToolTipText(Messages.getString("EnterOptionsDialog.AutoSplitHops.Tooltip"));
         wAutoSplit.setSelection(props.getAutoSplit());
-        fdAutoSplit=new FormData();
+        FormData fdAutoSplit = new FormData();
         fdAutoSplit.left = new FormAttachment(middle, 0);
         fdAutoSplit.top  = new FormAttachment(wSaveConf, margin);
         fdAutoSplit.right= new FormAttachment(100, 0);
@@ -1210,7 +1201,7 @@ public class EnterOptionsDialog extends Dialog
         wlCopyDistrib=new Label(wGeneralComp, SWT.RIGHT);
         wlCopyDistrib.setText(Messages.getString("EnterOptionsDialog.CopyOrDistributeDialog.Label"));
         props.setLook(wlCopyDistrib);
-        fdlCopyDistrib=new FormData();
+        FormData fdlCopyDistrib = new FormData();
         fdlCopyDistrib.left = new FormAttachment(0, 0);
         fdlCopyDistrib.top  = new FormAttachment(wAutoSplit, margin);
         fdlCopyDistrib.right= new FormAttachment(middle, -margin);
@@ -1219,7 +1210,7 @@ public class EnterOptionsDialog extends Dialog
         props.setLook(wCopyDistrib);
         wCopyDistrib.setToolTipText(Messages.getString("EnterOptionsDialog.CopyOrDistributeDialog.Tooltip"));
         wCopyDistrib.setSelection(props.showCopyOrDistributeWarning());
-        fdCopyDistrib=new FormData();
+        FormData fdCopyDistrib = new FormData();
         fdCopyDistrib.left = new FormAttachment(middle, 0);
         fdCopyDistrib.top  = new FormAttachment(wAutoSplit, margin);
         fdCopyDistrib.right= new FormAttachment(100, 0);
@@ -1229,7 +1220,7 @@ public class EnterOptionsDialog extends Dialog
         wlShowRep=new Label(wGeneralComp, SWT.RIGHT);
         wlShowRep.setText(Messages.getString("EnterOptionsDialog.ShowRepoDialog.Label"));
         props.setLook(wlShowRep);
-        fdlShowRep=new FormData();
+        FormData fdlShowRep = new FormData();
         fdlShowRep.left = new FormAttachment(0, 0);
         fdlShowRep.top  = new FormAttachment(wCopyDistrib, margin);
         fdlShowRep.right= new FormAttachment(middle, -margin);
@@ -1237,7 +1228,7 @@ public class EnterOptionsDialog extends Dialog
         wShowRep=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wShowRep);
         wShowRep.setSelection(props.showRepositoriesDialogAtStartup());
-        fdShowRep=new FormData();
+        FormData fdShowRep = new FormData();
         fdShowRep.left = new FormAttachment(middle, 0);
         fdShowRep.top  = new FormAttachment(wCopyDistrib, margin);
         fdShowRep.right= new FormAttachment(100, 0);
@@ -1247,7 +1238,7 @@ public class EnterOptionsDialog extends Dialog
         wlExitWarning=new Label(wGeneralComp, SWT.RIGHT);
         wlExitWarning.setText(Messages.getString("EnterOptionsDialog.AskOnExit.Label"));
         props.setLook(wlExitWarning);
-        fdlExitWarning=new FormData();
+        FormData fdlExitWarning = new FormData();
         fdlExitWarning.left = new FormAttachment(0, 0);
         fdlExitWarning.top  = new FormAttachment(wShowRep, margin);
         fdlExitWarning.right= new FormAttachment(middle, -margin);
@@ -1255,7 +1246,7 @@ public class EnterOptionsDialog extends Dialog
         wExitWarning=new Button(wGeneralComp, SWT.CHECK);
         props.setLook(wExitWarning);
         wExitWarning.setSelection(props.showExitWarning());
-        fdExitWarning=new FormData();
+        FormData fdExitWarning = new FormData();
         fdExitWarning.left = new FormAttachment(middle, 0);
         fdExitWarning.top  = new FormAttachment(wShowRep, margin);
         fdExitWarning.right= new FormAttachment(100, 0);
@@ -1265,7 +1256,7 @@ public class EnterOptionsDialog extends Dialog
         wlClearCustom=new Label(wGeneralComp, SWT.RIGHT);
         wlClearCustom.setText(Messages.getString("EnterOptionsDialog.ClearCustomParameters.Label"));
         props.setLook(wlClearCustom);
-        fdlClearCustom=new FormData();
+        FormData fdlClearCustom = new FormData();
         fdlClearCustom.left = new FormAttachment(0, 0);
         fdlClearCustom.top  = new FormAttachment(wExitWarning, margin + 10);
         fdlClearCustom.right= new FormAttachment(middle, -margin);
@@ -1273,7 +1264,7 @@ public class EnterOptionsDialog extends Dialog
         wClearCustom=new Button(wGeneralComp, SWT.PUSH | SWT.BORDER);
         props.setLook(wClearCustom);
         
-        fdClearCustom=layoutResetOptionButton(wClearCustom);
+        FormData fdClearCustom = layoutResetOptionButton(wClearCustom);
         fdClearCustom.left = new FormAttachment(middle, 0);
         fdClearCustom.top  = new FormAttachment(wExitWarning, margin);
         wClearCustom.setLayoutData(fdClearCustom);
@@ -1431,6 +1422,7 @@ public class EnterOptionsDialog extends Dialog
         
         props.setDefaultPreviewSize( Const.toInt( wDefaultPreview.getText(), props.getDefaultPreviewSize() ));
 
+        props.setMaxNrLinesInLog                     ( Const.toInt(wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES) );
 		props.setMaxUndo                             ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
 		props.setShowTips                            ( wShowTips.getSelection()    );
         props.setShowWelcomePageOnStartup            ( wShowWelcome.getSelection() );

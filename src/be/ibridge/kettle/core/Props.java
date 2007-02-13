@@ -143,6 +143,8 @@ public class Props implements Cloneable
     
     private static final String STRING_SHOW_WELCOME_PAGE_ON_STARTUP = "ShowWelcomePageOnStartup";
 
+    private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
+
     private LogWriter log = LogWriter.getInstance();
 	private Properties properties;
 	
@@ -1436,6 +1438,17 @@ public class Props implements Cloneable
     public void setShowWelcomePageOnStartup(boolean show)
     {
         properties.setProperty(STRING_SHOW_WELCOME_PAGE_ON_STARTUP, show?"Y":"N");
+    }
+    
+    public int getMaxNrLinesInLog()
+    {
+        String lines = properties.getProperty(STRING_MAX_NR_LINES_IN_LOG);
+        return Const.toInt(lines, Const.MAX_NR_LOG_LINES);
+    }
+    
+    public void setMaxNrLinesInLog(int maxNrLinesInLog)
+    {
+        properties.setProperty(STRING_MAX_NR_LINES_IN_LOG, Integer.toString(maxNrLinesInLog));
     }
 
     public int getJobsDialogStyle()
