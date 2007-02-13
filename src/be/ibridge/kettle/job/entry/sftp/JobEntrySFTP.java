@@ -88,14 +88,14 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("servername",   serverName));
-		retval.append("      "+XMLHandler.addTagValue("serverport",   serverPort));
-		retval.append("      "+XMLHandler.addTagValue("username",     userName));
-		retval.append("      "+XMLHandler.addTagValue("password",     password));
-		retval.append("      "+XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
-		retval.append("      "+XMLHandler.addTagValue("targetdirectory", targetDirectory));
-		retval.append("      "+XMLHandler.addTagValue("wildcard",     wildcard));
-		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
+		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
+		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
+		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
+		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+		retval.append("      ").append(XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
+		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
 		
 		return retval.toString();
 	}
@@ -109,7 +109,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
 			password        = XMLHandler.getTagValue(entrynode, "password");
-			sftpDirectory    = XMLHandler.getTagValue(entrynode, "sftpdirectory");
+			sftpDirectory   = XMLHandler.getTagValue(entrynode, "sftpdirectory");
 			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
@@ -133,7 +133,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
-			sftpDirectory    = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
+			sftpDirectory   = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
 			targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
@@ -316,7 +316,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	
 			// login to ftp host ...
 			sftpclient.login(realPassword);
-			log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
+			// Passwords should not appear in log files. 
+			//log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
 			// move to spool dir ...
 			if (!Const.isEmpty(realSftpDirString))
@@ -327,7 +328,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			
 			// Get all the files in the current directory...
 			String[] filelist = sftpclient.dir();
-			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote scp directory");
+			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
 
 			Pattern pattern = null;
 			if (!Const.isEmpty(realWildcard)) 
@@ -360,13 +361,13 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFilename), parentJob.getJobname(), toString());
                     result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
+					log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
 					
 					// Delete the file if this is needed!
 					if (remove) 
 					{
 						sftpclient.delete(filelist[i]);
-						log.logDetailed(toString(), "deleted file ["+filelist[i]+"]");
+						log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
 					}
 				}
 			}
@@ -378,7 +379,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		{
 			result.setNrErrors(1);
 			e.printStackTrace();
-			log.logError(toString(), "Error getting files from SCP : "+e.getMessage());
+			log.logError(toString(), "Error getting files from SFTP : "+e.getMessage());
 		} finally {
 			// close connection, if possible
 			try {
