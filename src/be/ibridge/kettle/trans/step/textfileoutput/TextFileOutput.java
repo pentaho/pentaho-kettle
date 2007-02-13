@@ -18,7 +18,6 @@ package be.ibridge.kettle.trans.step.textfileoutput;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -35,6 +34,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.util.StreamLogger;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -639,8 +639,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP))
     				{
     		            log.logDetailed(toString(), "Opening output stream in zipped mode");
-    					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
-    					data.zip = new ZipOutputStream(fos);
+                        
+                        OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                        data.zip = new ZipOutputStream(fos);
     					File entry = new File(buildFilename(false));
     					ZipEntry zipentry = new ZipEntry(entry.getName());
     					zipentry.setComment("Compressed by Kettle");
@@ -650,8 +651,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
     		            log.logDetailed(toString(), "Opening output stream in gzipped mode");
-    					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
-    					data.gzip = new GZIPOutputStream(fos);
+                        OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                        data.gzip = new GZIPOutputStream(fos);
     					outputStream=data.gzip;
     				}
                     else
@@ -662,8 +663,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				else
 				{
 		            log.logDetailed(toString(), "Opening output stream in nocompress mode");
-					FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
-					outputStream=fos;
+                    OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                    outputStream=fos;
 				}
                 
 	            if (!Const.isEmpty(meta.getEncoding()))
