@@ -349,8 +349,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 	
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
 		try
 		{
@@ -370,15 +369,14 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
-		throws KettleException
+	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
 		try
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      getTypeDesc(fieldType[i]));
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      functions[fieldType[i]]!=null ? functions[fieldType[i]].getCode() : "");
 			}
 		}
 		catch(Exception e)
