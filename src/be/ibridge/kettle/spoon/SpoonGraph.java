@@ -262,6 +262,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             public void mouseDown(MouseEvent e)
             {
                 clearSettings();
+                boolean alt     = (e.stateMask & SWT.ALT) != 0;
                 boolean control = (e.stateMask & SWT.CONTROL) != 0;
                 
                 last_button = e.button;
@@ -277,11 +278,18 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     setMenu(real.x, real.y);
                     return;
                 }
-
+                
                 // Did we click on a step?
                 StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                 if (stepMeta != null)
                 {
+                    // ALT-Click: edit error handling
+                    if (e.button==1 && alt && stepMeta.supportsErrorHandling())
+                    {
+                        spoon.editStepErrorHandling(transMeta, stepMeta);
+                        return;
+                    }
+
                     selected_steps = transMeta.getSelectedSteps();
                     selected_step = stepMeta;
                     // 

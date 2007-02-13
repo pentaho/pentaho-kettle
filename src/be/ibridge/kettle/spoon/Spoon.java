@@ -201,6 +201,8 @@ import be.ibridge.kettle.trans.dialog.TransLoadProgressDialog;
 import be.ibridge.kettle.trans.dialog.TransSaveProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepErrorMeta;
+import be.ibridge.kettle.trans.step.StepErrorMetaDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
@@ -2872,6 +2874,30 @@ public class Spoon implements AddUndoPositionInterface
         
         return stepMeta.getName();
     }
+    
+    public void editStepErrorHandling(TransMeta transMeta, StepMeta stepMeta)
+    {
+        if (stepMeta!=null && stepMeta.supportsErrorHandling())
+        {
+            StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+            if (stepErrorMeta==null)
+            {
+                stepErrorMeta = new StepErrorMeta(stepMeta);
+            }
+            List targetSteps = new ArrayList();
+            int nrNext = transMeta.findNrNextSteps(stepMeta);
+            for (int i=0;i<nrNext;i++) targetSteps.add( transMeta.findNextStep(stepMeta, i) );
+            
+            // now edit this stepErrorMeta object:
+            StepErrorMetaDialog dialog = new StepErrorMetaDialog(shell, stepErrorMeta, targetSteps);
+            if (dialog.open())
+            {
+                stepMeta.setStepErrorMeta(stepErrorMeta);
+                refreshGraph();
+            }
+        }
+    }
+
 
     public void dupeStep(TransMeta transMeta, StepMeta stepMeta)
     {
@@ -3350,7 +3376,7 @@ public class Spoon implements AddUndoPositionInterface
                 for (int i=0;i<oldDatabases.size();i++)
                 {
                     DatabaseMeta oldDatabase = (DatabaseMeta) oldDatabases.get(i);
-                    DatabaseMeta newDatabase = Const.findDatabase(transMeta.getDatabases(), oldDatabase.getName());
+                    DatabaseMeta newDatabase = DatabaseMeta.findDatabase(transMeta.getDatabases(), oldDatabase.getName());
                     
                     // If it exists, change the settings...
                     if (newDatabase!=null)

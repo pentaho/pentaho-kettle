@@ -31,11 +31,13 @@ public class RowStepCollector implements RowListener
 {
 	private List rowsRead;
 	private List rowsWritten;
+    private List rowsError;
 	
 	public RowStepCollector()
 	{
 		rowsRead = new ArrayList();
 		rowsWritten = new ArrayList();
+        rowsError = new ArrayList();
 	}
 
 	public void rowReadEvent(Row row) {
@@ -45,6 +47,11 @@ public class RowStepCollector implements RowListener
 	public void rowWrittenEvent(Row row) {
 		rowsWritten.add(row);
 	}
+    
+    public void errorRowWrittenEvent(Row row)
+    {
+        rowsError.add(row);
+    }
 	
 	/**
 	 * Clear the rows read and rows written.
@@ -53,6 +60,7 @@ public class RowStepCollector implements RowListener
 	{
 		rowsRead.clear();
 		rowsWritten.clear();
+        rowsError.clear();
 	}
 	
 	public List getRowsRead()
@@ -64,4 +72,9 @@ public class RowStepCollector implements RowListener
 	{
 		return rowsWritten;
 	}	
+    
+    public List getRowsError()
+    {
+        return rowsError;
+    }
 }

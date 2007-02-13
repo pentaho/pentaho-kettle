@@ -415,8 +415,9 @@ public class TransPainter
 
         int line[] = getLine(fs, ts);
 
-        gc.setLineWidth(linewidth);
         Color col;
+        int linestyle=SWT.LINE_SOLID;
+        int activeLinewidth = linewidth; 
 
         if (is_candidate)
         {
@@ -432,7 +433,13 @@ public class TransPainter
                 // System.out.println("Normal step: "+fs+" --> "+ts+",
                 // "+(infoSteps!=null)+", "+(targetSteps!=null));
 
-                if (targetSteps == null) // Normal link: distribute or copy data...
+                if (fs.isSendingErrorRowsToStep(ts))
+                {
+                    col = red;
+                    linestyle = SWT.LINE_DOT;
+                    activeLinewidth = linewidth+2;
+                }
+                else if (targetSteps == null) // Normal link: distribute or copy data...
                 {
                     // Or perhaps it's an informational link: draw different
                     // color...
@@ -460,7 +467,7 @@ public class TransPainter
                     }
                     else
                     {
-                        gc.setLineStyle(SWT.LINE_DOT);
+                        linestyle = SWT.LINE_DOT;
                         col = orange;
                     }
                 }
@@ -470,11 +477,13 @@ public class TransPainter
                 col = gray;
             }
         }
+        if (hi.split) activeLinewidth = linewidth+2;
 
         gc.setForeground(col);
-
-        if (hi.split) gc.setLineWidth(linewidth + 2);
-
+        gc.setLineStyle(linestyle);
+        gc.setLineWidth(activeLinewidth);
+        
+        
         drawArrow(gc, line);
 
         if (hi.split) gc.setLineWidth(linewidth);

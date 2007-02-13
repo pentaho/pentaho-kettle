@@ -1356,7 +1356,7 @@ public class Chef implements AddUndoPositionInterface
             for (int i=0;i<oldDatabases.size();i++)
             {
                 DatabaseMeta oldDatabase = (DatabaseMeta) oldDatabases.get(i);
-                DatabaseMeta newDatabase = Const.findDatabase(jobMeta.getDatabases(), oldDatabase.getName());
+                DatabaseMeta newDatabase = DatabaseMeta.findDatabase(jobMeta.getDatabases(), oldDatabase.getName());
                 
                 // If it exists, change the settings...
                 if (newDatabase!=null)

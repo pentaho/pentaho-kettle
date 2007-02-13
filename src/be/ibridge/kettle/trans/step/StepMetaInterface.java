@@ -228,4 +228,10 @@ public interface StepMetaInterface
      * @return the libraries that this step or plugin uses.
      */
     public String[] getUsedLibraries();
+    
+    /**
+     * @return true if this step supports error "reporting" on rows: the ability to send rows to a certain target step.
+     */
+    public boolean supportsErrorHandling();
+    
 }

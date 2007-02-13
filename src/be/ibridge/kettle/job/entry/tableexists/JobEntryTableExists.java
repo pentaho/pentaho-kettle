@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
@@ -94,7 +93,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			
 			tablename     = XMLHandler.getTagValue(entrynode, "tablename");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
-			connection    = Const.findDatabase(databases, dbname);
+			connection    = DatabaseMeta.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
 		{
@@ -113,12 +112,12 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
-				connection = Const.findDatabase(databases, id_db);
+				connection = DatabaseMeta.findDatabase(databases, id_db);
 			}
 			else
 			{
 				// This is were we end up in normally, the previous lines are for backward compatibility.
-				connection = Const.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
+				connection = DatabaseMeta.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
 			}
 
 		}

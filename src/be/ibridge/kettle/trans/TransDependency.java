@@ -35,7 +35,9 @@ import be.ibridge.kettle.repository.Repository;
 
 public class TransDependency implements XMLInterface
 {
-	private DatabaseMeta db;
+	public static final String XML_TAG = "dependency";
+    
+    private DatabaseMeta db;
 	private String tablename;
 	private String fieldname;
 	
@@ -52,14 +54,26 @@ public class TransDependency implements XMLInterface
 	{
 		this(null, null, null);
 	}
-
-	public TransDependency(Node depnode, ArrayList databases)
-		throws KettleXMLException
+    
+    public String getXML()
+    {
+        StringBuffer xml = new StringBuffer();
+        
+        xml.append("      ").append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
+        xml.append("        ").append(XMLHandler.addTagValue("connection", db==null?"":db.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        xml.append("        ").append(XMLHandler.addTagValue("table",      tablename)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("        ").append(XMLHandler.addTagValue("field",      fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("       ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
+        
+        return xml.toString();
+    }
+    
+	public TransDependency(Node depnode, ArrayList databases) throws KettleXMLException
 	{
 		try
 		{
 			String depcon    = XMLHandler.getTagValue(depnode, "connection"); //$NON-NLS-1$
-			db = Const.findDatabase(databases, depcon);
+			db = DatabaseMeta.findDatabase(databases, depcon);
 			tablename        = XMLHandler.getTagValue(depnode, "table"); //$NON-NLS-1$
 			fieldname        = XMLHandler.getTagValue(depnode, "field"); //$NON-NLS-1$
 		}
@@ -109,20 +123,7 @@ public class TransDependency implements XMLInterface
 		return fieldname;
 	}
 	
-	public String getXML()
-	{
-		String retval = ""; //$NON-NLS-1$
-		retval+="      <dependency>"+Const.CR; //$NON-NLS-1$
-		retval+="        "+XMLHandler.addTagValue("connection", db==null?"":db.getName()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval+="        "+XMLHandler.addTagValue("table",      tablename); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="        "+XMLHandler.addTagValue("field",      fieldname); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="        </dependency>"+Const.CR; //$NON-NLS-1$
-		
-		return retval;
-	}
-	
-	public TransDependency(Repository rep, long id_dependency, ArrayList databases)
-		throws KettleException
+	public TransDependency(Repository rep, long id_dependency, ArrayList databases) throws KettleException
 	{
 		try
 		{
@@ -133,7 +134,7 @@ public class TransDependency implements XMLInterface
 			if (r!=null)
 			{
 				long id_connection = r.searchValue("ID_DATABASE").getInteger(); //$NON-NLS-1$
-				db        = Const.findDatabase(databases, id_connection);
+				db        = DatabaseMeta.findDatabase(databases, id_connection);
 				tablename = r.searchValue("TABLE_NAME").getString(); //$NON-NLS-1$
 				fieldname = r.searchValue("FIELD_NAME").getString(); //$NON-NLS-1$
 			}
@@ -144,8 +145,7 @@ public class TransDependency implements XMLInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation)
-		throws KettleException
+	public void saveRep(Repository rep, long id_transformation) throws KettleException
 	{
 		try
 		{

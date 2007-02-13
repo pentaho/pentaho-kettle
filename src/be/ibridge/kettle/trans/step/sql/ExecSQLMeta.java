@@ -227,7 +227,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String con            = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta          = Const.findDatabase(databases, con);
+			databaseMeta          = DatabaseMeta.findDatabase(databases, con);
             String eachRow        = XMLHandler.getTagValue(stepnode, "execute_each_row"); //$NON-NLS-1$
             executedEachInputRow  = "Y".equalsIgnoreCase( eachRow ); //$NON-NLS-1$
             System.out.println(Messages.getString("ExecSQLMeta.Log.ExecutedEachRow",executedEachInputRow+"")+eachRow+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -300,7 +300,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection    = rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta          = Const.findDatabase( databases, id_connection);
+			databaseMeta          = DatabaseMeta.findDatabase( databases, id_connection);
             executedEachInputRow  = rep.getStepAttributeBoolean(id_step, "execute_each_row"); //$NON-NLS-1$
             sql                   = rep.getStepAttributeString (id_step, "sql"); //$NON-NLS-1$
 

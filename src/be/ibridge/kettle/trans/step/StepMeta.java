@@ -65,6 +65,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     private ClusterSchema        clusterSchema;
     private String               clusterSchemaName; // temporary to resolve later.
     
+    private StepErrorMeta stepErrorMeta;
+    
 	// private LogWriter log;
 		
 	private long id;
@@ -146,7 +148,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
         retval.append( stepPartitioningMeta.getXML() );
 		retval.append( stepMetaInterface.getXML() );
         retval.append("     ").append(XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
-			
+        
 		retval.append("    <GUI>").append(Const.CR); //$NON-NLS-1$
 		retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      <yloc>").append(location.y).append("</yloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -733,6 +735,81 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     public void setDistributes(boolean distributes)
     {
         this.distributes = distributes;
+    }
+
+    /**
+     * @return the StepErrorMeta error handling metadata for this step  
+     */
+    public StepErrorMeta getStepErrorMeta()
+    {
+        return stepErrorMeta;
+    }
+
+    /**
+     * @param stepErrorMeta the error handling metadata for this step
+     */
+    public void setStepErrorMeta(StepErrorMeta stepErrorMeta)
+    {
+        this.stepErrorMeta = stepErrorMeta;
+    }
+    
+    /**
+     * Find a step with the ID in a given ArrayList of steps
+     *
+     * @param steps The List of steps to search
+     * @param id The ID of the step
+     * @return The step if it was found, null if nothing was found
+     */
+    public static final StepMeta findStep(List steps, long id)
+    {
+        if (steps == null) return null;
+
+        for (int i = 0; i < steps.size(); i++)
+        {
+            StepMeta stepMeta = (StepMeta) steps.get(i);
+            if (stepMeta.getID() == id) return stepMeta;
+        }
+        return null;
+    }
+
+    /**
+     * Find a step with its name in a given ArrayList of steps
+     *
+     * @param steps The List of steps to search
+     * @param stepname The name of the step
+     * @return The step if it was found, null if nothing was found
+     */
+    public static final StepMeta findStep(List steps, String stepname)
+    {
+        if (steps == null) return null;
+
+        for (int i = 0; i < steps.size(); i++)
+        {
+            StepMeta stepMeta = (StepMeta) steps.get(i);
+            if (stepMeta.getName().equalsIgnoreCase(stepname)) return stepMeta;
+        }
+        return null;
+    }
+    
+    public boolean supportsErrorHandling()
+    {
+        return stepMetaInterface.supportsErrorHandling();
+    }
+    /**
+     * @return if error handling is supported for this step, if error handling is defined and a target step is set
+     */
+    public boolean isDoingErrorHandling()
+    {
+        return stepMetaInterface.supportsErrorHandling() && 
+            stepErrorMeta!=null && 
+            stepErrorMeta.getTargetStep()!=null &&
+            stepErrorMeta.isEnabled()
+            ;
+    }
+    
+    public boolean isSendingErrorRowsToStep(StepMeta targetStep)
+    {
+        return (isDoingErrorHandling() && stepErrorMeta.getTargetStep().equals(targetStep));
     }
 
 }

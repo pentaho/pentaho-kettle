@@ -61,7 +61,7 @@ public class RepositoryMeta
 			name        = XMLHandler.getTagValue(repnode, "name") ;
 			description = XMLHandler.getTagValue(repnode, "description") ;
 			String conn = XMLHandler.getTagValue(repnode, "connection") ;
-			connection  = Const.findDatabase(databases, conn);
+			connection  = DatabaseMeta.findDatabase(databases, conn);
 			return true;
 		}
 		catch(Exception e)

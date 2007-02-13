@@ -42,6 +42,7 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.cluster.TransSplitter;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.StepErrorMeta;
 import be.ibridge.kettle.trans.step.StepInitThread;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
@@ -98,7 +99,7 @@ public class Trans
 	/**
 	 * A list of all the steps
 	 */
-	private ArrayList steps;
+	private List steps;
 
 	public  int class_nr;
 
@@ -419,7 +420,35 @@ public class Trans
 				}
 			}
 		}
-
+        
+        // Now we need to verify if certain rowsets are not meant to be for error handling...
+        // Loop over the steps and for every step verify the output rowsets
+        // If a rowset is going to a target step in the steps error handling metadata, set it to the errorRowSet.
+        // The input rowsets are already in place, so the next step just accepts the rows.
+        // Metadata wise we need to do the same trick in TransMeta
+        //
+        for (int s=0;s<steps.size();s++)
+        {
+            StepMetaDataCombi combi = (StepMetaDataCombi) steps.get(s);
+            if (combi.stepMeta.isDoingErrorHandling())
+            {
+                StepErrorMeta stepErrorMeta = combi.stepMeta.getStepErrorMeta();
+                BaseStep baseStep = (BaseStep)combi.step;
+                boolean stop=false;
+                for (int rowsetNr=0;rowsetNr<baseStep.outputRowSets.size() && !stop;rowsetNr++)
+                {
+                    RowSet outputRowSet = (RowSet) baseStep.outputRowSets.get(rowsetNr);
+                    if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName()))
+                    {
+                        // This is the rowset to move!
+                        baseStep.errorRowSet = outputRowSet;
+                        baseStep.outputRowSets.remove(rowsetNr);
+                        stop=true;
+                    }
+                }
+            }
+        }
+        
 		// Link the threads to the rowsets
 		setThreadsOnRowSets();
 
@@ -1460,7 +1489,7 @@ public class Trans
 	/**
 	 * @return Returns the rowsets.
 	 */
-	public ArrayList getRowsets()
+	public List getRowsets()
 	{
 		return rowsets;
 	}
@@ -1468,7 +1497,7 @@ public class Trans
 	/**
 	 * @return Returns the steps.
 	 */
-	public ArrayList getSteps()
+	public List getSteps()
 	{
 		return steps;
 	}

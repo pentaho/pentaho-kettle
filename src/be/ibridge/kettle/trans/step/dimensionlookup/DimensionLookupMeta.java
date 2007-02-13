@@ -573,7 +573,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
             schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = Const.findDatabase(databases, con);
+			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			commit = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize = Const.toInt(commit, 0);
 
@@ -809,7 +809,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
-			databaseMeta = Const.findDatabase(databases, id_connection);
+			databaseMeta = DatabaseMeta.findDatabase(databases, id_connection);
 
             schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
 			tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$

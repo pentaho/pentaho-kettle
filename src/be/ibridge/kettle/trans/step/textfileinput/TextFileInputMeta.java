@@ -977,7 +977,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		acceptingStep = TransMeta.findStep(steps, acceptingStepName);
+		acceptingStep = StepMeta.findStep(steps, acceptingStepName);
 	}
 
 	public String[] getInfoSteps()

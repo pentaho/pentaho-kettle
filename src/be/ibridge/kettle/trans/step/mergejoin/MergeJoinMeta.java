@@ -330,8 +330,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		stepMeta1  = TransMeta.findStep(steps, stepName1);
-		stepMeta2 = TransMeta.findStep(steps, stepName2);
+		stepMeta1  = StepMeta.findStep(steps, stepName1);
+		stepMeta2 = StepMeta.findStep(steps, stepName2);
 	}
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)

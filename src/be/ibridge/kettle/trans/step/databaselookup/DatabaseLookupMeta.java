@@ -386,7 +386,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			String csize;
 			
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = Const.findDatabase(databases, con);
+			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			cached      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "cache")); //$NON-NLS-1$ //$NON-NLS-2$
 			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
 			cacheSize=Const.toInt(csize, 0);
@@ -551,7 +551,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta       = Const.findDatabase( databases, id_connection);
+			databaseMeta       = DatabaseMeta.findDatabase( databases, id_connection);
 			
 			cached                   =      rep.getStepAttributeBoolean(id_step, "cache"); //$NON-NLS-1$
 			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$

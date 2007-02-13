@@ -323,7 +323,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			int nrkeys, nrvalues;
 			
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = Const.findDatabase(databases, con);
+			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize=Const.toInt(csize, 0);
             errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -433,7 +433,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta = Const.findDatabase( databases, id_connection);
+			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$

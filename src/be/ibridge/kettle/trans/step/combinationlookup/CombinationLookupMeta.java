@@ -357,7 +357,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             schemaName  = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			tablename  = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			database = Const.findDatabase(databases, con);
+			database = DatabaseMeta.findDatabase(databases, con);
 			commit     = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize = Const.toInt(commit, 0);
 			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
@@ -490,7 +490,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			database = Const.findDatabase( databases, id_connection);
+			database = DatabaseMeta.findDatabase( databases, id_connection);
 
             schemaName       =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			tablename        =      rep.getStepAttributeString (id_step, "table"); //$NON-NLS-1$

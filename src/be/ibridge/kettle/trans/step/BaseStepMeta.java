@@ -253,4 +253,12 @@ public class BaseStepMeta implements Cloneable
     {
         return new String[] {};
     }
+        
+    /**
+     * @return true if this step supports error "reporting" on rows: the ability to send rows to a certain target step.
+     */
+    public boolean supportsErrorHandling()
+    {
+        return false;
+    }
 }

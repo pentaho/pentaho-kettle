@@ -6,4 +6,5 @@ public interface RowListener
 {
     public void rowReadEvent(Row row);
     public void rowWrittenEvent(Row row);
+    public void errorRowWrittenEvent(Row row);
 }

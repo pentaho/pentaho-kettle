@@ -213,7 +213,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			databaseMeta = Const.findDatabase(databases, con);
+			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			sql        = XMLHandler.getTagValue(stepnode, "sql"); //$NON-NLS-1$
 			outerJoin = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outer_join")); //$NON-NLS-1$ //$NON-NLS-2$
 			
@@ -359,7 +359,7 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			databaseMeta       = Const.findDatabase( databases, id_connection);
+			databaseMeta       = DatabaseMeta.findDatabase( databases, id_connection);
 			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "rowlimit"); //$NON-NLS-1$
 			sql              =      rep.getStepAttributeString (id_step, "sql");  //$NON-NLS-1$
 			outerJoin       =      rep.getStepAttributeBoolean(id_step, "outer_join");  //$NON-NLS-1$

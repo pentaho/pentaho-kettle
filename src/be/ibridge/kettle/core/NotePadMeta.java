@@ -33,7 +33,9 @@ import be.ibridge.kettle.repository.Repository;
 
 public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterface, GUISizeInterface
 {
-	private String note;
+	public static final String XML_TAG = "notepad";
+    
+    private String note;
 	private Point location;
 	public int width, height;
 	private boolean selected;

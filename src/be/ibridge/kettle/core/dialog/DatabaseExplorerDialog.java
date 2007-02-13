@@ -578,7 +578,7 @@ public class DatabaseExplorerDialog extends Dialog
     			String target = esd.open();
     			if (target!=null)
     			{
-    				DatabaseMeta targetdbi = Const.findDatabase(dbs, target);
+    				DatabaseMeta targetdbi = DatabaseMeta.findDatabase(dbs, target);
     				Database targetdb = new Database(targetdbi);
     
     				String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);

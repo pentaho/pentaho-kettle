@@ -662,4 +662,8 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
         return new String[] { "js.jar" };
     }
 
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }

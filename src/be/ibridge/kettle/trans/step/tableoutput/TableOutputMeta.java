@@ -337,7 +337,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			String commit;
 		
 			String con = XMLHandler.getTagValue(stepnode, "connection");
-			databaseMeta      = Const.findDatabase(databases, con);
+			databaseMeta      = DatabaseMeta.findDatabase(databases, con);
             schemaName    = XMLHandler.getTagValue(stepnode, "schema");
 			tablename     = XMLHandler.getTagValue(stepnode, "table");
 			commit        = XMLHandler.getTagValue(stepnode, "commit");
@@ -410,7 +410,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
-			databaseMeta = Const.findDatabase( databases, id_connection);
+			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
             schemaName       =      rep.getStepAttributeString (id_step, "schema");
 			tablename        =      rep.getStepAttributeString (id_step, "table");
 			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit");

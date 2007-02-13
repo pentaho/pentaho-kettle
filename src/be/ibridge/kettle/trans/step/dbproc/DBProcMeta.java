@@ -321,7 +321,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
             int nrargs;
 
             String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-            database = Const.findDatabase(databases, con);
+            database = DatabaseMeta.findDatabase(databases, con);
             procedure = XMLHandler.getTagValue(stepnode, "procedure"); //$NON-NLS-1$
 
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
@@ -354,7 +354,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         try
         {
             long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
-            database = Const.findDatabase(databases, id_connection);
+            database = DatabaseMeta.findDatabase(databases, id_connection);
             procedure = rep.getStepAttributeString(id_step, "procedure"); //$NON-NLS-1$
 
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$

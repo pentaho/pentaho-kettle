@@ -225,7 +225,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 			setErrorMessage(Messages.getString("CreateDatabaseWizardPage1.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
-		if (name!=null && Const.findDatabase(databases, name)!=null)
+		if (name!=null && DatabaseMeta.findDatabase(databases, name)!=null)
 		{
 			setErrorMessage(Messages.getString("CreateDatabaseWizardPage1.ErrorMessage.DBNameExists",name)); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;

@@ -357,7 +357,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		mainStep = TransMeta.findStep(steps, mainStepname);
+		mainStep = StepMeta.findStep(steps, mainStepname);
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

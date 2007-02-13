@@ -172,7 +172,7 @@ public class CopyTableWizardPage1 extends WizardPage
 		if (wSourceDB.getSelection().length==1)
 		{
 			String sourceDbName = wSourceDB.getSelection()[0];
-			return Const.findDatabase(databases, sourceDbName);
+			return DatabaseMeta.findDatabase(databases, sourceDbName);
 		}
 		return null;
 	}
@@ -182,7 +182,7 @@ public class CopyTableWizardPage1 extends WizardPage
 		if (wTargetDB.getSelection().length==1)
 		{
 			String targetDbName = wTargetDB.getSelection()[0];
-			return Const.findDatabase(databases, targetDbName);
+			return DatabaseMeta.findDatabase(databases, targetDbName);
 		}
 		return null;
 	}	

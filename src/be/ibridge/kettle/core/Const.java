@@ -1160,6 +1160,7 @@ public class Const
 	 * @param databases The ArrayList of databases
 	 * @param dbname The name of the database connection
 	 * @return The database object if one was found, null otherwise.
+     * @deprecated please use DatabaseMeta.findDatabase()
 	 */
 	public static final DatabaseMeta findDatabase(List databases, String dbname)
 	{
@@ -1179,7 +1180,9 @@ public class Const
      * Find a database with a certain name in an arraylist of databases.
      * @param databases The ArrayList of databases
      * @param dbname The name of the database connection
+     * @param exclude the name of the database connection to exclude from the search
      * @return The database object if one was found, null otherwise.
+     * @deprecated please use DatabaseMeta.findDatabase()
      */
     public static final DatabaseMeta findDatabase(List databases, String dbname, String exclude)
     {
@@ -1200,6 +1203,7 @@ public class Const
 	 * @param databases The ArrayList of databases
 	 * @param id The id of the database connection
 	 * @return The database object if one was found, null otherwise.
+     * @deprecated please use DatabaseMeta.findDatabase()
 	 */
 	public static final DatabaseMeta findDatabase(List databases, long id)
 	{

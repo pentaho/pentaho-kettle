@@ -170,7 +170,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta              = Const.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
+			databaseMeta              = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
 			rowLimit                  = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
 			lookupFromStepname        = XMLHandler.getTagValue(stepnode, "lookup");
@@ -297,7 +297,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); 
-			databaseMeta = Const.findDatabase( databases, id_connection);
+			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			rowLimit                  = (int)rep.getStepAttributeInteger(id_step, "limit");
@@ -460,7 +460,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-	    lookupFromStep = TransMeta.findStep(steps, lookupFromStepname);
+	    lookupFromStep = StepMeta.findStep(steps, lookupFromStepname);
 	}
 
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

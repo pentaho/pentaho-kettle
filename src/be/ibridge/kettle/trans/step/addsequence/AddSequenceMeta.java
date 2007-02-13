@@ -217,7 +217,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			
 			useDatabase = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
 			String conn  = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
-			database   = Const.findDatabase(databases, conn);
+			database   = DatabaseMeta.findDatabase(databases, conn);
             schemaName        = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
 			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
 			
@@ -291,7 +291,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	
 			useDatabase        =      rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
 			long id_connection =    rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
-			database = Const.findDatabase( databases, id_connection);
+			database = DatabaseMeta.findDatabase( databases, id_connection);
             schemaName         =      rep.getStepAttributeString (id_step, "schema"); //$NON-NLS-1$
 			sequenceName       =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	

@@ -659,7 +659,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		lookupFromStep = TransMeta.findStep(steps, lookupFromStepname);
+		lookupFromStep = StepMeta.findStep(steps, lookupFromStepname);
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

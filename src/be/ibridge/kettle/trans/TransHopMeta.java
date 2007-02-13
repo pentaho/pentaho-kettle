@@ -39,7 +39,9 @@ import be.ibridge.kettle.trans.step.StepMeta;
  */
 public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 {
-	private StepMeta from_step;
+	public static final String XML_TAG = "hop";
+    
+    private StepMeta from_step;
 	private StepMeta to_step;
 	private boolean  enabled;
 	
@@ -127,21 +129,21 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 			long id_step_to   = r.searchValue("ID_STEP_TO").getInteger(); //$NON-NLS-1$
 			enabled           = r.searchValue("ENABLED").getBoolean(); //$NON-NLS-1$
 			
-			from_step = TransMeta.findStep(steps, id_step_from);
+			from_step = StepMeta.findStep(steps, id_step_from);
             if (from_step==null && id_step_from>0) // Links to a shared objects, try again by looking up the name...
             {
                 // Simply load this, we only want the name, we don't care about the rest...
                 StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList(), new Hashtable(), new ArrayList()); 
-                from_step = TransMeta.findStep(steps, stepMeta.getName());
+                from_step = StepMeta.findStep(steps, stepMeta.getName());
             }
             from_step.setDraw(true);
             
-			to_step   = TransMeta.findStep(steps, id_step_to);
+			to_step   = StepMeta.findStep(steps, id_step_to);
             if (to_step==null  && id_step_to>0) // Links to a shared objects, try again by looking up the name...
             {
                 // Simply load this, we only want the name, we don't care about the rest...
                 StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList(), new Hashtable(), new ArrayList()); 
-                to_step = TransMeta.findStep(steps, stepMeta.getName());
+                to_step = StepMeta.findStep(steps, stepMeta.getName());
             }
             to_step.setDraw(true);
 		}

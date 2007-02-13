@@ -275,7 +275,7 @@ public class PartitionSchemaDialog extends Dialog
             String dbName = dialog.open();
             if (dbName!=null)
             {
-                DatabaseMeta databaseMeta = Const.findDatabase(databases, dbName);
+                DatabaseMeta databaseMeta = DatabaseMeta.findDatabase(databases, dbName);
                 PartitionDatabaseMeta[] partitioningInformation = databaseMeta.getPartitioningInformation();
                 if (partitioningInformation!=null)
                 {

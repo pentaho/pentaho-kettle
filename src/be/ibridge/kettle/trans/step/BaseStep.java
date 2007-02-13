@@ -334,6 +334,9 @@ public class BaseStep extends Thread
     /** the rowsets on the output, size() == nr of target steps */
     public List outputRowSets;
     
+    /** the rowset for the error rows */
+    public RowSet errorRowSet;
+    
     public boolean                       stopped;
 
     public boolean                       waiting;
@@ -966,6 +969,45 @@ public class BaseStep extends Thread
         rs.putRow(row);
         linesWritten++;
     }
+    
+    
+    public synchronized void putError(Row row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    {
+        if (errorRowSet==null) return; // nothing to do here ;-)
+        
+        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+        if (!Const.isEmpty(stepErrorMeta.getNrErrorsValuename()))
+        {
+            Value v = new Value(stepErrorMeta.getNrErrorsValuename(), nrErrors);
+            v.setLength(3);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(stepErrorMeta.getErrorDescriptionsValuename()))
+        {
+            Value v = new Value(stepErrorMeta.getErrorDescriptionsValuename(), errorDescriptions);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(stepErrorMeta.getErrorFieldsValuename()))
+        {
+            Value v = new Value(stepErrorMeta.getErrorFieldsValuename(), fieldNames);
+            row.addValue(v);
+        }
+        if (!Const.isEmpty(stepErrorMeta.getErrorCodesValuename()))
+        {
+            Value v = new Value(stepErrorMeta.getErrorCodesValuename(), errorCodes);
+            row.addValue(v);
+        }
+        
+        // call all rowlisteners...
+        for (int i = 0; i < rowListeners.size(); i++)
+        {
+            RowListener rowListener = (RowListener) rowListeners.get(i);
+            rowListener.errorRowWrittenEvent(row);
+        }
+
+        errorRowSet.putRow(row);
+    }
+    
 
     private synchronized RowSet currentInputStream()
     {
@@ -1248,6 +1290,7 @@ public class BaseStep extends Thread
                 RowSet rs = (RowSet) outputRowSets.get(i);
                 rs.setDone();
             }
+            if (errorRowSet!=null) errorRowSet.setDone();
         }
     }
 
@@ -1271,6 +1314,7 @@ public class BaseStep extends Thread
 
         inputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nrinput];
         outputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nroutput+out_copies];
+        errorRowSet = null;
         prevSteps = new StepMeta[nrInput];
         nextSteps = new StepMeta[nrOutput];
 
@@ -1938,4 +1982,5 @@ public class BaseStep extends Thread
         return getTransMeta().isFeedbackShown() && (lines > 0) && (getTransMeta().getFeedbackSize() > 0)
                 && (lines % getTransMeta().getFeedbackSize()) == 0;
     }
+
 }

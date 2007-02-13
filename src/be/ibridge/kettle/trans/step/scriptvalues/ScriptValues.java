@@ -17,7 +17,6 @@
 package be.ibridge.kettle.trans.step.scriptvalues;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 
 import be.ibridge.kettle.core.Const;
@@ -129,45 +128,52 @@ public class ScriptValues extends BaseStep implements StepInterface
 		
 		try
 		{
-
 			data.script.exec(data.cx, data.scope);
 			
 			StringBuffer message = new StringBuffer();
+            Row add = new Row();
 			for (int i=0;i<meta.getName().length;i++)
 			{
 				Value res = new Value();
 				if (meta.getValue(data.scope, i, res, message)) 
 				{
-					logError(message.toString());
-					setErrors(1);
-					stopAll();
-					return false;
+                    if (getStepMeta().isDoingErrorHandling())
+                    {
+                        putError(row, 1, message.toString(), meta.getName()[i], "SCR001");
+                    }
+                    else
+                    {
+    					logError(message.toString());
+    					setErrors(1);
+    					stopAll();
+                    }
+                    return false;
 				}
 					
-				row.addValue(res);  // This means the row in rowset gets an extra field!
+				add.addValue(res);  // This means the row in rowset gets an extra field!
 			}
-		}
-		catch(JavaScriptException jse)
-		{
-            logError(Messages.getString("ScriptValues.Log.JavascriptError")+jse.toString()); //$NON-NLS-1$
-            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
-            setErrors(1);
-			stopAll();
-			return false;
+            row.addRow(add);
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("ScriptValues.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
-            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			return false;
+            if (getStepMeta().isDoingErrorHandling())
+            {
+                putError(row, 1, e.toString(), null, "SCR002");
+            }
+            else
+            {
+    			logError(Messages.getString("ScriptValues.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
+                logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+    			setErrors(1);
+    			stopAll();
+            }
+            return false;
 		}
 		
 		return true;
 	}
-	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+
+    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(ScriptValuesMeta)smi;
 		data=(ScriptValuesData)sdi;
@@ -184,13 +190,18 @@ public class ScriptValues extends BaseStep implements StepInterface
 		// add new values to the row.
 		if (!addValues(r))
 		{
-			if (data.cx!=null) Context.exit();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+            if (!getStepMeta().isDoingErrorHandling())
+            {
+    			if (data.cx!=null) Context.exit();
+    			setOutputDone();  // signal end to receiver(s)
+    			return false;
+            }
 		}
-		putRow(r);       // copy row to output rowset(s);
-			
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("ScriptValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        else
+        {
+            putRow(r);       // copy row to output rowset(s);
+            if (checkFeedback(linesRead)) logBasic(Messages.getString("ScriptValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        }
 			
 		return true;
 	}

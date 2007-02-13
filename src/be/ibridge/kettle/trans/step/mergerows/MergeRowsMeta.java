@@ -351,8 +351,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		referenceStepMeta  = TransMeta.findStep(steps, referenceStepName);
-		compareStepMeta = TransMeta.findStep(steps, compareStepName);
+		referenceStepMeta  = StepMeta.findStep(steps, referenceStepName);
+		compareStepMeta = StepMeta.findStep(steps, compareStepName);
 	}
 
 	public boolean chosesTargetSteps()

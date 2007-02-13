@@ -348,8 +348,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
-		sendTrueStep  = TransMeta.findStep(steps, sendTrueStepname);
-		sendFalseStep = TransMeta.findStep(steps, sendFalseStepname);
+		sendTrueStep  = StepMeta.findStep(steps, sendTrueStepname);
+		sendFalseStep = StepMeta.findStep(steps, sendFalseStepname);
 	}
 
     /**

@@ -893,5 +893,15 @@ public class XMLHandler
         return cdata.toString();
     }
 
+    public static final String openTag(String tag)
+    {
+        return "<"+tag+">";
+    }
+
+    public static final String closeTag(String tag)
+    {
+        return "</"+tag+">";
+    }
+
 }
 	

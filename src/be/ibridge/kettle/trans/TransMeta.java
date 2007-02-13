@@ -72,6 +72,7 @@ import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.spoon.UndoInterface;
+import be.ibridge.kettle.trans.step.StepErrorMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
@@ -199,6 +200,16 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     public static final String  desc_type_undo[]   = { "", Messages.getString("TransMeta.UndoTypeDesc.UndoChange"), Messages.getString("TransMeta.UndoTypeDesc.UndoNew"), Messages.getString("TransMeta.UndoTypeDesc.UndoDelete"), Messages.getString("TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     private static final String STRING_MODIFIED_DATE = "modified_date";
+
+    private static final String XML_TAG_INFO                = "info";
+    private static final String XML_TAG_ORDER               = "order";
+    private static final String XML_TAG_NOTEPADS            = "notepads";
+    private static final String XML_TAG_DEPENDENCIES        = "dependencies";
+    private static final String XML_TAG_PARTITIONSCHEMAS    = "partitionschemas";
+    private static final String XML_TAG_SLAVESERVERS        = "slaveservers";
+    private static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
+    private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
+
 
 
     /**
@@ -1951,12 +1962,12 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 outputStep = findStep(steps, r.getInteger("ID_STEP_OUTPUT", -1L)); //$NON-NLS-1$
                 updateStep = findStep(steps, r.getInteger("ID_STEP_UPDATE", -1L)); //$NON-NLS-1$
 
-                logConnection = Const.findDatabase(databases, r.getInteger("ID_DATABASE_LOG", -1L)); //$NON-NLS-1$
+                logConnection = DatabaseMeta.findDatabase(databases, r.getInteger("ID_DATABASE_LOG", -1L)); //$NON-NLS-1$
                 logTable = r.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
                 useBatchId = r.getBoolean("USE_BATCHID", false); //$NON-NLS-1$
                 logfieldUsed = r.getBoolean("USE_LOGFIELD", false); //$NON-NLS-1$
 
-                maxDateConnection = Const.findDatabase(databases, r.getInteger("ID_DATABASE_MAXDATE", -1L)); //$NON-NLS-1$
+                maxDateConnection = DatabaseMeta.findDatabase(databases, r.getInteger("ID_DATABASE_MAXDATE", -1L)); //$NON-NLS-1$
                 maxDateTable = r.getString("TABLE_NAME_MAXDATE", null); //$NON-NLS-1$
                 maxDateField = r.getString("FIELD_NAME_MAXDATE", null); //$NON-NLS-1$
                 maxDateOffset = r.getNumber("OFFSET_MAXDATE", 0.0); //$NON-NLS-1$
@@ -2246,9 +2257,9 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
         StringBuffer retval = new StringBuffer();
 
-        retval.append("<"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
+        retval.append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
 
-        retval.append("  <info>" + Const.CR); //$NON-NLS-1$
+        retval.append("  ").append(XMLHandler.openTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
 
         retval.append("    " + XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2283,57 +2294,57 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         retval.append("    " + XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
         retval.append("    " + XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
         
-        retval.append("    <dependencies>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
         {
             TransDependency td = getDependency(i);
             retval.append(td.getXML());
         }
-        retval.append("      </dependencies>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
 
         // The database partitioning schemas...
         //
-        retval.append("    <partitionschemas>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < partitionSchemas.size(); i++)
         {
             PartitionSchema partitionSchema = (PartitionSchema) partitionSchemas.get(i);
             retval.append(partitionSchema.getXML());
         }
-        retval.append("      </partitionschemas>" + Const.CR); //$NON-NLS-1$
-
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
+        
         // The slave servers...
         //
-        retval.append("    <slaveservers>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < slaveServers.size(); i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
             retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
         }
-        retval.append("      </slaveservers>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
 
         // The cluster schemas...
         //
-        retval.append("    <clusterschemas>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.openTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < clusterSchemas.size(); i++)
         {
             ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
             retval.append(clusterSchema.getXML());
         }
-        retval.append("      </clusterschemas>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
 
         
         retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
         retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
 
-        retval.append("    </info>" + Const.CR); //$NON-NLS-1$
-
-        retval.append("  <notepads>" + Const.CR); //$NON-NLS-1$
+        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
+        
+        retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
         if (notes != null) for (int i = 0; i < nrNotes(); i++)
         {
             NotePadMeta ni = getNote(i);
             retval.append(ni.getXML());
         }
-        retval.append("    </notepads>" + Const.CR); //$NON-NLS-1$
+        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
 
         // The database connections...
         for (int i = 0; i < nrDatabases(); i++)
@@ -2349,18 +2360,32 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             }
         }
 
-        retval.append("  <order>" + Const.CR); //$NON-NLS-1$
+        retval.append("  ").append(XMLHandler.openTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrTransHops(); i++)
         {
             TransHopMeta transHopMeta = getTransHop(i);
             retval.append(transHopMeta.getXML());
         }
-        retval.append("  </order>" + Const.CR + Const.CR); //$NON-NLS-1$
+        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_ORDER)).append(Const.CR); //$NON-NLS-1$
 
+        /* The steps... */
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
             retval.append(stepMeta.getXML());
+        }
+        
+        /* The error handling metadata on the steps */
+        for (int i = 0; i < nrSteps(); i++)
+        {
+            StepMeta stepMeta = getStep(i);
+            
+            if (stepMeta.getStepErrorMeta()!=null)
+            {
+                retval.append("  ").append(XMLHandler.openTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
+                retval.append(stepMeta.getStepErrorMeta().getXML());
+                retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
+            }
         }
 
         retval.append("</"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
@@ -2503,12 +2528,12 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             }
 
             // Handle connections
-            int n = XMLHandler.countNodes(transnode, "connection"); //$NON-NLS-1$
+            int n = XMLHandler.countNodes(transnode, DatabaseMeta.XML_TAG); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
-                Node nodecon = XMLHandler.getSubNodeByNr(transnode, "connection", i); //$NON-NLS-1$
+                Node nodecon = XMLHandler.getSubNodeByNr(transnode, DatabaseMeta.XML_TAG, i); //$NON-NLS-1$
 
                 DatabaseMeta dbcon = new DatabaseMeta(nodecon);
 
@@ -2557,22 +2582,22 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             }
 
             // Read the notes...
-            Node notepadsnode = XMLHandler.getSubNode(transnode, "notepads"); //$NON-NLS-1$
-            int nrnotes = XMLHandler.countNodes(notepadsnode, "notepad"); //$NON-NLS-1$
+            Node notepadsnode = XMLHandler.getSubNode(transnode, XML_TAG_NOTEPADS); //$NON-NLS-1$
+            int nrnotes = XMLHandler.countNodes(notepadsnode, NotePadMeta.XML_TAG); //$NON-NLS-1$
             for (int i = 0; i < nrnotes; i++)
             {
-                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, "notepad", i); //$NON-NLS-1$
+                Node notepadnode = XMLHandler.getSubNodeByNr(notepadsnode, NotePadMeta.XML_TAG, i); //$NON-NLS-1$
                 NotePadMeta ni = new NotePadMeta(notepadnode);
                 notes.add(ni);
             }
 
             // Handle Steps
-            int s = XMLHandler.countNodes(transnode, "step"); //$NON-NLS-1$
+            int s = XMLHandler.countNodes(transnode, StepMeta.XML_TAG); //$NON-NLS-1$
 
             log.logDebug(toString(), Messages.getString("TransMeta.Log.ReadingSteps") + s + " steps..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < s; i++)
             {
-                Node stepnode = XMLHandler.getSubNodeByNr(transnode, "step", i); //$NON-NLS-1$
+                Node stepnode = XMLHandler.getSubNodeByNr(transnode, StepMeta.XML_TAG, i); //$NON-NLS-1$
 
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
                 StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
@@ -2597,6 +2622,16 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                     addStep(stepMeta); // simply add it.
                 }
             }
+            
+            // Read the error handling code of the steps...
+            Node errorHandlingNode = XMLHandler.getSubNode(transnode, XML_TAG_STEP_ERROR_HANDLING);
+            int nrErrorHandlers = XMLHandler.countNodes(errorHandlingNode, StepErrorMeta.XML_TAG);
+            for (int i=0;i<nrErrorHandlers;i++)
+            {
+                Node stepErrorMetaNode = XMLHandler.getSubNodeByNr(errorHandlingNode, StepErrorMeta.XML_TAG, i);
+                StepErrorMeta stepErrorMeta = new StepErrorMeta(stepErrorMetaNode, steps);
+                stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
+            }
 
             // Have all StreamValueLookups, etc. reference the correct source steps...
             for (int i = 0; i < nrSteps(); i++)
@@ -2607,14 +2642,14 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             }
 
             // Handle Hops
-            Node ordernode = XMLHandler.getSubNode(transnode, "order"); //$NON-NLS-1$
-            n = XMLHandler.countNodes(ordernode, "hop"); //$NON-NLS-1$
+            Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
+            n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
 
             log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveHops") + n + " hops..."); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtHop") + i); //$NON-NLS-1$
-                Node hopnode = XMLHandler.getSubNodeByNr(ordernode, "hop", i); //$NON-NLS-1$
+                Node hopnode = XMLHandler.getSubNodeByNr(ordernode, TransHopMeta.XML_TAG, i); //$NON-NLS-1$
 
                 TransHopMeta hopinf = new TransHopMeta(hopnode, steps);
                 addTransHop(hopinf);
@@ -2623,7 +2658,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             //
             // get transformation info:
             //
-            Node infonode = XMLHandler.getSubNode(transnode, "info"); //$NON-NLS-1$
+            Node infonode = XMLHandler.getSubNode(transnode, XML_TAG_INFO); //$NON-NLS-1$
 
             // Name
             name = XMLHandler.getTagValue(infonode, "name"); //$NON-NLS-1$
@@ -2658,12 +2693,12 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             // We calculate BEFORE we run the MAX of these dates
             // If the date is larger then enddate, startdate is set to MIN_DATE
             //
-            Node depsNode = XMLHandler.getSubNode(infonode, "dependencies"); //$NON-NLS-1$
-            int nrDeps = XMLHandler.countNodes(depsNode, "dependency"); //$NON-NLS-1$
+            Node depsNode = XMLHandler.getSubNode(infonode, XML_TAG_DEPENDENCIES); //$NON-NLS-1$
+            int nrDeps = XMLHandler.countNodes(depsNode, TransDependency.XML_TAG); //$NON-NLS-1$
 
             for (int i = 0; i < nrDeps; i++)
             {
-                Node depNode = XMLHandler.getSubNodeByNr(depsNode, "dependency", i); //$NON-NLS-1$
+                Node depNode = XMLHandler.getSubNodeByNr(depsNode, TransDependency.XML_TAG, i); //$NON-NLS-1$
 
                 TransDependency transDependency = new TransDependency(depNode, databases);
                 if (transDependency.getDatabase() != null && transDependency.getFieldname() != null)
@@ -2674,7 +2709,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
             // Read the partitioning schemas
             // 
-            Node partSchemasNode = XMLHandler.getSubNode(infonode, "partitionschemas"); //$NON-NLS-1$
+            Node partSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_PARTITIONSCHEMAS); //$NON-NLS-1$
             int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, PartitionSchema.XML_TAG); //$NON-NLS-1$
             for (int i = 0 ; i < nrPartSchemas ; i++)
             {
@@ -2712,7 +2747,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
             // Read the slave servers...
             // 
-            Node slaveServersNode = XMLHandler.getSubNode(infonode, "slaveservers"); //$NON-NLS-1$
+            Node slaveServersNode = XMLHandler.getSubNode(infonode, XML_TAG_SLAVESERVERS); //$NON-NLS-1$
             int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
             for (int i = 0 ; i < nrSlaveServers ; i++)
             {
@@ -2738,7 +2773,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
             // Read the cluster schemas
             // 
-            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, "clusterschemas"); //$NON-NLS-1$
+            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, XML_TAG_CLUSTERSCHEMAS); //$NON-NLS-1$
             int nrClusterSchemas = XMLHandler.countNodes(clusterSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
             for (int i = 0 ; i < nrClusterSchemas ; i++)
             {
@@ -3672,6 +3707,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      * @param steps The ArrayList of steps
      * @param id The ID of the step
      * @return The step if it was found, null if nothing was found
+     * @deprecated please use StepMeta.findStep()
      */
     public static final StepMeta findStep(ArrayList steps, long id)
     {
@@ -3691,6 +3727,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      * @param steps The ArrayList of steps
      * @param stepname The name of the step
      * @return The step if it was found, null if nothing was found
+     * @deprecated please use StepMeta.findStep()
      */
     public static final StepMeta findStep(ArrayList steps, String stepname)
     {
