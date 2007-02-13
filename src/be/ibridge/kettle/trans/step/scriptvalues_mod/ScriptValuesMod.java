@@ -112,11 +112,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			}
 		}
 		
-		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream"+data.fields_used.length)); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream",String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-
-	
-
 	
 	private synchronized int addValues(Row row){
 		if (first){
@@ -459,7 +456,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		if (checkFeedback(linesRead)) logBasic(Messages.getString("ScriptValuesMod.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		return bRC;
 	}
-		
+
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi){
 		meta=(ScriptValuesMetaMod)smi;
 		data=(ScriptValuesDataMod)sdi;
