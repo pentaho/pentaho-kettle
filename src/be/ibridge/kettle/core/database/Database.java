@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -1734,17 +1735,19 @@ public class Database
      * Insert a row into the database using a prepared statement that has all values set.
      * @param ps The prepared statement
      * @param batch True if you want to use batch inserts (size = commitsize)
+     * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
      * @throws KettleDatabaseException
      */
-	public void insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
+	public boolean insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{
 	    String debug="insertRow start";
+        boolean rowsAreSafe=false;
 		try
 		{
             // Unique connections and Batch inserts don't mix when you want to roll back on certain databases.
             // That's why we disable the batch insert in that case.
             //
-            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates() && !Const.isEmpty(connectionGroup);
+            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates() && Const.isEmpty(connectionGroup);
             
 			//
 			// Add support for batch inserts...
@@ -1788,18 +1791,27 @@ public class Database
 				    debug="insertRow normal commit";
                     commit();
 				}
+                rowsAreSafe=true;
 			}
+            return rowsAreSafe;
 		}
 		catch(BatchUpdateException ex)
 		{
 		    //System.out.println("Batch update exception "+ex.getMessage());
 			KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
 		    kdbe.setUpdateCounts(ex.getUpdateCounts());
+            List exceptions = new ArrayList();
+            SQLException nextException;
+            while ( (nextException = ex.getNextException())!=null)
+            {
+                exceptions.add(nextException);
+            }
+            kdbe.setExceptionsList(exceptions);
 		    throw kdbe;
 		}
 		catch(SQLException ex) 
 		{
-		    log.logError(toString(), Const.getStackTracker(ex));
+		    // log.logError(toString(), Const.getStackTracker(ex));
 			throw new KettleDatabaseException("Error inserting row", ex);
 		}
 		catch(Exception e)
@@ -1860,6 +1872,20 @@ public class Database
 				ps.close();
 			}
 		}
+        catch(BatchUpdateException ex)
+        {
+            //System.out.println("Batch update exception "+ex.getMessage());
+            KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
+            kdbe.setUpdateCounts(ex.getUpdateCounts());
+            List exceptions = new ArrayList();
+            SQLException nextException;
+            while ( (nextException = ex.getNextException())!=null)
+            {
+                exceptions.add(nextException);
+            }
+            kdbe.setExceptionsList(exceptions);
+            throw kdbe;
+        }
 		catch(SQLException ex) 
 		{
 			throw new KettleDatabaseException("Unable to commit connection after having inserted rows.", ex);

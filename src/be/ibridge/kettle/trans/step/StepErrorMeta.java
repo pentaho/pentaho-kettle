@@ -9,7 +9,10 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.repository.Repository;
 
 /**
  * This class contains the metadata to handle proper error handling on a step level.
@@ -124,6 +127,29 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         errorCodesValuename = XMLHandler.getTagValue(node, "codes_valuename");
     }
 
+
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleDatabaseException
+    {
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_source_step", sourceStep!=null ? sourceStep.getName() : "");
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_target_step", targetStep!=null ? targetStep.getName() : "");
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_is_enabled",  enabled);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_nr_valuename",  nrErrorsValuename);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_descriptions_valuename",  errorDescriptionsValuename);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_fields_valuename",  errorFieldsValuename);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_codes_valuename",  errorCodesValuename);
+    }
+    
+    public StepErrorMeta(Repository rep, StepMeta stepMeta, List steps) throws KettleDatabaseException
+    {
+        sourceStep = stepMeta;
+        targetStep = StepMeta.findStep( steps, rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_target_step") );
+        enabled = rep.getStepAttributeBoolean(stepMeta.getID(), "step_error_handling_is_enabled");
+        nrErrorsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_nr_valuename");
+        errorDescriptionsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_descriptions_valuename");
+        errorFieldsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_fields_valuename");
+        errorCodesValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_codes_valuename");
+    }
+    
     /**
      * @return the error codes valuename
      */
@@ -244,28 +270,34 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     public Row getErrorFields(long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
         Row row = new Row();
-        if (!Const.isEmpty(getNrErrorsValuename()))
+        
+        String nrErr = StringUtil.environmentSubstitute(getNrErrorsValuename());
+        if (!Const.isEmpty(nrErr))
         {
-            Value v = new Value(getNrErrorsValuename(), nrErrors);
+            Value v = new Value(nrErr, nrErrors);
             v.setLength(3);
             row.addValue(v);
         }
-        if (!Const.isEmpty(getErrorDescriptionsValuename()))
+        String errDesc = StringUtil.environmentSubstitute(getErrorDescriptionsValuename());
+        if (!Const.isEmpty(errDesc))
         {
-            Value v = new Value(getErrorDescriptionsValuename(), errorDescriptions);
+            Value v = new Value(errDesc, errorDescriptions);
             row.addValue(v);
         }
-        if (!Const.isEmpty(getErrorFieldsValuename()))
+        String errFields = StringUtil.environmentSubstitute(getErrorFieldsValuename());
+        if (!Const.isEmpty(errFields))
         {
-            Value v = new Value(getErrorFieldsValuename(), fieldNames);
+            Value v = new Value(errFields, fieldNames);
             row.addValue(v);
         }
-        if (!Const.isEmpty(getErrorCodesValuename()))
+        String errCodes = StringUtil.environmentSubstitute(getErrorCodesValuename());
+        if (!Const.isEmpty(errCodes))
         {
-            Value v = new Value(getErrorCodesValuename(), errorCodes);
+            Value v = new Value(errCodes, errorCodes);
             row.addValue(v);
         }
         
         return row;
     }
+
 }

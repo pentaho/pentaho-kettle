@@ -17,6 +17,8 @@
 
 package be.ibridge.kettle.core.exception;
 
+import java.util.List;
+
 /**
  * This exception is used by the Database class.
  *  
@@ -29,6 +31,8 @@ public class KettleDatabaseBatchException extends KettleDatabaseException
     public static final long serialVersionUID = 0x8D8EA0264F7A1C0EL;
     
     private int updateCounts[];
+
+    private List exceptionsList;
 
 	/**
 	 * Constructs a new throwable with null as its detail message.
@@ -80,5 +84,15 @@ public class KettleDatabaseBatchException extends KettleDatabaseException
     public void setUpdateCounts(int[] updateCounts)
     {
         this.updateCounts = updateCounts;
+    }
+
+    public void setExceptionsList(List exceptionsList)
+    {
+        this.exceptionsList = exceptionsList;
+    }
+    
+    public List getExceptionsList()
+    {
+        return exceptionsList;
     }
 }

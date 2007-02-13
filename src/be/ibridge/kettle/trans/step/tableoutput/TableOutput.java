@@ -16,8 +16,10 @@
 package be.ibridge.kettle.trans.step.tableoutput;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.List;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -63,14 +65,14 @@ public class TableOutput extends BaseStep implements StepInterface
 		r=getRow();    // this also waits for a previous step to be finished.
 		if (r==null)  // no more input to be expected...
 		{
-			setOutputDone();
 			return false;
 		}
 
 		try
 		{
 			writeToTable(r);
-			putRow(r);       // in case we want it go further...
+            
+            if (!r.isIgnored()) putRow(r); // in case we want it go further...
 
             if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
 		}
@@ -98,6 +100,13 @@ public class TableOutput extends BaseStep implements StepInterface
         
         String tableName = null;
         Value removedValue = null;
+        
+        boolean sendToErrorRow=false;
+        String errorMessage = null;
+        boolean rowIsSafe = false;
+        int[] updateCounts = null;
+        List exceptionsList = null;
+        boolean batchProblem = false;
         
         if ( meta.isTableNameInField() )
         {
@@ -154,7 +163,7 @@ public class TableOutput extends BaseStep implements StepInterface
         }
         else
         {
-            tableName = data.tableName;
+            tableName  = data.tableName;
         }
         
         if (Const.isEmpty(tableName))
@@ -177,58 +186,174 @@ public class TableOutput extends BaseStep implements StepInterface
 		try
 		{
 			data.db.setValues(r, insertStatement);
-			data.db.insertRow(insertStatement, data.batchMode);
+			rowIsSafe = data.db.insertRow(insertStatement, data.batchMode);
+            if (rowIsSafe)
+            {
+                System.out.println("Row is safe!");
+            }
 			linesOutput++;
-			
+
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
-				Row extra = data.db.getGeneratedKeys(insertStatement);
+				Row extraKeys = data.db.getGeneratedKeys(insertStatement);
 
 				// Send out the good word!
 				// Only 1 key at the moment. (should be enough for now :-)
-				Value keyVal = extra.getValue(0);
+				Value keyVal = extraKeys.getValue(0);
 				keyVal.setName(meta.getGeneratedKeyField());
 				r.addValue(keyVal);
 			}
-		}
+        }
 		catch(KettleDatabaseBatchException be)
 		{
-			data.db.clearBatch(insertStatement);
-		    data.db.rollback();
-			throw new KettleException("Error batch inserting rows into table ["+tableName+"]", be);
+            errorMessage = be.toString();
+            batchProblem = true;
+            sendToErrorRow = true;
+            updateCounts = be.getUpdateCounts();
+            exceptionsList = be.getExceptionsList();
+            
+            if (getStepMeta().isDoingErrorHandling())
+            {
+                data.db.clearBatch(insertStatement);
+                data.db.commit();
+            }
+            else
+            {
+    			data.db.clearBatch(insertStatement);
+    		    data.db.rollback();
+    			throw new KettleException("Error batch inserting rows into table ["+tableName+"]", be);
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{
-		    if (meta.ignoreErrors())
-		    {
-		        if (data.warnings<20)
-		        {
-		            logBasic("WARNING: Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
-		        }
-		        else
-		        if (data.warnings==20)
-		        {
-		            logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
-		        }
-		        data.warnings++;
-		    }
-		    else
-		    {
-		        setErrors(getErrors()+1);
-		        data.db.rollback();
-		        throw new KettleException("Error inserting row into table ["+tableName+"] with values: "+r, dbe);
-		    }
+            if (getStepMeta().isDoingErrorHandling())
+            {
+                sendToErrorRow = true;
+                errorMessage = dbe.toString();
+            }
+            else
+            {
+    		    if (meta.ignoreErrors())
+    		    {
+    		        if (data.warnings<20)
+    		        {
+    		            logBasic("WARNING: Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
+    		        }
+    		        else
+    		        if (data.warnings==20)
+    		        {
+    		            logBasic("FINAL WARNING (no more then 20 displayed): Couldn't insert row into table: "+r+Const.CR+dbe.getMessage());
+    		        }
+    		        data.warnings++;
+    		    }
+    		    else
+    		    {
+    		        setErrors(getErrors()+1);
+    		        data.db.rollback();
+    		        throw new KettleException("Error inserting row into table ["+tableName+"] with values: "+r, dbe);
+    		    }
+            }
 		}
 		
         if (meta.isTableNameInField() && !meta.isTableNameInTable())
         {
             r.addValue(data.indexOfTableNameField, removedValue);
         }
+        
+        if (data.batchMode)
+        {
+            if (sendToErrorRow) 
+            {
+                if (batchProblem)
+                {
+                    data.batchBuffer.add(r);
+                    r.setIgnore();
+
+                    processBatchException(errorMessage, updateCounts, exceptionsList);
+                }
+                else
+                {
+                    // Simply add this row to the error row
+                    putError(r, 1L, errorMessage, null, "TOP001");
+                    r.setIgnore();
+                }
+            }
+            else
+            {
+                data.batchBuffer.add(r);
+                r.setIgnore();
+                
+                if (rowIsSafe) // A commit was done and the rows are all safe (no error)
+                {
+                    for (int i=0;i<data.batchBuffer.size();i++)
+                    {
+                        Row row = (Row) data.batchBuffer.get(i);
+                        putRow(row);
+                    }
+                    // Clear the buffer
+                    data.batchBuffer.clear();
+                }
+            }
+        }
+        else
+        {
+            if (sendToErrorRow)
+            {
+                putError(r, 1, errorMessage, null, "TOP001");
+                r.setIgnore();
+            }
+        }
+        
 		return true;
 	}
 	
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	private void processBatchException(String errorMessage, int[] updateCounts, List exceptionsList) throws KettleStepException
+    {
+        // There was an error with the commit
+        // We should put all the failing rows out there...
+        //
+        if (updateCounts!=null)
+        {
+            int errNr = 0;
+            for (int i=0;i<updateCounts.length;i++)
+            {
+                Row row = (Row) data.batchBuffer.get(i);
+                if (updateCounts[i]>0)
+                {
+                    // send the error foward
+                    putRow(row);
+                }
+                else
+                {
+                    String exMessage = errorMessage;
+                    if (errNr<exceptionsList.size())
+                    {
+                        SQLException se = (SQLException) exceptionsList.get(errNr);
+                        errNr++;
+                        exMessage = se.toString();
+                    }
+                    putError(row, 1L, exMessage, null, "TOP0002");
+                }
+            }
+        }
+        else
+        {
+            // If we don't have update counts, it probably means the DB doesn't support it.
+            // In this case we don't have a choice but to consider all inserted rows to be error rows.
+            // 
+            for (int i=0;i<data.batchBuffer.size();i++)
+            {
+                Row row = (Row) data.batchBuffer.get(i);
+                putError(row, 1L, errorMessage, null, "TOP0003");
+            }
+        }
+        
+        // Clear the buffer afterwards...
+        data.batchBuffer.clear();
+    }
+
+    public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(TableOutputMeta)smi;
 		data=(TableOutputData)sdi;
@@ -294,9 +419,27 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(KettleDatabaseBatchException be)
 		{
-		    logError("Unexpected batch update error committing the database connection: "+be.toString());
-			setErrors(1);
-			stopAll();
+            if (getStepMeta().isDoingErrorHandling())
+            {
+                // Right at the back we are expriencing a batch commit problem...
+                // OK, we have the numbers...
+                try
+                {
+                    processBatchException(be.toString(), be.getUpdateCounts(), be.getExceptionsList());
+                }
+                catch(KettleException e)
+                {
+                    logError("Unexpected error processing batch error : "+e.toString());
+                    setErrors(1);
+                    stopAll();
+                }
+            }
+            else
+            {
+                logError("Unexpected batch update error committing the database connection: "+be.toString());
+    			setErrors(1);
+    			stopAll();
+            }
 		}
 		catch(Exception dbe)
 		{
@@ -307,6 +450,8 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		finally
         {
+            setOutputDone();
+
             if (getErrors()>0)
             {
                 try

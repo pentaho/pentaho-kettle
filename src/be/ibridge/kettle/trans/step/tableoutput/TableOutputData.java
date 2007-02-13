@@ -17,7 +17,9 @@
 package be.ibridge.kettle.trans.step.tableoutput;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import be.ibridge.kettle.core.database.Database;
@@ -33,7 +35,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 {
 	public  Database db;
 	public  int      warnings;
-	public String tableName;
+	public  String tableName;
     
     /**
      * Mapping between the SQL and the actual prepared statement.
@@ -50,6 +52,9 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
     public boolean batchMode;
     public int indexOfTableNameField;
     
+    public List batchBuffer;
+    public boolean sendToErrorRow;
+    
 	public TableOutputData()
 	{
 		super();
@@ -62,6 +67,8 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
         
         indexOfPartitioningField = -1;
         indexOfTableNameField = -1;
+        
+        batchBuffer = new ArrayList();
 	}
 
 }

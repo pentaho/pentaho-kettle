@@ -805,4 +805,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.schemaName = schemaName;
     }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }

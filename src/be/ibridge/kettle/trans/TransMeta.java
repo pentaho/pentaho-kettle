@@ -1764,6 +1764,17 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 TransDependency td = getDependency(i);
                 td.saveRep(rep, getID());
             }
+            
+            // Save the step error handling information as well!
+            for (int i=0;i<nrSteps();i++)
+            {
+                StepMeta stepMeta = getStep(i);
+                StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+                if (stepErrorMeta!=null)
+                {
+                    stepErrorMeta.saveRep(rep, getId(), stepMeta.getID());
+                }
+            }
 
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingFinished")); //$NON-NLS-1$
 
@@ -2210,6 +2221,18 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 }
                 if (monitor != null) monitor.worked(1);
 
+                // Also load the step error handling metadata
+                //
+                for (int i=0;i<nrSteps();i++)
+                {
+                    StepMeta stepMeta = getStep(i);
+                    String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
+                    if (sourceStep!=null)
+                    {
+                        
+                    }
+                }
+                
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SortingStepsTask.Title")); //$NON-NLS-1$
                 sortSteps();
                 if (monitor != null) monitor.worked(1);
