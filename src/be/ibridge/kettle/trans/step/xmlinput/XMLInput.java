@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.xmlinput;
 
+import org.apache.commons.vfs.FileObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -78,9 +79,9 @@ public class XMLInput extends BaseStep implements StepInterface
 		
 	private Row getRowFromXML() throws KettleValueException
     {
-        while (data.itemPosition>=data.itemCount || data.filename==null) // finished reading the file, read the next file!
+        while (data.itemPosition>=data.itemCount || data.file==null) // finished reading the file, read the next file!
         {
-            data.filename=null;
+            data.file=null;
             if (!openNextFile())
             {
                 return null;
@@ -269,7 +270,7 @@ public class XMLInput extends BaseStep implements StepInterface
         // See if we need to add the filename to the row...  
         if (meta.includeFilename() && meta.getFilenameField()!=null && meta.getFilenameField().length()>0)
         {
-            Value fn = new Value( meta.getFilenameField(), data.filename );
+            Value fn = new Value( meta.getFilenameField(), KettleVFS.getFilename(data.file));
             row.addValue(fn);
         }
         
@@ -317,30 +318,30 @@ public class XMLInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-            if (data.filenr>=data.files.length) // finished processing!
+            if (data.filenr>=data.files.size()) // finished processing!
             {
             	if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FinishedProcessing"));
                 return false;
             }
             
 		    // Is this the last file?
-			data.last_file = ( data.filenr==data.files.length-1);
-			data.filename = data.files[data.filenr];
+			data.last_file = ( data.filenr==data.files.size()-1);
+			data.file = (FileObject) data.files.get(data.filenr);
 			
-			logBasic(Messages.getString("XMLInput.Log.OpeningFile", data.filename));
+			logBasic(Messages.getString("XMLInput.Log.OpeningFile", data.file.toString()));
 			
 			// Move file pointer ahead!
 			data.filenr++;
             
             // Open the XML document
-            data.document = XMLHandler.loadXMLFile(data.filename);
+            data.document = XMLHandler.loadXMLFile(data.file);
             
 			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL,  KettleVFS.getFileObject(data.filename), getTransMeta().getName(), getStepname());
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
 			resultFile.setComment("File was read by an XML input step");
 			addResultFile(resultFile);
 
-            if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
+            if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.file.toString()));
             
             // Position in the file...
             data.section = data.document;
@@ -357,7 +358,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("XMLInput.Log.UnableToOpenFile", ""+data.filenr, data.filename, e.toString()));
+			logError(Messages.getString("XMLInput.Log.UnableToOpenFile", ""+data.filenr, data.file.toString(), e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -372,8 +373,8 @@ public class XMLInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles();
-			if (data.files==null || data.files.length==0)
+			data.files = meta.getFiles().getFiles();
+			if (data.files==null || data.files.size()==0)
 			{
 				logError(Messages.getString("XMLInput.Log.NoFiles"));
 				return false;

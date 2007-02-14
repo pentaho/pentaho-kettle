@@ -26,6 +26,7 @@ import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.vfs.FileObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -524,7 +525,40 @@ public class XMLHandler
     {
         return loadXMLFile(new File(filename));
     }
-    
+
+    /**
+     * Load a file into an XML document
+     * @param filename The filename to load into a document
+     * @return the Document if all went well, null if an error occured!
+     */
+    public static final Document loadXMLFile(FileObject fileObject) throws KettleXMLException
+    {
+        DocumentBuilderFactory dbf;
+        DocumentBuilder db;
+        Document doc;
+        
+        try
+        {           
+            // Check and open XML document
+            dbf  = DocumentBuilderFactory.newInstance();
+            db   = dbf.newDocumentBuilder();
+            try
+            {
+                doc  = db.parse(fileObject.getContent().getInputStream());
+            }
+            catch(FileNotFoundException ef)
+            {
+                throw new KettleXMLException(ef);
+            }
+                
+            return doc;
+        }
+        catch(Exception e)
+        {
+            throw new KettleXMLException("Error reading information from file", e);
+        }
+    }
+
 	/**
 	 * Load a file into an XML document
 	 * @param file The file to load into a document

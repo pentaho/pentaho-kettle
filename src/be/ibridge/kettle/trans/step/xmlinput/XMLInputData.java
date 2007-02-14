@@ -23,8 +23,10 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.vfs.FileObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -49,9 +51,9 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
 	
-	public String  files[];
+	public List    files;
 	public boolean last_file;
-	public String  filename;
+	public FileObject file;
 	public int     filenr;
 	
 	public FileInputStream fr;

@@ -27,6 +27,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -112,7 +113,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 		
 		FileObject file = data.files.getFile(data.filenr);
         
-		Value filename = new Value("filename", file.getName().getURI());
+		Value filename = new Value("filename", KettleVFS.getFilename(file));
 		filename.setLength(500,-1);
 		r.addValue(filename);
         
@@ -122,7 +123,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 
         try
         {
-            Value path = new Value("path", file.getParent().getName().getURI());
+            Value path = new Value("path", KettleVFS.getFilename(file.getParent()));
             path.setLength(500,-1);
             r.addValue(path);
         }

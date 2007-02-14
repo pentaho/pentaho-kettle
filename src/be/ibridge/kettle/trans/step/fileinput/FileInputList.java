@@ -335,6 +335,16 @@ public class FileInputList
     {
         return files;
     }
+    
+    public String[] getFileStrings()
+    {
+        String[] fileStrings = new String[files.size()];
+        for (int i=0;i<fileStrings.length;i++)
+        {
+            fileStrings[i] = KettleVFS.getFilename((FileObject) files.get(i));
+        }
+        return fileStrings;
+    }
 
     public List getNonAccessibleFiles()
     {

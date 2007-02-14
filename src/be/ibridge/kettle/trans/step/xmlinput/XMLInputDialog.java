@@ -71,6 +71,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class XMLInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -701,7 +702,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                     {
     					XMLInputMeta tfii = new XMLInputMeta();
     					getInfo(tfii);
-    					String files[] = tfii.getFiles();
+                        FileInputList fileInputList = tfii.getFiles();
+    					String files[] = fileInputList.getFileStrings();
     					if (files!=null && files.length>0)
     					{
     						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
@@ -1029,10 +1031,12 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             // Keep the list of positions
             ArrayList path = new ArrayList(); // ArrayList of XMLInputFieldPosition
             
-            for (int f=0;f<meta.getFiles().length && !finished;f++)
+            FileInputList inputList = meta.getFiles();
+            
+            for (int f=0;f<inputList.getFiles().size() && !finished;f++)
             {
                 // Open the file...
-                Node rootNode = XMLHandler.loadXMLFile(meta.getFiles()[f]);
+                Node rootNode = XMLHandler.loadXMLFile(inputList.getFile(f));
                 
                 // Position to the repeating item
                 for (int p=0;rootNode!=null && p<meta.getInputPosition().length-1;p++)

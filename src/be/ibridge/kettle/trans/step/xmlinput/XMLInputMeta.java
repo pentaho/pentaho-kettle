@@ -21,12 +21,8 @@
 
 package be.ibridge.kettle.trans.step.xmlinput;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -37,7 +33,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -48,6 +43,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
@@ -544,10 +540,18 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 
-	public String[] getFiles()
+	public FileInputList getFiles()
 	{
-		String files[]=null;
-		
+        String required[] = new String[fileName.length];
+        boolean subdirs[] = new boolean[fileName.length];
+        for (int i=0;i<required.length;i++)
+        {
+            required[i]="Y";
+            subdirs[i]=false;
+        }
+        return FileInputList.createFileList(fileName, fileMask, required, subdirs);
+
+        /*
 		// Replace possible environment variables...
 		final String realfile[] = StringUtil.environmentSubstitute(fileName);
 		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
@@ -618,6 +622,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		files = (String[])filelist.toArray(new String[filelist.size()]);
 
 		return files;
+        */
 	}
 	
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -636,15 +641,16 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		String files[] = getFiles();
-		if (files==null || files.length==0)
+        FileInputList fileInputList = getFiles();
+		// String files[] = getFiles();
+		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoFiles"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.FilesOk", ""+files.length), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
 			remarks.add(cr);
 		}
 	}
