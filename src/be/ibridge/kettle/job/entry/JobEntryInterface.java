@@ -34,6 +34,7 @@ import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
+import be.ibridge.kettle.job.entry.sftpput.JobEntrySFTPPUT;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
@@ -69,7 +70,8 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_CREATE_FILE    = 13;
     public static final int TYPE_JOBENTRY_DELETE_FILE    = 14;
     public static final int TYPE_JOBENTRY_WAIT_FOR_FILE  = 15;
-
+    public static final int TYPE_JOBENTRY_SFTPPUT        = 16;
+    
 	public final static String typeCode[] =
 		{
 			"-",
@@ -88,6 +90,7 @@ public interface JobEntryInterface
             "CREATE_FILE",
             "DELETE_FILE",
             "WAIT_FOR_FILE",
+            "SFTPPUT",
 		};
 
 	public final static String typeDesc[] =
@@ -108,6 +111,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.CreateFile.TypeDesc"),
             Messages.getString("JobEntry.DeleteFile.TypeDesc"),
             Messages.getString("JobEntry.WaitForFile.TypeDesc"),
+            Messages.getString("JobEntry.SFTPPut.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -127,7 +131,8 @@ public interface JobEntryInterface
             "WEB.png",
             "CFJ.png",
             "DFJ.png",
-            "WFF.png"
+            "WFF.png",
+            "SFP.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -148,6 +153,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.CreateFile.Tooltip"),
             Messages.getString("JobEntry.DeleteFile.Tooltip"),
             Messages.getString("JobEntry.WaitForFile.Tooltip"),
+            Messages.getString("JobEntry.SFTPPut.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -168,6 +174,7 @@ public interface JobEntryInterface
             JobEntryCreateFile.class,
             JobEntryDeleteFile.class,
             JobEntryWaitForFile.class,
+            JobEntrySFTPPUT.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
