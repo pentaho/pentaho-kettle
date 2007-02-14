@@ -372,40 +372,49 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		input.setChanged(backupChanged);
 		dispose();
 	}
-	
-	private void ok()
-	{		
-		input.setStepMeta1( transMeta.findStep( wStep1.getText() ) );
-		input.setStepMeta2( transMeta.findStep( wStep2.getText() ) );
-		input.setJoinType(wType.getText());
+    
+    private void getMeta(MergeJoinMeta meta)
+    {       
+        meta.setStepMeta1( transMeta.findStep( wStep1.getText() ) );
+        meta.setStepMeta2( transMeta.findStep( wStep2.getText() ) );
+        meta.setJoinType(wType.getText());
 
         int nrKeys1   = wKeys1.nrNonEmpty();
         int nrKeys2 = wKeys2.nrNonEmpty();
 
-        input.allocate(nrKeys1, nrKeys2);
+        meta.allocate(nrKeys1, nrKeys2);
         
         for (int i=0;i<nrKeys1;i++)
         {
             TableItem item = wKeys1.getNonEmpty(i);
-            input.getKeyFields1()[i] = item.getText(1);
+            meta.getKeyFields1()[i] = item.getText(1);
         }
 
         for (int i=0;i<nrKeys2;i++)
         {
             TableItem item = wKeys2.getNonEmpty(i);
-            input.getKeyFields2()[i] = item.getText(1);
+            meta.getKeyFields2()[i] = item.getText(1);
         }
+    }
 
-		stepname = wStepname.getText(); // return value
+	
+	private void ok()
+	{		
+        getMeta(input);
+
+        stepname = wStepname.getText(); // return value
 		
 		dispose();
 	}
     
     private void getKeys1()
     {
+        MergeJoinMeta meta = new MergeJoinMeta();
+        getMeta(meta);
+        
         try
         {
-            StepMeta stepMeta = transMeta.findStep(input.getStepName1());
+            StepMeta stepMeta = transMeta.findStep(meta.getStepName1());
             if (stepMeta!=null)
             {
                 Row prev = transMeta.getStepFields(stepMeta);
@@ -423,9 +432,12 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     
     private void getKeys2()
     {
+        MergeJoinMeta meta = new MergeJoinMeta();
+        getMeta(meta);
+
         try
         {
-            StepMeta stepMeta = transMeta.findStep(input.getStepName2());
+            StepMeta stepMeta = transMeta.findStep(meta.getStepName2());
             if (stepMeta!=null)
             {
                 Row prev = transMeta.getStepFields(stepMeta);
