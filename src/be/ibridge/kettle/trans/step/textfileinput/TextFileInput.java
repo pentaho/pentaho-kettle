@@ -316,6 +316,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 					pos = next + 1;
 					fieldnr++;
 				}
+				if ( pos == length )
+				{
+					strings.add("");
+				}
 			}
 			else
 			{
