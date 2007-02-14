@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
+    <name>Excel and Row normaliser</name>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -24,13 +24,48 @@
     <size_rowset>350</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
+    </dependencies>
     <partitionschemas>
-      </partitionschemas>
+        <partitionschema>
+          <name>MySQL EC2 Schema</name>
+          <partition>            <id>P2</id>
+            </partition>          <partition>            <id>P3</id>
+            </partition>          <partition>            <id>P4</id>
+            </partition>          <partition>            <id>P5</id>
+            </partition>          </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+        <clusterschema>
+          <name>EC2</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>100000</sockets_buffer_size>
+          <sockets_flush_interval>0</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>EC_MASTER_1</name>
+            <name>EC_SLAVE_2</name>
+            <name>EC_SLAVE_3</name>
+            <name>EC_SLAVE_4</name>
+            <name>EC_SLAVE_5</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
   <modified_user/>
   <modified_date>2006&#47;11&#47;10 21:10:48.078</modified_date>
-    </info>
+  </info>
   <notepads>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
@@ -72,10 +107,9 @@ one new column.</note>
       <width>150</width>
       <heigth>37</heigth>
       </notepad>
-    </notepads>
+  </notepads>
   <order>
   <hop> <from>Excel Input</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
-
   <step>
     <name>Dummy (do nothing)</name>
     <type>Dummy</type>
@@ -87,6 +121,7 @@ one new column.</note>
            <field_name/>
            <schema_name/>
            </partitioning>
+     <cluster_schema/>
     <GUI>
       <xloc>276</xloc>
       <yloc>319</yloc>
@@ -309,6 +344,7 @@ one new column.</note>
     <error_line_files_extension>error</error_line_files_extension>
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
+     <cluster_schema/>
     <GUI>
       <xloc>139</xloc>
       <yloc>188</yloc>
@@ -364,7 +400,8 @@ one new column.</note>
         </field>      <field>        <name>12</name>
         <value>12</value>
         <norm>ValuePerMonth</norm>
-        </field>      </fields>    <GUI>
+        </field>      </fields>     <cluster_schema/>
+    <GUI>
       <xloc>276</xloc>
       <yloc>188</yloc>
       <draw>Y</draw>

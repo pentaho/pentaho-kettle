@@ -625,10 +625,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
             else
             {
                 String filename = buildFilename(true);
-                File file = new File(filename);
-
+                
 				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename), getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with a text file output step");
 	            addResultFile(resultFile);
 	

@@ -16,7 +16,7 @@
 
 package be.ibridge.kettle.trans.step.filesfromresult;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -86,12 +87,19 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
 		if (row==null) row=new Row();
 		
 		// Add the fields from a ResultFile
-		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File("foo.bar"), "parentOrigin", "origin");
-		Row add = resultFile.getRow();
-		
-		// Set the origin on the fields...
-		for (int i=0;i<add.size();i++) add.getValue(i).setOrigin(name);
-		row.addRow(add);
+        try
+        {
+    		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject("foo.bar"), "parentOrigin", "origin");
+    		Row add = resultFile.getRow();
+
+            // Set the origin on the fields...
+            for (int i=0;i<add.size();i++) add.getValue(i).setOrigin(name);
+            row.addRow(add);
+        }
+        catch(IOException e)
+        {
+            throw new KettleStepException(e);
+        }
 		
 		return row;
 	}

@@ -20,8 +20,6 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +30,7 @@ import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -2284,11 +2283,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		getInfo(meta);
 						
 		FileInputList    textFileList = meta.getTextFileList();
-		FileInputStream fileInputStream = null;
-		ZipInputStream  zipInputStream = null ;
+		InputStream      fileInputStream = null;
+		ZipInputStream   zipInputStream = null ;
 		GZIPInputStream  gzipInputStream = null ;
-		InputStream     inputStream  = null;
-        String          fileFormat = wFormat.getText();
+		InputStream      inputStream  = null;
+        String           fileFormat = wFormat.getText();
         
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2310,7 +2309,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					wFields.table.removeAll();
 				}
 
-				fileInputStream = new FileInputStream(textFileList.getFile(0));
+                FileObject fileObject = textFileList.getFile(0);
+				fileInputStream = fileObject.getContent().getInputStream();
 				Table table = wFields.table;
 				
 				if (meta.getFileCompression().equals("Zip"))
@@ -2601,7 +2601,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		getInfo(info);
 		FileInputList textFileList = info.getTextFileList();
 		
-        FileInputStream fi = null;
+        InputStream     fi = null;
 		ZipInputStream  zi = null ;
 		GZIPInputStream gzi = null ;
 		InputStream     f  = null;
@@ -2610,10 +2610,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		if (textFileList.nrOfFiles()>0)
 		{
-			File file = textFileList.getFile(0);
+			FileObject file = textFileList.getFile(0);
 			try
 			{
-				fi = new FileInputStream(file);
+				fi = file.getContent().getInputStream();
 				
 				if (info.getFileCompression().equals("Zip"))
 				{
@@ -2684,7 +2684,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 			catch(Exception e)
 			{
-                throw new KettleException(Messages.getString("TextFileInputDialog.Exception.ErrorGettingFirstLines", ""+nrlines, file.getPath()), e);
+                throw new KettleException(Messages.getString("TextFileInputDialog.Exception.ErrorGettingFirstLines", ""+nrlines, file.getName().getURI()), e);
 			}
 			finally
 			{

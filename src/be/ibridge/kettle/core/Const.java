@@ -1907,6 +1907,16 @@ public class Const
     }
 
     /**
+     * Check if the array supplied is empty.  An array is empty when it is null or when the length is 0
+     * @param array The array to check
+     * @return true if the array supplied is empty
+     */
+    public static final boolean isEmpty(Object[] array)
+    {
+     return array==null || array.length==0;
+    }
+    
+    /**
      * @return a new ClassLoader
      */
     public static final ClassLoader createNewClassLoader() throws KettleException

@@ -15,9 +15,11 @@
 
 package be.ibridge.kettle.trans.step.getfilenames;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -108,19 +110,26 @@ public class GetFileNames extends BaseStep implements StepInterface
 		
 		Row r = new Row();
 		
-		File file = data.files.getFile(data.filenr);
+		FileObject file = data.files.getFile(data.filenr);
         
-		Value filename = new Value("filename", file.getAbsolutePath());
+		Value filename = new Value("filename", file.getName().getURI());
 		filename.setLength(500,-1);
 		r.addValue(filename);
         
-        Value short_filename = new Value("short_filename", file.getName());
+        Value short_filename = new Value("short_filename", file.getName().getBaseName());
         short_filename.setLength(500,-1);
         r.addValue(short_filename);
 
-        Value path = new Value("path", file.getParent());
-        path.setLength(500,-1);
-        r.addValue(path);
+        try
+        {
+            Value path = new Value("path", file.getParent().getName().getURI());
+            path.setLength(500,-1);
+            r.addValue(path);
+        }
+        catch(IOException e)
+        {
+            throw new KettleException(e);
+        }
 
 		
 		data.filenr++;

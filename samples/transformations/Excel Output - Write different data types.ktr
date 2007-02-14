@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
-    <directory>/</directory>
+    <name>Excel Output - Write different data types</name>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
@@ -24,31 +24,79 @@
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
-    </info>
+    </dependencies>
+    <partitionschemas>
+        <partitionschema>
+          <name>MySQL EC2 Schema</name>
+          <partition>            <id>P2</id>
+            </partition>          <partition>            <id>P3</id>
+            </partition>          <partition>            <id>P4</id>
+            </partition>          <partition>            <id>P5</id>
+            </partition>          </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+        <clusterschema>
+          <name>EC2</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>100000</sockets_buffer_size>
+          <sockets_flush_interval>0</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>EC_MASTER_1</name>
+            <name>EC_SLAVE_2</name>
+            <name>EC_SLAVE_3</name>
+            <name>EC_SLAVE_4</name>
+            <name>EC_SLAVE_5</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;02&#47;14 11:51:01.375</modified_date>
+  </info>
   <notepads>
-    </notepads>
+  </notepads>
   <order>
   <hop> <from>Generate Rows</from><to>Excel Output</to><enabled>Y</enabled> </hop>  </order>
-
   <step>
     <name>Excel Output</name>
     <type>ExcelOutput</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <header>Y</header>
     <footer>N</footer>
     <encoding/>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}/output/datatypes</name>
+      <name>${Internal.Transformation.Filename.Directory}&#47;output&#47;datatypes</name>
       <extention>xls</extention>
       <split>N</split>
       <add_date>N</add_date>
       <add_time>N</add_time>
       <splitevery>75</splitevery>
       </file>
+    <template>
+      <enabled>N</enabled>
+      <append>N</append>
+      <filename/>
+      </template>
     <fields>
       <field>
         <name>StringField</name>
@@ -68,7 +116,7 @@
       <field>
         <name>DateField</name>
         <type>Date</type>
-        <format>M/d/yy H:mm:ss</format>
+        <format>M&#47;d&#47;yy H:mm:ss</format>
         </field>
       <field>
         <name>BooleanField</name>
@@ -81,6 +129,7 @@
         <format/>
         </field>
       </fields>
+     <cluster_schema/>
     <GUI>
       <xloc>305</xloc>
       <yloc>73</yloc>
@@ -94,6 +143,11 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>StringField</name>
@@ -131,11 +185,11 @@
       <field>
         <name>DateField</name>
         <type>Date</type>
-        <format>yyyy/MM/dd HH:mm:ss</format>
+        <format>yyyy&#47;MM&#47;dd HH:mm:ss</format>
         <currency/>
         <decimal/>
         <group/>
-        <nullif>2006/12/31 23:59:59</nullif>
+        <nullif>2006&#47;12&#47;31 23:59:59</nullif>
         <length>-1</length>
         <precision>-1</precision>
         </field>
@@ -163,6 +217,7 @@
         </field>
       </fields>
     <limit>100</limit>
+     <cluster_schema/>
     <GUI>
       <xloc>103</xloc>
       <yloc>73</yloc>

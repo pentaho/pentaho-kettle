@@ -15,7 +15,7 @@
  
 package be.ibridge.kettle.trans.step.xbaseinput;
 
-import java.io.File;
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
@@ -35,7 +35,7 @@ public class XBaseInputData extends BaseStepData implements StepDataInterface
 	public XBase xbi;
 	public Row fields;
     public int fileNr;
-    public File file_dbf;
+    public FileObject file_dbf;
     public FileInputList files;
 
 	public XBaseInputData()

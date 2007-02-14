@@ -1,7 +1,9 @@
 package be.ibridge.kettle.trans.step.playlist;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
@@ -36,8 +38,8 @@ public class FilePlayListReplay implements FilePlayList {
 
 	}
 
-	private File getCurrentProcessingFile() {
-		File result = null;
+	private FileObject getCurrentProcessingFile() {
+		FileObject result = null;
 		if (currentLineNumberFile != null)
 			result = currentLineNumberFile.getProcessingFile();
 		return result;
@@ -50,34 +52,41 @@ public class FilePlayListReplay implements FilePlayList {
 		return result;
 	}
 
-	public boolean isProcessingNeeded(File file, long lineNr, String filePart)
+	public boolean isProcessingNeeded(FileObject file, long lineNr, String filePart)
 			throws KettleException {
 		initializeCurrentIfNeeded(file, filePart);
 		return currentLineNumberFile.isProcessingNeeded(file, lineNr, filePart)
 				|| currentErrorFile.isProcessingNeeded(file, lineNr, filePart);
 	}
 
-	private void initializeCurrentIfNeeded(File file, String filePart) throws KettleException {
+	private void initializeCurrentIfNeeded(FileObject file, String filePart) throws KettleException {
 		if (!(file.equals(getCurrentProcessingFile()) && filePart.equals(getCurrentProcessingFilePart())))
 			initializeCurrent(file, filePart);
 	}
 
-	private void initializeCurrent(File file, String filePart) throws KettleException {
-		File lineFile = AbstractFileErrorHandler.getReplayFilename(
-				lineNumberDirectory, file.getName(), replayDate,
-				lineNumberExtension, filePart);
-		if (lineFile.exists())
-			currentLineNumberFile = new FilePlayListReplayLineNumberFile(
-					lineFile, encoding, file, filePart);
-		else
-			currentLineNumberFile = new FilePlayListReplayFile(file, filePart);
-
-		File errorFile = AbstractFileErrorHandler.getReplayFilename(
-				errorDirectory, file.getName(), replayDate, errorExtension,
-				AbstractFileErrorHandler.NO_PARTS);
-		if (errorFile.exists())
-			currentErrorFile = new FilePlayListReplayErrorFile(errorFile, file);
-		else
-			currentErrorFile = new FilePlayListReplayFile(file, AbstractFileErrorHandler.NO_PARTS);
+	private void initializeCurrent(FileObject file, String filePart) throws KettleException {
+        try
+        {
+            FileObject lineFile = AbstractFileErrorHandler.getReplayFilename(
+    				lineNumberDirectory, file.getName().getBaseName(), replayDate,
+    				lineNumberExtension, filePart);
+    		if (lineFile.exists())
+    			currentLineNumberFile = new FilePlayListReplayLineNumberFile(
+    					lineFile, encoding, file, filePart);
+    		else
+    			currentLineNumberFile = new FilePlayListReplayFile(file, filePart);
+    
+            FileObject errorFile = AbstractFileErrorHandler.getReplayFilename(
+    				errorDirectory, file.getName().getURI(), replayDate, errorExtension,
+    				AbstractFileErrorHandler.NO_PARTS);
+    		if (errorFile.exists())
+    			currentErrorFile = new FilePlayListReplayErrorFile(errorFile, file);
+    		else
+    			currentErrorFile = new FilePlayListReplayFile(file, AbstractFileErrorHandler.NO_PARTS);
+        }
+        catch(IOException e)
+        {
+            throw new KettleException(e);
+        }
 	}
 }

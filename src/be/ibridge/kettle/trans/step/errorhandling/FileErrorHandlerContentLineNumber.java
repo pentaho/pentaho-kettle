@@ -1,7 +1,8 @@
 package be.ibridge.kettle.trans.step.errorhandling;
 
-import java.io.File;
 import java.util.Date;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -26,10 +27,10 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
 		}
 	}
 
-	public void handleNonExistantFile(File file ) {
+	public void handleNonExistantFile(FileObject file ) {
 	}
 
-	public void handleNonAccessibleFile(File file ) {
+	public void handleNonAccessibleFile(FileObject file ) {
 	}
 
 }

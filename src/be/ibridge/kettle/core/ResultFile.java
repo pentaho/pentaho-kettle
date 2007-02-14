@@ -1,7 +1,8 @@
 package be.ibridge.kettle.core;
 
-import java.io.File;
 import java.util.Date;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.value.Value;
 
@@ -30,7 +31,7 @@ public class ResultFile implements Cloneable
     };
     
 	private int type;
-	private File   file;
+	private FileObject file;
 	private String originParent;
 	private String origin;
 	private String comment;
@@ -43,7 +44,7 @@ public class ResultFile implements Cloneable
 	 * @param originParent The transformation or job that has generated this result file
 	 * @param origin The step or job entry that has generated this result file
 	 */
-	public ResultFile(int type, File file, String originParent, String origin)
+	public ResultFile(int type, FileObject file, String originParent, String origin)
 	{
 		this.type = type;
 		this.file = file;
@@ -76,7 +77,7 @@ public class ResultFile implements Cloneable
 	/**
 	 * @return Returns the file.
 	 */
-	public File getFile()
+	public FileObject getFile()
 	{
 		return file;
 	}
@@ -84,7 +85,7 @@ public class ResultFile implements Cloneable
 	/**
 	 * @param file The file to set.
 	 */
-	public void setFile(File file)
+	public void setFile(FileObject file)
 	{
 		this.file = file;
 	}
@@ -215,10 +216,10 @@ public class ResultFile implements Cloneable
 		row.addValue( new Value("type", getTypeDesc()));
 
 		// The filename
-		row.addValue( new Value("filename", file.getName()));
+		row.addValue( new Value("filename", file.getName().getBaseName()));
 
 		// The path
-		row.addValue( new Value("path", file.getPath()));
+		row.addValue( new Value("path", file.getName().getURI()));
 
 		// The origin parent
 		row.addValue( new Value("parentorigin", originParent));

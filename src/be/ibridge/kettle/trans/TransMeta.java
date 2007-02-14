@@ -2500,7 +2500,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
         catch (IOException e)
         {
-            throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname));
+            throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname)+" : "+e.toString(), e);
         }
         
         Document doc = XMLHandler.loadXMLString(xml);

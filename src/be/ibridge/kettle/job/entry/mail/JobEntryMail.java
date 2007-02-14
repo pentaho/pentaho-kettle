@@ -16,7 +16,6 @@
 package be.ibridge.kettle.job.entry.mail;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.activation.URLDataSource;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -41,6 +41,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
@@ -689,12 +690,13 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 						for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
 						{
 							ResultFile resultFile = (ResultFile) iter.next();
-							File file = resultFile.getFile();
+							FileObject file = resultFile.getFile();
 							if (file != null && file.exists()) 
 							{
 								// create a data source
 								MimeBodyPart files = new MimeBodyPart();
-								FileDataSource fds = new FileDataSource(file);
+                                URLDataSource fds = new URLDataSource(file.getURL());
+                                
 								// get a data Handler to manipulate this file type;
 								files.setDataHandler(new DataHandler(fds));
 								// include the file in th e data source
@@ -716,12 +718,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 							for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
 							{
 								ResultFile resultFile = (ResultFile) iter.next();
-								File file = resultFile.getFile();
-								ZipEntry zipEntry = new ZipEntry(file.getPath());
+								FileObject file = resultFile.getFile();
+								ZipEntry zipEntry = new ZipEntry(file.getName().getURI());
 								zipOutputStream.putNextEntry(zipEntry);
 
 								// Now put the content of this file into this archive...
-								BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+								BufferedInputStream inputStream = new BufferedInputStream(file.getContent().getInputStream());
 								int c;
 								while ( (c=inputStream.read())>=0)
 								{
@@ -807,7 +809,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             {
                 if (transport!=null) transport.close();
             }
-		} 
+		}
+        catch(IOException e)
+        {
+            log.logError(toString(), "Problem while sending message: "+e.toString());
+            result.setNrErrors(1);
+        }
 		catch (MessagingException mex) 
 		{
 		    log.logError(toString(), "Problem while sending message: "+mex.toString());

@@ -14,7 +14,6 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.sftp;
-import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -32,6 +31,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -358,7 +358,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 					filesRetrieved++; 
 					
 					// Add to the result files...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFilename), parentJob.getJobname(), toString());
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
                     result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
 					log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");

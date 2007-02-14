@@ -19,6 +19,8 @@ package be.ibridge.kettle.trans.step.exceloutput;
 import java.io.File;
 import java.util.Locale;
 
+import org.apache.commons.vfs.FileObject;
+
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.DateFormat;
@@ -34,6 +36,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -398,7 +401,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
             
             
-            File file = new File(buildFilename());
+            FileObject file = KettleVFS.getFileObject(buildFilename());
 
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
@@ -408,14 +411,14 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Create the workboook
             if (!meta.isTemplateEnabled())
             {
-            	data.workbook = Workbook.createWorkbook(file, ws);
+            	data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
                 // Create a sheet?
                 data.sheet = data.workbook.createSheet("Sheet1", 0);            	
             } else {
             	// create the workbook from the template
             	Workbook tmpWorkbook=Workbook.getWorkbook(
             			new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
-            	data.workbook = Workbook.createWorkbook(file, tmpWorkbook);
+            	data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
             	tmpWorkbook.close();
             	// use only the first sheet as template
             	data.sheet = data.workbook.getSheet(0);

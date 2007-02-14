@@ -1,22 +1,31 @@
 package be.ibridge.kettle.trans.step.playlist;
 
-import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public class FilePlayListReplayErrorFile extends FilePlayListReplayFile {
 
-	private File errorFile;
+	private FileObject errorFile;
 
-	public FilePlayListReplayErrorFile(File errorFile, File processingFile) {
+	public FilePlayListReplayErrorFile(FileObject errorFile, FileObject processingFile) {
 		super(processingFile, AbstractFileErrorHandler.NO_PARTS);
 		this.errorFile = errorFile;
 	}
 
-	public boolean isProcessingNeeded(File file, long lineNr, String filePart)
+	public boolean isProcessingNeeded(FileObject file, long lineNr, String filePart)
 			throws KettleException {
-		return errorFile.exists();
+        try
+        {
+            return errorFile.exists();
+        }
+        catch(IOException e)
+        {
+            throw new KettleException(e);
+        }
 	}
 
 }

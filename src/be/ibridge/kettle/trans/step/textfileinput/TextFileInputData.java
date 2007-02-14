@@ -15,8 +15,7 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -24,8 +23,10 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -69,11 +70,11 @@ public class TextFileInputData extends BaseStepData implements
 	
 	public int lineInFile;
 	
-	public File file;
+	public FileObject file;
 
 	public int filenr;
 
-	public FileInputStream fr;
+	public InputStream fr;
 
 	public ZipInputStream zi;
 

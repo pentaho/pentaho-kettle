@@ -1,19 +1,19 @@
 package be.ibridge.kettle.trans.step.playlist;
 
-import java.io.File;
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
 public class FilePlayListReplayFile implements FilePlayList {
-	private File processingFile;
+	private FileObject processingFile;
 	private String processingFilePart;
 
-	public FilePlayListReplayFile(File processingFile, String processingFilePart) {
+	public FilePlayListReplayFile(FileObject processingFile, String processingFilePart) {
 		this.processingFile = processingFile;
 		this.processingFilePart = processingFilePart;
 	}
 
-	File getProcessingFile() {
+	FileObject getProcessingFile() {
 		return processingFile;
 	}
 
@@ -21,7 +21,7 @@ public class FilePlayListReplayFile implements FilePlayList {
 		return processingFilePart;
 	}
 
-	public boolean isProcessingNeeded(File file, long lineNr, String filePart)
+	public boolean isProcessingNeeded(FileObject file, long lineNr, String filePart)
 			throws KettleException {
 		return false;
 	}

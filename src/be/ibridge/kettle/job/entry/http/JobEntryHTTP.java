@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -472,7 +473,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                 log.logBasic(toString(), "Finished writing " + bytesRead + " bytes to result file ["+realTargetFile+"]");
                 
 				// Add to the result files...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(realTargetFile), parentJob.getJobname(), toString());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realTargetFile), parentJob.getJobname(), toString());
                 result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
                 result.setResult( true );

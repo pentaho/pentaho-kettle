@@ -15,13 +15,14 @@
  
 package be.ibridge.kettle.trans.step.filestoresult;
 
-import java.io.File;
+import java.io.IOException;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -80,10 +81,17 @@ public class FilesToResult extends BaseStep implements StepInterface
 		
 		String filename = filenameValue.getString();
 		
-		ResultFile resultFile = new ResultFile(meta.getFileType(), new File(filename), getTrans().getName(), getStepname());
-		
-		// Add all rows to rows buffer...
-		data.filenames.add(resultFile);
+        try
+        {
+    		ResultFile resultFile = new ResultFile(meta.getFileType(), KettleVFS.getFileObject(filename), getTrans().getName(), getStepname());
+    		
+    		// Add all rows to rows buffer...
+    		data.filenames.add(resultFile);
+        }
+        catch(IOException e)
+        {
+            throw new KettleException(e);
+        }
 				
 		// Copy to any possible next steps...
 		putRow(r);     // copy row to possible alternate rowset(s).

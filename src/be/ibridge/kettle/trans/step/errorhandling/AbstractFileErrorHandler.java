@@ -1,7 +1,5 @@
 package be.ibridge.kettle.trans.step.errorhandling;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -12,10 +10,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
@@ -57,8 +58,9 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		return new SimpleDateFormat(DD_MMYYYY_HHMMSS);
 	}
 
-	public static File getReplayFilename(String destinationDirectory,
-			String processingFilename, String dateString, String extension, Object source) {
+	public static FileObject getReplayFilename(String destinationDirectory,
+			String processingFilename, String dateString, String extension, Object source) throws IOException 
+    {
 		String name = null;
 		String sourceAdding = ""; //$NON-NLS-1$
 		if (source != NO_PARTS) {
@@ -68,11 +70,11 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			name = processingFilename + sourceAdding + "." + dateString; //$NON-NLS-1$
 		else
 			name = processingFilename + sourceAdding + "." + dateString + "." + extension; //$NON-NLS-1$ //$NON-NLS-2$
-		return new File(StringUtil.environmentSubstitute(destinationDirectory), name);
+		return KettleVFS.getFileObject(StringUtil.environmentSubstitute(destinationDirectory)+"/"+name);
 	}
 
-	public static File getReplayFilename(String destinationDirectory,
-			String processingFilename, Date date, String extension, Object source) {
+	public static FileObject getReplayFilename(String destinationDirectory,
+			String processingFilename, Date date, String extension, Object source) throws IOException {
 		return getReplayFilename(destinationDirectory, processingFilename,
 				createDateFormat().format(date), extension, source);
 	}
@@ -83,27 +85,38 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	 * @return
 	 * @throws KettleException
 	 */
-	Writer getWriter(Object source) throws KettleException {
-		Writer outputStreamWriter = (Writer) writers.get(source);
-		if (outputStreamWriter != null)
-			return outputStreamWriter;
-		File file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension, source);
-		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, baseStep.getTransMeta().getName(), baseStep.getStepname());
-		baseStep.addResultFile(resultFile);
-		try {
-			if (encoding == null)
-				outputStreamWriter = new OutputStreamWriter(
-						new FileOutputStream(file));
-			else
-				outputStreamWriter = new OutputStreamWriter(
-						new FileOutputStream(file), encoding);
-		} catch (Exception e) {
-			throw new KettleException(
-					Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
-							+ file.getPath(), e);
-		}
-		writers.put(source, outputStreamWriter);
-		return outputStreamWriter;
+	Writer getWriter(Object source) throws KettleException 
+    {
+        try
+        {
+    		Writer outputStreamWriter = (Writer) writers.get(source);
+    		if (outputStreamWriter != null)
+    			return outputStreamWriter;
+    		FileObject file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension, source);
+    		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, baseStep.getTransMeta().getName(), baseStep.getStepname());
+    		baseStep.addResultFile(resultFile);
+    		try {
+    			if (encoding == null)
+                {
+    				outputStreamWriter = new OutputStreamWriter(file.getContent().getOutputStream());
+                }
+    			else
+                {
+    				outputStreamWriter = new OutputStreamWriter(file.getContent().getOutputStream(), encoding);
+                }
+    		} 
+            catch (Exception e) 
+            {
+    			throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
+    							+ file.getName().getURI(), e);
+    		}
+    		writers.put(source, outputStreamWriter);
+    		return outputStreamWriter;
+        }
+        catch(IOException e)
+        {
+            throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile"), e);
+        }
 	}
 
 	public void close() throws KettleException {
@@ -131,9 +144,9 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		}
 	}
 
-	public void handleFile(File file) throws KettleException {
+	public void handleFile(FileObject file) throws KettleException {
 		close();
-		this.processingFilename = file.getName();
+		this.processingFilename = file.getName().getBaseName();
 	}
 
 }

@@ -1,8 +1,9 @@
 package be.ibridge.kettle.trans.step.errorhandling;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
@@ -16,7 +17,7 @@ public class CompositeFileErrorHandler implements FileErrorHandler
 		this.handlers = handlers;
 	}
 
-	public void handleFile(File file) throws KettleException
+	public void handleFile(FileObject file) throws KettleException
 	{
 		for (Iterator iter = handlers.iterator(); iter.hasNext();)
 		{
@@ -43,7 +44,7 @@ public class CompositeFileErrorHandler implements FileErrorHandler
 		}
 	}
 
-	public void handleNonExistantFile(File file) throws KettleException
+	public void handleNonExistantFile(FileObject file) throws KettleException
 	{
 		for (Iterator iter = handlers.iterator(); iter.hasNext();)
 		{
@@ -52,7 +53,7 @@ public class CompositeFileErrorHandler implements FileErrorHandler
 		}
 	}
 
-	public void handleNonAccessibleFile(File file) throws KettleException
+	public void handleNonAccessibleFile(FileObject file) throws KettleException
 	{
 		for (Iterator iter = handlers.iterator(); iter.hasNext();)
 		{

@@ -1,26 +1,26 @@
 package be.ibridge.kettle.trans.step.fileinput;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Pattern;
+
+import org.apache.commons.vfs.FileDepthSelector;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 
 public class FileInputList
 {
     private List                files              = new ArrayList();
-
     private List                nonExistantFiles   = new ArrayList(1);
-
     private List                nonAccessibleFiles = new ArrayList(1);
-
+    
     private static final String YES                = "Y";
 
     public static String getRequiredFilesDescription(List nonExistantFiles)
@@ -28,8 +28,8 @@ public class FileInputList
         StringBuffer buffer = new StringBuffer();
         for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
         {
-            File file = (File) iter.next();
-            buffer.append(file.getPath());
+            FileObject file = (FileObject) iter.next();
+            buffer.append(file.getName().getURI());
             buffer.append(Const.CR);
         }
         return buffer.toString();
@@ -56,7 +56,8 @@ public class FileInputList
         String[] filePaths = new String[fileList.size()];
         for (int i = 0; i < filePaths.length; i++)
         {
-            filePaths[i] = ((File) fileList.get(i)).getPath();
+            filePaths[i] = ((FileObject) fileList.get(i)).getName().getURI();
+            // filePaths[i] = KettleVFS.getFilename((FileObject) fileList.get(i));
         }
         return filePaths;
     }
@@ -67,8 +68,118 @@ public class FileInputList
         return createFileList(fileName, fileMask, fileRequired, includeSubdirs);
     }
     
-    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired,
-        boolean[] includeSubdirs)
+    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
+    {
+        FileInputList fileInputList = new FileInputList();
+
+        // Replace possible environment variables...
+        final String realfile[] = StringUtil.environmentSubstitute(fileName);
+        final String realmask[] = StringUtil.environmentSubstitute(fileMask);
+
+        for (int i = 0; i < realfile.length; i++)
+        {
+            final String onefile = realfile[i];
+            final String onemask = realmask[i];
+            final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
+            final boolean subdirs = includeSubdirs[i];
+            
+            if (onefile == null) continue;
+
+            // 
+            // If a wildcard is set we search for files
+            //
+            if (!Const.isEmpty(onemask))
+            {
+                try
+                {
+                    // Find all file names that match the wildcard in this directory
+                    //
+                    FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
+                    FileObject[] children = directoryFileObject.getChildren();
+                    
+                    if (children.length==0) // it's a directory
+                    {
+                        FileObject[] fileObjects = directoryFileObject.findFiles(
+                                new FileDepthSelector(1,1)
+                                {
+                                    public boolean traverseDescendents(FileSelectInfo arg0)
+                                    {
+                                        return subdirs;
+                                    }
+                                    
+                                    public boolean includeFile(FileSelectInfo fileSelectInfo)
+                                    {
+                                        String name = fileSelectInfo.getFile().getName().getBaseName();
+                                        return Pattern.matches(onemask, name);
+                                    }
+                                }
+                            );
+                        if (fileObjects != null) 
+                        {
+                            for (int j = 0; j < fileObjects.length; j++)
+                            {
+                                if (fileObjects[j].exists()) fileInputList.addFile(fileObjects[j]);
+                            }
+                        }
+                        if (Const.isEmpty(fileObjects))
+                        {
+                            if (onerequired) fileInputList.addNonAccessibleFile(directoryFileObject);
+                        }
+                        
+                        // Sort the list: quicksort, only for regular files
+                        fileInputList.sortFiles();
+                    }
+                    else
+                    {
+                        for (int j = 0; j < children.length; j++)
+                        {
+                            // See if the wildcard (regexp) matches...
+                            String name = children[j].getName().getBaseName();
+                            if (Pattern.matches(onemask, name)) fileInputList.addFile(children[j]);
+                        }
+                        // We don't sort here, keep the order of the files in the archive.
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+                }
+            }
+            else
+            // A normal file...
+            {
+                try
+                {
+                    FileObject fileObject = KettleVFS.getFileObject(onefile);
+                    if (fileObject.exists())
+                    {
+                        if (fileObject.isReadable())
+                        {
+                            fileInputList.addFile(fileObject);
+                        }
+                        else
+                        {
+                            if (onerequired) fileInputList.addNonAccessibleFile(fileObject);
+                        }
+                    }
+                    else
+                    {
+                        if (onerequired) fileInputList.addNonExistantFile(fileObject);
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
+                }
+            }
+        }
+
+
+        return fileInputList;
+    }
+    
+    /* 
+    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
     {
         FileInputList fileInputList = new FileInputList();
 
@@ -158,12 +269,14 @@ public class FileInputList
 
         return fileInputList;
     }
+    */
     
-    /**
+    
+    /*
      * Copies all elements of a String array into a Vector
      * @param sArray The string array
+     * @param sPrefix the prefix to put before all strings to be copied to the vector
      * @return The Vector.
-     */
     private static void appendToVector(Vector v, String[] sArray, String sPrefix)
     {
         if (sArray == null || sArray.length == 0)
@@ -172,14 +285,26 @@ public class FileInputList
         for (int i = 0; i < sArray.length; i++)
             v.add(sPrefix + sArray[i]);
     }
+     */
+
+    /*
+    private static void appendToVector(Vector v, String[] sArray, String sPrefix)
+    {
+        if (sArray == null || sArray.length == 0)
+            return;
+
+        for (int i = 0; i < sArray.length; i++)
+            v.add(sPrefix + sArray[i]);
+    }
+    */
+
     
-    /**
+    /*
      * 
      * @param dir
      * @param onemask
      * @param matchingFileNames
      * @param sPrefix
-     */
     private static void findMatchingFiles(File dir, final String onemask, Vector matchingFileNames, String sPrefix)
     {
         if (!Const.isEmpty(sPrefix))
@@ -204,6 +329,7 @@ public class FileInputList
             }
         }
     }
+     */
     
     public List getFiles()
     {
@@ -220,17 +346,17 @@ public class FileInputList
         return nonExistantFiles;
     }
 
-    public void addFile(File file)
+    public void addFile(FileObject file)
     {
         files.add(file);
     }
 
-    public void addNonAccessibleFile(File file)
+    public void addNonAccessibleFile(FileObject file)
     {
         nonAccessibleFiles.add(file);
     }
 
-    public void addNonExistantFile(File file)
+    public void addNonExistantFile(FileObject file)
     {
         nonExistantFiles.add(file);
     }
@@ -242,9 +368,9 @@ public class FileInputList
         Collections.sort(nonExistantFiles);
     }
 
-    public File getFile(int i)
+    public FileObject getFile(int i)
     {
-        return (File) files.get(i);
+        return (FileObject) files.get(i);
     }
 
     public int nrOfFiles()

@@ -16,8 +16,7 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
@@ -32,6 +31,8 @@ import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ResultFile;
@@ -40,6 +41,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -719,7 +721,15 @@ public class TextFileInput extends BaseStep implements StepInterface
                         }
                     }
                     Value fileValue = fileRow.getValue(idx);
-                    data.files.addFile(new File(fileValue.getString()));
+                    try
+                    {
+                        FileObject fileObject = KettleVFS.getFileObject(fileValue.getString());
+                        data.files.addFile(fileObject);
+                    }
+                    catch(IOException e)
+                    {
+                        logError(Messages.getString("TextFileInput.Log.Error.UnableToCreateFileObject", fileValue.getString()));
+                    }
                     
                     // Grab another row
                     fileRow = getRowFrom(meta.getAcceptingStepName());
@@ -1060,7 +1070,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			log.logBasic("Required files", "WARNING: Missing " + message);
 			if (meta.isErrorIgnored()) for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
 			{
-				data.dataErrorLineHandler.handleNonExistantFile((File) iter.next());
+				data.dataErrorLineHandler.handleNonExistantFile((FileObject) iter.next());
 			}
 			else throw new KettleException("Following required files are missing: " + message);
 		}
@@ -1072,7 +1082,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			log.logBasic("Required files", "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored()) for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
 			{
-				data.dataErrorLineHandler.handleNonAccessibleFile((File) iter.next());
+				data.dataErrorLineHandler.handleNonAccessibleFile((FileObject) iter.next());
 			}
 			else throw new KettleException("Following required files are not accessible: " + message);
 		}
@@ -1125,7 +1135,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			// Is this the last file?
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
-			data.filename = data.file.getPath();
+			data.filename = KettleVFS.getFilename( data.file );
 			data.lineInFile = 0;
 			
             // Add this files to the result of this transformation.
@@ -1135,7 +1145,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 			logBasic("Opening file: " + data.filename);
 
-			data.fr = new FileInputStream(data.file);
+			data.fr = KettleVFS.getInputStream(data.filename);
 			data.dataErrorLineHandler.handleFile(data.file);
 
             String sFileCompression = meta.getFileCompression();

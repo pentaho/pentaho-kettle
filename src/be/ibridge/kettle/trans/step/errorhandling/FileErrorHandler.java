@@ -1,6 +1,6 @@
 package be.ibridge.kettle.trans.step.errorhandling;
 
-import java.io.File;
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
@@ -17,7 +17,7 @@ public interface FileErrorHandler {
 	 * @param file
 	 * @throws KettleException
 	 */
-	void handleFile(File file) throws KettleException;
+	void handleFile(FileObject file) throws KettleException;
 
 	/**
 	 * This method handles an error when processing the line with corresponding
@@ -42,7 +42,7 @@ public interface FileErrorHandler {
 	 * @param file
 	 * @throws KettleException
 	 */
-	void handleNonExistantFile(File file) throws KettleException;
+	void handleNonExistantFile(FileObject file) throws KettleException;
 
 	/**
 	 * This method handles a file that is required, but is not accessible.
@@ -50,6 +50,5 @@ public interface FileErrorHandler {
 	 * @param file
 	 * @throws KettleException
 	 */
-	void handleNonAccessibleFile(File file)
-			throws KettleException;
+	void handleNonAccessibleFile(FileObject file) throws KettleException;
 }

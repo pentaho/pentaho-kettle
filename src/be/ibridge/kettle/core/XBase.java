@@ -38,8 +38,8 @@ import com.linuxense.javadbf.DBFReader;
 
 public class XBase
 {
-    private LogWriter log;
-    private String file_dbf;
+    private LogWriter   log;
+    private String      dbfFile;
     private DBFReader   reader;
     private InputStream inputstream;
     private boolean     error;
@@ -48,17 +48,26 @@ public class XBase
     public XBase(String file_dbf)
     {
         this.log      = LogWriter.getInstance();
-        this.file_dbf = file_dbf;
+        this.dbfFile = file_dbf;
         error         = false;
         reader        = null;
         inputstream   = null;
+    }
+    
+    public XBase(InputStream inputStream)
+    {
+        this.log      = LogWriter.getInstance();
+        this.dbfFile = null;
+        this.error         = false;
+        this.reader        = null;
+        this.inputstream   = inputStream;
     }
     
     public void open() throws KettleException
     {
         try
         {
-        	inputstream = new FileInputStream( file_dbf );
+        	if (inputstream==null) inputstream = new FileInputStream( dbfFile );
 	        reader = new DBFReader(inputstream);
         }
         catch(DBFException e)
@@ -238,7 +247,7 @@ public class XBase
         }
         catch(IOException e)
         {
-            log.logError(toString(), "Couldn't close file ["+file_dbf+"] : "+e.toString());
+            log.logError(toString(), "Couldn't close file ["+dbfFile+"] : "+e.toString());
             error = true;
         }
         
@@ -252,7 +261,7 @@ public class XBase
 
     public String toString()
     {
-    	if (file_dbf!=null)	return "["+file_dbf+"]";
+    	if (dbfFile!=null)	return dbfFile;
     	else 				return getClass().getName();
     }
     
@@ -278,5 +287,21 @@ public class XBase
 		{
     		return false;
 		}
+    }
+
+    /**
+     * @return the dbfFile
+     */
+    public String getDbfFile()
+    {
+        return dbfFile;
+    }
+
+    /**
+     * @param dbfFile the dbfFile to set
+     */
+    public void setDbfFile(String dbfFile)
+    {
+        this.dbfFile = dbfFile;
     }
 }

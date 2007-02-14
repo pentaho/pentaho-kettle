@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -33,6 +34,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -505,7 +507,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				{
                     log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+StringUtil.environmentSubstitute(targetDirectory)+"]");
 					String targetFilename = getTargetFilename(filelist[i]);
-                    File targetFile = new File(targetFilename);
+                    FileObject targetFile = KettleVFS.getFileObject(targetFilename);
 
                     if ( (onlyGettingNewFiles == false) ||
                     	 (onlyGettingNewFiles == true) && needsDownload(filelist[i]))

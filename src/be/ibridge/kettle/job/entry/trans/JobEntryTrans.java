@@ -14,7 +14,6 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.trans;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +35,7 @@ import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -659,13 +659,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         
                         if (setLogfile) 
                         {
-                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, new File(getLogFilename()), parentJob.getName(), toString());
+                        	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(getLogFilename()), parentJob.getName(), toString());
                             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
         				}
         			}
                 }
     		}
-    		catch(KettleException e)
+    		catch(Exception e)
     		{
     			log.logError(toString(), "Unable to open transformation: "+e.getMessage());
     			result.setNrErrors(1);

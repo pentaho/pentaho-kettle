@@ -15,7 +15,7 @@
 
 package be.ibridge.kettle.trans.step.excelinput;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,11 +30,15 @@ import jxl.LabelCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
+
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -344,7 +348,14 @@ public class ExcelInput extends BaseStep implements StepInterface
                         }
                     }
                     Value fileValue = fileRow.getValue(idx);
-                    data.files.addFile(new File(fileValue.getString()));
+                    try
+                    {
+                        data.files.addFile(KettleVFS.getFileObject(fileValue.getString()));
+                    }
+                    catch(IOException e)
+                    {
+                        throw new KettleException("Unexpected error creating file object for "+fileValue.getString(), e);
+                    }
                     
                     // Grab another row
                     fileRow = getRowFrom(meta.getAcceptingStepName());
@@ -418,7 +429,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
 				{
-					data.errorHandler.handleNonExistantFile((File) iter.next());
+					data.errorHandler.handleNonExistantFile((FileObject) iter.next());
 				}
 			else
 				throw new KettleException("Following required files are missing: " + message);
@@ -432,7 +443,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
 				{
-					data.errorHandler.handleNonAccessibleFile((File) iter.next());
+					data.errorHandler.handleNonAccessibleFile((FileObject) iter.next());
 				}
 			else
 				throw new KettleException("Following required files are not accessible: " + message);
@@ -454,14 +465,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 			{
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
-				data.filename = data.file.getPath();
+				data.filename = KettleVFS.getFilename( data.file );
 				
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
 				resultFile.setComment("File was read by an Excel input step");
 				addResultFile(resultFile);
 				
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
-				data.workbook = Workbook.getWorkbook(data.file);
+				data.workbook = Workbook.getWorkbook(data.file.getContent().getInputStream());
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...
 				data.sheetnr = 0;
@@ -642,8 +653,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 				for (Iterator iter = data.files.getFiles().iterator(); iter.hasNext();)
 				{
-					File file = (File) iter.next();
-					String name = file.getName();
+					FileObject file = (FileObject) iter.next();
+					String name = KettleVFS.getFilename(file);
 					if (name.length() > data.maxfilelength) data.maxfilelength = name.length();
 				}
 

@@ -15,7 +15,7 @@
  
 package be.ibridge.kettle.trans.step.xbaseinput;
 
-import java.io.File;
+import java.io.IOException;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
@@ -23,6 +23,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -81,7 +82,14 @@ public class XBaseInput extends BaseStep implements StepInterface
                         }
                     }
                     Value fileValue = fileRow.getValue(idx);
-                    data.files.addFile(new File(fileValue.getString()));
+                    try
+                    {
+                        data.files.addFile( KettleVFS.getFileObject(fileValue.getString()));
+                    }
+                    catch(IOException e)
+                    {
+                        throw new KettleException(e);
+                    }
                     
                     // Grab another row
                     fileRow = getRowFrom(meta.getAcceptingStepName());
@@ -119,7 +127,7 @@ public class XBaseInput extends BaseStep implements StepInterface
         // Possibly add a filename...
         if (meta.includeFilename())
         {
-            Value inc = new Value(meta.getFilenameField(), data.file_dbf.getPath());
+            Value inc = new Value(meta.getFilenameField(), data.file_dbf.getName().getURI());
             inc.setLength(100);
             row.addValue(inc);
         }
@@ -173,23 +181,24 @@ public class XBaseInput extends BaseStep implements StepInterface
         data.file_dbf = data.files.getFile(data.fileNr);
         data.fileNr++;
                 
-        data.xbi=new XBase(data.file_dbf.getPath());
         try
         {
+            data.xbi=new XBase(data.file_dbf.getContent().getInputStream());
+            data.xbi.setDbfFile(data.file_dbf.getName().getURI());
             data.xbi.open();
             
-            logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.file_dbf.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.xbi+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             data.fields = data.xbi.getFields();
             
             // Add this to the result file names...
-            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(data.file_dbf.getPath()), getTransMeta().getName(), getStepname());
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file_dbf, getTransMeta().getName(), getStepname());
             resultFile.setComment(Messages.getString("XBaseInput.ResultFile.Comment"));
             addResultFile(resultFile);
         }
-        catch(KettleException e)
+        catch(Exception e)
         {
             logError(Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-            throw e;
+            throw new KettleException(e);
         }
     }
 

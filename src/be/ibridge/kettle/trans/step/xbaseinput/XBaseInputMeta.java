@@ -324,10 +324,11 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         
         // Take the first file to determine what the layout is...
         //
-		XBase xbi = new XBase(fileList.getFile(0).getPath());
-        
+        XBase xbi=null;
 		try
 		{
+            xbi = new XBase(fileList.getFile(0).getContent().getInputStream());
+            xbi.setDbfFile(fileList.getFile(0).getName().getURI());
             xbi.open();
 			Row add = xbi.getFields();
 			for (int i=0;i<add.size();i++)
@@ -337,13 +338,13 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			row.addRow(	add );
 		}
-		catch(KettleException ke)
+		catch(Exception ke)
 	    {
 			throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); //$NON-NLS-1$
 	    }
         finally
         {
-            xbi.close();
+            if (xbi!=null) xbi.close();
         }
 	    
 	    if (rowNrAdded && rowNrField!=null && rowNrField.length()>0)
