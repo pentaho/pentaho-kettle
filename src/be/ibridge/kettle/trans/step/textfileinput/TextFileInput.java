@@ -318,6 +318,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				if ( pos == length )
 				{
+					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
 					strings.add("");
 				}
 			}
@@ -998,7 +999,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());			
 			putRow(r);
 
-			if ( linesInput > meta.getRowLimit() && meta.getRowLimit() >0 )
+			if ( linesInput >= meta.getRowLimit() && meta.getRowLimit() >0 )
 			{
 			    closeLastFile();
 			    setOutputDone(); // signal end to receiver(s)
