@@ -18,7 +18,6 @@ package be.ibridge.kettle.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -143,6 +142,7 @@ import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.i18n.LanguageChoice;
@@ -4151,7 +4151,7 @@ public class Spoon implements AddUndoPositionInterface
         String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
         try
         {
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
+            DataOutputStream dos = new DataOutputStream(KettleVFS.getOutputStream(fname, false));
             dos.write(xml.getBytes(Const.XML_ENCODING));
             dos.close();
 
@@ -8221,7 +8221,7 @@ public class Spoon implements AddUndoPositionInterface
         String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
         try
         {
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
+            DataOutputStream dos = new DataOutputStream(KettleVFS.getOutputStream(fname, false));
             dos.write(xml.getBytes(Const.XML_ENCODING));
             dos.close();
             
