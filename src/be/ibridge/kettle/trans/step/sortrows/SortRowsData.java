@@ -18,6 +18,8 @@ package be.ibridge.kettle.trans.step.sortrows;
 
 import java.util.ArrayList;
 
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -36,6 +38,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
     public ArrayList rowMeta;
 
 	public int     fieldnrs[];      // the corresponding field numbers;
+    public FileObject fil;
 
 	/**
 	 * 

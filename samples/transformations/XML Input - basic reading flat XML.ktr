@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name/>
-    <directory>/</directory>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
@@ -24,9 +24,48 @@
     <size_rowset>350</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
-    </info>
+    </dependencies>
+    <partitionschemas>
+        <partitionschema>
+          <name>MySQL EC2 Schema</name>
+          <partition>            <id>P2</id>
+            </partition>          <partition>            <id>P3</id>
+            </partition>          <partition>            <id>P4</id>
+            </partition>          <partition>            <id>P5</id>
+            </partition>          </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+        <clusterschema>
+          <name>EC2</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>100000</sockets_buffer_size>
+          <sockets_flush_interval>0</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>EC_MASTER_1</name>
+            <name>EC_SLAVE_2</name>
+            <name>EC_SLAVE_3</name>
+            <name>EC_SLAVE_4</name>
+            <name>EC_SLAVE_5</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;02&#47;14 18:32:15.687</modified_date>
+  </info>
   <notepads>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
@@ -52,16 +91,21 @@
       <width>166</width>
       <heigth>49</heigth>
       </notepad>
-    </notepads>
+  </notepads>
   <order>
   <hop> <from>XML Input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
-
   <step>
     <name>Dummy (do nothing)</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
     <GUI>
       <xloc>262</xloc>
       <yloc>108</yloc>
@@ -75,12 +119,17 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <include>N</include>
     <include_field/>
     <rownum>N</rownum>
     <rownum_field/>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}/files/XML - flat.xml</name>
+      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML - flat.xml</name>
       <filemask/>
       </file>
     <fields>
@@ -95,7 +144,7 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        <positions><position>E=ObjectID/1</position>        </positions>
+        <positions><position>E=ObjectID&#47;1</position>        </positions>
         </field>
       <field>
         <name>Sapident1</name>
@@ -108,7 +157,7 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        <positions><position>E=SAPIDENT/1</position>        </positions>
+        <positions><position>E=SAPIDENT&#47;1</position>        </positions>
         </field>
       <field>
         <name>Quantity1</name>
@@ -121,7 +170,7 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        <positions><position>E=Quantity/1</position>        </positions>
+        <positions><position>E=Quantity&#47;1</position>        </positions>
         </field>
       <field>
         <name>Merkmalname1</name>
@@ -134,7 +183,7 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        <positions><position>E=Merkmalname/1</position>        </positions>
+        <positions><position>E=Merkmalname&#47;1</position>        </positions>
         </field>
       <field>
         <name>Merkmalswert1</name>
@@ -147,7 +196,7 @@
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        <positions><position>E=Merkmalswert/1</position>        </positions>
+        <positions><position>E=Merkmalswert&#47;1</position>        </positions>
         </field>
       </fields>
     <positions>
@@ -157,6 +206,7 @@
       </positions>
     <limit>0</limit>
     <skip>0</skip>
+     <cluster_schema/>
     <GUI>
       <xloc>80</xloc>
       <yloc>108</yloc>

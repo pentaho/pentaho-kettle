@@ -16,23 +16,27 @@
  
 package be.ibridge.kettle.trans.step.sortrows;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -81,27 +85,24 @@ public class SortRows extends BaseStep implements StepInterface
 			quickSort(data.buffer);
 			
 			// Then write them to disk...
-			File             fil;
-			FileOutputStream fos;
 			DataOutputStream dos;
 			GZIPOutputStream gzos;
 			int p;
 			
 			try
 			{
-				fil=File. createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory())));
-				fil.deleteOnExit();
-				data.files.add(fil);   // Remember the files!
+				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", StringUtil.environmentSubstitute(meta.getDirectory()));
 				
-				fos=new FileOutputStream(fil);
+				data.files.add(fileObject); // Remember the files!
+				OutputStream outputStream = fileObject.getContent().getOutputStream();
 				if (meta.getCompress())
 				{
-					gzos = new GZIPOutputStream(new BufferedOutputStream(fos));
+					gzos = new GZIPOutputStream(new BufferedOutputStream(outputStream));
 					dos=new DataOutputStream(gzos);
 				}
 				else
 				{
-					dos = new DataOutputStream(fos);
+					dos = new DataOutputStream(outputStream);
 					gzos = null;
 				}
 			
@@ -124,7 +125,7 @@ public class SortRows extends BaseStep implements StepInterface
                 {
 					gzos.close(); // close gzip stream
                 }
-				fos.close();  // close file stream
+                outputStream.close();  // close file stream
 			}
 			catch(Exception e)
 			{
@@ -145,7 +146,6 @@ public class SortRows extends BaseStep implements StepInterface
 		int smallest;
 		Row r1, r2;
 		Row retval;
-		String filename;
 		
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
@@ -156,9 +156,10 @@ public class SortRows extends BaseStep implements StepInterface
 			{
 				for (f=0;f<data.files.size() && !isStopped();f++)
 				{
-					filename=((File)data.files.get(f)).toString();
+					FileObject fileObject = (FileObject)data.files.get(f);
+                    String filename = KettleVFS.getFilename(fileObject);
 					if (log.isDetailed()) logDetailed("Opening tmp-file: ["+filename+"]");
-					FileInputStream fi=new FileInputStream( (File)data.files.get(f) );
+					InputStream fi=fileObject.getContent().getInputStream();
 					DataInputStream di;
 					data.fis.add(fi);
 					if (meta.getCompress())
@@ -241,9 +242,9 @@ public class SortRows extends BaseStep implements StepInterface
 				
 				// now get another Row for position smallest
 				
-				File          file = (File)data.files.get(smallest);
+				FileObject    file = (FileObject)data.files.get(smallest);
 				DataInputStream di = (DataInputStream)data.dis.get(smallest); 
-				FileInputStream fi = (FileInputStream)data.fis.get(smallest);
+				InputStream     fi = (InputStream)data.fis.get(smallest);
 				GZIPInputStream gzfi = (meta.getCompress()) ? (GZIPInputStream)data.gzis.get(smallest) : null;
 
 				try
@@ -380,124 +381,15 @@ public class SortRows extends BaseStep implements StepInterface
 		if (log.isDetailed()) logDetailed("Starting quickSort algorithm..."); 
 		if (! elements.isEmpty())
 		{ 
-			this.quickSort(elements, 0, elements.size()-1);
+            Collections.sort(elements, new Comparator()
+                {
+                    public int compare(Object o1, Object o2)
+                    {
+                        return ((Row) o1).compare((Row) o2, data.fieldnrs, meta.getAscending());
+                    }
+                }
+            );
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
-
-
-	/**
-	 * QuickSort.java by Henk Jan Nootenboom, 9 Sep 2002
-	 * Copyright 2002-2003 SUMit. All Rights Reserved.
-	 *
-	 * Algorithm designed by prof C. A. R. Hoare, 1962
-	 * See http://www.sum-it.nl/en200236.html
-	 * for algorithm improvement by Henk Jan Nootenboom, 2002.
-	 *
-	 * Recursive Quicksort, sorts (part of) a Vector by
-	 *  1.  Choose a pivot, an element used for comparison
-	 *  2.  dividing into two parts:
-	 *      - less than-equal pivot
-	 *      - and greater than-equal to pivot.
-	 *      A element that is equal to the pivot may end up in any part.
-	 *      See www.sum-it.nl/en200236.html for the theory behind this.
-	 *  3. Sort the parts recursively until there is only one element left.
-	 *
-	 * www.sum-it.nl/QuickSort.java this source code
-	 * www.sum-it.nl/quicksort.php3 demo of this quicksort in a java applet
-	 *
-	 * Permission to use, copy, modify, and distribute this java source code
-	 * and its documentation for NON-COMMERCIAL or COMMERCIAL purposes and
-	 * without fee is hereby granted.
-	 * See http://www.sum-it.nl/security/index.html for copyright laws.
-	 */
-	  private void quickSort(ArrayList elements, int lowIndex, int highIndex)
-	  { 
-	  	int lowToHighIndex;
-		int highToLowIndex;
-		int pivotIndex;
-		Row pivotValue;  // values are Strings in this demo, change to suit your application
-		Row lowToHighValue;
-		Row highToLowValue;
-		Row parking;
-		int newLowIndex;
-		int newHighIndex;
-		int compareResult;
-
-		lowToHighIndex = lowIndex;
-		highToLowIndex = highIndex;
-		/** Choose a pivot, remember it's value
-		 *  No special action for the pivot element itself.
-		 *  It will be treated just like any other element.
-		 */
-		pivotIndex = (lowToHighIndex + highToLowIndex) / 2;
-		pivotValue = (Row)elements.get(pivotIndex);
-
-		/** Split the Vector in two parts.
-		 *
-		 *  The lower part will be lowIndex - newHighIndex,
-		 *  containing elements <= pivot Value
-		 *
-		 *  The higher part will be newLowIndex - highIndex,
-		 *  containting elements >= pivot Value
-		 * 
-		 */
-		newLowIndex = highIndex + 1;
-		newHighIndex = lowIndex - 1;
-		// loop until low meets high
-		while ((newHighIndex + 1) < newLowIndex) // loop until partition complete
-		{ // loop from low to high to find a candidate for swapping
-		  lowToHighValue = (Row)elements.get(lowToHighIndex);
-		  while (lowToHighIndex < newLowIndex
-			& lowToHighValue.compare(pivotValue, data.fieldnrs, meta.getAscending())<0 )
-		  { 
-		  	newHighIndex = lowToHighIndex; // add element to lower part
-			lowToHighIndex ++;
-			lowToHighValue = (Row)elements.get(lowToHighIndex);
-		  }
-
-		  // loop from high to low find other candidate for swapping
-		  highToLowValue = (Row)elements.get(highToLowIndex);
-		  while (newHighIndex <= highToLowIndex
-			& (highToLowValue.compare(pivotValue, data.fieldnrs, meta.getAscending())>0)
-			)
-		  { 
-		  	newLowIndex = highToLowIndex; // add element to higher part
-			highToLowIndex --;
-			highToLowValue = (Row)elements.get(highToLowIndex);
-		  }
-
-		  // swap if needed
-		  if (lowToHighIndex == highToLowIndex) // one last element, may go in either part
-		  { 
-		  	newHighIndex = lowToHighIndex; // move element arbitrary to lower part
-		  }
-		  else if (lowToHighIndex < highToLowIndex) // not last element yet
-		  { 
-		  	compareResult = lowToHighValue.compare(highToLowValue, data.fieldnrs, meta.getAscending());
-			if (compareResult >= 0) // low >= high, swap, even if equal
-			{ 
-			  parking = lowToHighValue;
-			  elements.set(lowToHighIndex, highToLowValue);
-			  elements.set(highToLowIndex, parking);
-
-			  newLowIndex = highToLowIndex;
-			  newHighIndex = lowToHighIndex;
-
-			  lowToHighIndex ++;
-			  highToLowIndex --;
-			}
-		  }
-		}
-
-		// Continue recursion for parts that have more than one element
-		if (lowIndex < newHighIndex)
-		{ 
-			this.quickSort(elements, lowIndex, newHighIndex); // sort lower subpart
-		}
-		if (newLowIndex < highIndex)
-		{ 
-			this.quickSort(elements, newLowIndex, highIndex); // sort higher subpart
-		}
-	  }
 }

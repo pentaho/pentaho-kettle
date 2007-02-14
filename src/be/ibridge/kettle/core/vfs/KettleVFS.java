@@ -15,6 +15,20 @@ import be.ibridge.kettle.core.Const;
 
 public class KettleVFS
 {
+    private int fileNumber;
+    
+    private KettleVFS()
+    {
+        fileNumber=1;
+    }
+    
+    private int getNextFileNumber()
+    {
+        return fileNumber++;
+    }
+    
+    private static KettleVFS kettleVFS = new KettleVFS();
+    
     public static FileObject getFileObject(String vfsFilename) throws IOException
     {
         FileSystemManager fsManager = VFS.getManager();
@@ -100,5 +114,17 @@ public class KettleVFS
             fileString = Const.replace(fileString, "/", Const.FILE_SEPARATOR);
         }
         return fileString;
+    }
+    
+    public static FileObject createTempFile(String prefix, String suffix, String directory) throws IOException
+    {
+        FileObject fileObject;
+        do
+        {
+            String filename = directory+"/"+prefix+"_"+kettleVFS.getNextFileNumber()+suffix;
+            fileObject = getFileObject(filename);
+        }
+        while (fileObject.exists());
+        return fileObject;
     }
 }
