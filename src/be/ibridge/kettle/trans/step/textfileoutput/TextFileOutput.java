@@ -492,7 +492,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			if (sLine!=null)
 			{
 				if (sLine.trim().length()>0)
+				{
 					data.writer.write(sLine.toCharArray());
+					linesOutput++;
+				}
 			}
 		}
 		catch(Exception e)
@@ -501,7 +504,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			e.printStackTrace();
 			retval=true;
 		}
-		linesOutput++;
+		
 		return retval;
 	}
 	
