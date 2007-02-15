@@ -1402,6 +1402,22 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 }
             });
 
+            /*
+             * Define Error handling...
+             */
+            if (stepMeta.supportsErrorHandling())
+            {
+                MenuItem miError = new MenuItem(mPop, SWT.NONE);
+                miError.setText(Messages.getString("SpoonGraph.PopupMenu.Error")); //$NON-NLS-1$
+                miError.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        spoon.editStepErrorHandling(transMeta, stepMeta);
+                    }
+                });
+            }
+
             if (sels == 2)
             {
                 miNewHop.addSelectionListener(new SelectionAdapter()
