@@ -28,6 +28,7 @@ import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.createfile.JobEntryCreateFile;
 import be.ibridge.kettle.job.entry.deletefile.JobEntryDeleteFile;
 import be.ibridge.kettle.job.entry.eval.JobEntryEval;
+import be.ibridge.kettle.job.entry.filecompare.JobEntryFileCompare;
 import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
 import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
@@ -71,6 +72,7 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_DELETE_FILE    = 14;
     public static final int TYPE_JOBENTRY_WAIT_FOR_FILE  = 15;
     public static final int TYPE_JOBENTRY_SFTPPUT        = 16;
+    public static final int TYPE_JOBENTRY_FILE_COMPARE   = 17;
     
 	public final static String typeCode[] =
 		{
@@ -91,6 +93,7 @@ public interface JobEntryInterface
             "DELETE_FILE",
             "WAIT_FOR_FILE",
             "SFTPPUT",
+            "FILE_COMPARE"
 		};
 
 	public final static String typeDesc[] =
@@ -111,7 +114,8 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.CreateFile.TypeDesc"),
             Messages.getString("JobEntry.DeleteFile.TypeDesc"),
             Messages.getString("JobEntry.WaitForFile.TypeDesc"),
-            Messages.getString("JobEntry.SFTPPut.TypeDesc"),
+            Messages.getString("JobEntry.SFTPPut.TypeDesc"),            
+            Messages.getString("JobEntry.FileCompare.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -131,8 +135,9 @@ public interface JobEntryInterface
             "WEB.png",
             "CFJ.png",
             "DFJ.png",
-            "WFF.png",
-            "SFP.png",
+            "WFF.png",           
+            "SFP.png",                        
+            "BFC.png"
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -154,6 +159,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.DeleteFile.Tooltip"),
             Messages.getString("JobEntry.WaitForFile.Tooltip"),
             Messages.getString("JobEntry.SFTPPut.Tooltip"),
+            Messages.getString("JobEntry.FileCompare.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -175,6 +181,7 @@ public interface JobEntryInterface
             JobEntryDeleteFile.class,
             JobEntryWaitForFile.class,
             JobEntrySFTPPUT.class,
+            JobEntryFileCompare.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
