@@ -245,7 +245,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	 */
 	public String getSQLListOfProcedures()
 	{
-		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid and upper(u.name) = '"+getUsername().toUpperCase()+"'";
+		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid";
 	}
 	/* (non-Javadoc)
 	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
