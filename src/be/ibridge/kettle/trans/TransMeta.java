@@ -2493,17 +2493,16 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
         // OK, try to load using the VFS stuff...
-        String xml = null;
+        Document doc=null;
         try
         {
-            xml = KettleVFS.getFileContent(fname);
+            doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
         }
         catch (IOException e)
         {
             throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname)+" : "+e.toString(), e);
         }
         
-        Document doc = XMLHandler.loadXMLString(xml);
         if (doc != null)
         {
             // Clear the transformation

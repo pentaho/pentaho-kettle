@@ -3,6 +3,7 @@ package be.ibridge.kettle.core.vfs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.apache.commons.vfs.FileContent;
@@ -64,13 +65,24 @@ public class KettleVFS
         return fileObject;
     }
     
-    public static String getFileContent(String vfsFilename) throws IOException
+    /**
+     * Read a text file (like an XML document).  WARNING DO NOT USE FOR DATA FILES.
+     * 
+     * @param vfsFilename the filename or URL to read from
+     * @param charSetName the character set of the string (UTF-8, ISO8859-1, etc)
+     * @return The content of the file as a String
+     * @throws IOException
+     */
+    public static String getTextFileContent(String vfsFilename, String charSetName) throws IOException
     {
         InputStream inputStream = getInputStream(vfsFilename);
+        InputStreamReader reader = new InputStreamReader(inputStream, charSetName);
         int c;
         StringBuffer stringBuffer = new StringBuffer();
-        while ( (c=inputStream.read())!=-1) stringBuffer.append((char)c);
+        while ( (c=reader.read())!=-1) stringBuffer.append((char)c);
+        reader.close();
         inputStream.close();
+        
         return stringBuffer.toString();
     }
     

@@ -545,8 +545,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         try
         {
             // OK, try to load using the VFS stuff...
-            String xml = KettleVFS.getFileContent(fname);
-            Document doc = XMLHandler.loadXMLString(xml);
+            Document doc = XMLHandler.loadXMLFile(KettleVFS.getFileObject(fname));
             if (doc != null)
             {
                 // Clear the job

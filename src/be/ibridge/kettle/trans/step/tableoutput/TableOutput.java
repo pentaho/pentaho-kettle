@@ -187,11 +187,6 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
 			data.db.setValues(r, insertStatement);
 			rowIsSafe = data.db.insertRow(insertStatement, data.batchMode);
-            if (rowIsSafe)
-            {
-                System.out.println("Row is safe!");
-            }
-			linesOutput++;
 
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
