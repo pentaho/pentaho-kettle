@@ -121,7 +121,25 @@ public class Update extends BaseStep implements StepInterface
 			 */
             if (!meta.isErrorIgnored())
             {
-                throw new KettleDatabaseException(Messages.getString("Update.Exception.KeyCouldNotFound")+lu); //$NON-NLS-1$
+                if (getStepMeta().isDoingErrorHandling())
+                {
+                    row.setIgnore();
+                    if (data.stringErrorKeyNotFound==null)
+                    {
+                        data.stringErrorKeyNotFound=Messages.getString("Update.Exception.KeyCouldNotFound")+lu;
+                        data.stringFieldnames="";
+                        for (int i=0;i<lu.size();i++) 
+                        {
+                            if (i>0) data.stringFieldnames+=", ";
+                            data.stringFieldnames+=lu.getValue(i).getName();
+                        }
+                    }
+                    putError(row, 1L, data.stringErrorKeyNotFound, data.stringFieldnames, "UPD001");
+                }
+                else
+                {
+                    throw new KettleDatabaseException(Messages.getString("Update.Exception.KeyCouldNotFound")+lu); //$NON-NLS-1$
+                }
             }
             else
             {
@@ -185,7 +203,8 @@ public class Update extends BaseStep implements StepInterface
 		try
 		{
 			lookupValues(r); // add new values to the row in rowset[0].
-			putRow(r);       // copy row to output rowset(s);
+			
+            if (!r.isIgnored()) putRow(r); // copy row to output rowset(s);
 			
             if (checkFeedback(linesRead)) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}

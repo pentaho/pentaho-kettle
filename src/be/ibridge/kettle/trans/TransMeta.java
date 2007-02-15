@@ -2440,17 +2440,17 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
         
         /* The error handling metadata on the steps */
+        retval.append("  ").append(XMLHandler.openTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
             
             if (stepMeta.getStepErrorMeta()!=null)
             {
-                retval.append("  ").append(XMLHandler.openTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
                 retval.append(stepMeta.getStepErrorMeta().getXML());
-                retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
             }
         }
+        retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
 
         retval.append("</"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
 
