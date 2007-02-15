@@ -139,8 +139,9 @@ public class GetTransStatusHandler extends AbstractHandler
                     }
                     
                     out.println("<table border=\"1\">");
-                    out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> <th>Updated</th> " +
-                            "<th>Errors</th> <th>Active</th> <th>Time</th> <th>Speed</th> <th>pr/in/out</th> <th>Sleeps</th> </tr>");
+                    out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> " +
+                            "<th>Updated</th> <th>Rejected</th> <th>Errors</th> <th>Active</th> <th>Time</th> " +
+                            "<th>Speed</th> <th>pr/in/out</th> <th>Sleeps</th> </tr>");
         
                     for (int i = 0; i < trans.nrSteps(); i++)
                     {

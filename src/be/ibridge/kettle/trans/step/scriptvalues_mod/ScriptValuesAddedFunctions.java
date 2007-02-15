@@ -168,6 +168,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				else if(strType.toLowerCase().equals("r")) return (double)scm.getLinesRead();
 				else if(strType.toLowerCase().equals("u")) return (double)scm.getLinesUpdated();
 				else if(strType.toLowerCase().equals("w")) return (double)scm.getLinesWritten();
+                else if(strType.toLowerCase().equals("e")) return (double)scm.getLinesRejected();
 				else return 0;
 			}catch(Exception e){
 				//throw Context.reportRuntimeError(e.toString());

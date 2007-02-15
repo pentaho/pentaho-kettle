@@ -162,6 +162,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 			Long lines_input     = new Long(result.getNrLinesInput());
 			Long lines_output    = new Long(result.getNrLinesOutput());
 			Long lines_updated   = new Long(result.getNrLinesUpdated());
+            Long lines_rejected  = new Long(result.getNrLinesRejected());
 			Long lines_read      = new Long(result.getNrLinesRead());
 			Long lines_written   = new Long(result.getNrLinesWritten());
 			Long exit_status     = new Long(result.getExitStatus());
@@ -173,6 +174,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 			scope.put("lines_input", scope, lines_input);
 			scope.put("lines_output", scope, lines_output);
 			scope.put("lines_updated", scope, lines_updated);
+            scope.put("lines_rejected", scope, lines_rejected);
 			scope.put("lines_read", scope, lines_read);
 			scope.put("lines_written", scope, lines_written);
 			scope.put("files_retrieved", scope, files_retrieved);

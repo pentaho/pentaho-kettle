@@ -53,6 +53,7 @@ public class StepErrorMetaDialog extends Dialog
     private CCombo   wTargetStep;
     private Button   wEnabled;
 	private TextVar  wNrErrors,  wErrDesc, wErrFields,  wErrCodes;
+    private TextVar  wMaxErrors,  wMaxPct, wMinPctRows;
 
 	private Button    wOK, wCancel;
 	
@@ -254,6 +255,63 @@ public class StepErrorMetaDialog extends Dialog
         fdErrCodes.right= new FormAttachment(95, 0);
         wErrCodes.setLayoutData(fdErrCodes);
 
+        // What's the maximum number of errors allowed before we stop?
+        Label wlMaxErrors = new Label(composite, SWT.RIGHT ); 
+        wlMaxErrors.setText("Max nr errors allowed  "); 
+        props.setLook(wlMaxErrors);
+        FormData fdlMaxErrors = new FormData();
+        fdlMaxErrors.top  = new FormAttachment(wErrCodes, margin);
+        fdlMaxErrors.left = new FormAttachment(0,0);
+        fdlMaxErrors.right= new FormAttachment(middle, -margin);
+        wlMaxErrors.setLayoutData(fdlMaxErrors);
+
+        wMaxErrors = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wMaxErrors);
+        wMaxErrors.addModifyListener(lsMod);
+        FormData fdMaxErrors = new FormData();
+        fdMaxErrors.top  = new FormAttachment(wErrCodes, margin);
+        fdMaxErrors.left = new FormAttachment(middle, 0); 
+        fdMaxErrors.right= new FormAttachment(95, 0);
+        wMaxErrors.setLayoutData(fdMaxErrors);
+
+        // What's the maximum % of errors allowed?
+        Label wlMaxPct = new Label(composite, SWT.RIGHT ); 
+        wlMaxPct.setText("Max % errors allowed (empt==100) "); 
+        props.setLook(wlMaxPct);
+        FormData fdlMaxPct = new FormData();
+        fdlMaxPct.top  = new FormAttachment(wMaxErrors, margin);
+        fdlMaxPct.left = new FormAttachment(0,0);
+        fdlMaxPct.right= new FormAttachment(middle, -margin);
+        wlMaxPct.setLayoutData(fdlMaxPct);
+
+        wMaxPct = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wMaxPct);
+        wMaxPct.addModifyListener(lsMod);
+        FormData fdMaxPct = new FormData();
+        fdMaxPct.top  = new FormAttachment(wMaxErrors, margin);
+        fdMaxPct.left = new FormAttachment(middle, 0); 
+        fdMaxPct.right= new FormAttachment(95, 0);
+        wMaxPct.setLayoutData(fdMaxPct);
+
+        // What's the min nr of rows to read before doing % evaluation
+        Label wlMinPctRows = new Label(composite, SWT.RIGHT ); 
+        wlMinPctRows.setText("Min nr of rows to read before doing % evaluation "); 
+        props.setLook(wlMinPctRows);
+        FormData fdlMinPctRows = new FormData();
+        fdlMinPctRows.top  = new FormAttachment(wMaxPct, margin);
+        fdlMinPctRows.left = new FormAttachment(0,0);
+        fdlMinPctRows.right= new FormAttachment(middle, -margin);
+        wlMinPctRows.setLayoutData(fdlMinPctRows);
+
+        wMinPctRows = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wMinPctRows);
+        wMinPctRows.addModifyListener(lsMod);
+        FormData fdMinPctRows = new FormData();
+        fdMinPctRows.top  = new FormAttachment(wMaxPct, margin);
+        fdMinPctRows.left = new FormAttachment(middle, 0); 
+        fdMinPctRows.right= new FormAttachment(95, 0);
+        wMinPctRows.setLayoutData(fdMinPctRows);
+
 		FormData fdComposite = new FormData();
 		fdComposite.left  = new FormAttachment(0, 0);
 		fdComposite.top   = new FormAttachment(0, 0);
@@ -270,6 +328,9 @@ public class StepErrorMetaDialog extends Dialog
 		wErrCodes.addSelectionListener(selAdapter);
 		wNrErrors.addSelectionListener(selAdapter);
         wErrDesc.addSelectionListener(selAdapter);
+        wMaxErrors.addSelectionListener(selAdapter);
+        wMaxPct.addSelectionListener(selAdapter);
+        wMinPctRows.addSelectionListener(selAdapter);
 
 
 		// Detect X or ALT-F4 or something that kills this window...
@@ -303,6 +364,9 @@ public class StepErrorMetaDialog extends Dialog
         wErrDesc.setText( Const.NVL(stepErrorMeta.getErrorDescriptionsValuename(), "") );
         wErrFields.setText( Const.NVL(stepErrorMeta.getErrorFieldsValuename(), "") );
 		wErrCodes.setText( Const.NVL(stepErrorMeta.getErrorCodesValuename(), "") );
+        if (stepErrorMeta.getMaxErrors()>0) wMaxErrors.setText( Long.toString(stepErrorMeta.getMaxErrors()));
+        if (stepErrorMeta.getMaxPercentErrors()>0) wMaxPct.setText( Long.toString(stepErrorMeta.getMaxPercentErrors()));
+        if (stepErrorMeta.getMinPercentRows()>0) wMinPctRows.setText( Long.toString(stepErrorMeta.getMinPercentRows()));
 
 		wSourceStep.setFocus();
 	}
@@ -322,6 +386,9 @@ public class StepErrorMetaDialog extends Dialog
         originalStepErrorMeta.setErrorDescriptionsValuename( stepErrorMeta.getErrorDescriptionsValuename() );
         originalStepErrorMeta.setErrorFieldsValuename( stepErrorMeta.getErrorFieldsValuename() );
         originalStepErrorMeta.setErrorCodesValuename( stepErrorMeta.getErrorCodesValuename() );
+        originalStepErrorMeta.setMaxErrors( stepErrorMeta.getMaxErrors() );
+        originalStepErrorMeta.setMaxPercentErrors( stepErrorMeta.getMaxPercentErrors() );
+        originalStepErrorMeta.setMinPercentRows( stepErrorMeta.getMinPercentRows() );
 
         originalStepErrorMeta.setChanged();
 
@@ -339,5 +406,8 @@ public class StepErrorMetaDialog extends Dialog
         stepErrorMeta.setErrorDescriptionsValuename( wErrDesc.getText() );
         stepErrorMeta.setErrorFieldsValuename( wErrFields.getText() );
         stepErrorMeta.setErrorCodesValuename( wErrCodes.getText() );
+        stepErrorMeta.setMaxErrors( Const.toLong(wMaxErrors.getText(),-1L) );
+        stepErrorMeta.setMaxPercentErrors( Const.toInt( Const.replace(wMaxPct.getText(), "%", ""), -1) );
+        stepErrorMeta.setMinPercentRows( Const.toLong(wMinPctRows.getText(),-1L) );
     }
 }

@@ -72,7 +72,11 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
 			writeToTable(r);
             
-            if (!r.isIgnored()) putRow(r); // in case we want it go further...
+            if (!r.isIgnored())
+            {
+                putRow(r); // in case we want it go further...
+                linesOutput++;
+            }
 
             if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
 		}
@@ -187,7 +191,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
 			data.db.setValues(r, insertStatement);
 			rowIsSafe = data.db.insertRow(insertStatement, data.batchMode);
-
+			
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
@@ -285,6 +289,7 @@ public class TableOutput extends BaseStep implements StepInterface
                     {
                         Row row = (Row) data.batchBuffer.get(i);
                         putRow(row);
+                        linesOutput++;
                     }
                     // Clear the buffer
                     data.batchBuffer.clear();
@@ -318,6 +323,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 {
                     // send the error foward
                     putRow(row);
+                    linesOutput++;
                 }
                 else
                 {

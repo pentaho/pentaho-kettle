@@ -124,6 +124,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
     private StepMeta            updateStep;
 
+    private StepMeta            rejectedStep;
+
     private String              logTable;
 
     private DatabaseMeta        logConnection;
@@ -1999,11 +2001,17 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             if (r != null)
             {
                 name = r.searchValue("NAME").getString(); //$NON-NLS-1$
-                readStep = findStep(steps, r.getInteger("ID_STEP_READ", -1L)); //$NON-NLS-1$
-                writeStep = findStep(steps, r.getInteger("ID_STEP_WRITE", -1L)); //$NON-NLS-1$
-                inputStep = findStep(steps, r.getInteger("ID_STEP_INPUT", -1L)); //$NON-NLS-1$
-                outputStep = findStep(steps, r.getInteger("ID_STEP_OUTPUT", -1L)); //$NON-NLS-1$
-                updateStep = findStep(steps, r.getInteger("ID_STEP_UPDATE", -1L)); //$NON-NLS-1$
+                readStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_READ", -1L)); //$NON-NLS-1$
+                writeStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_WRITE", -1L)); //$NON-NLS-1$
+                inputStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_INPUT", -1L)); //$NON-NLS-1$
+                outputStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_OUTPUT", -1L)); //$NON-NLS-1$
+                updateStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_UPDATE", -1L)); //$NON-NLS-1$
+                
+                long id_rejected = rep.getTransAttributeInteger(getID(), 0, "ID_STEP_REJECTED"); // $NON-NLS-1$
+                if (id_rejected>0)
+                {
+                    rejectedStep = StepMeta.findStep(steps, id_rejected); //$NON-NLS-1$
+                }
 
                 logConnection = DatabaseMeta.findDatabase(databases, r.getInteger("ID_DATABASE_LOG", -1L)); //$NON-NLS-1$
                 logTable = r.getString("TABLE_NAME_LOG", null); //$NON-NLS-1$
@@ -2324,6 +2332,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         retval.append("      " + XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      " + XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      " + XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      " + XMLHandler.addTagValue("rejected", rejectedStep == null ? "" : rejectedStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      " + XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("      " + XMLHandler.addTagValue("table", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      " + XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2727,6 +2736,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             inputStep = findStep(XMLHandler.getTagValue(infonode, "log", "input")); //$NON-NLS-1$ //$NON-NLS-2$
             outputStep = findStep(XMLHandler.getTagValue(infonode, "log", "output")); //$NON-NLS-1$ //$NON-NLS-2$
             updateStep = findStep(XMLHandler.getTagValue(infonode, "log", "update")); //$NON-NLS-1$ //$NON-NLS-2$
+            rejectedStep = findStep(XMLHandler.getTagValue(infonode, "log", "rejected")); //$NON-NLS-1$ //$NON-NLS-2$
             String logcon = XMLHandler.getTagValue(infonode, "log", "connection"); //$NON-NLS-1$ //$NON-NLS-2$
             logConnection = findDatabase(logcon);
             logTable = XMLHandler.getTagValue(infonode, "log", "table"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -5328,5 +5338,21 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     public void setSlaveServers(ArrayList slaveServers)
     {
         this.slaveServers = slaveServers;
+    }
+
+    /**
+     * @return the rejectedStep
+     */
+    public StepMeta getRejectedStep()
+    {
+        return rejectedStep;
+    }
+
+    /**
+     * @param rejectedStep the rejectedStep to set
+     */
+    public void setRejectedStep(StepMeta rejectedStep)
+    {
+        this.rejectedStep = rejectedStep;
     }
 }

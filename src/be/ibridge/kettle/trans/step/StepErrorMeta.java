@@ -45,6 +45,16 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /** the name of the field value to contain the error code(s) (null or empty means it's not needed) */  
     private String   errorCodesValuename;
     
+    /** The maximum number of errors allowed before we stop processing with a hard error */
+    private long     maxErrors;
+    
+    /** The maximum percent of errors allowed before we stop processing with a hard error */
+    private int      maxPercentErrors;
+    
+    /** The minimum number of rows to read before the percentage evaluation takes place */
+    private long     minPercentRows;
+
+    
     /**
      * Create a new step error handling metadata object
      * @param sourceStep The source step that can send the error rows
@@ -111,6 +121,9 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         xml.append("        ").append(XMLHandler.addTagValue("descriptions_valuename", errorDescriptionsValuename));
         xml.append("        ").append(XMLHandler.addTagValue("fields_valuename", errorFieldsValuename));
         xml.append("        ").append(XMLHandler.addTagValue("codes_valuename", errorCodesValuename));
+        xml.append("        ").append(XMLHandler.addTagValue("max_errors", maxErrors));
+        xml.append("        ").append(XMLHandler.addTagValue("max_pct_errors", maxPercentErrors));
+        xml.append("        ").append(XMLHandler.addTagValue("min_pct_rows", minPercentRows));
         xml.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
         
         return xml.toString();
@@ -125,6 +138,9 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         errorDescriptionsValuename = XMLHandler.getTagValue(node, "descriptions_valuename");
         errorFieldsValuename = XMLHandler.getTagValue(node, "fields_valuename");
         errorCodesValuename = XMLHandler.getTagValue(node, "codes_valuename");
+        maxErrors = Const.toLong(XMLHandler.getTagValue(node, "max_errors"), -1L);
+        maxPercentErrors = Const.toInt(XMLHandler.getTagValue(node, "max_pct_errors"), -1);
+        minPercentRows = Const.toLong(XMLHandler.getTagValue(node, "min_pct_rows"), -1L);
     }
 
 
@@ -137,6 +153,9 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_descriptions_valuename",  errorDescriptionsValuename);
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_fields_valuename",  errorFieldsValuename);
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_codes_valuename",  errorCodesValuename);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_max_errors",  maxErrors);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_max_pct_errors",  maxPercentErrors);
+        rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_min_pct_rows",  minPercentRows);
     }
     
     public StepErrorMeta(Repository rep, StepMeta stepMeta, List steps) throws KettleDatabaseException
@@ -148,6 +167,9 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         errorDescriptionsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_descriptions_valuename");
         errorFieldsValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_fields_valuename");
         errorCodesValuename = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_codes_valuename");
+        maxErrors = rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_max_errors");
+        maxPercentErrors = (int) rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_max_pct_errors");
+        minPercentRows = rep.getStepAttributeInteger(stepMeta.getID(), "step_error_handling_min_pct_rows");
     }
     
     /**
@@ -298,6 +320,54 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         }
         
         return row;
+    }
+
+    /**
+     * @return the maxErrors
+     */
+    public long getMaxErrors()
+    {
+        return maxErrors;
+    }
+
+    /**
+     * @param maxErrors the maxErrors to set
+     */
+    public void setMaxErrors(long maxErrors)
+    {
+        this.maxErrors = maxErrors;
+    }
+
+    /**
+     * @return the maxPercentErrors
+     */
+    public int getMaxPercentErrors()
+    {
+        return maxPercentErrors;
+    }
+
+    /**
+     * @param maxPercentErrors the maxPercentErrors to set
+     */
+    public void setMaxPercentErrors(int maxPercentErrors)
+    {
+        this.maxPercentErrors = maxPercentErrors;
+    }
+
+    /**
+     * @return the minRowsForPercent
+     */
+    public long getMinPercentRows()
+    {
+        return minPercentRows;
+    }
+
+    /**
+     * @param minRowsForPercent the minRowsForPercent to set
+     */
+    public void setMinPercentRows(long minRowsForPercent)
+    {
+        this.minPercentRows = minRowsForPercent;
     }
 
 }

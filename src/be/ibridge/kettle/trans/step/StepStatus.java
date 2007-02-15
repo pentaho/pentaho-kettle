@@ -17,6 +17,7 @@ public class StepStatus
     private long linesInput;
     private long linesOutput;
     private long linesUpdated;
+    private long linesRejected;
     private long errors;
     private String statusDescription;
     private double seconds;
@@ -42,17 +43,18 @@ public class StepStatus
 
         this.stepname = baseStep.getStepname();
         this.copy = baseStep.getCopy();
-        this.linesRead = baseStep.getLinesRead(); //$NON-NLS-1$
-        this.linesWritten = baseStep.getLinesWritten(); //$NON-NLS-1$
-        this.linesInput = baseStep.getLinesInput(); //$NON-NLS-1$
-        this.linesOutput = baseStep.getLinesOutput(); //$NON-NLS-1$
-        this.linesUpdated = baseStep.getLinesUpdated(); //$NON-NLS-1$
-        this.errors = baseStep.getErrors(); //$NON-NLS-1$
-        this.statusDescription = baseStep.getStatusDescription(); //$NON-NLS-1$
-        this.seconds = Math.floor((lapsed * 10) + 0.5) / 10; //$NON-NLS-1$
+        this.linesRead = baseStep.getLinesRead();
+        this.linesWritten = baseStep.getLinesWritten();
+        this.linesInput = baseStep.getLinesInput();
+        this.linesOutput = baseStep.getLinesOutput();
+        this.linesUpdated = baseStep.getLinesUpdated(); 
+        this.linesRejected = baseStep.getLinesRejected();
+        this.errors = baseStep.getErrors();
+        this.statusDescription = baseStep.getStatusDescription();
+        this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
         this.speed = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
         this.priority = baseStep.isAlive() ? "" + baseStep.getPriority() + "/" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        this.sleeps = "" + baseStep.getNrGetSleeps() + "/" + baseStep.getNrPutSleeps();
+        this.sleeps = "" + baseStep.getNrGetSleeps() + "/" + baseStep.getNrPutSleeps(); // $NON-NLS-1$ $NON-NLS-2$  
     }
     
     public String getHTMLTableRow()
@@ -65,6 +67,7 @@ public class StepStatus
                     "<th>"+linesInput+"</th> " +
                     "<th>"+linesOutput+"</th> " +
                     "<th>"+linesUpdated+"</th> " +
+                    "<th>"+linesRejected+"</th> " +
                     "<th>"+errors+"</th> " +
                     "<th>"+statusDescription+"</th> " +
                     "<th>"+seconds+"</th> " +
@@ -84,6 +87,7 @@ public class StepStatus
                     XMLHandler.addTagValue("linesInput", linesInput, false) +
                     XMLHandler.addTagValue("linesOutput", linesOutput, false) +
                     XMLHandler.addTagValue("linesUpdated", linesUpdated, false) +
+                    XMLHandler.addTagValue("linesRejected", linesRejected, false) +
                     XMLHandler.addTagValue("errors", errors, false) +
                     XMLHandler.addTagValue("statusDescription", statusDescription, false) +
                     XMLHandler.addTagValue("seconds", seconds, false) +
@@ -102,6 +106,7 @@ public class StepStatus
         linesInput = Long.parseLong( XMLHandler.getTagValue(node, "linesInput") );
         linesOutput = Long.parseLong( XMLHandler.getTagValue(node, "linesOutput") );
         linesUpdated = Long.parseLong( XMLHandler.getTagValue(node, "linesUpdated") );
+        linesRejected = Long.parseLong( XMLHandler.getTagValue(node, "linesRejected") );
         errors = Long.parseLong( XMLHandler.getTagValue(node, "errors") );
         statusDescription = XMLHandler.getTagValue(node, "statusDescription");
         seconds = Double.parseDouble( XMLHandler.getTagValue(node, "seconds") );
@@ -118,7 +123,7 @@ public class StepStatus
     
     public String[] getSpoonLogFields()
     {
-        String fields[] = new String[14];
+        String fields[] = new String[15];
         fields[1] = stepname;
         fields[2] = ""+copy;
         fields[3] = "" + linesRead;
@@ -126,12 +131,13 @@ public class StepStatus
         fields[5] = "" + linesInput;
         fields[6] = "" + linesOutput;
         fields[7] = "" + linesUpdated;
-        fields[8] = "" + errors;
-        fields[9] = statusDescription;
-        fields[10] = "" + seconds;
-        fields[11] = "" + speed;
-        fields[12] = priority;
-        fields[13] = sleeps;
+        fields[8] = "" + linesRejected;
+        fields[9] = "" + errors;
+        fields[10] = statusDescription;
+        fields[11] = "" + seconds;
+        fields[12] = "" + speed;
+        fields[13] = priority;
+        fields[14] = sleeps;
         
         return fields;
     }
@@ -353,6 +359,22 @@ public class StepStatus
     public void setStepname(String stepname)
     {
         this.stepname = stepname;
+    }
+
+    /**
+     * @return the linesRejected
+     */
+    public long getLinesRejected()
+    {
+        return linesRejected;
+    }
+
+    /**
+     * @param linesRejected the linesRejected to set
+     */
+    public void setLinesRejected(long linesRejected)
+    {
+        this.linesRejected = linesRejected;
     }
 
 }

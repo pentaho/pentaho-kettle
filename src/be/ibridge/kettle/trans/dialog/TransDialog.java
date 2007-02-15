@@ -159,6 +159,8 @@ public class TransDialog extends Dialog
     private boolean sharedObjectsFileChanged;
 
     private Button wManageThreads;
+
+    private CCombo wRejectedStep;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
@@ -537,6 +539,24 @@ public class TransDialog extends Dialog
         fdUpdateStep.right= new FormAttachment(100, 0);
         wUpdateStep.setLayoutData(fdUpdateStep);
 
+        // Log step: update...
+        Label wlRejectedStep = new Label(wLogComp, SWT.RIGHT);
+        wlRejectedStep.setText(Messages.getString("TransDialog.RejectedStep.Label")); //$NON-NLS-1$
+        props.setLook(wlRejectedStep);
+        FormData fdlRejectedStep = new FormData();
+        fdlRejectedStep.left = new FormAttachment(0, 0);
+        fdlRejectedStep.right= new FormAttachment(middle, -margin);
+        fdlRejectedStep.top  = new FormAttachment(wUpdateStep, margin*2);
+        wlRejectedStep.setLayoutData(fdlRejectedStep);
+        wRejectedStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wRejectedStep);
+        wRejectedStep.addModifyListener(lsMod);
+        FormData fdRejectedStep = new FormData();
+        fdRejectedStep.left = new FormAttachment(middle, 0);
+        fdRejectedStep.top  = new FormAttachment(wUpdateStep, margin*2);
+        fdRejectedStep.right= new FormAttachment(100, 0);
+        wRejectedStep.setLayoutData(fdRejectedStep);
+
         for (int i=0;i<transMeta.nrSteps();i++)
         {
             StepMeta stepMeta = transMeta.getStep(i);
@@ -545,6 +565,7 @@ public class TransDialog extends Dialog
             wInputStep.add(stepMeta.getName());
             wOutputStep.add(stepMeta.getName());
             wUpdateStep.add(stepMeta.getName());
+            wRejectedStep.add(stepMeta.getName());
         }
 
         // Log table connection...
@@ -554,7 +575,7 @@ public class TransDialog extends Dialog
         FormData fdlLogconnection = new FormData();
         fdlLogconnection.left = new FormAttachment(0, 0);
         fdlLogconnection.right= new FormAttachment(middle, -margin);
-        fdlLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        fdlLogconnection.top  = new FormAttachment(wRejectedStep, margin*4);
         wlLogconnection.setLayoutData(fdlLogconnection);
 
         wbLogconnection=new Button(wLogComp, SWT.PUSH);
@@ -575,7 +596,7 @@ public class TransDialog extends Dialog
         });
         FormData fdbLogconnection = new FormData();
         fdbLogconnection.right= new FormAttachment(100, 0);
-        fdbLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        fdbLogconnection.top  = new FormAttachment(wRejectedStep, margin*4);
         wbLogconnection.setLayoutData(fdbLogconnection);
 
         wLogconnection=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -583,7 +604,7 @@ public class TransDialog extends Dialog
         wLogconnection.addModifyListener(lsMod);
         FormData fdLogconnection = new FormData();
         fdLogconnection.left = new FormAttachment(middle, 0);
-        fdLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        fdLogconnection.top  = new FormAttachment(wRejectedStep, margin*4);
         fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
         wLogconnection.setLayoutData(fdLogconnection);
 
@@ -1249,7 +1270,9 @@ public class TransDialog extends Dialog
 		if (transMeta.getInputStep()!=null)     wInputStep.setText        ( transMeta.getInputStep().getName() );
 		if (transMeta.getOutputStep()!=null)    wOutputStep.setText       ( transMeta.getOutputStep().getName() );
 		if (transMeta.getUpdateStep()!=null)    wUpdateStep.setText       ( transMeta.getUpdateStep().getName() );
-		if (transMeta.getLogConnection()!=null) wLogconnection.setText    ( transMeta.getLogConnection().getName());
+        if (transMeta.getRejectedStep()!=null)  wRejectedStep.setText     ( transMeta.getRejectedStep().getName() );
+
+        if (transMeta.getLogConnection()!=null) wLogconnection.setText    ( transMeta.getLogConnection().getName());
 		if (transMeta.getLogTable()!=null)      wLogtable.setText         ( transMeta.getLogTable());
 		wBatch.setSelection(transMeta.isBatchIdUsed());
 		wLogfield.setSelection(transMeta.isLogfieldUsed());
@@ -1352,6 +1375,8 @@ public class TransDialog extends Dialog
 		transMeta.setInputStep(         transMeta.findStep( wInputStep.getText() )           );
 		transMeta.setOutputStep(        transMeta.findStep( wOutputStep.getText() )          );
 		transMeta.setUpdateStep(        transMeta.findStep( wUpdateStep.getText() )          );
+        transMeta.setRejectedStep(      transMeta.findStep( wRejectedStep.getText() )        );
+        
 		transMeta.setLogConnection(     transMeta.findDatabase(wLogconnection.getText())     );
 		transMeta.setLogTable(          wLogtable.getText()                              );
 		transMeta.setMaxDateConnection( transMeta.findDatabase(wMaxdateconnection.getText()) );

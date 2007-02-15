@@ -993,7 +993,12 @@ public class Repository
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
-        
+
+        if (transMeta.getRejectedStep()!=null)
+        {
+            insertTransAttribute(transMeta.getId(), 0, "ID_STEP_REJECTED", transMeta.getRejectedStep().getID(), null);
+        }
+
         insertTransAttribute(transMeta.getId(), 0, "UNIQUE_CONNECTIONS", 0, transMeta.isUsingUniqueConnections()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SHOWN", 0, transMeta.isFeedbackShown()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SIZE", transMeta.getFeedbackSize(), "");
@@ -1220,7 +1225,7 @@ public class Repository
 		return id;
 	}
     
-    public synchronized long insertTransAttribute(long id_transformation, long nr, String code, double value_num, String value_str) throws KettleDatabaseException
+    public synchronized long insertTransAttribute(long id_transformation, long nr, String code, long value_num, String value_str) throws KettleDatabaseException
     {
         long id = getNextTransAttributeID();
 
@@ -3915,7 +3920,7 @@ public class Repository
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
 		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
-		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
+		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_INTEGER, 18, 0));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_TRANS_ATTRIBUTE", false);
 

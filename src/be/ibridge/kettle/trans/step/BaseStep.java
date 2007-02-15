@@ -312,6 +312,10 @@ public class BaseStep extends Thread
     /** nr of lines skipped */
     public long                          linesSkipped;
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
+    public long                          linesRejected;
+    /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
+    
+    
     private long                         nrGetSleeps;
     /** total sleep time in ns cause by a full output buffer (next step is slow) */
     private long                         nrPutSleeps;
@@ -984,9 +988,39 @@ public class BaseStep extends Thread
             rowListener.errorRowWrittenEvent(row);
         }
 
+        linesRejected++;
+
         if (errorRowSet!=null) errorRowSet.putRow(row);
+
+        verifyRejectionRates();
     }
     
+    private void verifyRejectionRates()
+    {
+        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+        if (stepErrorMeta==null) return; // nothing to verify.
+        
+        // Was this one error too much?
+        if (stepErrorMeta.getMaxErrors()>0 && linesRejected>stepErrorMeta.getMaxErrors())
+        {
+            logError(Messages.getString("BaseStep.Log.TooManyRejectedRows", Long.toString(stepErrorMeta.getMaxErrors()), Long.toString(linesRejected)));
+            setErrors(1L);
+            stopAll();
+        }
+        
+        if ( stepErrorMeta.getMaxPercentErrors()>0 && linesRejected>0 &&
+            ( stepErrorMeta.getMinPercentRows()<=0 || linesRead>=stepErrorMeta.getMinPercentRows()) 
+            )
+        {
+            int pct = (int) (100 * linesRejected / linesRead );
+            if (pct>stepErrorMeta.getMaxPercentErrors())
+            {
+                logError(Messages.getString("BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct) ,Long.toString(linesRejected), Long.toString(linesRead)));
+                setErrors(1L);
+                stopAll();
+            }
+        }
+    }
 
     private synchronized RowSet currentInputStream()
     {
@@ -1116,6 +1150,9 @@ public class BaseStep extends Thread
         {
             safeModeChecking(row);
         } // Extra checking
+        
+        // Check the rejection rates etc. as well. 
+        verifyRejectionRates();
 
         return row;
     }
@@ -1713,9 +1750,7 @@ public class BaseStep extends Thread
 
     public void logSummary()
     {
-        logBasic(Messages
-                .getString(
-                        "BaseStep.Log.SummaryInfo", String.valueOf(linesInput), String.valueOf(linesOutput), String.valueOf(linesRead), String.valueOf(linesWritten), String.valueOf(linesUpdated), String.valueOf(getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        logBasic(Messages.getString("BaseStep.Log.SummaryInfo", String.valueOf(linesInput), String.valueOf(linesOutput), String.valueOf(linesRead), String.valueOf(linesWritten), String.valueOf(linesUpdated), String.valueOf(errors+linesRejected))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     }
 
     public String getStepID()
@@ -1960,6 +1995,22 @@ public class BaseStep extends Thread
     {
         return getTransMeta().isFeedbackShown() && (lines > 0) && (getTransMeta().getFeedbackSize() > 0)
                 && (lines % getTransMeta().getFeedbackSize()) == 0;
+    }
+
+    /**
+     * @return the linesRejected
+     */
+    public long getLinesRejected()
+    {
+        return linesRejected;
+    }
+
+    /**
+     * @param linesRejected the linesRejected to set
+     */
+    public void setLinesRejected(long linesRejected)
+    {
+        this.linesRejected = linesRejected;
     }
 
 }

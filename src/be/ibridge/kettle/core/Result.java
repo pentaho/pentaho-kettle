@@ -49,6 +49,7 @@ public class Result implements Cloneable
 	private Map resultFiles;
 	
 	public boolean stopped;
+    private int nrLinesRejected;
 	
 	public Result()
 	{
@@ -337,6 +338,7 @@ public class Result implements Cloneable
         nrLinesRead=0;
         nrLinesWritten=0;
         nrLinesUpdated=0;
+        nrLinesRejected=0;
         nrLinesDeleted=0;
         nrErrors=0;
         nrFilesRetrieved=0;
@@ -353,6 +355,7 @@ public class Result implements Cloneable
         nrLinesRead+=res.getNrLinesRead();
         nrLinesWritten+=res.getNrLinesWritten();
         nrLinesUpdated+=res.getNrLinesUpdated();
+        nrLinesRejected+=res.getNrLinesRejected();
         nrLinesDeleted+=res.getNrLinesDeleted();
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
@@ -381,4 +384,20 @@ public class Result implements Cloneable
 	{
 		this.resultFiles = usedFiles;
 	}
+
+    /**
+     * @return the nrLinesRejected
+     */
+    public int getNrLinesRejected()
+    {
+        return nrLinesRejected;
+    }
+
+    /**
+     * @param nrLinesRejected the nrLinesRejected to set
+     */
+    public void setNrLinesRejected(int nrLinesRejected)
+    {
+        this.nrLinesRejected = nrLinesRejected;
+    }
 }

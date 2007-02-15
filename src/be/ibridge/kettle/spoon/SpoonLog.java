@@ -164,6 +164,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SpoonLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -183,7 +184,8 @@ public class SpoonLog extends Composite implements TabItemInterface
 		colinf[9].setAllignement(SWT.RIGHT);
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
-		colinf[12].setAllignement(SWT.RIGHT);
+        colinf[12].setAllignement(SWT.RIGHT);
+		colinf[13].setAllignement(SWT.RIGHT);
 
 		wFields = new TableView(sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
 				null, // Listener
