@@ -83,7 +83,7 @@ public class FileInputList
             final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
             final boolean subdirs = includeSubdirs[i];
             
-            if (onefile == null) continue;
+            if (Const.isEmpty(onefile)) continue;
 
             // 
             // If a wildcard is set we search for files
