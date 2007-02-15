@@ -18,6 +18,7 @@
 package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import org.xml.sax.InputSource;
 
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.ValueDate;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 
 /**
  * This class contains a number of (static final) methods to facilitate 
@@ -523,7 +525,14 @@ public class XMLHandler
      */
     public static final Document loadXMLFile(String filename) throws KettleXMLException
     {
-        return loadXMLFile(new File(filename));
+        try
+        {
+            return loadXMLFile(KettleVFS.getFileObject(filename));
+        }
+        catch(IOException e)
+        {
+            throw new KettleXMLException(e);
+        }
     }
 
     /**

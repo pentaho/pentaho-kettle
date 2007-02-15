@@ -1041,6 +1041,11 @@ public class Spoon implements AddUndoPositionInterface
         MenuItem miFileOpen = new MenuItem(msFile, SWT.CASCADE); 
         miFileOpen.setText(Messages.getString("Spoon.Menu.File.Open")); //&Open \tCTRL-O
         miFileOpen.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { openFile(false); } });
+        // Open file from URL
+        //
+        MenuItem miFileOpenVFS = new MenuItem(msFile, SWT.CASCADE); 
+        miFileOpenVFS.setText(Messages.getString("Spoon.Menu.File.OpenVFS")); //Open file from &URL
+        miFileOpenVFS.addListener (SWT.Selection, new Listener() { public void handleEvent(Event e) { openFileVFSFile(); } });
         // Import from XML
         //
         MenuItem miFileImport = new MenuItem(msFile, SWT.CASCADE); 
@@ -3580,6 +3585,20 @@ public class Spoon implements AddUndoPositionInterface
                     refreshTree();
                 }
             }
+        }
+    }
+    
+    private String lastFileOpened="";
+    
+    public void openFileVFSFile()
+    {
+        // "Open a file", "Specify the URL of the file to open:"
+        EnterStringDialog enterStringDialog = new EnterStringDialog(shell, lastFileOpened, Messages.getString("Spoon.Dialog.OpenFileVFS.Title"), Messages.getString("Spoon.Dialog.OpenFileVFS.Message"));
+        String fileName = enterStringDialog.open();
+        if (fileName!=null)
+        {
+            lastFileOpened=fileName;
+            openFile(fileName, false);
         }
     }
     
