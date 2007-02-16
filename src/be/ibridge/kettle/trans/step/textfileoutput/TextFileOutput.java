@@ -642,8 +642,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				{
     		            log.logDetailed(toString(), "Opening output stream in zipped mode");
                         
-                        OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
-                        data.zip = new ZipOutputStream(fos);
+                        data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                        data.zip = new ZipOutputStream(data.fos);
     					File entry = new File(buildFilename(false));
     					ZipEntry zipentry = new ZipEntry(entry.getName());
     					zipentry.setComment("Compressed by Kettle");
@@ -653,8 +653,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
     				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
     		            log.logDetailed(toString(), "Opening output stream in gzipped mode");
-                        OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
-                        data.gzip = new GZIPOutputStream(fos);
+                        data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                        data.gzip = new GZIPOutputStream(data.fos);
     					outputStream=data.gzip;
     				}
                     else
@@ -728,6 +728,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					data.gzip.finish();
 				}
+                if (data.fos!=null)
+                {
+                    data.fos.close();
+                    data.fos=null;
+                }
 			}
 			//System.out.println("Closed file...");
 

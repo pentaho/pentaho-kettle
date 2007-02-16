@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -60,6 +61,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
     public DateFormatSymbols defaultDateFormatSymbols;
 
     public Process cmdProc;
+
+    public OutputStream fos;
 
     /**
 	 * 
