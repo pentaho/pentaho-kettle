@@ -15,7 +15,6 @@
  
 package be.ibridge.kettle.job.entry.waitforfile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
