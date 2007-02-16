@@ -3392,6 +3392,25 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      */
     public void selectInRect(Rectangle rect)
     {
+    	if ( rect.height < 0 || rect.width < 0 )
+    	{
+    		Rectangle rectified = new Rectangle(rect.x, rect.y, rect.width,
+    				                            rect.height);
+    		
+    		// Only for people not dragging from left top to right bottom
+    		if ( rectified.height < 0 )
+    		{
+    		    rectified.y = rectified.y + rectified.height;
+    		    rectified.height = -rectified.height;
+    		}
+    		if ( rectified.width < 0 )
+    		{
+    		    rectified.x = rectified.x + rectified.width;
+    		    rectified.width = -rectified.width;
+    		}    		
+    		rect = rectified;
+    	}
+    	
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
