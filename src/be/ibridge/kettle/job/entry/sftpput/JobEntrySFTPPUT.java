@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.sftpput;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -40,13 +41,12 @@ import be.ibridge.kettle.job.entry.sftp.SFTPClient;
 import be.ibridge.kettle.repository.Repository;
 
 /**
- * This defines an FTP job entry.
+ * This defines an SFTP put job entry.
  * 
  * @author Matt
  * @since 05-11-2003
  *
  */
-
 public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String serverName;
@@ -86,19 +86,18 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("servername",   serverName));
-		retval.append("      "+XMLHandler.addTagValue("serverport",   serverPort));
-		retval.append("      "+XMLHandler.addTagValue("username",     userName));
-		retval.append("      "+XMLHandler.addTagValue("password",     password));
-		retval.append("      "+XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
-		retval.append("      "+XMLHandler.addTagValue("localdirectory", localDirectory));
-		retval.append("      "+XMLHandler.addTagValue("wildcard",     wildcard));
-		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
+		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
+		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
+		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+		retval.append("      ").append(XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("localdirectory", localDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
+		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));		
 		
 		return retval.toString();
 	}
@@ -112,15 +111,15 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
 			password        = XMLHandler.getTagValue(entrynode, "password");
-			sftpDirectory    = XMLHandler.getTagValue(entrynode, "sftpdirectory");
-			localDirectory = XMLHandler.getTagValue(entrynode, "localdirectory");
+			sftpDirectory   = XMLHandler.getTagValue(entrynode, "sftpdirectory");
+			localDirectory  = XMLHandler.getTagValue(entrynode, "localdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
 			
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load file exists job entry from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'SFTPPUT' from XML node", xe);			
 		}
 	}
 
@@ -137,15 +136,14 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
-			sftpDirectory    = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
-			localDirectory = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
+			sftpDirectory   = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
+			localDirectory  = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
-			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
-			
+			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");			
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry for type file exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'SFTPPUT' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -163,16 +161,13 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "sftpdirectory",    sftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
-			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
-			
+			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);			
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("unable to save jobentry of type 'file exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to load job entry of type 'SFTPPUT' to the repository for id_job="+id_job, dbe);
 		}
 	}
-
-	
 	
 	/**
 	 * @return Returns the directory.
@@ -314,9 +309,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         String realPassword        = StringUtil.environmentSubstitute(password);
         String realSftpDirString   = StringUtil.environmentSubstitute(sftpDirectory);
         String realWildcard        = StringUtil.environmentSubstitute(wildcard);
-        String realLocalDirectory = StringUtil.environmentSubstitute(localDirectory);
-        
-  
+        String realLocalDirectory  = StringUtil.environmentSubstitute(localDirectory);
         
 		try
 		{
@@ -326,7 +319,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 	
 			// login to ftp host ...
 			sftpclient.login(realPassword);
-			log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
+			// Don't show the password in the logs, it's not good for security audits
+			//log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
 			// move to spool dir ...
 			if (!Const.isEmpty(realSftpDirString))
@@ -425,8 +419,6 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 				// just ignore this, makes no big difference
 			} // end catch
 		} // end finallly
-        
-        
         
         return result;
 	} // JKU: end function execute()
