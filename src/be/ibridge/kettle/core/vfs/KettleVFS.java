@@ -104,7 +104,7 @@ public class KettleVFS
         FileObject fileObject = getFileObject(vfsFilename);
         fileObject.createFile();
         FileContent content = fileObject.getContent();
-        return content.getOutputStream();
+        return content.getOutputStream(append);
     }
     
     public static String getFilename(FileObject fileObject)
