@@ -17,6 +17,7 @@
 package be.ibridge.kettle.trans.step.mergejoin;
 
 import java.util.ArrayList;
+
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;

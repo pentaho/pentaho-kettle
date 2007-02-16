@@ -20,7 +20,6 @@ package be.ibridge.kettle.trans.step.XMLInputSax;
 
 //import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
-//import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;

@@ -34,7 +34,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -130,7 +129,7 @@ public class RepositoryImportProgressDialog extends Dialog
 
         // Buttons
         wClose = new Button(shell, SWT.PUSH);
-        wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
+        wClose.setText(Messages.getString("System.Button.Close"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose }, Const.MARGIN, (Control) null);
 
@@ -241,9 +240,9 @@ public class RepositoryImportProgressDialog extends Dialog
                                     Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
                                     MessageDialog.QUESTION,
                                     new String[] {
-                                                  GlobalMessages.getSystemString("System.Button.Yes"),
-                                                  GlobalMessages.getSystemString("System.Button.No"),
-                                                  GlobalMessages.getSystemString("System.Button.Cancel") },
+                                                  Messages.getString("System.Button.Yes"),
+                                                  Messages.getString("System.Button.No"),
+                                                  Messages.getString("System.Button.Cancel") },
                                     1,
                                     Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                                     !askDirectory);
@@ -277,8 +276,8 @@ public class RepositoryImportProgressDialog extends Dialog
                                 null,
                                 Messages.getString("RepositoryImportDialog.OverwriteTrans.Message", ti.getName()),
                                 MessageDialog.QUESTION,
-                                new String[] { GlobalMessages.getSystemString("System.Button.Yes"),
-                                              GlobalMessages.getSystemString("System.Button.No") },
+                                new String[] { Messages.getString("System.Button.Yes"),
+                                              Messages.getString("System.Button.No") },
                                 1,
                                 Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                                 !askOverwrite);
@@ -344,9 +343,9 @@ public class RepositoryImportProgressDialog extends Dialog
                                     Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
                                     MessageDialog.QUESTION,
                                     new String[] {
-                                                  GlobalMessages.getSystemString("System.Button.Yes"),
-                                                  GlobalMessages.getSystemString("System.Button.No"),
-                                                  GlobalMessages.getSystemString("System.Button.Cancel") },
+                                                  Messages.getString("System.Button.Yes"),
+                                                  Messages.getString("System.Button.No"),
+                                                  Messages.getString("System.Button.Cancel") },
                                     1,
                                     Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                                     !askDirectory);
@@ -380,8 +379,8 @@ public class RepositoryImportProgressDialog extends Dialog
                                 null,
                                 Messages.getString("RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
                                 MessageDialog.QUESTION,
-                                new String[] { GlobalMessages.getSystemString("System.Button.Yes"),
-                                              GlobalMessages.getSystemString("System.Button.No") },
+                                new String[] { Messages.getString("System.Button.Yes"),
+                                              Messages.getString("System.Button.No") },
                                 1,
                                 Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
                                 !askOverwrite);

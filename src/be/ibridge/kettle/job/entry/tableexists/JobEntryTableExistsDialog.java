@@ -46,7 +46,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
@@ -166,7 +165,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
         wlConnection.setLayoutData(fdlConnection);
 
         wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText(GlobalMessages.getSystemString("System.Button.New") + "...");
+        wbConnection.setText(Messages.getString("System.Button.New") + "...");
         wbConnection.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
@@ -225,7 +224,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
         wTablename.setLayoutData(fdTablename);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wOK.setText(Messages.getString("System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -233,7 +232,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);

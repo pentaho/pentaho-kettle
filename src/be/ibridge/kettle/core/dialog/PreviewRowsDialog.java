@@ -42,7 +42,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -179,7 +178,7 @@ public class PreviewRowsDialog extends Dialog
         wFields.setLayoutData(fdFields);
 
         wClose = new Button(shell, SWT.PUSH);
-        wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
+        wClose.setText(Messages.getString("System.Button.Close"));
 
         wLog = new Button(shell, SWT.PUSH);
         wLog.setText(Messages.getString("PreviewRowsDialog.Button.ShowLog"));

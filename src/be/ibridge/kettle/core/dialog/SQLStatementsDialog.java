@@ -43,7 +43,6 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -136,7 +135,7 @@ public class SQLStatementsDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
+		wClose.setText(Messages.getString("System.Button.Close"));
 		fdClose=new FormData();
 		fdClose.left   =new FormAttachment(25, 0);
 		fdClose.bottom =new FormAttachment(100, 0);

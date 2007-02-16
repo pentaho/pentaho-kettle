@@ -37,8 +37,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.util.SortedFileOutputStream;
 import be.ibridge.kettle.core.value.Value;

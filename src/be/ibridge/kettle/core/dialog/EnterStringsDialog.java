@@ -42,7 +42,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -140,10 +139,10 @@ public class EnterStringsDialog extends Dialog
         
         
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 

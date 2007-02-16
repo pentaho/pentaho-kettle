@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -166,9 +165,9 @@ public class ErrorDialog extends Dialog
 		wDesc.setEditable(false);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
         wDetails=new Button(shell, SWT.PUSH);
-        wDetails.setText(GlobalMessages.getSystemString("System.Button.Details"));
+        wDetails.setText(Messages.getString("System.Button.Details"));
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wDetails }, margin, null);
 

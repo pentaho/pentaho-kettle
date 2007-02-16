@@ -1,12 +1,11 @@
 package be.ibridge.kettle.core.database;
 
+import junit.framework.TestCase;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.TransMeta;
-
-import junit.framework.TestCase;
 
 /**
  * Try to test database functionality using a hypersonic database. This

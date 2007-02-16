@@ -3,6 +3,7 @@ package be.ibridge.kettle.i18n;
 
 
 import java.text.MessageFormat;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class GlobalMessageUtil {
@@ -13,12 +14,13 @@ public class GlobalMessageUtil {
     return GlobalMessages.getString("MESSUTIL.ERROR_FORMAT_MASK", s2, msg); //$NON-NLS-1$
   }
 
-  public static String getString(ResourceBundle bundle, String key) {
-    try {
-      return bundle.getString(key);
-    } catch (Exception e) {
-      return '!' + key + '!';
-    }
+  public static String getString(ResourceBundle bundle, String key) throws MissingResourceException 
+  {
+    // try {
+      return MessageFormat.format(bundle.getString(key), new Object[] {});
+    // } catch (Exception e) {
+    //   return '!' + key + '!';
+    //}
   }
 
   public static String getErrorString(ResourceBundle bundle, String key) {
@@ -94,6 +96,16 @@ public class GlobalMessageUtil {
   public static String getErrorString(ResourceBundle bundle, String key, String param1, String param2, String param3, String param4) {
     return formatErrorMessage(key, getString(bundle, key, param1, param2, param3, param4));
   }
+  
+  /*
+  public static String formatMessage(String pattern) {
+      try {
+        Object[] args = {};
+        return MessageFormat.format(pattern, args);      
+      } catch (Exception e) {
+        return '!' + pattern + '!';
+      }
+    }
 
   public static String formatMessage(String pattern, String param1) {
     try {
@@ -131,4 +143,5 @@ public class GlobalMessageUtil {
       return '!' + pattern + '!';
     }
   }
+  */
 }

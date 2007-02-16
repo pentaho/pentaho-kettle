@@ -22,8 +22,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.zip.ZipOutputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;

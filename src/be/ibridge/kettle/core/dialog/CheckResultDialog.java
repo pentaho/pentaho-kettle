@@ -40,7 +40,6 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 
@@ -159,7 +158,7 @@ public class CheckResultDialog extends Dialog
 		wNoOK.setLayoutData(fd);
         
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(GlobalMessages.getSystemString("System.Button.Close"));
+		wClose.setText(Messages.getString("System.Button.Close"));
 
 		wView=new Button(shell, SWT.PUSH);
 		wView.setText(Messages.getString("CheckResultDialog.Button.ViewMessage"));

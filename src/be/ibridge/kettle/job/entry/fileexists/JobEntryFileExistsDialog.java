@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
@@ -165,7 +164,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 
         wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
         props.setLook(wbFilename);
-        wbFilename.setText(GlobalMessages.getSystemString("System.Button.Browse"));
+        wbFilename.setText(Messages.getString("System.Button.Browse"));
         fdbFilename = new FormData();
         fdbFilename.right = new FormAttachment(100, 0);
         fdbFilename.top = new FormAttachment(wName, 0);
@@ -210,7 +209,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
         });
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wOK.setText(Messages.getString("System.Button.OK"));
         FormData fd = new FormData();
         fd.right = new FormAttachment(50, -10);
         fd.bottom = new FormAttachment(100, 0);
@@ -218,7 +217,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
         wOK.setLayoutData(fd);
 
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
         fd = new FormData();
         fd.left = new FormAttachment(50, 10);
         fd.bottom = new FormAttachment(100, 0);

@@ -2,8 +2,6 @@ package be.ibridge.kettle.repository.dialog;
 
 import java.util.MissingResourceException;
 
-import be.ibridge.kettle.i18n.GlobalMessages;
-
 public class Messages
 {
     public static final String packageName = Messages.class.getPackage().getName();
@@ -13,7 +11,7 @@ public class Messages
         try {
             return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key);
         } catch (MissingResourceException e) {
-            return GlobalMessages.getSystemString(key);
+            return Messages.getString(key);
         }
     }
 
@@ -22,7 +20,7 @@ public class Messages
         try {
             return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1);
         } catch (MissingResourceException e) {
-            return GlobalMessages.getSystemString(key, param1);
+            return Messages.getString(key, param1);
         }
     }
 
@@ -31,7 +29,7 @@ public class Messages
         try {
             return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1, param2);
         } catch (MissingResourceException e) {
-            return GlobalMessages.getSystemString(key, param1, param2);
+            return Messages.getString(key, param1, param2);
         }
     }
 
@@ -40,7 +38,7 @@ public class Messages
         try {
             return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1, param2, param3);
         } catch (MissingResourceException e) {
-            return GlobalMessages.getSystemString(key, param1, param2, param3);
+            return Messages.getString(key, param1, param2, param3);
         }
     }
 }

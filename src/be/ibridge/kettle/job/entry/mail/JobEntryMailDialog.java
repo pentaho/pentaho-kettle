@@ -42,7 +42,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -494,9 +493,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 

@@ -60,7 +60,7 @@ import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
 import be.ibridge.kettle.job.JobMeta;
-import be.ibridge.kettle.job.entry.JobEntryCopy;    
+import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.spoon.TabItemInterface;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;

@@ -19,8 +19,6 @@ package be.ibridge.kettle.trans.step.exceloutput;
 import java.io.File;
 import java.util.Locale;
 
-import org.apache.commons.vfs.FileObject;
-
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.DateFormat;
@@ -30,6 +28,9 @@ import jxl.write.Label;
 import jxl.write.NumberFormat;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;

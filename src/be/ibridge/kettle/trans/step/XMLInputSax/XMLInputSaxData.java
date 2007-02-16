@@ -25,7 +25,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.zip.ZipInputStream;
 
-//import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Row;

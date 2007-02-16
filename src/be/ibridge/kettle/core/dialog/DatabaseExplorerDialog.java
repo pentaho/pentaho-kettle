@@ -55,7 +55,6 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.DatabaseMetaInformation;
 import be.ibridge.kettle.core.database.Schema;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.test.EditDatabaseTable;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -179,15 +178,15 @@ public class DatabaseExplorerDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wRefresh = new Button(shell, SWT.PUSH); 
-		wRefresh.setText(GlobalMessages.getSystemString("System.Button.Refresh"));
+		wRefresh.setText(Messages.getString("System.Button.Refresh"));
 		
 		if (!justLook) 
 		{
 			wCancel = new Button(shell, SWT.PUSH);
-			wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+			wCancel.setText(Messages.getString("System.Button.Cancel"));
 		}
 		
 		FormData fdTree      = new FormData(); 

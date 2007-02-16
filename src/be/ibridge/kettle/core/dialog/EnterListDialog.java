@@ -58,7 +58,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -275,10 +274,10 @@ public class EnterListDialog extends Dialog
  		////////////////////////////////////////////////////////////////
  		
  		wOK = new Button(bottom, SWT.PUSH); 
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 		
 		wCancel = new Button(bottom, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();

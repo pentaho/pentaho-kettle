@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -223,7 +222,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 
         wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
         props.setLook(wbFilename);
-        wbFilename.setText(GlobalMessages.getSystemString("System.Button.Browse"));
+        wbFilename.setText(Messages.getString("System.Button.Browse"));
         fdbFilename = new FormData();
         fdbFilename.top = new FormAttachment(wName, margin);
         fdbFilename.right = new FormAttachment(100, 0);
@@ -482,9 +481,9 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFields);
 

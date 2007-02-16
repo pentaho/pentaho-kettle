@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.mergejoin;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;

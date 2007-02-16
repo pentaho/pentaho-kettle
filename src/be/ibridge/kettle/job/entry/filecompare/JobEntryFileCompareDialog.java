@@ -34,7 +34,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
@@ -145,7 +144,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		wlFilename1.setLayoutData(fdlFilename1);
 		wbFilename1=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename1);
-		wbFilename1.setText(GlobalMessages.getSystemString("System.Button.Browse"));
+		wbFilename1.setText(Messages.getString("System.Button.Browse"));
 		fdbFilename1=new FormData();
 		fdbFilename1.right= new FormAttachment(100, 0);
 		fdbFilename1.top  = new FormAttachment(wName, 0);
@@ -201,7 +200,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		wlFilename2.setLayoutData(fdlFilename2);
 		wbFilename2=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename2);
-		wbFilename2.setText(GlobalMessages.getSystemString("System.Button.Browse"));
+		wbFilename2.setText(Messages.getString("System.Button.Browse"));
 		fdbFilename2=new FormData();
 		fdbFilename2.right= new FormAttachment(100, 0);
 		fdbFilename2.top  = new FormAttachment(wFilename1, 0);
@@ -247,9 +246,9 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		);
 
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+        wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFilename2);
 

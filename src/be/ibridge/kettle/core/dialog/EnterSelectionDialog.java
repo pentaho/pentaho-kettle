@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -171,11 +170,11 @@ public class EnterSelectionDialog extends Dialog
 		wOK=new Button(shell, SWT.PUSH);
 		if (viewOnly) 
 		{
-			wOK.setText(GlobalMessages.getSystemString("System.Button.Close"));
+			wOK.setText(Messages.getString("System.Button.Close"));
 		} 
 		else
 		{
-			wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+			wOK.setText(Messages.getString("System.Button.OK"));
 		}
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
@@ -185,7 +184,7 @@ public class EnterSelectionDialog extends Dialog
 		if (!viewOnly)
 		{
 			wCancel=new Button(shell, SWT.PUSH);
-			wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+			wCancel.setText(Messages.getString("System.Button.Cancel"));
 			lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 			wCancel.addListener(SWT.Selection, lsCancel );
             

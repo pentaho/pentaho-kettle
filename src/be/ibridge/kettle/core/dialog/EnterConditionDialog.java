@@ -39,7 +39,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.ConditionEditor;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -102,10 +101,10 @@ public class EnterConditionDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 		
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 	
 		FormData fdCond      = new FormData(); 
 		

@@ -44,7 +44,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -163,7 +162,7 @@ public class StepFieldsDialog extends Dialog
 		wEdit=new Button(shell, SWT.PUSH);
 		wEdit.setText(Messages.getString("StepFieldsDialog.Buttons.EditOrigin"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wEdit, wCancel }, margin, wFields);
 		

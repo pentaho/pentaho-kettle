@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -145,7 +144,7 @@ public class SQLEditor extends Dialog
         wClear=new Button(shell, SWT.PUSH);
         wClear.setText(Messages.getString("SQLEditor.Button.ClearCache"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Close"));
+		wCancel.setText(Messages.getString("System.Button.Close"));
 
         wClear.setToolTipText(Messages.getString("SQLEditor.Button.ClearCache.Tooltip"));
         

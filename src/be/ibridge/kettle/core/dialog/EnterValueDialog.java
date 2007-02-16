@@ -46,7 +46,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -233,11 +232,11 @@ public class EnterValueDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH );
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wTest=new Button(shell, SWT.PUSH );
-		wTest.setText(GlobalMessages.getSystemString("System.Button.Test"));
+		wTest.setText(Messages.getString("System.Button.Test"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(25, 0);

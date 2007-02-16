@@ -29,9 +29,9 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Encr;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SharedObjectBase;
 import be.ibridge.kettle.core.SharedObjectInterface;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;

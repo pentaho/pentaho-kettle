@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.i18n.GlobalMessages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -372,9 +371,9 @@ public class EnterPrintDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(33, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);

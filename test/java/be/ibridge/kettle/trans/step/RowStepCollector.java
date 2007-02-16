@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.trans.step.RowListener;
 
 /**
  * Helper class for testcases. You can add an instance of this class to

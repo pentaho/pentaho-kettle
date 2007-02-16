@@ -244,9 +244,9 @@ public class EnterOptionsDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH );
-		wOK.setText(GlobalMessages.getSystemString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(GlobalMessages.getSystemString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 		

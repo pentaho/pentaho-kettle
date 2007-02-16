@@ -2,6 +2,7 @@ package be.ibridge.kettle.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -10,6 +11,9 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.StepLoader;
 
 public class GlobalMessages
@@ -106,6 +110,24 @@ public class GlobalMessages
     {
         try
         {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key);
+        }
+        catch (MissingResourceException e)
+        {
+            try
+            {
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key);
+            }
+            catch (MissingResourceException fe)
+            {
+                fe.printStackTrace();
+                return '!' + key + '!';
+            }
+        }
+
+        /*
+        try
+        {
             ResourceBundle bundle = getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE));
             return bundle.getString(key);
         }
@@ -123,6 +145,7 @@ public class GlobalMessages
                 return '!' + key + '!';
             }
         }
+        */
     }
 
     public static String getSystemString(String key, String param1)
@@ -244,90 +267,91 @@ public class GlobalMessages
             }
         }
     }
-
-    public static String getString(String packageName, String key)
+    
+    private static String findString(String packageName, Locale locale, String key, Object[] parameters) throws MissingResourceException
     {
         try
         {
-        	ResourceBundle bundle = getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME); 
-            return bundle.getString(key);
+            ResourceBundle bundle = getBundle(locale, packageName + "." + BUNDLE_NAME);
+            String unformattedString = bundle.getString(key);
+            String string = MessageFormat.format(unformattedString, parameters);
+            return string;
         }
-        catch(MissingResourceException e)
+        catch(IllegalArgumentException e)
         {
-        	ResourceBundle bundle = getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME);
-        	return bundle.getString(key);
+            String message = "Format problem with key=["+key+"], locale=["+locale+"], package="+packageName+" : "+e.toString();
+            LogWriter.getInstance().logError("i18n", message);
+            LogWriter.getInstance().logError("i18n", Const.getStackTracker(e));
+            throw new MissingResourceException(message, packageName, key);
         }
+    }
+    
+    private static String calculateString(String packageName, String key, Object[] parameters)
+    {
+        String string=null;
+        
+        // First try the standard locale, in the local package
+        try { string = findString(packageName, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        if (string!=null) return string;
+        
+        // Then try to find it in the i18n package, in the system messages of the preferred language.
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters); } catch(MissingResourceException e) {};
+        if (string!=null) return string;
+        
+        // Then try the failover locale, in the local package
+        try { string = findString(packageName, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        if (string!=null) return string;
+        
+        // Then try to find it in the i18n package, in the system messages of the failover language.
+        try { string = findString(SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters); } catch(MissingResourceException e) {};
+        if (string!=null) return string;
+        
+        string = "!"+key+"!";
+        String message = "Message not found in the prefered and failover locale: key=["+key+"], package="+packageName;
+        LogWriter.getInstance().logError("i18n", Const.getStackTracker(new KettleException(message)));
+
+        return string;
+    }
+    
+    public static String getString(String packageName, String key) 
+    {
+        Object[] parameters = new Object[] {};
+        return calculateString(packageName, key, parameters);
     }
 
     public static String getString(String packageName, String key, String param1)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1);
-        }
+        Object[] parameters = new Object[] { param1 };
+        return calculateString(packageName, key, parameters);
     }
 
     public static String getString(String packageName, String key, String param1, String param2)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
-        }
+        Object[] parameters = new Object[] { param1, param2 };
+        return calculateString(packageName, key, parameters);
     }
 
     public static String getString(String packageName, String key, String param1, String param2, String param3)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3);
-        }
+        Object[] parameters = new Object[] { param1, param2, param3 };
+        return calculateString(packageName, key, parameters);
     }
     
     public static String getString(String packageName, String key, String param1, String param2, String param3,String param4)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4);
-        }
+        Object[] parameters = new Object[] { param1, param2, param3, param4 };
+        return calculateString(packageName, key, parameters);
     }
     
     public static String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4, param5);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4, param5);
-        }
+        Object[] parameters = new Object[] { param1, param2, param3, param4, param5 };
+        return calculateString(packageName, key, parameters);
     }
     
     public static String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5,String param6)
     {
-        try
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5, param6);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5,param6);
-        }
+        Object[] parameters = new Object[] { param1, param2, param3, param4, param5, param6 };
+        return calculateString(packageName, key, parameters);
     }
 }
