@@ -15,8 +15,7 @@
  
 package be.ibridge.kettle.job.entry.createfile;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Shell;
@@ -35,6 +34,8 @@ import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.apache.commons.vfs.FileObject;
 
 
 /**
@@ -155,54 +156,47 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 	
 		if (filename!=null)
 		{
-            String realFilename = getRealFilename(); 
-			File file = new File(realFilename);
-			if ( file.exists() )
-			{
-				if ( isFailIfFileExists() )
+            String realFilename = getRealFilename();
+            FileObject fileObject = null;
+			try {
+				fileObject = KettleVFS.getFileObject(realFilename);
+
+				if ( fileObject.exists() )
 				{
-					// File exists and fail flag is on.
-				    result.setResult( false );
-				    log.logError(toString(), "File ["+realFilename+"] exists, failing.");
+					if ( isFailIfFileExists() )
+					{
+						// File exists and fail flag is on.
+					    result.setResult( false );
+					    log.logError(toString(), "File ["+realFilename+"] exists, failing.");
+					}
+					else
+					{
+						// File already exists, no reason to try to create it
+					    result.setResult( true );
+					    log.logBasic(toString(), "File ["+realFilename+"] already exists, not recreating.");
+					}
 				}
 				else
 				{
-					// File already exists, no reason to try to create it
-				    result.setResult( true );
-				    log.logBasic(toString(), "File ["+realFilename+"] already exists, not recreating.");
+					//  No file yet, create an empty file.
+					fileObject.createFile();					
+					log.logBasic(toString(), "File ["+realFilename+"] created!");
+					result.setResult( true );
 				}
+			} catch (IOException e) {
+				log.logError(toString(), "Could not create file ["+realFilename+"], exception: " + e.getMessage());
+				result.setResult( false );
+				result.setNrErrors(1);					
 			}
-			else
-			{
-				//  No file yet, create an empty file.
-				FileOutputStream output=null;
-				try     
-				{
-				    output=new FileOutputStream(file);
-				}
-				catch (Exception e)
-				{
-					log.logError(toString(), "Could not create file ["+realFilename+"], aborting.");
-					result.setResult( false );
-					result.setNrErrors(1);					
-				}
-				finally
-				{
-					try 
-					{
-				        if ( output != null )
-				        {
-					        output.close();
-				        }
-				    }
-					catch ( Exception e )
-					{
-					    // we don't care if the file can't be closed
-					}
-				}				 		 			
-				log.logBasic(toString(), "File ["+realFilename+"] created!");
-				result.setResult( true );
-			}
+            finally {
+            	if ( fileObject != null )
+            	{
+            		try  {
+            		     fileObject.close();
+            		}
+            		catch ( IOException ex ) {};
+            	}
+            }			
 		}
 		else
 		{			

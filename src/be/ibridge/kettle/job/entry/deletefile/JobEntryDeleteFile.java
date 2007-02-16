@@ -15,7 +15,7 @@
  
 package be.ibridge.kettle.job.entry.deletefile;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Shell;
@@ -34,6 +34,8 @@ import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.apache.commons.vfs.FileObject;
 
 
 /**
@@ -155,43 +157,53 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		if (filename!=null)
 		{
             String realFilename = getRealFilename(); 
-			File file = new File(realFilename);
-			if ( ! file.exists() )
-			{
-				if ( isFailIfFileNotExists() )
+            
+            FileObject fileObject = null;
+            try {
+            	fileObject = KettleVFS.getFileObject(realFilename);
+			
+				if ( ! fileObject.exists() )
 				{
-					// File doesn't exist and fail flag is on.
-				    result.setResult( false );
-				    log.logError(toString(), "File ["+realFilename+"] doesn't exist, failing.");
+					if ( isFailIfFileNotExists() )
+					{
+						// File doesn't exist and fail flag is on.
+					    result.setResult( false );
+					    log.logError(toString(), "File ["+realFilename+"] doesn't exist, failing.");
+					}
+					else
+					{
+						// File already deleted, no reason to try to delete it
+					    result.setResult( true );
+					    log.logBasic(toString(), "File ["+realFilename+"] already deleted.");
+					}
 				}
 				else
 				{
-					// File already deleted, no reason to try to delete it
-				    result.setResult( true );
-				    log.logBasic(toString(), "File ["+realFilename+"] already deleted.");
-				}
-			}
-			else
-			{
-				try     
-				{
-				    boolean deleted = file.delete();
+				    boolean deleted = fileObject.delete();
 				    if ( ! deleted )
 				    {
-						log.logError(toString(), "Could not delete file ["+realFilename+"], aborting.");
+						log.logError(toString(), "Could not delete file ["+realFilename+"].");
 						result.setResult( false );
 						result.setNrErrors(1);									    	
 				    }
+					log.logBasic(toString(), "File ["+realFilename+"] deleted!");
+					result.setResult( true );
 				}
-				catch (Exception e)
-				{
-					log.logError(toString(), "Could not delete file ["+realFilename+"], aborting.");
-					result.setResult( false );
-					result.setNrErrors(1);					
-				}		 		 			
-				log.logBasic(toString(), "File ["+realFilename+"] deleted!");
-				result.setResult( true );
+			} 
+            catch (IOException e) {
+				log.logError(toString(), "Could not delete file ["+realFilename+"], exception: " + e.getMessage());
+				result.setResult( false );
+				result.setNrErrors(1);					
 			}
+            finally {
+            	if ( fileObject != null )
+            	{
+            		try  {
+            		     fileObject.close();
+            		}
+            		catch ( IOException ex ) {};
+            	}
+            }
 		}
 		else
 		{			

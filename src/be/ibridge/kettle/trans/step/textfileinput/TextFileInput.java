@@ -1113,7 +1113,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 				data.fr.close();
 				data.isr.close();
 				data.filename = null; // send it down the next time.
-				data.file = null;
+				if ( data.file != null )
+				{
+					data.file.close();
+					data.file = null;
+				}
 			}
 			data.dataErrorLineHandler.close();
 		}

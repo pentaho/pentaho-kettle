@@ -16,8 +16,10 @@
 package be.ibridge.kettle.job.entry.waitforfile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
@@ -29,6 +31,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -168,166 +171,176 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         return StringUtil.environmentSubstitute(getFilename());
     }
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
-	{
-		LogWriter log = LogWriter.getInstance();
-		Result result = new Result(nr);
-		result.setResult( false );
-	
-		// starttime (in seconds)
-		long timeStart = System.currentTimeMillis() / 1000;
-		
-		if (filename!=null)
-		{
-            String realFilename = getRealFilename(); 
-			File file = new File(realFilename);
-			
-			long iMaximumTimeout = Const.toInt(getMaximumTimeout(), 
-					                          Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
-			long iCycleTime = Const.toInt(getCheckCycleTime(), 
-					                     Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 0));
+    public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+    {
+    	LogWriter log = LogWriter.getInstance();
+    	Result result = new Result(nr);
+    	result.setResult( false );
 
-			//
-			// Sanity check on some values, and complain on insanity
-			//
-			if ( iMaximumTimeout < 0 )
-			{
-			    iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
-			    log.logBasic(toString(), "Maximum timeout invalid, reset to " + iMaximumTimeout);
-			}
-			
-			if ( iCycleTime < 1 )
-			{
-				// If lower than 1 set to the default
-				iCycleTime = Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 1);
-				log.logBasic(toString(), "Check cycle time invalid, reset to " + iCycleTime);
-			}
+    	// starttime (in seconds)
+    	long timeStart = System.currentTimeMillis() / 1000;
 
-			if ( iMaximumTimeout == 0 )
-			{
-			    log.logBasic(toString(), "Waiting indefinitely for file [" +
-			                 realFilename + "]");
-			}
-			else 
-			{
-			    log.logBasic(toString(), "Waiting " + iMaximumTimeout + " seconds for file [" +
-			                 realFilename + "]");
-			}
+    	if (filename!=null)
+    	{
+    		String realFilename = getRealFilename();
+    		try 
+    		{ 
+    			FileObject fileObject = null;
 
-			boolean continueLoop = true;
-			while ( continueLoop && !parentJob.isStopped() )
-			{
-				if ( file.exists() )
-				{
-					// file exists, we're happy to exit
-					log.logBasic(toString(), "Detected file [" + realFilename + "] within timeout");
-					result.setResult( true );
-					continueLoop = false;
-				}
-				else
-				{
-					long now = System.currentTimeMillis() / 1000;
-					
-					if ( (iMaximumTimeout > 0) && 
-							 (now > (timeStart + iMaximumTimeout)))
-					{													
-						continueLoop = false;
-						
-						// file doesn't exist after timeout, either true or false						
-						if ( isSuccessOnTimeout() )
-						{
-							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, success");
-						    result.setResult( true );
-						}
-						else
-						{
-							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, failure");
-							result.setResult( false );
-						}						
-					}
-					
-					// sleep algorithm					
-					long sleepTime = 0;
-					
-					if ( iMaximumTimeout == 0 )
-					{
-						sleepTime = iCycleTime;
-					}
-					else
-					{						
-						if ( (now + iCycleTime) < (timeStart + iMaximumTimeout) )
-						{
-							sleepTime = iCycleTime;
-						}
-						else
-						{
-							sleepTime = iCycleTime - ((now + iCycleTime) - 
-							                 (timeStart + iMaximumTimeout));
-						}
-					}
-					
-					try {
-						if ( sleepTime > 0 )
-						{
-						    if ( log.isDetailed() )
-						    {
-							    log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" +
-								   	            realFilename + "]");							
-						    }						   
-					  	    Thread.sleep(sleepTime * 1000);
-						}
-					} catch (InterruptedException e) {
-						// something strange happened
-						result.setResult( false );
-						continueLoop = false;						
-					}					
-				}
-			}			
-			
-			if ( !parentJob.isStopped() &&
-				  file.exists() )
-			{
-				long oldSize = -1;
-				long newSize = file.length();
+    			fileObject = KettleVFS.getFileObject(realFilename);
 
-				log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");
-				log.logBasic(toString(), "Waiting until file [" + realFilename + "] stops growing for " + iCycleTime + " seconds");
-				while ( oldSize != newSize && !parentJob.isStopped() )
-				{
-					try {
-						if ( log.isDetailed() )
-						{
-						    log.logDetailed(toString(), "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");						    		
-						}
-						Thread.sleep(iCycleTime * 1000);
-					} catch (InterruptedException e) {
-                        // something strange happened
-						result.setResult( false );
-						continueLoop = false;
-					}
-					oldSize = newSize;
-					newSize = file.length();
-					if ( log.isDetailed() )
-					{
-					    log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");						    		
-					}					
-				}
-				log.logBasic(toString(), "Stopped waiting for file [" + realFilename + "] to stop growing");
-			}			
+    			long iMaximumTimeout = Const.toInt(getMaximumTimeout(), 
+    					Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
+    			long iCycleTime = Const.toInt(getCheckCycleTime(), 
+    					Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 0));
+
+    			//
+    			// Sanity check on some values, and complain on insanity
+    			//
+    			if ( iMaximumTimeout < 0 )
+    			{
+    				iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
+    				log.logBasic(toString(), "Maximum timeout invalid, reset to " + iMaximumTimeout);
+    			}
+
+    			if ( iCycleTime < 1 )
+    			{
+    				// If lower than 1 set to the default
+    				iCycleTime = Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 1);
+    				log.logBasic(toString(), "Check cycle time invalid, reset to " + iCycleTime);
+    			}
+
+    			if ( iMaximumTimeout == 0 )
+    			{
+    				log.logBasic(toString(), "Waiting indefinitely for file [" +
+    						realFilename + "]");
+    			}
+    			else 
+    			{
+    				log.logBasic(toString(), "Waiting " + iMaximumTimeout + " seconds for file [" +
+    						realFilename + "]");
+    			}
+
+    			boolean continueLoop = true;
+    			while ( continueLoop && !parentJob.isStopped() )
+    			{
+    				if ( fileObject.exists() )
+    				{
+    					// file exists, we're happy to exit
+    					log.logBasic(toString(), "Detected file [" + realFilename + "] within timeout");
+    					result.setResult( true );
+    					continueLoop = false;
+    				}
+    				else
+    				{
+    					long now = System.currentTimeMillis() / 1000;
+
+    					if ( (iMaximumTimeout > 0) && 
+    							(now > (timeStart + iMaximumTimeout)))
+    					{													
+    						continueLoop = false;
+
+    						// file doesn't exist after timeout, either true or false						
+    						if ( isSuccessOnTimeout() )
+    						{
+    							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, success");
+    							result.setResult( true );
+    						}
+    						else
+    						{
+    							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, failure");
+    							result.setResult( false );
+    						}						
+    					}
+
+    					// sleep algorithm					
+    					long sleepTime = 0;
+
+    					if ( iMaximumTimeout == 0 )
+    					{
+    						sleepTime = iCycleTime;
+    					}
+    					else
+    					{						
+    						if ( (now + iCycleTime) < (timeStart + iMaximumTimeout) )
+    						{
+    							sleepTime = iCycleTime;
+    						}
+    						else
+    						{
+    							sleepTime = iCycleTime - ((now + iCycleTime) - 
+    									(timeStart + iMaximumTimeout));
+    						}
+    					}
+
+    					try {
+    						if ( sleepTime > 0 )
+    						{
+    							if ( log.isDetailed() )
+    							{
+    								log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" +
+    										realFilename + "]");							
+    							}						   
+    							Thread.sleep(sleepTime * 1000);
+    						}
+    					} catch (InterruptedException e) {
+    						// something strange happened
+    						result.setResult( false );
+    						continueLoop = false;						
+    					}					
+    				}
+    			}			
+
+    			if ( !parentJob.isStopped() &&
+    					fileObject.exists() &&
+    					isFileSizeCheck() )
+    			{
+    				long oldSize = -1;
+    				long newSize = fileObject.getContent().getSize();
+
+    				log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");
+    				log.logBasic(toString(), "Waiting until file [" + realFilename + "] stops growing for " + iCycleTime + " seconds");
+    				while ( oldSize != newSize && !parentJob.isStopped() )
+    				{
+    					try {
+    						if ( log.isDetailed() )
+    						{
+    							log.logDetailed(toString(), "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");						    		
+    						}
+    						Thread.sleep(iCycleTime * 1000);
+    					} catch (InterruptedException e) {
+    						// something strange happened
+    						result.setResult( false );
+    						continueLoop = false;
+    					}
+    					oldSize = newSize;
+    					newSize = fileObject.getContent().getSize();
+    					if ( log.isDetailed() )
+    					{
+    						log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");						    		
+    					}					
+    				}
+    				log.logBasic(toString(), "Stopped waiting for file [" + realFilename + "] to stop growing");
+    			}			
+
+    			if ( parentJob.isStopped() )
+    			{
+    				result.setResult( false );
+    			}
+    		}
+    		catch ( IOException e )
+    		{
+    			log.logBasic(toString(), "Exception while waiting for file [" + realFilename + "] to stop growing: " + e.getMessage());
+    		}
+    	}
+    	else
+    	{			
+    		log.logError(toString(), "No filename is defined.");
+    	}
+
+    	return result;
+    }
 			
-			if ( parentJob.isStopped() )
-			{
-				result.setResult( false );
-			}
-		}
-		else
-		{			
-			log.logError(toString(), "No filename is defined.");
-		}
-		
-		return result;
-	}
-	
 	public boolean evaluates()
 	{
 		return true;
