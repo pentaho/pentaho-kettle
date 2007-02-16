@@ -1,7 +1,6 @@
 package be.ibridge.kettle.core.database;
 
 import junit.framework.TestCase;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
@@ -34,7 +33,7 @@ public class DatabaseTest extends TestCase
 	{
 		Database database = null;
 		
-        LogWriter log = LogWriter.getInstance();
+        // LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
         try
         {
@@ -92,7 +91,7 @@ public class DatabaseTest extends TestCase
 	{
 		Database database = null;
 		
-        LogWriter log = LogWriter.getInstance();
+        // LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
         try
         {
