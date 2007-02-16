@@ -190,6 +190,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wlServerPort.setLayoutData(fdlServerPort);
 		wServerPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wServerPort);
+		wServerPort.setToolTipText(Messages.getString("JobSFTPPUT.Port.Tooltip"));
 		wServerPort.addModifyListener(lsMod);
 		fdServerPort=new FormData();
 		fdServerPort.left = new FormAttachment(middle, 0);
@@ -208,6 +209,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wlUserName.setLayoutData(fdlUserName);
 		wUserName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUserName);
+		wUserName.setToolTipText(Messages.getString("JobSFTPPUT.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
 		fdUserName.left = new FormAttachment(middle, 0);
