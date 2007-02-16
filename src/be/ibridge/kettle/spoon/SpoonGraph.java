@@ -74,6 +74,7 @@ import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.StepFieldsDialog;
+import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.spoon.dialog.SearchFieldsProgressDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
@@ -1806,7 +1807,14 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             else
             {
                 newTip=stepMeta.getName();
-            }            
+            }
+            
+            // Add the steps description
+            StepPlugin stepPlugin = StepLoader.getInstance().getStepPlugin(stepMeta.getStepMetaInterface());
+            if (stepPlugin!=null)
+            {
+                newTip+=Const.CR+Const.CR+stepPlugin.getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString());
+            }
         }
         else
         {

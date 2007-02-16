@@ -583,6 +583,23 @@ public class StepLoader
     }
     
     /**
+     * Determine the step's plugin based upon the StepMetaInterface we get...
+     * 
+     * @param sii The StepMetaInterface
+     * @return the step plugin or null if we couldn't find anything.
+     */
+    public StepPlugin getStepPlugin(StepMetaInterface sii)
+    {
+        for (int i = 0; i < nrStepsWithType(StepPlugin.TYPE_ALL); i++)
+        {
+            StepPlugin sp = getStepWithType(StepPlugin.TYPE_ALL, i);
+            if (sp.getClassname() == sii.getClass().getName()) return sp; // return the first = default
+        }
+        return null;
+    }
+
+    
+    /**
      * Search through all jarfiles in all steps and try to find a certain file in it.
      * 
      * @param filename
