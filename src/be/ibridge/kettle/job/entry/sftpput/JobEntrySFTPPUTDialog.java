@@ -112,7 +112,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 			props=Props.getInstance();
 			this.jobEntry=jobEntry;
 	
-			if (this.jobEntry.getName() == null) this.jobEntry.setName("SFTP Put Files");
+			if (this.jobEntry.getName() == null) this.jobEntry.setName(Messages.getString("JobSFTPPUT.Title"));
 	}
 
 	public JobEntryInterface open()
@@ -138,14 +138,14 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Put files by SFTP...");
+		shell.setText(Messages.getString("JobSFTPPUT.Title"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Job entry name ");
+		wlName.setText(Messages.getString("JobSFTPPUT.Name.Label"));
  		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -163,7 +163,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// ServerName line
 		wlServerName=new Label(shell, SWT.RIGHT);
-		wlServerName.setText("SFTP-server name (IP)");
+		wlServerName.setText(Messages.getString("JobSFTPPUT.Server.Label"));
  		props.setLook(wlServerName);
 		fdlServerName=new FormData();
 		fdlServerName.left = new FormAttachment(0, 0);
@@ -181,7 +181,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		
 		// ServerPort line
 		wlServerPort=new Label(shell, SWT.RIGHT);
-		wlServerPort.setText("SFTP-server port (usually 22)");
+		wlServerPort.setText(Messages.getString("JobSFTPPUT.Port.Label"));
  		props.setLook(wlServerPort);
 		fdlServerPort=new FormData();
 		fdlServerPort.left = new FormAttachment(0, 0);
@@ -199,7 +199,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// UserName line
 		wlUserName=new Label(shell, SWT.RIGHT);
-		wlUserName.setText("Username");
+		wlUserName.setText(Messages.getString("JobSFTPPUT.Username.Label"));
  		props.setLook(wlUserName);
 		fdlUserName=new FormData();
 		fdlUserName.left = new FormAttachment(0, 0);
@@ -217,7 +217,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// Password line
 		wlPassword=new Label(shell, SWT.RIGHT);
-		wlPassword.setText("Password");
+		wlPassword.setText(Messages.getString("JobSFTPPUT.Password.Label"));
  		props.setLook(wlPassword);
 		fdlPassword=new FormData();
 		fdlPassword.left = new FormAttachment(0, 0);
@@ -236,7 +236,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// FtpDirectory line
 		wlScpDirectory=new Label(shell, SWT.RIGHT);
-		wlScpDirectory.setText("Remote directory");
+		wlScpDirectory.setText(Messages.getString("JobSFTPPUT.RemoteDir.Label"));
  		props.setLook(wlScpDirectory);
 		fdlScpDirectory=new FormData();
 		fdlScpDirectory.left = new FormAttachment(0, 0);
@@ -254,7 +254,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// LocalDirectory line
 		wlLocalDirectory=new Label(shell, SWT.RIGHT);
-		wlLocalDirectory.setText("Local directory");
+		wlLocalDirectory.setText(Messages.getString("JobSFTPPUT.LocalDir.Label"));
  		props.setLook(wlLocalDirectory);
 		fdlLocalDirectory=new FormData();
 		fdlLocalDirectory.left = new FormAttachment(0, 0);
@@ -272,7 +272,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// Wildcard line
 		wlWildcard=new Label(shell, SWT.RIGHT);
-		wlWildcard.setText("Wildcard (regular expression)");
+		wlWildcard.setText(Messages.getString("JobSFTPPUT.Wildcard.Label"));
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
@@ -290,7 +290,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 
 		// Remove files after retrieval...
 		wlRemove=new Label(shell, SWT.RIGHT);
-		wlRemove.setText("Remove local files after transfer? ");
+		wlRemove.setText(Messages.getString("JobSFTPPUT.RemoveFiles.Label"));
  		props.setLook(wlRemove);
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
