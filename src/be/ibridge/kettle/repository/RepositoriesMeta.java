@@ -232,7 +232,7 @@ public class RepositoriesMeta
 	{
 		String retval="";
 		
-		retval+="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+		retval+="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+Const.CR;
 		retval+="<repositories>"+Const.CR;
 
 		for (int i=0;i<nrDatabases();i++)
@@ -276,5 +276,4 @@ public class RepositoriesMeta
 	{
 		return "Kettle";
 	}
-
 }
