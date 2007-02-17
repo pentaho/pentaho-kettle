@@ -38,12 +38,11 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
-
-/*
+/**
+ * Meta Data class for the Select Values Step.
+ * 
  * Created on 02-jun-2003
- *
  */
-
 public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 {
 	// SELECT mode
@@ -72,14 +71,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	/** Meta: new precision of field (for numbers)  */
 	private int    metaPrecision[];
 	
-	
 	public SelectValuesMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
-	
-	
+
     /**
      * @return Returns the deleteName.
      */
@@ -479,35 +475,35 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
 		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<selectName.length;i++)
 		{
 			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",      selectName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename",    selectRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("length",    selectLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("precision", selectPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name",      selectName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename",    selectRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("length",    selectLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("precision", selectPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </field>"); //$NON-NLS-1$
 		}
 		for (int i=0;i<deleteName.length;i++)
 		{
 			retval.append("      <remove>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </remove>"); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name",      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </remove>"); //$NON-NLS-1$
 		}
 		for (int i=0;i<metaName.length;i++)
 		{
 			retval.append("      <meta>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",      metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename",    metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("length",    metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("precision", metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </meta>"); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name",      metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename",    metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("type",      Value.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("length",    metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("precision", metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </meta>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"); //$NON-NLS-1$
+		retval.append("    </fields>"); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -775,5 +771,4 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new SelectValuesData();
 	}
-
 }

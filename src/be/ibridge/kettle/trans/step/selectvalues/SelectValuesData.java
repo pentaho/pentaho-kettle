@@ -12,14 +12,12 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
 
 package be.ibridge.kettle.trans.step.selectvalues;
 
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
-
 
 /**
  * @author Matt
@@ -41,13 +39,4 @@ public class SelectValuesData extends BaseStepData implements StepDataInterface
 	public boolean select;      // "normal" selection of fields.
 	public boolean deselect;    // de-select mode
 	public boolean metadata;    // change meta-data (rename & change length/precision)
-
-	/**
-	 * 
-	 */
-	public SelectValuesData()
-	{
-		super();
-	}
-
 }

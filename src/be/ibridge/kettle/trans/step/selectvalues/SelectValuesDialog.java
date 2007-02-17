@@ -56,7 +56,9 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 
-
+/**
+ * Dialog for the Select Values step. 
+ */
 public class SelectValuesDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private CTabFolder   wTabFolder;

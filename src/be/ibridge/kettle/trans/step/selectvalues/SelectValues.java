@@ -51,8 +51,7 @@ public class SelectValues extends BaseStep implements StepInterface
 	   Change the meta-data information if needed...<p>
 	   
 	   @param row The row to manipulate
-	   @return true if everything went well, false if we need to stop because of an error!
-	   
+	   @return true if everything went well, false if we need to stop because of an error!	   
 	*/
 	private synchronized boolean selectValues(Row row)
 	{
@@ -124,8 +123,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			else
 			{
 				if (log.isDetailed()) logDetailed(Messages.getString("SelectValues.Log.MixingStreamWithDifferentFields")); //$NON-NLS-1$
-			}
-			
+			}			
 		}
 
 		for (int i=0;i<meta.getSelectName().length;i++) // Add in the same order as before!
@@ -209,13 +207,6 @@ public class SelectValues extends BaseStep implements StepInterface
 					}
 				}
 			}
-
-			/*
-			for (int i=0;i<removenrs.length;i++)
-			{
-				System.out.println("Remove index : "+removenrs[i]);
-			}
-			*/
 		}
 
 		/*
