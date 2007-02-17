@@ -192,12 +192,14 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		String realFilename1 = getRealFilename1();
 		String realFilename2 = getRealFilename2();
 
+		FileObject file1 = null;
+		FileObject file2 = null;
 		try 
 		{       
 			if (filename1!=null && filename2!=null)
 			{
-				FileObject file1 = KettleVFS.getFileObject(realFilename1);
-				FileObject file2 = KettleVFS.getFileObject(realFilename2);
+				file1 = KettleVFS.getFileObject(realFilename1);
+				file2 = KettleVFS.getFileObject(realFilename2);
 
 				if ( file1.exists() && file2.exists() )
 				{
@@ -224,7 +226,6 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 			{
 				log.logError(toString(), "Need 2 filenames to compare file contents.");
 			}
-
 		}
 		catch ( Exception e )
 		{
@@ -232,7 +233,19 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 			result.setNrErrors(1);
 			log.logError(toString(), "Error occurred while comparing file [" + realFilename2 + 
 					"] and file [" + realFilename2 + "]: " + e.getMessage());
-		}			
+		}	
+		finally
+		{
+			try 
+			{
+			    if ( file1 != null )
+			    	file1.close();
+			    
+			    if ( file2 != null )
+			    	file2.close();			    
+		    }
+			catch ( IOException e ) { }			
+		}
 		
 
 		return result;
