@@ -779,8 +779,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 					String line = getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
 					if (line != null)
 					{
-						linesInput++;
-						lineNumberInFile++;
 						// Filter row?
 						boolean isFilterLastLine = false;
 						boolean filterOK = checkFilterRow(line, isFilterLastLine);
@@ -823,6 +821,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		   the buffer
 		*/
 		TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
+		linesInput++;
+		lineNumberInFile++;
 
 		data.lineBuffer.remove(0);
 
@@ -1236,9 +1236,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				line = getLine(log, data.isr, meta.getFileFormat());
 				if (line != null)
 				{
-					// logRowlevel("LINE READ: "+line);
-					linesInput++;
-					lineNumberInFile++;
 					// when there is no header, check the filter for the first line
 					if (!meta.hasHeader())
 					{
