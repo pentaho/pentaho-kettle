@@ -307,7 +307,7 @@ public class GlobalMessages
         if (string!=null) return string;
         
         string = "!"+key+"!";
-        String message = "Message not found in the prefered and failover locale: key=["+key+"], package="+packageName;
+        String message = "Message not found in the preferred and failover locale: key=["+key+"], package="+packageName;
         LogWriter.getInstance().logError("i18n", Const.getStackTracker(new KettleException(message)));
 
         return string;

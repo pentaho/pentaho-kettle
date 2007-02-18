@@ -251,7 +251,7 @@ public class TextFileCSVImportProgressDialog
         boolean errorFound = false;
         while (!errorFound && line != null && (linenr <= samples || samples == 0) && !monitor.isCanceled())
         {
-            monitor.subTask(Messages.getString("TextFileCSVImportProgressDialog.ScanningLine", ""+linenr));
+            monitor.subTask(Messages.getString("TextFileCSVImportProgressDialog.Task.ScanningLine", ""+linenr));
             if (samples>0) monitor.worked(1);
             
             if (log.isDebug()) debug = "convert line #" + linenr + " to row";
