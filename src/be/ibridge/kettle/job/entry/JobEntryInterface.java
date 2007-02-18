@@ -42,6 +42,9 @@ import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.job.entry.waitforfile.JobEntryWaitForFile;
+import be.ibridge.kettle.job.entry.mysqlbulkload.JobEntryMysqlBulkLoad;
+
+
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -73,7 +76,8 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_WAIT_FOR_FILE  = 15;
     public static final int TYPE_JOBENTRY_SFTPPUT        = 16;
     public static final int TYPE_JOBENTRY_FILE_COMPARE   = 17;
-    
+    public static final int TYPE_JOBENTRY_MYSQL_BULK_LOAD   = 18;
+
 	public final static String typeCode[] =
 		{
 			"-",
@@ -93,7 +97,8 @@ public interface JobEntryInterface
             "DELETE_FILE",
             "WAIT_FOR_FILE",
             "SFTPPUT",
-            "FILE_COMPARE"
+            "FILE_COMPARE",
+			"MYSQL_BULK_LOAD",
 		};
 
 	public final static String typeDesc[] =
@@ -116,6 +121,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.WaitForFile.TypeDesc"),
             Messages.getString("JobEntry.SFTPPut.TypeDesc"),            
             Messages.getString("JobEntry.FileCompare.TypeDesc"),
+			Messages.getString("JobEntry.MysqlBulkLoad.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -137,7 +143,8 @@ public interface JobEntryInterface
             "DFJ.png",
             "WFF.png",           
             "SFP.png",                        
-            "BFC.png"
+            "BFC.png",
+			"MBL.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -160,6 +167,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.WaitForFile.Tooltip"),
             Messages.getString("JobEntry.SFTPPut.Tooltip"),
             Messages.getString("JobEntry.FileCompare.Tooltip"),
+			Messages.getString("JobEntry.MysqlBulkLoad.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -182,6 +190,7 @@ public interface JobEntryInterface
             JobEntryWaitForFile.class,
             JobEntrySFTPPUT.class,
             JobEntryFileCompare.class,
+			JobEntryMysqlBulkLoad.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
