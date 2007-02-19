@@ -50,7 +50,6 @@ public class EnterNumberDialog extends Dialog
     private FormData fdlNumber, fdNumber;
 
     private Button wOK, wCancel;
-    private FormData fdOK, fdCancel;
     private Listener lsOK, lsCancel;
     private boolean hideCancelButton;
 
@@ -131,20 +130,9 @@ public class EnterNumberDialog extends Dialog
         }
         else
         {
-            buttons = new Button[] { wOK, wCancel };
+            buttons = new Button[] { wOK };
         }
-        fdOK = new FormData();
-        fdOK.left = new FormAttachment(33, 0);
-        fdOK.top = new FormAttachment(wNumber, margin * 2);
-        wOK.setLayoutData(fdOK);
-        if (!hideCancelButton)
-        {
-            fdCancel = new FormData();
-            fdCancel.left = new FormAttachment(66, 0);
-            fdCancel.top = new FormAttachment(wNumber, margin * 2);
-            wCancel.setLayoutData(fdCancel);
-        }
-        
+
         BaseStepDialog.positionBottomButtons(shell, buttons, margin, wNumber);
 
         // Add listeners
