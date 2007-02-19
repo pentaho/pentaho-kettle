@@ -297,8 +297,11 @@ public class Job extends Thread
             prevResult = new Result();
         }
 
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(jei.getClass().getClassLoader());
         // Execute this entry...
         Result result = ((JobEntryInterface)jei.clone()).execute(prevResult, nr, rep, this);
+        Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
 		
         // Save this result as well...

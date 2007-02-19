@@ -14,7 +14,6 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.mysqlbulkload;
-import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Shell;
@@ -239,7 +238,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 					if (filename!=null)
 					{
 						String realFilename = getRealFilename(); 
-						File file = new File(realFilename);
+						// File file = new File(realFilename);
 						if (1 == 1 ) //file.exists() && file.canRead())
 						{
 							// File exist, we can continue ...

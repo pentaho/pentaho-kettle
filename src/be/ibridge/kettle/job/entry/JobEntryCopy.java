@@ -77,7 +77,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-
+        
         retval.append("    <entry>").append(Const.CR);
 		retval.append(entry.getXML());
 		

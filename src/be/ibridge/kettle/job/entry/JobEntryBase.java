@@ -40,6 +40,7 @@ public class JobEntryBase implements Cloneable
 {
 	private String  name;
 	private String  description;
+    private String  pluginID = null;
 	private boolean changed;
 	private int     type;
 	private long id;
@@ -86,6 +87,11 @@ public class JobEntryBase implements Cloneable
 	{
 		this.type = type;
 	}
+    
+    public String getPluginID()
+    {
+        return this.pluginID;
+    }    
 	
 	public int getType()
 	{
@@ -94,6 +100,8 @@ public class JobEntryBase implements Cloneable
 	
 	public String getTypeCode()
 	{
+        if (this.pluginID != null)
+          return this.pluginID;
 		return JobEntryInterface.typeCode[type];
 	}
 	
@@ -116,6 +124,11 @@ public class JobEntryBase implements Cloneable
 	{
 		this.name = name;
 	}
+    
+    public void setPluginID(String pid)
+    {
+        this.pluginID = pid;
+    }
 
 	public String getName()
 	{
@@ -211,6 +224,9 @@ public class JobEntryBase implements Cloneable
 		retval.append("      ").append(XMLHandler.addTagValue("description",  getDescription()));
         if (type!=JobEntryInterface.TYPE_JOBENTRY_NONE)
             retval.append("      ").append(XMLHandler.addTagValue("type",     getTypeCode()));
+        if (pluginID != null)
+          retval.append("      ").append(XMLHandler.addTagValue("type",     pluginID));
+
 	
 		return retval.toString();
 	}	

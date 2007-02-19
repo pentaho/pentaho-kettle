@@ -1733,7 +1733,7 @@ public class Spoon implements AddUndoPositionInterface
         
             
             JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-            JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
+            JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
             for (int i=0;i<baseEntries.length;i++)
             {
                 if (!baseEntries[i].getID().equals("SPECIAL"))

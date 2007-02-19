@@ -243,7 +243,7 @@ public class JobEntryLoader
                     for (int i = 0; i < jarfiles.length; i++)
                     {
                         File jarfile = new File(jarfiles[i]);
-                        urls[i] = jarfile.toURL();
+                        urls[i] = jarfile.toURI().toURL();
                     }
 
                     // Load the class!!
@@ -270,8 +270,12 @@ public class JobEntryLoader
                 default:
                     throw new KettleStepLoaderException("Unknown plugin type : " + sp.getType());
                 }
+                JobEntryInterface res = (JobEntryInterface) cl.newInstance();
+                if (sp.getType() == JobPlugin.TYPE_PLUGIN) {
+                  res.setPluginID(sp.getID());
+                }
 
-                return (JobEntryInterface) cl.newInstance();
+                return res;
             }
             catch (ClassNotFoundException e)
             {
