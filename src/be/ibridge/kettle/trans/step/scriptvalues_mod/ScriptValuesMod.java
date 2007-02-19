@@ -140,7 +140,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			data.scope.put("_TransformationName_", data.scope, new String(this.getName()));
 			
 			try{
-				try{
+				for (int i=0;i<data.fields_used.length;i++)
+				{
+					Value val = row.getValue(data.fields_used[i]); 
+					Scriptable jsarg = Context.toObject(val, data.scope);
+					data.scope.put(val.getName(), data.scope, jsarg);
+				}
+/*				try{
 					//Creating special Values as Objects to the Context
 					ScriptableObject.defineClass(data.scope, tranVar.class);
 					tranVars = new tranVar[data.fields_used.length];
@@ -156,7 +162,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					setErrors(1);
 					stopAll();
 					return ERROR_TRANSFORMATION;
-				}
+				} */
 				
 				// Modification for Additional Script parsing
 				try{
@@ -233,10 +239,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		}
 		
 		// Filling the defined TranVars with the Values from the Row
-		for (int i=0;i<data.fields_used.length;i++){
-			Value val = row.getValue(data.fields_used[i]);
-			tranVars[i].setValue(val);
-		}
+		//for (int i=0;i<data.fields_used.length;i++){
+		//	Value val = row.getValue(data.fields_used[i]);
+		//	tranVars[i].setValue(val);
+		//}
 		
 		try{
 
