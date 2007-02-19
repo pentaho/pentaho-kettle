@@ -20,7 +20,6 @@
 
 package be.ibridge.kettle.trans.step.excelinput;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -29,6 +28,7 @@ import jxl.CellType;
 import jxl.Sheet;
 import jxl.Workbook;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -65,9 +65,11 @@ import be.ibridge.kettle.core.dialog.EnterListDialog;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
@@ -1587,10 +1589,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		FileInputList fileList = info.getFileList();
 		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+			FileObject fileObject = (FileObject) iter.next();
 			try
 			{
-				Workbook workbook = Workbook.getWorkbook(file);
+				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(fileObject));
 				
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
@@ -1605,10 +1607,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 			catch(Exception e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ExcelInputDialog.ErrorReadingFile.DialogMessage", file.getPath()));
-				mb.setText(Messages.getString("System.Dialog.Error.Title"));
-				mb.open(); 
+                new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("ExcelInputDialog.ErrorReadingFile.DialogMessage", KettleVFS.getFilename(fileObject)), e);
 			}
 		}
 
@@ -1642,10 +1641,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		FileInputList fileList = info.getFileList();
 		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+			FileObject file = (FileObject) iter.next();
 			try
 			{
-				Workbook workbook = Workbook.getWorkbook(file);
+				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(file));
 
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
@@ -1728,11 +1727,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 			catch(Exception e)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("ExcelInputDialog.ErrorReadingFile2.DialogMessage", file.getPath(), e.toString()));
-				mb.setText(Messages.getString("System.Dialog.Error.Title"));
-				mb.setText("ERROR");
-				mb.open(); 
+                new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("ExcelInputDialog.ErrorReadingFile2.DialogMessage", KettleVFS.getFilename(file), e.toString()), e);
 			}
 		}
 

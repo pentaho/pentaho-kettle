@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 
@@ -92,19 +93,29 @@ public class KettleVFS
         return fileObject.exists();
     }
     
+    public static InputStream getInputStream(FileObject fileObject) throws FileSystemException
+    {
+        FileContent content = fileObject.getContent();
+        return content.getInputStream();
+    }
+    
     public static InputStream getInputStream(String vfsFilename) throws IOException
     {
         FileObject fileObject = getFileObject(vfsFilename);
+        return getInputStream(fileObject);
+    }
+    
+    public static OutputStream getOutputStream(FileObject fileObject, boolean append) throws IOException
+    {
+        fileObject.createFile();
         FileContent content = fileObject.getContent();
-        return content.getInputStream();
+        return content.getOutputStream(append);
     }
     
     public static OutputStream getOutputStream(String vfsFilename, boolean append) throws IOException
     {
         FileObject fileObject = getFileObject(vfsFilename);
-        fileObject.createFile();
-        FileContent content = fileObject.getContent();
-        return content.getOutputStream(append);
+        return getOutputStream(fileObject, append);
     }
     
     public static String getFilename(FileObject fileObject)
@@ -139,4 +150,5 @@ public class KettleVFS
         while (fileObject.exists());
         return fileObject;
     }
+
 }
