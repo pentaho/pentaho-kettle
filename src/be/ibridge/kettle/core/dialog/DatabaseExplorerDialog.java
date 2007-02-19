@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -98,6 +99,15 @@ public class DatabaseExplorerDialog extends Dialog
 	private List    databases;
     private boolean splitSchemaAndTable;
     private String schemaName;
+    private Composite buttonsComposite;
+    private Button bPrev;
+    private Button bPrevN;
+    private Button bCount;
+    private Button bShow;
+    private Button bDDL;
+    private Button bDDL2;
+    private Button bSQL;
+    private String activeSchemaTable;
 
     /** @deprecated */
     public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
@@ -170,6 +180,9 @@ public class DatabaseExplorerDialog extends Dialog
 		
 		shell.setLayout (formLayout);
  		
+        addButtons();
+        refreshButtons(null);
+        
  		// Tree
  		wTree = new Tree(shell, SWT.SINGLE | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
  		props.setLook( 		wTree);
@@ -195,7 +208,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 		fdTree.left   = new FormAttachment(0, 0); // To the right of the label
 		fdTree.top    = new FormAttachment(0, 0);
-		fdTree.right  = new FormAttachment(100, 0);
+		fdTree.right  = new FormAttachment(buttonsComposite, -margin);
 		fdTree.bottom = new FormAttachment(100, -50);
 		wTree.setLayoutData(fdTree);
 
@@ -239,6 +252,11 @@ public class DatabaseExplorerDialog extends Dialog
 		);
 		SelectionAdapter selAdapter=new SelectionAdapter()
 			{
+                public void widgetSelected(SelectionEvent e)
+                {
+                    refreshButtons(getSchemaTable());
+                }
+                
 				public void widgetDefaultSelected(SelectionEvent e)
 				{
 					openSchema(e);	
@@ -271,6 +289,118 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 		return tableName;
 	}
+    
+    private void addButtons()
+    {
+        buttonsComposite = new Composite(shell, SWT.NONE);
+        props.setLook(buttonsComposite);
+        buttonsComposite.setLayout(new FormLayout());
+
+        activeSchemaTable=null;
+        
+        bPrev  = new Button(buttonsComposite, SWT.PUSH); 
+        bPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", Const.NVL(activeSchemaTable, "?")));
+        bPrev.setEnabled(activeSchemaTable!=null);
+        bPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(activeSchemaTable, false); }});
+        FormData prevData = new FormData();
+        prevData.left = new FormAttachment(0, 0);
+        prevData.right = new FormAttachment(100, 0);
+        prevData.top = new FormAttachment(0, 0);
+        bPrev.setLayoutData(prevData);
+        
+        bPrevN  = new Button(buttonsComposite, SWT.PUSH); 
+        bPrevN.setText(Messages.getString("DatabaseExplorerDialog.Menu.PreviewN", Const.NVL(activeSchemaTable, "?")));
+        bPrevN.setEnabled(activeSchemaTable!=null);
+        bPrevN.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(activeSchemaTable, true); }});
+        FormData prevNData = new FormData();
+        prevNData.left = new FormAttachment(0, 0);
+        prevNData.right = new FormAttachment(100, 0);
+        prevNData.top = new FormAttachment(bPrev, Const.MARGIN);
+        bPrevN.setLayoutData(prevNData);
+        
+        bCount = new Button(buttonsComposite, SWT.PUSH); 
+        bCount.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowSize", Const.NVL(activeSchemaTable, "?")));
+        bCount.setEnabled(activeSchemaTable!=null);
+        bCount.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showCount(activeSchemaTable); }});
+        FormData countData = new FormData();
+        countData.left = new FormAttachment(0, 0);
+        countData.right = new FormAttachment(100, 0);
+        countData.top = new FormAttachment(bPrevN, Const.MARGIN);
+        bCount.setLayoutData(countData);
+
+        bShow  = new Button(buttonsComposite, SWT.PUSH); 
+        bShow.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowLayout", Const.NVL(activeSchemaTable, "?")));
+        bShow.setEnabled(activeSchemaTable!=null);
+        bShow.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showTable(activeSchemaTable); }});
+        FormData showData = new FormData();
+        showData.left = new FormAttachment(0, 0);
+        showData.right = new FormAttachment(100, 0);
+        showData.top = new FormAttachment(bCount, Const.MARGIN*7);
+        bShow.setLayoutData(showData);
+        
+        bDDL  = new Button(buttonsComposite, SWT.PUSH); 
+        bDDL.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDL"));
+        bDDL.setEnabled(activeSchemaTable!=null);
+        bDDL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDL(activeSchemaTable); }});
+        FormData ddlData = new FormData();
+        ddlData.left = new FormAttachment(0, 0);
+        ddlData.right = new FormAttachment(100, 0);
+        ddlData.top = new FormAttachment(bShow, Const.MARGIN);
+        bDDL.setLayoutData(ddlData);
+        
+        bDDL2  = new Button(buttonsComposite, SWT.PUSH); 
+        bDDL2.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDLOtherConn"));
+        bDDL2.setEnabled(activeSchemaTable!=null);
+        bDDL2.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDLForOther(activeSchemaTable); }});
+        bDDL2.setEnabled(databases!=null);
+        FormData ddl2Data = new FormData();
+        ddl2Data.left = new FormAttachment(0, 0);
+        ddl2Data.right = new FormAttachment(100, 0);
+        ddl2Data.top = new FormAttachment(bDDL, Const.MARGIN);
+        bDDL2.setLayoutData(ddl2Data);
+
+        bSQL  = new Button(buttonsComposite, SWT.PUSH); 
+        bSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", Const.NVL(activeSchemaTable, "?")));
+        bSQL.setEnabled(activeSchemaTable!=null);
+        bSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(activeSchemaTable); }});
+        FormData sqlData = new FormData();
+        sqlData.left = new FormAttachment(0, 0);
+        sqlData.right = new FormAttachment(100, 0);
+        sqlData.top = new FormAttachment(bDDL2, Const.MARGIN);
+        bSQL.setLayoutData(sqlData);
+
+        FormData fdComposite = new FormData();
+        fdComposite.right = new FormAttachment(100,0);
+        fdComposite.top   = new FormAttachment(0, 20);
+        buttonsComposite.setLayoutData(fdComposite);        
+    }
+    
+    private void refreshButtons(String table)
+    {
+        activeSchemaTable=table;
+        bPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", Const.NVL(table, "?")));
+        bPrev.setEnabled(table!=null);
+        
+        bPrevN.setText(Messages.getString("DatabaseExplorerDialog.Menu.PreviewN", Const.NVL(table, "?")));
+        bPrevN.setEnabled(table!=null);
+        
+        bCount.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowSize", Const.NVL(table, "?")));
+        bCount.setEnabled(table!=null);
+
+        bShow.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowLayout", Const.NVL(table, "?")));
+        bShow.setEnabled(table!=null);
+        
+        bDDL.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDL"));
+        bDDL.setEnabled(table!=null);
+        
+        bDDL2.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDLOtherConn"));
+        bDDL2.setEnabled(table!=null);
+
+        bSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", Const.NVL(table, "?")));
+        bSQL.setEnabled(table!=null);
+        
+        shell.layout(true, true);
+    }
 	
 	private boolean getData()
 	{
@@ -403,67 +533,80 @@ public class DatabaseExplorerDialog extends Dialog
 		
 		return true;
 	}
+    
+    private String getSchemaTable()
+    {
+        TreeItem ti[]=wTree.getSelection();
+        if (ti.length==1)
+        {
+            // Get the parent.
+            TreeItem parent = ti[0].getParentItem();
+            if (parent!=null)
+            {
+                String schemaName = parent.getText();
+                String tableName  = ti[0].getText();
+
+                if (ti[0].getItemCount()==0) // No children, only the tables themselves...
+                {
+                    String tab = null;
+                    if (schemaName.equalsIgnoreCase(STRING_TABLES) ||
+                        schemaName.equalsIgnoreCase(STRING_VIEWS) ||
+                        schemaName.equalsIgnoreCase(STRING_SYNONYMS) ||
+                        ( schemaName!=null && schemaName.length()==0 )
+                        )
+                    {
+                        tab = tableName;
+                    }
+                    else
+                    {
+                        tab = dbMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+                    }
+                    return tab;
+                }
+            }
+        }
+        return null;
+    }
 
 	public void setTreeMenu()
 	{
-		Menu mTree = null;
+        final String table = getSchemaTable();
+        if (table!=null)
+        {
+            Menu mTree = null;
 		
-		TreeItem ti[]=wTree.getSelection();
-		if (ti.length==1)
-		{
-			// Get the parent.
-			TreeItem parent = ti[0].getParentItem();
-			if (parent!=null)
-			{
-				String schemaName = parent.getText();
-				String tableName  = ti[0].getText();
+            if (mTree!=null && !mTree.isDisposed())
+            {
+                mTree.dispose();
+            }
+            mTree = new Menu(shell, SWT.POP_UP);
+			MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", table));
+			miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
+			MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText(Messages.getString("DatabaseExplorerDialog.Menu.PreviewN", table));
+			miPrevN.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, true); }});
+			//MenuItem miEdit   = new MenuItem(mTree, SWT.PUSH); miEdit.setText("Open ["+table+"] for editing");
+			//miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTable(table); }});
+			MenuItem miCount = new MenuItem(mTree, SWT.PUSH); miCount.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowSize", table));
+			miCount.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showCount(table); }});
 
-				if (ti[0].getItemCount()==0) // No children, only the tables themselves...
-				{
-					String tab = null;
-					if (schemaName.equalsIgnoreCase(STRING_TABLES) ||
-						schemaName.equalsIgnoreCase(STRING_VIEWS) ||
-						schemaName.equalsIgnoreCase(STRING_SYNONYMS) ||
-						( schemaName!=null && schemaName.length()==0 )
-						)
-					{
-						tab = tableName;
-					}
-					else
-					{
-						tab = dbMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-					}
-					final String table = tab;
-					
-                    if (mTree!=null && !mTree.isDisposed())
-                    {
-                        mTree.dispose();
-                    }
-                    mTree = new Menu(shell, SWT.POP_UP);
-					MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText(Messages.getString("DatabaseExplorerDialog.Menu.Preview100", table));
-					miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
-					MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText(Messages.getString("DatabaseExplorerDialog.Menu.PreviewN", table));
-					miPrevN.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, true); }});
-					//MenuItem miEdit   = new MenuItem(mTree, SWT.PUSH); miEdit.setText("Open ["+table+"] for editing");
-					//miEdit.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTable(table); }});
-					MenuItem miCount = new MenuItem(mTree, SWT.PUSH); miCount.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowSize", table));
-					miCount.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showCount(table); }});
-
-					new MenuItem(mTree, SWT.SEPARATOR);
-					
-					MenuItem miShow  = new MenuItem(mTree, SWT.PUSH); miShow.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowLayout", table));
-					miShow.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showTable(table); }});
-					MenuItem miDDL  = new MenuItem(mTree, SWT.PUSH); miDDL.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDL"));
-					miDDL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDL(table); }});
-                    MenuItem miDDL2  = new MenuItem(mTree, SWT.PUSH); miDDL2.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDLOtherConn"));
-					miDDL2.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDLForOther(table); }});
-                    miDDL2.setEnabled(databases!=null);
-					MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", table));
-					miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(table); }});
-				}
-			}
+			new MenuItem(mTree, SWT.SEPARATOR);
+			
+			MenuItem miShow  = new MenuItem(mTree, SWT.PUSH); miShow.setText(Messages.getString("DatabaseExplorerDialog.Menu.ShowLayout", table));
+			miShow.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showTable(table); }});
+			MenuItem miDDL  = new MenuItem(mTree, SWT.PUSH); miDDL.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDL"));
+			miDDL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDL(table); }});
+            MenuItem miDDL2  = new MenuItem(mTree, SWT.PUSH); miDDL2.setText(Messages.getString("DatabaseExplorerDialog.Menu.GenDDLOtherConn"));
+			miDDL2.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDLForOther(table); }});
+            miDDL2.setEnabled(databases!=null);
+			MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", table));
+			miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(table); }});
+            
+            wTree.setMenu(mTree);
 		}
-		wTree.setMenu(mTree);
+        else
+        {
+            wTree.setMenu(null);
+        }
 	}
 
 	public void previewTable(String tableName, boolean asklimit)
