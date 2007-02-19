@@ -154,6 +154,11 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 	private FormData     fdlReplacedata, fdReplacedata;
 
 
+	// Priority
+	private Label wlProrityValue;
+	private  CCombo wProrityValue;
+	private FormData fdlProrityValue, fdProrityValue;
+
 	public JobEntryMysqlBulkLoadDialog(Shell parent, JobEntryMysqlBulkLoad jobEntry, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
@@ -368,6 +373,37 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 
 
 
+		// Priority
+		wlProrityValue = new Label(shell, SWT.RIGHT);
+		wlProrityValue.setText(Messages.getString("JobMysqlBulkLoad.ProrityValue.Label"));
+		props.setLook(wlProrityValue);
+		fdlProrityValue = new FormData();
+		fdlProrityValue.left = new FormAttachment(0, 0);
+		fdlProrityValue.right = new FormAttachment(middle, 0);
+		fdlProrityValue.top = new FormAttachment(wLocalInfile, margin);
+		wlProrityValue.setLayoutData(fdlProrityValue);
+		wProrityValue = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+					wProrityValue.add(Messages.getString("JobMysqlBulkLoad.NorProrityValue.Label"));
+					wProrityValue.add(Messages.getString("JobMysqlBulkLoad.LowProrityValue.Label"));
+					wProrityValue.add(Messages.getString("JobMysqlBulkLoad.ConProrityValue.Label"));
+					wProrityValue.select(0); // +1: starts at -1
+
+		props.setLook(wProrityValue);
+		fdProrityValue= new FormData();
+		fdProrityValue.left = new FormAttachment(middle, 0);
+		fdProrityValue.top = new FormAttachment(wLocalInfile, margin);
+		fdProrityValue.right = new FormAttachment(100, 0);
+		wProrityValue.setLayoutData(fdProrityValue);
+
+		fdProrityValue = new FormData();
+		fdProrityValue.left = new FormAttachment(middle, 0);
+		fdProrityValue.top = new FormAttachment(wLocalInfile, margin);
+		fdProrityValue.right = new FormAttachment(100, 0);
+		wProrityValue.setLayoutData(fdProrityValue);
+
+
+
+
 		// Separator
 		wlSeparator = new Label(shell, SWT.RIGHT);
 		wlSeparator.setText(Messages.getString("JobMysqlBulkLoad.Separator.Label"));
@@ -375,7 +411,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlSeparator = new FormData();
 		fdlSeparator.left = new FormAttachment(0, 0);
 		fdlSeparator.right = new FormAttachment(middle, 0);
-		fdlSeparator.top = new FormAttachment(wFilename, margin);
+		fdlSeparator.top = new FormAttachment(wProrityValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
 		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -383,7 +419,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		wSeparator.addModifyListener(lsMod);
 		fdSeparator = new FormData();
 		fdSeparator.left = new FormAttachment(middle, 0);
-		fdSeparator.top = new FormAttachment(wFilename, margin);
+		fdSeparator.top = new FormAttachment(wProrityValue, margin);
 		fdSeparator.right = new FormAttachment(100, 0);
 		wSeparator.setLayoutData(fdSeparator);
 
@@ -556,8 +592,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		if (jobEntry.getSeparator() != null)
 			wSeparator.setText(jobEntry.getSeparator());
 	
-		
-		
+				
 		wReplacedata.setSelection(jobEntry.isReplacedata());
 		
 		wLocalInfile.setSelection(jobEntry.isLocalInfile());
@@ -575,8 +610,10 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		if (jobEntry.getListattribut() != null)
 			wListattribut.setText(jobEntry.getListattribut());
 		
+     
+		wProrityValue.select(jobEntry.prorityvalue );
 
-		
+	
 		
 		if (jobEntry.getDatabase() != null)
 		{
@@ -602,6 +639,8 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		jobEntry.setReplacedata(wReplacedata.getSelection());
 		jobEntry.setIgnorelines(wIgnorelines.getText());
 		jobEntry.setListattribut(wListattribut.getText());
+
+		jobEntry.prorityvalue = wProrityValue.getSelectionIndex();
 
 		jobEntry.setLocalInfile(wLocalInfile.getSelection());
 

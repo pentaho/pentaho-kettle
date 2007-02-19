@@ -54,6 +54,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private boolean replacedata;
 	private String listattribut;
 	private boolean localinfile;
+	public int prorityvalue;
 
 	private DatabaseMeta connection;
 
@@ -102,7 +103,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("listattribut",  listattribut));
 
 		retval.append("      ").append(XMLHandler.addTagValue("localinfile",  localinfile));
-
+		retval.append("      ").append(XMLHandler.addTagValue("prorityvalue",  prorityvalue));
 		
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
@@ -123,7 +124,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			listattribut     = XMLHandler.getTagValue(entrynode, "listattribut");
 
 			localinfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
-
+			
+			prorityvalue     = Integer.parseInt(XMLHandler.getTagValue(entrynode, "prorityvalue"));
 
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
@@ -150,6 +152,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 			localinfile=rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
 
+			prorityvalue=Integer.parseInt(rep.getJobEntryAttributeString(id_jobentry, "prorityvalue"));
+			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -184,6 +188,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	
 			rep.saveJobEntryAttribute(id_job, getID(), "localinfile", localinfile);
 			
+			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue", prorityvalue);	
+
+
 
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
@@ -231,6 +238,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		String IgnoreNbrLignes;
 		String ListOfColumn="";
 		String LocalExec="";
+		String PriorityText="";
+
 		LogWriter log = LogWriter.getInstance();
 		
 		Result result = new Result(nr);
@@ -299,8 +308,32 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 							}
 						
+
+							// Prority
+							if (prorityvalue == 0)
+							{
+								// NORMAL
+								PriorityText ="";
+							}
+							else if (prorityvalue == 1)
+							{
+								//LOW
+								PriorityText = " LOW_PRIORITY ";
+
+							}
+							else
+							{
+								//CONCURRENT
+								PriorityText = " CONCURRENT ";
+							}
+
+
+
+
+
+
 							// Let's built Bulk Load String
-							String SQLBULKLOAD="LOAD DATA " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore + 
+							String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore + 
 								" INTO TABLE " + realTablename + " FIELDS TERMINATED BY  '" + getRealSeparator() + "' " + IgnoreNbrLignes + " " + ListOfColumn + ";";
 
 
