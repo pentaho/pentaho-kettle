@@ -251,7 +251,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             };
         cPreviewSteps[1].setValueType(Value.VALUE_TYPE_INTEGER);
                 
-        wPreviewSteps = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), true, null, props);
+        wPreviewSteps = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), false, null, props);
         FormData fdPreviewSteps = new FormData();
         fdPreviewSteps.left   = new FormAttachment(  0, 0);
         fdPreviewSteps.top    = new FormAttachment(wPreview, margin);
