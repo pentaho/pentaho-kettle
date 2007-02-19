@@ -324,33 +324,33 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public String getXML(){
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    "+XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
         
 
 		retval.append("    <jsScripts>"); 
 		for (int i=0;i<jsScripts.length;i++){
 			retval.append("      <jsScript>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("jsScript_type",  jsScripts[i].getScriptType()));
-			retval.append("        "+XMLHandler.addTagValue("jsScript_name",  jsScripts[i].getScriptName()));
-			retval.append("        "+XMLHandler.addTagValue("jsScript_script", jsScripts[i].getScript()));
-			retval.append("        </jsScript>"); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("jsScript_type",  jsScripts[i].getScriptType()));
+			retval.append("        ").append(XMLHandler.addTagValue("jsScript_name",  jsScripts[i].getScriptName()));
+			retval.append("        ").append(XMLHandler.addTagValue("jsScript_script", jsScripts[i].getScript()));
+			retval.append("      </jsScript>"); //$NON-NLS-1$
 		}
-		retval.append("     </jsScripts>"); 
+		retval.append("    </jsScripts>"); 
 		
 		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<name.length;i++)
 		{
 			retval.append("      <field>"); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("rename",    rename[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("rename",    rename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </field>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"); //$NON-NLS-1$
+		retval.append("    </fields>"); //$NON-NLS-1$
 		
 		return retval.toString();
 	}
@@ -477,7 +477,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     				}
                 }
 			}catch(Exception e){
-				error_message = ("Coundln't not add JavaClasses to Context! Error:");
+				error_message = ("Couldn't add JavaClasses to Context! Error:");
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
@@ -487,7 +487,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				Context.javaToJS(ScriptValuesAddedFunctions.class, jsscope);
 				((ScriptableObject)jsscope).defineFunctionProperties(ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 			} catch (Exception ex) {
-				error_message="Coundln't not add Default Functions! Error:"+Const.CR+ex.toString();
+				error_message="Couldn't add Default Functions! Error:"+Const.CR+ex.toString();
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			};
@@ -499,7 +499,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				jsscope.put("ERROR_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.ERROR_TRANSFORMATION));
 				jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.CONTINUE_TRANSFORMATION));
 			} catch (Exception ex) {
-				error_message="Coundln't not add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			};
@@ -517,7 +517,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					jsscope.put(val.getName(), jsscope, objTV);
 				}
 			}catch(Exception ev){
-				error_message="Coundln't not add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
+				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
@@ -531,7 +531,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					remarks.add(cr);
 				}
 			}catch(Exception e){
-				error_message="Coundln't not processing Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);				
 			};
@@ -551,16 +551,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					
 					if (name.length>0){
 						StringBuffer message = new StringBuffer(Messages.getString("ScriptValuesMetaMod.CheckResult.FailedToGetValues",String.valueOf(name.length))+Const.CR+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
-						
-						/*for (int i=0;i<name.length;i++){
-							Value res = new Value();
-							message.append("   "); //$NON-NLS-1$
-							if (getValue(jsscope, i, res, message)){
-								error_found = true;
-							}
-							message.append(Const.CR);
-						}*/
-						
+												
 						if (error_found)
 						{
 							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, message.toString(), stepinfo);
@@ -592,7 +583,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 						remarks.add(cr);
 					}
 				}catch(Exception e){
-					error_message="Coundln't not processing End Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);				
 				};
