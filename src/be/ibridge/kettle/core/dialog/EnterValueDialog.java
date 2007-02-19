@@ -83,7 +83,6 @@ public class EnterValueDialog extends Dialog
     private FormData     fdlPrecision, fdPrecision;
 
 	private Button wOK, wCancel, wTest;
-	private FormData fdOK, fdCancel, fdTest;
 	private Listener lsOK, lsCancel, lsTest;
 
 	private Shell  shell;
@@ -238,20 +237,9 @@ public class EnterValueDialog extends Dialog
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		fdOK=new FormData();
-		fdOK.left       = new FormAttachment(25, 0);
-		fdOK.top        = new FormAttachment(wPrecision, margin*2);
-		wOK.setLayoutData(fdOK);
-		fdTest=new FormData();
-		fdTest.left       = new FormAttachment(50, 0);
-		fdTest.top        = new FormAttachment(wPrecision, margin*2);
-		wTest.setLayoutData(fdTest);
-		fdCancel=new FormData();
-		fdCancel.left   = new FormAttachment(75, 0);
-		fdCancel.top    = new FormAttachment(wPrecision, margin*2);
-		wCancel.setLayoutData(fdCancel);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wTest, wCancel }, margin, wPrecision);
 
-		// Add listeners
+        // Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsTest     = new Listener() { public void handleEvent(Event e) { test();   } };

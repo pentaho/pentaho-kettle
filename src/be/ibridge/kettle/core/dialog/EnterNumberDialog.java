@@ -119,12 +119,19 @@ public class EnterNumberDialog extends Dialog
         wNumber.setLayoutData(fdNumber);
 
         // Some buttons
+        Button[] buttons=null;
+        
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         if (!hideCancelButton)
         {
             wCancel = new Button(shell, SWT.PUSH);
             wCancel.setText(Messages.getString("System.Button.Cancel"));
+            buttons = new Button[] { wOK, wCancel };
+        }
+        else
+        {
+            buttons = new Button[] { wOK, wCancel };
         }
         fdOK = new FormData();
         fdOK.left = new FormAttachment(33, 0);
@@ -137,6 +144,8 @@ public class EnterNumberDialog extends Dialog
             fdCancel.top = new FormAttachment(wNumber, margin * 2);
             wCancel.setLayoutData(fdCancel);
         }
+        
+        BaseStepDialog.positionBottomButtons(shell, buttons, margin, wNumber);
 
         // Add listeners
         lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
