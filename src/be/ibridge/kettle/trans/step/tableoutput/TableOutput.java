@@ -78,7 +78,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 linesOutput++;
             }
 
-            if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
+            if (checkFeedback(linesRead)) logBasic("linenr "+linesRead);
 		}
 		catch(KettleException e)
 		{
