@@ -936,7 +936,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
     					}
                     }
 				}catch(Exception e){
-					errorMessage="Coundln't not add JavaClasses to Context! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					errorMessage="Couldn't add JavaClasses to Context! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -945,7 +945,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 					Context.javaToJS(ScriptValuesAddedFunctions.class, jsscope);
 					((ScriptableObject)jsscope).defineFunctionProperties(jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 				} catch (Exception ex) {
-					errorMessage="Coundln't not add Default Functions! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+					errorMessage="Couldn't add Default Functions! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 					retval = false;
 				};
 
@@ -956,24 +956,27 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 					jsscope.put("ERROR_TRANSFORMATION", jsscope, new Integer(ERROR_TRANSFORMATION));
 					jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(CONTINUE_TRANSFORMATION));
 				} catch (Exception ex) {
-					errorMessage="Coundln't not add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
+					errorMessage="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
 					retval = false;
 				};
 				
 				try{
-					ScriptableObject.defineClass(jsscope, tranVar.class);
-					for (int i=0;i<row.size();i++){
-						Value val = row.getValue(i); 
-						// Set date and string values to something to simulate real thing
-						if (val.isDate()) val.setValue(new Date());
-						if (val.isString()) val.setNull();//val.setValue("00000000"); //$NON-NLS-1$
-						Object[] arg = {new String(val.getName())};
-						tranVar objTV = (tranVar)jscx.newObject(jsscope, "tranVar", arg);
-						objTV.setValue(val);
-						jsscope.put(val.getName(), jsscope, objTV);
-					}
+	   			    Scriptable jsrow = Context.toObject(row, jsscope);
+				    jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
+				    for (int i=0;i<row.size();i++)
+				    {
+	  				    Value val = row.getValue(i); 
+					    // Set date and string values to something to simulate real thing
+					    if (val.isDate()) val.setValue(new Date());
+					    if (val.isString()) val.setValue("test value test value test value test value test value test value test value test value test value test value"); //$NON-NLS-1$
+					    Scriptable jsarg = Context.toObject(val, jsscope);
+					    jsscope.put(val.getName(), jsscope, jsarg);
+				    }
+				    // Add support for Value class (new Value())
+				    Scriptable jsval = Context.toObject(Value.class, jsscope);
+				    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
 				}catch(Exception ev){
-					errorMessage="Coundln't not add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
+					errorMessage="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
 					retval = false;
 				}
 				
@@ -984,7 +987,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 						/* Object startScript = */ jscx.evaluateString(jsscope, strStartScript, "trans_Start", 1, null);
 					}
 				}catch(Exception e){
-					errorMessage="Coundln't not processing Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
+					errorMessage="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
 					retval = false;					
 				};
 				
@@ -1044,9 +1047,6 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 					}
 					
 					// End Script!
-					
-					
-					
 				}
 				catch(JavaScriptException jse){
 					errorMessage=Messages.getString("ScriptValuesDialogMod.Exception.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
@@ -1157,8 +1157,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 				strData = "jsFunction";
 				itemFunction.setData(strData);
 			}
-	    }
-		
+	    }		
 	}
 	
 	public boolean TreeItemExist(TreeItem itemToCheck, String strItemName){

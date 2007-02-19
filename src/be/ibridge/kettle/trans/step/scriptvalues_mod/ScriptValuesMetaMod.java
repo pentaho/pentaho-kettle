@@ -503,20 +503,23 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			};
-			
+
 			try{
-				ScriptableObject.defineClass(jsscope, tranVar.class);
-				for (int i=0;i<prev.size();i++){
-					Value val = prev.getValue(i); 
-					// Set date and string values to something to simulate real thing
-					if (val.isDate()) val.setValue(new Date());
-					if (val.isString()) val.setValue("000000000"); //$NON-NLS-1$
-					Object[] arg = {new String(val.getName())};
-					tranVar objTV = (tranVar)jscx.newObject(jsscope, "tranVar", arg);
-					objTV.setValue(val);
-					jsscope.put(val.getName(), jsscope, objTV);
-				}
-			}catch(Exception ev){
+   			    Scriptable jsrow = Context.toObject(prev, jsscope);
+			    jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
+			    for (int i=0;i<prev.size();i++)
+			    {
+  				    Value val = prev.getValue(i); 
+				    // Set date and string values to something to simulate real thing
+				    if (val.isDate()) val.setValue(new Date());
+				    if (val.isString()) val.setValue("test value test value test value test value test value test value test value test value test value test value"); //$NON-NLS-1$
+				    Scriptable jsarg = Context.toObject(val, jsscope);
+				    jsscope.put(val.getName(), jsscope, jsarg);
+			    }
+			    // Add support for Value class (new Value())
+			    Scriptable jsval = Context.toObject(Value.class, jsscope);
+			    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$			
+			} catch(Exception ev){
 				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);

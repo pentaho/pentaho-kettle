@@ -57,9 +57,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 {
 	private ScriptValuesMetaMod meta;
 	private ScriptValuesDataMod data;
-	
-	private tranVar[] tranVars;
-	
+		
 	public final static int SKIP_TRANSFORMATION = 1;
 	public final static int ABORT_TRANSFORMATION = -1;
 	public final static int ERROR_TRANSFORMATION = -2;
@@ -140,36 +138,21 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			data.scope.put("_TransformationName_", data.scope, new String(this.getName()));
 			
 			try{
+				Scriptable jsrow = Context.toObject(row, data.scope);
+				data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
+				
 				for (int i=0;i<data.fields_used.length;i++)
 				{
 					Value val = row.getValue(data.fields_used[i]); 
 					Scriptable jsarg = Context.toObject(val, data.scope);
 					data.scope.put(val.getName(), data.scope, jsarg);
 				}
-/*				try{
-					//Creating special Values as Objects to the Context
-					ScriptableObject.defineClass(data.scope, tranVar.class);
-					tranVars = new tranVar[data.fields_used.length];
-					for (int i=0;i<data.fields_used.length;i++){
-						Value val = row.getValue(data.fields_used[i]); 
-						Object[] arg = { new String(val.getName())};
-						tranVars[i] = (tranVar)data.cx.newObject(data.scope, "tranVar", arg);
-						data.scope.put(val.getName(), data.scope, tranVars[i]);
-					}
-				}catch(Exception e){
-					logError(Messages.getString("ScriptValuesMod.Log.CouldNotAttachTransVars")+e.toString()); //$NON-NLS-1$
-                    logError(Const.getStackTracker(e));
-					setErrors(1);
-					stopAll();
-					return ERROR_TRANSFORMATION;
-				} */
 				
 				// Modification for Additional Script parsing
 				try{
                     if (meta.getAddClasses()!=null)
                     {
     					for(int i=0;i<meta.getAddClasses().length;i++){
-    						//Object jsOut = data.cx.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
     						Object jsOut = Context.javaToJS(meta.getAddClasses()[i].getAddObject(), data.scope);
     						ScriptableObject.putProperty(data.scope, meta.getAddClasses()[i].getJSName(), jsOut);
     					}
