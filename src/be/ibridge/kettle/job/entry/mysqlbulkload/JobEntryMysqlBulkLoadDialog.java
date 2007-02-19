@@ -71,41 +71,41 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 			Messages
 			.getString("JobMysqlBulkLoad.Filetype.All") };
 
-    private Label wlName;
+	private Label wlName;
 
-    private Text wName;
+	private Text wName;
 
-    private FormData fdlName, fdName;
+	private FormData fdlName, fdName;
 
-    private Label wlConnection;
+	private Label wlConnection;
 
-    private CCombo wConnection;
+	private CCombo wConnection;
 
-    private Button wbConnection;
+	private Button wbConnection;
 
-    private FormData fdlConnection, fdbConnection, fdConnection;
+	private FormData fdlConnection, fdbConnection, fdConnection;
 
-    private Label wlTablename;
+	private Label wlTablename;
 
-    private TextVar wTablename;
+	private TextVar wTablename;
 
-    private FormData fdlTablename, fdTablename;
+	private FormData fdlTablename, fdTablename;
 
-    private Button wOK, wCancel;
+	private Button wOK, wCancel;
 
-    private Listener lsOK, lsCancel;
+	private Listener lsOK, lsCancel;
 
-    private JobEntryMysqlBulkLoad jobEntry;
+	private JobEntryMysqlBulkLoad jobEntry;
 
-    private JobMeta jobMeta;
+	private JobMeta jobMeta;
 
-    private Shell shell;
+	private Shell shell;
 
-    private Props props;
+	private Props props;
 
-    private SelectionAdapter lsDef;
+	private SelectionAdapter lsDef;
 
-    private boolean changed;
+	private boolean changed;
 
 	//Fichier
 	private Label wlFilename;
@@ -115,6 +115,13 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 	private TextVar wFilename;
 
 	private FormData fdlFilename, fdbFilename, fdFilename;
+
+	//  LocalInfile
+	private Label        wlLocalInfile;
+	private Button       wLocalInfile;
+	private FormData     fdlLocalInfile, fdLocalInfile;
+
+
 
 	//Separator
 	private Label wlSeparator;
@@ -147,131 +154,131 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 	private FormData     fdlReplacedata, fdReplacedata;
 
 
-    public JobEntryMysqlBulkLoadDialog(Shell parent, JobEntryMysqlBulkLoad jobEntry, JobMeta jobMeta)
-    {
-        super(parent, SWT.NONE);
-        props = Props.getInstance();
-        this.jobEntry = jobEntry;
-        this.jobMeta = jobMeta;
+	public JobEntryMysqlBulkLoadDialog(Shell parent, JobEntryMysqlBulkLoad jobEntry, JobMeta jobMeta)
+	{
+		super(parent, SWT.NONE);
+		props = Props.getInstance();
+		this.jobEntry = jobEntry;
+		this.jobMeta = jobMeta;
 
-        if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobMysqlBulkLoad.Name.Default"));
-    }
+		if (this.jobEntry.getName() == null)
+			this.jobEntry.setName(Messages.getString("JobMysqlBulkLoad.Name.Default"));
+	}
 
-    public JobEntryInterface open()
-    {
-        Shell parent = getParent();
-        Display display = parent.getDisplay();
+	public JobEntryInterface open()
+	{
+		Shell parent = getParent();
+		Display display = parent.getDisplay();
 
-        shell = new Shell(parent, props.getJobsDialogStyle());
-        props.setLook(shell);
-        JobDialog.setShellImage(shell, jobEntry);
+		shell = new Shell(parent, props.getJobsDialogStyle());
+		props.setLook(shell);
+		JobDialog.setShellImage(shell, jobEntry);
 
-        ModifyListener lsMod = new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                jobEntry.setChanged();
-            }
-        };
-        changed = jobEntry.hasChanged();
+		ModifyListener lsMod = new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		};
+		changed = jobEntry.hasChanged();
 
-        FormLayout formLayout = new FormLayout();
-        formLayout.marginWidth = Const.FORM_MARGIN;
-        formLayout.marginHeight = Const.FORM_MARGIN;
+		FormLayout formLayout = new FormLayout();
+		formLayout.marginWidth = Const.FORM_MARGIN;
+		formLayout.marginHeight = Const.FORM_MARGIN;
 
-        shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobMysqlBulkLoad.Title"));
+		shell.setLayout(formLayout);
+		shell.setText(Messages.getString("JobMysqlBulkLoad.Title"));
 
-        int middle = props.getMiddlePct();
-        int margin = Const.MARGIN;
+		int middle = props.getMiddlePct();
+		int margin = Const.MARGIN;
 
-        // Filename line
-        wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobMysqlBulkLoad.Name.Label"));
-        props.setLook(wlName);
-        fdlName = new FormData();
-        fdlName.left = new FormAttachment(0, 0);
-        fdlName.right = new FormAttachment(middle, 0);
-        fdlName.top = new FormAttachment(0, margin);
-        wlName.setLayoutData(fdlName);
-        wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wName);
-        wName.addModifyListener(lsMod);
-        fdName = new FormData();
-        fdName.left = new FormAttachment(middle, 0);
-        fdName.top = new FormAttachment(0, margin);
-        fdName.right = new FormAttachment(100, 0);
-        wName.setLayoutData(fdName);
+		// Filename line
+		wlName = new Label(shell, SWT.RIGHT);
+		wlName.setText(Messages.getString("JobMysqlBulkLoad.Name.Label"));
+		props.setLook(wlName);
+		fdlName = new FormData();
+		fdlName.left = new FormAttachment(0, 0);
+		fdlName.right = new FormAttachment(middle, 0);
+		fdlName.top = new FormAttachment(0, margin);
+		wlName.setLayoutData(fdlName);
+		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wName);
+		wName.addModifyListener(lsMod);
+		fdName = new FormData();
+		fdName.left = new FormAttachment(middle, 0);
+		fdName.top = new FormAttachment(0, margin);
+		fdName.right = new FormAttachment(100, 0);
+		wName.setLayoutData(fdName);
 
-        // Connection line
-        wlConnection = new Label(shell, SWT.RIGHT);
-        wlConnection.setText(Messages.getString("JobMysqlBulkLoad.Connection.Label"));
-        props.setLook(wlConnection);
-        fdlConnection = new FormData();
-        fdlConnection.left = new FormAttachment(0, 0);
-        fdlConnection.top = new FormAttachment(wName, margin);
-        fdlConnection.right = new FormAttachment(middle, -margin);
-        wlConnection.setLayoutData(fdlConnection);
+		// Connection line
+		wlConnection = new Label(shell, SWT.RIGHT);
+		wlConnection.setText(Messages.getString("JobMysqlBulkLoad.Connection.Label"));
+		props.setLook(wlConnection);
+		fdlConnection = new FormData();
+		fdlConnection.left = new FormAttachment(0, 0);
+		fdlConnection.top = new FormAttachment(wName, margin);
+		fdlConnection.right = new FormAttachment(middle, -margin);
+		wlConnection.setLayoutData(fdlConnection);
 
-        wbConnection = new Button(shell, SWT.PUSH);
-        wbConnection.setText(Messages.getString("System.Button.New") + "...");
-        wbConnection.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                DatabaseMeta databaseMeta = new DatabaseMeta();
-                DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-                if (cid.open() != null)
-                {
-                    jobMeta.addDatabase(databaseMeta);
+		wbConnection = new Button(shell, SWT.PUSH);
+		wbConnection.setText(Messages.getString("System.Button.New") + "...");
+		wbConnection.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				DatabaseMeta databaseMeta = new DatabaseMeta();
+				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+				if (cid.open() != null)
+				{
+					jobMeta.addDatabase(databaseMeta);
 
-                    // SB: Maybe do the same her as in BaseStepDialog: remove
-                    // all db connections and add them again.
-                    wConnection.add(databaseMeta.getName());
-                    wConnection.select(wConnection.getItemCount() - 1);
-                }
-            }
-        });
-        fdbConnection = new FormData();
-        fdbConnection.right = new FormAttachment(100, 0);
-        fdbConnection.top = new FormAttachment(wName, margin);
-        fdbConnection.height = 20;
-        wbConnection.setLayoutData(fdbConnection);
+					// SB: Maybe do the same her as in BaseStepDialog: remove
+					// all db connections and add them again.
+					wConnection.add(databaseMeta.getName());
+					wConnection.select(wConnection.getItemCount() - 1);
+				}
+			}
+		});
+		fdbConnection = new FormData();
+		fdbConnection.right = new FormAttachment(100, 0);
+		fdbConnection.top = new FormAttachment(wName, margin);
+		fdbConnection.height = 20;
+		wbConnection.setLayoutData(fdbConnection);
 
-        wConnection = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-        props.setLook(wConnection);
-        for (int i = 0; i < jobMeta.nrDatabases(); i++)
-        {
-            DatabaseMeta ci = jobMeta.getDatabase(i);
-            wConnection.add(ci.getName());
-        }
-        wConnection.select(0);
-        wConnection.addModifyListener(lsMod);
-        fdConnection = new FormData();
-        fdConnection.left = new FormAttachment(middle, 0);
-        fdConnection.top = new FormAttachment(wName, margin);
-        fdConnection.right = new FormAttachment(wbConnection, -margin);
-        wConnection.setLayoutData(fdConnection);
+		wConnection = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+		props.setLook(wConnection);
+		for (int i = 0; i < jobMeta.nrDatabases(); i++)
+		{
+			DatabaseMeta ci = jobMeta.getDatabase(i);
+			wConnection.add(ci.getName());
+		}
+		wConnection.select(0);
+		wConnection.addModifyListener(lsMod);
+		fdConnection = new FormData();
+		fdConnection.left = new FormAttachment(middle, 0);
+		fdConnection.top = new FormAttachment(wName, margin);
+		fdConnection.right = new FormAttachment(wbConnection, -margin);
+		wConnection.setLayoutData(fdConnection);
 
-        // Table name line
-        wlTablename = new Label(shell, SWT.RIGHT);
-        wlTablename.setText(Messages.getString("JobMysqlBulkLoad.Tablename.Label"));
-        props.setLook(wlTablename);
-        fdlTablename = new FormData();
-        fdlTablename.left = new FormAttachment(0, 0);
-        fdlTablename.right = new FormAttachment(middle, 0);
-        fdlTablename.top = new FormAttachment(wConnection, margin);
-        wlTablename.setLayoutData(fdlTablename);
+		// Table name line
+		wlTablename = new Label(shell, SWT.RIGHT);
+		wlTablename.setText(Messages.getString("JobMysqlBulkLoad.Tablename.Label"));
+		props.setLook(wlTablename);
+		fdlTablename = new FormData();
+		fdlTablename.left = new FormAttachment(0, 0);
+		fdlTablename.right = new FormAttachment(middle, 0);
+		fdlTablename.top = new FormAttachment(wConnection, margin);
+		wlTablename.setLayoutData(fdlTablename);
 
-        wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wTablename);
-        wTablename.addModifyListener(lsMod);
-        fdTablename = new FormData();
-        fdTablename.left = new FormAttachment(middle, 0);
-        fdTablename.top = new FormAttachment(wConnection, margin);
-        fdTablename.right = new FormAttachment(100, 0);
-        wTablename.setLayoutData(fdTablename);
+		wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wTablename);
+		wTablename.addModifyListener(lsMod);
+		fdTablename = new FormData();
+		fdTablename.left = new FormAttachment(middle, 0);
+		fdTablename.top = new FormAttachment(wConnection, margin);
+		fdTablename.right = new FormAttachment(100, 0);
+		wTablename.setLayoutData(fdTablename);
 
 
 
@@ -334,6 +341,32 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		});
 
 
+		//Local
+		wlLocalInfile = new Label(shell, SWT.RIGHT);
+		wlLocalInfile.setText(Messages.getString("JobMysqlBulkLoad.LocalInfile.Label"));
+		props.setLook(wlLocalInfile);
+		fdlLocalInfile = new FormData();
+		fdlLocalInfile.left = new FormAttachment(0, 0);
+		fdlLocalInfile.top = new FormAttachment(wFilename, margin);
+		fdlLocalInfile.right = new FormAttachment(middle, -margin);
+		wlLocalInfile.setLayoutData(fdlLocalInfile);
+		wLocalInfile = new Button(shell, SWT.CHECK);
+		props.setLook(wLocalInfile);
+		wLocalInfile.setToolTipText(Messages.getString("JobMysqlBulkLoad.LocalInfile.Tooltip"));
+		fdLocalInfile = new FormData();
+		fdLocalInfile.left = new FormAttachment(middle, 0);
+		fdLocalInfile.top = new FormAttachment(wFilename, margin);
+		fdLocalInfile.right = new FormAttachment(100, 0);
+		wLocalInfile.setLayoutData(fdLocalInfile);
+		wLocalInfile.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+
+
 
 		// Separator
 		wlSeparator = new Label(shell, SWT.RIGHT);
@@ -375,9 +408,6 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdListattribut.top = new FormAttachment(wSeparator, margin);
 		fdListattribut.right = new FormAttachment(100, 0);
 		wListattribut.setLayoutData(fdListattribut);
-
-
-
 
 
 
@@ -434,93 +464,93 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 
 
 
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        FormData fd = new FormData();
-        fd.right = new FormAttachment(50, -10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wOK.setLayoutData(fd);
+		wOK = new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK"));
+		FormData fd = new FormData();
+		fd.right = new FormAttachment(50, -10);
+		fd.bottom = new FormAttachment(100, 0);
+		fd.width = 100;
+		wOK.setLayoutData(fd);
 
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
-        fd = new FormData();
-        fd.left = new FormAttachment(50, 10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wCancel.setLayoutData(fd);
+		wCancel = new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		fd = new FormData();
+		fd.left = new FormAttachment(50, 10);
+		fd.bottom = new FormAttachment(100, 0);
+		fd.width = 100;
+		wCancel.setLayoutData(fd);
 
-        // Add listeners
-        lsCancel = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                cancel();
-            }
-        };
-        lsOK = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                ok();
-            }
-        };
+		// Add listeners
+		lsCancel = new Listener()
+		{
+			public void handleEvent(Event e)
+			{
+				cancel();
+			}
+		};
+		lsOK = new Listener()
+		{
+			public void handleEvent(Event e)
+			{
+				ok();
+			}
+		};
 
-        wCancel.addListener(SWT.Selection, lsCancel);
-        wOK.addListener(SWT.Selection, lsOK);
+		wCancel.addListener(SWT.Selection, lsCancel);
+		wOK.addListener(SWT.Selection, lsOK);
 
-        lsDef = new SelectionAdapter()
-        {
-            public void widgetDefaultSelected(SelectionEvent e)
-            {
-                ok();
-            }
-        };
+		lsDef = new SelectionAdapter()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				ok();
+			}
+		};
 
-        wName.addSelectionListener(lsDef);
-        wTablename.addSelectionListener(lsDef);
+		wName.addSelectionListener(lsDef);
+		wTablename.addSelectionListener(lsDef);
 
-        // Detect X or ALT-F4 or something that kills this window...
-        shell.addShellListener(new ShellAdapter()
-        {
-            public void shellClosed(ShellEvent e)
-            {
-                cancel();
-            }
-        });
+		// Detect X or ALT-F4 or something that kills this window...
+		shell.addShellListener(new ShellAdapter()
+		{
+			public void shellClosed(ShellEvent e)
+			{
+				cancel();
+			}
+		});
 
-        getData();
+		getData();
 
-        BaseStepDialog.setSize(shell);
+		BaseStepDialog.setSize(shell);
 
-        shell.open();
-        props.setDialogSize(shell, "JobMysqlBulkLoadDialogSize");
-        while (!shell.isDisposed())
-        {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        return jobEntry;
-    }
+		shell.open();
+		props.setDialogSize(shell, "JobMysqlBulkLoadDialogSize");
+		while (!shell.isDisposed())
+		{
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		return jobEntry;
+	}
 
-    public void dispose()
-    {
-        WindowProperty winprop = new WindowProperty(shell);
-        props.setScreen(winprop);
-        shell.dispose();
-    }
+	public void dispose()
+	{
+		WindowProperty winprop = new WindowProperty(shell);
+		props.setScreen(winprop);
+		shell.dispose();
+	}
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-        // System.out.println("evaluates: "+jobentry.evaluates());
+	/**
+	 * Copy information from the meta-data input to the dialog fields.
+	 */
+	public void getData()
+	{
+		// System.out.println("evaluates: "+jobentry.evaluates());
 
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        if (jobEntry.getTablename() != null)
-            wTablename.setText(jobEntry.getTablename());
+		if (jobEntry.getName() != null)
+			wName.setText(jobEntry.getName());
+		if (jobEntry.getTablename() != null)
+			wTablename.setText(jobEntry.getTablename());
 		if (jobEntry.getFilename() != null)
 			wFilename.setText(jobEntry.getFilename());
 		if (jobEntry.getSeparator() != null)
@@ -530,11 +560,13 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		
 		wReplacedata.setSelection(jobEntry.isReplacedata());
 		
+		wLocalInfile.setSelection(jobEntry.isLocalInfile());
+		
 
 		if (jobEntry.getIgnorelines() != null)
 		{
 
-				wIgnorelines.setText(jobEntry.getIgnorelines());
+			wIgnorelines.setText(jobEntry.getIgnorelines());
 
 		}
 		else
@@ -547,34 +579,37 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		
 		
 		if (jobEntry.getDatabase() != null)
-        {
-            wConnection.setText(jobEntry.getDatabase().getName());
-        }
-        wName.selectAll();
-    }
+		{
+			wConnection.setText(jobEntry.getDatabase().getName());
+		}
+		wName.selectAll();
+	}
 
-    private void cancel()
-    {
-        jobEntry.setChanged(changed);
-        jobEntry = null;
-        dispose();
-    }
+	private void cancel()
+	{
+		jobEntry.setChanged(changed);
+		jobEntry = null;
+		dispose();
+	}
 
-    private void ok()
-    {
-        jobEntry.setName(wName.getText());
-        jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
-        jobEntry.setTablename(wTablename.getText());
+	private void ok()
+	{
+		jobEntry.setName(wName.getText());
+		jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
+		jobEntry.setTablename(wTablename.getText());
 		jobEntry.setFilename(wFilename.getText());
 		jobEntry.setSeparator(wSeparator.getText());
 		jobEntry.setReplacedata(wReplacedata.getSelection());
 		jobEntry.setIgnorelines(wIgnorelines.getText());
 		jobEntry.setListattribut(wListattribut.getText());
-        dispose();
-    }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
+		jobEntry.setLocalInfile(wLocalInfile.getSelection());
+
+		dispose();
+	}
+
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
 }

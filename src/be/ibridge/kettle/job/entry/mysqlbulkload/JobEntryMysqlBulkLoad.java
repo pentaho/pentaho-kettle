@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.mysqlbulkload;
+import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Shell;
@@ -52,18 +53,20 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private String ignorelines;
 	private boolean replacedata;
 	private String listattribut;
+	private boolean localinfile;
 
 	private DatabaseMeta connection;
 
 	public JobEntryMysqlBulkLoad(String n)
 	{
-	    super(n, "");
+		super(n, "");
 		tablename=null;
 		filename=null;
 		separator=null;
 		replacedata=true;
 		ignorelines = "0";
 		listattribut=null;
+		localinfile=true;
 		connection=null;
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_MYSQL_BULK_LOAD);
@@ -79,15 +82,15 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		super(jeb);
 	}
     
-    public Object clone()
-    {
-        JobEntryMysqlBulkLoad je = (JobEntryMysqlBulkLoad) super.clone();
-        return je;
-    }
+	public Object clone()
+	{
+		JobEntryMysqlBulkLoad je = (JobEntryMysqlBulkLoad) super.clone();
+		return je;
+	}
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer(200);
+		StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
 		
@@ -97,6 +100,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("replacedata",  replacedata));
 		retval.append("      ").append(XMLHandler.addTagValue("ignorelines",  ignorelines));
 		retval.append("      ").append(XMLHandler.addTagValue("listattribut",  listattribut));
+
+		retval.append("      ").append(XMLHandler.addTagValue("localinfile",  localinfile));
 
 		
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
@@ -116,6 +121,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			replacedata = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacedata"));
 			ignorelines     = XMLHandler.getTagValue(entrynode, "ignorelines");
 			listattribut     = XMLHandler.getTagValue(entrynode, "listattribut");
+
+			localinfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
+
 
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
@@ -139,6 +147,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			replacedata = rep.getJobEntryAttributeBoolean(id_jobentry, "replacedata");
 			ignorelines  = rep.getJobEntryAttributeString(id_jobentry, "ignorelines");
 			listattribut  = rep.getJobEntryAttributeString(id_jobentry, "listattribut");
+
+			localinfile=rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
 
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
@@ -170,14 +180,17 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "separator", separator);
 			rep.saveJobEntryAttribute(id_job, getID(), "replacedata", replacedata);
 			rep.saveJobEntryAttribute(id_job, getID(), "ignorelines", ignorelines);
-			rep.saveJobEntryAttribute(id_job, getID(), "listattribut", listattribut);		
+			rep.saveJobEntryAttribute(id_job, getID(), "listattribut", listattribut);	
+	
+			rep.saveJobEntryAttribute(id_job, getID(), "localinfile", localinfile);
+			
 
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'table exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
@@ -217,32 +230,39 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		String ReplaceIgnore;
 		String IgnoreNbrLignes;
 		String ListOfColumn="";
+		String LocalExec="";
 		LogWriter log = LogWriter.getInstance();
-
+		
 		Result result = new Result(nr);
 		result.setResult(false);
-		
-		if (connection!=null)
-		{
-			Database db = new Database(connection);
-			try
-			{
-				db.connect();
-                String realTablename = StringUtil.environmentSubstitute(tablename);
-				if (db.checkTableExists(realTablename))
-				{
-					// The table existe, we can continue
-					log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
 
-					// Let's check now the filename ...
-					if (filename!=null)
+		// Let's check  the filename ...
+		if (filename!=null)
+		{
+			// User has specified a file, We can continue ...
+			String realFilename = getRealFilename(); 
+			File file = new File(realFilename);
+			if ((file.exists() && file.canRead()) ||  isLocalInfile()==false)
+			{
+				// User has specified an existing file, We can continue ...
+				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+
+
+				if (connection!=null)
+				{
+					// User has specified a connection, We can continue ...
+					Database db = new Database(connection);
+					try
 					{
-						String realFilename = getRealFilename(); 
-						// File file = new File(realFilename);
-						if (1 == 1 ) //file.exists() && file.canRead())
+						db.connect();
+						// Get tablename
+						String realTablename = StringUtil.environmentSubstitute(tablename);
+
+						if (db.checkTableExists(realTablename))
 						{
-							// File exist, we can continue ...
-							log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+							// The table existe, We can continue ...
+							log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
+
 
 							// Set the REPLACE or IGNORE 
 							if (isReplacedata())
@@ -271,80 +291,101 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								
 							}
 							
-				
+
+							// Local File execution
+							if (isLocalInfile())
+							{
+								LocalExec = " LOCAL ";
+
+							}
+						
 							// Let's built Bulk Load String
-							String SQLBULKLOAD="LOAD DATA INFILE '" + 
-								realFilename + 	"' " + ReplaceIgnore + 
-								" INTO TABLE " + realTablename + " FIELDS TERMINATED BY  '" + 
-								getRealSeparator() + "' " + IgnoreNbrLignes + " " + ListOfColumn + ";";
+							String SQLBULKLOAD="LOAD DATA " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore + 
+								" INTO TABLE " + realTablename + " FIELDS TERMINATED BY  '" + getRealSeparator() + "' " + IgnoreNbrLignes + " " + ListOfColumn + ";";
+
 
 							try
 							{
+								// Run the SQL
 								db.execStatements(SQLBULKLOAD);
+
+
+								// Everything is OK...we can deconnect now
+								db.disconnect();
+								result.setResult(true);
 
 							
 							}
 							catch(KettleDatabaseException je)
 							{
+								db.disconnect();
 								result.setNrErrors(1);
 								log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
 							}
-							finally
-							{
-								db.disconnect();
-							}	
-
-								db.disconnect();
-								result.setResult(true);
-
+							
 
 
 						}
 						else
 						{
+							// Of course, the table should have been created already before the bulk load operation
+							db.disconnect();
 							result.setNrErrors(1);
-							log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
+							log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 						}
+
+
 					}
-					else
+					catch(KettleDatabaseException dbe)
 					{
+						db.disconnect();
 						result.setNrErrors(1);
-						log.logError(toString(), "No filename is defined.");
+						log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
 					}
+					
 
 
-					//result.setResult(true);
 				}
+
 				else
 				{
-					// Of course, the table should have been created already before the bulk load operation
-					log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
+					// No database connection is defined
+					result.setNrErrors(1);
+					log.logError(toString(),  Messages.getString("JobMysqlBulkLoad.Nodatabase.Label"));
 				}
-				db.disconnect();
+
+
 			}
-			catch(KettleDatabaseException dbe)
+			else
 			{
+				// the file doesn't exist
 				result.setNrErrors(1);
-				log.logError(toString(), "An error occurred executing this step: "+dbe.getMessage());
+				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
+
 			}
+
+
 		}
 		else
 		{
+			// No file was specified
 			result.setNrErrors(1);
-			log.logError(toString(), "No database connection is defined.");
+			log.logError(toString(), Messages.getString("JobMysqlBulkLoad.Nofilename.Label"));
 		}
-		
+
 		return result;
+
 	}
 
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryMysqlBulkLoadDialog(shell,this,jobMeta);
-    }
+	public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
+	{
+		return new JobEntryMysqlBulkLoadDialog(shell,this,jobMeta);
+	}
     
-    public DatabaseMeta[] getUsedDatabaseConnections()
-    {
-        return new DatabaseMeta[] { connection, };
-    }
+	public DatabaseMeta[] getUsedDatabaseConnections()
+	{
+		return new DatabaseMeta[] { connection, };
+	}
 
 	public boolean isReplacedata() 
 	{
@@ -355,6 +396,19 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		this.replacedata = replacedata;
 	}
+
+
+	public void setLocalInfile(boolean localinfile) 
+	{
+		this.localinfile = localinfile;
+	}
+
+
+	public boolean isLocalInfile() 
+	{
+		return localinfile;
+	}
+
 
 	public void setFilename(String filename)
 	{
@@ -368,7 +422,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealFilename()
 	{
-		return StringUtil.environmentSubstitute(getFilename());
+ 
+		String RealFile= StringUtil.environmentSubstitute(getFilename());
+		return RealFile.replace('\\','/');
 	}
 	public void setSeparator(String separator)
 	{
@@ -414,8 +470,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		return StringUtil.environmentSubstitute(getListattribut());
 	}
-
-
 
 
 	
