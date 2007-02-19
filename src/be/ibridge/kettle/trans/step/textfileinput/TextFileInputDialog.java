@@ -2824,7 +2824,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setCurrencySymbol(f.getCurrencySymbol());
 			field.setRepeated(f.isRepeated());
 			field.setNullString(f.getNullString());
-			
+            
 			fields.add(field);
 			
 			prevEnd = field.getPosition()+field.getLength();

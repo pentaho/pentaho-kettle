@@ -143,6 +143,7 @@ public class TextFileCSVImportProgressDialog
         DecimalFormat df = (DecimalFormat)nf;
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         SimpleDateFormat daf  = new SimpleDateFormat();
+        daf.setLenient(false);
         DateFormatSymbols dafs = new DateFormatSymbols();
 
         int nrfields = meta.getInputFields().length;
