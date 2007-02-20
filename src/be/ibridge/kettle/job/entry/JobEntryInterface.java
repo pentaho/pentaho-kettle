@@ -35,6 +35,7 @@ import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.mysqlbulkload.JobEntryMysqlBulkLoad;
+import be.ibridge.kettle.job.entry.msgboxinfo.JobEntryMsgBoxInfo;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
 import be.ibridge.kettle.job.entry.sftpput.JobEntrySFTPPUT;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
@@ -75,6 +76,7 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_SFTPPUT        = 16;
     public static final int TYPE_JOBENTRY_FILE_COMPARE   = 17;
     public static final int TYPE_JOBENTRY_MYSQL_BULK_LOAD= 18;
+	public static final int TYPE_JOBENTRY_MSGBOX_INFO= 19;
     
 	public final static String typeCode[] =
 		{
@@ -97,6 +99,7 @@ public interface JobEntryInterface
             "SFTPPUT",
             "FILE_COMPARE",
             "MYSQL_BULK_LOAD",
+			"MSGBOX_INFO",
 		};
 
 	public final static String typeDesc[] =
@@ -120,6 +123,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.SFTPPut.TypeDesc"),            
             Messages.getString("JobEntry.FileCompare.TypeDesc"),
             Messages.getString("JobEntry.MysqlBulkLoad.TypeDesc"),
+			Messages.getString("JobEntry.MsgBoxInfo.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -143,6 +147,7 @@ public interface JobEntryInterface
             "SFP.png",                        
             "BFC.png",
             "MBL.png",
+			"INF.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -166,6 +171,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.SFTPPut.Tooltip"),
             Messages.getString("JobEntry.FileCompare.Tooltip"),
             Messages.getString("JobEntry.MysqlBulkLoad.Tooltip"),
+		    Messages.getString("JobEntry.MsgBoxInfo.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -189,6 +195,7 @@ public interface JobEntryInterface
             JobEntrySFTPPUT.class,
             JobEntryFileCompare.class,
             JobEntryMysqlBulkLoad.class,
+			JobEntryMsgBoxInfo.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
