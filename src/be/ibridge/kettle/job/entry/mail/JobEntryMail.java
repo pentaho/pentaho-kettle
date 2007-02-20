@@ -333,10 +333,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 	}
 	public String getDestinationCc()
 	{
-		return destinationCc;
+			return destinationCc;
 	}
 	public String getDestinationBCc()
 	{
+	
 		return destinationBCc;
 	}
 	public void setReplyAddress(String reply)
@@ -594,20 +595,26 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             
 		    msg.setRecipients(Message.RecipientType.TO, address);
 		
+			if (destinationCc != null)
+			{
+				// Split the mail-address Cc: space separated
+				String destinationsCc[] = StringUtil.environmentSubstitute(destinationCc).split(" ");
+				InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
+				for (int i=0;i<destinationsCc.length;i++) addressCc[i] = new InternetAddress(destinationsCc[i]);
+	            
+				msg.setRecipients(Message.RecipientType.CC, addressCc);
+			}
 
-			// Split the mail-address Cc: space separated
-			String destinationsCc[] = StringUtil.environmentSubstitute(destinationCc).split(" ");
-			InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
-			for (int i=0;i<destinationsCc.length;i++) addressCc[i] = new InternetAddress(destinationsCc[i]);
-            
-			msg.setRecipients(Message.RecipientType.CC, addressCc);
+			if (destinationBCc != null)
+			{
+				// Split the mail-address BCc: space separated
+				String destinationsBCc[] = StringUtil.environmentSubstitute(destinationBCc).split(" ");
+				InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
+				for (int i=0;i<destinationsBCc.length;i++) addressBCc[i] = new InternetAddress(destinationsBCc[i]);
+	            
+				msg.setRecipients(Message.RecipientType.BCC, addressBCc);
+			}
 
-			// Split the mail-address BCc: space separated
-			String destinationsBCc[] = StringUtil.environmentSubstitute(destinationBCc).split(" ");
-			InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
-			for (int i=0;i<destinationsBCc.length;i++) addressBCc[i] = new InternetAddress(destinationsBCc[i]);
-            
-			msg.setRecipients(Message.RecipientType.BCC, addressBCc);
 
 		
 			msg.setSubject(StringUtil.environmentSubstitute(subject));
