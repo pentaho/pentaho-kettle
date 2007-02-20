@@ -15,10 +15,11 @@
 
 package be.ibridge.kettle.job;
 
+
 /**
  * Contains the description of a job-entry of a job-entry plugin, what jars to load, the icon, etc.
  *  
- * @since 2005-mai-09
+ * @since 2005-may-09
  * @author Matt
  *
  */

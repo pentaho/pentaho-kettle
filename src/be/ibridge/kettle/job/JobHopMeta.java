@@ -36,12 +36,9 @@ import be.ibridge.kettle.repository.Repository;
  * @since 19-06-2003
  *
  */
-
 public class JobHopMeta implements Cloneable, XMLInterface
 {
-	//public String from_step, to_step;
 	public JobEntryCopy from_entry, to_entry;
-	//public int from_nr, to_nr;
 	private boolean enabled;
 	private boolean split;
 	private boolean evaluation;
@@ -101,17 +98,17 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
-		retval.append("    <hop>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("from",          from_entry!=null?from_entry.getName():""));
-		retval.append("      "+XMLHandler.addTagValue("to",            to_entry!=null?to_entry.getName():""));
-		retval.append("      "+XMLHandler.addTagValue("from_nr",       from_entry.getNr()));
-		retval.append("      "+XMLHandler.addTagValue("to_nr",         to_entry.getNr()));
-		retval.append("      "+XMLHandler.addTagValue("enabled",       enabled));
-		retval.append("      "+XMLHandler.addTagValue("evaluation",    evaluation));
-		retval.append("      "+XMLHandler.addTagValue("unconditional", unconditional));
-		retval.append("      </hop>"+Const.CR);
+		retval.append("    <hop>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("from",          from_entry!=null?from_entry.getName():""));
+		retval.append("      ").append(XMLHandler.addTagValue("to",            to_entry!=null?to_entry.getName():""));
+		retval.append("      ").append(XMLHandler.addTagValue("from_nr",       from_entry.getNr()));
+		retval.append("      ").append(XMLHandler.addTagValue("to_nr",         to_entry.getNr()));
+		retval.append("      ").append(XMLHandler.addTagValue("enabled",       enabled));
+		retval.append("      ").append(XMLHandler.addTagValue("evaluation",    evaluation));
+		retval.append("      ").append(XMLHandler.addTagValue("unconditional", unconditional));
+		retval.append("    </hop>"+Const.CR);
 		
 		return retval.toString();
 	}
@@ -140,7 +137,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job hop with id_job_hop="+id_job_hop, dbe);
+			throw new KettleException("Unable to load job hop with id_job_hop = "+id_job_hop, dbe);
 		}
 	}
 

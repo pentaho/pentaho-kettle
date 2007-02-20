@@ -467,14 +467,14 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         if (Props.isInitialized()) props=Props.getInstance();
 
         DatabaseMeta ci = getLogConnection();
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(500);
 
-        retval.append("<"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
+        retval.append("<").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
         
-        retval.append("  " + XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("  " + XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("  " + XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("  " + XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("  ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         // Save the database connections...
         for (int i = 0; i < nrDatabases(); i++)
@@ -493,40 +493,40 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             }
         }
         
-        retval.append("  " + XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("  " + XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("  ").append(XMLHandler.addTagValue("logconnection", ci == null ? "" : ci.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("  ").append(XMLHandler.addTagValue("logtable", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("   " + XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("   " + XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("   ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("   " + XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
+        retval.append("   ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
 
-        retval.append("  <entries>" + Const.CR); //$NON-NLS-1$
+        retval.append("  <entries>").append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrJobEntries(); i++)
         {
             JobEntryCopy jge = getJobEntry(i);
             retval.append(jge.getXML());
         }
-        retval.append("    </entries>" + Const.CR); //$NON-NLS-1$
+        retval.append("  </entries>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("  <hops>" + Const.CR); //$NON-NLS-1$
+        retval.append("  <hops>").append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrJobHops(); i++)
         {
             JobHopMeta hi = getJobHop(i);
             retval.append(hi.getXML());
         }
-        retval.append("    </hops>" + Const.CR); //$NON-NLS-1$
+        retval.append("  </hops>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("  <notepads>" + Const.CR); //$NON-NLS-1$
+        retval.append("  <notepads>").append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrNotes(); i++)
         {
             NotePadMeta ni = getNote(i);
             retval.append(ni.getXML());
         }
-        retval.append("    </notepads>" + Const.CR); //$NON-NLS-1$
+        retval.append("  </notepads>").append(Const.CR); //$NON-NLS-1$
 
-        retval.append("  </"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
+        retval.append("</").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -696,7 +696,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                         {
                             je.setEntry(prev.getEntry());
 
-                            // See if entry.5 already exists...
+                            // See if entry already exists...
                             prev = findJobEntry(je.getName(), je.getNr(), true);
                             if (prev != null) // remove the old one!
                             {
