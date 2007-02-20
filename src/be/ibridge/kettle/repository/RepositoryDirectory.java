@@ -360,23 +360,23 @@ public class RepositoryDirectory
 	public String getXML(int level)
 	{
 		String spaces = Const.rightPad(" ", level);
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 		
-		retval.append(spaces+"<repdir>"+Const.CR);
-		retval.append(spaces+"  "+XMLHandler.addTagValue("name", getDirectoryName() ));
+		retval.append(spaces).append("<repdir>").append(Const.CR);
+		retval.append(spaces).append("  ").append(XMLHandler.addTagValue("name", getDirectoryName() ));
 		
 		if (getNrSubdirectories()>0)
 		{
-			retval.append(spaces+"    <subdirs>"+Const.CR);
+			retval.append(spaces).append("    <subdirs>").append(Const.CR);
 			for (int i=0;i<getNrSubdirectories();i++)
 			{
 				RepositoryDirectory subdir = getSubdirectory(i);
 				retval.append(subdir.getXML(level+1));
 			}
-			retval.append(spaces+"      </subdirs>"+Const.CR);
+			retval.append(spaces).append("    </subdirs>").append(Const.CR);
 		}
 		
-		retval.append(spaces+"  </repdir>"+Const.CR);
+		retval.append(spaces).append("</repdir>").append(Const.CR);
         
 		return retval.toString();
 	}

@@ -23,13 +23,9 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 
-
-
 /*
- * Created on 31-mrt-2004
- *
+ * Created on 31-mar-2004
  */
-
 public class RepositoryMeta 
 {
 	private String       name;
@@ -112,13 +108,13 @@ public class RepositoryMeta
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(100);
 		
-		retval.append("  <repository>"+Const.CR);
-		retval.append("    "+XMLHandler.addTagValue("name",        name));
-		retval.append("    "+XMLHandler.addTagValue("description", description));
-		retval.append("    "+XMLHandler.addTagValue("connection",  connection!=null?connection.getName():null));
-		retval.append("    </repository>"+Const.CR);
+		retval.append("  <repository>").append(Const.CR);
+		retval.append("    ").append(XMLHandler.addTagValue("name",        name));
+		retval.append("    ").append(XMLHandler.addTagValue("description", description));
+		retval.append("    ").append(XMLHandler.addTagValue("connection",  connection!=null?connection.getName():null));
+		retval.append("  </repository>").append(Const.CR);
         
 		return retval.toString();
 	}
