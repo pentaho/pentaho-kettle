@@ -125,7 +125,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 			localinfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
 			
-			prorityvalue     = Integer.parseInt(XMLHandler.getTagValue(entrynode, "prorityvalue"));
+			prorityvalue     = Const.toInt(XMLHandler.getTagValue(entrynode, "prorityvalue"), -1);
 
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
@@ -152,7 +152,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 			localinfile=rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
 
-			prorityvalue=Integer.parseInt(rep.getJobEntryAttributeString(id_jobentry, "prorityvalue"));
+			prorityvalue=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "prorityvalue"),-1);
 			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)

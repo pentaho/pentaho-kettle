@@ -611,7 +611,14 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 			wListattribut.setText(jobEntry.getListattribut());
 		
      
-		wProrityValue.select(jobEntry.prorityvalue );
+		if (jobEntry.prorityvalue>=0) 
+        {
+            wProrityValue.select(jobEntry.prorityvalue );
+        }
+        else
+        {
+            wProrityValue.select(0); // NORMAL priority
+        }
 
 	
 		
