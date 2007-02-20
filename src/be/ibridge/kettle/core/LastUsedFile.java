@@ -6,6 +6,7 @@ public class LastUsedFile
 {
     public static final String FILE_TYPE_TRANSFORMATION = "Trans";
     public static final String FILE_TYPE_JOB            = "Job";
+    public static final String FILE_TYPE_SCHEMA         = "Schema";
     
     private String  fileType;
     private String  filename;
@@ -153,5 +154,10 @@ public class LastUsedFile
     public boolean isJob()
     {
         return FILE_TYPE_JOB.equalsIgnoreCase(fileType);
+    }
+    
+    public boolean isSchema()
+    {
+        return FILE_TYPE_SCHEMA.equalsIgnoreCase(fileType);
     }
 }
