@@ -152,15 +152,22 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	
 			Display display = new Display();
 			Shell shell = new Shell(display);
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+			MessageBox mb = new MessageBox(shell, SWT.OK |SWT.CANCEL | SWT.ICON_INFORMATION );
 			// Set the Body Message
 			mb.setMessage(getRealBodyMessage()+Const.CR);
 			// Set the title Message
 			mb.setText(getRealTitleMessage());
-			mb.open();
+			//mb.open();
 
 
-			return true;
+			if (mb.open() == SWT.OK)
+					
+				return true;
+			else
+				return false;
+
+			
+					
 		}
 		catch(Exception e)
 		{
