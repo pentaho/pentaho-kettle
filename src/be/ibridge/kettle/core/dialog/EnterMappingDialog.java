@@ -123,14 +123,27 @@ public class EnterMappingDialog extends Dialog
      */
     public EnterMappingDialog(Shell parent, String source[], String target[])
     {
+        this(parent, source, target, new ArrayList());
+    }
+
+    /**
+     * Create a new dialog allowing the user to enter a mapping
+     * 
+     * @param parent the parent shell
+     * @param source the source values
+     * @param target the target values
+     * @param mappings the already selected mappings (ArrayList containing <code>SourceToTargetMapping</code>s)
+     */
+    public EnterMappingDialog(Shell parent, String source[], String target[], ArrayList mappings)
+    {
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.sourceList = source;
         this.targetList = target;
 
-        mappings = new ArrayList();
+        this.mappings = mappings;
     }
-
+    
     public ArrayList open()
     {
         Shell parent = getParent();

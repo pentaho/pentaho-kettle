@@ -21,6 +21,9 @@
 
 package be.ibridge.kettle.trans.step.selectvalues;
 
+import java.util.ArrayList;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -47,14 +50,20 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SourceToTargetMapping;
+import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /**
  * Dialog for the Select Values step. 
@@ -81,7 +90,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private TableView    wMeta;
 	private FormData     fdlMeta, fdMeta;
 	
-	private Button       wGetSelect, wGetRemove, wGetMeta;
+	private Button       wGetSelect, wGetRemove, wGetMeta, wDoMapping;
 	private FormData     fdGetSelect, fdGetRemove, fdGetMeta;
 
 	private SelectValuesMeta input;
@@ -192,7 +201,17 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		fdGetSelect.right = new FormAttachment(100, 0);
 		fdGetSelect.top   = new FormAttachment(50, 0);
 		wGetSelect.setLayoutData(fdGetSelect);
-		
+
+		wDoMapping = new Button(wSelectComp, SWT.PUSH);
+		wDoMapping.setText(Messages.getString("SelectValuesDialog.DoMapping.Button")); //$NON-NLS-1$
+
+		wDoMapping.addListener(SWT.Selection, new Listener() { 	public void handleEvent(Event arg0) { generateMappings();}});
+
+		fdGetSelect = new FormData();
+		fdGetSelect.right = new FormAttachment(100, 0);
+		fdGetSelect.top   = new FormAttachment(wGetSelect, 0);
+		wDoMapping.setLayoutData(fdGetSelect);
+
 		fdFields=new FormData();
 		fdFields.left = new FormAttachment(0, 0);
 		fdFields.top  = new FormAttachment(wlFields, margin);
@@ -543,6 +562,119 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		catch(KettleException ke)
 		{
 			new ErrorDialog(shell, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
+	
+	/**
+	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
+	 * EnterMappingDialog with this information. After the user did the 
+	 */
+	private void generateMappings() {
+		if ((wRemove.getItemCount() > 0) || (wMeta.getItemCount() > 0)) {
+			for (int i = 0; i < wRemove.getItemCount(); i++) {
+				String[] item = wRemove.getItem(i);
+				for(String col : item){
+					if (col.length()>0){
+						MessageDialog.openError(shell, 
+								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMetaTitle"),
+								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMeta"));
+						return;
+					}
+				}
+			}
+			for (int i = 0; i < wMeta.getItemCount(); i++) {
+				String[] item = wMeta.getItem(i);
+				for(String col : item){
+					if (col.length()>0){
+						MessageDialog.openError(shell, 
+								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMetaTitle"),
+								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMeta"));
+						return;
+					}
+				}
+			}
+		}
+		Row prevFields = null;
+		Row nextStepRequiredFields = null;
+
+		StepMeta stepMeta = new StepMeta(stepname, input);
+		StepMeta[] nextSteps = transMeta.getNextSteps(stepMeta);
+		if (nextSteps.length == 0 || nextSteps.length > 1) {
+			MessageDialog
+					.openError(shell,
+							Messages.getString("SelectValuesDialog.DoMapping.NoNextStepTitle"),
+							Messages.getString("SelectValuesDialog.DoMapping.NoNextStep"));
+			return;
+		}
+		StepMeta outputStepMeta = nextSteps[0];
+		StepMetaInterface stepMetaInterface = outputStepMeta
+				.getStepMetaInterface();
+		try {
+			prevFields = transMeta.getPrevStepFields(stepname);
+			nextStepRequiredFields = stepMetaInterface.getRequiredFields();
+//			nextFields = stepMetaInterface.getFields(new Row(), outputStepMeta
+//					.getName(), null);
+		} catch (KettleException e) {
+			throw new RuntimeException(e);
+		}
+
+		String[] inputNames = new String[prevFields.size()];
+		for (int i = 0; i < prevFields.size(); i++) {
+			inputNames[i] = prevFields.getValue(i).getName();
+		}
+
+		String[] outputNames = new String[nextStepRequiredFields.size()];
+		for(int i=0; i<nextStepRequiredFields.size(); i++){
+			outputNames[i] = nextStepRequiredFields.getValue(i).getName();
+		}
+		
+		String[] selectName = input.getSelectName();
+		String[] selectRename = input.getSelectRename();
+		ArrayList mappings = new ArrayList();
+		boolean someFieldsNotFound = false;
+		for (int i = 0; i < selectName.length; i++) {
+			int inIndex = prevFields.searchValueIndex(selectName[i]);
+			if (inIndex < 0) {
+				System.err.println("Rejecting mapping selectName="
+						+ selectName[i] + ", selectRename=" + selectRename[i]
+						+ " input field not found");
+				someFieldsNotFound = true;
+				continue;
+			}
+			int outIndex = nextStepRequiredFields.searchValueIndex(selectRename[i]);
+			if (outIndex < 0) {
+				System.err.println("Rejecting mapping selectName="
+						+ selectName[i] + ", selectRename=" + selectRename[i]
+						+ " output field not found");
+				someFieldsNotFound = true;
+				continue;
+			}
+			SourceToTargetMapping mapping = new SourceToTargetMapping(inIndex,
+					outIndex);
+			mappings.add(mapping);
+		}
+		if (someFieldsNotFound){
+			// TODO localization
+			MessageDialog.openWarning(shell,"Warning" , "Some input and/or output fields could not be found that were mapped.");
+		}
+		EnterMappingDialog d = new EnterMappingDialog(SelectValuesDialog.this.shell,inputNames, outputNames, mappings);
+		mappings = d.open();
+
+		// null if the user pressed cancel
+		if (null != mappings) {
+			wFields.table.removeAll();
+			wFields.table.setItemCount(mappings.size());
+			for (int i = 0; i < mappings.size(); i++) {
+				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings
+						.get(i);
+				TableItem item = wFields.table.getItem(i);
+				item.setText(1, inputNames[mapping
+											.getSourcePosition()]);
+				item.setText(2, outputNames[mapping
+											.getTargetPosition()]);
+				item.setText(3, "-1");
+				item.setText(4, "-1");
+			}
 		}
 	}
 }
