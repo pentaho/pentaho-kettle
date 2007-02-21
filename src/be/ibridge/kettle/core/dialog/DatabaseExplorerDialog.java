@@ -108,6 +108,7 @@ public class DatabaseExplorerDialog extends Dialog
     private Button bDDL2;
     private Button bSQL;
     private String activeSchemaTable;
+    private Button bTruncate;
 
     /** @deprecated */
     public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
@@ -369,12 +370,23 @@ public class DatabaseExplorerDialog extends Dialog
         sqlData.top = new FormAttachment(bDDL2, Const.MARGIN);
         bSQL.setLayoutData(sqlData);
 
+        bTruncate  = new Button(buttonsComposite, SWT.PUSH); 
+        bTruncate.setText(Messages.getString("DatabaseExplorerDialog.Menu.Truncate", Const.NVL(activeSchemaTable, "?")));
+        bTruncate.setEnabled(activeSchemaTable!=null);
+        bTruncate.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTruncate(activeSchemaTable); }});
+        FormData truncateData = new FormData();
+        truncateData.left = new FormAttachment(0, 0);
+        truncateData.right = new FormAttachment(100, 0);
+        truncateData.top = new FormAttachment(bSQL, Const.MARGIN*7);
+        bTruncate.setLayoutData(truncateData);
+
         FormData fdComposite = new FormData();
         fdComposite.right = new FormAttachment(100,0);
         fdComposite.top   = new FormAttachment(0, 20);
         buttonsComposite.setLayoutData(fdComposite);        
     }
-    
+
+
     private void refreshButtons(String table)
     {
         activeSchemaTable=table;
@@ -399,6 +411,9 @@ public class DatabaseExplorerDialog extends Dialog
         bSQL.setText(Messages.getString("DatabaseExplorerDialog.Menu.OpenSQL", Const.NVL(table, "?")));
         bSQL.setEnabled(table!=null);
         
+        bTruncate.setText(Messages.getString("DatabaseExplorerDialog.Menu.Truncate", Const.NVL(table, "?")));
+        bTruncate.setEnabled(table!=null);
+
         shell.layout(true, true);
     }
 	
@@ -519,9 +534,12 @@ public class DatabaseExplorerDialog extends Dialog
 					// System.out.println("Selection set on "+ti.getText());
 					wTree.setSelection(new TreeItem[] { ti });
 					wTree.showSelection();
+                    refreshButtons(dbMeta.getQuotedSchemaTableCombination(selectedSchema, selectedTable));
 				}
 				
 				selectedTable=null;
+                
+                
 			}
 			
 			tiTree.setExpanded(true);
@@ -753,6 +771,13 @@ public class DatabaseExplorerDialog extends Dialog
 		SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+tableName);
 		sql.open();
 	}
+    
+    
+    public void getTruncate(String activeSchemaTable)
+    {
+        SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "-- TRUNCATE TABLE "+activeSchemaTable);
+        sql.open();
+    }
 
 	public void dispose()
 	{
