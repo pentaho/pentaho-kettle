@@ -93,6 +93,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Label        wlCommit;
 	private Text         wCommit;
 
+    private Label        wlCacheSize;
+    private Text         wCacheSize;
+
 	private Label        wlTk;
 	private Text         wTk;
 
@@ -315,6 +318,24 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdCommit.right= new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
 
+        // Cache size ...
+        wlCacheSize=new Label(shell, SWT.RIGHT);
+        wlCacheSize.setText(Messages.getString("DimensionLookupDialog.CacheSize.Label")); //$NON-NLS-1$
+        props.setLook(wlCacheSize);
+        FormData fdlCacheSize=new FormData();
+        fdlCacheSize.left = new FormAttachment(0, 0);
+        fdlCacheSize.right= new FormAttachment(middle, -margin);
+        fdlCacheSize.top  = new FormAttachment(wCommit, margin);
+        wlCacheSize.setLayoutData(fdlCacheSize);
+        wCacheSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wCacheSize);
+        wCacheSize.addModifyListener(lsMod);
+        FormData fdCacheSize=new FormData();
+        fdCacheSize.left = new FormAttachment(middle, 0);
+        fdCacheSize.top  = new FormAttachment(wCommit, margin);
+        fdCacheSize.right= new FormAttachment(100, 0);
+        wCacheSize.setLayoutData(fdCacheSize);
+
 		wlTkRename=new Label(shell, SWT.RIGHT);
 
         wTabFolder = new CTabFolder(shell, SWT.BORDER);
@@ -439,7 +460,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wCommit, margin);
+		fdTabFolder.top   = new FormAttachment(wCacheSize, margin);
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(wlTkRename, -2 * margin);		
 		wTabFolder.setLayoutData(fdTabFolder);
@@ -701,6 +722,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wSchema.addSelectionListener( lsDef );
 		wTable.addSelectionListener( lsDef );
 		wCommit.addSelectionListener( lsDef );
+        wCacheSize.addSelectionListener( lsDef );
 		wTk.addSelectionListener( lsDef );
 		wTkRename.addSelectionListener( lsDef );
 		wSeq.addSelectionListener( lsDef );
@@ -939,9 +961,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     	        wSeq.setText(input.getSequenceName());
 			}
 		}
-		
-		
+				
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
+        if (input.getCacheSize()>=0) wCacheSize.setText(""+input.getCacheSize()); //$NON-NLS-1$
 
 		wMinyear.setText(""+input.getMinYear()); //$NON-NLS-1$
 		wMaxyear.setText(""+input.getMaxYear()); //$NON-NLS-1$
@@ -1048,6 +1070,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		in.setUpdate( wUpdate.getSelection() );
 
 		in.setCommitSize( Const.toInt(wCommit.getText(), 0) );
+        in.setCacheSize( Const.toInt(wCacheSize.getText(), -1) );
 		in.setMinYear( Const.toInt(wMinyear.getText(), Const.MIN_YEAR) );
 		in.setMaxYear( Const.toInt(wMaxyear.getText(), Const.MAX_YEAR) );
 	}

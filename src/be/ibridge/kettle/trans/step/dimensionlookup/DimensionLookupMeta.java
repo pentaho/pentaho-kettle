@@ -139,6 +139,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public static String CREATION_METHOD_SEQUENCE = "sequence";
 	public static String CREATION_METHOD_TABLEMAX = "tablemax";    
     
+    /** The size of the cache in ROWS : -1 means: not set, 0 means: cache all */
+    private int                 cacheSize;
+    
 	public DimensionLookupMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -631,6 +634,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			versionField = XMLHandler.getTagValue(fields, "return", "version"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
+            
+            cacheSize = Const.toInt(XMLHandler.getTagValue(stepnode, "cache_size"), -1); //$NON-NLS-1$
 		}
 		catch (Exception e)
 		{
@@ -680,6 +685,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		keyRename = ""; //$NON-NLS-1$
 		autoIncrement = false;
 		versionField = "version"; //$NON-NLS-1$
+        
+        cacheSize = 5000;
 	}
 
 	public Row getFields(Row r, String name, Row info) throws KettleStepException
@@ -775,6 +782,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("        </date>").append(Const.CR); //$NON-NLS-1$
 
 		if (fieldStream != null)
+        {
 			for (int i = 0; i < fieldStream.length; i++)
 			{
 				if (fieldStream[i] != null)
@@ -786,6 +794,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 				}
 			}
+        }
 		retval.append("        <return>").append(Const.CR); //$NON-NLS-1$
 		retval.append("          ").append(XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("          ").append(XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -801,7 +810,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		return retval.toString();
+        retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
@@ -847,6 +858,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			sequenceName = rep.getStepAttributeString(id_step, "sequence"); //$NON-NLS-1$
 			minYear = (int) rep.getStepAttributeInteger(id_step, "min_year"); //$NON-NLS-1$
 			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
+
+            cacheSize = (int) rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
 		}
 		catch (Exception e)
 		{
@@ -894,6 +907,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
             rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
+
+            rep.saveStepAttribute(id_transformation, id_step, "cache_size", cacheSize); //$NON-NLS-1$
 
             // Also, save the step-database relationship!
             if (databaseMeta != null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
@@ -1736,5 +1751,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     public void setSchemaName(String schemaName)
     {
         this.schemaName = schemaName;
+    }
+
+    /**
+     * @return the cacheSize
+     */
+    public int getCacheSize()
+    {
+        return cacheSize;
+    }
+
+    /**
+     * @param cacheSize the cacheSize to set
+     */
+    public void setCacheSize(int cacheSize)
+    {
+        this.cacheSize = cacheSize;
     }
 }

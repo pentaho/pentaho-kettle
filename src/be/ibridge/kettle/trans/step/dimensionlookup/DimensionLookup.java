@@ -15,8 +15,11 @@
 
 package be.ibridge.kettle.trans.step.dimensionlookup;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -24,6 +27,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.hash.ByteArrayHashIndex;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -92,10 +96,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		Row lu = new Row();
 		Row add;		
 		Value technicalKey;
-		Value val_version;
-		Value val_date    = null;
-		Value val_datfrom = null;
-		Value val_datto   = null;
+		Value valueVersion;
+		Value valueDate    = null;
+		Value valueDateFrom = null;
+		Value valueDateTo   = null;
 		
 		if (first)
 		{
@@ -111,7 +115,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				                 meta.getFieldLookup(), 
                                  meta.getFieldStream(),
 				                 meta.getDateFrom(), 
-				                 meta.getDateTo()
+				                 meta.getDateTo(),
+                                 meta.getCacheSize()>=0
 				                );
 			
 			// Lookup values
@@ -123,7 +128,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				if (data.keynrs[i]<0) // couldn't find field!
 				{
 					throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
-				} 
+				}
 			}
 
 			// Return values
@@ -150,18 +155,30 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 			if (meta.getDateField()!=null && data.datefieldnr>=0)
 			{
-				data.val_datnow = row.getValue(data.datefieldnr);
+				data.valueDateNow = row.getValue(data.datefieldnr);
 			}
 			else
 			{
 				Calendar cal=Calendar.getInstance();
-				data.val_datnow = new Value("MIN", new Date(cal.getTimeInMillis())); // System date... //$NON-NLS-1$
+				data.valueDateNow = new Value("MIN", new Date(cal.getTimeInMillis())); // System date... //$NON-NLS-1$
 			}
+            
+            if (meta.getCacheSize()>=0)
+            {
+                data.keyMeta = new Row();
+                for (int i=0;i<data.keynrs.length;i++)
+                {
+                    Value key = new Value(row.getValue(data.keynrs[i]));
+                    data.keyMeta.addValue(key.Clone());
+                }
+                
+                data.cache = new ByteArrayHashIndex(meta.getCacheSize()>0 ? meta.getCacheSize() : 5000, data.keyMeta);
+            }
 		}
 
 		if (meta.getDateField()!=null && data.datefieldnr>=0)
 		{
-			data.val_datnow = row.getValue(data.datefieldnr);
+			data.valueDateNow = row.getValue(data.datefieldnr);
 		}
 		
 		for (int i=0;i<meta.getKeyStream().length;i++)
@@ -175,13 +192,31 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				throw new KettleStepException(Messages.getString("DimensionLookup.Exception.ErrorDetectedInGettingKey",i+"",data.keynrs[i]+"/"+row.size(),row.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 		}
-		if (data.datefieldnr>=0)	val_date = row.getValue(data.datefieldnr);
-		else val_date = data.val_datnow;
+		if (data.datefieldnr>=0)	valueDate = row.getValue(data.datefieldnr);
+		else valueDate = data.valueDateNow;
 		
-		if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+lu.toString()+" val_date="+val_date.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+lu.toString()+" valueDate="+valueDate.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		data.db.setDimValues(lu, val_date );
-		add=data.db.getLookup();
+        // Do the lookup and see if we can find anything in the database.
+        // But before that, let's see if we can find anything in the cache
+        //
+        add=null;
+        if (meta.getCacheSize()>=0)
+        {
+            add=getFromCache(lu, valueDate);
+        }
+        
+        if (add==null)
+        {
+            data.db.setDimValues(lu, valueDate );
+            add=data.db.getLookup();
+            linesInput++;
+            
+            if (add!=null && meta.getCacheSize()>=0)
+            {
+                addToCache(lu, add);
+            }
+        }
 		
 		/* Handle "update = false" first for performance reasons
 		 */
@@ -221,9 +256,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.NoDimensionEntryFound")+lu+")"); //$NON-NLS-1$ //$NON-NLS-2$
 				//logDetailed("Entry not found: add value!");
 				// Date range: ]-oo,+oo[ 
-				val_datfrom = new Value("MIN", meta.getMinDate()); //$NON-NLS-1$
-				val_datto   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
-				val_version = new Value(meta.getVersionField(), 1L);     // Versions start at 1.
+				valueDateFrom = new Value("MIN", meta.getMinDate()); //$NON-NLS-1$
+				valueDateTo   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
+				valueVersion = new Value(meta.getVersionField(), 1L);     // Versions start at 1.
 				
 				// get a new value from the sequence choosen.
 				boolean autoinc=false;
@@ -247,7 +282,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 				/*
 				 *   INSERT INTO table(version, datefrom, dateto, fieldlookup)
-				 *   VALUES(val_version, val_datfrom, val_datto, row.fieldnrs)
+				 *   VALUES(valueVersion, valueDateFrom, valueDateTo, row.fieldnrs)
 				 *   ;
 				 */
 				
@@ -256,9 +291,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 								  autoinc?null:meta.getKeyField(),   // In case of auto increment, don't insert the key, let the database do it.
 								  autoinc, 
 								  technicalKey, 
-								  meta.getVersionField(), val_version, 
-								  meta.getDateFrom(), val_datfrom, 
-								  meta.getDateTo(), val_datto, 
+								  meta.getVersionField(), valueVersion, 
+								  meta.getDateFrom(), valueDateFrom, 
+								  meta.getDateTo(), valueDateTo, 
 								  meta.getFieldLookup(), data.fieldnrs,
 								  meta.getKeyStream(), 
 								  meta.getKeyLookup(), data.keynrs
@@ -268,6 +303,16 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				add=new Row();
 				if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) technicalKey.setName(meta.getKeyRename());
 				add.addValue(technicalKey);
+                
+                // See if we need to store this record in the cache as well...
+                if (meta.getCacheSize()>=0)
+                {
+                    Row values = getCacheValues(row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
+                    
+                    // put it in the cache...
+                    addToCache(lu, values);
+                }
+                
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddedDimensionEntry")+add.toString()); //$NON-NLS-1$
 			}
 			else  // The entry was found: do we need to insert, update or both?
@@ -276,11 +321,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 
 				// What's the key?  The first value of the return row
 				technicalKey     = add.getValue(0);
-				val_version = add.getValue(1); 
+				valueVersion = add.getValue(1); 
                 
 				// Date range: ]-oo,+oo[ 
-				val_datfrom = new Value("MIN", meta.getMinDate()); //$NON-NLS-1$
-				val_datto   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
+				valueDateFrom = new Value("MIN", meta.getMinDate()); //$NON-NLS-1$
+				valueDateTo   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
 
 				// The other values, we compare with
 				int cmp;
@@ -319,7 +364,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					  logRowlevel(Messages.getString("DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 				
-				if (!insert)  // Just an update of row at key = val_key
+				if (!insert)  // Just an update of row at key = valueKey
 				{
 					if (!identical)
 					{
@@ -331,6 +376,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						 */
 						data.db.dimUpdate(row, meta.getSchemaName(), meta.getTableName(), meta.getFieldLookup(), data.fieldnrs, meta.getKeyField(), technicalKey);
 						linesUpdated++;
+                        
+                        // We need to capture this change in the cache as well...
+                        if (meta.getCacheSize()>=0)
+                        {
+                            Row values = getCacheValues(row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
+                            addToCache(lu, values);
+                        }
 					}
 					else
 					{
@@ -343,8 +395,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.InsertNewVersion")+technicalKey.toString()); //$NON-NLS-1$
 					
-					val_datfrom = data.val_datnow;
-					val_datto   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
+					valueDateFrom = data.valueDateNow;
+					valueDateTo   = new Value("MAX", meta.getMaxDate()); //$NON-NLS-1$
 
 					boolean autoinc=false;					
 					// First try to use an AUTOINCREMENT field
@@ -371,13 +423,20 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					data.db.dimInsert( row, meta.getSchemaName(), meta.getTableName(), 
 									   false,
 									   meta.getKeyField(), autoinc, technicalKey, 
-									   meta.getVersionField(), val_version, 
-									   meta.getDateFrom(), val_datfrom, 
-									   meta.getDateTo(), val_datto, 
+									   meta.getVersionField(), valueVersion, 
+									   meta.getDateFrom(), valueDateFrom, 
+									   meta.getDateTo(), valueDateTo, 
 									   meta.getFieldLookup(), data.fieldnrs, 
 									   meta.getKeyStream(), meta.getKeyLookup(), data.keynrs
 						         );
 					linesOutput++;
+                    
+                    // We need to capture this change in the cache as well...
+                    if (meta.getCacheSize()>=0)
+                    {
+                        Row values = getCacheValues(row, technicalKey, valueVersion, valueDateFrom, valueDateTo);
+                        addToCache(lu, values);
+                    }
 				}
 				if (punch) // On of the fields we have to punch through has changed!
 				{
@@ -406,7 +465,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}
 		
 		if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddValuesToRow")+add); //$NON-NLS-1$
-		for (int i=0;i<add.size();i++)
+        
+        int size = add.size();
+        if (meta.getCacheSize()>=0)
+        {
+            size-=2; // don't return date from-to fields.
+        }
+		for (int i=0;i<size;i++)
 		{
 			row.addValue( add.getValue(i) );
 		}
@@ -421,7 +486,151 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		if (data.max_date.compare(date)<0) data.max_date.setValue( date.getDate() ); 
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+    /**
+     * Keys:
+     *   - natural key fields
+     * Values:
+     *   - Technical key
+     *   - lookup fields / extra fields (allows us to compare or retrieve)
+     *   - Date_from
+     *   - Date_to
+     *   
+     * @param row The input row
+     * @param technicalKey the technical key value
+     * @param valueDateFrom the start of valid date range
+     * @param valueDateTo the end of the valid date range
+     * @return the values to store in the cache as a row.
+     */
+    private Row getCacheValues(Row row, Value technicalKey, Value valueVersion, Value valueDateFrom, Value valueDateTo)
+    {
+        Row values = new Row();
+        values.addValue(technicalKey);
+        values.addValue(valueVersion);
+        for (int i=0;i<data.fieldnrs.length;i++)
+        {
+            Value v = row.getValue(data.fieldnrs[i]);
+            values.addValue(v);
+        }
+        values.addValue(valueDateFrom);
+        values.addValue(valueDateTo);
+        
+        return values;
+    }
+
+    /**
+     * Adds a row to the cache
+     * In case we are doing updates, we need to store the complete rows from the database.
+     * These are the values we need to store
+     * 
+     * Key:
+     *   - natural key fields
+     * Value:
+     *   - Technical key
+     *   - lookup fields / extra fields (allows us to compare or retrieve)
+     *   - Date_from
+     *   - Date_to
+     * 
+     * @param keyValues
+     * @param returnValues
+     */
+	private void addToCache(Row keyValues, Row returnValues)
+    {
+        if (data.valueMeta==null)
+        {
+            data.valueMeta = returnValues.Clone();
+        }
+        
+        // store it in the cache if needed.
+        data.cache.putAgain(Row.extractData(keyValues), Row.extractData(returnValues));
+        
+        // check if the size is not too big...
+        // Allow for a buffer overrun of 20% and then remove those 20% in one go.
+        // Just to keep performance in track.
+        //
+        int tenPercent = meta.getCacheSize()/10;
+        if (meta.getCacheSize()>0 && data.cache.size()>meta.getCacheSize()+tenPercent)
+        {
+            // Which cache entries do we delete here?
+            // We delete those with the lowest technical key...
+            // Those would arguably be the "oldest" dimension entries.
+            // Oh well... Nothing is going to be perfect here...
+            // 
+            // Getting the lowest 20% requires some kind of sorting algorithm and I'm not sure we want to do that.
+            // Sorting is slow and even in the best case situation we need to do 2 passes over the cache entries...
+            //
+            // Perhaps we should get 20% random values and delete everything below the lowest but one TK.
+            //
+            List keys = data.cache.getKeys();
+            int sizeBefore = keys.size();
+            List samples = new ArrayList();
+            
+            // Take 10 sample technical keys....
+            for (int i=0;i<keys.size();i+=keys.size()/5)
+            {
+                byte[] key = (byte[]) keys.get(i);
+                byte[] value = data.cache.get(key);
+                if (value!=null)
+                {
+                    Row values = Row.getRow(value, data.valueMeta);
+                    Long tk = new Long(values.getValue(0).getInteger());
+                    samples.add(tk);
+                }
+            }
+            // Sort these 5 elements...
+            Collections.sort(samples);
+            
+            // What is the smallest?
+            // Take the second, not the fist in the list, otherwise we would be removing a single entry = not good.
+            data.smallestCacheKey = ((Long) samples.get(1)).longValue();
+            
+            // Remove anything in the cache <= smallest.
+            // This makes it almost single pass...
+            // This algorithm is not 100% correct, but I guess it beats sorting the whole cache all the time.
+            //
+            for (int i=0;i<keys.size();i++)
+            {
+                byte[] key = (byte[]) keys.get(i);
+                byte[] value = data.cache.get(key);
+                if (value!=null)
+                {
+                    Row values = Row.getRow(value, data.valueMeta);
+                    long tk = new Long(values.getValue(0).getInteger()).longValue();
+                    if (tk<=data.smallestCacheKey)
+                    {
+                        data.cache.remove(key); // this one has to go.
+                    }
+                }
+            }
+            
+            int sizeAfter = data.cache.size();
+            logDetailed("Reduced the lookup cache from "+sizeBefore+" to "+sizeAfter+" rows.");
+        }
+        
+        if (log.isRowLevel()) logRowlevel("Cache store: key="+keyValues+"    values="+returnValues);
+    }
+
+    private Row getFromCache(Row keyValues, Value dateValue)
+    {
+        byte[] value = data.cache.get(Row.extractData(keyValues));
+        if (value!=null) 
+        {
+            Row row = Row.getRow(value, data.valueMeta);
+            
+            // See if the dateValue is between the from and to date ranges...
+            // The last 2 values are from and to
+            long time = dateValue.getInteger();
+            long from = row.getValue(row.size()-2).getInteger(); 
+            long to   = row.getValue(row.size()-1).getInteger(); 
+            if (time>=from && time<to) // sanity check to see if we have the right version
+            {
+                if (log.isRowLevel()) logRowlevel("Cache hit: key="+keyValues+"  values="+row);
+                return row;
+            }
+        }
+        return null;
+    }
+
+    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(DimensionLookupMeta)smi;
 		data=(DimensionLookupData)sdi;

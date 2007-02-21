@@ -15,7 +15,9 @@
 
 package be.ibridge.kettle.trans.step.dimensionlookup;
 
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.hash.ByteArrayHashIndex;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -27,7 +29,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class DimensionLookupData extends BaseStepData implements StepDataInterface
 {
-	public Value   val_datnow;
+	public Value   valueDateNow;
 	
 	public Database db;
 	
@@ -37,7 +39,15 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 	public int     keynrs[];      // nrs in row of the keys
 	public int     fieldnrs[];    // nrs in row of the fields
 	public int     datefieldnr;   // Nr of datefield field in row
-	
+
+    public Row keyMeta;
+
+    public ByteArrayHashIndex cache;
+
+    public Row valueMeta;
+
+    public long smallestCacheKey;
+    
 	/**
 	 * 
 	 */
@@ -46,7 +56,8 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 		super();
 
 		db=null;
-		val_datnow=null;
+		valueDateNow=null;
+        smallestCacheKey=-1;
 	}
 
 }
