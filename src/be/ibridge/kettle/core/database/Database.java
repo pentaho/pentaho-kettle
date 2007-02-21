@@ -3370,9 +3370,9 @@ public class Database
 		}
 	}
 	
-    public boolean setDimLookup(String table, String keys[], String tk, String version, String extra[], String extraRename[], String datefrom, String dateto) throws KettleDatabaseException
+    public boolean setDimLookup(String table, String keys[], String tk, String version, String extra[], String extraRename[], String datefrom, String dateto, boolean performsCaching) throws KettleDatabaseException
     {
-        return setDimLookup(null, table, keys, tk, version, extra, extraRename, datefrom, dateto);
+        return setDimLookup(null, table, keys, tk, version, extra, extraRename, datefrom, dateto, performsCaching);
     }
 
     /*
@@ -3381,7 +3381,8 @@ public class Database
      */
 	public boolean setDimLookup(String schemaName, String tableName, 
 								String keys[], String tk, String version, String extra[], 
-                                String extraRename[], String datefrom, String dateto
+                                String extraRename[], String datefrom, String dateto,
+                                boolean performsCaching
 							   ) throws KettleDatabaseException
 	{
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
@@ -3414,8 +3415,11 @@ public class Database
                 }
                 
 			}
-            
 		}
+        if (performsCaching)
+        {
+            sql+=", "+databaseMeta.quoteField(datefrom)+", "+databaseMeta.quoteField(dateto);
+        }
 		
 		sql+= " FROM "+schemaTable+" WHERE ";
 		
