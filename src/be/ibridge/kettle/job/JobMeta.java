@@ -308,6 +308,17 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
     }
 
     /**
+     * Builds a name - if no name is set, yet - from the filename
+     */
+    public void nameFromFilename()
+    {
+        if (Const.isEmpty(name) && !Const.isEmpty(filename))
+        {
+            name = Const.createName(filename);
+        }
+    }
+    
+    /**
      * @return Returns the directory.
      */
     public RepositoryDirectory getDirectory()

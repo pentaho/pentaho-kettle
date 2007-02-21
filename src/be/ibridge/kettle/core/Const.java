@@ -2022,6 +2022,61 @@ public class Const
         }
     }
 
+    public static final String createName(String filename)
+    {
+        if (Const.isEmpty(filename))
+            return filename;
+        
+        String pureFilename = filenameOnly(filename);
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; i < pureFilename.length(); i++)
+        {
+            char c = pureFilename.charAt(i);
+            if ( Character.isUnicodeIdentifierPart(c) )
+            {
+                sb.append(c);
+            }
+            else
+            if (Character.isWhitespace(c))
+            {
+                sb.append('_');
+            }
+        }
+        return sb.toString().toLowerCase();
+    }
+    
+    /**
+     * <p>
+     * Returns the pure filename of a filename with full path. E.g. if passed parameter is
+     * <code>/opt/tomcat/logs/catalina.out</code> this method returns <code>catalina.out</code>.
+     * The method works with the Environment variable <i>System.getProperty("file.separator")</i>,
+     * so on linux/Unix it will check for the last occurence of a frontslash, on windows for
+     * the last occurence of a backslash.
+     * </p>
+     * 
+     * <p>
+     * To make this OS independent, the method could check for the last occurence of a
+     * frontslash and backslash and use the higher value of both. Should work, since these
+     * characters aren't allowed in filenames on neither OS types (or said differently:
+     * Neither linux nor windows can carry frontslashes OR backslashes in filenames).
+     * Just a suggestion of an improvement ...
+     * </p>
+     * 
+     * @param sFullPath
+     * @return
+     */
+    public static String filenameOnly(String sFullPath)
+    {
+        if (Const.isEmpty(sFullPath))
+            return sFullPath;
+        
+        int idx = sFullPath.lastIndexOf(FILE_SEPARATOR);
+        if (idx != -1)
+            return sFullPath.substring(idx + 1);
+        else
+            return sFullPath;
+    }
+    
     /**
      * Returning the internationalized tips of the days. They get created once on first
      * request.

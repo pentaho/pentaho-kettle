@@ -3019,6 +3019,17 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     }
 
     /**
+     * Builds a name - if no name is set, yet - from the filename
+     */
+    public void nameFromFilename()
+    {
+        if (Const.isEmpty(name) && !Const.isEmpty(filename))
+        {
+            name = Const.createName(filename);
+        }
+    }
+
+    /**
      * Get the filename (if any) of the transformation
      *
      * @return The filename of the transformation.
