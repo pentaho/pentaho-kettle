@@ -1762,6 +1762,18 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
                     miStepNew.setMenu(mStep);
 
+                    // Transformation settings
+                    new MenuItem(mPop, SWT.SEPARATOR);
+                    MenuItem miSettings = new MenuItem(mPop, SWT.NONE);
+                    miSettings.setText(Messages.getString("SpoonGraph.PopupMenu.Settings"));
+                    miSettings.addSelectionListener(new SelectionAdapter()
+                    {
+                        public void widgetSelected(SelectionEvent e)
+                        {
+                            spoon.editTransformationProperties(transMeta);
+                        }
+                    });
+
                     setMenu(mPop);
                 }
             }
@@ -2272,7 +2284,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
     public int showChangedWarning()
     {
         MessageBox mb = new MessageBox(shell,  SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-        mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", spoon.makeGraphTabName(transMeta)));//"This model has changed.  Do you want to save it?"
+        mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", spoon.makeTransGraphTabName(transMeta)));//"This model has changed.  Do you want to save it?"
         mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
         return mb.open();
     }
