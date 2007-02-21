@@ -298,7 +298,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	
 	public boolean equals(Object o)
 	{
-		JobEntryCopy je = (JobEntryCopy)o;
+        if (o == null) return false;
+        JobEntryCopy je = (JobEntryCopy)o;
 		return je.entry.getName().equalsIgnoreCase(entry.getName()) && je.getNr() == getNr();
 	}
 	
