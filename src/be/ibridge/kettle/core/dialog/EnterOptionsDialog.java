@@ -202,7 +202,7 @@ public class EnterOptionsDialog extends Dialog
     private int margin;
 
     /**
-     * @deprecated Use CT with <i>props</i> parameter
+     * @deprecated Use CT without <i>props</i> parameter instead
      */
 	public EnterOptionsDialog(Shell parent, Props props)
 	{
