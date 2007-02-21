@@ -327,6 +327,7 @@ public class SQLEditor extends Dialog
     							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
     								db.execStatement(sql);
                                     message.append(Messages.getString("SQLEditor.Log.SQLExecuted", sql));
+                                    message.append(Const.CR);
                                     
     								// Clear the database cache, in case we're using one...
     								if (dbcache!=null) dbcache.clear(ci.getName());
