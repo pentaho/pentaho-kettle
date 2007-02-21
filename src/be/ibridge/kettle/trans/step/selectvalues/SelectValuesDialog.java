@@ -567,7 +567,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	
 	/**
 	 * Reads in the fields from the previous steps and from the ONE next step and opens an 
-	 * EnterMappingDialog with this information. After the user did the 
+	 * EnterMappingDialog with this information. After the user did the mapping, those information 
+	 * is put into the Select/Rename table.
 	 */
 	private void generateMappings() {
 		if ((wRemove.getItemCount() > 0) || (wMeta.getItemCount() > 0)) {
@@ -612,15 +613,16 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		try {
 			prevFields = transMeta.getPrevStepFields(stepname);
 			nextStepRequiredFields = stepMetaInterface.getRequiredFields();
-//			nextFields = stepMetaInterface.getFields(new Row(), outputStepMeta
-//					.getName(), null);
 		} catch (KettleException e) {
 			throw new RuntimeException(e);
+			// TODO error handling
 		}
 
 		String[] inputNames = new String[prevFields.size()];
 		for (int i = 0; i < prevFields.size(); i++) {
-			inputNames[i] = prevFields.getValue(i).getName();
+			Value value = prevFields.getValue(i);
+			inputNames[i] = value.getName()+
+			     EnterMappingDialog.STRING_ORIGIN_SEPARATOR+value.getOrigin()+")";
 		}
 
 		String[] outputNames = new String[nextStepRequiredFields.size()];
@@ -628,34 +630,37 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			outputNames[i] = nextStepRequiredFields.getValue(i).getName();
 		}
 		
-		String[] selectName = input.getSelectName();
-		String[] selectRename = input.getSelectRename();
+		String[] selectName = new String[wFields.getItemCount()];
+		String[] selectRename = new String[wFields.getItemCount()];
+		for (int i = 0; i < wFields.getItemCount(); i++) {
+			selectName[i] = wFields.getItem(i, 1);
+			selectRename[i] = wFields.getItem(i, 2);
+		}
+		
 		ArrayList mappings = new ArrayList();
-		boolean someFieldsNotFound = false;
+		StringBuffer missingFields = new StringBuffer();
 		for (int i = 0; i < selectName.length; i++) {
 			int inIndex = prevFields.searchValueIndex(selectName[i]);
 			if (inIndex < 0) {
-				System.err.println("Rejecting mapping selectName="
-						+ selectName[i] + ", selectRename=" + selectRename[i]
-						+ " input field not found");
-				someFieldsNotFound = true;
+				missingFields.append(Const.CR + "   " + selectName[i]+" --> " + selectRename[i]);
 				continue;
 			}
 			int outIndex = nextStepRequiredFields.searchValueIndex(selectRename[i]);
 			if (outIndex < 0) {
-				System.err.println("Rejecting mapping selectName="
-						+ selectName[i] + ", selectRename=" + selectRename[i]
-						+ " output field not found");
-				someFieldsNotFound = true;
+				missingFields.append(Const.CR + "   " + selectName[i]+" --> " + selectRename[i]);
 				continue;
 			}
 			SourceToTargetMapping mapping = new SourceToTargetMapping(inIndex,
 					outIndex);
 			mappings.add(mapping);
 		}
-		if (someFieldsNotFound){
-			// TODO localization
-			MessageDialog.openWarning(shell,"Warning" , "Some input and/or output fields could not be found that were mapped.");
+		if (missingFields.length()>0){
+			boolean goOn = MessageDialog.openConfirm(shell,
+					Messages.getString("SelectValuesDialog.DoMapping.SomeFieldsNotFoundTitle"), 
+					Messages.getString("SelectValuesDialog.DoMapping.SomeFieldsNotFound", missingFields.toString()));
+			if (!goOn) {
+				return;
+			}
 		}
 		EnterMappingDialog d = new EnterMappingDialog(SelectValuesDialog.this.shell,inputNames, outputNames, mappings);
 		mappings = d.open();
@@ -668,8 +673,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				SourceToTargetMapping mapping = (SourceToTargetMapping) mappings
 						.get(i);
 				TableItem item = wFields.table.getItem(i);
-				item.setText(1, inputNames[mapping
-											.getSourcePosition()]);
+				item.setText(1, prevFields.getValue(mapping
+														.getSourcePosition()).getName());
 				item.setText(2, outputNames[mapping
 											.getTargetPosition()]);
 				item.setText(3, "-1");
