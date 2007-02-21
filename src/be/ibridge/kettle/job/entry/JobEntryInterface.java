@@ -36,6 +36,7 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.mysqlbulkload.JobEntryMysqlBulkLoad;
 import be.ibridge.kettle.job.entry.msgboxinfo.JobEntryMsgBoxInfo;
+import be.ibridge.kettle.job.entry.delay.JobEntryDelay;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
 import be.ibridge.kettle.job.entry.sftpput.JobEntrySFTPPUT;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
@@ -77,6 +78,7 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_FILE_COMPARE   = 17;
     public static final int TYPE_JOBENTRY_MYSQL_BULK_LOAD= 18;
 	public static final int TYPE_JOBENTRY_MSGBOX_INFO= 19;
+	public static final int TYPE_JOBENTRY_DELAY= 20;
     
 	public final static String typeCode[] =
 		{
@@ -100,6 +102,7 @@ public interface JobEntryInterface
             "FILE_COMPARE",
             "MYSQL_BULK_LOAD",
 			"MSGBOX_INFO",
+			"DELAY",
 		};
 
 	public final static String typeDesc[] =
@@ -124,6 +127,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.FileCompare.TypeDesc"),
             Messages.getString("JobEntry.MysqlBulkLoad.TypeDesc"),
 			Messages.getString("JobEntry.MsgBoxInfo.TypeDesc"),
+			Messages.getString("JobEntry.Delay.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -148,6 +152,7 @@ public interface JobEntryInterface
             "BFC.png",
             "MBL.png",
 			"INF.png",
+			"DLT.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -172,6 +177,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.FileCompare.Tooltip"),
             Messages.getString("JobEntry.MysqlBulkLoad.Tooltip"),
 		    Messages.getString("JobEntry.MsgBoxInfo.Tooltip"),
+			Messages.getString("JobEntry.Delay.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -196,6 +202,7 @@ public interface JobEntryInterface
             JobEntryFileCompare.class,
             JobEntryMysqlBulkLoad.class,
 			JobEntryMsgBoxInfo.class,
+			JobEntryDelay.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
