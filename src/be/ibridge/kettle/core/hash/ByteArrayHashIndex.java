@@ -1,5 +1,8 @@
 package be.ibridge.kettle.core.hash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import be.ibridge.kettle.core.Row;
 
 /*
@@ -463,5 +466,22 @@ public final class ByteArrayHashIndex {
         return Row.getRow(key, metadata).hashCode();
     }
     
-    
+    /**
+     * @return a List of byte[] containing the serialized keys 
+     */
+    public List getKeys()
+    {
+        List list = new ArrayList();
+        
+        for (int i=0;i<table.length;i++)
+        {
+            Entry entry = table[i];
+            if (entry!=null && entry.key!=null)
+            {
+                list.add(entry.key);
+            }
+        }
+        
+        return list;
+    }
 }
