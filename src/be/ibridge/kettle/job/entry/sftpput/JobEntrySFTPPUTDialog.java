@@ -247,7 +247,8 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wlScpDirectory.setLayoutData(fdlScpDirectory);
 		wScpDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wScpDirectory);
-		wScpDirectory.addModifyListener(lsMod);
+ 		wScpDirectory.setToolTipText(Messages.getString("JobSFTPPUT.RemoteDir.Tooltip"));
+        wScpDirectory.addModifyListener(lsMod);
 		fdScpDirectory=new FormData();
 		fdScpDirectory.left = new FormAttachment(middle, 0);
 		fdScpDirectory.top  = new FormAttachment(wPassword, margin);
@@ -265,6 +266,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wlLocalDirectory.setLayoutData(fdlLocalDirectory);
 		wLocalDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLocalDirectory);
+ 		wLocalDirectory.setToolTipText(Messages.getString("JobSFTPPUT.LocalDir.Tooltip"));
 		wLocalDirectory.addModifyListener(lsMod);
 		fdLocalDirectory=new FormData();
 		fdLocalDirectory.left = new FormAttachment(middle, 0);
@@ -283,6 +285,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wWildcard);
+ 		wWildcard.setToolTipText(Messages.getString("JobSFTPPUT.Wildcard.Tooltip"));
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
@@ -302,6 +305,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		wRemove=new Button(shell, SWT.CHECK);
  		props.setLook(wRemove);
 		fdRemove=new FormData();
+		wRemove.setToolTipText(Messages.getString("JobSFTPPUT.RemoveFiles.Tooltip"));
 		fdRemove.left = new FormAttachment(middle, 0);
 		fdRemove.top  = new FormAttachment(wWildcard, margin);
 		fdRemove.right= new FormAttachment(100, 0);

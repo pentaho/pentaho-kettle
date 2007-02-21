@@ -378,7 +378,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         fdlControlEncoding.right = new FormAttachment(middle, 0);
         wlControlEncoding.setLayoutData(fdlControlEncoding);
         wControlEncoding=new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wActive.setToolTipText(Messages.getString("JobFTP.ControlEncoding.Tooltip"));
+        wControlEncoding.setToolTipText(Messages.getString("JobFTP.ControlEncoding.Tooltip"));
         wControlEncoding.setItems(encodings);
         props.setLook(wControlEncoding);
         fdControlEncoding=new FormData();

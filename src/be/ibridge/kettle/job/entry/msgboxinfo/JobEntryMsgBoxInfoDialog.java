@@ -97,7 +97,7 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
         this.jobEntry = jobEntry;
 
         if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobMsgBoxInfo.Name.Default"));
+            this.jobEntry.setName(Messages.getString("MsgBoxInfo.Name.Default"));
     }
 
     public JobEntryInterface open()
