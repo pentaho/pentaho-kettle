@@ -54,10 +54,8 @@ import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -573,9 +571,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private void generateMappings() {
 		if ((wRemove.getItemCount() > 0) || (wMeta.getItemCount() > 0)) {
 			for (int i = 0; i < wRemove.getItemCount(); i++) {
-				String[] item = wRemove.getItem(i);
-				for(String col : item){
-					if (col.length()>0){
+				String[] columns = wRemove.getItem(i);
+				for (int a = 0; a < columns.length; a++) {
+					if (columns[a].length() > 0) {
 						MessageDialog.openError(shell, 
 								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMetaTitle"),
 								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMeta"));
@@ -584,9 +582,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 			for (int i = 0; i < wMeta.getItemCount(); i++) {
-				String[] item = wMeta.getItem(i);
-				for(String col : item){
-					if (col.length()>0){
+				String[] columns = wMeta.getItem(i);
+				for (int a = 0; a < columns.length; a++) {
+					String col = columns[a];
+					if (col.length() > 0) {
 						MessageDialog.openError(shell, 
 								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMetaTitle"),
 								Messages.getString("SelectValuesDialog.DoMapping.NoDeletOrMeta"));

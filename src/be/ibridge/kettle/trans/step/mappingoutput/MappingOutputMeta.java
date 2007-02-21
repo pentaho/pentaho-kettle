@@ -369,13 +369,11 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         return new MappingOutputData();
     }
     
-    @Override
     public Row getRequiredFields() throws KettleException {
     	Row row = new Row();
-    	for (String field : fieldName) {
-			row.addValue(new Value(field));
+		for (int i = 0; i < fieldName.length; i++) {
+			row.addValue(new Value(fieldName[i]));
 		}
-    	return row;
+		return row;
     }
-
 }
