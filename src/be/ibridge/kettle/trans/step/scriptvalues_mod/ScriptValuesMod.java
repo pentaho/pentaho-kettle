@@ -396,8 +396,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
-		if (r==null && !first){
-			
+		if (r==null && data.readsRows)
+        {
 			//Modfication for Additional End Function
 			try{
 				// Checking for EndScript
@@ -417,7 +417,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		if(r==null && first) r = new Row();
+		if(r==null && !data.readsRows)
+        {
+            r = new Row();
+        }
 		
 		// Getting the Row, with the Transformation Status
         switch (addValues(r)) {
@@ -451,12 +454,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		meta=(ScriptValuesMetaMod)smi;
 		data=(ScriptValuesDataMod)sdi;
 
-		if (super.init(smi, sdi)){
-		    
+		if (super.init(smi, sdi))
+        {
 			// Add init code here.
 			// Get the actual Scripts from our MetaData
 			jsScripts = meta.getJSScripts();
-			for(int j=0;j<jsScripts.length;j++){
+			for(int j=0;j<jsScripts.length;j++)
+            {
 				switch(jsScripts[j].getScriptType()){
 				case ScriptValuesScript.TRANSFORM_SCRIPT:
 						strTransformScript =jsScripts[j].getScript();
@@ -469,6 +473,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 						break;
 				}
 			}
+            
+            // See if this step has any previous steps: do we just need to generate output or read input too?
+            //
+            data.readsRows = false;
+            StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
+            if (previous!=null && previous.length>0)
+            {
+                data.readsRows = true;
+            }
 			return true;
 		}
 		return false;
