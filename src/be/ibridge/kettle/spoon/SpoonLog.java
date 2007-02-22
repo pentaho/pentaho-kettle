@@ -125,6 +125,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 	private Spoon spoon;
 
     private boolean halted;
+    private boolean halting;
 
     private FormData fdStop;    
 
@@ -415,6 +416,7 @@ public class SpoonLog extends Composite implements TabItemInterface
                 running = false;
                 initialized=false;
                 halted = false;
+                halting = false;
                 
                 try
                 {
@@ -552,10 +554,11 @@ public class SpoonLog extends Composite implements TabItemInterface
 		}
 	}
     
-    public void stop()
+    public synchronized void stop()
     {
-        if (running)
+        if (running && !halting)
         {
+            halting = true;
             trans.stopAll();
             try
             {
@@ -571,6 +574,7 @@ public class SpoonLog extends Composite implements TabItemInterface
             running = false;
             initialized = false;
             halted = false;
+            halting = false;
             if (preview)
             {
                 preview = false;

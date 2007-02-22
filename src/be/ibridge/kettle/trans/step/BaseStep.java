@@ -69,6 +69,7 @@ import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
 import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
 import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
 import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
+import be.ibridge.kettle.trans.step.formula.FormulaMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
 import be.ibridge.kettle.trans.step.getvariable.GetVariableMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
@@ -256,6 +257,8 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP), 
             new StepPluginMeta(BodetPluginMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
                     .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL), 
+            new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
+                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL), 
         };
 
     public static final String category_order[] = 

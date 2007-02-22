@@ -28,41 +28,28 @@ REM **********************
 REM   External Libraries
 REM **********************
 
-set CLASSPATH=%CLASSPATH%;libext\CacheDB.jar
-set CLASSPATH=%CLASSPATH%;libext\SQLBaseJDBC.jar
-set CLASSPATH=%CLASSPATH%;libext\activation.jar
-set CLASSPATH=%CLASSPATH%;libext\db2jcc.jar
-set CLASSPATH=%CLASSPATH%;libext\db2jcc_license_cu.jar
-set CLASSPATH=%CLASSPATH%;libext\edtftpj-1.5.3.jar
-set CLASSPATH=%CLASSPATH%;libext\jaybird-full-2.1.0.jar
-set CLASSPATH=%CLASSPATH%;libext\hsqldb.jar
-set CLASSPATH=%CLASSPATH%;libext\ifxjdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\javadbf.jar
-set CLASSPATH=%CLASSPATH%;libext\js.jar
-set CLASSPATH=%CLASSPATH%;libext\jt400.jar
-set CLASSPATH=%CLASSPATH%;libext\jtds-1.2.jar
-set CLASSPATH=%CLASSPATH%;libext\jxl.jar
-set CLASSPATH=%CLASSPATH%;libext\log4j-1.2.8.jar
-set CLASSPATH=%CLASSPATH%;libext\mail.jar
-set CLASSPATH=%CLASSPATH%;libext\mysql-connector-java-3.1.14-bin.jar
-set CLASSPATH=%CLASSPATH%;libext\ojdbc14.jar
-set CLASSPATH=%CLASSPATH%;libext\orai18n.jar
-set CLASSPATH=%CLASSPATH%;libext\postgresql-8.1-407.jdbc3.jar
-set CLASSPATH=%CLASSPATH%;libext\iijdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\jsch-0.1.24.jar
-set CLASSPATH=%CLASSPATH%;libext\interclient.jar
-set CLASSPATH=%CLASSPATH%;libext\sapdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\xdbjdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\rdbthin.jar
-set CLASSPATH=%CLASSPATH%;libext\jackcess-1.1.5.jar
-set CLASSPATH=%CLASSPATH%;libext\commons-collections-3.1.jar
-set CLASSPATH=%CLASSPATH%;libext\commons-logging.jar
-set CLASSPATH=%CLASSPATH%;libext\commons-lang-2.2.jar
-set CLASSPATH=%CLASSPATH%;libext\commons-dbcp-1.2.1.jar
-set CLASSPATH=%CLASSPATH%;libext\commons-pool-1.3.jar
-set CLASSPATH=%CLASSPATH%;libext\nzjdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\unijdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\asjava.zip
+REM **********************
+REM   External Libraries
+REM **********************
+
+REM Loop the libext directory and add the classpath.
+REM The following command would only add the last jar: FOR %%F IN (libext\*.jar) DO call set CLASSPATH=%CLASSPATH%;%%F
+REM So the circumvention with a subroutine solves this ;-)
+
+FOR %%F IN (libext\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\JDBC\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\webservices\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\commons\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\web\*.jar) DO call :addcp %%F
+FOR %%F IN (libext\pentaho\*.jar) DO call :addcp %%F
+
+goto extlibe
+
+:addcp
+set CLASSPATH=%CLASSPATH%;%1
+goto :eof
+
+:extlibe
 
 REM *****************
 REM   SWT Libraries

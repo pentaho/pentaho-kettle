@@ -201,14 +201,14 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
     
     private void counterDown()
     {
-        if((counter-1==_counter)&&comparePaths(_counter))
+        if ((counter-1==_counter) && comparePaths(_counter))
         {
             _pathToRootElement.remove(_counter);
             counter--;
             _counter--;
             rootFound = false;
             rowSet.add(row.Clone());
-            System.out.println(row.toString());
+            // System.out.println(row.toString());
             this.row = null;
             this.row = this.emptyRow.Clone();
         }
@@ -306,6 +306,11 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
         try {
 			tempVal = new String(ch,start,length);
 			
+            if (tempVal.equals("01-2040-0021-92602-00-000000"))
+            {
+                System.out.println("tempVal="+tempVal);
+            }
+            
 			if(this.fieldToFill>=0)
 			{
 			    Value v=row.getValue(fieldToFill);
@@ -422,20 +427,26 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
     
     public boolean hasNext()
     {
-    	return !rowSet.isEmpty();
+        synchronized (rowSet)
+        {
+            return !rowSet.isEmpty();
+        }
     }
     
     public Row getNext(){
-    	if(!rowSet.isEmpty())
-    	{
-    		Row ret=(Row)rowSet.get(0);
-    		rowSet.remove(0);
-    		return ret;
-    	}
-    	else
-    	{
-    		return null;
-    	}
+        synchronized(rowSet)
+        {
+        	if(!rowSet.isEmpty())
+        	{
+        		Row ret=(Row)rowSet.get(0);
+        		rowSet.remove(0);
+        		return ret;
+        	}
+        	else
+        	{
+        		return null;
+        	}
+        }
     }
     
     
