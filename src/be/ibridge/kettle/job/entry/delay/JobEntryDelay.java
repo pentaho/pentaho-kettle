@@ -14,23 +14,19 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.delay;
-import java.io.IOException;
 import java.util.ArrayList;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
+
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
-import org.eclipse.swt.widgets.Display;
 
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -34,7 +33,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
@@ -62,7 +60,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 	private FormData fdlScaleTime, fdScaleTime;
 
 	private LabelTextVar      wMaximumTimeout;
-	private FormData     fdlMaximumTimeout, fdMaximumTimeout;
+	private FormData     fdMaximumTimeout;
 
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
