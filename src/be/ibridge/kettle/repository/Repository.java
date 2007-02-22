@@ -2659,7 +2659,6 @@ public class Repository
 
 	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, String value) throws KettleDatabaseException
 	{
-	    if (value==null) return -1L;
 		return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value);
 	}
 
