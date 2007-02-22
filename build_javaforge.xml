@@ -75,6 +75,7 @@
 				<fileset dir="${libext}/JDBC" 		includes="*.jar"/>
 				<fileset dir="${libext}/web" 		includes="*.jar"/>
 				<fileset dir="${libext}/webservices"    includes="*.jar"/>				
+				<fileset dir="${libext}/pentaho"    includes="*.jar"/>
 				<fileset dir="${libswt}" 		includes="*.jar"/>
 				<fileset dir="${libswt}/win32/" includes="*.jar"/>
 		  		</classpath>
