@@ -2397,7 +2397,7 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
-		EnterStringDialog esd = new EnterStringDialog(shell, Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		EnterStringDialog esd = new EnterStringDialog(shell, Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String newdir = esd.open();
 		if (newdir!=null)
 		{
