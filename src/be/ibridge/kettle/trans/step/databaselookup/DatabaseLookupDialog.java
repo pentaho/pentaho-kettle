@@ -21,8 +21,15 @@
 
 package be.ibridge.kettle.trans.step.databaselookup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -105,6 +112,21 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 	private DatabaseLookupMeta input;
 
+	/**
+	 * List of ColumnInfo that should have the field names of the selected database table
+	 */
+	private List tableFieldColumns = new ArrayList();
+	
+	/**
+	 * List of ColumnInfo that should have the previous fields combo box
+	 */
+	private List fieldColumns = new ArrayList();
+	
+	/**
+	 * all fields from the previous steps
+	 */
+	private Row prevFields = null;
+	
 	public DatabaseLookupDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -125,6 +147,12 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			public void modifyText(ModifyEvent e) 
 			{
 				input.setChanged();
+			}
+		};
+		
+		FocusListener lsFocusLost = new FocusAdapter() {
+			public void focusLost(FocusEvent arg0) {
+				setTableFieldCombo();
 			}
 		};
 		backupChanged = input.hasChanged();
@@ -176,6 +204,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
+        wSchema.addFocusListener(lsFocusLost);
         fdSchema=new FormData();
         fdSchema.left = new FormAttachment(middle, 0);
         fdSchema.top  = new FormAttachment(wConnection, margin*2);
@@ -203,6 +232,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
+		wTable.addFocusListener(lsFocusLost);
 		fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top  = new FormAttachment(wSchema, margin*2);
@@ -267,13 +297,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 
 		int nrKeyCols=4;
 		int nrKeyRows=(input.getStreamKeyField1()!=null?input.getStreamKeyField1().length:1);
-		
+
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Tablefield"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Tablefield"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},  false); //$NON-NLS-1$
 		ciKey[1]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Comparator"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-		ciKey[2]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field1"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		ciKey[3]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field2"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		
+		ciKey[2]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field1"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
+		ciKey[3]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field2"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{""},   false); //$NON-NLS-1$
+		tableFieldColumns.add(ciKey[0]);
+		fieldColumns.add(ciKey[2]);
+		fieldColumns.add(ciKey[3]);
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
@@ -380,10 +412,11 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         int UpInsRows= (input.getReturnValueField()!=null?input.getReturnValueField().length:1);
         
         ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-        ciReturn[0]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        ciReturn[0]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_CCOMBO,new String[]{},  false); //$NON-NLS-1$
         ciReturn[1]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Newname"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
         ciReturn[2]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
         ciReturn[3]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes()); //$NON-NLS-1$
+        tableFieldColumns.add(ciReturn[0]);
         
         wReturn=new TableView(shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -440,6 +473,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		getData();
 		input.setChanged(backupChanged);
 
+		setComboValues();
+		setTableFieldCombo();
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -448,6 +483,69 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		return stepname;
 	}
 
+	private void setComboValues() {
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				try {
+					prevFields = transMeta.getPrevStepFields(stepname);
+				} catch (KettleException e) {
+					prevFields = new Row();
+					String msg = Messages
+							.getString("SelectValuesDialog.DoMapping.UnableToFindInput");
+					log.logError(toString(), msg);
+				}
+				String[] prevStepFieldNames = prevFields.getFieldNames();
+				Arrays.sort(prevStepFieldNames);
+				for (int i = 0; i < fieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+					colInfo.setComboValues(prevStepFieldNames);
+				}
+			}
+		};
+		new Thread(fieldLoader).start();
+	}
+	
+	private void setTableFieldCombo(){
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				if (!Const.isEmpty(wTable.getText())) {
+					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
+					if (ci != null) {
+						Database db = new Database(ci);
+						try {
+							db.connect();
+
+							String schemaTable = ci
+									.getQuotedSchemaTableCombination(wSchema
+											.getText(), wTable.getText());
+							Row r = db.getTableFields(schemaTable);
+							if (null != r) {
+								String[] fieldNames = r.getFieldNames();
+								if (null != fieldNames) {
+									for (int i = 0; i < tableFieldColumns
+											.size(); i++) {
+										ColumnInfo colInfo = (ColumnInfo) tableFieldColumns
+												.get(i);
+										colInfo.setComboValues(fieldNames);
+									}
+								}
+							}
+						} catch (Exception e) {
+							for (int i = 0; i < tableFieldColumns.size(); i++) {
+								ColumnInfo colInfo = (ColumnInfo) tableFieldColumns
+										.get(i);
+								colInfo.setComboValues(new String[] {});
+							}
+							// ignore any errors here. drop downs will not be
+							// filled, but no problem for the user
+						}
+					}
+				}
+			}
+		};
+		shell.getDisplay().asyncExec(fieldLoader);
+	}
+	
 	private void setFlags()
     {
         wlOrderBy.setEnabled( !wFailMultiple.getSelection() );

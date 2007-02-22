@@ -22,6 +22,8 @@
 package be.ibridge.kettle.trans.step.selectvalues;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -92,6 +94,13 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private FormData     fdGetSelect, fdGetRemove, fdGetMeta;
 
 	private SelectValuesMeta input;
+	
+	private List fieldColumns = new ArrayList();
+	
+	/**
+	 * Fields from previous step
+	 */
+	private Row prevFields;
 	
 	public SelectValuesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -179,11 +188,12 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getSelectName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")},   false ); //$NON-NLS-1$
 		colinf[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.RenameTo"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		colinf[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		colinf[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		
+
+		fieldColumns.add(colinf[0]);
 		wFields=new TableView(wSelectComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
@@ -257,8 +267,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int RemoveRows=input.getDeleteName().length;
 		
 		ColumnInfo[] colrem=new ColumnInfo[RemoveCols];
-		colrem[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		
+		colrem[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")},  false ); //$NON-NLS-1$
+		fieldColumns.add(colrem[0]);
 		wRemove=new TableView(wRemoveComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colrem, 
@@ -324,12 +334,12 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int MetaRows=input.getMetaName().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[MetaCols];
-		colmeta[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
+		colmeta[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")}, false ); //$NON-NLS-1$
 		colmeta[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Renameto"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		colmeta[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), false); //$NON-NLS-1$
 		colmeta[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		colmeta[4]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
-		
+		fieldColumns.add(colmeta[0]);
 		wMeta=new TableView(wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colmeta, 
@@ -409,12 +419,36 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		getData();
 		input.setChanged(changed);
 
+		setComboValues();
+
 		shell.open();
 		while (!shell.isDisposed())
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
 		return stepname;
+	}
+
+	private void setComboValues() {
+		Runnable fieldLoader = new Runnable() {
+			public void run() {
+				try {
+					prevFields = transMeta.getPrevStepFields(stepname);
+				} catch (KettleException e) {
+					prevFields = new Row();
+					String msg = Messages
+							.getString("SelectValuesDialog.DoMapping.UnableToFindInput");
+					log.logError(toString(), msg);
+				}
+				String[] prevStepFieldNames = prevFields.getFieldNames();
+				Arrays.sort(prevStepFieldNames);
+				for (int i = 0; i < fieldColumns.size(); i++) {
+					ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
+					colInfo.setComboValues(prevStepFieldNames);
+				}
+			}
+		};
+		new Thread(fieldLoader).start();
 	}
 
 	/**
@@ -594,7 +628,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 		}
-		Row prevFields = null;
+
 		Row nextStepRequiredFields = null;
 
 		StepMeta stepMeta = new StepMeta(stepname, input);
@@ -610,11 +644,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		StepMetaInterface stepMetaInterface = outputStepMeta
 				.getStepMetaInterface();
 		try {
-			prevFields = transMeta.getPrevStepFields(stepname);
 			nextStepRequiredFields = stepMetaInterface.getRequiredFields();
 		} catch (KettleException e) {
-			throw new RuntimeException(e);
-			// TODO error handling
+			log.logError(toString(), Messages.getString("SelectValuesDialog.DoMapping.UnableToFindOutput"));
+			nextStepRequiredFields = new Row();
 		}
 
 		String[] inputNames = new String[prevFields.size()];
@@ -639,20 +672,26 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		ArrayList mappings = new ArrayList();
 		StringBuffer missingFields = new StringBuffer();
 		for (int i = 0; i < selectName.length; i++) {
-			int inIndex = prevFields.searchValueIndex(selectName[i]);
+			String valueName = selectName[i];
+			String valueRename = selectRename[i];
+			int inIndex = prevFields.searchValueIndex(valueName);
 			if (inIndex < 0) {
-				missingFields.append(Const.CR + "   " + selectName[i]+" --> " + selectRename[i]);
+				missingFields.append(Const.CR + "   " + valueName+" --> " + valueRename);
 				continue;
 			}
-			int outIndex = nextStepRequiredFields.searchValueIndex(selectRename[i]);
+			if (null==valueRename || valueRename.equals("")){
+				valueRename = valueName;
+			}
+			int outIndex = nextStepRequiredFields.searchValueIndex(valueRename);
 			if (outIndex < 0) {
-				missingFields.append(Const.CR + "   " + selectName[i]+" --> " + selectRename[i]);
+				missingFields.append(Const.CR + "   " + valueName+" --> " + valueRename);
 				continue;
 			}
 			SourceToTargetMapping mapping = new SourceToTargetMapping(inIndex,
 					outIndex);
 			mappings.add(mapping);
 		}
+		// show a confirm dialog if some misconfiguration was found
 		if (missingFields.length()>0){
 			boolean goOn = MessageDialog.openConfirm(shell,
 					Messages.getString("SelectValuesDialog.DoMapping.SomeFieldsNotFoundTitle"), 
@@ -664,7 +703,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		EnterMappingDialog d = new EnterMappingDialog(SelectValuesDialog.this.shell,inputNames, outputNames, mappings);
 		mappings = d.open();
 
-		// null if the user pressed cancel
+		// mappings == null if the user pressed cancel
 		if (null != mappings) {
 			wFields.table.removeAll();
 			wFields.table.setItemCount(mappings.size());
@@ -679,6 +718,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				item.setText(3, "-1");
 				item.setText(4, "-1");
 			}
+			wFields.setRowNums();
+			wFields.optWidth(true);
+			wTabFolder.setSelection(0);
 		}
 	}
 }
