@@ -2028,6 +2028,10 @@ public class Const
             return filename;
         
         String pureFilename = filenameOnly(filename);
+        if (pureFilename.endsWith(".ktr") || pureFilename.endsWith(".kjb") ||  pureFilename.endsWith(".xml"))
+        {
+            pureFilename = pureFilename.substring(0, pureFilename.length()-4);
+        }
         StringBuffer sb = new StringBuffer();
         for (int i=0; i < pureFilename.length(); i++)
         {
@@ -2039,10 +2043,10 @@ public class Const
             else
             if (Character.isWhitespace(c))
             {
-                sb.append('_');
+                sb.append(' ');
             }
         }
-        return sb.toString().toLowerCase();
+        return sb.toString();
     }
     
     /**
