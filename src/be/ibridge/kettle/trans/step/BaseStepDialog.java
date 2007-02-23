@@ -550,7 +550,7 @@ public class BaseStepDialog extends Dialog
             choice = idx&0xFF;
         }
         
-        if (choice==3) return; // Cancel clicked
+        if (choice==3 || choice == 255 /* 255 = escape pressed */) return; // Cancel clicked
 
         if (choice==2)
         {
