@@ -101,6 +101,12 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	 * Fields from previous step
 	 */
 	private Row prevFields;
+
+	/**
+	 * Previous fields are read asynchonous because this might take some time
+	 * and the user is able to do other things, where he will not need the previous fields
+	 */
+	private boolean bPreviousFieldsLoaded = false;
 	
 	public SelectValuesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -442,13 +448,14 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				}
 				String[] prevStepFieldNames = prevFields.getFieldNames();
 				Arrays.sort(prevStepFieldNames);
+				bPreviousFieldsLoaded = true;
 				for (int i = 0; i < fieldColumns.size(); i++) {
 					ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
 					colInfo.setComboValues(prevStepFieldNames);
 				}
 			}
 		};
-		new Thread(fieldLoader).start();
+		shell.getDisplay().asyncExec(fieldLoader);
 	}
 
 	/**
@@ -603,6 +610,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	 * is put into the Select/Rename table.
 	 */
 	private void generateMappings() {
+		if (!bPreviousFieldsLoaded) {
+			MessageDialog.openError(shell, Messages.getString("SelectValuesDialog.ColumnInfo.Loading"), Messages.getString("SelectValuesDialog.ColumnInfo.Loading"));
+		}
 		if ((wRemove.getItemCount() > 0) || (wMeta.getItemCount() > 0)) {
 			for (int i = 0; i < wRemove.getItemCount(); i++) {
 				String[] columns = wRemove.getItem(i);
