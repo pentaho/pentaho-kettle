@@ -164,8 +164,8 @@ public class ExecSQL extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-           meta=(ExecSQLMeta)smi;
-            data=(ExecSQLData)sdi;
+        meta=(ExecSQLMeta)smi;
+        data=(ExecSQLData)sdi;
 
         logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
 
@@ -195,7 +195,15 @@ public class ExecSQL extends BaseStep implements StepInterface
             // Connect to the database
             try
             {
-                data.db.connect();
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
+                }
+                else
+                {
+                    data.db.connect(getPartitionID());
+                }
+
                 if (log.isDetailed()) logDetailed(Messages.getString("ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
 
                 // If the SQL needs to be executed once, this is a starting step somewhere.
