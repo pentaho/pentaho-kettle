@@ -44,7 +44,6 @@ public class ScriptValuesDataMod extends BaseStepData implements StepDataInterfa
 	public Script script;
 	
 	public int fields_used[];
-    public boolean readsRows;
 	
 	/**
 	 * 

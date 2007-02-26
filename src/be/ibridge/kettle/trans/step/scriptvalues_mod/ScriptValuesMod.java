@@ -414,9 +414,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
-		if (r==null && !first){
+		if (r==null){
 			
-			//Modfication for Additional End Function
+			//Modification for Additional End Function
 			try{
 				// Checking for EndScript
 				if(strEndScript != null && strEndScript.length()>0){
@@ -434,8 +434,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-		
-		if(r==null && first) r = new Row();
 		
 		// Getting the Row, with the Transformation Status
         switch (addValues(r)) {
