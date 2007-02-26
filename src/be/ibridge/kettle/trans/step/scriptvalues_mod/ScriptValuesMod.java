@@ -138,6 +138,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			data.scope.put("_TransformationName_", data.scope, new String(this.getName()));
 			
 			try{
+				// add these now (they will be readded later) to make compilation succeed
 				Scriptable jsrow = Context.toObject(row, data.scope);
 				data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
 				
@@ -228,6 +229,23 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		//}
 		
 		try{
+			
+			try{
+				Scriptable jsrow = Context.toObject(row, data.scope);
+				data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
+				
+				for (int i=0;i<data.fields_used.length;i++)
+				{
+					Value val = row.getValue(data.fields_used[i]); 
+					Scriptable jsarg = Context.toObject(val, data.scope);
+					data.scope.put(val.getName(), data.scope, jsarg);
+				}
+			}
+			catch(Exception e){
+				setErrors(1);
+				stopAll();
+				return ERROR_TRANSFORMATION;
+			}				
 
 			// Executing our Script
 			data.script.exec(data.cx, data.scope);
@@ -396,8 +414,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
-		if (r==null && data.readsRows)
-        {
+		if (r==null && !first){
+			
 			//Modfication for Additional End Function
 			try{
 				// Checking for EndScript
@@ -417,10 +435,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		if(r==null && !data.readsRows)
-        {
-            r = new Row();
-        }
+		if(r==null && first) r = new Row();
 		
 		// Getting the Row, with the Transformation Status
         switch (addValues(r)) {
@@ -454,13 +469,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		meta=(ScriptValuesMetaMod)smi;
 		data=(ScriptValuesDataMod)sdi;
 
-		if (super.init(smi, sdi))
-        {
+		if (super.init(smi, sdi)){
+		    
 			// Add init code here.
 			// Get the actual Scripts from our MetaData
 			jsScripts = meta.getJSScripts();
-			for(int j=0;j<jsScripts.length;j++)
-            {
+			for(int j=0;j<jsScripts.length;j++){
 				switch(jsScripts[j].getScriptType()){
 				case ScriptValuesScript.TRANSFORM_SCRIPT:
 						strTransformScript =jsScripts[j].getScript();
@@ -473,15 +487,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 						break;
 				}
 			}
-            
-            // See if this step has any previous steps: do we just need to generate output or read input too?
-            //
-            data.readsRows = false;
-            StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
-            if (previous!=null && previous.length>0)
-            {
-                data.readsRows = true;
-            }
 			return true;
 		}
 		return false;
