@@ -1,4 +1,4 @@
-package be.ibridge.kettle.job.entry.createfile;
+package be.ibridge.kettle.job.entry.zipfile;
 
 import be.ibridge.kettle.i18n.BaseMessages;
 
