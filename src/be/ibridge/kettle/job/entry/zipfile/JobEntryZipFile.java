@@ -14,8 +14,8 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.zipfile;
+
 import java.io.*;
-import java.lang.Integer;
 import java.util.Date;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +62,6 @@ import org.apache.commons.vfs.FileObject;
 public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String ZipFilename;
-	private boolean failIfFileExists;
 	public int compressionrate;
 	public int ifzipfileexists;
 	public int afterzip;
@@ -76,7 +75,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		super(n, "");
 		ZipFilename=null;
-		failIfFileExists=true;
 		ifzipfileexists=2;
 		afterzip=0;
 		compressionrate=1;
@@ -422,9 +420,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 									{	
 						    			result.setResult( false );
 										result.setNrErrors(1);
-										log.logError(toString(), Messages.getString("JobZipFiles.Can_Delete_File1.Label")+
+										log.logError(toString(), Messages.getString("JobZipFiles.Cant_Delete_File1.Label")+
 											realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i]+
-												Messages.getString("JobZipFiles.Can_Delete_File2.Label"));
+												Messages.getString("JobZipFiles.Cant_Delete_File2.Label"));
 
 									}
 									// File deleted
@@ -446,8 +444,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 									}
 									catch (IOException e) 
 									{
-										log.logError(toString(), Messages.getString("JobZipFiles.Can_Move_File1.Label") +ZippedFiles[i]+
-											Messages.getString("JobZipFiles.Can_Move_File2.Label") + e.getMessage());
+										log.logError(toString(), Messages.getString("JobZipFiles.Cant_Move_File1.Label") +ZippedFiles[i]+
+											Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
 										result.setResult( false );
 										result.setNrErrors(1);				
 	
@@ -459,30 +457,17 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
 								 }
 							}
-							
 						}
-
 					}
-
-
-
-
 					result.setResult( true );
-
-
-					
 				}
-
-
 				}
 			catch (IOException e) 
 			{
-				log.logError(toString(), Messages.getString("JobZipFiles.Can_CreateZipFile1.Label") +realZipfilename+
-									Messages.getString("JobZipFiles.Can_CreateZipFile2.Label") + e.getMessage());
+       			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +realZipfilename+
+		       							 Messages.getString("JobZipFiles.Cant_CreateZipFile2.Label") + e.getMessage());
 				result.setResult( false );
 				result.setNrErrors(1);				
-	
-
 			}
 			
 			finally 
@@ -496,8 +481,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					catch ( IOException ex ) {};
 				}
 			}
-		              
-        			
 		}
 		else
 		{	
@@ -508,7 +491,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		
 		return result;
 	}
-
 
 	public boolean evaluates()
 	{
@@ -523,7 +505,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		this.ZipFilename = ZipFilename;
 	}
-
 	
 	public void setWildcard(String wildcard)
 	{
@@ -554,8 +535,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		return movetodirectory;
 	}
 
-
-
 	public String getZipFilename()
 	{
 		return ZipFilename;
@@ -565,11 +544,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return wildcard;
 	}
+	
 	public String getWildcardExclude()
 	{
 		return wildcardexclude;
 	}
-
-    
-
 }

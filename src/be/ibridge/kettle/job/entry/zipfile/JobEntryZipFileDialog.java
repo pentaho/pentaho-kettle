@@ -98,12 +98,9 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 	private  CCombo wIfFileExists;
 	private FormData fdlIfFileExists, fdIfFileExists;
 
-
 	private Label wlAfterZip;
-	private  CCombo wAfterZip;
+	private CCombo wAfterZip;
 	private FormData fdlAfterZip, fdAfterZip;
-
-
 
 	private SelectionAdapter lsDef;
 
@@ -165,8 +162,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdName.right= new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
 
-
-
 		// TargetDirectory line
 		wlTargetDirectory = new Label(shell, SWT.RIGHT);
 		wlTargetDirectory.setText(Messages.getString("JobZipFiles.TargetDir.Label"));
@@ -185,8 +180,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdTargetDirectory.top = new FormAttachment(wName, margin);
 		fdTargetDirectory.right = new FormAttachment(100, 0);
 		wTargetDirectory.setLayoutData(fdTargetDirectory);
-
-
 		
 		// Wildcard line
 		wlWildcard = new Label(shell, SWT.RIGHT);
@@ -206,8 +199,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdWildcard.top = new FormAttachment(wTargetDirectory, margin);
 		fdWildcard.right = new FormAttachment(100, 0);
 		wWildcard.setLayoutData(fdWildcard);
-
-	
 		
 		// Wildcard to exclude
 		wlWildcardExclude = new Label(shell, SWT.RIGHT);
@@ -255,11 +246,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdZipFilename.right= new FormAttachment(wbZipFilename, -margin);
 		wZipFilename.setLayoutData(fdZipFilename);
 
-
-
-
-		
-
 		// Whenever something changes, set the tooltip to the expanded version:
 		wZipFilename.addModifyListener(new ModifyListener()
 			{
@@ -292,8 +278,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 			}
 		);
 
-
-
 		//Compression Rate
 
 		wlCompressionRate = new Label(shell, SWT.RIGHT);
@@ -323,8 +307,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdCompressionRate.top = new FormAttachment(wZipFilename, margin);
 		fdCompressionRate.right = new FormAttachment(100, 0);
 		wCompressionRate.setLayoutData(fdCompressionRate);
-
-
 	
 		//IF File Exists
 
@@ -417,7 +399,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdMovetoDirectory.right = new FormAttachment(100, 0);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
 
-	
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
@@ -463,20 +444,14 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 			wMovetoDirectory.setEnabled(true);
 		else
 			wMovetoDirectory.setEnabled(false);
-				
-		
-
 	}
 
-
-
-	public void dispose()
+    public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
 		props.setScreen(winprop);
 		shell.dispose();
 	}
-
 
 
 	/**
@@ -512,8 +487,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		if (jobEntry.getTargetDirectory()!= null) wTargetDirectory.setText( jobEntry.getTargetDirectory() );
 		if (jobEntry.getMoveToDirectory()!= null) wMovetoDirectory.setText( jobEntry.getMoveToDirectory() );
 
-
-
 		if (jobEntry.afterzip>=0)
 		{
 			wAfterZip.select(jobEntry.afterzip );
@@ -523,11 +496,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		{
 			wAfterZip.select(0 ); // NOTHING
 		}
-
-
-
-
-
 	}
 
 	private void cancel()
@@ -553,8 +521,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		
 		
 		jobEntry.afterzip = wAfterZip.getSelectionIndex();
-
-
 	
 		dispose();
 	}
