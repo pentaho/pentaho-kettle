@@ -50,7 +50,6 @@ import be.ibridge.kettle.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
 
 
-
 /**
  * This defines a 'zip file' job entry. Its main use would be to 
  * zip files in a directory and process zipped files (deleted or move)
@@ -61,26 +60,26 @@ import org.apache.commons.vfs.FileObject;
  */
 public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-	private String ZipFilename;
+	private String zipFilename;
 	public int compressionrate;
 	public int ifzipfileexists;
 	public int afterzip;
 	private String wildcard;
 	private String wildcardexclude;
-	private String targetdirectory;
+	private String sourcedirectory;
 	private String movetodirectory;
 	
 
 	public JobEntryZipFile(String n)
 	{
 		super(n, "");
-		ZipFilename=null;
+		zipFilename=null;
 		ifzipfileexists=2;
 		afterzip=0;
 		compressionrate=1;
 		wildcard=null;
 		wildcardexclude=null;
-		targetdirectory=null;
+		sourcedirectory=null;
 		movetodirectory=null;
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_ZIP_FILE);
@@ -107,13 +106,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         StringBuffer retval = new StringBuffer(50);
 		
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("ZipFilename",   ZipFilename));
+		retval.append("      ").append(XMLHandler.addTagValue("zipfilename",      zipFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("compressionrate",  compressionrate));
 		retval.append("      ").append(XMLHandler.addTagValue("ifzipfileexists",  ifzipfileexists));
-		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
-		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",     wildcardexclude));
-		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory",     targetdirectory));
-		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",     movetodirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcard",         wildcard));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",  wildcardexclude));
+		retval.append("      ").append(XMLHandler.addTagValue("sourcedirectory",  sourcedirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",  movetodirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("afterzip",  afterzip));
 		return retval.toString();
 	}
@@ -124,20 +123,20 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		try
 		{
 			super.loadXML(entrynode, databases);
-			ZipFilename = XMLHandler.getTagValue(entrynode, "ZipFilename");
-			compressionrate     = Const.toInt(XMLHandler.getTagValue(entrynode, "compressionrate"), -1);
-			ifzipfileexists     = Const.toInt(XMLHandler.getTagValue(entrynode, "ifzipfileexists"), -1);
-			afterzip     = Const.toInt(XMLHandler.getTagValue(entrynode, "afterzip"), -1);
+			zipFilename = XMLHandler.getTagValue(entrynode, "zipfilename");
+			compressionrate = Const.toInt(XMLHandler.getTagValue(entrynode, "compressionrate"), -1);
+			ifzipfileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "ifzipfileexists"), -1);
+			afterzip        = Const.toInt(XMLHandler.getTagValue(entrynode, "afterzip"), -1);
 
     		wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
-			targetdirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
+			sourcedirectory = XMLHandler.getTagValue(entrynode, "sourcedirectory");
 			movetodirectory = XMLHandler.getTagValue(entrynode, "movetodirectory");
 
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'create file' from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'zipfile' from XML node", xe);
 		}
 	}
 
@@ -147,19 +146,19 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			ZipFilename = rep.getJobEntryAttributeString(id_jobentry, "ZipFilename");
+			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
 			compressionrate=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "compressionrate"),-1);
 			ifzipfileexists=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "ifzipfileexists"),-1);
 			afterzip=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "afterzip"),-1);
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
-			targetdirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
+			sourcedirectory = rep.getJobEntryAttributeString(id_jobentry, "sourcedirectory");
 			movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
 		
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'create file' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'zipfile' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -170,24 +169,21 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		{
 			super.saveRep(rep, id_job);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "ZipFilename", ZipFilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "zipfilename", zipFilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "compressionrate", compressionrate);
 			rep.saveJobEntryAttribute(id_job, getID(), "ifzipfileexists", ifzipfileexists);
 			rep.saveJobEntryAttribute(id_job, getID(), "afterzip", afterzip);
 
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
-			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetdirectory);
+			rep.saveJobEntryAttribute(id_job, getID(), "sourcedirectory", sourcedirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "movetodirectory", movetodirectory);
-
-		
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type 'create file' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'zipfile' to the repository for id_job="+id_job, dbe);
 		}
 	}
-
 
 	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
@@ -197,17 +193,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		result.setResult( false );
 		boolean Fileexists=false;
 
-		String realZipfilename        = StringUtil.environmentSubstitute(ZipFilename);
-		String realWildcard        = StringUtil.environmentSubstitute(wildcard);
-		String realWildcardExclude        = StringUtil.environmentSubstitute(wildcardexclude);
-		String realTargetdirectory        = StringUtil.environmentSubstitute(targetdirectory);
-		String realMovetodirectory        = StringUtil.environmentSubstitute(movetodirectory);
-
-			
+		String realZipfilename       = StringUtil.environmentSubstitute(zipFilename);
+		String realWildcard          = StringUtil.environmentSubstitute(wildcard);
+		String realWildcardExclude   = StringUtil.environmentSubstitute(wildcardexclude);
+		String realTargetdirectory   = StringUtil.environmentSubstitute(sourcedirectory);
+		String realMovetodirectory   = StringUtil.environmentSubstitute(movetodirectory);
 	
-		if (ZipFilename!=null)
+		if (zipFilename!=null)
 		{
-        
             FileObject fileObject = null;
 			try {
 				fileObject = KettleVFS.getFileObject(realZipfilename);
@@ -215,9 +208,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				if ( fileObject.exists() )
 				{
 					Fileexists =true;
-					log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ ZipFilename 
+					log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ zipFilename 
 											+ Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
-
 				}
 				else
 				{
@@ -246,11 +238,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					result.setNrErrors(1);
 					log.logError(toString(), Messages.getString("JobZipFiles.AfterZip_No_DestinationFolder_Defined.Label"));
 
-				}
-				
+				}				
 				else 
 					// After Zip, Move files..User must give a destination Folder
-
 				{
 
 					if(ifzipfileexists==0 && Fileexists)
@@ -260,15 +250,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						//Format Date
 		
 						DateFormat dateFormat = new SimpleDateFormat("hhmmss_mmddyyyy");
-						ZipFilename=ZipFilename + "_" + dateFormat.format(new Date())+".zip";		
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + ZipFilename + 
+						zipFilename=zipFilename + "_" + dateFormat.format(new Date())+".zip";		
+						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + zipFilename + 
 												Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
 
 
 					}
 					else if(ifzipfileexists==1 && Fileexists)
 					{
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + ZipFilename + 
+						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + zipFilename + 
 										Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
 					}
 				
@@ -282,8 +272,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					log.logDetailed(toString(), Messages.getString("JobZipFiles.Files_Found1.Label") +filelist.length+ 
 										Messages.getString("JobZipFiles.Files_Found2.Label") + realTargetdirectory + 
 										Messages.getString("JobZipFiles.Files_Found3.Label"));
-
-
 
 					Pattern pattern = null;
 					if (!Const.isEmpty(realWildcard)) 
@@ -301,7 +289,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					// Prepare Zip File
 					byte[] buffer = new byte[18024];
 					
-					FileOutputStream dest = new FileOutputStream(ZipFilename);
+					FileOutputStream dest = new FileOutputStream(zipFilename);
 					BufferedOutputStream buff = new BufferedOutputStream(dest);
 					ZipOutputStream out = new ZipOutputStream(buff);
 
@@ -327,12 +315,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						out.setLevel(Deflater.BEST_SPEED);
 					}
 
-
 					// Specify Zipped files (After that we will move,delete them...)
 					String[] ZippedFiles = new String[filelist.length];
-					int FileNum=0;
-
-				
+					int FileNum=0;			
 
 					// Get the files in the list...
 					for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
@@ -388,20 +373,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							// Get Zipped File
 							ZippedFiles[FileNum] = filelist[i];
 							FileNum=FileNum+1;
-							
-	
 						}
-
 					}
 						
 					// Close the ZipOutPutStream
 					out.close();
 
-					
-
-
 					//-----Get the list of Zipped Files and Move or Delete Them
-					if (afterzip == 1 || afterzip==2)
+					if (afterzip == 1 || afterzip == 2)
 					{
 						// iterate through the array of Zipped files
 						for (int i = 0; i < ZippedFiles.length; i++) 
@@ -429,10 +408,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 									log.logDebug(toString(), Messages.getString("JobZipFiles.File_Deleted1.Label") + 
 										realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i] + 
 										Messages.getString("JobZipFiles.File_Deleted2.Label"));
-
-
-
-
 								}
 								else if(afterzip == 2)
 								{
@@ -448,20 +423,17 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 											Messages.getString("JobZipFiles.Cant_Move_File2.Label") + e.getMessage());
 										result.setResult( false );
 										result.setNrErrors(1);				
-	
-
 									}
 									// File moved
 									log.logDebug(toString(), Messages.getString("JobZipFiles.File_Moved1.Label") + ZippedFiles[i] + 
 										Messages.getString("JobZipFiles.File_Moved2.Label"));
-
 								 }
 							}
 						}
 					}
 					result.setResult( true );
 				}
-				}
+			}
 			catch (IOException e) 
 			{
        			log.logError(toString(), Messages.getString("JobZipFiles.Cant_CreateZipFile1.Label") +realZipfilename+
@@ -469,7 +441,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				result.setResult( false );
 				result.setNrErrors(1);				
 			}
-			
 			finally 
 			{
 				if ( fileObject != null )
@@ -501,9 +472,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
         return new JobEntryZipFileDialog(shell,this,jobMeta);
     }
 
-	public void setZipFilename(String ZipFilename)
+	public void setZipFilename(String zipFilename)
 	{
-		this.ZipFilename = ZipFilename;
+		this.zipFilename = zipFilename;
 	}
 	
 	public void setWildcard(String wildcard)
@@ -515,9 +486,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		this.wildcardexclude = wildcardexclude;
 	}
 	
-	public void setTargetDirectory(String targetdirectory)
+	public void setSourceDirectory(String sourcedirectory)
 	{
-		this.targetdirectory = targetdirectory;
+		this.sourcedirectory = sourcedirectory;
 	}
 	
 	public void setMoveToDirectory(String movetodirectory)
@@ -525,9 +496,9 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		this.movetodirectory = movetodirectory;
 	}
 	
-	public String getTargetDirectory()
+	public String getSourceDirectory()
 	{
-		return targetdirectory;
+		return sourcedirectory;
 	}
 
 	public String getMoveToDirectory()
@@ -537,7 +508,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
 	public String getZipFilename()
 	{
-		return ZipFilename;
+		return zipFilename;
 	}
 
 	public String getWildcard()

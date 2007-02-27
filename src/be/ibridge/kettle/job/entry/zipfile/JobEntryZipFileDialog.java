@@ -71,16 +71,13 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 	private Shell       	shell;
 	private Props       	props;
 
-
-	private Label wlTargetDirectory;
-	private TextVar wTargetDirectory;
-	private FormData fdlTargetDirectory, fdTargetDirectory;
+	private Label wlSourceDirectory;
+	private TextVar wSourceDirectory;
+	private FormData fdlSourceDirectory, fdSourceDirectory;
 
 	private Label wlMovetoDirectory;
 	private TextVar wMovetoDirectory;
 	private FormData fdlMovetoDirectory, fdMovetoDirectory;
-
-
 
 	private Label wlWildcard;
 	private TextVar wWildcard;
@@ -163,23 +160,23 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		wName.setLayoutData(fdName);
 
 		// TargetDirectory line
-		wlTargetDirectory = new Label(shell, SWT.RIGHT);
-		wlTargetDirectory.setText(Messages.getString("JobZipFiles.TargetDir.Label"));
-		props.setLook(wlTargetDirectory);
-		fdlTargetDirectory = new FormData();
-		fdlTargetDirectory.left = new FormAttachment(0, 0);
-		fdlTargetDirectory.top = new FormAttachment(wName, margin);
-		fdlTargetDirectory.right = new FormAttachment(middle, -margin);
-		wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-		wTargetDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.TargetDir.Tooltip"));
-		props.setLook(wTargetDirectory);
-		wTargetDirectory.addModifyListener(lsMod);
-		fdTargetDirectory = new FormData();
-		fdTargetDirectory.left = new FormAttachment(middle, 0);
-		fdTargetDirectory.top = new FormAttachment(wName, margin);
-		fdTargetDirectory.right = new FormAttachment(100, 0);
-		wTargetDirectory.setLayoutData(fdTargetDirectory);
+		wlSourceDirectory = new Label(shell, SWT.RIGHT);
+		wlSourceDirectory.setText(Messages.getString("JobZipFiles.SourceDir.Label"));
+		props.setLook(wlSourceDirectory);
+		fdlSourceDirectory = new FormData();
+		fdlSourceDirectory.left = new FormAttachment(0, 0);
+		fdlSourceDirectory.top = new FormAttachment(wName, margin);
+		fdlSourceDirectory.right = new FormAttachment(middle, -margin);
+		wlSourceDirectory.setLayoutData(fdlSourceDirectory);
+		wSourceDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
+			.getString("JobZipFiles.SourceDir.Tooltip"));
+		props.setLook(wSourceDirectory);
+		wSourceDirectory.addModifyListener(lsMod);
+		fdSourceDirectory = new FormData();
+		fdSourceDirectory.left = new FormAttachment(middle, 0);
+		fdSourceDirectory.top = new FormAttachment(wName, margin);
+		fdSourceDirectory.right = new FormAttachment(100, 0);
+		wSourceDirectory.setLayoutData(fdSourceDirectory);
 		
 		// Wildcard line
 		wlWildcard = new Label(shell, SWT.RIGHT);
@@ -187,7 +184,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		props.setLook(wlWildcard);
 		fdlWildcard = new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
-		fdlWildcard.top = new FormAttachment(wTargetDirectory, margin);
+		fdlWildcard.top = new FormAttachment(wSourceDirectory, margin);
 		fdlWildcard.right = new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
@@ -196,7 +193,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard = new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
-		fdWildcard.top = new FormAttachment(wTargetDirectory, margin);
+		fdWildcard.top = new FormAttachment(wSourceDirectory, margin);
 		fdWildcard.right = new FormAttachment(100, 0);
 		wWildcard.setLayoutData(fdWildcard);
 		
@@ -219,9 +216,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdWildcardExclude.right = new FormAttachment(100, 0);
 		wWildcardExclude.setLayoutData(fdWildcardExclude);
 
-
 		// ZipFilename line
-
 		wlZipFilename=new Label(shell, SWT.RIGHT);
 		wlZipFilename.setText(Messages.getString("JobZipFiles.ZipFilename.Label"));
 		props.setLook(wlZipFilename);
@@ -279,7 +274,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		);
 
 		//Compression Rate
-
 		wlCompressionRate = new Label(shell, SWT.RIGHT);
 		wlCompressionRate.setText(Messages.getString("JobZipFiles.CompressionRate.Label"));
 		props.setLook(wlCompressionRate);
@@ -309,7 +303,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		wCompressionRate.setLayoutData(fdCompressionRate);
 	
 		//IF File Exists
-
 		wlIfFileExists = new Label(shell, SWT.RIGHT);
 		wlIfFileExists.setText(Messages.getString("JobZipFiles.IfZipFileExists.Label"));
 		props.setLook(wlIfFileExists);
@@ -339,9 +332,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
 
-
 		//After Zipping
-
 		wlAfterZip = new Label(shell, SWT.RIGHT);
 		wlAfterZip.setText(Messages.getString("JobZipFiles.AfterZip.Label"));
 		props.setLook(wlAfterZip);
@@ -379,7 +370,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 			}
 		});
 
-
 		// moveTo Directory
 		wlMovetoDirectory = new Label(shell, SWT.RIGHT);
 		wlMovetoDirectory.setText(Messages.getString("JobZipFiles.MovetoDirectory.Label"));
@@ -398,7 +388,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
 		fdMovetoDirectory.right = new FormAttachment(100, 0);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
-
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
@@ -463,7 +452,6 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		wName.selectAll();
 		if (jobEntry.getZipFilename()!= null) wZipFilename.setText( jobEntry.getZipFilename() );
 
-
 		if (jobEntry.compressionrate>=0) 
 		{
 			wCompressionRate.select(jobEntry.compressionrate );
@@ -484,7 +472,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 
 		if (jobEntry.getWildcard()!= null) wWildcard.setText( jobEntry.getWildcard() );
 		if (jobEntry.getWildcardExclude()!= null) wWildcardExclude.setText( jobEntry.getWildcardExclude() );
-		if (jobEntry.getTargetDirectory()!= null) wTargetDirectory.setText( jobEntry.getTargetDirectory() );
+		if (jobEntry.getSourceDirectory()!= null) wSourceDirectory.setText( jobEntry.getSourceDirectory() );
 		if (jobEntry.getMoveToDirectory()!= null) wMovetoDirectory.setText( jobEntry.getMoveToDirectory() );
 
 		if (jobEntry.afterzip>=0)
@@ -515,7 +503,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 
 		jobEntry.setWildcard(wWildcard.getText());
 		jobEntry.setWildcardExclude(wWildcardExclude.getText());
-		jobEntry.setTargetDirectory(wTargetDirectory.getText());
+		jobEntry.setSourceDirectory(wSourceDirectory.getText());
 
 		jobEntry.setMoveToDirectory(wMovetoDirectory.getText());
 		
