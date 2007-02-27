@@ -37,6 +37,7 @@ import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.mysqlbulkload.JobEntryMysqlBulkLoad;
 import be.ibridge.kettle.job.entry.msgboxinfo.JobEntryMsgBoxInfo;
 import be.ibridge.kettle.job.entry.delay.JobEntryDelay;
+import be.ibridge.kettle.job.entry.zipfile.JobEntryZipFile;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
 import be.ibridge.kettle.job.entry.sftpput.JobEntrySFTPPUT;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
@@ -79,6 +80,7 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_MYSQL_BULK_LOAD= 18;
 	public static final int TYPE_JOBENTRY_MSGBOX_INFO= 19;
 	public static final int TYPE_JOBENTRY_DELAY= 20;
+	public static final int TYPE_JOBENTRY_ZIP_FILE= 21;
     
 	public final static String typeCode[] =
 		{
@@ -103,6 +105,7 @@ public interface JobEntryInterface
             "MYSQL_BULK_LOAD",
 			"MSGBOX_INFO",
 			"DELAY",
+			"ZIP_FILE",
 		};
 
 	public final static String typeDesc[] =
@@ -128,6 +131,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.MysqlBulkLoad.TypeDesc"),
 			Messages.getString("JobEntry.MsgBoxInfo.TypeDesc"),
 			Messages.getString("JobEntry.Delay.TypeDesc"),
+			Messages.getString("JobEntry.ZipFile.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -153,6 +157,7 @@ public interface JobEntryInterface
             "MBL.png",
 			"INF.png",
 			"DLT.png",
+			"ZIP.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -178,6 +183,7 @@ public interface JobEntryInterface
             Messages.getString("JobEntry.MysqlBulkLoad.Tooltip"),
 		    Messages.getString("JobEntry.MsgBoxInfo.Tooltip"),
 			Messages.getString("JobEntry.Delay.Tooltip"),
+			Messages.getString("JobEntry.ZipFile.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -203,6 +209,7 @@ public interface JobEntryInterface
             JobEntryMysqlBulkLoad.class,
 			JobEntryMsgBoxInfo.class,
 			JobEntryDelay.class,
+			JobEntryZipFile.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
