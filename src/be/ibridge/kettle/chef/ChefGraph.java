@@ -537,7 +537,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 					{
 						Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 						selected_note.setLocation(note.x, note.y);
-						spoon.refreshGraph();
+						redraw();
+						//spoon.refreshGraph();  removed in 2.4.1 (SB: defect #4862)
 					}
 				}
 			}
