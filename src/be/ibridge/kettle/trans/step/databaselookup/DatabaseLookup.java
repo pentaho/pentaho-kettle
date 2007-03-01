@@ -197,7 +197,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			try {
 				add = data.db.getLookup(meta.isFailingOnMultipleResults());
 			} catch (KettleDatabaseException e) {
-				logError("Database lookup failed for values: " + lu);
+				logError(Messages.getString("DatabaseLookup.ERROR005.LookupFailed", lu.toString()));
 				throw e;
 			}
 			cache_now=true;
