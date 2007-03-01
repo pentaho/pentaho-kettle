@@ -22,7 +22,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.TimedRow;
 import be.ibridge.kettle.core.database.Database;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
@@ -194,12 +193,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+lu); //$NON-NLS-1$ //$NON-NLS-2$
 
 			data.db.setValuesLookup(lu);
-			try {
+// TODO this is too time consuming, find a way to enhance error handling
+//			try {
 				add = data.db.getLookup(meta.isFailingOnMultipleResults());
-			} catch (KettleDatabaseException e) {
-				logError(Messages.getString("DatabaseLookup.ERROR005.LookupFailed", lu.toString()));
-				throw e;
-			}
+//			} catch (KettleDatabaseException e) {
+//				logError(Messages.getString("DatabaseLookup.ERROR005.LookupFailed", lu.toString()));
+//				throw e;
+//			}
 			cache_now=true;
 		}
 
