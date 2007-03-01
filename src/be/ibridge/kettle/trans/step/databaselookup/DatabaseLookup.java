@@ -193,13 +193,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+lu); //$NON-NLS-1$ //$NON-NLS-2$
 
 			data.db.setValuesLookup(lu);
-// TODO this is too time consuming, find a way to enhance error handling
-//			try {
-				add = data.db.getLookup(meta.isFailingOnMultipleResults());
-//			} catch (KettleDatabaseException e) {
-//				logError(Messages.getString("DatabaseLookup.ERROR005.LookupFailed", lu.toString()));
-//				throw e;
-//			}
+			add = data.db.getLookup(meta.isFailingOnMultipleResults());
 			cache_now=true;
 		}
 

@@ -3635,12 +3635,13 @@ public class Database
 			
             if (failOnMultipleResults)
             {
-                if (res.next()) 
+                if (ret != null && res.next()) 
                 {
+                	// if the previous row was null, there's no reason to try res.next() again.
+                	// on DB2 this will even cause an exception (because of the buggy DB2 JDBC driver).
                     throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and at least 2 were found!");
                 }
-            }
-			debug = "res.close()";
+            }			
 			return ret;
 		}
 		catch(SQLException ex) 
@@ -3651,6 +3652,7 @@ public class Database
         {
             try
             {
+            	debug = "res.close()";
                 if (res!=null) res.close(); // close resultset!
             }
             catch(SQLException e)
