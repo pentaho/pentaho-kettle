@@ -269,7 +269,10 @@ public class Mapping extends BaseStep implements StepInterface
         super.stopAll();
         
         // Also stop the mapping step.
-        data.trans.stopAll();
+        if ( data.trans != null  )
+        {
+            data.trans.stopAll();
+        }
     }
 	
 	//
