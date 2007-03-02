@@ -656,7 +656,7 @@ public class ValueTest extends TestCase
 	    vs.setValue(10.0D);
 	    vs.setOrigin("origin");
 	    vs.setLength(4, 2);
-	    Value copy = (Value)vs.Clone();
+	    Value copy = vs.Clone();
 	    assertEquals(vs.getType(), copy.getType());
 	    assertEquals(vs.getNumber(), copy.getNumber(), 0.1D);
 	    assertEquals(vs.getLength(), copy.getLength());
@@ -1125,7 +1125,7 @@ public class ValueTest extends TestCase
 	/**
 	 * Test hexEncode.
 	 */
-	public void testByteToHexEncode() throws KettleValueException 
+	public void testByteToHexEncode() 
 	{
 	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
 
