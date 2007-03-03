@@ -203,6 +203,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				return false;
 			}
+			if (getStepMeta().isDoingErrorHandling())
+			{
+                putError(row, 1L, "No lookup found", null, "DBL001");
+                row.setIgnore();
+                
+                // return false else we would still be processed.
+                return false;
+			}
+			
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.NoResultsFoundAfterLookup")); //$NON-NLS-1$
 			add=new Row();
 			for (int i=0;i<meta.getReturnValueField().length;i++)
