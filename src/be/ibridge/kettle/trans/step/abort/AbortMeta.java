@@ -40,11 +40,8 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	
     public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String[] input, String[] output, Row info) {
         // See if we have input streams leading to this step!
-        if (input.length>0) {
-            CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FilesFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
-            remarks.add(cr);
-        } else {
-            CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FilesFromResultMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+        if (input.length == 0) {
+            CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("AbortMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }
