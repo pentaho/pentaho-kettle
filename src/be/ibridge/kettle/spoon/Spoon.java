@@ -7418,7 +7418,7 @@ public class Spoon implements AddUndoPositionInterface
         TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
         if (dialog.open())
         {
-            addSpoonLog(transMeta);
+            addSpoonLog(transMeta, !executionConfiguration.isLocalPreviewing());
             SpoonLog spoonLog = getActiveSpoonLog();
             
             if (executionConfiguration.isExecutingLocally())
@@ -7647,12 +7647,18 @@ public class Spoon implements AddUndoPositionInterface
     {
         return "Slave server: "+slaveServer.getName();
     }
-    
+
     public void addSpoonLog(TransMeta transMeta)
+    {
+        addSpoonLog(transMeta, true);
+    } 
+
+    public void addSpoonLog(TransMeta transMeta, boolean setActive)
     {
         // See if there already is a tab for this log
         // If no, add it
         // If yes, select that tab
+    	//   if setActive is true
         //
         String tabName = makeLogTabName(transMeta);
         CTabItem tabItem=findCTabItem(tabName);
@@ -7679,8 +7685,11 @@ public class Spoon implements AddUndoPositionInterface
             
             tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonLog));
         }
-        int idx = tabfolder.indexOf(tabItem);
-        tabfolder.setSelection(idx);
+        if ( setActive )
+        {
+            int idx = tabfolder.indexOf(tabItem);
+            tabfolder.setSelection(idx);
+        }
     }
     
     public void addChefLog(JobMeta jobMeta)

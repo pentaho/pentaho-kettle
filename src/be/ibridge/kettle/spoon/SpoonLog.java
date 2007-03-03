@@ -812,7 +812,8 @@ public class SpoonLog extends Composite implements TabItemInterface
                 }
                 setVariables(executionConfiguration);
 
-				spoon.tabfolder.setSelection(1);
+				// SB: don't set it to the first tabfolder
+                // spoon.tabfolder.setSelection(1);
 				trans = new Trans(log, transMeta, executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
