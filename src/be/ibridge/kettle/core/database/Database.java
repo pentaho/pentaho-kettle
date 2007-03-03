@@ -1878,10 +1878,17 @@ public class Database
             KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
             kdbe.setUpdateCounts(ex.getUpdateCounts());
             List exceptions = new ArrayList();
-            SQLException nextException;
-            while ( (nextException = ex.getNextException())!=null)
+            SQLException nextException = ex.getNextException();
+            SQLException oldException = null;
+            
+            // This construction is specifically done for some JDBC drivers, these drivers
+            // always return the same exception on getNextException() (and thus go into an infinite loop).
+            // So it's not "equals" but != (comments from Sven Boden).
+            while ( (nextException != null) && (oldException != nextException) )
             {
                 exceptions.add(nextException);
+                oldException = nextException;
+               	nextException = nextException.getNextException();
             }
             kdbe.setExceptionsList(exceptions);
             throw kdbe;
