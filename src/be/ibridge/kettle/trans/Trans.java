@@ -763,6 +763,8 @@ public class Trans
 
 	public void killAll()
 	{
+		if (steps==null) return;
+		
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
@@ -897,6 +899,8 @@ public class Trans
 	//
 	public void stopAll()
 	{
+		if (steps==null) return;
+		
 		//log.logDetailed("DIS: Checking wether of not ["+sname+"]."+cnr+" has started!");
 		//log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
 		for (int i=0;i<steps.size();i++)
@@ -1511,6 +1515,8 @@ public class Trans
 
     public MappingInput findMappingInput()
     {
+		if (steps==null) return null;
+		
         // Look in threads and find the MappingInput step thread...
         for (int i=0;i<steps.size();i++)
         {
@@ -1524,6 +1530,8 @@ public class Trans
 
     public MappingOutput findMappingOutput()
     {
+		if (steps==null) return null;
+		
         // Look in threads and find the MappingInput step thread...
         for (int i=0;i<steps.size();i++)
         {
@@ -1559,6 +1567,8 @@ public class Trans
      */
     public StepInterface getStepInterface(String stepname, int copy)
     {
+		if (steps==null) return null;
+		
         // Now start all the threads...
         for (int i=0;i<steps.size();i++)
         {
@@ -1652,6 +1662,8 @@ public class Trans
      */
     public StepDataInterface getStepDataInterface(String stepname, int stepcopy)
     {
+		if (steps==null) return null;
+		
         for (int i=0;i<steps.size();i++)
         {
             StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
@@ -1666,6 +1678,9 @@ public class Trans
      */
     public boolean hasHaltedSteps()
     {
+    	// not yet 100% sure of this, if there are no steps... or none halted?
+		if (steps==null) return false;
+		
         for (int i=0;i<steps.size();i++)
         {
             StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
@@ -1939,7 +1954,4 @@ public class Trans
             throw new KettleException("There was an error during transformation split");
         }
     }
-
 }
-
-
