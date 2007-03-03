@@ -262,10 +262,14 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 	public Row getParameterRow(Row fields)
 	{
 		Row param = new Row();
-		for (int i=0;i<parameterField.length;i++)
+		
+		if ( fields != null )
 		{
-			Value v = fields.searchValue(parameterField[i]);
-			if (v!=null) param.addValue(v);
+		    for (int i=0;i<parameterField.length;i++)
+		    {
+			    Value v = fields.searchValue(parameterField[i]);
+			    if (v!=null) param.addValue(v);
+		    }
 		}
 		return param;
 	}
