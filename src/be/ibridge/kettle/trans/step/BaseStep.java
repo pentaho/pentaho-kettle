@@ -45,6 +45,7 @@ import be.ibridge.kettle.trans.StepPluginMeta;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.XMLInputSax.XMLInputSaxMeta;
+import be.ibridge.kettle.trans.step.abort.AbortMeta;
 import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
 import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
 import be.ibridge.kettle.trans.step.addxml.AddXMLMeta;
@@ -127,7 +128,7 @@ public class BaseStep extends Thread
 
     protected static LocalVariables localVariables = LocalVariables.getInstance();
 
-    public static final StepPluginMeta[] steps = 
+    public static final StepPluginMeta[] steps =
         {
             new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
@@ -254,26 +255,28 @@ public class BaseStep extends Thread
             new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages
                     .getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_INLINE),
             new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP), 
+                    .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
             new StepPluginMeta(BodetPluginMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL), 
+                    .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL), 
+                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
+            new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages
+                    .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_EXPERIMENTAL),
         };
 
-    public static final String category_order[] = 
-        { 
-            CATEGORY_INPUT,  
-            CATEGORY_OUTPUT, 
-            CATEGORY_LOOKUP, 
-            CATEGORY_TRANSFORM, 
-            CATEGORY_JOINS, 
+    public static final String category_order[] =
+        {
+            CATEGORY_INPUT,
+            CATEGORY_OUTPUT,
+            CATEGORY_LOOKUP,
+            CATEGORY_TRANSFORM,
+            CATEGORY_JOINS,
             CATEGORY_SCRIPTING,
-            CATEGORY_DATA_WAREHOUSE, 
-            CATEGORY_MAPPING, 
-            CATEGORY_JOB, 
-            CATEGORY_INLINE, 
-            CATEGORY_EXPERIMENTAL, 
+            CATEGORY_DATA_WAREHOUSE,
+            CATEGORY_MAPPING,
+            CATEGORY_JOB,
+            CATEGORY_INLINE,
+            CATEGORY_EXPERIMENTAL,
             CATEGORY_DEPRECATED,
         };
 
@@ -317,12 +320,12 @@ public class BaseStep extends Thread
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
     public long                          linesRejected;
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
-    
-    
+
+
     private long                         nrGetSleeps;
     /** total sleep time in ns cause by a full output buffer (next step is slow) */
     private long                         nrPutSleeps;
-    
+
     private boolean                      distributed;
 
     private long                         errors;
@@ -337,13 +340,13 @@ public class BaseStep extends Thread
 
     /** The rowsets on the input, size() == nr of source steps */
     public List inputRowSets;
-    
+
     /** the rowsets on the output, size() == nr of target steps */
     public List outputRowSets;
-    
+
     /** the rowset for the error rows */
     public RowSet errorRowSet;
-    
+
     public boolean                       stopped;
 
     public boolean                       waiting;
@@ -354,7 +357,7 @@ public class BaseStep extends Thread
     private int                          stepcopy;
     /** the output rowset nr, for fixed input channels like Stream Lookup */
     private int                          output_rowset_nr;
-    
+
     private Date                         start_time, stop_time;
 
     public boolean                       first;
@@ -369,7 +372,7 @@ public class BaseStep extends Thread
 
     /** The list of RowListener interfaces */
     private List                         rowListeners;
-    
+
     /**
      * Map of files that are generated or used by this step. After execution, these can be added to result.
      * The entry to the map is the filename
@@ -431,7 +434,7 @@ public class BaseStep extends Thread
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
-     * 
+     *
      * @param stepMeta The StepMeta object to run.
      * @param stepDataInterface the data object to store temporary data, database connections, caches, result sets,
      * hashtables etc.
@@ -686,7 +689,7 @@ public class BaseStep extends Thread
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
-     * 
+     *
      * @param row The row to put to the destination rowset(s).
      * @throws KettleStepException
      */
@@ -738,7 +741,7 @@ public class BaseStep extends Thread
                     rs.setPriorityFrom(calcPutPriority(rs));
                 }
             }
-            
+
             while (rs.isFull() && !stopped)
             {
                 try
@@ -806,11 +809,11 @@ public class BaseStep extends Thread
                 // We know that we have to partition in N pieces
                 // We should also have N rowsets to the next step
                 // This is always the case, wheter the target is partitioned or not.
-                // 
+                //
                 // So what we do is now count the number of rowsets
                 // And we take the steps copy nr to map.
                 // It's simple for the time being.
-                // 
+                //
                 // P1 : MOD(field,N)==0
                 // P2 : MOD(field,N)==1
                 // ...
@@ -886,7 +889,7 @@ public class BaseStep extends Thread
     /**
      * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
      * Otherwise it's the same as the other one.
-     * 
+     *
      * @param row the row to send to the destination step
      * @param to the name of the step to send the row to
      */
@@ -909,7 +912,7 @@ public class BaseStep extends Thread
     /**
      * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
      * (synchronized) If distribute is true, a a row is copied only once to a single output rowset!
-     * 
+     *
      * @param row The row to put to the destination rowsets.
      * @param output_rowset_nr the number of the rowset to put the row to.
      */
@@ -976,14 +979,14 @@ public class BaseStep extends Thread
         rs.putRow(row);
         linesWritten++;
     }
-    
-    
+
+
     public synchronized void putError(Row row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
         Row add = stepErrorMeta.getErrorFields(nrErrors, errorDescriptions, fieldNames, errorCodes);
         row.addRow(add);
-        
+
         // call all rowlisteners...
         for (int i = 0; i < rowListeners.size(); i++)
         {
@@ -997,12 +1000,12 @@ public class BaseStep extends Thread
 
         verifyRejectionRates();
     }
-    
+
     private void verifyRejectionRates()
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
         if (stepErrorMeta==null) return; // nothing to verify.
-        
+
         // Was this one error too much?
         if (stepErrorMeta.getMaxErrors()>0 && linesRejected>stepErrorMeta.getMaxErrors())
         {
@@ -1010,9 +1013,9 @@ public class BaseStep extends Thread
             setErrors(1L);
             stopAll();
         }
-        
+
         if ( stepErrorMeta.getMaxPercentErrors()>0 && linesRejected>0 &&
-            ( stepErrorMeta.getMinPercentRows()<=0 || linesRead>=stepErrorMeta.getMinPercentRows()) 
+            ( stepErrorMeta.getMinPercentRows()<=0 || linesRead>=stepErrorMeta.getMinPercentRows())
             )
         {
             int pct = (int) (100 * linesRejected / linesRead );
@@ -1063,9 +1066,9 @@ public class BaseStep extends Thread
         }
 
         // If everything is finished, we can stop immediately!
-        if (inputRowSets.isEmpty()) 
+        if (inputRowSets.isEmpty())
         {
-            return null; 
+            return null;
         }
 
         // What's the current input stream?
@@ -1082,7 +1085,7 @@ public class BaseStep extends Thread
                     inputRowSets.remove(in_handling);
                     if (inputRowSets.isEmpty()) // nothing more to be found!
                     {
-                        return null; 
+                        return null;
                     }
                 }
             }
@@ -1153,8 +1156,8 @@ public class BaseStep extends Thread
         {
             safeModeChecking(row);
         } // Extra checking
-        
-        // Check the rejection rates etc. as well. 
+
+        // Check the rejection rates etc. as well.
         verifyRejectionRates();
 
         return row;
@@ -1186,14 +1189,14 @@ public class BaseStep extends Thread
                     Value referenceValue = referenceRow.getValue(i);
                     Value compareValue = row.getValue(i);
 
-                    if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName())) 
-                    { 
-                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")"); 
+                    if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
+                    {
+                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")");
                     }
-                    
-                    if (referenceValue.getType()!=compareValue.getType()) 
-                    { 
-                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")"); 
+
+                    if (referenceValue.getType()!=compareValue.getType())
+                    {
+                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")");
                     }
                 }
             }
@@ -1714,7 +1717,7 @@ public class BaseStep extends Thread
 
     /**
      * Create a new empty StepMeta class from the steploader
-     * 
+     *
      * @param stepplugin The step/plugin to use
      * @param steploader The StepLoader to load from
      * @return The requested class.
@@ -1732,10 +1735,10 @@ public class BaseStep extends Thread
     /**
      * Perform actions to stop a running step. This can be stopping running SQL queries (cancel), etc. Default it
      * doesn't do anything.
-     * 
+     *
      * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc.
      * @throws KettleException in case something goes wrong
-     * 
+     *
      */
     public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException
     {
@@ -1744,7 +1747,7 @@ public class BaseStep extends Thread
     /**
      * Stops running operations This method is deprecated, please use the method specifying the metadata and data
      * interfaces.
-     * 
+     *
      * @deprecated
      */
     public void stopRunning()
