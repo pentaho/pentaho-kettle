@@ -15,7 +15,6 @@ import be.ibridge.kettle.repository.Repository;
  * It allows us to "map" 
  * 
  * @author Matt
- *
  */
 public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface
 {
@@ -111,17 +110,17 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 
     public String getXML()
     {
-        StringBuffer xml = new StringBuffer();
+        StringBuffer xml = new StringBuffer(200);
         
-        xml.append("        <"+XML_TAG+">"+Const.CR);
-        xml.append("          "+XMLHandler.addTagValue("name", name));
+        xml.append("        <").append(XML_TAG).append(">").append(Const.CR);
+        xml.append("          ").append(XMLHandler.addTagValue("name", name));
         for (int i=0;i<partitionIDs.length;i++)
         {
             xml.append("          <partition>");
-            xml.append("            "+XMLHandler.addTagValue("id", partitionIDs[i]));
-            xml.append("            </partition>");
+            xml.append("            ").append(XMLHandler.addTagValue("id", partitionIDs[i]));
+            xml.append("          </partition>");
         }
-        xml.append("          </"+XML_TAG+">"+Const.CR);
+        xml.append("        </").append(XML_TAG).append(">").append(Const.CR);
         return xml.toString();
     }
     
@@ -223,6 +222,4 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     {
         this.id = id;
     }
-
-
 }
