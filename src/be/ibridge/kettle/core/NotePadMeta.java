@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
- 
 package be.ibridge.kettle.core;
 import org.w3c.dom.Node;
 
@@ -22,15 +21,13 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.repository.Repository;
 
-
 /**
- * Describes a note displayed on a Transformation, Job, Schema or Report
+ * Describes a note displayed on a Transformation, Job, Schema, or Report.
  * 
  * @author Matt 
  * @since 28-11-2003
  *
  */
-
 public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterface, GUISizeInterface
 {
 	public static final String XML_TAG = "notepad";
@@ -252,7 +249,7 @@ public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterfac
 		retval.append("      ").append(XMLHandler.addTagValue("yloc",   location.y));
 		retval.append("      ").append(XMLHandler.addTagValue("width",  width));
 		retval.append("      ").append(XMLHandler.addTagValue("heigth", height));
-		retval.append("      </notepad>").append(Const.CR);
+		retval.append("    </notepad>").append(Const.CR);
 		
 		return retval.toString();
 	}
