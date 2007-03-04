@@ -2011,7 +2011,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			ni.setNote( n );
 			ni.width = Const.NOTE_MIN_SIZE;
 			ni.height = Const.NOTE_MIN_SIZE;
-			redraw();
+			spoon.refreshGraph();
 		} 
 	}
 
@@ -2252,6 +2252,5 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         mb.setMessage(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Message", spoon.makeJobGraphTabName(jobMeta)));//"This model has changed.  Do you want to save it?"
         mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title"));
         return mb.open();
-    }
-    
+    }   
 }
