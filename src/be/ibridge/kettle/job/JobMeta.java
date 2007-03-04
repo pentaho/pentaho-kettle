@@ -404,6 +404,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             DatabaseMeta db = getDatabase(i);
             db.setChanged(false);
         }
+        for (int i = 0; i < nrNotes(); i++)
+        {
+            NotePadMeta note = getNote(i);
+            note.setChanged(false);
+        }
         changed = false;
     }
 
