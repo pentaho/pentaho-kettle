@@ -132,7 +132,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 		catch(KettleException e)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'table exists' from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'Mysql bulk load' from XML node", e);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'table exists' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'Mysql bulk load' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
