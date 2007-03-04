@@ -2318,45 +2318,45 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         Props props = null;
         if (Props.isInitialized()) props=Props.getInstance();
 
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(800);
 
         retval.append(XMLHandler.openTag(XML_TAG)).append(Const.CR); //$NON-NLS-1$
 
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
 
-        retval.append("    " + XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    <log>" + Const.CR); //$NON-NLS-1$
-        retval.append("      " + XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("rejected", rejectedStep == null ? "" : rejectedStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("table", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      </log>" + Const.CR); //$NON-NLS-1$
-        retval.append("    <maxdate>" + Const.CR); //$NON-NLS-1$
-        retval.append("      " + XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("      " + XMLHandler.addTagValue("table", maxDateTable)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("field", maxDateField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("offset", maxDateOffset)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      " + XMLHandler.addTagValue("maxdiff", maxDateDifference)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      </maxdate>" + Const.CR); //$NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("rejected", rejectedStep == null ? "" : rejectedStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("table", logTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("use_batchid", useBatchId)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("use_logfield", logfieldUsed)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
+        retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("      ").append(XMLHandler.addTagValue("table", maxDateTable)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("field", maxDateField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("offset", maxDateOffset)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("maxdiff", maxDateDifference)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    </maxdate>").append(Const.CR); //$NON-NLS-1$
         
-        retval.append("    " + XMLHandler.addTagValue("size_rowset", sizeRowset)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("size_rowset", sizeRowset)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        retval.append("    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("sleep_time_full", sleepTimeFull)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        retval.append("    " + XMLHandler.addTagValue("unique_connections", usingUniqueConnections)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("unique_connections", usingUniqueConnections)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        retval.append("    " + XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    " + XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
-        retval.append("    " + XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
+        retval.append("    ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
         
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
@@ -2397,8 +2397,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
 
         
-        retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
-        retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
+        retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser));
+        retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
 
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
         
@@ -2452,7 +2452,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
 
-        retval.append("</"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
+        retval.append("</").append(XML_TAG+">").append(Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
