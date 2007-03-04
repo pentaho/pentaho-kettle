@@ -66,7 +66,6 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.spoon.UndoInterface;
 import be.ibridge.kettle.trans.HasDatabasesInterface;
-import be.ibridge.kettle.trans.Messages;
 
 /**
  * Defines a Job and provides methods to load, save, verify, etc.
@@ -75,7 +74,6 @@ import be.ibridge.kettle.trans.Messages;
  * @since 11-08-2003
  * 
  */
-
 public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
