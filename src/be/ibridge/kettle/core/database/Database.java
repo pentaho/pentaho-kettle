@@ -1953,7 +1953,10 @@ public class Database
             }
             
             // See if a cache needs to be cleared...
-            if (sql.toUpperCase().startsWith("ALTER TABLE"))
+            if (sql.toUpperCase().startsWith("ALTER TABLE") || 
+                sql.toUpperCase().startsWith("DROP TABLE") ||
+                sql.toUpperCase().startsWith("CREATE TABLE")
+                )
             {
                 DBCache.getInstance().clear(databaseMeta.getName());
             }
