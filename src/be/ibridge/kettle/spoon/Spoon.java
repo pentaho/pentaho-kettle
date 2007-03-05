@@ -6687,7 +6687,7 @@ public class Spoon implements AddUndoPositionInterface
         {       
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
-            int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
+            int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
             splash.hide();
             RepositoriesDialog rd = new RepositoriesDialog(spoon.disp, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
             if (rd.open())
