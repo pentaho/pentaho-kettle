@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -1576,7 +1577,7 @@ public class Spoon implements AddUndoPositionInterface
 
     private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
     private static final String STRING_SPOON_CORE_OBJECTS_TREE= Messages.getString("Spoon.CoreObjectsTree.Label");
-    
+
     private void addTree()
     {
         if (leftSash!=null)
@@ -3928,7 +3929,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             boolean answer = true;
             boolean ask    = ask_name;
-            while (answer && ( ask || transMeta.getName()==null || transMeta.getName().length()==0 ) )
+            while (answer && ( ask || Const.isEmpty(transMeta.getName()) ) )
             {
                 if (!ask)
                 {
@@ -3941,7 +3942,7 @@ public class Spoon implements AddUndoPositionInterface
                 answer = editTransformationProperties(transMeta);
             }
             
-            if (answer && transMeta.getName()!=null && transMeta.getName().length()>0)
+            if (answer && !Const.isEmpty(transMeta.getName()))
             {
                 if (!rep.getUserInfo().isReadonly())
                 {
@@ -4138,14 +4139,21 @@ public class Spoon implements AddUndoPositionInterface
                 fname+=Const.STRING_TRANS_DEFAULT_EXT;
             }
             // See if the file already exists...
-            File f = new File(fname);
             int id = SWT.YES;
-            if (f.exists())
+            try
             {
-                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
-                mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
-                id = mb.open();
+                FileObject f = KettleVFS.getFileObject(fname);
+                if (f.exists())
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
+                    mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
+                    id = mb.open();
+                }
+            }
+            catch(Exception e)
+            {
+                // TODO do we want to show an error dialog here?  My first guess is not, but we might.
             }
             if (id==SWT.YES)
             {
@@ -4610,7 +4618,7 @@ public class Spoon implements AddUndoPositionInterface
         catch(KettleException e)
         {
             String filename = stepPlugin.getErrorHelpFile();
-            if (stepPlugin!=null && filename!=null)
+            if (stepPlugin!=null && !Const.isEmpty(filename))
             {
                 // OK, in stead of a normal error message, we give back the content of the error help file... (HTML)
                 try
@@ -7619,7 +7627,7 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(transMeta.getName()))
             transMeta.nameFromFilename();
 
-        return transMeta.getName();
+        return STRING_TRANSFORMATION+": "+transMeta.getName();
     }
     
     public String makeJobGraphTabName(JobMeta jobMeta)
@@ -7630,7 +7638,7 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(jobMeta.getName()))
             jobMeta.nameFromFilename();
 
-        return jobMeta.getName();
+        return STRING_JOB+": "+jobMeta.getName();
     }
     
     public String makeHistoryTabName(TransMeta transMeta)
