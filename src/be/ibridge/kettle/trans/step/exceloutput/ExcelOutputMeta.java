@@ -55,6 +55,11 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/** The file extention in case of a generated filename */
 	private  String  extension;
 
+	
+	/** The password to protect the sheet */
+	private  String  password;
+
+
 	/** Add a header at the top of the file? */
     private  boolean headerEnabled;
 	
@@ -69,6 +74,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	
 	/** Flag: add the date in the filename */
     private  boolean dateInFilename;
+
+	/** Flag: protect the sheet */
+	private  boolean protectsheet;
 	
 	/** Flag: add the time in the filename */
     private  boolean timeInFilename;
@@ -153,6 +161,17 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return fileName;
     }
 
+	/**
+	 * @return Returns the password.
+	 */
+	public String getPassword()
+	{
+		return StringUtil.environmentSubstitute(password);
+	
+
+	}
+
+
 
 
     /**
@@ -162,6 +181,15 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.fileName = fileName;
     }
+
+
+	/**
+	 * @param password teh passwoed to set.
+	 */
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
 
 
 
@@ -272,6 +300,14 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         return timeInFilename;
     }
 
+	/**
+	 * @return Returns the protectsheet.
+	 */
+	public boolean isSheetProtected()
+	{
+		return protectsheet;
+	}
+
 
 
     /**
@@ -283,6 +319,13 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     }
 
 
+	/**
+	 * @param protectsheet the value to set.
+	 */
+	public void setProtectSheet(boolean protectsheet)
+	{
+		this.protectsheet = protectsheet;
+	}
 
 
 
@@ -410,6 +453,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
+			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
+			password = XMLHandler.getTagValue(stepnode, "file", "password");
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 
 			templateEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
@@ -467,6 +512,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
+		protectsheet	 = false;
 		splitEvery       = 0;
 		templateEnabled  = false;
 		templateAppend   = false;
@@ -587,6 +633,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("protect_sheet",   protectsheet));
+		retval.append("      "+XMLHandler.addTagValue("password",  password));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("      </file>"+Const.CR);
 		
@@ -630,6 +678,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+			protectsheet        =      rep.getStepAttributeBoolean(id_step, "protect_sheet");
+			password       =      rep.getStepAttributeString (id_step, "password");
 
 			templateEnabled       =      rep.getStepAttributeBoolean(id_step, "template_enabled");
 			templateAppend        =      rep.getStepAttributeBoolean(id_step, "template_append");
@@ -669,7 +719,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
+			rep.saveStepAttribute(id_transformation, id_step, "password",   password);
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "template_append",   templateAppend);
 			rep.saveStepAttribute(id_transformation, id_step, "template_filename", templateFileName);

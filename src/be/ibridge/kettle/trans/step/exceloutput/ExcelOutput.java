@@ -428,6 +428,14 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
             
             data.sheet.setName("Sheet1"); //TODO: let the user modify the Sheetname
+			
+			if (meta.isSheetProtected())
+			{
+				// Protect Sheet by setting password
+				data.sheet.getSettings().setProtected(true); 
+				data.sheet.getSettings().setPassword(meta.getPassword());
+			}
+            
 
             // Set the initial position...
             

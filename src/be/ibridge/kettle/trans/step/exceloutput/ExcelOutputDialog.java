@@ -53,7 +53,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
+//import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
@@ -102,6 +102,10 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wAddTime;
 	private FormData     fdlAddTime, fdAddTime;
 
+	private Label        wlProtectSheet;
+	private Button       wProtectSheet;
+	private FormData     fdlProtectSheet, fdProtectSheet;
+
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
 
@@ -133,6 +137,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Button       wbTemplateFilename;
 	private TextVar      wTemplateFilename;
 	private FormData     fdlTemplateFilename, fdbTemplateFilename, fdTemplateFilename;
+
+	private Label        wlPassword;
+	private TextVar      wPassword;
+	private FormData     fdlPassword, fdPassword;
+
+
 
 	private TableView    wFields;
 	private FormData     fdFields;
@@ -334,38 +344,86 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			}
 		);
 
+
+		// Protect Sheet?
+		wlProtectSheet=new Label(wFileComp, SWT.RIGHT);
+		wlProtectSheet.setText(Messages.getString("ExcelOutputDialog.ProtectSheet.Label"));
+		props.setLook(wlProtectSheet);
+		fdlProtectSheet=new FormData();
+		fdlProtectSheet.left = new FormAttachment(0, 0);
+		fdlProtectSheet.top  = new FormAttachment(wAddTime, margin);
+		fdlProtectSheet.right= new FormAttachment(middle, -margin);
+		wlProtectSheet.setLayoutData(fdlProtectSheet);
+		wProtectSheet=new Button(wFileComp, SWT.CHECK);
+		props.setLook(wProtectSheet);
+		fdProtectSheet=new FormData();
+		fdProtectSheet.left = new FormAttachment(middle, 0);
+		fdProtectSheet.top  = new FormAttachment(wAddTime, margin);
+		fdProtectSheet.right= new FormAttachment(100, 0);
+		wProtectSheet.setLayoutData(fdProtectSheet);
+		wProtectSheet.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				
+				EnablePassword();
+			}
+		}
+			);
+
+
+		// Password line
+		wlPassword=new Label(wFileComp, SWT.RIGHT);
+		wlPassword.setText(Messages.getString("ExcelOutputDialog.Password.Label"));
+		props.setLook(wlPassword);
+		fdlPassword=new FormData();
+		fdlPassword.left = new FormAttachment(0, 0);
+		fdlPassword.top  = new FormAttachment(wProtectSheet, margin);
+		fdlPassword.right= new FormAttachment(middle, -margin);
+		wlPassword.setLayoutData(fdlPassword);
+		wPassword=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD);
+		wPassword.setToolTipText(Messages.getString("ExcelOutputDialog.Password.Tooltip"));
+		props.setLook(wPassword);
+		wPassword.setEchoChar('*');
+		wPassword.addModifyListener(lsMod);
+		fdPassword=new FormData();
+		fdPassword.left = new FormAttachment(middle, 0);
+		fdPassword.top  = new FormAttachment(wProtectSheet, margin);
+		fdPassword.right= new FormAttachment(100, 0);
+		wPassword.setLayoutData(fdPassword);
+
+
+
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbShowFiles);
+		props.setLook(wbShowFiles);
 		wbShowFiles.setText(Messages.getString("ExcelOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
-		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
+		fdbShowFiles.top  = new FormAttachment(wPassword, margin*3);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 		wbShowFiles.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
 			{
-				public void widgetSelected(SelectionEvent e) 
+				ExcelOutputMeta tfoi = new ExcelOutputMeta();
+				getInfo(tfoi);
+				String files[] = tfoi.getFiles();
+				if (files!=null && files.length>0)
 				{
-					ExcelOutputMeta tfoi = new ExcelOutputMeta();
-					getInfo(tfoi);
-					String files[] = tfoi.getFiles();
-					if (files!=null && files.length>0)
-					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("ExcelOutputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.DialogTitle.Error"));
-						mb.open(); 
-					}
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
+					esd.setViewOnly();
+					esd.open();
+				}
+				else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(Messages.getString("ExcelOutputDialog.NoFilesFound.DialogMessage"));
+					mb.setText(Messages.getString("System.DialogTitle.Error"));
+					mb.open(); 
 				}
 			}
-		);
-
-
+		}
+			);
 		
 		fdFileComp=new FormData();
 		fdFileComp.left  = new FormAttachment(0, 0);
@@ -851,6 +909,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
+		wProtectSheet.setSelection(input.isSheetProtected());
+	
+		EnablePassword();
+		if (input.getPassword() != null) wPassword.setText(input.getPassword());
+
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
 		wTemplateAppend.setSelection(input.isTemplateAppend());
@@ -893,6 +956,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		tfoi.setProtectSheet( wProtectSheet.getSelection() );
+		tfoi.setPassword(   wPassword.getText() );
 		tfoi.setTemplateEnabled( wTemplate.getSelection() );
 		tfoi.setTemplateAppend( wTemplateAppend.getSelection() );
 
@@ -924,7 +989,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		dispose();
 	}
+	private void EnablePassword()
+	{
+		input.setChanged();
 	
+		wPassword.setEnabled(wProtectSheet.getSelection());
+	
+	
+	}
 	private void get()
 	{
 		try
