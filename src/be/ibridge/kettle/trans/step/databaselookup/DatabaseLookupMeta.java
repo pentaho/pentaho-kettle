@@ -913,4 +913,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     {
         this.schemaName = schemaName;
     }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }
