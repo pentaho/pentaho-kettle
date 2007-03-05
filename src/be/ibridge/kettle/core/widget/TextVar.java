@@ -1,6 +1,7 @@
 package be.ibridge.kettle.core.widget;
 
 import org.eclipse.jface.fieldassist.DecoratedField;
+import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
@@ -18,6 +19,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
@@ -116,6 +118,8 @@ public class TextVar extends Composite
         decoratedField = new DecoratedField(this, flags, new TextControlCreator());
         Text wText = (Text) decoratedField.getControl();
         props.setLook(wText);
+        Control layoutControl = decoratedField.getLayoutControl();
+        props.setLook(layoutControl);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface);
         wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
@@ -123,13 +127,14 @@ public class TextVar extends Composite
         // Put some decorations on it...
         FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
         registry.registerFieldDecoration("variable.field", Messages.getString("TextVar.tooltip.InsertVariable"), GUIResource.getInstance().getImageVariable());
-        decoratedField.addFieldDecoration(registry.getFieldDecoration("variable.field"), SWT.TOP | SWT.RIGHT, false);
+        FieldDecoration fieldDecoration = registry.getFieldDecoration("variable.field");
+        decoratedField.addFieldDecoration(fieldDecoration, SWT.TOP | SWT.RIGHT, false);
         
         FormData fdText = new FormData();
         fdText.top   = new FormAttachment(0, 0);
         fdText.left  = new FormAttachment(0 ,0);
         fdText.right = new FormAttachment(100, 0);
-        decoratedField.getLayoutControl().setLayoutData(fdText);
+        layoutControl.setLayoutData(fdText);
     }
     
     private ModifyListener getModifyListenerTooltipText(final Text textField)
