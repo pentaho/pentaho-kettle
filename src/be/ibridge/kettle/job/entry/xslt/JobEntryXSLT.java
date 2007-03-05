@@ -15,26 +15,28 @@
 
 package be.ibridge.kettle.job.entry.xslt;
 
-import java.io.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -50,12 +52,10 @@ import be.ibridge.kettle.repository.Repository;
 
 
 /**
- * This defines a 'xslt' job entry. It will compare 2 files in a binary way,
- * and will either follow the true flow upon the files being the same or the false
- * flow otherwise.
- *
- * @author Sven Boden
- * @since 01-02-2007
+ * This defines a 'xslt' job entry. 
+ * 
+ * @author Samatar Hassan
+ * @since 02-03-2007
  *
  */
 public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInterface
