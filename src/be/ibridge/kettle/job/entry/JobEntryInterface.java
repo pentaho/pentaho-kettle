@@ -35,6 +35,7 @@ import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.mysqlbulkload.JobEntryMysqlBulkLoad;
+import be.ibridge.kettle.job.entry.mysqlbulkfile.JobEntryMysqlBulkFile;
 import be.ibridge.kettle.job.entry.msgboxinfo.JobEntryMsgBoxInfo;
 import be.ibridge.kettle.job.entry.delay.JobEntryDelay;
 import be.ibridge.kettle.job.entry.zipfile.JobEntryZipFile;
@@ -83,6 +84,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_DELAY= 20;
 	public static final int TYPE_JOBENTRY_ZIP_FILE= 21;
 	public static final int TYPE_JOBENTRY_XSLT= 22;
+	public static final int TYPE_JOBENTRY_MYSQL_BULK_FILE= 23;
     
 	public final static String typeCode[] =
 		{
@@ -109,6 +111,7 @@ public interface JobEntryInterface
 			"DELAY",
 			"ZIP_FILE",
 			"XSLT",
+			"MYSQL_BULK_FILE",
 		};
 
 	public final static String typeDesc[] =
@@ -136,6 +139,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.Delay.TypeDesc"),
 			Messages.getString("JobEntry.ZipFile.TypeDesc"),
 			Messages.getString("JobEntry.XSLT.TypeDesc"),
+			Messages.getString("JobEntry.MysqlBulkFile.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -163,6 +167,7 @@ public interface JobEntryInterface
 			"DLT.png",
 			"ZIP.png",
 			"XSLT.png",
+			"MBF.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -190,6 +195,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.Delay.Tooltip"),
 			Messages.getString("JobEntry.ZipFile.Tooltip"),
 			Messages.getString("JobEntry.XSLT.Tooltip"),
+			Messages.getString("JobEntry.MysqlBulkFile.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -217,6 +223,7 @@ public interface JobEntryInterface
 			JobEntryDelay.class,
 			JobEntryZipFile.class,
 			JobEntryXSLT.class,
+			JobEntryMysqlBulkFile.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
