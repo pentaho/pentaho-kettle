@@ -15,16 +15,16 @@
  
 package be.ibridge.kettle.job.entry.mysqlbulkfile;
 import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
-import java.util.Date;
-import java.io.IOException;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
@@ -255,7 +255,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	
 		String LimitNbrLignes="";
 		String ListOfColumn="*";
-		String HighPriority="";
+		String strHighPriority="";
 		String OutDumpText="";
 		String OptionEnclosed="";
 		String FieldSeparator="";
@@ -368,7 +368,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 							// High Priority ?
 							if (isHighPriority())
-								HighPriority = " HIGH_PRIORITY ";
+								strHighPriority = " HIGH_PRIORITY ";
 
 							if (getRealEnclosed()!= null && outdumpvalue == 0)
 								OptionEnclosed=" OPTIONALLY ENCLOSED BY '" + getRealEnclosed() + "' ";
@@ -380,7 +380,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 								OutDumpText = " INTO DUMPFILE ";
 
 					
-							String FILEBulkFile = "SELECT " + ListOfColumn + OutDumpText + "'" + realFilename	+ "'" + FieldSeparator +
+							String FILEBulkFile = "SELECT " + strHighPriority + ListOfColumn + OutDumpText + "'" + realFilename	+ "'" + FieldSeparator +
 										OptionEnclosed + LinesTerminated  + " FROM " + 	realTablename + LimitNbrLignes + 
 										" LOCK IN SHARE MODE";
 

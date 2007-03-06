@@ -37,14 +37,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.dialog.JobDialog;
@@ -170,6 +177,9 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 	private Label wlOutDumpValue;
 	private  CCombo wOutDumpValue;
 	private FormData fdlOutDumpValue, fdOutDumpValue;
+
+    private Button wbTable;
+    private Button wbListColumns;
 
 	public JobEntryMysqlBulkFileDialog(Shell parent, JobEntryMysqlBulkFile jobEntry, JobMeta jobMeta)
 	{
@@ -309,6 +319,15 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlTablename.top = new FormAttachment(wSchemaname, margin);
 		wlTablename.setLayoutData(fdlTablename);
 
+        wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbTable);
+        wbTable.setText(Messages.getString("System.Button.Browse"));
+        FormData fdbTable = new FormData();
+        fdbTable.right= new FormAttachment(100, 0);
+        fdbTable.top  = new FormAttachment(wSchemaname, margin/2);
+        wbTable.setLayoutData(fdbTable);
+        wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
+
 		wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
 		wTablename.setToolTipText(Messages.getString("JobMysqlBulkFile.Tablename.Tooltip"));
@@ -316,10 +335,8 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdTablename = new FormData();
 		fdTablename.left = new FormAttachment(middle, 0);
 		fdTablename.top = new FormAttachment(wSchemaname, margin);
-		fdTablename.right = new FormAttachment(100, 0);
+		fdTablename.right = new FormAttachment(wbTable, -margin);
 		wTablename.setLayoutData(fdTablename);
-
-
 
 
 		// Filename line
@@ -515,6 +532,15 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlListColumn.top = new FormAttachment(wLineterminated, margin);
 		wlListColumn.setLayoutData(fdlListColumn);
 
+        wbListColumns=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbListColumns);
+        wbListColumns.setText(Messages.getString("System.Button.Edit"));
+        FormData fdbListColumns = new FormData();
+        fdbListColumns.right= new FormAttachment(100, 0);
+        fdbListColumns.top  = new FormAttachment(wLineterminated, margin);
+        wbListColumns.setLayoutData(fdbListColumns);
+        wbListColumns.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getListColumns(); } } );
+
 		wListColumn = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wListColumn);
 		wListColumn.setToolTipText(Messages.getString("JobMysqlBulkFile.ListColumn.Tooltip"));
@@ -522,7 +548,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdListColumn = new FormData();
 		fdListColumn.left = new FormAttachment(middle, 0);
 		fdListColumn.top = new FormAttachment(wLineterminated, margin);
-		fdListColumn.right = new FormAttachment(100, 0);
+		fdListColumn.right = new FormAttachment(wbListColumns, -margin);
 		wListColumn.setLayoutData(fdListColumn);
 
 
@@ -767,9 +793,86 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 
 		dispose();
 	}
+    
+    private void getTableName()
+    {
+        // New class: SelectTableDialog
+        int connr = wConnection.getSelectionIndex();
+        if (connr>=0)
+        {
+            DatabaseMeta inf = jobMeta.getDatabase(connr);
+                        
+            DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
+            std.setSelectedSchema(wSchemaname.getText());
+            std.setSelectedTable(wTablename.getText());
+            std.setSplitSchemaAndTable(true);
+            if (std.open() != null)
+            {
+                wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
+                wTablename.setText(Const.NVL(std.getTableName(), ""));
+            }
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage(Messages.getString("JobMysqlBulkFile.ConnectionError2.DialogMessage"));
+            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.open(); 
+        }
+                    
+    }
 
 	public String toString()
 	{
 		return this.getClass().getName();
 	}
+    
+    /**
+     * Get a list of columns, comma separated, allow the user to select from it.
+     *
+     */
+    private void getListColumns()
+    {
+        if (!Const.isEmpty(wTablename.getText()))
+        {
+            DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
+            if (databaseMeta!=null)
+            {
+                Database database = new Database(databaseMeta);
+                try
+                {
+                    database.connect();
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(wSchemaname.getText(), wTablename.getText());
+                    Row row = database.getTableFields(schemaTable);
+                    String available[] = row.getFieldNames();
+                    
+                    String source[] = wListColumn.getText().split(",");
+                    for (int i=0;i<source.length;i++) source[i] = Const.trim(source[i]);
+                    int idxSource[] = Const.indexsOfStrings(source, available);
+                    EnterSelectionDialog dialog = new EnterSelectionDialog(shell, available, Messages.getString("JobMysqlBulkFile.SelectColumns.Title"), Messages.getString("JobMysqlBulkFile.SelectColumns.Message"));
+                    dialog.setMulti(true);
+                    dialog.setSelectedNrs(idxSource);
+                    if (dialog.open()!=null)
+                    {
+                        String columns="";
+                        int idx[] = dialog.getSelectionIndeces();
+                        for (int i=0;i<idx.length;i++)
+                        {
+                            if (i>0) columns+=", ";
+                            columns+=available[idx[i]];
+                        }
+                        wListColumn.setText(columns);
+                    }
+                }
+                catch(KettleDatabaseException e)
+                {
+                    new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("JobMysqlBulkFile.ConnectionError2.DialogMessage"), e);
+                }
+                finally
+                {
+                    database.disconnect();
+                }
+            }
+        }
+    }
 }
