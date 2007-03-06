@@ -47,6 +47,8 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
     public Row valueMeta;
 
     public long smallestCacheKey;
+
+    public Value notFoundTk;
     
 	/**
 	 * 

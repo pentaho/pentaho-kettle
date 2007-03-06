@@ -150,8 +150,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				data.datefieldnr=-1;
 			} 
 
-			meta.setNotFound( new Value(meta.getKeyField(), (double)meta.getDatabaseMeta().getNotFoundTK(meta.isAutoIncrement())) );
-			if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) meta.getNotFound().setName(meta.getKeyRename());
+			data.notFoundTk = new Value(meta.getKeyField(), (long)meta.getDatabaseMeta().getNotFoundTK(meta.isAutoIncrement()));
+			if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) data.notFoundTk.setName(meta.getKeyRename());
 
 			if (meta.getDateField()!=null && data.datefieldnr>=0)
 			{
@@ -225,7 +225,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			if (add==null)
 			{
 				add=new Row();
-				add.addValue(meta.getNotFound());
+				add.addValue(data.notFoundTk);
 				Value v;
 				for (int i=0;i<meta.getFieldStream().length;i++)
 				{
@@ -238,6 +238,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
 						add.addValue(v);
 					}
 				}
+                if (meta.getCacheSize()>=0) // need -oo to +oo as well...
+                {
+                    add.addValue(data.min_date.Clone());
+                    add.addValue(data.min_date.Clone());
+                }
 			}
 			else
 			{

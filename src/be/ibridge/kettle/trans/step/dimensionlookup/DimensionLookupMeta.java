@@ -120,9 +120,6 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     /** Sequence name to get the sequence from */
     private String              sequenceName;
 
-    /** Default value in case nothing was found */
-    private Value               notFound;
-
     /** The number of rows between commits */
     private int                 commitSize;
 
@@ -443,23 +440,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     {
         this.minYear = minYear;
     }
-    
-    /**
-     * @return Returns the notFound.
-     */
-    public Value getNotFound()
-    {
-        return notFound;
-    }
-    
-    /**
-     * @param notFound The notFound to set.
-     */
-    public void setNotFound(Value notFound)
-    {
-        this.notFound = notFound;
-    }
-    
+        
     /**
      * @return Returns the sequenceName.
      */
