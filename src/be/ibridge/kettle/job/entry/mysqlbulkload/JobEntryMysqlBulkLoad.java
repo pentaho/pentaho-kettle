@@ -246,7 +246,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
 		String ReplaceIgnore;
-		String IgnoreNbrLignes;
+		String IgnoreNbrLignes="";
 		String ListOfColumn="";
 		String LocalExec="";
 		String PriorityText="";
@@ -287,26 +287,33 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 							// Add schemaname (Most the time Schemaname.Tablename) 
 							if (schemaname !=null)
+							{
 								realTablename= realSchemaname + "." + realTablename;
+							}
 
 
 							// Set the REPLACE or IGNORE 
 							if (isReplacedata())
+							{
 								ReplaceIgnore="REPLACE";
+							}
 							else
+							{
 								ReplaceIgnore="IGNORE";
+							}
 
 						
 							// Set the IGNORE LINES
 							if (Const.toInt(getRealIgnorelines(),0)>0)
+							{
 								IgnoreNbrLignes = " IGNORE " + getRealIgnorelines() + " LINES ";
-							else
-								IgnoreNbrLignes =" ";
+							}
+						
 
 							// Set list of Column 
 							if (getRealListattribut()!= null)
 							{
-								ListOfColumn="(" + getRealListattribut() + ")";	
+								ListOfColumn="(" + MysqlString(getRealListattribut()) + ")";	
 								
 							}
 							
@@ -338,13 +345,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							}
 
 
-
-
-
-
 							// Let's built Bulk Load String
 							String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore + 
-								" INTO TABLE " + realTablename + " FIELDS TERMINATED BY  '" + getRealSeparator() + "' " + IgnoreNbrLignes + " " + ListOfColumn + ";";
+								" INTO TABLE " + realTablename + " FIELDS TERMINATED BY  '" + getRealSeparator() + "' " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
 
 
 							try
@@ -514,6 +517,25 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return StringUtil.environmentSubstitute(getListattribut());
 	}
 
+	private String MysqlString(String listcolumns)
+	{
+		/* handle forbiden char like '
+		 */
+		String ReturnString="";
+		String[] split = listcolumns.split(",");	
 
+		for (int i=0;i<split.length;i++) 
+		{
+			if(ReturnString.equals(""))
+				ReturnString =  "`" + Const.trim(split[i]) + "`";
+			else
+				ReturnString = ReturnString +  ", `" + Const.trim(split[i]) + "`";
+
+		}
+
+		return ReturnString;
+	
+
+	}
 	
 }
