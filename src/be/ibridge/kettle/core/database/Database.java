@@ -2875,6 +2875,14 @@ public class Database
                     precision=-1;
                     length=-1;
                 }
+                
+                // MySQL: max resolution is double precision floating point (double)
+                // The (12,31) that is given back is not correct
+                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                {
+                    precision=-1;
+                    length=-1;
+                }
             }
             else
             {

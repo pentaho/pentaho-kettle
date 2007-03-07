@@ -3023,7 +3023,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
      */
     public void nameFromFilename()
     {
-        if (Const.isEmpty(name) && !Const.isEmpty(filename))
+        if (!Const.isEmpty(filename))
         {
             name = Const.createName(filename);
         }

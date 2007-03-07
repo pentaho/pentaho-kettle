@@ -310,7 +310,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
      */
     public void nameFromFilename()
     {
-        if (Const.isEmpty(name) && !Const.isEmpty(filename))
+        if (!Const.isEmpty(filename))
         {
             name = Const.createName(filename);
         }

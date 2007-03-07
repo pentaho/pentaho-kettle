@@ -3676,8 +3676,35 @@ public class Spoon implements AddUndoPositionInterface
         {
             new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Exception.ErrorReadingSharedObjects.Message"), e);
         }
+        int nr=1;
+        transMeta.setName( STRING_TRANSFORMATION+" "+nr );
+        
+        // See if a transformation with the same name isn't already loaded...
+        while (findTransformation(makeTransGraphTabName(transMeta))!=null)
+        {
+            nr++;
+            transMeta.setName( STRING_TRANSFORMATION+" "+nr ); // rename
+        }
         addSpoonGraph(transMeta);
         refreshTree();
+    }
+    
+    public boolean isDefaultTransformationName(String name)
+    {
+        if (!name.startsWith(STRING_TRANSFORMATION)) return false;
+        
+        // see if there are only digits behind the transformation...
+        // This will detect:
+        //   "Transformation" 
+        //   "Transformation " 
+        //   "Transformation 1" 
+        //   "Transformation 2"
+        //   ...
+        for (int i=STRING_TRANSFORMATION.length()+1;i<name.length();i++)
+        {
+            if (!Character.isDigit(name.charAt(i))) return false;
+        }
+        return true;
     }
     
     public void newJobFile()
@@ -3694,6 +3721,16 @@ public class Spoon implements AddUndoPositionInterface
                 new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
             }
             
+            int nr=1;
+            jobMeta.setName( STRING_JOB+" "+nr );
+            
+            // See if a transformation with the same name isn't already loaded...
+            while (findJob(makeJobGraphTabName(jobMeta))!=null)
+            {
+                nr++;
+                jobMeta.setName( STRING_JOB+" "+nr ); // rename
+            }
+
             addChefGraph(jobMeta);
             refreshTree();
         }
@@ -3701,6 +3738,24 @@ public class Spoon implements AddUndoPositionInterface
         {
             new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Title"), Messages.getString("Spoon.Exception.ErrorCreatingNewJob.Message"), e);
         }
+    }
+    
+    public boolean isDefaultJobnName(String name)
+    {
+        if (!name.startsWith(STRING_JOB)) return false;
+        
+        // see if there are only digits behind the job...
+        // This will detect:
+        //   "Job" 
+        //   "Job " 
+        //   "Job 1" 
+        //   "Job 2"
+        //   ...
+        for (int i=STRING_JOB.length()+1;i<name.length();i++)
+        {
+            if (!Character.isDigit(name.charAt(i))) return false;
+        }
+        return true;
     }
 
     public void loadRepositoryObjects(TransMeta transMeta)
@@ -5108,14 +5163,14 @@ public class Spoon implements AddUndoPositionInterface
         return getActiveJob();
     }
 
-    public TransMeta findTransformation(String name)
+    public TransMeta findTransformation(String tabItemText)
     {
-        return (TransMeta)transformationMap.get(name);
+        return (TransMeta)transformationMap.get(tabItemText);
     }
     
-    public JobMeta findJob(String name)
+    public JobMeta findJob(String tabItemText)
     {
-        return (JobMeta)jobMap.get(name);
+        return (JobMeta)jobMap.get(tabItemText);
     }
     
     public TransMeta[] getLoadedTransformations()
@@ -7624,8 +7679,10 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(transMeta.getName()) && Const.isEmpty(transMeta.getFilename()))
             return STRING_TRANS_NO_NAME;
         
-        if (Const.isEmpty(transMeta.getName()))
+        if (Const.isEmpty(transMeta.getName()) || isDefaultTransformationName(transMeta.getName()))
+        {
             transMeta.nameFromFilename();
+        }
 
         return STRING_TRANSFORMATION+": "+transMeta.getName();
     }
@@ -7635,8 +7692,10 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(jobMeta.getName()) && Const.isEmpty(jobMeta.getFilename()))
             return STRING_JOB_NO_NAME;
 
-        if (Const.isEmpty(jobMeta.getName()))
+        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobnName(jobMeta.getName()))
+        {
             jobMeta.nameFromFilename();
+        }
 
         return STRING_JOB+": "+jobMeta.getName();
     }

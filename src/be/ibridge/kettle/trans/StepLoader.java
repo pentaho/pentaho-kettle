@@ -244,8 +244,10 @@ public class StepLoader
                                     }
                                     
 		                            String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
+                                    String errorHelpFileFull = errorHelpfile;
+                                    if (!Const.isEmpty(errorHelpfile)) errorHelpFileFull = pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile;
                                     
-		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, new String[] { id }, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile);
+		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, new String[] { id }, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, errorHelpFileFull);
                                     
                                     // Add localized information too...
                                     sp.setLocalizedCategories(localizedCategories);

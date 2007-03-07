@@ -149,7 +149,7 @@ public class FormulaDialog extends BaseStepDialog implements StepDialogInterface
                     new ColumnInfo(Messages.getString("CalculatorDialog.Length.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.Precision.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.Remove.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } )
-               };
+               };   
         
         wFields=new TableView(shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

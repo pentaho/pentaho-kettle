@@ -1999,8 +1999,9 @@ public class TableView extends Composite
 		
 		button = new Button(table, SWT.PUSH );
         props.setLook(button, Props.WIDGET_STYLE_TABLE);
-		button.setText(columns[colnr-1].getButtonText());
-		Image image = new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
+        String buttonText = columns[colnr-1].getButtonText(); 
+        if (buttonText!=null) button.setText(buttonText);
+        Image image = new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
 		button.setImage(image);
 	
 		SelectionAdapter selAdpt = columns[colnr-1].getSelectionAdapter();
