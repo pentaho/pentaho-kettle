@@ -612,6 +612,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private void generateMappings() {
 		if (!bPreviousFieldsLoaded) {
 			MessageDialog.openError(shell, Messages.getString("SelectValuesDialog.ColumnInfo.Loading"), Messages.getString("SelectValuesDialog.ColumnInfo.Loading"));
+			return;
 		}
 		if ((wRemove.getItemCount() > 0) || (wMeta.getItemCount() > 0)) {
 			for (int i = 0; i < wRemove.getItemCount(); i++) {
