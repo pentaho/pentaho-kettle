@@ -134,14 +134,11 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 	private Button       wHighPriority;
 	private FormData     fdlHighPriority, fdHighPriority;
 
-
-
-	//Separator
-	private Label wlSeparator;
-
-	private TextVar wSeparator;
-
-	private FormData fdlSeparator, fdSeparator;
+	// Separator
+	private Label        wlSeparator;
+	private Button       wbSeparator;
+	private TextVar         wSeparator;
+	private FormData     fdlSeparator, fdbSeparator, fdSeparator;
 
 	//Enclosed
 	private Label wlEnclosed;
@@ -472,6 +469,14 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlSeparator.top = new FormAttachment(wOutDumpValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
+		wbSeparator=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbSeparator);
+		wbSeparator.setText(Messages.getString("JobMysqlBulkFile.Separator.Button"));
+		fdbSeparator=new FormData();
+		fdbSeparator.right= new FormAttachment(100, 0);
+		fdbSeparator.top  = new FormAttachment(wOutDumpValue, 0);
+		wbSeparator.setLayoutData(fdbSeparator);
+
 		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSeparator);
 		wSeparator.addModifyListener(lsMod);
@@ -660,6 +665,18 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 			}
 		});
 
+
+		// Allow the insertion of tabs as separator...
+		wbSeparator.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent se) 
+			{
+				wSeparator.setText(wSeparator.getText()+"\t");
+			}
+		}
+			);
+
+
 		getData();
 
 		BaseStepDialog.setSize(shell);
@@ -808,7 +825,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
             std.setSplitSchemaAndTable(true);
             if (std.open() != null)
             {
-                wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
+               // wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
                 wTablename.setText(Const.NVL(std.getTableName(), ""));
             }
         }
