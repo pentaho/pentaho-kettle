@@ -47,6 +47,7 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface
 {
+	private String schemaname;
 	private String tablename;
 	private String filename;
 	private String separator;
@@ -62,6 +63,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		super(n, "");
 		tablename=null;
+		schemaname=null;
 		filename=null;
 		separator=null;
 		replacedata=true;
@@ -94,7 +96,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
-		
+		retval.append("      ").append(XMLHandler.addTagValue("schemaname",  schemaname));
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",  tablename));
 		retval.append("      ").append(XMLHandler.addTagValue("filename",  filename));
 		retval.append("      ").append(XMLHandler.addTagValue("separator",  separator));
@@ -115,7 +117,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.loadXML(entrynode, databases);
-			
+			schemaname     = XMLHandler.getTagValue(entrynode, "schemaname");
 			tablename     = XMLHandler.getTagValue(entrynode, "tablename");
 			filename     = XMLHandler.getTagValue(entrynode, "filename");
 			separator     = XMLHandler.getTagValue(entrynode, "separator");
@@ -142,7 +144,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			
+			schemaname  = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
 			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
 			filename  = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			separator  = rep.getJobEntryAttributeString(id_jobentry, "separator");
@@ -178,7 +180,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "separator", separator);
@@ -205,6 +207,15 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public void setTablename(String tablename)
 	{
 		this.tablename = tablename;
+	}
+	public void setSchemaname(String schemaname)
+	{
+		this.schemaname = schemaname;
+	}
+
+	public String getSchemaname()
+	{
+		return schemaname;
 	}
 	
 	public String getTablename()
@@ -264,6 +275,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 					try
 					{
 						db.connect();
+						// Get schemaname
+						String realSchemaname = StringUtil.environmentSubstitute(schemaname);
 						// Get tablename
 						String realTablename = StringUtil.environmentSubstitute(tablename);
 
@@ -272,26 +285,23 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							// The table existe, We can continue ...
 							log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
 
+							// Add schemaname (Most the time Schemaname.Tablename) 
+							if (schemaname !=null)
+								realTablename= realSchemaname + "." + realTablename;
+
 
 							// Set the REPLACE or IGNORE 
 							if (isReplacedata())
-							{
 								ReplaceIgnore="REPLACE";
-							}
 							else
-							{
 								ReplaceIgnore="IGNORE";
-							}
+
 						
 							// Set the IGNORE LINES
 							if (Const.toInt(getRealIgnorelines(),0)>0)
-							{
 								IgnoreNbrLignes = " IGNORE " + getRealIgnorelines() + " LINES ";
-							}
 							else
-							{
 								IgnoreNbrLignes =" ";
-							}
 
 							// Set list of Column 
 							if (getRealListattribut()!= null)
