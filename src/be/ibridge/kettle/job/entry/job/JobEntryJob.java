@@ -347,6 +347,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         try
         {
             // First load the job, outside of the loop...
+        	if ( parentJob.getJobMeta() != null )
+        	{
+        		// reset the internal variables again.
+        		// Maybe we should split up the variables even more like in UNIX shells.
+        		// The internal variables need to be reset to be able use them properly in 2 sequential sub jobs.
+        		parentJob.getJobMeta().setInternalKettleVariables();
+        	}
             
             JobMeta jobMeta = null;
             boolean fromRepository = rep!=null && !Const.isEmpty(jobname) && directory!=null;
