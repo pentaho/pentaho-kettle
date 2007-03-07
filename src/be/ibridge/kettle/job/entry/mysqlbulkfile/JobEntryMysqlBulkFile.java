@@ -345,39 +345,57 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							
 							// Add schemaname (Most the time Schemaname.Tablename) 
 							if (schemaname !=null)
+							{
 								realTablename= realSchemaname + "." + realTablename;
+							}
 
 							// Set the Limit lines
 							if (Const.toInt(getRealLimitlines(),0)>0)
+							{
 								LimitNbrLignes = " LIMIT " + getRealLimitlines() + " " ;
+							}
 
 							// Set list of Column, if null get all columns (*) 
 							if (getRealListColumn()!= null )
+							{
 								ListOfColumn= getRealListColumn() ;	
+							}
 									
 
 							// Fields separator 
 							if (getRealSeparator()!= null && outdumpvalue == 0)
+							{
 								FieldSeparator=" FIELDS TERMINATED BY '" + getRealSeparator() + "' ";
+							}
 
 							// Lines Terminated by 
 							if (getRealLineterminated()!= null && outdumpvalue == 0)
+							{
 								LinesTerminated=" LINES TERMINATED BY '" + getRealLineterminated() + "' ";
+							}
 								
 
 
 							// High Priority ?
 							if (isHighPriority())
+							{
 								strHighPriority = " HIGH_PRIORITY ";
+							}
 
 							if (getRealEnclosed()!= null && outdumpvalue == 0)
+							{
 								OptionEnclosed=" OPTIONALLY ENCLOSED BY '" + getRealEnclosed() + "' ";
+							}
 
 							// OutFile or Dumpfile
 							if (outdumpvalue == 0)
+							{
 								OutDumpText =" INTO OUTFILE ";
+							}
 							else
+							{
 								OutDumpText = " INTO DUMPFILE ";
+							}
 
 					
 							String FILEBulkFile = "SELECT " + strHighPriority + ListOfColumn + OutDumpText + "'" + realFilename	+ "'" + FieldSeparator +
