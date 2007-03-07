@@ -76,6 +76,7 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.spoon.TabItemInterface;
+import be.ibridge.kettle.spoon.TabMapEntry;
 import be.ibridge.kettle.spoon.TransPainter;
 import be.ibridge.kettle.trans.TransMeta;
 
@@ -1532,9 +1533,11 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         String exactTransname = StringUtil.environmentSubstitute(entry.getTransname() );
         
         // check, whether a tab of this name is already opened
-        CTabItem tab = spoon.findCTabItem(exactFilename);
+        CTabItem tab = spoon.findCTabItem(exactFilename, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
         if (tab == null)
-            tab = spoon.findCTabItem(Const.filenameOnly(exactFilename));
+        {
+            tab = spoon.findCTabItem(Const.filenameOnly(exactFilename), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+        }
         if (tab != null)
         {
             spoon.tabfolder.setSelection(tab);

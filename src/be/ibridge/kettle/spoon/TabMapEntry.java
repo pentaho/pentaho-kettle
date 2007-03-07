@@ -4,11 +4,22 @@ import org.eclipse.swt.custom.CTabItem;
 
 public class TabMapEntry
 {
+    public static final int OBJECT_TYPE_TRANSFORMATION_GRAPH   = 1;
+    public static final int OBJECT_TYPE_TRANSFORMATION_LOG     = 2;
+    public static final int OBJECT_TYPE_TRANSFORMATION_HISTORY = 3;
+    public static final int OBJECT_TYPE_JOB_GRAPH              = 4;
+    public static final int OBJECT_TYPE_JOB_LOG                = 5;
+    public static final int OBJECT_TYPE_JOB_HISTORY            = 6;
+    public static final int OBJECT_TYPE_SLAVE_SERVER              = 7;
+    public static final int OBJECT_TYPE_BROWSER                = 8;
+    
     private CTabItem tabItem;
     
     private String objectName;
 
     private TabItemInterface object;
+    
+    private int objectType;
 
     /**
      * @param tabName
@@ -16,11 +27,12 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(CTabItem tabItem, String objectName, TabItemInterface object)
+    public TabMapEntry(CTabItem tabItem, String objectName, TabItemInterface object, int objectType)
     {
         this.tabItem = tabItem;
         this.objectName = objectName;
         this.object = object;
+        this.objectType = objectType;
     }
 
     /**
@@ -69,5 +81,21 @@ public class TabMapEntry
     public void setTabItem(CTabItem tabItem)
     {
         this.tabItem = tabItem;
+    }
+
+    /**
+     * @return the objectType
+     */
+    public int getObjectType()
+    {
+        return objectType;
+    }
+
+    /**
+     * @param objectType the objectType to set
+     */
+    public void setObjectType(int objectType)
+    {
+        this.objectType = objectType;
     }
 }
