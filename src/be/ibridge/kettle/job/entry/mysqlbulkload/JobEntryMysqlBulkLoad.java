@@ -359,7 +359,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								PriorityText = "LOW_PRIORITY";
 
 							}
-							else
+							else if(prorityvalue == 2)
 							{
 								//CONCURRENT
 								PriorityText = "CONCURRENT";
