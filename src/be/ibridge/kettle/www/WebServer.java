@@ -71,8 +71,8 @@ public class WebServer
         addTrans.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
         
         // Root
-        ServletHandler rootHandler = new ServletHandler();
-        rootHandler.addServletWithMapping(new ServletHolder(new GetRootHandler()), GetRootHandler.CONTEXT_PATH);
+        ContextHandler rootHandler = new ContextHandler(GetRootHandler.CONTEXT_PATH);
+        rootHandler.setHandler(new GetRootHandler());
         
         // Get status
         ContextHandler getStatus = new ContextHandler(GetStatusHandler.CONTEXT_PATH);
@@ -104,6 +104,7 @@ public class WebServer
                 new Handler[] 
                     { 
                         securityHandler,
+                        rootHandler, 
                         getStatus, 
                         getTransStatus, 
                         startTrans, 
@@ -119,7 +120,6 @@ public class WebServer
                     { 
                         securityHandler, 
                         addTrans, 
-                        rootHandler, 
                     }
                 );
                     
