@@ -668,6 +668,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		catch(Exception e)
     		{
     			log.logError(toString(), "Unable to open transformation: "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
     			result.setNrErrors(1);
     		}
             iteration++;
