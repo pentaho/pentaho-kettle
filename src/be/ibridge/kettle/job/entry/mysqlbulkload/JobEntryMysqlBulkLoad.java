@@ -372,20 +372,20 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								
 								if (getRealSeparator() != null )
 								{
-									FieldTerminatedby = FieldTerminatedby + "TERMINATED BY '" +  getRealSeparator().replace("'","''") +"'";
+									FieldTerminatedby = FieldTerminatedby + "TERMINATED BY '" +  Const.replace(getRealSeparator(), "'", "''") +"'";
 								
 								}
 								
 								if (getRealEnclosed() != null )
 								{				
-									FieldTerminatedby = FieldTerminatedby + " ENCLOSED BY '" +  getRealEnclosed().replace("'","''") +"'";
+									FieldTerminatedby = FieldTerminatedby + " ENCLOSED BY '" +  Const.replace(getRealEnclosed(), "'", "''") +"'";
 									
 								}
 
 								if (getRealEscaped() != null )
 								{
 
-										FieldTerminatedby = FieldTerminatedby + " ESCAPED BY '" +  getRealEscaped().replace("'","''") +"'";
+										FieldTerminatedby = FieldTerminatedby + " ESCAPED BY '" +  Const.replace(getRealEscaped(), "'", "''") +"'";
 									
 								}
 								
@@ -401,14 +401,14 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								// Line starting By
 								if (getRealLinestarted() != null)
 								{
-									LineTerminatedby =LineTerminatedby + "STARTING BY '" +  getRealLinestarted().replace("'","''") +"'";
+									LineTerminatedby =LineTerminatedby + "STARTING BY '" +  Const.replace(getRealLinestarted(), "'", "''") +"'";
 								}
 
 
 								// Line terminating By
 								if (getRealLineterminated() != null)
 								{
-									LineTerminatedby =LineTerminatedby + " TERMINATED BY '" +  getRealLineterminated().replace("'","''") +"'";
+									LineTerminatedby =LineTerminatedby + " TERMINATED BY '" +  Const.replace(getRealLineterminated(), "'", "''") +"'";
 								}
 
 								
