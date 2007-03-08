@@ -135,13 +135,31 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 	private Button       wLocalInfile;
 	private FormData     fdlLocalInfile, fdLocalInfile;
 
+
 	// Separator
 	private Label        wlSeparator;
-	private Button       wbSeparator;
 	private TextVar         wSeparator;
-	private FormData     fdlSeparator, fdbSeparator, fdSeparator;
+	private FormData     fdlSeparator,  fdSeparator;
 
+	//Enclosed
+	private Label wlEnclosed;
+	private TextVar wEnclosed;
+	private FormData fdlEnclosed, fdEnclosed;
 
+	//Escaped
+	private Label wlEscaped;
+	private TextVar wEscaped;
+	private FormData fdlEscaped, fdEscaped;
+
+	//Line terminated
+	private Label wlLineterminated;
+	private TextVar wLineterminated;
+	private FormData fdlLineterminated, fdLineterminated;
+
+	//Line starting
+	private Label wlLinestarted;
+	private TextVar wLinestarted;
+	private FormData fdlLinestarted, fdLinestarted;
 
 	//List Columns
 
@@ -305,7 +323,6 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 
 
 
-
 		// Table name line
 		wlTablename = new Label(shell, SWT.RIGHT);
 		wlTablename.setText(Messages.getString("JobMysqlBulkLoad.Tablename.Label"));
@@ -462,13 +479,6 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlSeparator.top = new FormAttachment(wProrityValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
-		wbSeparator=new Button(shell, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbSeparator);
-		wbSeparator.setText(Messages.getString("JobMysqlBulkLoad.Separator.Button"));
-		fdbSeparator=new FormData();
-		fdbSeparator.right= new FormAttachment(100, 0);
-		fdbSeparator.top  = new FormAttachment(wProrityValue, 0);
-		wbSeparator.setLayoutData(fdbSeparator);
 
 		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSeparator);
@@ -476,9 +486,87 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdSeparator = new FormData();
 		fdSeparator.left = new FormAttachment(middle, 0);
 		fdSeparator.top = new FormAttachment(wProrityValue, margin);
-		fdSeparator.right = new FormAttachment(wbSeparator, -margin);
+		fdSeparator.right = new FormAttachment(100, 0);
 		wSeparator.setLayoutData(fdSeparator);
 
+
+		// enclosed
+		wlEnclosed = new Label(shell, SWT.RIGHT);
+		wlEnclosed.setText(Messages.getString("JobMysqlBulkLoad.Enclosed.Label"));
+		props.setLook(wlEnclosed);
+		fdlEnclosed = new FormData();
+		fdlEnclosed.left = new FormAttachment(0, 0);
+		fdlEnclosed.right = new FormAttachment(middle, 0);
+		fdlEnclosed.top = new FormAttachment(wSeparator, margin);
+		wlEnclosed.setLayoutData(fdlEnclosed);
+
+		wEnclosed = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wEnclosed);
+		wEnclosed.addModifyListener(lsMod);
+		fdEnclosed = new FormData();
+		fdEnclosed.left = new FormAttachment(middle, 0);
+		fdEnclosed.top = new FormAttachment(wSeparator, margin);
+		fdEnclosed.right = new FormAttachment(100, 0);
+		wEnclosed.setLayoutData(fdEnclosed);
+
+
+		// escaped
+		wlEscaped = new Label(shell, SWT.RIGHT);
+		wlEscaped.setText(Messages.getString("JobMysqlBulkLoad.Escaped.Label"));
+		props.setLook(wlEscaped);
+		fdlEscaped= new FormData();
+		fdlEscaped.left = new FormAttachment(0, 0);
+		fdlEscaped.right = new FormAttachment(middle, 0);
+		fdlEscaped.top = new FormAttachment(wEnclosed, margin);
+		wlEscaped.setLayoutData(fdlEscaped);
+
+		wEscaped= new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wEscaped);
+		wEscaped.addModifyListener(lsMod);
+		fdEscaped= new FormData();
+		fdEscaped.left = new FormAttachment(middle, 0);
+		fdEscaped.top = new FormAttachment(wEnclosed, margin);
+		fdEscaped.right = new FormAttachment(100, 0);
+		wEscaped.setLayoutData(fdEscaped);
+
+		
+		// Line started
+		wlLinestarted = new Label(shell, SWT.RIGHT);
+		wlLinestarted.setText(Messages.getString("JobMysqlBulkLoad.Linestarted.Label"));
+		props.setLook(wlLinestarted);
+		fdlLinestarted = new FormData();
+		fdlLinestarted.left = new FormAttachment(0, 0);
+		fdlLinestarted.right = new FormAttachment(middle, 0);
+		fdlLinestarted.top = new FormAttachment(wEscaped, margin);
+		wlLinestarted.setLayoutData(fdlLinestarted);
+
+		wLinestarted = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wLinestarted);
+		wLinestarted.addModifyListener(lsMod);
+		fdLinestarted = new FormData();
+		fdLinestarted.left = new FormAttachment(middle, 0);
+		fdLinestarted.top = new FormAttachment(wEscaped, margin);
+		fdLinestarted.right = new FormAttachment(100, 0);
+		wLinestarted.setLayoutData(fdLinestarted);
+		
+		// Line terminated
+		wlLineterminated = new Label(shell, SWT.RIGHT);
+		wlLineterminated.setText(Messages.getString("JobMysqlBulkLoad.Lineterminated.Label"));
+		props.setLook(wlLineterminated);
+		fdlLineterminated = new FormData();
+		fdlLineterminated.left = new FormAttachment(0, 0);
+		fdlLineterminated.right = new FormAttachment(middle, 0);
+		fdlLineterminated.top = new FormAttachment(wLinestarted, margin);
+		wlLineterminated.setLayoutData(fdlLineterminated);
+
+		wLineterminated = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wLineterminated);
+		wLineterminated.addModifyListener(lsMod);
+		fdLineterminated = new FormData();
+		fdLineterminated.left = new FormAttachment(middle, 0);
+		fdLineterminated.top = new FormAttachment(wLinestarted, margin);
+		fdLineterminated.right = new FormAttachment(100, 0);
+		wLineterminated.setLayoutData(fdLineterminated);
 
 
 		// List of columns to set for
@@ -488,7 +576,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlListattribut = new FormData();
 		fdlListattribut.left = new FormAttachment(0, 0);
 		fdlListattribut.right = new FormAttachment(middle, 0);
-		fdlListattribut.top = new FormAttachment(wSeparator, margin);
+		fdlListattribut.top = new FormAttachment(wLineterminated, margin);
 		wlListattribut.setLayoutData(fdlListattribut);
 
 		
@@ -497,7 +585,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		wbListattribut.setText(Messages.getString("System.Button.Edit"));
 		FormData fdbListattribut = new FormData();
 		fdbListattribut.right= new FormAttachment(100, 0);
-		fdbListattribut.top  = new FormAttachment(wSeparator, margin);
+		fdbListattribut.top  = new FormAttachment(wLineterminated, margin);
 		wbListattribut.setLayoutData(fdbListattribut);
 		wbListattribut.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getListColumns(); } } );
 
@@ -507,7 +595,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		wListattribut.addModifyListener(lsMod);
 		fdListattribut = new FormData();
 		fdListattribut.left = new FormAttachment(middle, 0);
-		fdListattribut.top = new FormAttachment(wSeparator, margin);
+		fdListattribut.top = new FormAttachment(wLineterminated, margin);
 		fdListattribut.right = new FormAttachment(wbListattribut, -margin);
 		wListattribut.setLayoutData(fdListattribut);
 
@@ -616,17 +704,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		});
 
 
-		// Allow the insertion of tabs as separator...
-		wbSeparator.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent se) 
-			{
-				wSeparator.setText(wSeparator.getText()+"\t");
-			}
-		}
-			);
-
-
+	
 		getData();
 
 		BaseStepDialog.setSize(shell);
@@ -665,13 +743,24 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 			wFilename.setText(jobEntry.getFilename());
 		if (jobEntry.getSeparator() != null)
 			wSeparator.setText(jobEntry.getSeparator());
-	
-				
+		
+		if (jobEntry.getEnclosed() != null)
+			wEnclosed.setText(jobEntry.getEnclosed());
+
+		if (jobEntry.getEscaped() != null)
+			wEscaped.setText(jobEntry.getEscaped());
+		if (jobEntry.getLinestarted() != null)
+			wLinestarted.setText(jobEntry.getLinestarted());	
+		if (jobEntry.getLineterminated() != null)
+			wLineterminated.setText(jobEntry.getLineterminated());			
+
+
 		wReplacedata.setSelection(jobEntry.isReplacedata());
 		
 		wLocalInfile.setSelection(jobEntry.isLocalInfile());
-		
 
+
+	
 		if (jobEntry.getIgnorelines() != null)
 		{
 
@@ -718,6 +807,11 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		jobEntry.setTablename(wTablename.getText());
 		jobEntry.setFilename(wFilename.getText());
 		jobEntry.setSeparator(wSeparator.getText());
+		jobEntry.setEnclosed(wEnclosed.getText());
+		jobEntry.setEscaped(wEscaped.getText());
+		jobEntry.setLineterminated(wLineterminated.getText());
+		jobEntry.setLinestarted(wLinestarted.getText());
+
 		jobEntry.setReplacedata(wReplacedata.getSelection());
 		jobEntry.setIgnorelines(wIgnorelines.getText());
 		jobEntry.setListattribut(wListattribut.getText());
@@ -726,6 +820,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 
 		jobEntry.setLocalInfile(wLocalInfile.getSelection());
 
+		
 		dispose();
 	}
 
