@@ -1951,7 +1951,7 @@ public class Trans
         }
         catch(Exception e)
         {
-            throw new KettleException("There was an error during transformation split");
+            throw new KettleException("There was an error during transformation split", e);
         }
     }
 }
