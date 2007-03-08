@@ -61,6 +61,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	private String limitlines;
 	private String listcolumn;
 	private boolean highpriority;
+	private boolean optionenclosed;
 	public int outdumpvalue;
 	public int iffileexists;
 
@@ -78,6 +79,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		listcolumn=null;
 		lineterminated=null;
 		highpriority=true;
+		optionenclosed=false;
 		iffileexists=2;
 		connection=null;
 		setID(-1L);
@@ -110,6 +112,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("filename",  filename));
 		retval.append("      ").append(XMLHandler.addTagValue("separator",  separator));
 		retval.append("      ").append(XMLHandler.addTagValue("enclosed",  enclosed));
+		retval.append("      ").append(XMLHandler.addTagValue("optionenclosed",  optionenclosed));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
 		retval.append("      ").append(XMLHandler.addTagValue("limitlines",  limitlines));
 		retval.append("      ").append(XMLHandler.addTagValue("listcolumn",  listcolumn));
@@ -135,6 +138,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			limitlines     = XMLHandler.getTagValue(entrynode, "limitlines");
 			listcolumn     = XMLHandler.getTagValue(entrynode, "listcolumn");
 			highpriority = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "highpriority"));	
+			optionenclosed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "optionenclosed"));
 			outdumpvalue     = Const.toInt(XMLHandler.getTagValue(entrynode, "outdumpvalue"), -1);
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
@@ -161,6 +165,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			limitlines  = rep.getJobEntryAttributeString(id_jobentry, "limitlines");
 			listcolumn  = rep.getJobEntryAttributeString(id_jobentry, "listcolumn");
 			highpriority=rep.getJobEntryAttributeBoolean(id_jobentry, "highpriority");
+			optionenclosed=rep.getJobEntryAttributeBoolean(id_jobentry, "optionenclosed");
 			outdumpvalue=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "outdumpvalue"),-1);
 			iffileexists=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "iffileexists"),-1);
 			
@@ -197,6 +202,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "limitlines", limitlines);
 			rep.saveJobEntryAttribute(id_job, getID(), "listcolumn", listcolumn);	
 			rep.saveJobEntryAttribute(id_job, getID(), "highpriority", highpriority);
+			rep.saveJobEntryAttribute(id_job, getID(), "optionenclosed", optionenclosed);
+			
 			rep.saveJobEntryAttribute(id_job, getID(), "outdumpvalue", outdumpvalue);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
 
@@ -341,8 +348,10 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 						if (db.checkTableExists(realTablename))
 						{
 							// The table existe, We can continue ...
-							log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
-							
+							log.logDetailed(toString(), Messages.getString("JobMysqlBulkFile.TableExists1.Label")+realTablename+
+									Messages.getString("JobMysqlBulkFile.TableExists2.Label"));
+
+						
 							// Add schemaname (Most the time Schemaname.Tablename) 
 							if (schemaname !=null)
 							{
@@ -352,26 +361,28 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							// Set the Limit lines
 							if (Const.toInt(getRealLimitlines(),0)>0)
 							{
-								LimitNbrLignes = " LIMIT " + getRealLimitlines() + " " ;
+								LimitNbrLignes = "LIMIT " + getRealLimitlines() ;
 							}
 
 							// Set list of Column, if null get all columns (*) 
 							if (getRealListColumn()!= null )
 							{
-								ListOfColumn= getRealListColumn() ;	
+								ListOfColumn= MysqlString(getRealListColumn()) ;	
 							}
 									
 
 							// Fields separator 
 							if (getRealSeparator()!= null && outdumpvalue == 0)
 							{
-								FieldSeparator=" FIELDS TERMINATED BY '" + getRealSeparator() + "' ";
+								FieldSeparator="FIELDS TERMINATED BY '" + Const.replace(getRealSeparator(), "'", "''") + "'";
+								
 							}
 
 							// Lines Terminated by 
 							if (getRealLineterminated()!= null && outdumpvalue == 0)
 							{
-								LinesTerminated=" LINES TERMINATED BY '" + getRealLineterminated() + "' ";
+								LinesTerminated="LINES TERMINATED BY '" + Const.replace(getRealLineterminated(), "'", "''") + "'";
+								
 							}
 								
 
@@ -379,31 +390,39 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 							// High Priority ?
 							if (isHighPriority())
 							{
-								strHighPriority = " HIGH_PRIORITY ";
+								strHighPriority = "HIGH_PRIORITY";
 							}
 
 							if (getRealEnclosed()!= null && outdumpvalue == 0)
 							{
-								OptionEnclosed=" OPTIONALLY ENCLOSED BY '" + getRealEnclosed() + "' ";
+								if (isOptionEnclosed())
+								{
+									OptionEnclosed="OPTIONALLY ";
+								}
+								OptionEnclosed=OptionEnclosed + "ENCLOSED BY '" + Const.replace(getRealEnclosed(), "'", "''") + "'";
+								
 							}
 
 							// OutFile or Dumpfile
 							if (outdumpvalue == 0)
 							{
-								OutDumpText =" INTO OUTFILE ";
+								OutDumpText ="INTO OUTFILE";
 							}
 							else
 							{
-								OutDumpText = " INTO DUMPFILE ";
+								OutDumpText = "INTO DUMPFILE";
 							}
 
 					
-							String FILEBulkFile = "SELECT " + strHighPriority + ListOfColumn + OutDumpText + "'" + realFilename	+ "'" + FieldSeparator +
-										OptionEnclosed + LinesTerminated  + " FROM " + 	realTablename + LimitNbrLignes + 
-										" LOCK IN SHARE MODE";
+							String FILEBulkFile = "SELECT " + strHighPriority + " " + ListOfColumn + " " + 
+									OutDumpText + " '" + realFilename	+ "' " + FieldSeparator + " " + 
+									OptionEnclosed + " " + LinesTerminated  + " FROM " + 	
+									realTablename + " " + LimitNbrLignes + 	" LOCK IN SHARE MODE";
 
 							try
 							{
+
+								log.logDetailed(toString(), FILEBulkFile);
 								// Run the SQL
 								PreparedStatement ps= db.prepareSQL(FILEBulkFile);
 								ps.execute();
@@ -486,11 +505,19 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	{
 		this.highpriority = highpriority;
 	}
+	public void setOptionEnclosed(boolean optionenclosed) 
+	{
+		this.optionenclosed = optionenclosed;
+	}
 
 
 	public boolean isHighPriority() 
 	{
 		return highpriority;
+	}
+	public boolean isOptionEnclosed() 
+	{
+		return optionenclosed;
 	}
 
 
@@ -581,6 +608,25 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		return StringUtil.environmentSubstitute(getListColumn());
 	}
 
+	private String MysqlString(String listcolumns)
+	{
+		/* handle forbiden char like '
+		 */
+		String ReturnString="";
+		String[] split = listcolumns.split(",");	
 
+		for (int i=0;i<split.length;i++) 
+		{
+			if(ReturnString.equals(""))
+				ReturnString =  "`" + Const.trim(split[i]) + "`";
+			else
+				ReturnString = ReturnString +  ", `" + Const.trim(split[i]) + "`";
+
+		}
+
+		return ReturnString;
+	
+
+	}
 	
 }
