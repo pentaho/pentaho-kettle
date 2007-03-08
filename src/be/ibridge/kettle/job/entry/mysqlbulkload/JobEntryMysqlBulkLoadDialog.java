@@ -522,6 +522,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 
 		wEscaped= new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wEscaped);
+		wEscaped.setToolTipText(Messages.getString("JobMysqlBulkLoad.Escaped.Tooltip"));
 		wEscaped.addModifyListener(lsMod);
 		fdEscaped= new FormData();
 		fdEscaped.left = new FormAttachment(middle, 0);
