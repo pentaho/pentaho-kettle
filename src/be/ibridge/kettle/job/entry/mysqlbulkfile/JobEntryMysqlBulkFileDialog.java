@@ -136,14 +136,19 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 
 	// Separator
 	private Label        wlSeparator;
-	private Button       wbSeparator;
 	private TextVar         wSeparator;
-	private FormData     fdlSeparator, fdbSeparator, fdSeparator;
+	private FormData     fdlSeparator, fdSeparator;
 
 	//Enclosed
 	private Label wlEnclosed;
 	private TextVar wEnclosed;
 	private FormData fdlEnclosed, fdEnclosed;
+
+	//  OptionEnclosed
+	private Label        wlOptionEnclosed;
+	private Button       wOptionEnclosed;
+	private FormData     fdlOptionEnclosed, fdOptionEnclosed;
+
 
 	//Line terminated
 	private Label wlLineterminated;
@@ -469,14 +474,6 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlSeparator.top = new FormAttachment(wOutDumpValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
-		wbSeparator=new Button(shell, SWT.PUSH| SWT.CENTER);
-		props.setLook(wbSeparator);
-		wbSeparator.setText(Messages.getString("JobMysqlBulkFile.Separator.Button"));
-		fdbSeparator=new FormData();
-		fdbSeparator.right= new FormAttachment(100, 0);
-		fdbSeparator.top  = new FormAttachment(wOutDumpValue, 0);
-		wbSeparator.setLayoutData(fdbSeparator);
-
 		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSeparator);
 		wSeparator.addModifyListener(lsMod);
@@ -505,6 +502,32 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdEnclosed.right = new FormAttachment(100, 0);
 		wEnclosed.setLayoutData(fdEnclosed);
 
+		//Optionnally enclosed ?
+		wlOptionEnclosed = new Label(shell, SWT.RIGHT);
+		wlOptionEnclosed.setText(Messages.getString("JobMysqlBulkFile.OptionEnclosed.Label"));
+		props.setLook(wlOptionEnclosed);
+		fdlOptionEnclosed = new FormData();
+		fdlOptionEnclosed.left = new FormAttachment(0, 0);
+		fdlOptionEnclosed.top = new FormAttachment(wEnclosed, margin);
+		fdlOptionEnclosed.right = new FormAttachment(middle, -margin);
+		wlOptionEnclosed.setLayoutData(fdlOptionEnclosed);
+		wOptionEnclosed = new Button(shell, SWT.CHECK);
+		props.setLook(wOptionEnclosed);
+		wOptionEnclosed.setToolTipText(Messages.getString("JobMysqlBulkFile.OptionEnclosed.Tooltip"));
+		fdOptionEnclosed = new FormData();
+		fdOptionEnclosed.left = new FormAttachment(middle, 0);
+		fdOptionEnclosed.top = new FormAttachment(wEnclosed, margin);
+		fdOptionEnclosed.right = new FormAttachment(100, 0);
+		wOptionEnclosed.setLayoutData(fdOptionEnclosed);
+		wOptionEnclosed.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+
+
 		// Line terminated
 		wlLineterminated = new Label(shell, SWT.RIGHT);
 		wlLineterminated.setText(Messages.getString("JobMysqlBulkFile.Lineterminated.Label"));
@@ -512,7 +535,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlLineterminated = new FormData();
 		fdlLineterminated.left = new FormAttachment(0, 0);
 		fdlLineterminated.right = new FormAttachment(middle, 0);
-		fdlLineterminated.top = new FormAttachment(wEnclosed, margin);
+		fdlLineterminated.top = new FormAttachment(wOptionEnclosed, margin);
 		wlLineterminated.setLayoutData(fdlLineterminated);
 
 		wLineterminated = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -520,7 +543,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		wLineterminated.addModifyListener(lsMod);
 		fdLineterminated = new FormData();
 		fdLineterminated.left = new FormAttachment(middle, 0);
-		fdLineterminated.top = new FormAttachment(wEnclosed, margin);
+		fdLineterminated.top = new FormAttachment(wOptionEnclosed, margin);
 		fdLineterminated.right = new FormAttachment(100, 0);
 		wLineterminated.setLayoutData(fdLineterminated);
 
@@ -666,17 +689,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		});
 
 
-		// Allow the insertion of tabs as separator...
-		wbSeparator.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent se) 
-			{
-				wSeparator.setText(wSeparator.getText()+"\t");
-			}
-		}
-			);
-
-
+	
 		getData();
 
 		BaseStepDialog.setSize(shell);
@@ -739,13 +752,14 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 
 		if (jobEntry.getEnclosed() != null)
 			wEnclosed.setText(jobEntry.getEnclosed());
+		wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
 	
 		if (jobEntry.getLineterminated() != null)
 			wLineterminated.setText(jobEntry.getLineterminated());
 		
 			
 		wHighPriority.setSelection(jobEntry.isHighPriority());
-		
+		wOptionEnclosed.setSelection(jobEntry.isOptionEnclosed());
 
 		if (jobEntry.getLimitlines() != null)
 			wLimitlines.setText(jobEntry.getLimitlines());
@@ -798,6 +812,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		jobEntry.setFilename(wFilename.getText());
 		jobEntry.setSeparator(wSeparator.getText());
 		jobEntry.setEnclosed(wEnclosed.getText());
+		jobEntry.setOptionEnclosed(wOptionEnclosed.getSelection());
 		jobEntry.setLineterminated(wLineterminated.getText());
 		
 		jobEntry.setLimitlines(wLimitlines.getText());
