@@ -87,9 +87,5 @@ public class TextFileFilter implements Cloneable
     public void setFilterString(String filterString)
     {
         this.filterString = filterString;
-    }
-
-    
-    
-    
+    }   
 }

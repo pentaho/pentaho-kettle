@@ -1059,6 +1059,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if (!filterOK)
 				{
 					isFilterLastLine=filter.isFilterLastLine();
+					if ( isFilterLastLine )
+					{
+						data.doneReading = true;
+					}
 				}
 			}
 		}
