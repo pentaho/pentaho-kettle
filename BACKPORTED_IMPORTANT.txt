@@ -1,0 +1,3 @@
+The following steps had bug fixes backported from the 2.4.1-M2 series:
+- Group By (Worker+Meta class) - Matt - 2007-MAR-09
+- Merge Rows (Worker+Meta class) - Matt - 2007-MAR-09
