@@ -373,15 +373,6 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     			}
     			if (!found) r.removeValue(i);
     		}
-            
-    		// If we pass all rows, we can add a line nr in the group...
-            if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
-            {
-                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
-                lineNr.setLength(9);
-                lineNr.setOrigin(name);
-                r.addValue(lineNr);
-            }
         }
 		
 		// Re-add aggregates
@@ -426,41 +417,53 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				}
 			}
 		}
+        
+        if (passAllRows)
+        {
+            // If we pass all rows, we can add a line nr in the group...
+            if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
+            {
+                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
+                lineNr.setLength(9);
+                lineNr.setOrigin(name);
+                r.addValue(lineNr);
+            }
+        }
 
 		return row;
 	}
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(200);
 
-		retval.append("      "+XMLHandler.addTagValue("all_rows",  passAllRows)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("field_ignore", aggregateIgnoredField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("directory", directory)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("prefix",    prefix)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("add_linenr",  addingLineNrInGroup)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("      "+XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); //$NON-NLS-1$
+		retval.append("      ").append(XMLHandler.addTagValue("all_rows",  passAllRows)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("field_ignore", aggregateIgnoredField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("directory", directory)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("prefix",    prefix)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("add_linenr",  addingLineNrInGroup)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      ").append(XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); //$NON-NLS-1$
         
-		retval.append("      <group>"+Const.CR); //$NON-NLS-1$
+		retval.append("      <group>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<groupField.length;i++)
 		{
-			retval.append("        <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("          "+XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("name", groupField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("        </group>"+Const.CR); //$NON-NLS-1$
+		retval.append("        </group>").append(Const.CR); //$NON-NLS-1$
 
-		retval.append("      <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<subjectField.length;i++)
 		{
-			retval.append("        <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("          "+XMLHandler.addTagValue("aggregate", aggregateField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          "+XMLHandler.addTagValue("subject", subjectField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("aggregate", aggregateField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          ").append(XMLHandler.addTagValue("subject", subjectField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          ").append(XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("        </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("        </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -627,5 +630,4 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.lineNrInGroupField = lineNrInGroupField;
     }
-
 }
