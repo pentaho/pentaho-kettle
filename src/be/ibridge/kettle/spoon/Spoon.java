@@ -7549,6 +7549,7 @@ public class Spoon implements AddUndoPositionInterface
         for (Iterator iter = tabMap.values().iterator(); iter.hasNext();)
         {                       
             TabMapEntry entry = (TabMapEntry) iter.next();
+            if (entry.getTabItem().isDisposed()) continue;
             if (objectType == entry.getObjectType() && entry.getTabItem().getText().equalsIgnoreCase(tabItemText))
             {
                 return entry.getTabItem();
