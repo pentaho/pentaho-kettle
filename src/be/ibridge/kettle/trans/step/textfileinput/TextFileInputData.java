@@ -95,6 +95,8 @@ public class TextFileInputData extends BaseStepData implements
 	public FileErrorHandler dataErrorLineHandler;
 
 	public FilePlayList filePlayList;
+	
+	public TextFileFilterProcessor filterProcessor;
 
 	/**
 	 * 
@@ -120,10 +122,11 @@ public class TextFileInputData extends BaseStepData implements
 
 		fr = null;
 		zi = null;
+		
+		filterProcessor = null;
 	}
 
 	public void setDateFormatLenient(boolean lenient) {
 		daf.setLenient(lenient);
 	}
-
 }

@@ -1027,45 +1027,16 @@ public class TextFileInput extends BaseStep implements StepInterface
 			filterOK=false;
 		}
 		
-		// check the filters
-		for (int f = 0; f < meta.getFilter().length && filterOK; f++)
+		filterOK = data.filterProcessor.doFilters(line);
+		if ( ! filterOK )
 		{
-			TextFileFilter filter = meta.getFilter()[f];
-			if (filter.getFilterString() != null && filter.getFilterString().length() > 0)
+			if ( data.filterProcessor.isStopProcessing())
 			{
-				int from = filter.getFilterPosition();
-				if (from >= 0)
-				{
-					int to = from + filter.getFilterString().length();
-					if (line.length() >= from && line.length() >= to)
-					{
-						String sub = line.substring(filter.getFilterPosition(), to);
-						if (sub.equalsIgnoreCase(filter.getFilterString()))
-						{
-							filterOK = false; // skip this one!
-						}
-					}
-				}
-				else
-				// anywhere on the line
-				{
-					int idx = line.indexOf(filter.getFilterString());
-					if (idx >= 0)
-					{
-						filterOK = false;
-					}
-				}
-
-				if (!filterOK)
-				{
-					isFilterLastLine=filter.isFilterLastLine();
-					if ( isFilterLastLine )
-					{
-						data.doneReading = true;
-					}
-				}
+			    data.doneReading = true;
 			}
 		}
+		
+		// check the filters
 		return filterOK;
 	}
 
@@ -1253,10 +1224,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 						} 
 						else
 						{
-							if (isFilterLastLine)
-							{
-								data.doneReading = true;
-							}
 							bufferSize++; // grab another line, this one got filtered
 						}
 					}
@@ -1312,6 +1279,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 				
 			data.files = meta.getTextFileList();
+			data.filterProcessor = new TextFileFilterProcessor(meta.getFilter());
             
             // If there are missing files, fail if we don't ignore errors
             //

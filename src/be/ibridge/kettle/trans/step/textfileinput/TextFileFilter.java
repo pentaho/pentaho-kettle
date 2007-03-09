@@ -20,7 +20,7 @@ public class TextFileFilter implements Cloneable
     public TextFileFilter(int filterPosition, String filterString, boolean filterLastLine)
     {
         this.filterPosition = filterPosition;
-        this.filterString = filterString;
+        this.filterString   = filterString;
         this.filterLastLine = filterLastLine;
     }
 
