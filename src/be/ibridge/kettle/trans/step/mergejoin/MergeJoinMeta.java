@@ -197,7 +197,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrKeys1, int nrKeys2)
 	{
-        keyFields1 = new String[nrKeys2];
+        keyFields1 = new String[nrKeys1];
         keyFields2 = new String[nrKeys2];
 	}
 
