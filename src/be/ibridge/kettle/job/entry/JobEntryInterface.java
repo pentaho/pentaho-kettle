@@ -48,6 +48,7 @@ import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.job.entry.waitforfile.JobEntryWaitForFile;
+import be.ibridge.kettle.job.entry.abort.JobEntryAbort;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -85,7 +86,8 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_ZIP_FILE= 21;
 	public static final int TYPE_JOBENTRY_XSLT= 22;
 	public static final int TYPE_JOBENTRY_MYSQL_BULK_FILE= 23;
-    
+    public static final int TYPE_JOBENTRY_ABORT= 24;
+
 	public final static String typeCode[] =
 		{
 			"-",
@@ -112,6 +114,7 @@ public interface JobEntryInterface
 			"ZIP_FILE",
 			"XSLT",
 			"MYSQL_BULK_FILE",
+			"ABORT",
 		};
 
 	public final static String typeDesc[] =
@@ -140,6 +143,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.ZipFile.TypeDesc"),
 			Messages.getString("JobEntry.XSLT.TypeDesc"),
 			Messages.getString("JobEntry.MysqlBulkFile.TypeDesc"),
+			Messages.getString("JobEntry.Abort.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -168,6 +172,7 @@ public interface JobEntryInterface
 			"ZIP.png",
 			"XSLT.png",
 			"MBF.png",
+			"ABR.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -196,6 +201,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.ZipFile.Tooltip"),
 			Messages.getString("JobEntry.XSLT.Tooltip"),
 			Messages.getString("JobEntry.MysqlBulkFile.Tooltip"),
+			Messages.getString("JobEntry.Abort.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -224,6 +230,7 @@ public interface JobEntryInterface
 			JobEntryZipFile.class,
 			JobEntryXSLT.class,
 			JobEntryMysqlBulkFile.class,
+			JobEntryAbort.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
