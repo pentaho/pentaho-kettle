@@ -289,7 +289,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		case Value.VALUE_TYPE_DATE   : retval.append("DATE"); break;
 		case Value.VALUE_TYPE_BOOLEAN: retval.append("CHAR(1)"); break;
 		case Value.VALUE_TYPE_NUMBER : 
-		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 
 			retval.append("NUMBER"); 
 			if (length>0)
@@ -302,6 +301,9 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 				retval.append(')');
 			}
 			break;
+		case Value.VALUE_TYPE_INTEGER:  
+			retval.append("INTEGER"); 
+			break;			
 		case Value.VALUE_TYPE_STRING:
 			if (length>=DatabaseMeta.CLOB_LENGTH)
 			{

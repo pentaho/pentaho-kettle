@@ -2895,6 +2895,10 @@ public class Database
             
             if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
             {
+            	if (precision == 0 && length == 38 )
+            	{
+            		valtype=Value.VALUE_TYPE_INTEGER;
+            	}
                 if (precision<=0 && length<=0) // undefined size: BIGNUMBER
                 {
                     valtype=Value.VALUE_TYPE_BIGNUMBER;
