@@ -16,11 +16,9 @@
 package be.ibridge.kettle.job.entry.abort;
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
@@ -35,15 +33,12 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
-
 /**
- * Job entry type to display a message box.
- * It uses a piece of javascript to do this.
+ * Job entry type to abort a job.
  * 
  * @author Samatar
  * @since 12-02-2007
  */
-
 public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String messageabort;
@@ -76,7 +71,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
         StringBuffer retval = new StringBuffer();
 	
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("messageabort",   messageabort));
+		retval.append("      ").append(XMLHandler.addTagValue("message",   messageabort));
 
 		return retval.toString();
 	}
@@ -87,11 +82,11 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 			super.loadXML(entrynode, databases);
-			messageabort = XMLHandler.getTagValue(entrynode, "messageabort");
+			messageabort = XMLHandler.getTagValue(entrynode, "message");
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load job entry of type '" + Messages.getString("JobEntryAbort.Meta.Type") + "' from XML node", e);
+			throw new KettleXMLException("Unable to load job entry of type 'Abort' from XML node", e);
 		}
 	}
 
@@ -101,12 +96,11 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			messageabort = rep.getJobEntryAttributeString(id_jobentry, "messageabort");
-
+			messageabort = rep.getJobEntryAttributeString(id_jobentry, "message");
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type '" + Messages.getString("JobEntryAbort.Meta.Type") + "' from the repository with id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'Abort' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -118,19 +112,15 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 			super.saveRep(rep, id_job);
-			rep.saveJobEntryAttribute(id_job, getID(), "messageabort", messageabort);
+			rep.saveJobEntryAttribute(id_job, getID(), "message", messageabort);
 
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type '" + Messages.getString("JobEntryAbort.Meta.Type") + "' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'Abort' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
-
-	/**
-	 * Display the Message Box.
-	 */
 	public boolean evaluate(Result result)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -148,13 +138,10 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 			{
 				Returnmessage = RealMessageabort;
 
-			}
-			
+			}			
 			log.logError(toString(), Returnmessage);	
 			result.setNrErrors(1);
 			return false;
-					
-					
 		}
 		catch(Exception e)
 		{
@@ -162,8 +149,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 			log.logError(toString(), Messages.getString("JobEntryAbort.Meta.CheckResult.CoundntExecute") +e.toString());
 			return false;
 		}
-	
-	
 	}
 	
 	/**
@@ -208,7 +193,4 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		return messageabort;
 	}
-		
-
-	
 }

@@ -26,7 +26,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -48,7 +47,6 @@ import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 /**
  * This dialog allows you to edit a JobEntry Abort object.
@@ -169,9 +167,6 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
 		fdMessageAbort.top = new FormAttachment(wName, margin);
 		fdMessageAbort.right = new FormAttachment(100, 0);
 		wMessageAbort.setLayoutData(fdMessageAbort);
-
-
-
 	
 		// Add listeners
         lsCancel = new Listener()
@@ -181,8 +176,6 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
                 cancel();
             }
         };
-
-
 
         lsOK = new Listener()
         {
@@ -246,7 +239,6 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
         wName.selectAll();
 		if (jobEntry.getMessageabort() != null)
 			wMessageAbort.setText(jobEntry.getMessageabort());
-
     }
 
     private void cancel()
