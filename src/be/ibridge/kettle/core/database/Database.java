@@ -2463,7 +2463,7 @@ public class Database
 					//
 					// Get the info from the data dictionary...
 					//
-					String sql = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = '"+tablename.toUpperCase()+"'";
+					String sql = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = '"+tableName+"'";
 					ResultSet res = null;
 					try {
 						res = openQuery(sql);
