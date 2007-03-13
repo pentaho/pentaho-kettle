@@ -551,7 +551,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
          ColumnInfo.COLUMN_TYPE_CCOMBO,
          formats),
 			 new ColumnInfo(
-         Messages.getString("XMLInputDialog.FieldsTable.Format.Column"),
+         Messages.getString("XMLInputDialog.FieldsTable.Length.Column"),
          ColumnInfo.COLUMN_TYPE_TEXT,
          false),
 			 new ColumnInfo(
