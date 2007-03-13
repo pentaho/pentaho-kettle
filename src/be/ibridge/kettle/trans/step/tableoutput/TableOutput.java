@@ -197,11 +197,21 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
 				Row extraKeys = data.db.getGeneratedKeys(insertStatement);
 
-				// Send out the good word!
-				// Only 1 key at the moment. (should be enough for now :-)
-				Value keyVal = extraKeys.getValue(0);
-				keyVal.setName(meta.getGeneratedKeyField());
-				r.addValue(keyVal);
+				if ( extraKeys != null )
+				{
+  				    // Send out the good word!
+  				    // Only 1 key at the moment. (should be enough for now :-)
+				    Value keyVal = extraKeys.getValue(0);
+				    keyVal.setName(meta.getGeneratedKeyField());
+				    r.addValue(keyVal);
+				}
+				else
+				{
+					// we have to throw something here, else we don't know what the
+					// type is of the returned key(s) and we would violate our own rule
+					// that a hop should always contain rows of the same type.
+					throw new KettleStepException("No generated keys while \"return generated keys\" is active!");
+				}
 			}
         }
 		catch(KettleDatabaseBatchException be)
