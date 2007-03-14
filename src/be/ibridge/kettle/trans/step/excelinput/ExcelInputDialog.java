@@ -103,7 +103,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
-	private TextVar         wFilename;
+	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
@@ -479,6 +479,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		ColumnInfo[] colinfo=new ColumnInfo[3];
 		colinfo[ 0]=new ColumnInfo(Messages.getString("ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+        colinfo[ 0].setUsingVariables(true);
 		colinfo[ 1]=new ColumnInfo(Messages.getString("ExcelInputDialog.Wildcard.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		colinfo[ 1].setToolTip(Messages.getString("ExcelInputDialog.Wildcard.Tooltip"));
 		colinfo[ 2]=new ColumnInfo(Messages.getString("ExcelInputDialog.Required.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
