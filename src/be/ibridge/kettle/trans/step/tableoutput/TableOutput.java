@@ -427,12 +427,20 @@ public class TableOutput extends BaseStep implements StepInterface
                 PreparedStatement insertStatement = (PreparedStatement) preparedStatements.next();
                 data.db.insertFinished(insertStatement, data.batchMode);
             }
+            for (int i=0;i<data.batchBuffer.size();i++)
+            {
+                Row row = (Row) data.batchBuffer.get(i);
+                putRow(row);
+                linesOutput++;
+            }
+            // Clear the buffer
+            data.batchBuffer.clear();            
 		}
 		catch(KettleDatabaseBatchException be)
 		{
             if (getStepMeta().isDoingErrorHandling())
             {
-                // Right at the back we are expriencing a batch commit problem...
+                // Right at the back we are expesriencing a batch commit problem...
                 // OK, we have the numbers...
                 try
                 {
@@ -477,8 +485,7 @@ public class TableOutput extends BaseStep implements StepInterface
             
 		    data.db.disconnect();
             super.dispose(smi, sdi);
-        }
-        
+        }        
 	}
 	
 
