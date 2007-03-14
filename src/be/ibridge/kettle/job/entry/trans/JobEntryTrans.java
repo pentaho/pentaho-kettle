@@ -710,7 +710,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
         {
             log.logBasic(toString(), "Loading transformation from repository ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+getDirectory()+"]");
-            transMeta = new TransMeta(rep, StringUtil.environmentSubstitute(getTransname()), getDirectory());
+            
+            if ( rep != null )
+            {
+            	//
+            	// It only makes sense to try to load from the repository when the repository is also filled in.
+            	//
+                transMeta = new TransMeta(rep, StringUtil.environmentSubstitute(getTransname()), getDirectory());
+            }
+            else
+            {
+            	throw new KettleException("No repository defined!");
+            }
         }
         else
         {
