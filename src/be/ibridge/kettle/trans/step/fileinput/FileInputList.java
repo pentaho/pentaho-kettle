@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs.FileDepthSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileType;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -96,8 +97,8 @@ public class FileInputList
                     //
                     FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
                     FileObject[] children = directoryFileObject.getChildren();
-                    
-                    if (children.length==0) // it's a directory
+
+                    if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
                     {
                         FileObject[] fileObjects = directoryFileObject.findFiles(
                                 new FileDepthSelector(1,1)
@@ -373,11 +374,22 @@ public class FileInputList
 
     public void sortFiles()
     {
-        Collections.sort(files);
-        Collections.sort(nonAccessibleFiles);
-        Collections.sort(nonExistantFiles);
+        if (containsComparable(files))
+            Collections.sort(files);
+        if (containsComparable(nonAccessibleFiles))
+            Collections.sort(nonAccessibleFiles);
+        if (containsComparable(nonExistantFiles))
+            Collections.sort(nonExistantFiles);
     }
 
+    private boolean containsComparable(List list)
+    {
+        if (list == null || list.size() == 0)
+            return false;
+        
+        return (list.get(0) instanceof Comparable);
+    }
+    
     public FileObject getFile(int i)
     {
         return (FileObject) files.get(i);
