@@ -1724,7 +1724,8 @@ public class TableView extends Composite
 	{
 		activeTableColumn=colnr;
 		activeTableRow=rownr;
-		activeTableItem=table.getItem(rownr);
+		if (rownr >= 0)
+		    activeTableItem=table.getItem(rownr);
 	}
 
 	private void edit(int rownr, int colnr)
