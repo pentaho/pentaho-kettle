@@ -137,7 +137,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-		// Connection line
+		// Temp directory for sorting
 		wlSortDir=new Label(shell, SWT.RIGHT);
 		wlSortDir.setText(Messages.getString("SortRowsDialog.SortDir.Label"));
  		props.setLook(wlSortDir);
@@ -189,6 +189,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		);
 
+        // Prefix of temporary file
 		wlPrefix=new Label(shell, SWT.RIGHT);
 		wlPrefix.setText("TMP-file prefix ");
  		props.setLook(wlPrefix);
@@ -207,6 +208,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wPrefix.setLayoutData(fdPrefix);
 		wPrefix.setText("srt");
 
+        // Maximum number of lines to keep in memory before using temporary files
         wlSortSize=new Label(shell, SWT.RIGHT);
         wlSortSize.setText(Messages.getString("SortRowsDialog.SortSize.Label"));
         props.setLook(wlSortSize);
@@ -224,6 +226,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdSortSize.right = new FormAttachment(100, 0);
         wSortSize.setLayoutData(fdSortSize);
 
+        // Using compression for temporary files?
         wlCompress=new Label(shell, SWT.RIGHT);
         wlCompress.setText(Messages.getString("SortRowsDialog.Compress.Label"));
         props.setLook(wlCompress);
@@ -258,6 +261,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
+        // Table with fields to sort and sort direction
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("SortRowsDialog.Fields.Label"));
  		props.setLook(wlFields);
