@@ -36,7 +36,7 @@ import be.ibridge.kettle.repository.Repository;
 
 
 /**
- * Job entry type to display a message box.
+ * Job entry type to sleep the entry job.
  * It uses a piece of javascript to do this.
  * 
  * @author Samatar
@@ -175,7 +175,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 		try
 		{
 		
-
+			
 		// starttime (in seconds ,Minutes or Hours)
 		long timeStart = System.currentTimeMillis() / Multiple;
 
@@ -201,7 +201,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 			long now = System.currentTimeMillis()/ Multiple;
 
 			// Let's check the limit time
-			if ( (iMaximumTimeout > 0) && (now > (timeStart + iMaximumTimeout)))
+			if ( (iMaximumTimeout > 0) && (now >= (timeStart + iMaximumTimeout)))
 			{													
 				// We have reached the time limit
 				log.logDetailed(toString(), Messages.getString("JobEval.WaitTimeIsElapsed.Label"));
@@ -212,9 +212,12 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
 			}
 		}
-
+			
+			
+				
 
 		}
+	 
 		catch(Exception e)
 		{
 			// We get an exception
