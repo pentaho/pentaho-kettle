@@ -199,7 +199,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		String realTargetdirectory   = StringUtil.environmentSubstitute(sourcedirectory);
 		String realMovetodirectory   = StringUtil.environmentSubstitute(movetodirectory);
 	
-		if (zipFilename!=null)
+		if (realZipfilename!=null)
 		{
             FileObject fileObject = null;
 			try {
@@ -208,7 +208,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				if ( fileObject.exists() )
 				{
 					Fileexists =true;
-					log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ zipFilename 
+					log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileExists1.Label")+ realZipfilename 
 											+ Messages.getString("JobZipFiles.Zip_FileExists2.Label"));
 				}
 				else
@@ -250,15 +250,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						//Format Date
 		
 						DateFormat dateFormat = new SimpleDateFormat("hhmmss_mmddyyyy");
-						zipFilename=zipFilename + "_" + dateFormat.format(new Date())+".zip";		
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + zipFilename + 
+						realZipfilename=realZipfilename + "_" + dateFormat.format(new Date())+".zip";		
+						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileNameChange1.Label") + realZipfilename + 
 												Messages.getString("JobZipFiles.Zip_FileNameChange1.Label"));
 
 
 					}
 					else if(ifzipfileexists==1 && Fileexists)
 					{
-						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + zipFilename + 
+						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + realZipfilename + 
 										Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
 					}
 				
@@ -289,7 +289,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					// Prepare Zip File
 					byte[] buffer = new byte[18024];
 					
-					FileOutputStream dest = new FileOutputStream(zipFilename);
+					FileOutputStream dest = new FileOutputStream(realZipfilename);
 					BufferedOutputStream buff = new BufferedOutputStream(dest);
 					ZipOutputStream out = new ZipOutputStream(buff);
 
