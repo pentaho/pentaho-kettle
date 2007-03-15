@@ -654,10 +654,17 @@ public class Spoon implements AddUndoPositionInterface
     public void closeFile()
     {
         TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) closeTransformation(transMeta);
-
-        JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) closeJob(jobMeta);
+        if (transMeta!=null)
+        {
+            // If a transformation is the current active tab, close it
+            closeTransformation(transMeta);
+        }
+        else
+        {
+            // Otherwise try to find the current open job and close it
+            JobMeta jobMeta = getActiveJob();
+            if (jobMeta!=null) closeJob(jobMeta);
+        }
     }
 
     /**
@@ -667,13 +674,13 @@ public class Spoon implements AddUndoPositionInterface
     {
         String tabName = makeTransGraphTabName(transMeta);
         transformationMap.remove(tabName);
-        tabMap.remove(tabName);
         
         // Close the associated tabs...
         CTabItem graphTab = findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
         if (graphTab!=null)
         {
             graphTab.dispose();
+            tabMap.remove(tabName);
         }
         
         // Logging
@@ -704,12 +711,12 @@ public class Spoon implements AddUndoPositionInterface
     {
         String tabName = makeJobGraphTabName(jobMeta);
         jobMap.remove(tabName);
-        tabMap.remove(tabName);
         
         // Close the associated tabs...
         CTabItem graphTab = findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
         if (graphTab!=null)
         {
+            tabMap.remove(tabName);
             graphTab.dispose();
         }
         
