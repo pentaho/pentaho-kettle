@@ -687,8 +687,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			std.setSelectedTable(wTable.getText());
 			if (std.open() != null)
 			{
-                wSchema.setText(std.getSchemaName() == null ? "" : std.getSchemaName());
-				wTable.setText(std.getTableName());
+                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
+				wTable.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else
