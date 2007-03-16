@@ -175,8 +175,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			listattribut  = rep.getJobEntryAttributeString(id_jobentry, "listattribut");
 
 			localinfile=rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
-		
-			prorityvalue=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "prorityvalue"),-1);
+			prorityvalue=(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
 			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
