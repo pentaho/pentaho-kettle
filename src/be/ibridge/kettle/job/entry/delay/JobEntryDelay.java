@@ -106,7 +106,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 			super.loadRep(rep, id_jobentry, databases);
 
 			maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximumTimeout");
-			scaletime=Integer.parseInt(rep.getJobEntryAttributeString(id_jobentry, "scaletime"));
+			scaletime=(int) rep.getJobEntryAttributeInteger(id_jobentry, "scaletime");
 		}
 		catch(KettleDatabaseException dbe)
 		{
