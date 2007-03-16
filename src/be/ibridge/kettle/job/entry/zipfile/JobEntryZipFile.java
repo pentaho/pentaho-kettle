@@ -143,19 +143,22 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
 		throws KettleException
 	{
+		
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
 			zipFilename = rep.getJobEntryAttributeString(id_jobentry, "zipfilename");
-			compressionrate=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "compressionrate"),-1);
-			ifzipfileexists=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "ifzipfileexists"),-1);
-			afterzip=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "afterzip"),-1);
+			compressionrate=(int) rep.getJobEntryAttributeInteger(id_jobentry, "compressionrate");
+			ifzipfileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "ifzipfileexists");
+			afterzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterzip");
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			sourcedirectory = rep.getJobEntryAttributeString(id_jobentry, "sourcedirectory");
 			movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
 		
 		}
+
+
 		catch(KettleException dbe)
 		{
 			throw new KettleException("Unable to load job entry of type 'zipfile' from the repository for id_jobentry="+id_jobentry, dbe);
