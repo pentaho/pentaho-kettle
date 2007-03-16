@@ -166,8 +166,10 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			listcolumn  = rep.getJobEntryAttributeString(id_jobentry, "listcolumn");
 			highpriority=rep.getJobEntryAttributeBoolean(id_jobentry, "highpriority");
 			optionenclosed=rep.getJobEntryAttributeBoolean(id_jobentry, "optionenclosed");
-			outdumpvalue=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "outdumpvalue"),-1);
-			iffileexists=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "iffileexists"),-1);
+			
+			outdumpvalue=(int) rep.getJobEntryAttributeInteger(id_jobentry, "outdumpvalue");
+
+			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
 			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
