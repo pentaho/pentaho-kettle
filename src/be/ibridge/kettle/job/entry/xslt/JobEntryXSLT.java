@@ -134,7 +134,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			xmlfilename = rep.getJobEntryAttributeString(id_jobentry, "xmlfilename");
 			xslfilename = rep.getJobEntryAttributeString(id_jobentry, "xslfilename");
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
-			iffileexists=Const.toInt(rep.getJobEntryAttributeString(id_jobentry, "iffileexists"),-1);
+			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
 			
 
 

@@ -56,6 +56,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 	private static final String[] FILETYPES_XSL = new String[] 
 		{
 			Messages.getString("JobEntryXSLT.Filetype.Xsl"),
+			Messages.getString("JobEntryXSLT.Filetype.Xslt"),
 			Messages.getString("JobEntryXSLT.Filetype.All")};
 
 
@@ -246,7 +247,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 				public void widgetSelected(SelectionEvent e)
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-					dialog.setFilterExtensions(new String[] {"*.xsl;*.XSL", "*"});
+					dialog.setFilterExtensions(new String[] {"*.xsl;*.XSL", "*.xslt;*.XSLT", "*"});
 					if (wxslFilename.getText()!=null)
 					{
 						dialog.setFileName(StringUtil.environmentSubstitute(wxslFilename.getText()) );
