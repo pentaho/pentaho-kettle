@@ -128,9 +128,6 @@ public class Mapping extends BaseStep implements StepInterface
             data.wasStarted = true;
             
             // Now we continue with out regular program... 
-            
-            
-            
 			data.renameFieldIndexes = new ArrayList();
 			data.renameFieldNames   = new ArrayList();
 			

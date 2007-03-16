@@ -59,7 +59,14 @@ public class MappingOutput extends BaseStep implements StepInterface
             // No more input to be expected...
             // Tell the next steps.
             //
-			data.mapping.setOutputDone();
+			if ( data.mapping != null )
+			{
+				// Code hardening for bug #5054, data.mapping can be null when the
+				// mapping step fails before any input row is generated. This way
+				// the method "setConnectorStep()" of this step is not called leaving
+				// data.mapping set to null.
+			    data.mapping.setOutputDone();
+			}
 			return false;
 		}
 		
@@ -95,9 +102,6 @@ public class MappingOutput extends BaseStep implements StepInterface
                 throw new KettleStepException(Messages.getString("MappingOutput.Exception.MappingOutputFieldNotFound")+data.outputMapping[i]); //$NON-NLS-1$
             }
         }
-        
-
-        
         
 		data.mapping.putRow(r);     // copy row to possible alternate rowset(s).
 
@@ -157,7 +161,6 @@ public class MappingOutput extends BaseStep implements StepInterface
 
     public void setOutputMapping(String[] outputMapping)
     {
-        data.outputMapping = outputMapping;
-        
+        data.outputMapping = outputMapping;       
     }
 }
