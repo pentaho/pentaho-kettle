@@ -42,7 +42,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.logging.Log4jKettleLayout;
+import be.ibridge.kettle.core.logging.Log4JLayoutInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class LogSettingsDialog extends Dialog
@@ -67,7 +67,7 @@ public class LogSettingsDialog extends Dialog
 	private Shell         shell, parent;
 	private Props         props;
 
-    private Log4jKettleLayout layout;
+    private Log4JLayoutInterface layout;
 	
 	public LogSettingsDialog(Shell par, int style, LogWriter l, Props pr)
 	{
@@ -76,7 +76,7 @@ public class LogSettingsDialog extends Dialog
 			log=l;
 			props=pr;
             
-            layout = (Log4jKettleLayout) LogWriter.getLayout();
+            layout = (Log4JLayoutInterface) LogWriter.getLayout();
 	}
 
 	public Object open()
