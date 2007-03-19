@@ -393,7 +393,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-            WorkbookSettings ws = new WorkbookSettings();
+			WorkbookSettings ws = new WorkbookSettings();
             ws.setLocale(Locale.getDefault());
             
             if (!Const.isEmpty(meta.getEncoding()))
@@ -404,6 +404,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             
             FileObject file = KettleVFS.getFileObject(buildFilename());
 
+		
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
 			resultFile.setComment("This file was created with an Excel output step");
@@ -412,23 +413,33 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Create the workboook
             if (!meta.isTemplateEnabled())
             {
-            	data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
-                // Create a sheet?
-                data.sheet = data.workbook.createSheet("Sheet1", 0);            	
+				
+				// Create a new Workbook
+				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), ws);
+
+				// Create a sheet?
+				data.sheet = data.workbook.createSheet("Sheet1", 0);    
+
             } else {
-            	// create the workbook from the template
-            	Workbook tmpWorkbook=Workbook.getWorkbook(
-            			new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
-            	data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
+								
+				// create the workbook from the template
+				Workbook tmpWorkbook=Workbook.getWorkbook(
+						new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
+				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
+				
             	tmpWorkbook.close();
             	// use only the first sheet as template
             	data.sheet = data.workbook.getSheet(0);
             	// save inital number of columns
             	data.templateColumns = data.sheet.getColumns();
             }
-            
-            data.sheet.setName("Sheet1"); //TODO: let the user modify the Sheetname
 			
+            // Renamme Sheet
+			if (meta.getSheetname() != null) 
+			{
+				data.sheet.setName(meta.getSheetname()); 
+			}
+
 			if (meta.isSheetProtected())
 			{
 				// Protect Sheet by setting password
@@ -459,7 +470,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 		return retval;
 	}
-	
+
 	private boolean closeFile()
 	{
 		boolean retval=false;
@@ -469,6 +480,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			data.workbook.write();
             data.workbook.close();
             data.formats.clear();
+
             
 			retval=true;
 		}
