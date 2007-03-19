@@ -47,6 +47,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.chef.JobTracker;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.ResultFile;
@@ -148,7 +149,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         retval.append("      ").append(XMLHandler.addTagValue("use_auth", usingAuthentication));
         retval.append("      ").append(XMLHandler.addTagValue("use_secure_auth", usingSecureAuthentication));
         retval.append("      ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
-        retval.append("      ").append(XMLHandler.addTagValue("auth_password", authenticationPassword));
+        retval.append("      ").append(XMLHandler.addTagValue("auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword)));
 
         retval.append("      ").append(XMLHandler.addTagValue("only_comment", onlySendComment));
 
@@ -189,7 +190,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             setUsingAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_auth")) );
             setUsingSecureAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_secure_auth")) );
             setAuthenticationUser( XMLHandler.getTagValue(entrynode, "auth_user") );
-            setAuthenticationPassword( XMLHandler.getTagValue(entrynode, "auth_password") );
+            setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "auth_password") ) );
 
             setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_comment") ) );
             
@@ -237,7 +238,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
             usingSecureAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_secure_auth");
             authenticationUser = rep.getJobEntryAttributeString(id_jobentry, "auth_user");
-            authenticationPassword = rep.getJobEntryAttributeString(id_jobentry, "auth_password");
+            authenticationPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "auth_password") );
 
             onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
 
@@ -282,7 +283,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
             rep.saveJobEntryAttribute(id_job, getID(), "use_secure_auth", usingSecureAuthentication);
             rep.saveJobEntryAttribute(id_job, getID(), "auth_user", authenticationUser);
-            rep.saveJobEntryAttribute(id_job, getID(), "auth_password", authenticationPassword);
+            rep.saveJobEntryAttribute(id_job, getID(), "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ));
             
             rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
 			
