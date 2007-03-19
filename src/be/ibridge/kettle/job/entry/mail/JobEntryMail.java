@@ -596,7 +596,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             
 		    msg.setRecipients(Message.RecipientType.TO, address);
 		
-			if (destinationCc != null)
+			if (!Const.isEmpty(destinationCc))
 			{
 				// Split the mail-address Cc: space separated
 				String destinationsCc[] = StringUtil.environmentSubstitute(destinationCc).split(" ");
@@ -606,7 +606,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 				msg.setRecipients(Message.RecipientType.CC, addressCc);
 			}
 
-			if (destinationBCc != null)
+			if (!Const.isEmpty(destinationBCc))
 			{
 				// Split the mail-address BCc: space separated
 				String destinationsBCc[] = StringUtil.environmentSubstitute(destinationBCc).split(" ");
