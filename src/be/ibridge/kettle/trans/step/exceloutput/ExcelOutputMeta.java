@@ -90,6 +90,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/** Flag: append when template */
     private  boolean templateAppend;
 
+	/** the excel sheet name */
+	private  String sheetname;
     
 	/* THE FIELD SPECIFICATIONS ... */
 	
@@ -171,8 +173,23 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	}
 
+	/**
+	 * @return Returns the sheet name.
+	 */
+	public String getSheetname()
+	{
+		return StringUtil.environmentSubstitute(sheetname);
+	
 
+	}
 
+	/**
+	 * @param sheetname The sheet name.
+	 */
+	public void setSheetname(String sheetname)
+	{
+		this.sheetname = sheetname;
+	}
 
     /**
      * @param fileName The fileName to set.
@@ -460,7 +477,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			templateEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
 			templateAppend    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "append"));
 			templateFileName  = XMLHandler.getTagValue(stepnode, "template", "filename");
-			
+			sheetname  = XMLHandler.getTagValue(stepnode, "file", "sheetname");
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields= XMLHandler.countNodes(fields, "field");
 	
@@ -517,7 +534,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		templateEnabled  = false;
 		templateAppend   = false;
 		templateFileName = "template.xls";
-			
+		sheetname="Sheet1";	
 		int i, nrfields=0;
 		
 		allocate(nrfields);
@@ -633,6 +650,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      "+XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      "+XMLHandler.addTagValue("password",  password));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
@@ -684,7 +702,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			templateEnabled       =      rep.getStepAttributeBoolean(id_step, "template_enabled");
 			templateAppend        =      rep.getStepAttributeBoolean(id_step, "template_append");
 			templateFileName      =      rep.getStepAttributeString (id_step, "template_filename");
-			
+			sheetname      =      rep.getStepAttributeString (id_step, "sheetname");
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 			
 			allocate(nrfields);
@@ -724,7 +742,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "template_append",   templateAppend);
 			rep.saveStepAttribute(id_transformation, id_step, "template_filename", templateFileName);
-
+			rep.saveStepAttribute(id_transformation, id_step, "sheetname", sheetname);
 			for (int i=0;i<outputFields.length;i++)
 			{
 			    ExcelField field = outputFields[i];
