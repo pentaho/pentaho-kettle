@@ -46,7 +46,6 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
-
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static final String NO = "N";
@@ -940,8 +939,16 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepinfo);
-			remarks.add(cr);
+			if ( !isAcceptingFilenames() )
+			{
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepinfo);
+	  		    remarks.add(cr);
+			}
+			else
+			{
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.AcceptFilenamesOk"), stepinfo);
+			    remarks.add(cr);
+			}
 		}
 		else
 		{
@@ -952,8 +959,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		FileInputList fileList = getFileList();
 		if (fileList.nrOfFiles() == 0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
-			remarks.add(cr);
+			if ( ! isAcceptingFilenames() )
+			{
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
+   			    remarks.add(cr);
+			}
 		}
 		else
 		{
@@ -1064,22 +1074,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.strictTypes = strictTypes;
 	}
 
-
-
-
 	public String[] getFileRequired() {
 		return fileRequired;
 	}
 
-
-
-
 	public void setFileRequired(String[] fileRequired) {
 		this.fileRequired = fileRequired;
 	}
-
-
-
 
     /**
      * @return Returns the acceptingField.
@@ -1089,9 +1090,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         return acceptingField;
     }
 
-
-
-
     /**
      * @param acceptingField The acceptingField to set.
      */
@@ -1100,9 +1098,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         this.acceptingField = acceptingField;
     }
 
-
-
-
     /**
      * @return Returns the acceptingFilenames.
      */
@@ -1110,9 +1105,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return acceptingFilenames;
     }
-
-
-
 
     /**
      * @param acceptingFilenames The acceptingFilenames to set.
