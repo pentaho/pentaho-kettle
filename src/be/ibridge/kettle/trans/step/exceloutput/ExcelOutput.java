@@ -435,7 +435,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
 			
             // Renamme Sheet
-			if (meta.getSheetname() != null) 
+			if (!Const.isEmpty(meta.getSheetname())) 
 			{
 				data.sheet.setName(meta.getSheetname()); 
 			}
