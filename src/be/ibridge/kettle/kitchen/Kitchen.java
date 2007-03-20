@@ -312,7 +312,14 @@ public class Kitchen
             LocalVariables.getInstance().createKettleVariables(job.getName(), parentThread.getName(), true);
             
             // Set the arguments on the job metadata as well...
-            job.getJobMeta().setArguments((String[]) args.toArray(new String[args.size()]));
+            if ( args.size() == 0 )
+            {
+                job.getJobMeta().setArguments(null);
+            }
+            else
+            {
+                job.getJobMeta().setArguments((String[]) args.toArray(new String[args.size()]));
+            }
             
 			result = job.execute(); // Execute the selected job.
 			job.endProcessing("end", result);  // The bookkeeping...
