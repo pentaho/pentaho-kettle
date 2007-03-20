@@ -50,6 +50,7 @@ goto :eof
 REM *****************
 REM   SWT Libraries
 REM *****************
+
 set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
 set CLASSPATH=%CLASSPATH%;libswt\jface.jar
 set CLASSPATH=%CLASSPATH%;libswt\common.jar
