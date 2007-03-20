@@ -40,6 +40,7 @@ import be.ibridge.kettle.job.entry.msgboxinfo.JobEntryMsgBoxInfo;
 import be.ibridge.kettle.job.entry.delay.JobEntryDelay;
 import be.ibridge.kettle.job.entry.zipfile.JobEntryZipFile;
 import be.ibridge.kettle.job.entry.xslt.JobEntryXSLT;
+import be.ibridge.kettle.job.entry.getpop.JobEntryGetPOP;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
 import be.ibridge.kettle.job.entry.sftpput.JobEntrySFTPPUT;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
@@ -87,6 +88,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_XSLT= 22;
 	public static final int TYPE_JOBENTRY_MYSQL_BULK_FILE= 23;
     public static final int TYPE_JOBENTRY_ABORT= 24;
+	public static final int TYPE_JOBENTRY_GET_POP= 25;
 
 	public final static String typeCode[] =
 		{
@@ -115,6 +117,7 @@ public interface JobEntryInterface
 			"XSLT",
 			"MYSQL_BULK_FILE",
 			"ABORT",
+			"GET_POP",
 		};
 
 	public final static String typeDesc[] =
@@ -144,6 +147,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.XSLT.TypeDesc"),
 			Messages.getString("JobEntry.MysqlBulkFile.TypeDesc"),
 			Messages.getString("JobEntry.Abort.TypeDesc"),
+			Messages.getString("JobEntry.GetPOP.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -173,6 +177,7 @@ public interface JobEntryInterface
 			"XSLT.png",
 			"MBF.png",
 			"ABR.png",
+			"GETPOP.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -202,6 +207,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.XSLT.Tooltip"),
 			Messages.getString("JobEntry.MysqlBulkFile.Tooltip"),
 			Messages.getString("JobEntry.Abort.Tooltip"),
+			Messages.getString("JobEntry.GetPOP.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -231,6 +237,7 @@ public interface JobEntryInterface
 			JobEntryXSLT.class,
 			JobEntryMysqlBulkFile.class,
 			JobEntryAbort.class,
+			JobEntryGetPOP.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
