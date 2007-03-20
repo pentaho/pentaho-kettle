@@ -143,7 +143,14 @@ public class ErrorDialog extends Dialog
 			}
 			else // Error from somewhere else...
 			{
-                text.append(exception.getMessage());
+                if (exception.getMessage()==null)
+                {
+                    text.append(message);
+                }
+                else
+                {
+                    text.append(exception.getMessage());
+                }
 			}
 
 			
