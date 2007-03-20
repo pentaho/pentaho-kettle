@@ -168,4 +168,9 @@ public class UniqueArrayList implements UniqueList
     {
         return list.toArray(a);
     }
+
+    public List getList()
+    {
+        return list;
+    }
 }

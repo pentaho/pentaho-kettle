@@ -31,4 +31,6 @@ public interface UniqueList
     public List subList(int fromIndex, int toIndex);
     public Object[] toArray();
     public Object[] toArray(Object[] a);
+    
+    public List getList();
 }
