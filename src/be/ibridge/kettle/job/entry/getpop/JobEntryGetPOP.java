@@ -15,16 +15,32 @@
  
 package be.ibridge.kettle.job.entry.getpop;
 import java.io.File;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
-import java.util.*;
-import java.io.*; 
-import java.text.SimpleDateFormat;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+
+import javax.mail.Folder;
+import javax.mail.Header;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.URLName;
+
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
@@ -32,16 +48,13 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
-import be.ibridge.kettle.core.Const;
-import org.apache.commons.vfs.FileObject;
-import be.ibridge.kettle.core.vfs.KettleVFS;
-
 
 import com.sun.mail.pop3.POP3SSLStore;
 
