@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Comparator;
 
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileName;
@@ -149,6 +150,23 @@ public class KettleVFS
         }
         while (fileObject.exists());
         return fileObject;
+    }
+    
+    public static Comparator getComparator()
+    {
+        return new Comparator()
+        {
+            public int compare(Object o1, Object o2)
+            {
+                if (o1 instanceof FileObject && o2 instanceof FileObject )
+                {
+                    String filename1 = getFilename((FileObject) o1);
+                    String filename2 = getFilename((FileObject) o2);
+                    return filename1.compareTo(filename2);
+                }
+                return 0;
+            }
+        };
     }
 
 }
