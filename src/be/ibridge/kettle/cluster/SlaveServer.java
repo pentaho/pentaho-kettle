@@ -18,7 +18,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.w3c.dom.Node;
 
@@ -32,12 +32,12 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
-import be.ibridge.kettle.www.GetStatusHandler;
-import be.ibridge.kettle.www.GetTransStatusHandler;
+import be.ibridge.kettle.www.GetStatusServlet;
+import be.ibridge.kettle.www.GetTransStatusServlet;
 import be.ibridge.kettle.www.SlaveServerStatus;
 import be.ibridge.kettle.www.SlaveServerTransStatus;
-import be.ibridge.kettle.www.StartTransHandler;
-import be.ibridge.kettle.www.StopTransHandler;
+import be.ibridge.kettle.www.StartTransServlet;
+import be.ibridge.kettle.www.StopTransServlet;
 import be.ibridge.kettle.www.WebResult;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface
@@ -347,18 +347,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // 
         byte[] content = xml.getBytes(Const.XML_ENCODING);
         
-        // Prepare HTTP post
+        // Prepare HTTP put
         // 
-        PostMethod post = new PostMethod(constructUrl(service));
-        
-        // GetMethod post = new GetMethod("http://127.0.0.1/kettle/status");
+        String urlString = constructUrl(service);
+        System.out.println("Connecting to: "+urlString);
+        PutMethod put = new PutMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
         // 
         RequestEntity entity = new ByteArrayRequestEntity(content);
         
-        post.setRequestEntity(entity);
-        post.setDoAuthentication(true);
+        put.setRequestEntity(entity);
+        put.setDoAuthentication(true);
         
         // post.setContentChunked(true);
         
@@ -371,13 +371,13 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         // 
         try
         {
-            int result = client.executeMethod(post);
+            int result = client.executeMethod(put);
             
             // The status code
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            InputStream inputStream = new BufferedInputStream(post.getResponseBodyAsStream(), 1000);
+            InputStream inputStream = new BufferedInputStream(put.getResponseBodyAsStream(), 1000);
             
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
@@ -406,7 +406,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         finally
         {
             // Release current connection to the connection pool once you are done
-            post.releaseConnection();
+            put.releaseConnection();
             log.logDetailed(toString(), "Sent XML to service ["+service+"] on host ["+hostname+"]");
         }
     }
@@ -592,25 +592,25 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public SlaveServerStatus getStatus() throws Exception
     {
-        String xml = execService(GetStatusHandler.CONTEXT_PATH+"?xml=Y");
+        String xml = execService(GetStatusServlet.CONTEXT_PATH+"?xml=Y");
         return SlaveServerStatus.fromXML(xml);
     }
 
     public SlaveServerTransStatus getTransStatus(String transName) throws Exception
     {
-        String xml = execService(GetTransStatusHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y");
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public WebResult stopTransformation(String transName) throws Exception
     {
-        String xml = execService(StopTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(StopTransServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y");
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startTransformation(String transName) throws Exception
     {
-        String xml = execService(StartTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(StartTransServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y");
         return WebResult.fromXMLString(xml);
     }
 
