@@ -1275,29 +1275,49 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			StepMeta stepinfo = new StepMeta(Messages.getString("DimensionLookupDialog.Stepinfo.Title"), name, info); //$NON-NLS-1$
 			Row prev = transMeta.getPrevStepFields(stepname);
 
-			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);
-			if (!sql.hasError())
-			{
-				if (sql.hasSQL())
-				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
-					sqledit.open();
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage(Messages.getString("DimensionLookupDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
-					mb.setText(Messages.getString("DimensionLookupDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
-					mb.open();
-				}
-			}
-			else
-			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("DimensionLookupDialog.SQLError.DialogTitle")); //$NON-NLS-1$
-				mb.open();
-			}
+            String message = null;
+            if (Const.isEmpty(info.getKeyField()))
+            {
+                message = Messages.getString("DimensionLookupDialog.Error.NoTechnicalKeySpecified");
+            }
+            if (Const.isEmpty(info.getTableName()))
+            {
+                message = Messages.getString("DimensionLookupDialog.Error.NoTableNameSpecified");
+            }
+            
+            if (message==null)
+            {
+    			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);
+    			if (!sql.hasError())
+    			{
+    				if (sql.hasSQL())
+    				{
+    					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
+    					sqledit.open();
+    				}
+    				else
+    				{
+    					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+    					mb.setMessage(Messages.getString("DimensionLookupDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+    					mb.setText(Messages.getString("DimensionLookupDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+    					mb.open();
+    				}
+    			}
+    			else
+    			{
+    				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+    				mb.setMessage(sql.getError());
+    				mb.setText(Messages.getString("DimensionLookupDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+    				mb.open();
+    			}
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage(message);
+                mb.setText(Messages.getString("System.Dialog.Error.Title")); //$NON-NLS-1$
+                mb.open();
+            }
 		}
 		catch(KettleException ke)
 		{
