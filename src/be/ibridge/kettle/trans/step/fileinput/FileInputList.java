@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.vfs.FileDepthSelector;
+import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileType;
@@ -96,22 +96,25 @@ public class FileInputList
                     // Find all file names that match the wildcard in this directory
                     //
                     FileObject directoryFileObject = KettleVFS.getFileObject(onefile);
-                    FileObject[] children = directoryFileObject.getChildren();
-
                     if (directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER) // it's a directory
                     {
                         FileObject[] fileObjects = directoryFileObject.findFiles(
-                                new FileDepthSelector(1,1)
+                                new AllFileSelector()
                                 {
-                                    public boolean traverseDescendents(FileSelectInfo arg0)
+                                    public boolean traverseDescendents(FileSelectInfo info)
                                     {
-                                        return subdirs;
+                                        return info.getDepth()==0 || subdirs;
                                     }
                                     
-                                    public boolean includeFile(FileSelectInfo fileSelectInfo)
+                                    public boolean includeFile(FileSelectInfo info)
                                     {
-                                        String name = fileSelectInfo.getFile().getName().getBaseName();
-                                        return Pattern.matches(onemask, name);
+                                        String name = info.getFile().getName().getBaseName();
+                                        boolean matches = Pattern.matches(onemask, name);
+                                        if (matches)
+                                        {
+                                            System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
+                                        }
+                                        return matches;
                                     }
                                 }
                             );
@@ -132,6 +135,7 @@ public class FileInputList
                     }
                     else
                     {
+                        FileObject[] children = directoryFileObject.getChildren();
                         for (int j = 0; j < children.length; j++)
                         {
                             // See if the wildcard (regexp) matches...
@@ -374,14 +378,12 @@ public class FileInputList
 
     public void sortFiles()
     {
-        if (containsComparable(files))
-            Collections.sort(files);
-        if (containsComparable(nonAccessibleFiles))
-            Collections.sort(nonAccessibleFiles);
-        if (containsComparable(nonExistantFiles))
-            Collections.sort(nonExistantFiles);
+        Collections.sort(files, KettleVFS.getComparator());
+        Collections.sort(nonAccessibleFiles, KettleVFS.getComparator());
+        Collections.sort(nonExistantFiles, KettleVFS.getComparator());
     }
 
+    /*
     private boolean containsComparable(List list)
     {
         if (list == null || list.size() == 0)
@@ -389,6 +391,7 @@ public class FileInputList
         
         return (list.get(0) instanceof Comparable);
     }
+    */
     
     public FileObject getFile(int i)
     {
