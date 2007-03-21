@@ -701,16 +701,24 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 							FileObject file = resultFile.getFile();
 							if (file != null && file.exists()) 
 							{
-								// create a data source
-								MimeBodyPart files = new MimeBodyPart();
-                                URLDataSource fds = new URLDataSource(file.getURL());
-                                
-								// get a data Handler to manipulate this file type;
-								files.setDataHandler(new DataHandler(fds));
-								// include the file in th e data source
-								files.setFileName(fds.getName());
-								// add the part with the file in the BodyPart();
-								parts.addBodyPart(files);
+                                boolean found=false;
+                                for (int i=0;i<fileType.length;i++)
+                                {
+                                    if (fileType[i]==resultFile.getType()) found=true;
+                                }
+                                if (found)
+                                {
+    								// create a data source
+    								MimeBodyPart files = new MimeBodyPart();
+                                    URLDataSource fds = new URLDataSource(file.getURL());
+                                    
+    								// get a data Handler to manipulate this file type;
+    								files.setDataHandler(new DataHandler(fds));
+    								// include the file in th e data source
+    								files.setFileName(fds.getName());
+    								// add the part with the file in the BodyPart();
+    								parts.addBodyPart(files);
+                                }
 							}
 						}
 					}
@@ -722,23 +730,32 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 						try
 						{
 							zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
-
+                            
 							for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
 							{
-								ResultFile resultFile = (ResultFile) iter.next();
-								FileObject file = resultFile.getFile();
-								ZipEntry zipEntry = new ZipEntry(file.getName().getURI());
-								zipOutputStream.putNextEntry(zipEntry);
-
-								// Now put the content of this file into this archive...
-								BufferedInputStream inputStream = new BufferedInputStream(file.getContent().getInputStream());
-								int c;
-								while ( (c=inputStream.read())>=0)
-								{
-									zipOutputStream.write(c);
-								}
-								inputStream.close();
-								zipOutputStream.closeEntry();
+                                ResultFile resultFile = (ResultFile) iter.next();
+                                
+                                boolean found=false;
+                                for (int i=0;i<fileType.length;i++)
+                                {
+                                    if (fileType[i]==resultFile.getType()) found=true;
+                                }
+                                if (found)
+                                {
+    								FileObject file = resultFile.getFile();
+    								ZipEntry zipEntry = new ZipEntry(file.getName().getURI());
+    								zipOutputStream.putNextEntry(zipEntry);
+    
+    								// Now put the content of this file into this archive...
+    								BufferedInputStream inputStream = new BufferedInputStream(file.getContent().getInputStream());
+    								int c;
+    								while ( (c=inputStream.read())>=0)
+    								{
+    									zipOutputStream.write(c);
+    								}
+    								inputStream.close();
+    								zipOutputStream.closeEntry();
+                                }
 							}
 						}
 						catch(Exception e)
