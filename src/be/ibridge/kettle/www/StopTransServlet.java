@@ -4,35 +4,36 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 
-public class StopTransHandler extends AbstractHandler
+public class StopTransServlet extends HttpServlet
 {
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/stopTrans";
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
-    public StopTransHandler(TransformationMap transformationMap)
+    public StopTransServlet(TransformationMap transformationMap)
     {
         this.transformationMap = transformationMap;
     }
+    
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        doGet(request, response);
+    }
 
-    public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch) throws IOException, ServletException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
-        if (!isStarted()) return;
-
+        
         if (log.isDebug()) log.logDebug(toString(), "Stop of transformation requested");
 
         String transName = request.getParameter("name");
@@ -107,11 +108,6 @@ public class StopTransHandler extends AbstractHandler
             out.println("</BODY>");
             out.println("</HTML>");
         }
-
-        response.flushBuffer();
-        
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
     }
 
     public String toString()

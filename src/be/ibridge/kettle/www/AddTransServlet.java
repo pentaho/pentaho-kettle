@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,19 +33,14 @@ public class AddTransServlet extends HttpServlet
         this.transformationMap = transformationMap;
     }
     
-    public void init(ServletConfig servletConfig) throws ServletException
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        super.init(servletConfig);
+        doGet(request, response);
     }
     
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        doPost(request, response);
-    }
-    
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        if (!request.getServletPath().equals(CONTEXT_PATH)) return;
+        if (!request.getRequestURI().equals(CONTEXT_PATH+"/")) return;
 
         if (log.isDebug()) log.logDebug(toString(), "Addition of transformation requested");
 
@@ -54,8 +48,6 @@ public class AddTransServlet extends HttpServlet
         
         PrintWriter out = response.getWriter();
         InputStream is = request.getInputStream(); // read from the client
-
-        response.setStatus(HttpServletResponse.SC_OK);
 
         if (useXML)
         {
@@ -69,6 +61,8 @@ public class AddTransServlet extends HttpServlet
             out.println("<HEAD><TITLE>Add transformation</TITLE></HEAD>");
             out.println("<BODY>");
         }
+
+        response.setStatus(HttpServletResponse.SC_OK);
 
         try
         {
@@ -143,7 +137,7 @@ public class AddTransServlet extends HttpServlet
             out.println("</HTML>");
         }
 
-        response.flushBuffer();
+        // response.flushBuffer();
         
         Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         baseRequest.setHandled(true);

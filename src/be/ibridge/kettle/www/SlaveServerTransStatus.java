@@ -87,13 +87,20 @@ public class SlaveServerTransStatus
         try
         {
             byte[] bytes = Base64.decodeBase64(loggingString64.getBytes());
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            GZIPInputStream gzip = new GZIPInputStream(bais);
-            int c;
-            StringBuffer buffer = new StringBuffer();
-            while ( (c=gzip.read())!=-1) buffer.append((char)c);
-            gzip.close();
-            loggingString = buffer.toString();
+            if (bytes.length>0)
+            {
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                GZIPInputStream gzip = new GZIPInputStream(bais);
+                int c;
+                StringBuffer buffer = new StringBuffer();
+                while ( (c=gzip.read())!=-1) buffer.append((char)c);
+                gzip.close();
+                loggingString = buffer.toString();
+            }
+            else
+            {
+                loggingString="";
+            }
         }
         catch(IOException e)
         {

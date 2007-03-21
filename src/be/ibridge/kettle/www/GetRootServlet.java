@@ -4,34 +4,32 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.handler.AbstractHandler;
-
 import be.ibridge.kettle.core.LogWriter;
 
-public class GetRootHandler extends AbstractHandler
+public class GetRootServlet extends HttpServlet
 {
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/";
     
     private static LogWriter log = LogWriter.getInstance();
     
-    public GetRootHandler()
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        doGet(request, response);
     }
-
-    public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch) throws IOException, ServletException
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        if (!request.getPathInfo().equals(CONTEXT_PATH)) return;
-        if (!isStarted()) return;
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
-
+        if (!request.getRequestURI().equals(CONTEXT_PATH)) return;
+        
         if (log.isDebug()) log.logDebug(toString(), "Root requested");
+        
+        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        // baseRequest.setHandled(true);
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -48,9 +46,7 @@ public class GetRootHandler extends AbstractHandler
 
         out.println("<p>");
         out.println("</BODY>");
-        out.println("</HTML>");        
-        
-        response.flushBuffer();
+        out.println("</HTML>");
     }
 
     public String toString()

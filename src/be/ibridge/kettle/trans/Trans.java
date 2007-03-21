@@ -50,8 +50,8 @@ import be.ibridge.kettle.trans.step.StepMetaDataCombi;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 import be.ibridge.kettle.www.AddTransServlet;
-import be.ibridge.kettle.www.PrepareExecutionTransHandler;
-import be.ibridge.kettle.www.StartExecutionTransHandler;
+import be.ibridge.kettle.www.PrepareExecutionTransServlet;
+import be.ibridge.kettle.www.StartExecutionTransServlet;
 import be.ibridge.kettle.www.WebResult;
 
 
@@ -134,6 +134,8 @@ public class Trans
     private boolean preparing;
     private boolean initializing;
     private boolean running;
+
+    private boolean readyToStart;
 
 	/*
 	 * Initialize new empty transformation...
@@ -647,6 +649,8 @@ public class Trans
             }
             return false;
 		}
+        
+        readyToStart=true;
 
         return true;
 	}
@@ -1899,7 +1903,7 @@ public class Trans
                     // Prepare the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        String masterReply = masterServer.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -1911,7 +1915,7 @@ public class Trans
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -1925,7 +1929,7 @@ public class Trans
                     // Start the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                        String masterReply = masterServer.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -1937,7 +1941,7 @@ public class Trans
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -1953,5 +1957,14 @@ public class Trans
         {
             throw new KettleException("There was an error during transformation split", e);
         }
+    }
+
+    /**
+     * @return true if the transformation was prepared for execution succesfully.
+     * @see Trans.prepareExecution
+     */
+    public boolean isReadyToStart()
+    {
+        return readyToStart;
     }
 }

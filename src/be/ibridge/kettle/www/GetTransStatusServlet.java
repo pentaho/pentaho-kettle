@@ -6,13 +6,11 @@ import java.io.PrintWriter;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -23,7 +21,7 @@ import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepStatus;
 
-public class GetTransStatusHandler extends AbstractHandler
+public class GetTransStatusServlet extends HttpServlet
 {
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/transStatus";
@@ -31,16 +29,20 @@ public class GetTransStatusHandler extends AbstractHandler
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
-    public GetTransStatusHandler(TransformationMap transformationMap)
+    public GetTransStatusServlet(TransformationMap transformationMap)
     {
         this.transformationMap = transformationMap;
     }
 
-    public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch) throws IOException, ServletException
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        doGet(request, response);
+    }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
-        if (!isStarted()) return;
-
+        
         if (log.isDebug()) log.logDebug(toString(), "Transformation status requested");
 
         String transName = request.getParameter("name");
@@ -194,11 +196,6 @@ public class GetTransStatusHandler extends AbstractHandler
                 out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
             }
         }
-
-        response.flushBuffer();
-        
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
     }
 
     public String toString()
