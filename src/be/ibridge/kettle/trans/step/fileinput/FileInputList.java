@@ -110,10 +110,12 @@ public class FileInputList
                                     {
                                         String name = info.getFile().getName().getBaseName();
                                         boolean matches = Pattern.matches(onemask, name);
+                                        /*
                                         if (matches)
                                         {
                                             System.out.println("File match: URI: "+info.getFile()+", name="+name+", depth="+info.getDepth());
                                         }
+                                        */
                                         return matches;
                                     }
                                 }
