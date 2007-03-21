@@ -711,13 +711,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     								// create a data source
     								MimeBodyPart files = new MimeBodyPart();
                                     URLDataSource fds = new URLDataSource(file.getURL());
-                                    
-    								// get a data Handler to manipulate this file type;
+
+                                    // get a data Handler to manipulate this file type;
     								files.setDataHandler(new DataHandler(fds));
-    								// include the file in th e data source
+    								// include the file in the data source
     								files.setFileName(fds.getName());
     								// add the part with the file in the BodyPart();
     								parts.addBodyPart(files);
+                                    
+                                    log.logBasic(toString(), "Added file '"+fds.getName()+"' to the mail message.");
                                 }
 							}
 						}
@@ -755,6 +757,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     								}
     								inputStream.close();
     								zipOutputStream.closeEntry();
+                                    
+                                    log.logBasic(toString(), "Added file '"+file.getName().getURI()+"' to the mail message in a zip archive.");
                                 }
 							}
 						}
