@@ -1,7 +1,7 @@
 <project name="Kettle" default="default" basedir=".">
 
 	  <description>
-	      Kettle build file
+	      Kettle build file.
 	    </description>
 
 	  <tstamp prefix="start"/>
