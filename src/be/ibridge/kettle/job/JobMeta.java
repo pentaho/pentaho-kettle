@@ -80,11 +80,20 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
     public LogWriter            log;
 
+	private static final String STRING_CREATED_DATE = "CREATED_DATE";
     private static final String STRING_MODIFIED_DATE = "MODIFIED_DATE"; //$NON-NLS-1$
 
     private long                id;
 
     private String              name;
+
+	private String              description;
+
+	private String             extended_description;
+
+	private String				job_version;
+
+	private int 				job_status;
 
     private String              filename;
 
@@ -188,14 +197,20 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         addDefaults();
         setChanged(false);
 
+		created_user = "-"; //$NON-NLS-1$
+		created_date = new Value("create_date", Value.VALUE_TYPE_DATE).sysdate(); //$NON-NLS-1$
+
         modifiedUser = "-"; //$NON-NLS-1$
         modifiedDate = new Value("modifiedDate", Value.VALUE_TYPE_DATE).sysdate(); //$NON-NLS-1$
         directory = new RepositoryDirectory();
-        
+		description=null;
+		job_status=1;
+        job_version=null;
+		extended_description=null;
         useBatchId=true;
         logfieldUsed=true;
 
-        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruines the previews
+        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruins the previews
         // etc.
     }
 
@@ -428,7 +443,8 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         {
             // The ID has to be assigned, even when it's a new item...
             rep.insertJob(getID(), directory.getID(), getName(), logconnection == null ? -1 : logconnection.getID(), logTable, modifiedUser,
-                    modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile);
+                    modifiedDate, useBatchId, batchIdPassed, logfieldUsed, sharedObjectsFile,description,extended_description,job_version,
+					job_status, created_user,created_date);
         }
         catch (KettleDatabaseException dbe)
         {
@@ -486,7 +502,15 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         retval.append("<").append(XML_TAG).append(">").append(Const.CR); //$NON-NLS-1$
         
         retval.append("  ").append(XMLHandler.addTagValue("name", getName())); //$NON-NLS-1$ //$NON-NLS-2$
+
+		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
+		retval.append("    ").append(XMLHandler.addTagValue("job_version", job_version));
+		retval.append("    ").append(XMLHandler.addTagValue("job_status", job_status));
+
         retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("  ").append(XMLHandler.addTagValue("created_user", created_user)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("  ").append(XMLHandler.addTagValue("created_date", created_date != null ? created_date.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", modifiedDate != null ? modifiedDate.getString() : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -595,16 +619,38 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
     {
         Props props = null;
         if (Props.isInitialized()) props = Props.getInstance();
-
+       
         try
         {
             // clear the jobs;
             clear();
-
+            
             //
             // get job info:
             //
             name = XMLHandler.getTagValue(jobnode, "name"); //$NON-NLS-1$
+
+			// description
+			description = XMLHandler.getTagValue(jobnode, "description"); 
+
+			// extended description
+			extended_description = XMLHandler.getTagValue(jobnode, "extended_description"); 
+
+			// job version
+			job_version = XMLHandler.getTagValue(jobnode, "job_version"); 
+
+			// job status
+			job_status = Const.toInt(XMLHandler.getTagValue(jobnode, "job_status"),-1); 
+
+			// Created user/date
+			created_user = XMLHandler.getTagValue(jobnode, "created_user"); //$NON-NLS-1$
+			String createDate = XMLHandler.getTagValue(jobnode, "created_date"); //$NON-NLS-1$
+
+			if (createDate != null)
+			{
+				created_date = new Value(STRING_CREATED_DATE, createDate);
+				created_date.setType(Value.VALUE_TYPE_DATE);
+			}
 
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user"); //$NON-NLS-1$
@@ -862,9 +908,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         {
             
         }
-    }
-
-    
+    }   
 
     /**
      * Find a database connection by it's name
@@ -1042,7 +1086,17 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
                 Row jobRow = rep.getJob(getID());
 
                 name = jobRow.searchValue("NAME").getString(); //$NON-NLS-1$
+				description = jobRow.searchValue("DESCRIPTION").getString(); //$NON-NLS-1$
+				extended_description = jobRow.searchValue("EXTENDED_DESCRIPTION").getString(); //$NON-NLS-1$
+				job_version = jobRow.searchValue("JOB_VERSION").getString(); //$NON-NLS-1$
+				job_status = Const.toInt(jobRow.searchValue("JOB_STATUS").getString(),-1); //$NON-NLS-1$
                 logTable = jobRow.searchValue("TABLE_NAME_LOG").getString(); //$NON-NLS-1$
+
+				created_user = jobRow.searchValue("CREATED_USER").getString(); //$NON-NLS-1$
+				created_date = jobRow.searchValue("CREATED_DATE"); //$NON-NLS-1$
+
+				modifiedUser = jobRow.searchValue("MODIFIED_USER").getString(); //$NON-NLS-1$
+				modifiedDate = jobRow.searchValue("MODIFIED_DATE"); //$NON-NLS-1$
 
                 long id_logdb = jobRow.searchValue("ID_DATABASE_LOG").getInteger(); //$NON-NLS-1$
                 if (id_logdb > 0)
@@ -2127,6 +2181,14 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 
         // The name of the directory in the repository
         variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
+        
+        // Undefine the transformation specific variables
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null);
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null);
     }
 
     public boolean haveConnectionsChanged()
@@ -2192,4 +2254,141 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
     {
         this.sharedObjectsFile = sharedObjectsFile;
     }
+
+	/**
+	 * @param modifiedUser The modifiedUser to set.
+	 */
+	public void setModifiedUser(String modified_User)
+	{
+		modifiedUser = modified_User;
+	}
+
+	/**
+	 * @return Returns the modifiedUser.
+	 */
+	public String getModifiedUser()
+	{
+		return modifiedUser;
+	}
+
+	/**
+	 * @param modifiedDate The modifiedDate to set.
+	 */
+	public void setModifiedDate(Value modified_Date)
+	{
+		modifiedDate = modified_Date;
+	}
+
+	/**
+	 * @return Returns the modifiedDate.
+	 */
+	public Value getModifiedDate()
+	{
+		return modifiedDate;
+	}
+
+	/**
+	 * @return The description of the job
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * @return The extended description of the job
+	 */
+	public String getExtendedDescription()
+	{
+		return extended_description;
+	}
+
+	/**
+	 * @return The version of the job
+	 */
+	public String getJobversion()
+	{
+		return job_version;
+	}
+
+
+	/**
+	 * Get the status of the job
+	 */
+	public int getJobstatus()
+	{
+		return job_status;
+	}
+
+	/**
+	 * Set the description of the job.
+	 *
+	 * @param n The new description of the job
+	 */
+	public void setDescription(String n)
+	{
+		description = n;
+	}
+
+	/**
+	 * Set the description of the job.
+	 *
+	 * @param n The new extended description of the job
+	 */
+	public void setExtendedDescription(String n)
+	{
+		extended_description = n;
+	}
+	/**
+	 * Set the version of the job.
+	 *
+	 * @param n The new version description of the job
+	 */
+	public void setJobversion(String n)
+	{
+		job_version = n;
+	}
+
+	/**
+	 * Set the status of the job.
+	 *
+	 * @param n The new status description of the job
+	 */
+	public void setJobstatus(int n)
+	{
+		job_status = n;
+	}
+
+	/**
+	 * @return Returns the createdDate.
+	 */
+	public Value getCreatedDate()
+	{
+		return created_date;
+	}
+
+	/**
+	 * @param createdDate The createdDate to set.
+	 */
+	public void setCreatedDate(Value createddate)
+	{
+		created_date = createddate;
+	}
+
+	/**
+	 * @param createdUser The createdUser to set.
+	 */
+	public void setCreatedUser(String createduser)
+	{
+		created_user = createduser;
+	}
+
+	/**
+	 * @return Returns the createdUser.
+	 */
+	public String getCreatedUser()
+	{
+		return created_user;
+	}
+
 }

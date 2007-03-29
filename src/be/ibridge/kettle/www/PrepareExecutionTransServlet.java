@@ -56,7 +56,10 @@ public class PrepareExecutionTransServlet extends HttpServlet
         {
             response.setContentType("text/html");
             out.println("<HTML>");
-            out.println("<HEAD><TITLE>Prepare execution of transformation</TITLE></HEAD>");
+            out.println("<HEAD>");
+            out.println("<TITLE>Prepare execution of transformation</TITLE>");
+            out.println("<META http-equiv=\"Refresh\" content=\"2;url=/kettle/transStatus?name="+transName+"\">");
+            out.println("</HEAD>");
             out.println("<BODY>");
         }
     

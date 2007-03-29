@@ -22,6 +22,7 @@
 package be.ibridge.kettle.trans.step.scriptvalues;
 
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -66,7 +67,11 @@ import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
+import be.ibridge.kettle.trans.step.RowListener;
+import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepInterface;
+import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInterface
@@ -95,6 +100,124 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 	private Listener lsVars, lsTest;
 
 	private ScriptValuesMeta input;
+	
+	/**
+	 * Dummy class used for test().
+	 */
+	public class ScriptValuesDummy implements StepInterface
+	{
+		public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+			return false;
+		}
+
+		public void addRowListener(RowListener rowListener) {
+		}
+
+		public void dispose(StepMetaInterface sii, StepDataInterface sdi) {
+		}
+
+		public long getErrors() {
+			return 0;
+		}
+
+		public List getInputRowSets() {
+			return null;
+		}
+
+		public long getLinesInput() {
+			return 0;
+		}
+
+		public long getLinesOutput() {
+			return 0;
+		}
+
+		public long getLinesRead() {
+			return 0;
+		}
+
+		public long getLinesUpdated() {
+			return 0;
+		}
+
+		public long getLinesWritten() {
+			return 0;
+		}
+
+		public List getOutputRowSets() {
+			return null;
+		}
+
+		public String getPartitionID() {
+			return null;
+		}
+
+		public Row getRow() throws KettleException {
+			return null;
+		}
+
+		public List getRowListeners() {
+			return null;
+		}
+
+		public String getStepID() {
+			return null;
+		}
+
+		public String getStepname() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) {
+			return false;
+		}
+
+		public boolean isAlive() {
+			return false;
+		}
+
+		public boolean isPartitioned() {
+			return false;
+		}
+
+		public boolean isStopped() {
+			return false;
+		}
+
+		public void markStart() {
+		}
+
+		public void markStop() {
+		}
+
+		public void putRow(Row row) throws KettleException {
+		}
+
+		public void removeRowListener(RowListener rowListener) {
+		}
+
+		public void run() {
+		}
+
+		public void setErrors(long errors) {
+		}
+
+		public void setOutputDone() {
+		}
+
+		public void setPartitionID(String partitionID) {
+		}
+
+		public void start() {
+		}
+
+		public void stopAll() {
+		}
+
+		public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException {
+		}	
+	}
 
 	public ScriptValuesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -467,12 +590,16 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		try
 		{
 			Row row = transMeta.getPrevStepFields(stepname);
-	
+
+			ScriptValuesDummy dummy = new ScriptValuesDummy(); 
+		    Scriptable jsvalue = Context.toObject(dummy, jsscope);
+  		    jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
+
 			if (row!=null)
 			{
-				Scriptable jsrow = Context.toObject(row, jsscope);
-				jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
-                
+			   Scriptable jsrow = Context.toObject(row, jsscope);
+			   jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
+			                   
                for (int i=0;i<row.size();i++)
 				{
 					Value val = row.getValue(i); 
@@ -499,6 +626,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 							{
 								String varname = (String)id[i];
 								if (!varname.equalsIgnoreCase("row") && //$NON-NLS-1$
+									!varname.equalsIgnoreCase("_step_") && //$NON-NLS-1$
 								    row.searchValueIndex(varname)<0
 								    )
 								{

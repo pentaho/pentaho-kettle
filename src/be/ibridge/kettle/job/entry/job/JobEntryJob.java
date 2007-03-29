@@ -387,10 +387,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
 
             int iteration = 0;
-            String args[] = arguments;
-            if (args==null || args.length==0) // no arguments?  Check the parent jobs arguments
+            String args1[] = arguments;
+            if (args1==null || args1.length==0) // no arguments?  Check the parent jobs arguments
             {
-                args = parentJob.getJobMeta().getArguments();
+                args1 = parentJob.getJobMeta().getArguments();
+            }
+
+            //
+            // For the moment only do variable translation at the start of a job, not
+            // for every input row (if that would be switched on)
+            //
+            String args[] = null;
+            if ( args1 != null )
+            {
+                args = new String[args1.length];
+                for ( int idx = 0; idx < args1.length; idx++ )
+                {
+                	args[idx] = StringUtil.environmentSubstitute(args1[idx]);
+                }
             }
             
             Row resultRow = null;
@@ -477,7 +491,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     {
                         // Keep it as it was...
                         job.setSourceRows(result.getRows());
-                        job.getJobMeta().setArguments(parentJob.getJobMeta().getArguments());
                     }
                 }
     

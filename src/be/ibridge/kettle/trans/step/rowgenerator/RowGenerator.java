@@ -154,6 +154,10 @@ public class RowGenerator extends BaseStep implements StepInterface
                         value.setValue( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue));
                         break;
                         
+                    case Value.VALUE_TYPE_BINARY:                    
+                        value.setValue(stringValue.getBytes());                        
+                        break;                        
+                        
                     default:
                         String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError", value.getName(), value.getString());
                         remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
@@ -243,7 +247,6 @@ public class RowGenerator extends BaseStep implements StepInterface
         }
         return false;
     }
-
 
 	//
 	// Run is were the action happens!

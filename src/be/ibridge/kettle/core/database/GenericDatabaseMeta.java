@@ -2,6 +2,7 @@
 package be.ibridge.kettle.core.database;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -67,7 +68,8 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	{
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            return getAttributes().getProperty(ATRRIBUTE_CUSTOM_DRIVER_CLASS, "");
+            String driverClass = getAttributes().getProperty(ATRRIBUTE_CUSTOM_DRIVER_CLASS, "");
+            return StringUtil.environmentSubstitute(driverClass);            
         }
         else
         {
@@ -80,7 +82,8 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            return getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
+            String url = getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
+            return StringUtil.environmentSubstitute(url);
         }
         else
         {

@@ -158,6 +158,7 @@ public class RepositoryExplorerDialog extends Dialog
     private TreeColumn typeColumn;
     private TreeColumn userColumn;
     private TreeColumn changedColumn;
+    private TreeColumn descriptionColumn;
     
     /** @deprecated */
     public RepositoryExplorerDialog(Shell par, Props pr, int style, LogWriter l, Repository rep, UserInfo ui)
@@ -258,7 +259,12 @@ public class RepositoryExplorerDialog extends Dialog
             changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
             changedColumn.setWidth(120);
             changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
-            
+
+            descriptionColumn = new TreeColumn(wTree, SWT.LEFT);
+            descriptionColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Description")); //$NON-NLS-1$
+            descriptionColumn.setWidth(120);
+            descriptionColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
+
             // Add a memory to the tree.
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
@@ -547,7 +553,7 @@ public class RepositoryExplorerDialog extends Dialog
             ascending=true;
         }
         
-        if (sortColumn>=0 && sortColumn<4)
+        if (sortColumn>=0 && sortColumn<5)
         {
             TreeColumn column = wTree.getColumn(sortColumn);
             wTree.setSortColumn(column);

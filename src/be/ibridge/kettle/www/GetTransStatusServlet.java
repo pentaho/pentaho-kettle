@@ -108,7 +108,10 @@ public class GetTransStatusServlet extends HttpServlet
                 response.setContentType("text/html");
 
                 out.println("<HTML>");
-                out.println("<HEAD><TITLE>Kettle transformation status</TITLE></HEAD>");
+                out.println("<HEAD>");
+                out.println("<TITLE>Kettle transformation status</TITLE>");
+                out.println("<META http-equiv=\"Refresh\" content=\"5;url=/kettle/transStatus?name="+transName+"\">");
+                out.println("</HEAD>");
                 out.println("<BODY>");
                 out.println("<H1>Transformation status</H1>");
                 

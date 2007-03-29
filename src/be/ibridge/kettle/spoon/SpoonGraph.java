@@ -45,9 +45,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -91,8 +91,7 @@ import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
  * @since 17-mei-2003
  * 
  */
-
-public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
+public class SpoonGraph extends Composite implements Redrawable, TabItemInterface
 {
     private static final LogWriter log = LogWriter.getInstance();
     private static final int HOP_SEL_MARGIN = 9;
@@ -101,7 +100,9 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
     private Shell            shell;
 
-    private SpoonGraph       canvas;
+    private Canvas           canvas;
+    
+    // private Props            props;
 
     private int              iconsize;
 
@@ -160,15 +161,18 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
      */
     private boolean impactFinished;
 
-
     public SpoonGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
     {
-        super(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+        super(parent, SWT.NONE);
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.transMeta = transMeta;
         
-        canvas = this;
+        // this.props = Props.getInstance();
+        
+        setLayout(new FillLayout());
+        
+        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 
         iconsize = spoon.props.getIconSize();
 
@@ -179,8 +183,8 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         impact  = new ArrayList();
         impactFinished = false;
 
-        hori = getHorizontalBar();
-        vert = getVerticalBar();
+        hori = canvas.getHorizontalBar();
+        vert = canvas.getVerticalBar();
 
         hori.addSelectionListener(new SelectionAdapter()
         {
@@ -207,7 +211,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
         canvas.setBackground(GUIResource.getInstance().getColorBackground());
 
-        addPaintListener(new PaintListener()
+        canvas.addPaintListener(new PaintListener()
         {
             public void paintControl(PaintEvent e)
             {
@@ -218,13 +222,13 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         selected_steps = null;
         lastclick = null;
 
-        addKeyListener(spoon.modKeys);
+        canvas.addKeyListener(spoon.modKeys);
 
         /*
          * Handle the mouse...
          */
 
-        addMouseListener(new MouseAdapter()
+        canvas.addMouseListener(new MouseAdapter()
         {
             public void mouseDoubleClick(MouseEvent e)
             {
@@ -338,23 +342,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                 {
                     if (transMeta.findTransHop(candidate) == null)
                     {
-                        transMeta.addTransHop(candidate);
-                        spoon.refreshTree();
-                        if (transMeta.hasLoop(candidate.getFromStep()))
-                        {
-                            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
-                            mb.open();
-                            int idx = transMeta.indexOfTransHop(candidate);
-                            transMeta.removeTransHop(idx);
-                            spoon.refreshTree();
-                        }
-                        else
-                        {
-                            spoon.addUndoNew(transMeta, new TransHopMeta[] { candidate }, new int[] { transMeta.indexOfTransHop(candidate) });
-                        }
-                        spoon.verifyCopyDistribute(transMeta, candidate.getFromStep());
+                        spoon.newHop(transMeta, candidate);
                     }
                     candidate = null;
                     selected_steps = null;
@@ -510,7 +498,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             }
         });
 
-        addMouseMoveListener(new MouseMoveListener()
+        canvas.addMouseMoveListener(new MouseMoveListener()
         {
             public void mouseMove(MouseEvent e)
             {
@@ -675,7 +663,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
         // Drag & Drop for steps
         Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
-        DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE);
+        DropTarget ddTarget = new DropTarget(canvas, DND.DROP_MOVE);
         ddTarget.setTransfer(ttypes);
         ddTarget.addDropListener(new DropTargetListener()
             {
@@ -849,7 +837,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         );
 
         // Keyboard shortcuts...
-        addKeyListener(new KeyAdapter()
+        canvas.addKeyListener(new KeyAdapter()
         {
             public void keyPressed(KeyEvent e)
             {
@@ -939,11 +927,14 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
             }
         });
 
-        addKeyListener(spoon.defKeys);
+        canvas.addKeyListener(spoon.defKeys);
 
         setBackground(GUIResource.getInstance().getColorBackground());
-        
-        setLayout(new FormLayout());
+    }
+    
+    public void redraw()
+    {
+        canvas.redraw();
     }
 
     public void renameStep()
@@ -1563,7 +1554,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                     inputOutputFields(stepMeta, false);
                 }
             });
-            setMenu(mPop);
+            canvas.setMenu(mPop);
         }
         else
         {
@@ -1654,7 +1645,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                         spoon.refreshGraph();
                     }
                 });
-                setMenu(mPop);
+                canvas.setMenu(mPop);
             }
             else
             {
@@ -1692,7 +1683,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                         }
                     });
 
-                    setMenu(mPop);
+                    canvas.setMenu(mPop);
                 }
                 else
                 {
@@ -1774,7 +1765,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
                         }
                     });
 
-                    setMenu(mPop);
+                    canvas.setMenu(mPop);
                 }
             }
         }
@@ -1844,7 +1835,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
         
         if (newTip==null || !newTip.equalsIgnoreCase(getToolTipText()))
         {
-            setToolTipText(newTip);
+            canvas.setToolTipText(newTip);
         }
     }
 
@@ -1998,7 +1989,7 @@ public class SpoonGraph extends Canvas implements Redrawable, TabItemInterface
 
     private Point getArea()
     {
-        org.eclipse.swt.graphics.Rectangle rect = getClientArea();
+        org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
         Point area = new Point(rect.width, rect.height);
 
         return area;

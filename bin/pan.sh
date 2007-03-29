@@ -24,6 +24,13 @@ done
 
 JAVA_BIN=java
 
+# circumvention for the IBM JVM behavior (seems to be a problem with the IBM JVM native compiler)
+if [ `uname -s` = "OS400" ]
+then
+  CLASSPATH=${CLASSPATH}:libswt/aix/swt.jar
+fi
+
+
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 128m to higher values in case you run out of memory.  **

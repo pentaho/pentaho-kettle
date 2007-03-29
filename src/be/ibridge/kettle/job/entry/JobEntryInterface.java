@@ -50,6 +50,7 @@ import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.job.entry.waitforfile.JobEntryWaitForFile;
 import be.ibridge.kettle.job.entry.abort.JobEntryAbort;
+import be.ibridge.kettle.job.entry.ping.JobEntryPing;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -89,6 +90,7 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_MYSQL_BULK_FILE= 23;
     public static final int TYPE_JOBENTRY_ABORT= 24;
 	public static final int TYPE_JOBENTRY_GET_POP= 25;
+	public static final int TYPE_JOBENTRY_PING= 26;
 
 	public final static String typeCode[] =
 		{
@@ -118,6 +120,7 @@ public interface JobEntryInterface
 			"MYSQL_BULK_FILE",
 			"ABORT",
 			"GET_POP",
+			"PING",
 		};
 
 	public final static String typeDesc[] =
@@ -148,6 +151,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.MysqlBulkFile.TypeDesc"),
 			Messages.getString("JobEntry.Abort.TypeDesc"),
 			Messages.getString("JobEntry.GetPOP.TypeDesc"),
+			Messages.getString("JobEntry.Ping.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -178,6 +182,7 @@ public interface JobEntryInterface
 			"MBF.png",
 			"ABR.png",
 			"GETPOP.png",
+			"PNG.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -208,6 +213,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.MysqlBulkFile.Tooltip"),
 			Messages.getString("JobEntry.Abort.Tooltip"),
 			Messages.getString("JobEntry.GetPOP.Tooltip"),
+			Messages.getString("JobEntry.Ping.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -238,6 +244,7 @@ public interface JobEntryInterface
 			JobEntryMysqlBulkFile.class,
 			JobEntryAbort.class,
 			JobEntryGetPOP.class,
+			JobEntryPing.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;

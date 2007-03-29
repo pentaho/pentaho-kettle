@@ -104,7 +104,7 @@ public class WindowProperty
         
         Point     shLoc  = shell.getLocation();
         Rectangle shRect = shell.getBounds();
-        Rectangle diRect = shell.getDisplay().getPrimaryMonitor().getClientArea();
+        Rectangle diRect = shell.getDisplay().getPrimaryMonitor().getBounds();
         
         boolean resizex=false;
         boolean resizey=false;

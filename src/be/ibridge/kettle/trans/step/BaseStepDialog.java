@@ -419,7 +419,7 @@ public class BaseStepDialog extends Dialog
 			
 			// Now, as this is the first time it gets opened, try to put it in the middle of the screen...
 			Rectangle shellBounds = shell.getBounds();
-			Rectangle dispBounds = shell.getDisplay().getBounds();
+			Rectangle dispBounds = shell.getDisplay().getPrimaryMonitor().getBounds();
 			
 			int middleX = (dispBounds.width - shellBounds.width)/2;
 			int middleY = (dispBounds.height - shellBounds.height)/2;

@@ -36,6 +36,7 @@ import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.core.value.Value;
@@ -106,7 +107,7 @@ import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.valuemapper.ValueMapperMeta;
-import be.ibridge.kettle.trans.step.webservices.BodetPluginMeta;
+import be.ibridge.kettle.trans.step.webservices.WebServicePluginMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
@@ -256,7 +257,7 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_INLINE),
             new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
                     .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(BodetPluginMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
+            new StepPluginMeta(WebServicePluginMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
                     .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
@@ -402,9 +403,9 @@ public class BaseStep extends Thread
     private String                       partitionID;
 
     /**
-     * This field tells the putRow() method to re-partition the incoming data
+     * This field tells the putRow() method to re-partition the incoming data, See also StepPartitioningMeta.PARTITIONING_METHOD_*
      */
-    private boolean                      repartitioning;
+    private int                          repartitioning;
 
     /**
      * True if the step needs to perform a sorted merge on the incoming partitioned data
@@ -506,7 +507,7 @@ public class BaseStep extends Thread
         rowListeners = new ArrayList();
         resultFiles = new Hashtable();
 
-        repartitioning = false;
+        repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
         partitionColumnIndex = -1;
         partitionTargets = new Hashtable();
 
@@ -782,107 +783,123 @@ public class BaseStep extends Thread
         // If there are multiple steps, we need to look at the first (they should be all the same)
         // TODO: make something smart later to allow splits etc.
         //
-        if (repartitioning)
+        switch(repartitioning)
         {
-            // Do some pre-processing on the first row...
-            // This is only done once and should cost very little in terms of processing time.
-            //
-            if (partitionColumnIndex < 0)
+        case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
             {
-                StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
-                if (nextSteps == null || nextSteps.length == 0) { throw new KettleStepException(
-                        "Re-partitioning is enabled but no next steps could be found: developer error!"); }
-
-                // Take the partitioning logic from one of the next steps
-                nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
-
-                // What's the column index of the partitioning fieldname?
-                partitionColumnIndex = row.searchValueIndex(nextStepPartitioningMeta.getFieldName());
-                if (partitionColumnIndex < 0) { throw new KettleStepException("Unable to find partitioning field name ["
-                        + nextStepPartitioningMeta.getFieldName() + "] in the output row : " + row); }
-
-                // Cache the partition IDs as well...
-                partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-
-                // OK, we also want to cache the target rowset
+                // Do some pre-processing on the first row...
+                // This is only done once and should cost very little in terms of processing time.
                 //
-                // We know that we have to partition in N pieces
-                // We should also have N rowsets to the next step
-                // This is always the case, wheter the target is partitioned or not.
-                //
-                // So what we do is now count the number of rowsets
-                // And we take the steps copy nr to map.
-                // It's simple for the time being.
-                //
-                // P1 : MOD(field,N)==0
-                // P2 : MOD(field,N)==1
-                // ...
-                // PN : MOD(field,N)==N-1
-                //
-
+                if (partitionColumnIndex < 0)
+                {
+                    StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
+                    if (nextSteps == null || nextSteps.length == 0) { throw new KettleStepException(
+                            "Re-partitioning is enabled but no next steps could be found: developer error!"); }
+    
+                    // Take the partitioning logic from one of the next steps
+                    nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
+    
+                    // What's the column index of the partitioning fieldname?
+                    partitionColumnIndex = row.searchValueIndex(nextStepPartitioningMeta.getFieldName());
+                    if (partitionColumnIndex < 0) { throw new KettleStepException("Unable to find partitioning field name ["
+                            + nextStepPartitioningMeta.getFieldName() + "] in the output row : " + row); }
+    
+                    // Cache the partition IDs as well...
+                    partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+    
+                    // OK, we also want to cache the target rowset
+                    //
+                    // We know that we have to partition in N pieces
+                    // We should also have N rowsets to the next step
+                    // This is always the case, wheter the target is partitioned or not.
+                    //
+                    // So what we do is now count the number of rowsets
+                    // And we take the steps copy nr to map.
+                    // It's simple for the time being.
+                    //
+                    // P1 : MOD(field,N)==0
+                    // P2 : MOD(field,N)==1
+                    // ...
+                    // PN : MOD(field,N)==N-1
+                    //
+    
+                    for (int r = 0; r < outputRowSets.size(); r++)
+                    {
+                        RowSet rowSet = (RowSet) outputRowSets.get(r);
+                        if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
+                        {
+                            // Find the target step metadata
+                            StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
+    
+                            // What are the target partition ID's
+                            String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+    
+                            // The target partitionID:
+                            String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
+    
+                            // Save the mapping: if we want to know to which rowset belongs to a partition this is the place
+                            // to be.
+                            partitionTargets.put(targetPartitionID, rowSet);
+                        }
+                    }
+                } // End of the one-time init code.
+    
+                // Here we go with the regular show
+                int partitionNr = nextStepPartitioningMeta.getPartitionNr(row.getValue(partitionColumnIndex), partitionIDs.length);
+                String targetPartition = partitionIDs[partitionNr];
+    
+                // Put the row forward to the next step according to the partition rule.
+                RowSet rs = (RowSet) partitionTargets.get(targetPartition);
+                rs.putRow(row);
+                linesWritten++;
+            }
+            break;
+        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
+            {
+                // Copy always to all target steps/copies.
+                // 
                 for (int r = 0; r < outputRowSets.size(); r++)
                 {
                     RowSet rowSet = (RowSet) outputRowSets.get(r);
-                    if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
+                    rowSet.putRow(row);
+                }
+            }
+            break;
+        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+            {
+                if (distributed)
+                {
+                    // Copy the row to the "next" output rowset.
+                    // We keep the next one in out_handling
+                    RowSet rs = (RowSet) outputRowSets.get(out_handling);
+                    rs.putRow(row);
+                    linesWritten++;
+    
+                    // Now determine the next output rowset!
+                    // Only if we have more then one output...
+                    if (outputRowSets.size() > 1)
                     {
-                        // Find the target step metadata
-                        StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
-
-                        // What are the target partition ID's
-                        String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-
-                        // The target partitionID:
-                        String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
-
-                        // Save the mapping: if we want to know to which rowset belongs to a partition this is the place
-                        // to be.
-                        partitionTargets.put(targetPartitionID, rowSet);
+                        out_handling++;
+                        if (out_handling >= outputRowSets.size()) out_handling = 0;
                     }
                 }
-            } // End of the one-time init code.
-
-            // Here we go with the regular show
-            int partitionNr = nextStepPartitioningMeta.getPartitionNr(row.getValue(partitionColumnIndex), partitionIDs.length);
-            String targetPartition = partitionIDs[partitionNr];
-
-            // Put the row forward to the next step according to the partition rule.
-            RowSet rs = (RowSet) partitionTargets.get(targetPartition);
-            rs.putRow(row);
-            linesWritten++;
-        }
-        else
-        {
-            if (distributed)
-            {
-                // Copy the row to the "next" output rowset.
-                // We keep the next one in out_handling
-                RowSet rs = (RowSet) outputRowSets.get(out_handling);
-                rs.putRow(row);
-                linesWritten++;
-
-                // Now determine the next output rowset!
-                // Only if we have more then one output...
-                if (outputRowSets.size() > 1)
+                else
+                // Copy the row to all output rowsets!
                 {
-                    out_handling++;
-                    if (out_handling >= outputRowSets.size()) out_handling = 0;
+                    // Copy to the row in the other output rowsets...
+                    for (int i = 1; i < outputRowSets.size(); i++) // start at 1
+                    {
+                        RowSet rs = (RowSet) outputRowSets.get(i);
+                        rs.putRow(new Row(row));
+                    }
+    
+                    // set row in first output rowset
+                    RowSet rs = (RowSet) outputRowSets.get(0);
+                    rs.putRow(row);
+                    linesWritten++;
                 }
             }
-            else
-            // Copy the row to all output rowsets!
-            {
-                // Copy to the row in the other output rowsets...
-                for (int i = 1; i < outputRowSets.size(); i++) // start at 1
-                {
-                    RowSet rs = (RowSet) outputRowSets.get(i);
-                    rs.putRow(new Row(row));
-                }
-
-                // set row in first output rowset
-                RowSet rs = (RowSet) outputRowSets.get(0);
-                rs.putRow(row);
-                linesWritten++;
-            }
+            break;
         }
     }
 
@@ -1163,7 +1180,7 @@ public class BaseStep extends Thread
         return row;
     }
 
-    protected synchronized void safeModeChecking(Row row)
+    protected synchronized void safeModeChecking(Row row) throws KettleRowException
     {
         // String saveDebug=debug;
         // debug="Safe mode checking";
@@ -1173,35 +1190,40 @@ public class BaseStep extends Thread
         }
         else
         {
-            // See if the row we got has the same layout as the reference row.
-            // First check the number of fields
-            if (referenceRow.size() != row.size())
+            safeModeChecking(referenceRow, row);
+        }
+        // debug=saveDebug;
+    }
+
+    public static void safeModeChecking(Row referenceRow, Row row) throws KettleRowException
+    {
+        // See if the row we got has the same layout as the reference row.
+        // First check the number of fields
+        if (referenceRow.size() != row.size())
+        {
+            throw new KettleRowException("We detected rows with varying number of fields, this is not allowed in a transformation.  "
+                    + "Check your settings."+Const.CR+"The first row contained " + referenceRow.size() + " fields, this one contains " + row.size() + " : "
+                    + row);
+        }
+        else
+        {
+            // Check field by field for the position of the names...
+            for (int i = 0; i < referenceRow.size(); i++)
             {
-                throw new RuntimeException("We detected rows with varying number of fields, this is not allowed in a transformation.  "
-                        + "Check your settings. (first row contained " + referenceRow.size() + " elements, this one contains " + row.size() + " : "
-                        + row);
-            }
-            else
-            {
-                // Check field by field for the position of the names...
-                for (int i = 0; i < referenceRow.size(); i++)
+                Value referenceValue = referenceRow.getValue(i);
+                Value compareValue = row.getValue(i);
+
+                if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
                 {
-                    Value referenceValue = referenceRow.getValue(i);
-                    Value compareValue = row.getValue(i);
+                    throw new KettleRowException("The name of field #" + (i+1) + " is not the same as in the first row received: you're mixing rows with different layout!" + Const.CR + "Field '"+referenceValue.getName() +" "+ referenceValue.toStringMeta() + "' does not have the same name as field '" + compareValue.getName()+" " +compareValue.toStringMeta()+"'");
+                }
 
-                    if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
-                    {
-                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")");
-                    }
-
-                    if (referenceValue.getType()!=compareValue.getType())
-                    {
-                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")");
-                    }
+                if (referenceValue.getType()!=compareValue.getType())
+                {
+                    throw new KettleRowException("The data type of field #" + (i+1) + " is not the same as the first row received: you're mixing rows with different layout!" + Const.CR + "Field '"+referenceValue.getName() +" "+ referenceValue.toStringMeta() + "' does not have the same data type as field '" + compareValue.getName()+" " +compareValue.toStringMeta()+"'");
                 }
             }
         }
-        // debug=saveDebug;
     }
 
     /**
@@ -1363,18 +1385,21 @@ public class BaseStep extends Thread
                 nrCopies = 1;
             }
             else
+            {
                 if (prevCopies == 1 && nextCopies > 1)
                 {
                     dispatchType = Trans.TYPE_DISP_1_N;
                     nrCopies = 1;
                 }
                 else
+                {
                     if (prevCopies > 1 && nextCopies == 1)
                     {
                         dispatchType = Trans.TYPE_DISP_N_1;
                         nrCopies = prevCopies;
                     }
                     else
+                    {
                         if (prevCopies == nextCopies)
                         {
                             dispatchType = Trans.TYPE_DISP_N_N;
@@ -1385,6 +1410,9 @@ public class BaseStep extends Thread
                             dispatchType = Trans.TYPE_DISP_N_M;
                             nrCopies = prevCopies;
                         }
+                    }
+                }
+            }
 
             for (int c = 0; c < nrCopies; c++)
             {
@@ -1440,18 +1468,21 @@ public class BaseStep extends Thread
                 nrCopies = 1;
             }
             else
+            {
                 if (prevCopies == 1 && nextCopies > 1)
                 {
                     dispatchType = Trans.TYPE_DISP_1_N;
                     nrCopies = nextCopies;
                 }
                 else
+                {
                     if (prevCopies > 1 && nextCopies == 1)
                     {
                         dispatchType = Trans.TYPE_DISP_N_1;
                         nrCopies = 1;
                     }
                     else
+                    {
                         if (prevCopies == nextCopies)
                         {
                             dispatchType = Trans.TYPE_DISP_N_N;
@@ -1462,6 +1493,9 @@ public class BaseStep extends Thread
                             dispatchType = Trans.TYPE_DISP_N_M;
                             nrCopies = nextCopies;
                         }
+                    }
+                }
+            }
 
             for (int c = 0; c < nrCopies; c++)
             {
@@ -1952,7 +1986,7 @@ public class BaseStep extends Thread
     /**
      * @return the repartitioning
      */
-    public boolean isRepartitioning()
+    public int getRepartitioning()
     {
         return repartitioning;
     }
@@ -1960,7 +1994,7 @@ public class BaseStep extends Thread
     /**
      * @param repartitioning the repartitioning to set
      */
-    public void setRepartitioning(boolean repartitioning)
+    public void setRepartitioning(int repartitioning)
     {
         this.repartitioning = repartitioning;
     }

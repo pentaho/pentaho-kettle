@@ -259,7 +259,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		return false;
 	}
 
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 	
 		String LimitNbrLignes="";
@@ -272,7 +272,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 		LogWriter log = LogWriter.getInstance();
 		
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult(false);
 
 		// Let's check  the filename ...

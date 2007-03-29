@@ -250,8 +250,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			throw new KettleXMLException("Unable to load job entry of type 'trans' from XML node", e);
 		}
 	}
-    
-	
+    	
 	// Load the jobentry from repository
 	public void loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException
 	{
@@ -406,11 +405,27 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         TransMeta transMeta = getTransMeta(rep);
         
         int iteration = 0;
-        String args[] = arguments;
-        if (args==null || args.length==0) // No arguments set, look at the parent job.
+        String args1[] = arguments;
+        if (args1==null || args1.length==0) // No arguments set, look at the parent job.
         {
-            args = parentJob.getJobMeta().getArguments();
+            args1 = parentJob.getJobMeta().getArguments();
         }
+
+        //
+        // For the moment only do variable translation at the start of a job, not
+        // for every input row (if that would be switched on). This is for safety,
+        // the real argument setting is later on.
+        //
+        String args[] = null;
+        if ( args1 != null )
+        {
+            args = new String[args1.length];
+            for ( int idx = 0; idx < args1.length; idx++ )
+            {
+            	args[idx] = StringUtil.environmentSubstitute(args1[idx]);
+            }
+        }        
+        
         Row resultRow = null;
         boolean first = true;
         List rows = result.getRows();
@@ -493,7 +508,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                     else
                     {
-                        args = parentJob.getJobMeta().getArguments();
+                    	// do nothing
                     }
                 }
 

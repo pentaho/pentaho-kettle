@@ -183,9 +183,9 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		return dummy;
 	}
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleJobException
 	{
-		Result result = prev_result;
+		Result result = previousResult;
 
 		if (isStart())
 		{
@@ -196,13 +196,13 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			} catch (InterruptedException e) {
 				throw new KettleJobException(e);
 			}
-			result = prev_result;
+			result = previousResult;
 			result.setResult( true );
 		}
 		else
 		if (isDummy())
 		{
-			result = prev_result;
+			result = previousResult;
 		}
 		return result;
 	}

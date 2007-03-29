@@ -91,10 +91,29 @@ public class TransDialog extends Dialog
 	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab;
 
 	private Text         wTransname;
+
+	// Trans description
+	private Text         wTransdescription;
+	
+	private Label wlExtendeddescription;
+	private Text wExtendeddescription;
+
+	// Trans Status
+	private Label wlTransstatus;
+	private  CCombo wTransstatus;
+	private FormData fdlTransstatus, fdTransstatus;
+
+	//Trans version
+	private Text         wTransversion;
+
+	private FormData fdlExtendeddescription, fdExtendeddescription;
     
     private Text         wDirectory;
 	private Button       wbDirectory;
-    
+    	    
+	private Text         wCreateUser;
+	private Text         wCreateDate;
+
 	private Text         wModUser;
 	private Text         wModDate;
 	private CCombo       wReadStep;
@@ -319,31 +338,112 @@ public class TransDialog extends Dialog
         fdTransname.right= new FormAttachment(100, 0);
         wTransname.setLayoutData(fdTransname);
         
-        // Directory:
-        Label wlDirectory = new Label(wTransComp, SWT.RIGHT);
-        wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
-        props.setLook(wlDirectory);
-        FormData fdlDirectory = new FormData();
-        fdlDirectory.left = new FormAttachment(0, 0);
-        fdlDirectory.right= new FormAttachment(middle, -margin);
-        fdlDirectory.top  = new FormAttachment(wTransname, margin);
-        wlDirectory.setLayoutData(fdlDirectory);
+		// Transformation description:
+		Label wlTransdescription = new Label(wTransComp, SWT.RIGHT);
+		wlTransdescription.setText(Messages.getString("TransDialog.Transdescription.Label")); //$NON-NLS-1$
+		props.setLook(wlTransdescription);
+		FormData fdlTransdescription = new FormData();
+		fdlTransdescription.left = new FormAttachment(0, 0);
+		fdlTransdescription.right= new FormAttachment(middle, -margin);
+		fdlTransdescription.top  = new FormAttachment(wTransname, margin);
+		wlTransdescription.setLayoutData(fdlTransdescription);
+		wTransdescription=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wTransdescription);
+		wTransdescription.addModifyListener(lsMod);
+		FormData fdTransdescription = new FormData();
+		fdTransdescription.left = new FormAttachment(middle, 0);
+		fdTransdescription.top  = new FormAttachment(wTransname, margin);
+		fdTransdescription.right= new FormAttachment(100, 0);
+		wTransdescription.setLayoutData(fdTransdescription);
+        
 
-        wbDirectory=new Button(wTransComp, SWT.PUSH);
-        wbDirectory.setText("..."); //$NON-NLS-1$
-        props.setLook(wbDirectory);
-        FormData fdbDirectory = new FormData();
-        fdbDirectory.right= new FormAttachment(100, 0);
-        fdbDirectory.top  = new FormAttachment(wTransname, margin);
-        wbDirectory.setLayoutData(fdbDirectory);
-        wbDirectory.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent arg0)
-            {
-                if (rep!=null)
-                {
-                    RepositoryDirectory directoryFrom = transMeta.getDirectory();
-                    long idDirectoryFrom  = directoryFrom.getID();
+		// Transformation Extended description
+		wlExtendeddescription = new Label(wTransComp, SWT.RIGHT);
+		wlExtendeddescription.setText(Messages.getString("TransDialog.Extendeddescription.Label"));
+		props.setLook(wlExtendeddescription);
+		fdlExtendeddescription = new FormData();
+		fdlExtendeddescription.left = new FormAttachment(0, 0);
+		fdlExtendeddescription.top = new FormAttachment(wTransdescription, margin);
+		fdlExtendeddescription.right = new FormAttachment(middle, -margin);
+		wlExtendeddescription.setLayoutData(fdlExtendeddescription);
+
+		wExtendeddescription = new Text(wTransComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		props.setLook(wExtendeddescription,Props.WIDGET_STYLE_FIXED);
+		wExtendeddescription.addModifyListener(lsMod);
+		fdExtendeddescription = new FormData();
+		fdExtendeddescription.left = new FormAttachment(middle, 0);
+		fdExtendeddescription.top = new FormAttachment(wTransdescription, margin);
+		fdExtendeddescription.right = new FormAttachment(100, 0);
+		fdExtendeddescription.bottom =new FormAttachment(50, -margin);
+		wExtendeddescription.setLayoutData(fdExtendeddescription);
+
+		//Trans Status
+		wlTransstatus = new Label(wTransComp, SWT.RIGHT);
+		wlTransstatus.setText(Messages.getString("TransDialog.Transstatus.Label"));
+		props.setLook(wlTransstatus);
+		fdlTransstatus = new FormData();
+		fdlTransstatus.left = new FormAttachment(0, 0);
+		fdlTransstatus.right = new FormAttachment(middle, 0);
+		fdlTransstatus.top = new FormAttachment(wExtendeddescription, margin*2);
+		wlTransstatus.setLayoutData(fdlTransstatus);
+		wTransstatus = new CCombo(wTransComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wTransstatus.add(Messages.getString("TransDialog.Draft_Transstatus.Label"));
+		wTransstatus.add(Messages.getString("TransDialog.Production_Transstatus.Label"));
+		//wTransstatus.select(-1); // +1: starts at -1
+
+		props.setLook(wTransstatus);
+		fdTransstatus= new FormData();
+		fdTransstatus.left = new FormAttachment(middle, 0);
+		fdTransstatus.top = new FormAttachment(wExtendeddescription, margin*2);
+		fdTransstatus.right = new FormAttachment(100, 0);
+		wTransstatus.setLayoutData(fdTransstatus);
+
+
+		// Transformation Transversion:
+		Label wlTransversion = new Label(wTransComp, SWT.RIGHT);
+		wlTransversion.setText(Messages.getString("TransDialog.Transversion.Label")); //$NON-NLS-1$
+		props.setLook(wlTransversion);
+		FormData fdlTransversion = new FormData();
+		fdlTransversion.left = new FormAttachment(0, 0);
+		fdlTransversion.right= new FormAttachment(middle, -margin);
+		fdlTransversion.top  = new FormAttachment(wTransstatus, margin);
+		wlTransversion.setLayoutData(fdlTransversion);
+		wTransversion=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wTransversion);
+		wTransversion.addModifyListener(lsMod);
+		FormData fdTransversion = new FormData();
+		fdTransversion.left = new FormAttachment(middle, 0);
+		fdTransversion.top  = new FormAttachment(wTransstatus, margin);
+		fdTransversion.right= new FormAttachment(100, 0);
+		wTransversion.setLayoutData(fdTransversion);
+
+
+
+		// Directory:
+		Label wlDirectory = new Label(wTransComp, SWT.RIGHT);
+		wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
+		props.setLook(wlDirectory);
+		FormData fdlDirectory = new FormData();
+		fdlDirectory.left = new FormAttachment(0, 0);
+		fdlDirectory.right= new FormAttachment(middle, -margin);
+		fdlDirectory.top  = new FormAttachment(wTransversion, margin);
+		wlDirectory.setLayoutData(fdlDirectory);
+
+		wbDirectory=new Button(wTransComp, SWT.PUSH);
+		wbDirectory.setText("..."); //$NON-NLS-1$
+		props.setLook(wbDirectory);
+		FormData fdbDirectory = new FormData();
+		fdbDirectory.right= new FormAttachment(100, 0);
+		fdbDirectory.top  = new FormAttachment(wTransversion, margin);
+		wbDirectory.setLayoutData(fdbDirectory);
+		wbDirectory.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				if (rep!=null)
+				{
+					RepositoryDirectory directoryFrom = transMeta.getDirectory();
+					long idDirectoryFrom  = directoryFrom.getID();
                     
                     SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
                     RepositoryDirectory rd = sdd.open();
@@ -374,9 +474,48 @@ public class TransDialog extends Dialog
         wDirectory.setEditable(false);
         FormData fdDirectory = new FormData();
         fdDirectory.left = new FormAttachment(middle, 0);
-        fdDirectory.top  = new FormAttachment(wTransname, margin);
+		fdDirectory.top  = new FormAttachment(wTransversion, margin);
         fdDirectory.right= new FormAttachment(wbDirectory, 0);
         wDirectory.setLayoutData(fdDirectory);
+
+		// Create User:
+		Label wlCreateUser = new Label(wTransComp, SWT.RIGHT);
+		wlCreateUser.setText(Messages.getString("TransDialog.CreateUser.Label")); //$NON-NLS-1$
+		props.setLook(wlCreateUser);
+		FormData fdlCreateUser = new FormData();
+		fdlCreateUser.left = new FormAttachment(0, 0);
+		fdlCreateUser.right= new FormAttachment(middle, -margin);
+		fdlCreateUser.top  = new FormAttachment(wDirectory, margin);
+		wlCreateUser.setLayoutData(fdlCreateUser);
+		wCreateUser=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wCreateUser);
+		wCreateUser.setEditable(false);
+		wCreateUser.addModifyListener(lsMod);
+		FormData fdCreateUser = new FormData();
+		fdCreateUser.left = new FormAttachment(middle, 0);
+		fdCreateUser.top  = new FormAttachment(wDirectory, margin);
+		fdCreateUser.right= new FormAttachment(100, 0);
+		wCreateUser.setLayoutData(fdCreateUser);
+
+		// Created Date:
+		Label wlCreateDate = new Label(wTransComp, SWT.RIGHT);
+		wlCreateDate.setText(Messages.getString("TransDialog.CreateDate.Label")); //$NON-NLS-1$
+		props.setLook(wlCreateDate);
+		FormData fdlCreateDate = new FormData();
+		fdlCreateDate.left = new FormAttachment(0, 0);
+		fdlCreateDate.right= new FormAttachment(middle, -margin);
+		fdlCreateDate.top  = new FormAttachment(wCreateUser, margin);
+		wlCreateDate.setLayoutData(fdlCreateDate);
+		wCreateDate=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wCreateDate);
+		wCreateDate.setEditable(false);
+		wCreateDate.addModifyListener(lsMod);
+		FormData fdCreateDate = new FormData();
+		fdCreateDate.left = new FormAttachment(middle, 0);
+		fdCreateDate.top  = new FormAttachment(wCreateUser, margin);
+		fdCreateDate.right= new FormAttachment(100, 0);
+		wCreateDate.setLayoutData(fdCreateDate);
+
 
         // Modified User:
         Label wlModUser = new Label(wTransComp, SWT.RIGHT);
@@ -385,7 +524,7 @@ public class TransDialog extends Dialog
         FormData fdlModUser = new FormData();
         fdlModUser.left = new FormAttachment(0, 0);
         fdlModUser.right= new FormAttachment(middle, -margin);
-        fdlModUser.top  = new FormAttachment(wDirectory, margin*3);
+		fdlModUser.top  = new FormAttachment(wCreateDate, margin);
         wlModUser.setLayoutData(fdlModUser);
         wModUser=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wModUser);
@@ -393,7 +532,7 @@ public class TransDialog extends Dialog
         wModUser.addModifyListener(lsMod);
         FormData fdModUser = new FormData();
         fdModUser.left = new FormAttachment(middle, 0);
-        fdModUser.top  = new FormAttachment(wDirectory, margin*3);
+		fdModUser.top  = new FormAttachment(wCreateDate, margin);
         fdModUser.right= new FormAttachment(100, 0);
         wModUser.setLayoutData(fdModUser);
 
@@ -1260,6 +1399,18 @@ public class TransDialog extends Dialog
 		log.logDebug(toString(), Messages.getString("TransDialog.Log.GettingTransformationInfo")); //$NON-NLS-1$
 
 		if (transMeta.getName()!=null)         wTransname.setText        ( transMeta.getName());
+		
+		if (transMeta.getDescription()!=null)   wTransdescription.setText        ( transMeta.getDescription());
+		if (transMeta.getExtendedDescription()!=null)   wExtendeddescription.setText        ( transMeta.getExtendedDescription());
+		if (transMeta.getTransversion()!=null)   wTransversion.setText        ( transMeta.getTransversion());
+		wTransstatus.select        ( transMeta.getTransstatus()-1);
+				
+
+		if (transMeta.getCreatedUser()!=null)     wCreateUser.setText          ( transMeta.getCreatedUser() );
+		if (transMeta.getCreatedDate()!=null && transMeta.getCreatedDate().getString()!=null)     						   
+			wCreateDate.setText          ( transMeta.getCreatedDate().getString() );
+		
+		
 		if (transMeta.getModifiedUser()!=null)     wModUser.setText          ( transMeta.getModifiedUser() );
 		if (transMeta.getModifiedDate()!=null && 
 			transMeta.getModifiedDate().getString()!=null
@@ -1385,6 +1536,11 @@ public class TransDialog extends Dialog
 		transMeta.setBatchIdUsed(       wBatch.getSelection()                            );
 		transMeta.setLogfieldUsed(      wLogfield.getSelection()                         );
 		transMeta.setName(              wTransname.getText()                             );
+
+		transMeta.setDescription(       wTransdescription.getText()                      );
+		transMeta.setExtendedDescription(       wExtendeddescription.getText()           );
+		transMeta.setTransversion(       wTransversion.getText()                         );
+		transMeta.setTransstatus(       wTransstatus.getSelectionIndex()   +1            );
 		
 		try
 		{

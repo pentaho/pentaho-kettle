@@ -523,6 +523,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
         colinf[0] = new ColumnInfo(Messages.getString("JobJob.Fields.Argument.Label"),
             ColumnInfo.COLUMN_TYPE_TEXT, false);
+        colinf[0].setUsingVariables(true);
 
         wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
             FieldsRows, lsMod, props);

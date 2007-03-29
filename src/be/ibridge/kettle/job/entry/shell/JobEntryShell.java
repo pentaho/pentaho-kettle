@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
@@ -35,6 +36,7 @@ import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.util.StreamLogger;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -68,7 +70,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		super(name, "");
 		setType(JobEntryInterface.TYPE_JOBENTRY_SHELL);
 	}
-
 
 	public JobEntryShell()
 	{
@@ -398,18 +399,23 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             
             log.logBasic(toString(), "Running on platform : "+Const.getOS());
             
+			FileObject fileObject = null;
+
+			String realFilename = StringUtil.environmentSubstitute(getFilename());
+			fileObject = KettleVFS.getFileObject(realFilename);			
+			
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C", StringUtil.environmentSubstitute(getFilename()) };
+                base = new String[] { "command.com", "/C",  KettleVFS.getFilename(fileObject) };
             }
             else
             if( Const.getOS().startsWith( "Windows" ) )
             {
-                base = new String[] { "cmd.exe", "/C", StringUtil.environmentSubstitute(getFilename()) };
+                base = new String[] { "cmd.exe", "/C", KettleVFS.getFilename(fileObject) };
             }
             else 
             {
-                base = new String[] { StringUtil.environmentSubstitute(getFilename()) };
+                base = new String[] { KettleVFS.getFilename(fileObject) };
             }
     
             // Construct the arguments...

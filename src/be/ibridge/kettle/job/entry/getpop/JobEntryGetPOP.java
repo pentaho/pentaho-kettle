@@ -340,10 +340,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		this.password = password;
 	}
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult( false );
 		result.setNrErrors(1);
 

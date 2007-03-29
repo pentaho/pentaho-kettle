@@ -398,13 +398,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     	this.controlEncoding = encoding;
     }    
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
 
         log4j.info("Started FTP job to "+serverName);
 
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult( false );
 		long filesRetrieved = 0;
 

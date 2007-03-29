@@ -86,6 +86,7 @@ public class SelectObjectDialog extends Dialog
     private String objectType;
     private boolean showTrans;
     private boolean showJobs;
+    private TreeColumn descriptionColumn;
 
     public SelectObjectDialog(Shell parent, Repository rep)
     {
@@ -160,7 +161,11 @@ public class SelectObjectDialog extends Dialog
         changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
         changedColumn.setWidth(120);
         changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
-        
+
+        descriptionColumn = new TreeColumn(wTree, SWT.LEFT);
+        descriptionColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Description")); //$NON-NLS-1$
+        descriptionColumn.setWidth(120);
+        descriptionColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(4); } });
         
         props.setLook(wTree);
 		fdTree=new FormData();
@@ -231,7 +236,7 @@ public class SelectObjectDialog extends Dialog
             ascending=true;
         }
         
-        if (sortColumn>=0 && sortColumn<4)
+        if (sortColumn>=0 && sortColumn<5)
         {
             TreeColumn column = wTree.getColumn(sortColumn);
             wTree.setSortColumn(column);

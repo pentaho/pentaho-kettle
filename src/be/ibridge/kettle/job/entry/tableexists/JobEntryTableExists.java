@@ -174,11 +174,11 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		return false;
 	}
 
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult(false);
 		
 		if (connection!=null)

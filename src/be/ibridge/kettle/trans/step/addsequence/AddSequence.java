@@ -71,8 +71,8 @@ public class AddSequence extends BaseStep implements StepInterface
 			
 			//System.out.println("Found prev value: "+prev.longValue()+", increment_by = "+info.increment_by+", max_value = "+info.max_value);
 			long nval = prev.longValue() + meta.getIncrementBy();
-			if (meta.getIncrementBy()>0 && nval>meta.getMaxValue()) nval=meta.getStartAt();
-			if (meta.getIncrementBy()<0 && nval<meta.getMaxValue()) nval=meta.getStartAt();
+			if (meta.getIncrementBy()>0 && meta.getMaxValue()>meta.getStartAt() && nval>meta.getMaxValue()) nval=meta.getStartAt();
+			if (meta.getIncrementBy()<0 && meta.getMaxValue()<meta.getStartAt() && nval<meta.getMaxValue()) nval=meta.getStartAt();
 			getTransMeta().getCounters().put(data.getLookup(), new Long(nval)); 
 
 			next = new Value(meta.getValuename(), prev.longValue());

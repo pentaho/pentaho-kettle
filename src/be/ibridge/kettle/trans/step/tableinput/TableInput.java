@@ -286,12 +286,14 @@ public class TableInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("TableInput.Log.StartingToRun"));
 			while (!isStopped() && processRow(meta, data) );
+
+
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error : "+e.toString());
+			logError(Messages.getString("TableInput.Log.UnexpectedError")+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

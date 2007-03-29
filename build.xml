@@ -1,14 +1,14 @@
 <project name="Kettle" default="default" basedir=".">
 
 	  <description>
-	      Kettle build file.
+	      Kettle build file
 	    </description>
 
 	  <tstamp prefix="start"/>
 
 	  <!-- system properties to use -->
 	  <property name="cr" value="${line.separator}"/> 
-	  <property name="version" value="2.4.1-M2"/>      
+	  <property name="version" value="2.5.0-M2"/>      
 		
 	  <!-- set global properties for this build -->
 	
@@ -67,7 +67,6 @@
 	           deprecation="true"
 	    	   debug="true"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
-		       memorymaximumsize="256M"
 	    	>
 
 	    	<classpath id="cp-kettle">

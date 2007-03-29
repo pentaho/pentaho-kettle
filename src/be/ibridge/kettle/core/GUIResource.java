@@ -78,10 +78,13 @@ public class GUIResource
     private Image     imageHop;
     private Image     imageConnection; 
     private Image     imageBol;
+    private Image     imageArrow;
     private Image     imageKettle;
     private Image     imageCredits;
     private Image     imageStart;
     private Image     imageDummy;
+    private Image     imageStartSmall;
+    private Image     imageDummySmall;
     private Image     imageSpoon;
     private Image     imageChef;
     private Image     imagePentaho;
@@ -203,10 +206,13 @@ public class GUIResource
             imageHop         .dispose();
             imageConnection  .dispose();
             imageBol         .dispose();
+            imageArrow       .dispose();
             imageKettle      .dispose();
             imageCredits     .dispose();
             imageStart       .dispose();
             imageDummy       .dispose();
+            imageStartSmall  .dispose();
+            imageDummySmall  .dispose();
             imageSpoon       .dispose();
             imageChef        .dispose();
             imageSplash      .dispose();
@@ -336,6 +342,7 @@ public class GUIResource
         imageHop         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "HOP.png"));
         imageConnection  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "CNC.png"));
         imageBol         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "BOL.png"));
+        imageArrow       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png"));
         imageKettle      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo.png"));
         imageCredits     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "credits.png"));
         imageStart       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
@@ -349,6 +356,16 @@ public class GUIResource
         imageChefGraph   = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png"));
         imageEditOptionButton  = loadImage(Const.IMAGE_DIRECTORY + "edit_option.png");
         imageResetOptionButton = loadImage(Const.IMAGE_DIRECTORY + "reset_option.png");
+        
+        imageStartSmall  = new Image(display, 16, 16);
+        GC gc = new GC(imageStartSmall);
+        gc.drawImage(imageStart, 0, 0, 32, 32, 0, 0, 16, 16);
+        gc.dispose();
+        imageDummySmall  = new Image(display, 16, 16);
+        gc = new GC(imageDummySmall);
+        gc.drawImage(imageDummy, 0, 0, 32, 32, 0, 0, 16, 16);
+        gc.dispose();
+
     }
 
     /**
@@ -834,5 +851,53 @@ public class GUIResource
     public Image getResetOptionButton()
     {
         return imageResetOptionButton;
+    }
+
+    /**
+     * @return the imageArrow
+     */
+    public Image getImageArrow()
+    {
+        return imageArrow;
+    }
+
+    /**
+     * @param imageArrow the imageArrow to set
+     */
+    public void setImageArrow(Image imageArrow)
+    {
+        this.imageArrow = imageArrow;
+    }
+
+    /**
+     * @return the imageDummySmall
+     */
+    public Image getImageDummySmall()
+    {
+        return imageDummySmall;
+    }
+
+    /**
+     * @param imageDummySmall the imageDummySmall to set
+     */
+    public void setImageDummySmall(Image imageDummySmall)
+    {
+        this.imageDummySmall = imageDummySmall;
+    }
+
+    /**
+     * @return the imageStartSmall
+     */
+    public Image getImageStartSmall()
+    {
+        return imageStartSmall;
+    }
+
+    /**
+     * @param imageStartSmall the imageStartSmall to set
+     */
+    public void setImageStartSmall(Image imageStartSmall)
+    {
+        this.imageStartSmall = imageStartSmall;
     }
 }

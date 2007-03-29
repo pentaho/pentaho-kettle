@@ -197,6 +197,9 @@ public class ErrorDialog extends Dialog
 		);
 		
 		BaseStepDialog.setSize(shell);
+        
+        // Set the focus on the "OK" button
+        wOK.setFocus();
 
 		shell.open();
 		while (!shell.isDisposed())

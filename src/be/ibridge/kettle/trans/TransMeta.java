@@ -61,6 +61,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
@@ -72,6 +73,7 @@ import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.spoon.UndoInterface;
+import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepErrorMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
@@ -111,6 +113,14 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     private RepositoryDirectory directoryTree;
 
     private String              name;
+
+	private String              description;
+
+	private String             extended_description;
+
+	private String				trans_version;
+
+	private int					trans_status;
 
     private String              filename;
 
@@ -201,6 +211,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
     public static final String  desc_type_undo[]   = { "", Messages.getString("TransMeta.UndoTypeDesc.UndoChange"), Messages.getString("TransMeta.UndoTypeDesc.UndoNew"), Messages.getString("TransMeta.UndoTypeDesc.UndoDelete"), Messages.getString("TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
+	private static final String STRING_CREATED_DATE = "created_date";
     private static final String STRING_MODIFIED_DATE = "modified_date";
 
     private static final String XML_TAG_INFO                = "info";
@@ -301,6 +312,10 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         clusterSchemas = new ArrayList();
         
         name = null;
+		description=null;
+		trans_status=1;
+		trans_version=null;
+		extended_description=null;
         filename = null;
         readStep = null;
         writeStep = null;
@@ -333,6 +348,9 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
         useBatchId = true; // Make this one the default from now on...
         logfieldUsed = false; // Don't use the log-field by default...
+
+		createdUser = "-"; //$NON-NLS-1$
+		createdDate = new Value("created_date", new Date()); //$NON-NLS-1$
 
         modifiedUser = "-"; //$NON-NLS-1$
         modifiedDate = new Value("modified_date", new Date()); //$NON-NLS-1$
@@ -2001,6 +2019,13 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             if (r != null)
             {
                 name = r.searchValue("NAME").getString(); //$NON-NLS-1$
+
+				// Trans description
+				description = r.searchValue("DESCRIPTION").getString();
+				extended_description = r.searchValue("EXTENDED_DESCRIPTION").getString();
+				trans_version = r.searchValue("TRANS_VERSION").getString();
+				trans_status=(int) r.getInteger("TRANS_STATUS", -1L);
+
                 readStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_READ", -1L)); //$NON-NLS-1$
                 writeStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_WRITE", -1L)); //$NON-NLS-1$
                 inputStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_INPUT", -1L)); //$NON-NLS-1$
@@ -2023,6 +2048,9 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                 maxDateField = r.getString("FIELD_NAME_MAXDATE", null); //$NON-NLS-1$
                 maxDateOffset = r.getNumber("OFFSET_MAXDATE", 0.0); //$NON-NLS-1$
                 maxDateDifference = r.getNumber("DIFF_MAXDATE", 0.0); //$NON-NLS-1$
+
+				createdUser = r.getString("CREATED_USER", null); //$NON-NLS-1$
+				createdDate = r.searchValue("CREATED_DATE"); //$NON-NLS-1$
 
                 modifiedUser = r.getString("MODIFIED_USER", null); //$NON-NLS-1$
                 modifiedDate = r.searchValue("MODIFIED_DATE"); //$NON-NLS-1$
@@ -2325,6 +2353,10 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
 
         retval.append("    ").append(XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
+		retval.append("    ").append(XMLHandler.addTagValue("trans_version", trans_version));
+		retval.append("    ").append(XMLHandler.addTagValue("trans_status", trans_status));
         retval.append("    ").append(XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2726,6 +2758,18 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             // Name
             name = XMLHandler.getTagValue(infonode, "name"); //$NON-NLS-1$
 
+			// description
+			description = XMLHandler.getTagValue(infonode, "description"); 
+
+			// extended description
+			extended_description = XMLHandler.getTagValue(infonode, "extended_description"); 
+
+			// trans version
+			trans_version = XMLHandler.getTagValue(infonode, "trans_version"); 
+
+			// trans status
+			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
+
             /*
              * Directory String directoryPath = XMLHandler.getTagValue(infonode, "directory");
              */
@@ -2878,6 +2922,16 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
             feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
             usingThreadPriorityManagment = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "using_thread_priorities") ); //$NON-NLS-1$ 
             
+			// Created user/date
+			createdUser = XMLHandler.getTagValue(infonode, "created_user");
+			String createDate = XMLHandler.getTagValue(infonode, "created_date");
+			if (createDate!=null)
+			{
+				createdDate = new Value(STRING_CREATED_DATE, createDate);
+				createdDate.setType(Value.VALUE_TYPE_DATE);
+			}
+
+
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
             String modDate = XMLHandler.getTagValue(infonode, "modified_date");
@@ -4237,6 +4291,18 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
                     CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description"), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
                 }
+                
+                // Also check for mixing rows...
+                try
+                {
+                    checkRowMixingStatically(stepMeta, null);
+                }
+                catch(KettleRowException e)
+                {
+                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, e.getMessage(), stepMeta);
+                    remarks.add(cr);
+                }
+                
 
                 if (monitor != null)
                 {
@@ -4797,6 +4863,88 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         return modifiedUser;
     }
 
+
+
+
+
+	/**
+	 * Get the description of the transformation
+	 *
+	 * @return The description of the transformation
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+	/**
+	 * Set the description of the transformation.
+	 *
+	 * @param n The new description of the transformation
+	 */
+	public void setDescription(String n)
+	{
+		description = n;
+	}
+	
+	/**
+	 * Set the extended description of the transformation.
+	 *
+	 * @param n The new extended description of the transformation
+	 */
+	public void setExtendedDescription(String n)
+	{
+		extended_description = n;
+	}
+
+	/**
+	 * Get the extended description of the transformation
+	 *
+	 * @return The extended description of the transformation
+	 */
+	public String getExtendedDescription()
+	{
+		return extended_description;
+	}
+
+	/**
+	 * Get the version of the transformation
+	 *
+	 * @return The version of the transformation
+	 */
+	public String getTransversion()
+	{
+		return trans_version;
+	}
+
+	/**
+	 * Set the version of the transformation.
+	 *
+	 * @param n The new version description of the transformation
+	 */
+	public void setTransversion(String n)
+	{
+		trans_version = n;
+	}
+
+	/**
+	 * Set the status of the transformation.
+	 *
+	 * @param n The new status description of the transformation
+	 */
+	public void setTransstatus(int n)
+	{
+		trans_status = n;
+	}
+	/**
+	 * Get the status of the transformation
+	 *
+	 * @return The status of the transformation
+	 */
+	public int getTransstatus()
+	{
+		return trans_status;
+	}
+
     /**
      * @return the textual representation of the transformation: it's name. If the name has not been set, the classname
      * is returned.
@@ -5087,6 +5235,8 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 
         // The name of the directory in the repository
         variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
+        
+        // Here we don't undefine the job specific parameters, as it may come in handy.
     }
 
     /**
@@ -5384,5 +5534,44 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
     public void setRejectedStep(StepMeta rejectedStep)
     {
         this.rejectedStep = rejectedStep;
+    }
+    
+    /**
+     * Check a step to see if there are no multiple steps to read from.
+     * If so, check to see if the receiving rows are all the same in layout.
+     * We only want to ONLY use the DBCache for this to prevent GUI stalls.
+     * 
+     * @param stepMeta the step to check
+     * @throws KettleRowException in case we detect a row mixing violation
+     *
+     */
+    public void checkRowMixingStatically(StepMeta stepMeta, IProgressMonitor monitor) throws KettleRowException
+    {
+       int nrPrevious = findNrPrevSteps(stepMeta);
+       if (nrPrevious>1)
+       {
+           Row referenceRow = null;
+           // See if all previous steps send out the same rows...
+           for (int i=0;i<nrPrevious;i++)
+           {
+               StepMeta previousStep = findPrevStep(stepMeta, i);
+               try
+               {
+                   Row row = getStepFields(previousStep, monitor); // Throws KettleStepException
+                   if (referenceRow==null)
+                   {
+                       referenceRow = row;
+                   }
+                   else
+                   {
+                       BaseStep.safeModeChecking(referenceRow, row);
+                   }
+               }
+               catch(KettleStepException e)
+               {
+                   // We ignore this one because we are in the process of designing the transformation, anything intermediate can go wrong.
+               }
+           }
+       }
     }
 }

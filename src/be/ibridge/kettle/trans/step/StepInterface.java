@@ -69,13 +69,6 @@ public interface StepInterface
 	 *
 	 */
 	public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException;
-
-    /**
-     * Stops running operations
-     * This method is deprecated, please use the method specifying the metadata and data interfaces.
-     * @deprecated
-     */
-    public void stopRunning();
     
 	/**
 	 * Is the thread still alive?

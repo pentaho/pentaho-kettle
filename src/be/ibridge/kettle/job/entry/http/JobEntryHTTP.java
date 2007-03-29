@@ -330,11 +330,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
      *  In that case if (on an application server for example) several HTTP's are running at the same time, 
      *  you get into problems because the System.setProperty() calls are system wide!
      */
-    public synchronized Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+    public synchronized Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult( false );
 
 		log.logBasic(toString(), "Start of HTTP job entry.");
@@ -345,7 +345,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         if (runForEveryRow)
         {
-            resultRows = prev_result.getRows();
+            resultRows = previousResult.getRows();
             if (resultRows==null)
             {
                 result.setNrErrors(1);

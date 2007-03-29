@@ -154,14 +154,14 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 	/**
 	 * Execute this job entry and return the result.
 	 * In this case it means, just set the result boolean in the Result class.
-	 * @param prev_result The result of the previous execution
+	 * @param previousResult The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
-		prev_result.setResult( evaluate(prev_result) );
+		previousResult.setResult( evaluate(previousResult) );
 		
-		return prev_result;
+		return previousResult;
 	}
 	
 	public boolean resetErrorsBeforeExecution()

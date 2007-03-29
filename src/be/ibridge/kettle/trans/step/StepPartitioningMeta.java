@@ -14,11 +14,12 @@ import be.ibridge.kettle.repository.Repository;
 
 public class StepPartitioningMeta implements XMLInterface, Cloneable
 {
-    public static final int PARTITIONING_METHOD_NONE = 0;
-    public static final int PARTITIONING_METHOD_MOD  = 1;
+    public static final int PARTITIONING_METHOD_NONE    = 0;
+    public static final int PARTITIONING_METHOD_MOD     = 1;
+    public static final int PARTITIONING_METHOD_MIRROR  = 2;
     
-    public static final String[] methodCodes        = new String[] { "none", "Mod" };
-    public static final String[] methodDescriptions = new String[] { "None", "Remainder of division" };
+    public static final String[] methodCodes        = new String[] { "none", "Mod", "Mirror" };
+    public static final String[] methodDescriptions = new String[] { "None", "Remainder of division", "Mirror to all partitions" };
 
     private int             method;
     private String          fieldName;
@@ -195,5 +196,15 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");
         method = getMethod(methodCode);
         fieldName           = rep.getStepAttributeString(id_step, "PARTITIONING_FIELDNAME");
+    }
+    
+    public boolean isMethodMod()
+    {
+        return method==PARTITIONING_METHOD_MOD;
+    }
+    
+    public boolean isMethodMirror()
+    {
+        return method==PARTITIONING_METHOD_MIRROR;
     }
 }

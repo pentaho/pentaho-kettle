@@ -1,6 +1,5 @@
  /**********************************************************************
  **                                                                   **
- **               This code belongs to the KETTLE project.            **
  **                                                                   **
  ** Kettle, from version 2.2 on, is released into the public domain   **
  ** under the Lesser GNU Public License (LGPL).                       **
@@ -30,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -99,7 +99,11 @@ import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
+import be.ibridge.kettle.trans.step.RowListener;
+import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepInterface;
+import be.ibridge.kettle.trans.step.StepMetaInterface;
 import de.proconis.StyledText.StyledTextComp;
 
 
@@ -183,7 +187,125 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	private ScriptValuesMetaMod input;
 	private ScriptValuesHelp scVHelp;
 	private ScriptValuesHighlight lineStyler = new ScriptValuesHighlight();
+	
+	/**
+	 * Dummy class used for test().
+	 */
+	public class ScriptValuesModDummy implements StepInterface
+	{
 
+		public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+			return false;
+		}
+
+		public void addRowListener(RowListener rowListener) {
+		}
+
+		public void dispose(StepMetaInterface sii, StepDataInterface sdi) {
+		}
+
+		public long getErrors() {
+			return 0;
+		}
+
+		public List getInputRowSets() {
+			return null;
+		}
+
+		public long getLinesInput() {
+			return 0;
+		}
+
+		public long getLinesOutput() {
+			return 0;
+		}
+
+		public long getLinesRead() {
+			return 0;
+		}
+
+		public long getLinesUpdated() {
+			return 0;
+		}
+
+		public long getLinesWritten() {
+			return 0;
+		}
+
+		public List getOutputRowSets() {
+			return null;
+		}
+
+		public String getPartitionID() {
+			return null;
+		}
+
+		public Row getRow() throws KettleException {
+			return null;
+		}
+
+		public List getRowListeners() {
+			return null;
+		}
+
+		public String getStepID() {
+			return null;
+		}
+
+		public String getStepname() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) {
+			return false;
+		}
+
+		public boolean isAlive() {
+			return false;
+		}
+
+		public boolean isPartitioned() {
+			return false;
+		}
+
+		public boolean isStopped() {
+			return false;
+		}
+
+		public void markStart() {
+		}
+
+		public void markStop() {
+		}
+
+		public void putRow(Row row) throws KettleException {
+		}
+
+		public void removeRowListener(RowListener rowListener) {
+		}
+
+		public void run() {
+		}
+
+		public void setErrors(long errors) {
+		}
+
+		public void setOutputDone() {
+		}
+
+		public void setPartitionID(String partitionID) {
+		}
+
+		public void start() {
+		}
+
+		public void stopAll() {
+		}
+
+		public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException {
+		}	
+	}
 	
 	public ScriptValuesDialogMod(Shell parent, Object in, TransMeta transMeta, String sname){
 
@@ -332,9 +454,6 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		fdHelpLabel.bottom = new FormAttachment(100,0);
 		wlHelpLabel.setLayoutData(fdHelpLabel);
 		wlHelpLabel.setVisible(false);
-		
-		
-		
 
 		fdTop=new FormData();
 		fdTop.left  = new FormAttachment(0, 0);
@@ -870,7 +989,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 					{
 					case Value.VALUE_TYPE_STRING : script+=v.getName()+".getString()"; break; //$NON-NLS-1$
 					case Value.VALUE_TYPE_NUMBER : script+=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-					case Value.VALUE_TYPE_INTEGER: script+=v.getName()+".getInt()"; break; //$NON-NLS-1$
+					case Value.VALUE_TYPE_INTEGER: script+=v.getName()+".getInteger()"; break; //$NON-NLS-1$
 					case Value.VALUE_TYPE_DATE   : script+=v.getName()+".getDate()"; break; //$NON-NLS-1$
 					case Value.VALUE_TYPE_BOOLEAN: script+=v.getName()+".getBool()"; break; //$NON-NLS-1$
 					default: script+=v.getName(); break;
@@ -910,7 +1029,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		jscx = Context.enter();
 		jscx.setOptimizationLevel(-1);
 		jsscope = jscx.initStandardObjects(null);
-		
+				
 		// Adding the existing Scripts to the Context
 		for(int i=0;i<folder.getItemCount();i++){
 			StyledTextComp sItem = getStyledTextComp(folder.getItem(i));
@@ -921,6 +1040,9 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		// Adding the Name of the Transformation to the Context
 		jsscope.put("_TransformationName_", jsscope, new String(this.stepname));
 		
+		ScriptValuesModDummy dummyStep = new ScriptValuesModDummy();
+		Scriptable jsvalue = Context.toObject(dummyStep, jsscope);
+		jsscope.put("_step_", jsscope, jsvalue); //$NON-NLS-1$
 			
 		try{
 			
@@ -1180,13 +1302,14 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 				item.setText("Output Fields");
 				String strItemToAdd="";
 				for (int i=0;i<r.size();i++){
-						Value v = r.getValue(i);
+						Value v = r.getValue(i);					
 						switch(v.getType()){
-							case Value.VALUE_TYPE_STRING : strItemToAdd=v.getName()+".setString(var)"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_NUMBER : strItemToAdd=v.getName()+".setNumber(var)"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_INTEGER: strItemToAdd=v.getName()+".setInt(var)"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_DATE   : strItemToAdd=v.getName()+".setDate(var)"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_BOOLEAN: strItemToAdd=v.getName()+".setBool(var)"; break; //$NON-NLS-1$
+							case Value.VALUE_TYPE_STRING : 
+							case Value.VALUE_TYPE_NUMBER : 
+							case Value.VALUE_TYPE_INTEGER: 
+							case Value.VALUE_TYPE_DATE   : 
+							case Value.VALUE_TYPE_BOOLEAN: 
+								strItemToAdd=v.getName()+".setValue(var)"; break; //$NON-NLS-1$
 							default: strItemToAdd=v.getName(); break;
 						}
 						TreeItem itemInputFields = new TreeItem(item, SWT.NULL);
@@ -1213,7 +1336,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 						switch(v.getType()){
 							case Value.VALUE_TYPE_STRING : strItemToAdd=v.getName()+".getString()"; break; //$NON-NLS-1$
 							case Value.VALUE_TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_INTEGER: strItemToAdd=v.getName()+".getInt()"; break; //$NON-NLS-1$
+							case Value.VALUE_TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
 							case Value.VALUE_TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
 							case Value.VALUE_TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBool()"; break; //$NON-NLS-1$
 							default: strItemToAdd=v.getName(); break;

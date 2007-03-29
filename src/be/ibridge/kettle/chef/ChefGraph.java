@@ -41,9 +41,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -89,14 +89,15 @@ import be.ibridge.kettle.trans.TransMeta;
  *
  */
 
-public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
+public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 {
 	private static final int HOP_SEL_MARGIN = 9;
 
 	private Shell shell;
-	private ChefGraph canvas;
+	private Canvas canvas;
 	private LogWriter log;
     private JobMeta jobMeta;
+    // private Props props;
     
 	private int iconsize;
 	private int linewidth;
@@ -132,14 +133,19 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
     private Menu mPopAD;
 
+
 	public ChefGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
-		super(par,  SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+		super(par, SWT.NONE);
 		shell = par.getShell();
 		this.log = LogWriter.getInstance();
 		this.spoon = spoon;
-		this.canvas = this;
-        this.jobMeta = jobMeta;
+		this.jobMeta = jobMeta;
+        // this.props = Props.getInstance();
+        
+        setLayout(new FillLayout());
+        
+        canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
         
 		newProps();
 		
@@ -150,8 +156,8 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		selected_entries = null;
 		selected_note = null;
         
-        hori = getHorizontalBar();
-		vert = getVerticalBar();
+        hori = canvas.getHorizontalBar();
+		vert = canvas.getVerticalBar();
 
 		hori.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -171,7 +177,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
 		setVisible(true);
 		
-		addPaintListener(new PaintListener() {
+		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				ChefGraph.this.paintControl(e);
 			}
@@ -180,7 +186,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		selected_entries = null;
 		lastclick = null;
 
-		addMouseListener(new MouseAdapter() 
+		canvas.addMouseListener(new MouseAdapter() 
 		{
 			public void mouseDoubleClick(MouseEvent e) 
 			{
@@ -420,7 +426,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			}
 		});
 
-		addMouseMoveListener(new MouseMoveListener() 
+		canvas.addMouseMoveListener(new MouseMoveListener() 
 		{
 			public void mouseMove(MouseEvent e) 
 			{
@@ -547,7 +553,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 
 		// Drag & Drop for steps
 		Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
-		DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE);
+		DropTarget ddTarget = new DropTarget(canvas, DND.DROP_MOVE);
 		ddTarget.setTransfer(ttypes);
 		ddTarget.addDropListener(new DropTargetListener() 
 		{
@@ -675,7 +681,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 		});
 
 		// Keyboard shortcuts...
-		addKeyListener(new KeyAdapter() 
+		canvas.addKeyListener(new KeyAdapter() 
 		{
 			public void keyPressed(KeyEvent e) 
 			{
@@ -754,12 +760,15 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 			}
 		});
 
-		addKeyListener(spoon.defKeys);
+		canvas.addKeyListener(spoon.defKeys);
 
 		setBackground(GUIResource.getInstance().getColorBackground());
-
-		setLayout(new FormLayout());
 	}
+
+    public void redraw()
+    {
+        canvas.redraw();
+    }
 	
     public void renameJobEntry()
     {
@@ -1236,7 +1245,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 					}
 				});
 			}
-			setMenu(mPop);
+            canvas.setMenu(mPop);
 		}
 		else // Clear the menu
 		{
@@ -1363,7 +1372,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 						}
 					}
 				);
-				setMenu(mPop);
+                canvas.setMenu(mPop);
 			}
 			else 
 			{
@@ -1403,7 +1412,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
 						} 
 					);
 					
-					setMenu(mPop);
+                    canvas.setMenu(mPop);
 				}
 				else
 				{
@@ -1457,7 +1466,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
                         }
                     });
 
-					setMenu(mPop);
+                    canvas.setMenu(mPop);
 				}
 			}
 		}
@@ -1498,7 +1507,7 @@ public class ChefGraph extends Canvas implements Redrawable, TabItemInterface
         
         if (newTip==null || !newTip.equalsIgnoreCase(getToolTipText())) 
         {
-            setToolTipText(newTip);
+            canvas.setToolTipText(newTip);
         }
 	}
 	

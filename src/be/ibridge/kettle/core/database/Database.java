@@ -3855,6 +3855,10 @@ public class Database
 				// Numeric values...
 				mod |= ( currentField.getType() != desiredField.getType() ) && ( currentField.isNumber()^desiredField.isNumeric() );
 				
+                // TODO: this is not an optimal way of finding out changes.
+                // Perhaps we should just generate the data types strings for existing and new data type and see if anything changed.
+                // 
+                
 				if (mod)
 				{
                     // System.out.println("Desired field: ["+desiredField.toStringMeta()+"], current field: ["+currentField.toStringMeta()+"]");

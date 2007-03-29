@@ -78,7 +78,7 @@ public class Repository
          };
     
     public static final int REQUIRED_MAJOR_VERSION = 2;
-    public static final int REQUIRED_MINOR_VERSION = 4;
+    public static final int REQUIRED_MINOR_VERSION = 5;
     
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
@@ -970,6 +970,10 @@ public class Repository
 
 		table.addValue(new Value("ID_TRANSFORMATION",   transMeta.getId()));
 		table.addValue(new Value("NAME",                transMeta.getName()));
+		table.addValue(new Value("DESCRIPTION",         transMeta.getDescription()));
+		table.addValue(new Value("EXTENDED_DESCRIPTION",   transMeta.getExtendedDescription()));
+		table.addValue(new Value("TRANS_VERSION",       transMeta.getTransversion()));
+		table.addValue(new Value("TRANS_STATUS",        transMeta.getTransstatus()  <0 ? -1L : transMeta.getTransstatus()));
 		table.addValue(new Value("ID_STEP_READ",        transMeta.getReadStep()  ==null ? -1L : transMeta.getReadStep().getID()));
 		table.addValue(new Value("ID_STEP_WRITE",       transMeta.getWriteStep() ==null ? -1L : transMeta.getWriteStep().getID()));
 		table.addValue(new Value("ID_STEP_INPUT",       transMeta.getInputStep() ==null ? -1L : transMeta.getInputStep().getID()));
@@ -984,6 +988,10 @@ public class Repository
 		table.addValue(new Value("FIELD_NAME_MAXDATE",  transMeta.getMaxDateField()));
 		table.addValue(new Value("OFFSET_MAXDATE",      transMeta.getMaxDateOffset()));
 		table.addValue(new Value("DIFF_MAXDATE",        transMeta.getMaxDateDifference()));
+
+		table.addValue(new Value("CREATED_USER",        transMeta.getCreatedUser()));
+		table.addValue(new Value("CREATED_DATE",        transMeta.getCreatedDate()));
+		
 		table.addValue(new Value("MODIFIED_USER",       transMeta.getModifiedUser()));
 		table.addValue(new Value("MODIFIED_DATE",       transMeta.getModifiedDate()));
 		table.addValue(new Value("SIZE_ROWSET",  (long) transMeta.getSizeRowset()));
@@ -1014,15 +1022,24 @@ public class Repository
 
 	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
 			String modified_user, Value modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed, 
-            String sharedObjectsFile) throws KettleDatabaseException
+            String sharedObjectsFile, String description, String extended_description, String version, int status,
+			String created_user, Value created_date) throws KettleDatabaseException
 	{
 		Row table = new Row();
 
 		table.addValue(new Value("ID_JOB", id_job));
 		table.addValue(new Value("ID_DIRECTORY", id_directory));
 		table.addValue(new Value("NAME", name));
+		table.addValue(new Value("DESCRIPTION", description));
+		table.addValue(new Value("EXTENDED_DESCRIPTION", extended_description));
+		table.addValue(new Value("JOB_VERSION", version));
+		table.addValue(new Value("JOB_STATUS", status  <0 ? -1L : status));
+
 		table.addValue(new Value("ID_DATABASE_LOG", id_database_log));
 		table.addValue(new Value("TABLE_NAME_LOG", table_name_log));
+
+		table.addValue(new Value("CREATED_USER", created_user));
+		table.addValue(new Value("CREATED_DATE", created_date));
 		table.addValue(new Value("MODIFIED_USER", modified_user));
 		table.addValue(new Value("MODIFIED_DATE", modified_date));
         table.addValue(new Value("USE_BATCH_ID", useBatchId));
@@ -2173,7 +2190,7 @@ public class Repository
     {
         String nameField = databaseMeta.quoteField("NAME");
         
-        String sql = "SELECT "+nameField+", MODIFIED_USER, MODIFIED_DATE " +
+        String sql = "SELECT "+nameField+", MODIFIED_USER, MODIFIED_DATE, DESCRIPTION " +
                 "FROM "+tableName+" " +
                 "WHERE ID_DIRECTORY = " + id_directory + " "
                 ;
@@ -2188,7 +2205,7 @@ public class Repository
                 Row r = database.getRow(rs);
                 while (r != null)
                 {
-                    repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate(), objectType));
+                    repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate(), objectType, r.getValue(3).getString()));
                     r = database.getRow(rs);
                 }
         	}
@@ -3872,6 +3889,10 @@ public class Repository
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DIRECTORY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("EXTENDED_DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("TRANS_VERSION", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValue(new Value("TRANS_STATUS", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_READ", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_WRITE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_INPUT", Value.VALUE_TYPE_INTEGER, KEY, 0));
@@ -3886,12 +3907,14 @@ public class Repository
 		table.addValue(new Value("FIELD_NAME_MAXDATE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("OFFSET_MAXDATE", Value.VALUE_TYPE_NUMBER, 12, 2));
 		table.addValue(new Value("DIFF_MAXDATE", Value.VALUE_TYPE_NUMBER, 12, 2));
+		table.addValue(new Value("CREATED_USER", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+		table.addValue(new Value("CREATED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
 		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
 		table.addValue(new Value("SIZE_ROWSET", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION", false);
 
-		if (sql != null && sql.length() > 0)
+        if (sql != null && sql.length() > 0)
 		{
             if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
@@ -4625,8 +4648,14 @@ public class Repository
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DIRECTORY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValue(new Value("EXTENDED_DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValue(new Value("JOB_VERSION", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("JOB_STATUS", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DATABASE_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("CREATED_USER", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("CREATED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
 		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
         table.addValue(new Value("USE_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));

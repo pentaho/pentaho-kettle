@@ -139,13 +139,13 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 	/**
 	 * Execute this job entry and return the result.
 	 * In this case it means, just set the result boolean in the Result class.
-	 * @param prev_result The result of the previous execution
+	 * @param previousResult The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
-		Result result = new Result(nr);
+		Result result = previousResult;
 		result.setResult( false );
 		int Multiple;
 		String Waitscale;

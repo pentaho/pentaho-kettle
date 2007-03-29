@@ -1577,6 +1577,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public String quoteField(String field)
 	{
         if (Const.isEmpty(field)) return null;
+        
+        // If the field already contains quotes, we don't touch it anymore, just return the same string...
+        if (field.indexOf(getStartQuote())>=0 || field.indexOf(getEndQuote())>=0)
+        {
+            return field;
+        }
+        
 		if (isReservedWord(field) && quoteReservedWords())
         {
             return handleCase(getStartQuote()+field+getEndQuote());            

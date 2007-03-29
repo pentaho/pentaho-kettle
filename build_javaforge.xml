@@ -8,7 +8,7 @@
 
 	  <!-- system properties to use -->
 	  <property name="cr" value="${line.separator}"/> 
-	  <property name="version" value="2.4.1-M1"/>      
+	  <property name="version" value="2.5.0-M1"/>      
 		
 	  <!-- set global properties for this build -->
 	
@@ -67,7 +67,6 @@
 	           deprecation="true"
 	    	   debug="true"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
-		       memorymaximumsize="256M"
 	    	>
 
 	    	<classpath id="cp-kettle">

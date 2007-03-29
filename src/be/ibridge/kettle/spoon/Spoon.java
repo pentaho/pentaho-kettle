@@ -45,19 +45,21 @@ import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.ExpandAdapter;
+import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -68,17 +70,22 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -139,6 +146,7 @@ import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
@@ -282,7 +290,7 @@ public class Spoon implements AddUndoPositionInterface
     private MenuItem miEditUndo, miEditRedo;
     
     private Tree selectionTree;
-    private TreeItem  tiTransBase, tiJobBase;
+    // private TreeItem  tiTransBase, tiJobBase;
 
     private Tree coreObjectsTree;    
     
@@ -309,8 +317,8 @@ public class Spoon implements AddUndoPositionInterface
 
     private static final String APPL_TITLE         = APP_NAME;
 
-    private static final String STRING_WELCOME_TAB_NAME = "Welcome!";
-    private static final String FILE_WELCOME_PAGE       = "docs/English/welcome/kettle_document_map.html";
+    private static final String STRING_WELCOME_TAB_NAME = Messages.getString("Spoon.Title.STRING_WELCOME"); 
+    private static final String FILE_WELCOME_PAGE       = Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME");  //"docs/English/welcome/kettle_document_map.html";
     
     public static final int STATE_CORE_OBJECTS_NONE     = 1;   // No core objects
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
@@ -323,8 +331,9 @@ public class Spoon implements AddUndoPositionInterface
 
     private Composite tabComp;
 
-    private SashForm leftSash;
-
+    private ExpandBar leftSash;
+    private ExpandBar expandBar;
+    
     private TransExecutionConfiguration executionConfiguration;
 
     private TreeItem tiTrans, tiJobs;
@@ -340,7 +349,8 @@ public class Spoon implements AddUndoPositionInterface
     private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
     
     private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
-        
+
+    
     public Spoon(LogWriter l, Repository rep)
     {
         this(l, null, null, rep);
@@ -555,7 +565,7 @@ public class Spoon implements AddUndoPositionInterface
         tBar.setLayoutData(fdBar);
 
         sashform = new SashForm(shell, SWT.HORIZONTAL);
-        // props.setLook(sashform);
+        props.setLook(sashform);
         
         FormData fdSash = new FormData();
         fdSash.left = new FormAttachment(0, 0);
@@ -564,8 +574,18 @@ public class Spoon implements AddUndoPositionInterface
         fdSash.right  = new FormAttachment(100, 0);
         sashform.setLayoutData(fdSash);
 
+        // Set the shell size, based upon previous time...
+        WindowProperty winprop = props.getScreen(APPL_TITLE);
+        if (winprop!=null) winprop.setShell(shell); 
+        else 
+        {
+            shell.pack();
+            shell.setMaximized(true); // Default = maximized!
+        }
+
         addMenu();
         addTree();
+        addCoreObjectsExpandBar();
         addTabs();
                 
         // In case someone dares to press the [X] in the corner ;-)
@@ -585,16 +605,7 @@ public class Spoon implements AddUndoPositionInterface
             showWelcomePage();
         }
 
-        shell.layout();
-        
-        // Set the shell size, based upon previous time...
-        WindowProperty winprop = props.getScreen(APPL_TITLE);
-        if (winprop!=null) winprop.setShell(shell); 
-        else 
-        {
-            shell.pack();
-            shell.setMaximized(true); // Default = maximized!
-        }
+        shell.layout();        
     }
 
     public static Spoon getInstance()
@@ -1587,32 +1598,47 @@ public class Spoon implements AddUndoPositionInterface
 
     private void addTree()
     {
-        if (leftSash!=null)
-        {
-            leftSash.dispose();
-        }
+        leftSash = new ExpandBar(sashform, SWT.NONE);
         
-        // Split the left side of the screen in half
-        leftSash = new SashForm(sashform, SWT.VERTICAL);
+        leftSash.addExpandListener(new ExpandAdapter()
+            {
+                public void itemExpanded(ExpandEvent event)
+                {
+                    ExpandItem item = (ExpandItem) event.item;
+                    int idx = leftSash.indexOf(item);
+                    if (idx>=0)
+                    {
+                        for (int i=0;i<leftSash.getItemCount();i++) if (i!=idx) leftSash.getItem(i).setExpanded(false);
+                        Control control = item.getControl();
+                        control.setFocus();
+                    }
+                }
+            }
+        );
+
+        // // Split the left side of the screen in half
+        // leftSash = new SashForm(mainExpandBar, SWT.VERTICAL);
         
         // Now set up the main CSH tree
         selectionTree = new Tree(leftSash, SWT.SINGLE | SWT.BORDER);
         props.setLook(selectionTree);
         selectionTree.setLayout(new FillLayout());
         
+        ExpandItem treeItem = new ExpandItem(leftSash, SWT.NONE);
+        treeItem.setControl(selectionTree);
+        treeItem.setText(STRING_SPOON_MAIN_TREE);
+        treeItem.setImage(GUIResource.getInstance().getImageBol());
+        treeItem.setHeight(shell.getBounds().height);
+        
         // Add a tree memory as well...
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
         
         tiTrans  = new TreeItem(selectionTree, SWT.NONE); tiTrans.setText(STRING_TRANSFORMATIONS);
+        tiTrans.setImage(GUIResource.getInstance().getImageBol());
+
         tiJobs   = new TreeItem(selectionTree, SWT.NONE); tiJobs.setText(STRING_JOBS);
-        
-        // Default selection (double-click, enter)
-        // lsNewDef  = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ newSelected();  } };
-        
-        // Add all the listeners... 
-        // selectionTree.addSelectionListener(lsEditDef); // double click somewhere in the tree...
-        // tCSH.addSelectionListener(lsNewDef); // double click somewhere in the tree...
-        
+        tiJobs.setImage(GUIResource.getInstance().getImageBol());
+
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(); } });
@@ -1622,59 +1648,102 @@ public class Spoon implements AddUndoPositionInterface
         selectionTree.addKeyListener(modKeys);
         
         // Set a listener on the tree
-        addDragSourceToTree(selectionTree);
+        addDragSourceToTree(selectionTree); 
         
-        // OK, now add a list of often-used icons to the bottom of the tree...
-        coreObjectsTree = new Tree(leftSash, SWT.SINGLE );
+        leftSash.addListener(SWT.Resize, new Listener()
+            {
+                public void handleEvent(Event event)
+                {
+                    Rectangle bounds = leftSash.getBounds();
+                    
+                    // Adjust the sizes of the
+                    int header = 0;
+                    ExpandItem[] items = leftSash.getItems();
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        ExpandItem item = items[i];
+                        header+=item.getHeaderHeight();
+                    }
+                    
+                    for (int i = 0; i < items.length; i++)
+                    {
+                        ExpandItem item = items[i];
+                        item.setHeight(bounds.height-header-15);
+                    }
 
-        // Add a tree memory as well...
-        TreeMemory.addTreeListener(coreObjectsTree, STRING_SPOON_CORE_OBJECTS_TREE);
-
-        refreshCoreObjectsTree();
-
-        tiJobBase.setExpanded(true);
-        
-        // Scroll to the top
-        coreObjectsTree.setSelection(tiTransBase);
-        coreObjectsTree.showSelection();
-
-        // Add tooltips for history tree too
-        addToolTipsToTree(coreObjectsTree);
-        
-        // Set the same listener on this tree
-        addDragSourceToTree(coreObjectsTree);
-
-        leftSash.setWeights(new int[] { 50, 50 } );
-        
-        setTreeImages();
+                }
+            }
+        );
     }
     
     private void refreshCoreObjectsTree()
     {
-        clearCoreObjectsTree();
-        addCoreObjectsToTree();
+        refreshCoreObjectsExpandBar();
     }
     
-    private void clearCoreObjectsTree()
+    public void addCoreObjectsExpandBar()
     {
-    	setCoreObjectsState(STATE_CORE_OBJECTS_NONE);
-        TreeItem[] items = coreObjectsTree.getItems();
-        for (int i=0;i<items.length;i++) items[i].dispose();
+        Composite composite = new Composite(leftSash, SWT.NONE);
+        FormLayout formLayout = new FormLayout();
+        composite.setLayout(formLayout);
+        
+        expandBar = new ExpandBar(composite, SWT.V_SCROLL);
+        FormData expandData = new FormData();
+        expandData.left=new FormAttachment(0, 0);
+        expandData.right=new FormAttachment(100, 0);
+        expandData.top=new FormAttachment(0, 0);
+        expandData.bottom=new FormAttachment(100, 0);
+        expandBar.setLayoutData(expandData);
+        
+        // collapse the other expandbar items if one gets expanded...
+        expandBar.addExpandListener(new ExpandAdapter()
+            {
+                public void itemExpanded(ExpandEvent event)
+                {
+                    ExpandItem item = (ExpandItem) event.item;
+                    int idx = expandBar.indexOf(item);
+                    if (idx>=0)
+                    {
+                        for (int i=0;i<expandBar.getItemCount();i++) if (i!=idx) expandBar.getItem(i).setExpanded(false);
+                        ScrolledComposite scrolledComposite = (ScrolledComposite) item.getControl();
+                        Composite composite = (Composite) scrolledComposite.getContent();
+                        composite.setFocus();
+                    }
+                }
+            }
+        );
+        ExpandItem expandItem = new ExpandItem(leftSash, SWT.NONE);
+        expandItem.setText(STRING_SPOON_CORE_OBJECTS_TREE);
+        expandItem.setControl(composite);
+        expandItem.setImage(GUIResource.getInstance().getImageBol());
+        expandItem.setHeight(shell.getBounds().height);
+        
+        refreshCoreObjectsExpandBar();
     }
     
-    private void addCoreObjectsToTree()
+    private boolean previousShowTrans;
+    private boolean previousShowJob;
+     
+    private void refreshCoreObjectsExpandBar()
     {
         boolean showTrans = getActiveTransformation()!=null;
-        boolean showJob   = getActiveJob()!=null;
-        int nrTabs        = tabMap.size();
+        boolean showJob = getActiveJob()!=null;
         
-        if (showTrans || nrTabs==0)
+        if (showTrans==previousShowTrans && showJob==previousShowJob) return;
+        
+        // First remove all the entries that where present...
+        ExpandItem[] expandItems = expandBar.getItems();
+        for (int i = 0; i < expandItems.length; i++)
         {
-            tiTransBase = new TreeItem(coreObjectsTree, SWT.NONE); 
-            tiTransBase.setText(STRING_TRANS_BASE);
-            tiTransBase.setImage(GUIResource.getInstance().getImageBol());
-
+            ExpandItem item = expandItems[i];
+            item.getControl().dispose();
+            item.dispose();
+        }
+        
+        if (showTrans)
+        {
             // Fill the base components...
+            //
             //////////////////////////////////////////////////////////////////////////////////////////////////
             // TRANSFORMATIONS
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1687,51 +1756,74 @@ public class Spoon implements AddUndoPositionInterface
             
             for (int i=0;i<basecat.length;i++)
             {
-                TreeItem tiBaseCat = new TreeItem(tiTransBase, SWT.NONE);
-                tiBaseCat.setText(basecat[i]);
-                tiBaseCat.setImage(GUIResource.getInstance().getImageBol());
+                ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL);
+                scrolledComposite.setLayout(new FillLayout());
+                
+                Composite composite = new Composite(scrolledComposite, SWT.NONE);
+                props.setLook(composite);
+                GridLayout layout = new GridLayout ();
+                layout.marginLeft = 15;
+                layout.verticalSpacing = Const.MARGIN;
+                composite.setLayout(layout);
                 
                 for (int j=0;j<basesteps.length;j++)
                 {
                     if (basesteps[j].getCategory(locale).equalsIgnoreCase(basecat[i]))
                     {
-                        TreeItem treeItem = new TreeItem(tiBaseCat, 0);
-                        treeItem.setText(basesteps[j].getDescription(locale));
-                        if (basesteps[j].isPlugin()) treeItem.setFont(GUIResource.getInstance().getFontBold());
+                        final Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(basesteps[j].getID()[0]);
+                        String pluginName        = basesteps[j].getDescription(locale);
+                        String pluginDescription = basesteps[j].getTooltip(locale);
+                        boolean isPlugin = basesteps[j].isPlugin();
                         
-                        Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(basesteps[j].getID()[0]);
-                        if (stepimg!=null)
-                        {
-                            treeItem.setImage(stepimg);
-                        }
+                        addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, basesteps[j]);
                     }
                 }
+                
+                composite.pack();
+                org.eclipse.swt.graphics.Rectangle bounds = composite.getBounds();
+                
+                scrolledComposite.setMinSize(bounds.width, bounds.height);
+                scrolledComposite.setContent(composite);
+                scrolledComposite.setExpandHorizontal(true);
+                scrolledComposite.setExpandVertical(true);
+                
+                ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+                item.setText(basecat[i]);
+                item.setControl(scrolledComposite);
+                item.setImage(GUIResource.getInstance().getImageArrow());
+                item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
             }
-            setCoreObjectsState(STATE_CORE_OBJECTS_SPOON);
         }
-
-        if (showJob || nrTabs==0)
+        
+        if (showJob)
         {
-            tiJobBase   = new TreeItem(coreObjectsTree, SWT.NONE); 
-            tiJobBase.setText(STRING_JOB_BASE);
-            tiJobBase.setImage(GUIResource.getInstance().getImageBol());
+            ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL);
+            scrolledComposite.setLayout(new FillLayout());
+            
+            Composite composite = new Composite(scrolledComposite, SWT.NONE);
+            props.setLook(composite);
+            GridLayout layout = new GridLayout ();
+            layout.marginLeft = 20;
+            layout.verticalSpacing = Const.MARGIN;
+            composite.setLayout(layout);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
             // JOBS
             //////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
             // First add a few "Special entries: Start, Dummy, OK, ERROR
             //
-            String specialText[] = new String[] { JobMeta.STRING_SPECIAL_START, JobMeta.STRING_SPECIAL_DUMMY };
-            Image  specialImage[]= new Image[] { GUIResource.getInstance().getImageStart(), GUIResource.getInstance().getImageDummy() };
+            JobEntryCopy startEntry = JobMeta.createStartEntry();
+            JobEntryCopy dummyEntry = JobMeta.createDummyEntry();
+            
+            String specialText[] = new String[] { startEntry.getName(), dummyEntry.getName(), };
+            String specialTooltip[] = new String[] { startEntry.getDescription(), dummyEntry.getDescription(),};
+            Image  specialImage[]= new Image[] { GUIResource.getInstance().getImageStartSmall(), GUIResource.getInstance().getImageDummySmall() };
             
             for (int i=0;i<specialText.length;i++)
             {
-                TreeItem treeItem = new TreeItem(tiJobBase, SWT.NONE);
-                treeItem.setText(specialText[i]);
-                treeItem.setImage(specialImage[i]);
+                addExpandBarItemLine(composite, specialImage[i], specialText[i], specialTooltip[i], false, specialText[i]);
             }
-        
             
             JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
             JobPlugin baseEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
@@ -1739,26 +1831,161 @@ public class Spoon implements AddUndoPositionInterface
             {
                 if (!baseEntries[i].getID().equals("SPECIAL"))
                 {
-                    TreeItem tiBaseItem = new TreeItem(tiJobBase, SWT.NONE);
-                    tiBaseItem.setText(baseEntries[i].getDescription());
-                    if (baseEntries[i].isPlugin()) tiBaseItem.setFont(GUIResource.getInstance().getFontBold());
+                    final Image stepimg = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
+                    String pluginName        = baseEntries[i].getDescription();
+                    String pluginDescription = baseEntries[i].getTooltip();
+                    boolean isPlugin = baseEntries[i].isPlugin();
                     
-                    Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-                    tiBaseItem.setImage(image);
-                    
-                    Image jobEntryImg = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(baseEntries[i].getID());
-                    if (jobEntryImg!=null)
-                    {
-                        tiBaseItem.setImage(jobEntryImg);
-                    }
+                    addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, baseEntries[i]);
                 }
             }
-            setCoreObjectsState(STATE_CORE_OBJECTS_CHEF);
+
+            composite.pack();
+            org.eclipse.swt.graphics.Rectangle bounds = composite.getBounds();
+            
+            scrolledComposite.setMinSize(bounds.width, bounds.height);
+            scrolledComposite.setContent(composite);
+            scrolledComposite.setExpandHorizontal(true);
+            scrolledComposite.setExpandVertical(true);
+            
+            ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+            item.setText(Spoon.STRING_JOB_ENTRIES);
+            item.setControl(scrolledComposite);
+            item.setImage(GUIResource.getInstance().getImageArrow());
+            item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+            item.setExpanded(true);
         }
         
-        TreeMemory.setExpandedFromMemory(coreObjectsTree, STRING_SPOON_CORE_OBJECTS_TREE);
+        leftSash.layout(true, true);
+        
+        previousShowTrans = showTrans;
+        previousShowJob =  showJob;
+    }
+    
+    private void addExpandBarItemLine(Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
+    {
+        final Image stepimg;
+        if (image==null)
+        {
+            stepimg=new Image(shell.getDisplay(), Const.ICON_SIZE, Const.ICON_SIZE);
+            composite.addDisposeListener(
+                new DisposeListener()
+                {
+                    public void widgetDisposed(DisposeEvent event) { stepimg.dispose(); } 
+                }
+            );
+        }
+        else
+        {
+            stepimg=image;
+        }
+        
+        // Add a line with the step as a new composite
+        Composite lineComposite = new Composite(composite, SWT.NONE);
+        props.setLook(lineComposite);
+        lineComposite.setLayout(new FormLayout());
+        
+        Canvas canvas = new Canvas(lineComposite, SWT.NO_BACKGROUND);
+        canvas.setToolTipText(pluginDescription);
+        props.setLook(canvas);
+        canvas.addPaintListener(new PaintListener()
+            {
+                public void paintControl(PaintEvent e)
+                {
+                    e.gc.drawImage(stepimg, 0, 0);
+                }
+            }
+        );
+        FormData fdCanvas = new FormData();
+        fdCanvas.left=new FormAttachment(0,0);
+        fdCanvas.right=new FormAttachment(0,stepimg.getBounds().width);
+        fdCanvas.top=new FormAttachment(0,0);
+        fdCanvas.bottom=new FormAttachment(0,stepimg.getBounds().height);
+        canvas.setLayoutData(fdCanvas);
+        
+        Label name = new Label(lineComposite, SWT.LEFT);
+        props.setLook(name);
+        name.setText(pluginName);
+        name.setToolTipText(pluginDescription);
+        if (isPlugin) name.setFont(GUIResource.getInstance().getFontBold());
+        FormData fdName = new FormData();
+        fdName.left=new FormAttachment(canvas,Const.MARGIN);
+        fdName.right=new FormAttachment(100,0);
+        fdName.top=new FormAttachment(canvas, 0, SWT.CENTER);
+        name.setLayoutData(fdName);                        
+
+        /*
+        Label desc = new Label(lineComposite, SWT.LEFT);
+        props.setLook(desc);
+        desc.setText(pluginDescription);
+        desc.setToolTipText(pluginDescription);
+        FormData fdDesc = new FormData();
+        fdDesc.left=new FormAttachment(canvas, Const.MARGIN);
+        fdDesc.right=new FormAttachment(100,0);
+        fdDesc.top=new FormAttachment(name, Const.MARGIN);
+        desc.setLayoutData(fdDesc);  
+        */
+        
+        addDragSourceToLine(canvas, plugin);
+        addDragSourceToLine(name, plugin);
+        // addDragSourceToLine(desc, plugin);
+        
     }
 
+    private void addDragSourceToLine(final Control control, final Object plugin)
+    {
+        // Drag & Drop for steps
+        Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
+        
+        DragSource ddSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_MOVE);
+        ddSource.setTransfer(ttypes);
+        ddSource.addDragListener(new DragSourceListener() 
+            {
+                public void dragStart(DragSourceEvent event){ }
+    
+                public void dragSetData(DragSourceEvent event) 
+                {
+                    int type=0;
+                    String data=null;
+                    
+                    if (plugin instanceof StepPlugin)
+                    {
+                        StepPlugin stepPlugin = (StepPlugin) plugin;
+                        type=DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+                        data = stepPlugin.getDescription(); // Step type description
+                    }
+                    if (plugin instanceof JobPlugin)
+                    {
+                        JobPlugin jobPlugin = (JobPlugin) plugin;
+                        type=DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+                        data = jobPlugin.getDescription(); // Job Entry type description
+                    }
+                    if (plugin instanceof String)
+                    {
+                        type=DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+                        data = (String)plugin; // Job Entry type description
+                    }
+
+                    if (data!=null)
+                    {
+                        event.data = new DragAndDropContainer(type, data);
+                    }
+                    else
+                    {
+                        event.doit=false;
+                    }
+                }
+    
+                public void dragFinished(DragSourceEvent event) {}
+            }
+        );
+
+    }
+
+    
+    
+    
+    
     protected void shareObject(SharedObjectInterface sharedObjectInterface)
     {
         sharedObjectInterface.setShared(true);
@@ -1919,48 +2146,6 @@ public class Spoon implements AddUndoPositionInterface
         return (TreeSelection[]) objects.toArray(new TreeSelection[objects.size()]);
     }
     
-    private void addToolTipsToTree(Tree tree)
-    {
-        tree.addListener(SWT.MouseHover, new Listener()
-            {
-                public void handleEvent(Event e)
-                {
-                    String tooltip=null;
-                    Tree tree = (Tree)e.widget;
-                    TreeItem item = tree.getItem(new org.eclipse.swt.graphics.Point(e.x, e.y));
-                    if (item!=null)
-                    {
-                        String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-                        StepLoader steploader = StepLoader.getInstance();
-                        StepPlugin sp = steploader.findStepPluginWithDescription(item.getText(), locale);
-                        if (sp!=null)
-                        {
-                            tooltip = sp.getTooltip(locale);
-                        }
-                        else
-                        {
-                            JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
-                            JobPlugin jobPlugin = jobEntryLoader.findJobEntriesWithDescription(item.getText());
-                            if (jobPlugin!=null)
-                            {
-                                tooltip = jobPlugin.getTooltip();
-                            }
-                            else
-                            {
-                                if (item.getText().equalsIgnoreCase(STRING_TRANS_BASE))
-                                {
-                                    tooltip=Messages.getString("Spoon.Tooltip.SelectStepType",Const.CR);  //"Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
-                                }
-                            }
-                        }
-                    }
-                    tree.setToolTipText(tooltip);
-                }
-            }
-        );
-    }
-    
-    
     private void addDragSourceToTree(final Tree tree)
     {
         // Drag & Drop for steps
@@ -2086,6 +2271,7 @@ public class Spoon implements AddUndoPositionInterface
                 int current = tabfolder.getSelectionIndex();
                 int desired = tabfolder.indexOf(tabItem); 
                 if (current!=desired) tabfolder.setSelection(desired);
+                transMeta.setInternalKettleVariables();
                 if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
                 {
                 	// Switch the core objects in the lower left corner to the spoon trans types
@@ -2106,6 +2292,7 @@ public class Spoon implements AddUndoPositionInterface
                 int current = tabfolder.getSelectionIndex();
                 int desired = tabfolder.indexOf(tabItem); 
                 if (current!=desired) tabfolder.setSelection(desired);
+                jobMeta.setInternalKettleVariables();
                 if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
                 {
                 	// Switch the core objects in the lower left corner to the spoon job types
@@ -2449,11 +2636,9 @@ public class Spoon implements AddUndoPositionInterface
         
         tabComp = new Composite(sashform, SWT.BORDER );
         props.setLook(tabComp);
-        
-        tabComp.setLayout(new GridLayout());
+        tabComp.setLayout(new FillLayout());
         
         tabfolder= new CTabFolder(tabComp, SWT.BORDER);
-        tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
         
@@ -2492,6 +2677,12 @@ public class Spoon implements AddUndoPositionInterface
                             //
                             if (event.doit && entry.getObject() instanceof SpoonGraph)
                             {
+                               SpoonGraph graph = (SpoonGraph)entry.getObject();
+                               TransMeta meta = graph.getTransMeta();
+                               if ( meta != null )
+                               {
+                            	   meta.setInternalKettleVariables();
+                               }
                                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
                                {
                                    refreshCoreObjectsTree();
@@ -2499,6 +2690,12 @@ public class Spoon implements AddUndoPositionInterface
                             }
                             if (event.doit && entry.getObject() instanceof ChefGraph)
                             {
+                               ChefGraph graph = (ChefGraph)entry.getObject();
+                               JobMeta meta = graph.getJobMeta();
+                               if ( meta != null )
+                               {
+                             	   meta.setInternalKettleVariables();
+                               }
                                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
                                {
                                    refreshCoreObjectsTree();
@@ -2581,133 +2778,6 @@ public class Spoon implements AddUndoPositionInterface
                             }
                         }
                     }
-                }
-            }
-        );
-        
-        // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
-        DropTarget ddTarget = new DropTarget(tabfolder, DND.DROP_MOVE);
-        ddTarget.setTransfer(ttypes);
-        ddTarget.addDropListener(new DropTargetListener()
-            {
-                public void dragEnter(DropTargetEvent event)
-                {
-                }
-    
-                public void dragLeave(DropTargetEvent event)
-                {
-                }
-    
-                public void dragOperationChanged(DropTargetEvent event)
-                {
-                }
-    
-                public void dragOver(DropTargetEvent event)
-                {
-                }
-    
-                public void drop(DropTargetEvent event)
-                {
-                    // no data to copy, indicate failure in event.detail
-                    if (event.data == null)
-                    {
-                        event.detail = DND.DROP_NONE;
-                        return;
-                    }
-    
-                    // What's the real drop position?
-                    Point p = new Point(event.x, event.y);
-                    
-                    // Subtract locations of parents...
-                    Composite follow = tabfolder;
-                    while (follow.getParent()!=null)
-                    {
-                        follow=follow.getParent();
-                        org.eclipse.swt.graphics.Point parentLoc = follow.getLocation();
-                        p.x-=parentLoc.x;
-                        p.y-=parentLoc.y;
-                    }
-                    p.x-=10;
-                    p.y-=75;
-    
-                    // 
-                    // We expect a Drag and Drop container... (encased in XML)
-                    try
-                    {
-                        DragAndDropContainer container = (DragAndDropContainer)event.data;
-                        
-                        switch(container.getType())
-                        {
-                        // Create a new step
-                        // Since we drag onto the tabfolder, there is no graph to accept this
-                        // Therefor we need to create a new transformation.
-                        //
-                        case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
-                            {
-                                // Add the transformation.
-                                // Since there is no transformation or job loaded, it should be safe to do so.
-                                //
-                                TransMeta transMeta = new TransMeta();
-                                try
-                                {
-                                    transMeta.readSharedObjects(rep);
-                                }
-                                catch(KettleException e)
-                                {
-                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTransGraphTabName(transMeta)), e);
-                                }                                
-                                addSpoonGraph(transMeta);
-                                
-                                // Not an existing step: data refers to the type of step to create
-                                String steptype = container.getData();
-                                StepMeta stepMeta = newStep(transMeta, steptype, steptype, false, true);
-                                stepMeta.setLocation(p);
-                                stepMeta.setDraw(true);
-                                
-                                addUndoNew(transMeta, new StepMeta[] { stepMeta }, new int[] { 0 });
-                                
-                                refreshTree();
-                            }
-                            break;
-                            
-                        // Create a new TableInput step using the selected connection...
-                        case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: 
-                            {
-                                // Add the job.
-                                // Since there is no job or job loaded, it should be safe to do so.
-                                //
-                                JobMeta jobMeta = new JobMeta(log);
-                                try
-                                {
-                                    jobMeta.readSharedObjects(rep);
-                                }
-                                catch(KettleException e)
-                                {
-                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
-                                }
-                                addChefGraph(jobMeta);
-                                
-                                // Not an existing entry: data refers to the type of step to create
-                                String steptype = container.getData();
-                                JobEntryCopy jobEntry = newJobEntry(jobMeta, steptype, false);
-                                jobEntry.setLocation(p);
-                                jobEntry.setDrawn(true);
-                                
-                                refreshGraph();
-                                refreshTree();
-                            }
-                            break;
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
-                    }
-                }
-    
-                public void dropAccept(DropTargetEvent event)
-                {
                 }
             }
         );
@@ -3187,43 +3257,92 @@ public class Spoon implements AddUndoPositionInterface
         TransHopDialog hd = new TransHopDialog(shell, SWT.NONE, hi, transMeta);
         if (hd.open()!=null)
         {
-            boolean error=false;
-
-            if (transMeta.findTransHop(hi.getFromStep(), hi.getToStep())!=null)
-            {
-                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("Spoon.Dialog.HopExists.Message"));//"This hop already exists!"
-                mb.setText(Messages.getString("Spoon.Dialog.HopExists.Title"));//Error!
-                mb.open();
-                error=true;
-            }
-            
-            if (transMeta.hasLoop(fr) || transMeta.hasLoop(to))
-            {
-                refreshTree();
-                refreshGraph();
-                
-                MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-                mb.setMessage(Messages.getString("Spoon.Dialog.AddingHopCausesLoop.Message"));//Adding this hop causes a loop in the transformation.  Loops are not allowed!
-                mb.setText(Messages.getString("Spoon.Dialog.AddingHopCausesLoop.Title"));//Warning!
-                mb.open();
-                error=true;
-            }
-            
-            if (!error)
-            {
-                transMeta.addTransHop(hi);
-                addUndoNew(transMeta, new TransHopMeta[] { (TransHopMeta)hi.clone() }, new int[] { transMeta.indexOfTransHop(hi) });
-                hi.getFromStep().drawStep();
-                hi.getToStep().drawStep();
-                refreshTree();
-                refreshGraph();
-                
-                // Check if there are 2 hops coming out of the "From" step.
-                verifyCopyDistribute(transMeta, fr);
-            }
+            newHop(transMeta, hi);
         }
     }
+    
+    public void newHop(TransMeta transMeta, TransHopMeta transHopMeta)
+    {
+        if (checkIfHopAlreadyExists(transMeta, transHopMeta))
+        {
+            transMeta.addTransHop(transHopMeta);
+            int idx = transMeta.indexOfTransHop(transHopMeta);
+            
+            if (!performNewTransHopChecks(transMeta, transHopMeta))
+            {
+                // Some error occurred: loops, existing hop, etc.
+                // Remove it again...
+                //
+                transMeta.removeTransHop(idx);
+            }
+            else
+            {
+                addUndoNew(transMeta, new TransHopMeta[] { transHopMeta }, new int[] { transMeta.indexOfTransHop(transHopMeta) });
+            }
+            
+            // Just to make sure
+            transHopMeta.getFromStep().drawStep();
+            transHopMeta.getToStep().drawStep();
+            
+            refreshTree();
+            refreshGraph();
+        }
+    }
+    
+    /**
+     * @param transMeta
+     * @param newHop
+     * @return true when the hop was added, false if there was an error
+     */
+    public boolean checkIfHopAlreadyExists(TransMeta transMeta, TransHopMeta newHop)
+    {
+        boolean ok = true;
+        if (transMeta.findTransHop(newHop.getFromStep(), newHop.getToStep())!=null)
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage(Messages.getString("Spoon.Dialog.HopExists.Message"));//"This hop already exists!"
+            mb.setText(Messages.getString("Spoon.Dialog.HopExists.Title"));//Error!
+            mb.open();
+            ok=false;
+        }
+        
+        return ok;
+    }
+
+    
+    /**
+     * @param transMeta
+     * @param newHop
+     * @return true when the hop was added, false if there was an error
+     */
+    public boolean performNewTransHopChecks(TransMeta transMeta, TransHopMeta newHop)
+    {
+        boolean ok = true;
+
+        if (transMeta.hasLoop(newHop.getFromStep()) || transMeta.hasLoop(newHop.getToStep()))
+        {
+            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
+            mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
+            mb.open();
+            ok=false;
+        }
+        
+        try
+        {
+            transMeta.checkRowMixingStatically(newHop.getToStep(), null);
+        }
+        catch(KettleRowException re)
+        {
+            // Show warning about mixing rows with conflicting layouts...
+            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Message"), re);
+        }
+        
+        verifyCopyDistribute(transMeta, newHop.getFromStep());
+        
+        return ok;
+    }
+
 
     public void verifyCopyDistribute(TransMeta transMeta, StepMeta fr)
     {
@@ -4038,6 +4157,20 @@ public class Spoon implements AddUndoPositionInterface
                     if (response == SWT.YES)
                     {
                         shell.setCursor(cursor_hourglass);
+						
+						// Keep info on who & when this transformation was created...
+						if (  transMeta.getCreatedUser()==null || transMeta.getCreatedUser().equals("-"))
+						{
+							transMeta.setCreatedDate( new Value("CREATED_DATE", Value.VALUE_TYPE_DATE) );                 
+							transMeta.getCreatedDate().sysdate();
+							transMeta.setCreatedUser( rep.getUserInfo().getLogin() );
+						}
+						else
+						{
+
+							transMeta.setCreatedDate( transMeta.getCreatedDate() );                 
+							transMeta.setCreatedUser( transMeta.getCreatedUser());
+						}
 
                         // Keep info on who & when this transformation was changed...
                         transMeta.setModifiedDate( new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE) );                 
@@ -4735,10 +4868,9 @@ public class Spoon implements AddUndoPositionInterface
         return inf;
     }
 
+    /*
     private void setTreeImages()
     {
-        tiTrans.setImage(GUIResource.getInstance().getImageBol());
-        tiJobs.setImage(GUIResource.getInstance().getImageBol());
 
         TreeItem tiBaseCat[]=tiTransBase.getItems();
         for (int x=0;x<tiBaseCat.length;x++)
@@ -4764,7 +4896,8 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
     }
-
+    */
+    
     public void setShellText()
     {
         if (shell.isDisposed()) return;
@@ -6848,7 +6981,8 @@ public class Spoon implements AddUndoPositionInterface
                                 				{
                                 					TransMeta transMeta = new TransMeta(spoon.rep, optionTransname.toString(), repdir);
                                 					transMeta.setFilename(optionRepname.toString());
-                                					transMeta.clearChanged();   
+                                					transMeta.clearChanged();
+                                					transMeta.setInternalKettleVariables();
                                 					spoon.addSpoonGraph(transMeta);
                                 				}
                                 				else
@@ -6857,6 +6991,7 @@ public class Spoon implements AddUndoPositionInterface
                                 					JobMeta jobMeta = new JobMeta(log, spoon.rep, optionJobname.toString(), repdir);
                                 					jobMeta.setFilename(optionRepname.toString());
                                 					jobMeta.clearChanged();
+                                					jobMeta.setInternalKettleVariables();
                                 					spoon.addChefGraph(jobMeta);
                                         		}
                                 			}
@@ -7115,12 +7250,8 @@ public class Spoon implements AddUndoPositionInterface
             switch(method)
             {
             case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
+            case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:  
             case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
-                // ask for a fieldname
-                EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
-                String fieldName = stringDialog.open();
-                stepPartitioningMeta.setFieldName(fieldName);
-
                 // Ask for a Partitioning Schema
                 String schemaNames[] = transMeta.getPartitionSchemasNames();
                 if (schemaNames.length==0)
@@ -7146,6 +7277,14 @@ public class Spoon implements AddUndoPositionInterface
                         idx = Const.indexOfString(schemaName, schemaNames);
                         stepPartitioningMeta.setPartitionSchema((PartitionSchema) transMeta.getPartitionSchemas().get(idx));
                     }
+                }
+                
+                if (method==StepPartitioningMeta.PARTITIONING_METHOD_MOD)
+                {
+                    // ask for a fieldname
+                    EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
+                    String fieldName = stringDialog.open();
+                    stepPartitioningMeta.setFieldName(fieldName);
                 }
                 break;
             }
@@ -8229,7 +8368,23 @@ public class Spoon implements AddUndoPositionInterface
                     
                     if (response == SWT.YES)
                     {
-                        // Keep info on who & when this transformation was changed...
+
+						// Keep info on who & when this job was created...
+						if (  jobMeta.getCreatedUser()==null || jobMeta.getCreatedUser().equals("-"))
+						{
+							jobMeta.setCreatedDate( new Value("CREATED_DATE", Value.VALUE_TYPE_DATE) );                 
+							jobMeta.getCreatedDate().sysdate();
+							jobMeta.setCreatedUser( rep.getUserInfo().getLogin() );
+						}
+						else
+						{
+
+							jobMeta.setCreatedDate( jobMeta.getCreatedDate() );                 
+							jobMeta.setCreatedUser( jobMeta.getCreatedUser());
+						}
+
+
+                        // Keep info on who & when this job was changed...
                         jobMeta.modifiedDate = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE);                //$NON-NLS-1$
                         jobMeta.modifiedDate.sysdate();
                         jobMeta.modifiedUser = rep.getUserInfo().getLogin();
@@ -8942,4 +9097,3 @@ public class Spoon implements AddUndoPositionInterface
     	return coreObjectsState;
     }
 }
-

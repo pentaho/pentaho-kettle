@@ -350,15 +350,12 @@ public class TransPainter
         {
             partitioned=true;
             String message = "P";
-            if ( !Const.isEmpty(meta.getFieldName()) )
+            PartitionSchema schema = meta.getPartitionSchema();
+            if (schema!=null)
             {
-                PartitionSchema schema = meta.getPartitionSchema();
-                if (schema!=null)
+                if (schema.getPartitionIDs()!=null && schema.getPartitionIDs().length>0)
                 {
-                    if (schema.getPartitionIDs()!=null && schema.getPartitionIDs().length>0)
-                    {
-                        message+="x"+schema.getPartitionIDs().length;
-                    }
+                    message+="x"+schema.getPartitionIDs().length;
                 }
             }
             
@@ -439,36 +436,42 @@ public class TransPainter
                     linestyle = SWT.LINE_DOT;
                     activeLinewidth = linewidth+2;
                 }
-                else if (targetSteps == null) // Normal link: distribute or copy data...
-                {
-                    // Or perhaps it's an informational link: draw different
-                    // color...
-                    if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
-                    {
-                        if (fs.isDistributes())
-                            col = yellow;
-                        else
-                            col = magenta;
-                    }
-                    else
-                    {
-                        if (fs.isDistributes())
-                            col = green;
-                        else
-                            col = red;
-                    }
-                }
                 else
                 {
-                    // Visual check to see if the target step is specified...
-                    if (Const.indexOfString(ts.getName(), fsii.getTargetSteps()) >= 0)
+                    if (targetSteps == null) // Normal link: distribute or copy data...
                     {
-                        col = black;
+                        boolean distributes = fs.isDistributes();
+                        if (ts.getStepPartitioningMeta().isMethodMirror()) distributes=false;
+                        
+                        // Or perhaps it's an informational link: draw different
+                        // color...
+                        if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
+                        {
+                            if (distributes)
+                                col = yellow;
+                            else
+                                col = magenta;
+                        }
+                        else
+                        {
+                            if (distributes)
+                                col = green;
+                            else
+                                col = red;
+                        }
                     }
                     else
                     {
-                        linestyle = SWT.LINE_DOT;
-                        col = orange;
+                        // Visual check to see if the target step is specified...
+                        if (Const.indexOfString(ts.getName(), fsii.getTargetSteps()) >= 0)
+                        {
+                            col = black;
+                        }
+                        else
+                        {
+                            linestyle = SWT.LINE_DOT;
+                            col = orange;
+                        }
                     }
                 }
             }

@@ -26,6 +26,7 @@ public class RepositoryObject
     private String modifiedUser;
     private Date   modifiedDate;
     private String objectType; 
+    private String description;
     
     public RepositoryObject()
     {
@@ -36,13 +37,14 @@ public class RepositoryObject
      * @param modifiedUser
      * @param modifiedDate
      */
-    public RepositoryObject(String name, String modifiedUser, Date modifiedDate, String objectType)
+    public RepositoryObject(String name, String modifiedUser, Date modifiedDate, String objectType, String description)
     {
         this();
         this.name = name;
         this.modifiedUser = modifiedUser;
         this.modifiedDate = modifiedDate;
         this.objectType = objectType;
+        this.description = description;
     }
 
     /**
@@ -100,6 +102,7 @@ public class RepositoryObject
         treeItem.setText(1, Const.NVL(objectType, ""));
         treeItem.setText(2, Const.NVL(modifiedUser, ""));
         treeItem.setText(3, modifiedDate!=null ? simpleDateFormat.format(modifiedDate) : "");
+        treeItem.setText(4, Const.NVL(description, ""));
     }
     
     public static final int compareStrings(String one, String two)
@@ -135,6 +138,7 @@ public class RepositoryObject
                     case 1: result=compareStrings(r1.getObjectType(), r2.getObjectType()); break;
                     case 2: result=compareStrings(r1.getModifiedUser(), r2.getModifiedUser()); break;
                     case 3: result=compareDates(r1.getModifiedDate(), r2.getModifiedDate()); break; 
+                    case 4: result=compareStrings(r1.getDescription(), r2.getDescription()); break; 
                     }
                     
                     if (!ascending) result*=-1;
@@ -159,6 +163,22 @@ public class RepositoryObject
     public void setObjectType(String objectType)
     {
         this.objectType = objectType;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
     
 }

@@ -47,6 +47,7 @@ import be.ibridge.kettle.trans.step.StepInitThread;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaDataCombi;
+import be.ibridge.kettle.trans.step.StepPartitioningMeta;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 import be.ibridge.kettle.www.AddTransServlet;
@@ -494,48 +495,60 @@ public class Trans
             BaseStep baseStep = (BaseStep)sid.step;
 
             baseStep.setPartitioned(stepMeta.isPartitioned());
-            PartitionSchema thisSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+            StepPartitioningMeta thisPartitioningMeta = stepMeta.getStepPartitioningMeta(); 
+            PartitionSchema thisSchema = thisPartitioningMeta.getPartitionSchema();
             String thisFieldName = stepMeta.getStepPartitioningMeta().getFieldName();
 
             // Now let's take a look at the source and target relation
             //
             // If this source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
-            // If both steps are partitioned on the same schema, we don't need to re-partition
-            // If both steps are partitioned on a different schema, we need to re-partition as well.
+            // If both steps are partitioned on the same method and schema, we don't need to re-partition
+            // If both steps are partitioned on a different method or schema, we need to re-partition as well.
             // If both steps are not partitioned, we don't need to re-partition
             //
-            boolean nextPartitioned = true;
+            int nextPartitioned = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
             boolean samePartitioned = thisSchema!=null;
             boolean sameFieldName   = thisFieldName!=null;
             int nrNext = transMeta.findNrNextSteps(stepMeta);
             for (int p=0;p<nrNext;p++)
             {
                 StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
-                if (!nextStep.isPartitioned()) 
+                StepPartitioningMeta nextPartitioningMeta = nextStep.getStepPartitioningMeta();
+                if (nextStep.isPartitioned()) 
                 {
-                    nextPartitioned = false;
+                    nextPartitioned = nextStep.getStepPartitioningMeta().getMethod();
                 }
                 else
                 {
+                    // This step is partitioned for a certain schema
+                    // The next one is using a different one.
                     if (thisSchema!=null && !thisSchema.equals( nextStep.getStepPartitioningMeta().getPartitionSchema() ) )
                     {
                         samePartitioned = false;
                     }
+                    // This partitioning is done on a certain field (MOD).
+                    // The next one is using a different one. (or none)
                     if (thisFieldName !=null && !thisFieldName.equalsIgnoreCase( nextStep.getStepPartitioningMeta().getFieldName() ) )
                     {
                         sameFieldName = false;
                     }
+                    // The partitioning method is different...
+                    //
+                    if (thisPartitioningMeta!=null && nextPartitioningMeta!=null && thisPartitioningMeta.getMethod()!=nextPartitioningMeta.getMethod())
+                    {
+                        samePartitioned = false;
+                    }
                 }
             }
             
-            baseStep.setRepartitioning(false);
+            baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
             
-            if ( ( !stepMeta.isPartitioned() &&  nextPartitioned ) || // This one is not partitioned & the next one is
-                 ( stepMeta.isPartitioned() && nextPartitioned && !samePartitioned) || // both partitioned, other schema
-                 ( stepMeta.isPartitioned() && nextPartitioned && !sameFieldName)  // both partitioned, other field partitioned on
+            if ( ( !stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE ) || // This one is not partitioned & the next one is
+                 ( stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && !samePartitioned) || // both partitioned, other schema
+                 ( stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && !sameFieldName)  // both partitioned, other field partitioned on
                )
             {
-                baseStep.setRepartitioning(true); // in those cases we need to re-partition.
+                baseStep.setRepartitioning(nextPartitioned); // in those cases we need to re-partition.
             }
 
             // If the previous step is partitioned and this step is not we have to do a sorted merge
@@ -1358,6 +1371,20 @@ public class Trans
 		}
 		return null;
 	}
+    
+    public StepDataInterface findDataInterface(String name)
+    {
+        if (steps==null) return null;
+
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            BaseStep rt = (BaseStep)sid.step;
+            if (rt.getStepname().equalsIgnoreCase(name)) return sid.data;
+        }
+        return null;
+    }
+
 
 	/**
 	 * @return Returns the startDate.
