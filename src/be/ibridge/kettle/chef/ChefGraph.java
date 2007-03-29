@@ -769,6 +769,16 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
     {
         canvas.redraw();
     }
+    
+    public boolean forceFocus()
+    {
+        return canvas.forceFocus();
+    }
+    
+    public boolean setFocus()
+    {
+        return canvas.setFocus();
+    }
 	
     public void renameJobEntry()
     {
@@ -1670,7 +1680,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
         
 		Image img = new Image(disp, area.x, area.y);
 		GC gc = new GC(img);
-		drawJob(gc);
+		drawJob(gc, true);
 		e.gc.drawImage(img, 0, 0);
 		gc.dispose();
 		img.dispose();
@@ -1678,7 +1688,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 		// spoon.setShellText();
 	}
     
-	public void drawJob(GC gc) 
+	public void drawJob(GC gc, boolean branded) 
 	{
         if (spoon.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
         
@@ -1694,6 +1704,16 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 		hori.setThumb(thumb.x);
 		vert.setThumb(thumb.y);
 
+        if (branded)
+        {
+            Image gradient= GUIResource.getInstance().getImageBanner();
+            gc.drawImage(gradient, 0, 0);
+
+            Image logo = GUIResource.getInstance().getImageKettleLogo();
+            org.eclipse.swt.graphics.Rectangle logoBounds = logo.getBounds();
+            gc.drawImage(logo, 20, area.y-logoBounds.height);
+        }
+        
 		// First draw the notes...
         gc.setFont(GUIResource.getInstance().getFontNote());
 
@@ -1951,7 +1971,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 
 	private Point getArea() 
 	{
-        org.eclipse.swt.graphics.Rectangle rect = getClientArea();
+        org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
 		Point area = new Point(rect.width, rect.height);
 
 		return area;

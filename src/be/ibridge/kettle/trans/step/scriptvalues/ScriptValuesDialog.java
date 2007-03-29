@@ -626,7 +626,6 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 							{
 								String varname = (String)id[i];
 								if (!varname.equalsIgnoreCase("row") && //$NON-NLS-1$
-									!varname.equalsIgnoreCase("_step_") && //$NON-NLS-1$
 								    row.searchValueIndex(varname)<0
 								    )
 								{

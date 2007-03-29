@@ -331,8 +331,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 									res.setValue( ((Integer)result).longValue() );
 								}else if (classType.equalsIgnoreCase("java.lang.Long")){
 									res.setValue( ((Long)result).longValue() );
-								}else if (classType.equalsIgnoreCase("java.lang.String")){
-									res.setValue( (new Long((String)result)).longValue() );									
 								}else if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")){
 									res.setNull();
 								}else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")){
@@ -340,7 +338,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 									Value v = (Value)Context.toType(result, Value.class);
 									res.setValue( v.getInteger() );
 								}else{
-									res.setValue( (long)((Long)result).longValue()); 
+									res.setValue( Math.round( ((Double)result).doubleValue() ) ); 
 								}
 								break;
 							case Value.VALUE_TYPE_STRING:  

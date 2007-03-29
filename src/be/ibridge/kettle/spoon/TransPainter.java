@@ -99,8 +99,13 @@ public class TransPainter
         iconsize = props.getIconSize(); 
         linewidth = props.getLineWidth();
     }
-    
+
     public Image getTransformationImage(Device device)
+    {
+        return getTransformationImage(device, false);
+    }
+    
+    public Image getTransformationImage(Device device, boolean branded)
     {
         Image img = new Image(device, area.x, area.y);
         GC gc = new GC(img);
@@ -108,6 +113,16 @@ public class TransPainter
         // First clear the image in the background color
         gc.setBackground(background);
         gc.fillRectangle(0, 0, area.x, area.y);
+        
+        if (branded)
+        {
+            Image gradient= GUIResource.getInstance().getImageBanner();
+            gc.drawImage(gradient, 0, 0);
+
+            Image logo = GUIResource.getInstance().getImageKettleLogo();
+            org.eclipse.swt.graphics.Rectangle logoBounds = logo.getBounds();
+            gc.drawImage(logo, 20, area.y-logoBounds.height);
+        }
         
         // Draw the transformation onto the image
         drawTrans(gc);

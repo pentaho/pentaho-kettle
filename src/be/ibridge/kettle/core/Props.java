@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -1210,9 +1211,17 @@ public class Props implements Cloneable
         case WIDGET_STYLE_TAB     : 
             background = gui.getColorBackground(); 
             // font       = gui.getFontDefault();
-            ((CTabFolder)control).setSimple(false);
-            ((CTabFolder)control).setBorderVisible(false);
-            ((CTabFolder)control).setSelectionBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+            CTabFolder tabFolder = (CTabFolder)control; 
+            tabFolder.setSimple(false);
+            tabFolder.setBorderVisible(false);
+
+            // Set a small vertical gradient
+            tabFolder.setSelectionBackground(new Color[] {
+                    display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW),
+                    display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW),
+                    }, 
+                    new int[] { 55, },
+                    true);
             break;
         default                   : 
             background = gui.getColorBackground(); 
@@ -1315,22 +1324,35 @@ public class Props implements Cloneable
         return pluginHistory;
     }
 
+    public int increasePluginHistory(String pluginID)
+    {
+        for (int i=0;i<pluginHistory.size();i++)
+        {
+            ObjectUsageCount usage = (ObjectUsageCount)pluginHistory.get(i);
+            if (usage.getObjectName().equalsIgnoreCase(pluginID))
+            {
+                int uses = usage.increment();
+                Collections.sort(pluginHistory);
+                savePluginHistory();
+                return uses;
+            }
+        }
+        addPluginHistory(pluginID, 1);
+        Collections.sort(pluginHistory);
+        savePluginHistory();
+        
+        return 1;
+    }
+    
+    /*
     /**
      * Set the last plugin used in the plugin history
      * @param pluginID The last plugin ID
      */
-    public void addPluginHistory(String pluginID)
+    public void addPluginHistory(String pluginID, int uses)
     {
         // Add at the front
-        pluginHistory.add(0, pluginID);
-        
-        // Remove in the rest of the list
-        for (int i=pluginHistory.size()-1;i>0;i--)
-        {
-            String id = (String)pluginHistory.get(i);
-            if (id.equalsIgnoreCase(pluginID)) pluginHistory.remove(i); 
-        }
-        savePluginHistory();
+        pluginHistory.add(new ObjectUsageCount(pluginID, uses));
     }
 
     /**
@@ -1341,21 +1363,23 @@ public class Props implements Cloneable
     {
         pluginHistory = new ArrayList();
         int i=0;
-        String pluginID = properties.getProperty(STRING_PLUGIN_HISTORY+"_"+i);
-        while (pluginID!=null)
+        String string = properties.getProperty(STRING_PLUGIN_HISTORY+"_"+i);
+        while (string!=null)
         {
-            pluginHistory.add(pluginID);
+            pluginHistory.add(ObjectUsageCount.fromString(string));
             i++;
-            pluginID = properties.getProperty(STRING_PLUGIN_HISTORY+"_"+i);
+            string = properties.getProperty(STRING_PLUGIN_HISTORY+"_"+i);
         }
+        
+        Collections.sort(pluginHistory);
     }
     
     private void savePluginHistory()
     {
         for (int i=0;i<pluginHistory.size();i++)
         {
-            String id = (String) pluginHistory.get(i);
-            properties.setProperty(STRING_PLUGIN_HISTORY+"_"+i, id);
+            ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
+            properties.setProperty(STRING_PLUGIN_HISTORY+"_"+i, usage.toString());
         }
     }
 

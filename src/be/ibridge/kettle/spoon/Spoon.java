@@ -75,6 +75,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Canvas;
@@ -116,6 +117,7 @@ import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LastUsedFile;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
+import be.ibridge.kettle.core.ObjectUsageCount;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.PrintSpool;
 import be.ibridge.kettle.core.Props;
@@ -237,7 +239,7 @@ public class Spoon implements AddUndoPositionInterface
     private static Spoon staticSpoon;
     
     private LogWriter log;
-    private Display disp;
+    private Display display;
     private Shell shell;
     private boolean destroy;
     
@@ -331,7 +333,7 @@ public class Spoon implements AddUndoPositionInterface
 
     private Composite tabComp;
 
-    private ExpandBar leftSash;
+    private ExpandBar mainExpandBar;
     private ExpandBar expandBar;
     
     private TransExecutionConfiguration executionConfiguration;
@@ -349,7 +351,6 @@ public class Spoon implements AddUndoPositionInterface
     private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
     
     private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
-
     
     public Spoon(LogWriter l, Repository rep)
     {
@@ -368,15 +369,15 @@ public class Spoon implements AddUndoPositionInterface
         
         if (d!=null) 
         {
-            disp=d;
+            display=d;
             destroy=false;
         } 
         else 
         {
-            disp=new Display();
+            display=new Display();
             destroy=true;
         } 
-        shell=new Shell(disp);
+        shell=new Shell(display);
         shell.setText(APPL_TITLE);
         FormLayout layout = new FormLayout();
         layout.marginWidth = 0;
@@ -397,7 +398,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             //log.logDetailed(toString(), "Load properties for Spoon...");
             log.logDetailed(toString(),Messages.getString("Spoon.Log.LoadProperties"));
-            Props.init(disp, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
+            Props.init(display, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
         }
         props=Props.getInstance();
         
@@ -415,8 +416,8 @@ public class Spoon implements AddUndoPositionInterface
         
         shell.setImage(GUIResource.getInstance().getImageSpoon());
         
-        cursor_hourglass = new Cursor(disp, SWT.CURSOR_WAIT);
-        cursor_hand      = new Cursor(disp, SWT.CURSOR_HAND);
+        cursor_hourglass = new Cursor(display, SWT.CURSOR_WAIT);
+        cursor_hand      = new Cursor(display, SWT.CURSOR_HAND);
         
         // widgets = new WidgetContainer();
         
@@ -598,6 +599,9 @@ public class Spoon implements AddUndoPositionInterface
                 } 
             } 
         );
+        
+        shell.addKeyListener(defKeys);
+        shell.addKeyListener(modKeys);
         
         // Add a browser widget
         if (props.showWelcomePageOnStartup())
@@ -946,7 +950,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public boolean readAndDispatch ()
     {
-        return disp.readAndDispatch();
+        return display.readAndDispatch();
     }
     
     /**
@@ -1003,17 +1007,17 @@ public class Spoon implements AddUndoPositionInterface
         cursor_hand.dispose();
         cursor_hourglass.dispose();
         
-        if (destroy && !disp.isDisposed()) disp.dispose();        
+        if (destroy && !display.isDisposed()) display.dispose();        
     }
 
     public boolean isDisposed()
     {
-        return disp.isDisposed();
+        return display.isDisposed();
     }
 
     public void sleep()
     {
-        disp.sleep();
+        display.sleep();
     }
     
     public void addMenu()
@@ -1446,7 +1450,7 @@ public class Spoon implements AddUndoPositionInterface
                         // Ask for a username password to get the required repository access
                         //
                         int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-                        RepositoriesDialog rd = new RepositoriesDialog(disp, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
+                        RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
                         rd.setRepositoryName(lastUsedFile.getRepositoryName());
                         if (rd.open())
                         {
@@ -1497,82 +1501,82 @@ public class Spoon implements AddUndoPositionInterface
         // props.setLook(tBar);
         
         final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileNew = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
+        final Image imFileNew = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
         tiFileNew.setImage(imFileNew);
         tiFileNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newFile(); }});
         tiFileNew.setToolTipText(Messages.getString("Spoon.Tooltip.NewTranformation"));//New transformation, clear all settings
 
         final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileOpen = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 
+        final Image imFileOpen = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 
         tiFileOpen.setImage(imFileOpen);
         tiFileOpen.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openFile(false); }});
         tiFileOpen.setToolTipText(Messages.getString("Spoon.Tooltip.OpenTranformation"));//Open tranformation
 
         tiFileSave = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
+        final Image imFileSave = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
         tiFileSave.setImage(imFileSave);
         tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(); }});
         tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save current transformation
 
         tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
+        final Image imFileSaveAs = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
         tiFileSaveAs.setImage(imFileSaveAs);
         tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(); }});
         tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save transformation with different name
 
         new ToolItem(tBar, SWT.SEPARATOR);
         tiFilePrint = new ToolItem(tBar, SWT.PUSH);
-        final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
+        final Image imFilePrint = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
         tiFilePrint.setImage(imFilePrint);
         tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
         tiFilePrint.setToolTipText(Messages.getString("Spoon.Tooltip.Print"));//Print
 
         new ToolItem(tBar, SWT.SEPARATOR);
         tiFileRun = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
+        final Image imFileRun = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
         tiFileRun.setImage(imFileRun);
         tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, false, null); }});
         tiFileRun.setToolTipText(Messages.getString("Spoon.Tooltip.RunTranformation"));//Run this transformation
 
         tiFilePreview = new ToolItem(tBar, SWT.PUSH);
-        final Image imFilePreview = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
+        final Image imFilePreview = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
         tiFilePreview.setImage(imFilePreview);
         tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
         tiFilePreview.setToolTipText(Messages.getString("Spoon.Tooltip.PreviewTranformation"));//Preview this transformation
 
         tiFileReplay = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileReplay = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
+        final Image imFileReplay = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
         tiFileReplay.setImage(imFileReplay);
         tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
         tiFileReplay.setToolTipText("Replay this transformation");
 
         new ToolItem(tBar, SWT.SEPARATOR);
         tiFileCheck = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileCheck = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png")); 
+        final Image imFileCheck = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png")); 
         tiFileCheck.setImage(imFileCheck);
         tiFileCheck.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { checkTrans(getActiveTransformation()); }});
         tiFileCheck.setToolTipText(Messages.getString("Spoon.Tooltip.VerifyTranformation"));//Verify this transformation
 
         new ToolItem(tBar, SWT.SEPARATOR);
         tiImpact = new ToolItem(tBar, SWT.PUSH);
-        final Image imImpact = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"impact.png")); 
+        final Image imImpact = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"impact.png")); 
         // Can't seem to get the transparency correct for this image!
         ImageData idImpact = imImpact.getImageData();
         int impactPixel = idImpact.palette.getPixel(new RGB(255, 255, 255));
         idImpact.transparentPixel = impactPixel;
-        Image imImpact2 = new Image(disp, idImpact);
+        Image imImpact2 = new Image(display, idImpact);
         tiImpact.setImage(imImpact2);
         tiImpact.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { analyseImpact(getActiveTransformation()); }});
         tiImpact.setToolTipText(Messages.getString("Spoon.Tooltip.AnalyzeTranformation"));//Analyze the impact of this transformation on the database(s)
 
         new ToolItem(tBar, SWT.SEPARATOR);
         tiSQL = new ToolItem(tBar, SWT.PUSH);
-        final Image imSQL = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
+        final Image imSQL = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
         // Can't seem to get the transparency correct for this image!
         ImageData idSQL = imSQL.getImageData();
         int sqlPixel= idSQL.palette.getPixel(new RGB(255, 255, 255));
         idSQL.transparentPixel = sqlPixel;
-        Image imSQL2= new Image(disp, idSQL);
+        Image imSQL2= new Image(display, idSQL);
         tiSQL.setImage(imSQL2);
         tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL();  }});
         tiSQL.setToolTipText(Messages.getString("Spoon.Tooltip.GenerateSQLForTranformation"));//Generate the SQL needed to run this transformation
@@ -1598,37 +1602,47 @@ public class Spoon implements AddUndoPositionInterface
 
     private void addTree()
     {
-        leftSash = new ExpandBar(sashform, SWT.NONE);
+        Composite composite = new Composite(sashform, SWT.NONE);
+        props.setLook(composite);
         
-        leftSash.addExpandListener(new ExpandAdapter()
+        FillLayout fillLayout = new FillLayout();
+        fillLayout.spacing = Const.MARGIN;
+        fillLayout.marginHeight= Const.MARGIN;
+        fillLayout.marginWidth= Const.MARGIN;
+        composite.setLayout(fillLayout);
+        
+        mainExpandBar = new ExpandBar(composite, SWT.NO_BACKGROUND);
+        mainExpandBar.setSpacing(0);
+
+        mainExpandBar.addExpandListener(new ExpandAdapter()
             {
                 public void itemExpanded(ExpandEvent event)
                 {
                     ExpandItem item = (ExpandItem) event.item;
-                    int idx = leftSash.indexOf(item);
+                    int idx = mainExpandBar.indexOf(item);
                     if (idx>=0)
                     {
-                        for (int i=0;i<leftSash.getItemCount();i++) if (i!=idx) leftSash.getItem(i).setExpanded(false);
+                        for (int i=0;i<mainExpandBar.getItemCount();i++) if (i!=idx) mainExpandBar.getItem(i).setExpanded(false);
                         Control control = item.getControl();
                         control.setFocus();
                     }
                 }
             }
         );
+        mainExpandBar.setBackground(GUIResource.getInstance().getColorBackground());
 
         // // Split the left side of the screen in half
         // leftSash = new SashForm(mainExpandBar, SWT.VERTICAL);
         
         // Now set up the main CSH tree
-        selectionTree = new Tree(leftSash, SWT.SINGLE | SWT.BORDER);
+        selectionTree = new Tree(mainExpandBar, SWT.SINGLE | SWT.BORDER);
         props.setLook(selectionTree);
         selectionTree.setLayout(new FillLayout());
         
-        ExpandItem treeItem = new ExpandItem(leftSash, SWT.NONE);
+        ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
         treeItem.setControl(selectionTree);
-        treeItem.setText(STRING_SPOON_MAIN_TREE);
-        treeItem.setImage(GUIResource.getInstance().getImageBol());
         treeItem.setHeight(shell.getBounds().height);
+        setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE);
         
         // Add a tree memory as well...
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
@@ -1647,47 +1661,77 @@ public class Spoon implements AddUndoPositionInterface
         selectionTree.addKeyListener(defKeys);
         selectionTree.addKeyListener(modKeys);
         
+        mainExpandBar.addKeyListener(defKeys);
+        mainExpandBar.addKeyListener(modKeys);
+
         // Set a listener on the tree
         addDragSourceToTree(selectionTree); 
         
-        leftSash.addListener(SWT.Resize, new Listener()
+        mainExpandBar.addListener(SWT.Resize, new Listener()
             {
                 public void handleEvent(Event event)
                 {
-                    Rectangle bounds = leftSash.getBounds();
-                    
-                    // Adjust the sizes of the
-                    int header = 0;
-                    ExpandItem[] items = leftSash.getItems();
-                    for (int i = 0; i < items.length; i++)
-                    {
-                        ExpandItem item = items[i];
-                        header+=item.getHeaderHeight();
-                    }
-                    
-                    for (int i = 0; i < items.length; i++)
-                    {
-                        ExpandItem item = items[i];
-                        item.setHeight(bounds.height-header-15);
-                    }
-
+                    resizeExpandBar(mainExpandBar);
                 }
             }
         );
     }
-    
-    private void refreshCoreObjectsTree()
+        
+    protected void resizeExpandBar(ExpandBar bar)
     {
-        refreshCoreObjectsExpandBar();
+        Rectangle bounds = bar.getBounds();
+        
+        // Adjust the sizes of the
+        int header = 0;
+        ExpandItem[] items = bar.getItems();
+        for (int i = 0; i < items.length; i++)
+        {
+            ExpandItem item = items[i];
+            header+=item.getHeaderHeight();
+        }
+        
+        for (int i = 0; i < items.length; i++)
+        {
+            ExpandItem item = items[i];
+            item.setHeight(bounds.height-header-15);
+        }
     }
-    
+
+    private void drawPentahoGradient(GC gc, Rectangle rect, boolean vertical)
+    {
+        if (!vertical)
+        {
+            gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            gc.setBackground(GUIResource.getInstance().getColorPentaho());
+            gc.fillGradientRectangle(rect.x, rect.y, 2*rect.width/3, rect.height, vertical);
+            gc.setForeground(GUIResource.getInstance().getColorPentaho());
+            gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            gc.fillGradientRectangle(rect.x+2*rect.width/3, rect.y, rect.width/3+1, rect.height, vertical);
+        }
+        else
+        {
+            gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            gc.setBackground(GUIResource.getInstance().getColorPentaho());
+            gc.fillGradientRectangle(rect.x, rect.y, rect.width, 2*rect.height/3, vertical);
+            gc.setForeground(GUIResource.getInstance().getColorPentaho());
+            gc.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            gc.fillGradientRectangle(rect.x, rect.y+2*rect.height/3, rect.width, rect.height/3+1, vertical);
+        }
+    }
+
     public void addCoreObjectsExpandBar()
     {
-        Composite composite = new Composite(leftSash, SWT.NONE);
+        Composite composite = new Composite(mainExpandBar, SWT.BORDER);
         FormLayout formLayout = new FormLayout();
+        formLayout.marginLeft=20;
+        formLayout.marginTop=Const.MARGIN;
+        formLayout.marginBottom=Const.MARGIN;
         composite.setLayout(formLayout);
         
         expandBar = new ExpandBar(composite, SWT.V_SCROLL);
+        expandBar.setBackground(GUIResource.getInstance().getColorBackground());
+        expandBar.setSpacing(0);
+        
         FormData expandData = new FormData();
         expandData.left=new FormAttachment(0, 0);
         expandData.right=new FormAttachment(100, 0);
@@ -1712,24 +1756,130 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
         );
-        ExpandItem expandItem = new ExpandItem(leftSash, SWT.NONE);
-        expandItem.setText(STRING_SPOON_CORE_OBJECTS_TREE);
-        expandItem.setControl(composite);
-        expandItem.setImage(GUIResource.getInstance().getImageBol());
-        expandItem.setHeight(shell.getBounds().height);
+        expandBar.addListener(SWT.Resize, new Listener()
+            {
+                public void handleEvent(Event event)
+                {
+                    resizeExpandBar(expandBar);
+                }
+            }
+        );
         
-        refreshCoreObjectsExpandBar();
+        
+        ExpandItem expandItem = new ExpandItem(mainExpandBar, SWT.NONE);
+        expandItem.setControl(composite);
+        expandItem.setHeight(shell.getBounds().height);
+        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE);
+        
+        refreshCoreObjects();
+    }
+    
+    private void setHeaderImage(ExpandItem expandItem, Image icon, String string)
+    {
+        // Draw just an image with text and all...
+        Image img = new Image(display, 1, 1);
+        GC tmpGC = new GC(img);
+        org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
+        tmpGC.dispose();
+        img.dispose();
+        
+        Rectangle rect = new Rectangle(0, 0, point.x + 100, point.y+11);
+        Rectangle iconBounds = icon.getBounds();
+        
+        final Image image = new Image(display, rect.width, rect.height);
+        GC gc = new GC(image);
+        drawPentahoGradient(gc, rect, false);
+        gc.drawImage(icon, 0, 2);
+        gc.setForeground(GUIResource.getInstance().getColorBlack());
+        gc.setFont(GUIResource.getInstance().getFontBold());
+        gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
+        expandItem.setImage(image);
+        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
+    }
+
+    private void refreshCoreObjectsHistory()
+    {
+        boolean showTrans = getActiveTransformation()!=null;
+        if (showTrans)
+        {
+            // create the history expand-item.
+            ScrolledComposite scrolledHistoryComposite = new ScrolledComposite(mainExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+    
+            scrolledHistoryComposite.setLayout(new FillLayout());
+            
+            Composite historyComposite = new Composite(scrolledHistoryComposite, SWT.NONE);
+            props.setLook(historyComposite);
+            GridLayout layout = new GridLayout ();
+            layout.marginLeft = 15;
+            layout.verticalSpacing = Const.MARGIN;
+            historyComposite.setLayout(layout);
+            
+            List pluginHistory = props.getPluginHistory();
+            String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+            
+            for (int i=0;i<pluginHistory.size();i++)
+            {
+                ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
+                
+                StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
+                if (stepPlugin!=null)
+                {
+                    final Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(stepPlugin.getID()[0]);
+                    String pluginName   = stepPlugin.getDescription(locale)+" ("+usage.getNrUses()+")";
+                    String pluginDescription = stepPlugin.getTooltip(locale);
+                    boolean isPlugin = stepPlugin.isPlugin();
+                    
+                    addExpandBarItemLine(historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
+                }
+            }
+            
+            historyComposite.layout();
+            org.eclipse.swt.graphics.Rectangle bounds = historyComposite.getBounds();
+            
+            scrolledHistoryComposite.setMinSize(bounds.width, bounds.height);
+            scrolledHistoryComposite.setContent(historyComposite);
+            scrolledHistoryComposite.setExpandHorizontal(true);
+            scrolledHistoryComposite.setExpandVertical(true);
+            
+            ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
+            historyExpandItem.setControl(scrolledHistoryComposite);
+            historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+            setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY);
+            scrolledHistoryComposite.layout(true, true);
+        }
+        
+        boolean expanded = false;
+        if (mainExpandBar.getItemCount()>3-(showTrans?0:1))
+        {
+            ExpandItem item = mainExpandBar.getItem(2);
+            expanded = item.getExpanded();
+            item.setExpanded(false);
+            item.dispose();
+        }
+        
+        if (showTrans)
+        {
+            mainExpandBar.getItem(2).setExpanded(expanded);
+        }
+        resizeExpandBar(mainExpandBar);
+        
+        mainExpandBar.redraw();
     }
     
     private boolean previousShowTrans;
     private boolean previousShowJob;
      
-    private void refreshCoreObjectsExpandBar()
+    private void refreshCoreObjects()
     {
+        refreshCoreObjectsHistory();
+
         boolean showTrans = getActiveTransformation()!=null;
         boolean showJob = getActiveJob()!=null;
         
-        if (showTrans==previousShowTrans && showJob==previousShowJob) return;
+        if (showTrans==previousShowTrans && showJob==previousShowJob)
+        {
+            return;
+        }
         
         // First remove all the entries that where present...
         ExpandItem[] expandItems = expandBar.getItems();
@@ -1756,13 +1906,18 @@ public class Spoon implements AddUndoPositionInterface
             
             for (int i=0;i<basecat.length;i++)
             {
-                ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL);
+                ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
                 scrolledComposite.setLayout(new FillLayout());
+                scrolledComposite.addKeyListener(defKeys);
+                scrolledComposite.addKeyListener(modKeys);
                 
-                Composite composite = new Composite(scrolledComposite, SWT.NONE);
+                final Composite composite = new Composite(scrolledComposite, SWT.NONE);
                 props.setLook(composite);
-                GridLayout layout = new GridLayout ();
-                layout.marginLeft = 15;
+                composite.addKeyListener(defKeys);
+                composite.addKeyListener(modKeys);
+                
+                GridLayout layout = new GridLayout();
+                layout.marginLeft = 20;
                 layout.verticalSpacing = Const.MARGIN;
                 composite.setLayout(layout);
                 
@@ -1788,25 +1943,25 @@ public class Spoon implements AddUndoPositionInterface
                 scrolledComposite.setExpandVertical(true);
                 
                 ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
-                item.setText(basecat[i]);
                 item.setControl(scrolledComposite);
-                item.setImage(GUIResource.getInstance().getImageArrow());
-                item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+                item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
+                setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i]);
             }
         }
         
         if (showJob)
         {
-            ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL);
+            ScrolledComposite scrolledComposite = new ScrolledComposite(expandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
             scrolledComposite.setLayout(new FillLayout());
             
             Composite composite = new Composite(scrolledComposite, SWT.NONE);
             props.setLook(composite);
-            GridLayout layout = new GridLayout ();
+            
+            GridLayout layout = new GridLayout();
             layout.marginLeft = 20;
             layout.verticalSpacing = Const.MARGIN;
             composite.setLayout(layout);
-
+            
             //////////////////////////////////////////////////////////////////////////////////////////////////
             // JOBS
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1849,17 +2004,23 @@ public class Spoon implements AddUndoPositionInterface
             scrolledComposite.setExpandVertical(true);
             
             ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
-            item.setText(Spoon.STRING_JOB_ENTRIES);
             item.setControl(scrolledComposite);
-            item.setImage(GUIResource.getInstance().getImageArrow());
-            item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES);
+            item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
             item.setExpanded(true);
+            
+            if (mainExpandBar.getItemCount()>2)
+            {
+                ExpandItem historyItem = mainExpandBar.getItem(2);
+                historyItem.setExpanded(false);
+                historyItem.dispose();
+            }
         }
-        
-        leftSash.layout(true, true);
+                
+        mainExpandBar.redraw();
         
         previousShowTrans = showTrans;
-        previousShowJob =  showJob;
+        previousShowJob =  showJob;        
     }
     
     private void addExpandBarItemLine(Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
@@ -1884,6 +2045,8 @@ public class Spoon implements AddUndoPositionInterface
         Composite lineComposite = new Composite(composite, SWT.NONE);
         props.setLook(lineComposite);
         lineComposite.setLayout(new FormLayout());
+        lineComposite.addKeyListener(defKeys);
+        lineComposite.addKeyListener(modKeys);
         
         Canvas canvas = new Canvas(lineComposite, SWT.NO_BACKGROUND);
         canvas.setToolTipText(pluginDescription);
@@ -1912,7 +2075,7 @@ public class Spoon implements AddUndoPositionInterface
         fdName.left=new FormAttachment(canvas,Const.MARGIN);
         fdName.right=new FormAttachment(100,0);
         fdName.top=new FormAttachment(canvas, 0, SWT.CENTER);
-        name.setLayoutData(fdName);                        
+        name.setLayoutData(fdName);
 
         /*
         Label desc = new Label(lineComposite, SWT.LEFT);
@@ -1929,6 +2092,8 @@ public class Spoon implements AddUndoPositionInterface
         addDragSourceToLine(canvas, plugin);
         addDragSourceToLine(name, plugin);
         // addDragSourceToLine(desc, plugin);
+        
+        lineComposite.setLayoutData(new GridData());
         
     }
 
@@ -2275,7 +2440,7 @@ public class Spoon implements AddUndoPositionInterface
                 if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
                 {
                 	// Switch the core objects in the lower left corner to the spoon trans types
-                    refreshCoreObjectsTree();
+                    refreshCoreObjects();
                 }                
             }
         }
@@ -2296,7 +2461,7 @@ public class Spoon implements AddUndoPositionInterface
                 if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
                 {
                 	// Switch the core objects in the lower left corner to the spoon job types
-                    refreshCoreObjectsTree();
+                    refreshCoreObjects();
                 }                
             }
         }        
@@ -2638,7 +2803,7 @@ public class Spoon implements AddUndoPositionInterface
         props.setLook(tabComp);
         tabComp.setLayout(new FillLayout());
         
-        tabfolder= new CTabFolder(tabComp, SWT.BORDER);
+        tabfolder= new CTabFolder(tabComp, SWT.MULTI);
 
         props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
         
@@ -2685,7 +2850,7 @@ public class Spoon implements AddUndoPositionInterface
                                }
                                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_SPOON )
                                {
-                                   refreshCoreObjectsTree();
+                                   refreshCoreObjects();
                                }
                             }
                             if (event.doit && entry.getObject() instanceof ChefGraph)
@@ -2698,7 +2863,7 @@ public class Spoon implements AddUndoPositionInterface
                                }
                                if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
                                {
-                                   refreshCoreObjectsTree();
+                                   refreshCoreObjects();
                                }
                             }                            
                         }
@@ -3457,7 +3622,7 @@ public class Spoon implements AddUndoPositionInterface
     public void openRepository()
     {
         int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-        RepositoriesDialog rd = new RepositoriesDialog(disp, perms, APP_NAME);
+        RepositoriesDialog rd = new RepositoriesDialog(display, perms, APP_NAME);
         rd.getShell().setImage(GUIResource.getInstance().getImageSpoon());
         if (rd.open())
         {
@@ -4674,6 +4839,8 @@ public class Spoon implements AddUndoPositionInterface
         // Set the expanded state of the complete tree.
         TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
 
+        refreshCoreObjectsHistory();
+        
         selectionTree.setFocus();
         setShellText();
     }
@@ -4816,7 +4983,7 @@ public class Spoon implements AddUndoPositionInterface
                     }
                     
                     // Also store it in the pluginHistory list...
-                    props.addPluginHistory(stepPlugin.getID()[0]);
+                    props.increasePluginHistory(stepPlugin.getID()[0]);
         
                     refreshTree();
                 }
@@ -5025,7 +5192,7 @@ public class Spoon implements AddUndoPositionInterface
         tiFileSave.setEnabled(enableTransMenu || enableJobMenu);
         
         // What steps & plugins to show?
-        refreshCoreObjectsTree();
+        refreshCoreObjects();
     }
     
     private void markTabsChanged()
@@ -5074,7 +5241,7 @@ public class Spoon implements AddUndoPositionInterface
         // Create an image of the screen
         Point max = transMeta.getMaximum();
         
-        Image img = spoonGraph.getTransformationImage(printer, max.x, max.y);
+        Image img = spoonGraph.getTransformationImage(printer, max.x, max.y, false);
 
         ps.printImage(shell, img);
         
@@ -5105,7 +5272,7 @@ public class Spoon implements AddUndoPositionInterface
         img_gc.fillRectangle(0,0,max.x, max.y);
         
         // Draw the transformation...
-        chefGraph.drawJob(img_gc);
+        chefGraph.drawJob(img_gc, false);
         
         ps.printImage(shell, img);
         
@@ -6551,7 +6718,7 @@ public class Spoon implements AddUndoPositionInterface
         Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
         
         Point area = transMeta.getMaximum();
-        Image image = spoonGraph.getTransformationImage(Display.getCurrent(), area.x, area.y);
+        Image image = spoonGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false);
         clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[]{ImageDataTransfer.getInstance()});
     }
     
@@ -6901,7 +7068,7 @@ public class Spoon implements AddUndoPositionInterface
 
             int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
             splash.hide();
-            RepositoriesDialog rd = new RepositoriesDialog(spoon.disp, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+            RepositoriesDialog rd = new RepositoriesDialog(spoon.display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
             if (rd.open())
             {
                 repositoryMeta = rd.getRepository();
@@ -7817,6 +7984,7 @@ public class Spoon implements AddUndoPositionInterface
                 SpoonBrowser browser = new SpoonBrowser(tabfolder, this, urlString);
                 tabItem = new CTabItem(tabfolder, SWT.CLOSE);
                 tabItem.setText(name);
+                tabItem.setImage(GUIResource.getInstance().getImageLogoSmall());
                 tabItem.setControl(browser.getComposite());
                 
                 tabMap.put(name, new TabMapEntry(tabItem, name, browser, TabMapEntry.OBJECT_TYPE_BROWSER));

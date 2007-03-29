@@ -2493,7 +2493,7 @@ public class Chef implements AddUndoPositionInterface
 		img_gc.fillRectangle(0,0,max.x, max.y);
 		
 		// Draw the transformation...
-		chefgraph.drawJob(img_gc);
+		chefgraph.drawJob(img_gc, false);
 		
 		//ShowImageDialog sid = new ShowImageDialog(shell, jobMeta.props, img);
 		//sid.open();

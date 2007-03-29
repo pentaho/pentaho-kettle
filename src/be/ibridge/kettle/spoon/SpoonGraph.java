@@ -50,6 +50,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -222,6 +223,7 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
         selected_steps = null;
         lastclick = null;
 
+        addKeyListener(spoon.modKeys);
         canvas.addKeyListener(spoon.modKeys);
 
         /*
@@ -837,7 +839,17 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
         );
 
         // Keyboard shortcuts...
-        canvas.addKeyListener(new KeyAdapter()
+        addKeyListener(canvas);
+        addKeyListener(this);
+
+        canvas.addKeyListener(spoon.defKeys);
+
+        setBackground(GUIResource.getInstance().getColorBackground());
+    }
+    
+    private void addKeyListener(Control control)
+    {
+        KeyAdapter keyAdapter = new KeyAdapter()
         {
             public void keyPressed(KeyEvent e)
             {
@@ -925,17 +937,24 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
                     }
                 }
             }
-        });
-
-        canvas.addKeyListener(spoon.defKeys);
-
-        setBackground(GUIResource.getInstance().getColorBackground());
+        };
+        control.addKeyListener(keyAdapter);
     }
     
     public void redraw()
     {
         canvas.redraw();
     }
+        
+    public boolean forceFocus()
+    {
+        return canvas.forceFocus();
+    }
+    
+    public boolean setFocus()
+    {
+        return canvas.setFocus();
+    }    
 
     public void renameStep()
     {
@@ -1971,17 +1990,17 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
 
         Display disp = shell.getDisplay();
 
-        Image img = getTransformationImage(disp, area.x, area.y);
+        Image img = getTransformationImage(disp, area.x, area.y, true);
         e.gc.drawImage(img, 0, 0);
         img.dispose();
 
         // spoon.setShellText();
     }
 
-    public Image getTransformationImage(Device device, int x, int y)
+    public Image getTransformationImage(Device device, int x, int y, boolean branded)
     {
         TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
-        Image img = transPainter.getTransformationImage(device);
+        Image img = transPainter.getTransformationImage(device, branded);
 
         return img;
     }

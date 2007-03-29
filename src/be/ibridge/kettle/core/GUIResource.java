@@ -14,11 +14,14 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
+import be.ibridge.kettle.core.util.ImageUtil;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -61,6 +64,8 @@ public class GUIResource
     private ManagedColor colorDemoGray;
     private ManagedColor colorWhite;
     private ManagedColor colorDirectory;
+    private ManagedColor colorPentaho;
+    private ManagedColor colorLightPentaho;
 
     /* * * Fonts * * */
     private ManagedFont fontGraph;
@@ -77,6 +82,9 @@ public class GUIResource
     
     private Image     imageHop;
     private Image     imageConnection; 
+    private Image     imageKettleLogo;
+    private Image     imageLogoSmall;
+    private Image     imageBanner;
     private Image     imageBol;
     private Image     imageArrow;
     private Image     imageKettle;
@@ -98,6 +106,8 @@ public class GUIResource
     private Image     imageResetOptionButton;
 
     private ManagedFont fontBold;
+
+    private Image imageLogoLeft;
 
     /**
      * GUIResource also contains the clipboard as it has to be allocated only once!
@@ -140,25 +150,28 @@ public class GUIResource
     {
         Props props = Props.getInstance();
         
-        colorBackground = new ManagedColor(display, props.getBackgroundRGB() );
-        colorGraph      = new ManagedColor(display, props.getGraphColorRGB() );
-        colorTab        = new ManagedColor(display, props.getTabColorRGB()   );
+        colorBackground   = new ManagedColor(display, props.getBackgroundRGB() );
+        colorGraph        = new ManagedColor(display, props.getGraphColorRGB() );
+        colorTab          = new ManagedColor(display, props.getTabColorRGB()   );
         
-        colorRed        = new ManagedColor(display, 255,   0,   0 );
-        colorGreen      = new ManagedColor(display,   0, 255,   0 );
-        colorBlue       = new ManagedColor(display,   0,   0, 255 );
-        colorGray       = new ManagedColor(display, 100, 100, 100 );
-        colorYellow     = new ManagedColor(display, 255, 255,   0 );
-        colorMagenta    = new ManagedColor(display, 255,   0, 255);
-        colorOrange     = new ManagedColor(display, 255, 165,   0 );
+        colorRed          = new ManagedColor(display, 255,   0,   0 );
+        colorGreen        = new ManagedColor(display,   0, 255,   0 );
+        colorBlue         = new ManagedColor(display,   0,   0, 255 );
+        colorGray         = new ManagedColor(display, 100, 100, 100 );
+        colorYellow       = new ManagedColor(display, 255, 255,   0 );
+        colorMagenta      = new ManagedColor(display, 255,   0, 255);
+        colorOrange       = new ManagedColor(display, 255, 165,   0 );
 
-        colorWhite      = new ManagedColor(display, 255, 255, 255 );
-        colorDemoGray   = new ManagedColor(display, 240, 240, 240 );
-        colorLightGray  = new ManagedColor(display, 225, 225, 225 );
-        colorDarkGray   = new ManagedColor(display, 100, 100, 100 );
-        colorBlack      = new ManagedColor(display,   0,   0,   0 );
+        colorWhite        = new ManagedColor(display, 255, 255, 255 );
+        colorDemoGray     = new ManagedColor(display, 240, 240, 240 );
+        colorLightGray    = new ManagedColor(display, 225, 225, 225 );
+        colorDarkGray     = new ManagedColor(display, 100, 100, 100 );
+        colorBlack        = new ManagedColor(display,   0,   0,   0 );
 
-        colorDirectory  = new ManagedColor(display,   0,   0, 255 );
+        colorDirectory    = new ManagedColor(display,   0,   0, 255 );
+        // colorPentaho    = new ManagedColor(display, 239, 128,  51 ); // Orange
+        colorPentaho      = new ManagedColor(display, 188, 198,  82 );
+        colorLightPentaho = new ManagedColor(display, 238, 248, 152 );
         
         // Load all images from files...
         if (!reload)
@@ -173,25 +186,27 @@ public class GUIResource
     private void dispose(boolean reload)
     {
         // Colors 
-        colorBackground.dispose();
-        colorGraph     .dispose();
-        colorTab       .dispose();
+        colorBackground  .dispose();
+        colorGraph       .dispose();
+        colorTab         .dispose();
         
-        colorRed      .dispose();
-        colorGreen    .dispose();
-        colorBlue     .dispose();
-        colorGray     .dispose();
-        colorYellow   .dispose();
-        colorMagenta  .dispose();
-        colorOrange   .dispose();
+        colorRed         .dispose();
+        colorGreen       .dispose();
+        colorBlue        .dispose();
+        colorGray        .dispose();
+        colorYellow      .dispose();
+        colorMagenta     .dispose();
+        colorOrange      .dispose();
 
-        colorWhite    .dispose();
-        colorDemoGray .dispose();
-        colorLightGray.dispose();
-        colorDarkGray .dispose();
-        colorBlack    .dispose();
+        colorWhite       .dispose();
+        colorDemoGray    .dispose();
+        colorLightGray   .dispose();
+        colorDarkGray    .dispose();
+        colorBlack       .dispose();
         
-        colorDirectory.dispose();
+        colorDirectory   .dispose();
+        colorPentaho     .dispose();
+        colorLightPentaho.dispose();
         
         if (!reload) // display shutdown, clean up our mess
         {
@@ -205,6 +220,10 @@ public class GUIResource
             // Common images
             imageHop         .dispose();
             imageConnection  .dispose();
+            imageLogoSmall   .dispose();
+            imageKettleLogo  .dispose();
+            imageLogoLeft    .dispose();
+            imageBanner      .dispose();
             imageBol         .dispose();
             imageArrow       .dispose();
             imageKettle      .dispose();
@@ -341,8 +360,9 @@ public class GUIResource
     {
         imageHop         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "HOP.png"));
         imageConnection  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "CNC.png"));
+        imageKettleLogo  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "logo_kettle_lrg.png"));
+        imageBanner      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png"));
         imageBol         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "BOL.png"));
-        imageArrow       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png"));
         imageKettle      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo.png"));
         imageCredits     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "credits.png"));
         imageStart       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
@@ -352,8 +372,6 @@ public class GUIResource
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
         imageVariable    = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "variable.png"));
-        imageSpoonGraph  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png"));
-        imageChefGraph   = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png"));
         imageEditOptionButton  = loadImage(Const.IMAGE_DIRECTORY + "edit_option.png");
         imageResetOptionButton = loadImage(Const.IMAGE_DIRECTORY + "reset_option.png");
         
@@ -365,7 +383,28 @@ public class GUIResource
         gc = new GC(imageDummySmall);
         gc.drawImage(imageDummy, 0, 0, 32, 32, 0, 0, 16, 16);
         gc.dispose();
-
+        
+        // Makes transparent images "on the fly"
+        //
+        imageSpoonGraph = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png")), new RGB(255,255,255));
+        imageChefGraph  = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
+        imageLogoSmall  = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")), new RGB(255,255,255));
+        imageArrow      = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
+        imageBanner     = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
+        
+        // Rotate logo once left.
+        imageLogoLeft = new Image(display, ImageUtil.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
+    }
+    
+    public Image makeImageTransparent(Image tempImage, RGB transparentColor)
+    {
+        ImageData imageData = tempImage.getImageData();
+        int pixelIndex = imageData.palette.getPixel(new RGB(255,255,255));
+        imageData.transparentPixel = pixelIndex;
+        Image image = new Image(display, imageData);
+        tempImage.dispose();
+        
+        return image;
     }
 
     /**
@@ -899,5 +938,85 @@ public class GUIResource
     public void setImageStartSmall(Image imageStartSmall)
     {
         this.imageStartSmall = imageStartSmall;
+    }
+
+    /**
+     * @return the imageBanner
+     */
+    public Image getImageBanner()
+    {
+        return imageBanner;
+    }
+
+    /**
+     * @param imageBanner the imageBanner to set
+     */
+    public void setImageBanner(Image imageBanner)
+    {
+        this.imageBanner = imageBanner;
+    }
+
+    /**
+     * @return the imageKettleLogo
+     */
+    public Image getImageKettleLogo()
+    {
+        return imageKettleLogo;
+    }
+
+    /**
+     * @param imageKettleLogo the imageKettleLogo to set
+     */
+    public void setImageKettleLogo(Image imageKettleLogo)
+    {
+        this.imageKettleLogo = imageKettleLogo;
+    }
+
+    /**
+     * @return the colorPentaho
+     */
+    public Color getColorPentaho()
+    {
+        return colorPentaho.getColor();
+    }
+
+    /**
+     * @return the imageLogoSmall
+     */
+    public Image getImageLogoSmall()
+    {
+        return imageLogoSmall;
+    }
+
+    /**
+     * @param imageLogoSmall the imageLogoSmall to set
+     */
+    public void setImageLogoSmall(Image imageLogoSmall)
+    {
+        this.imageLogoSmall = imageLogoSmall;
+    }
+
+    /**
+     * @return the imageLogoLeft
+     */
+    public Image getImageLogoLeft()
+    {
+        return imageLogoLeft;
+    }
+
+    /**
+     * @param imageLogoLeft the imageLogoLeft to set
+     */
+    public void setImageLogoLeft(Image imageLogoLeft)
+    {
+        this.imageLogoLeft = imageLogoLeft;
+    }
+
+    /**
+     * @return the colorLightPentaho
+     */
+    public Color getColorLightPentaho()
+    {
+        return colorLightPentaho.getColor();
     }
 }
