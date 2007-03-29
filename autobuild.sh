@@ -24,7 +24,7 @@ then
   # upload kettle.jar to Kettle.be
   #
   cd lib
-  ftp -u ftp://www.kettle.be:pw4pixelmgr@www.kettle.be/dloads/ kettle.jar
+  ftp -u ftp://www.kettle.be:*******@www.kettle.be/dloads/ kettle.jar
 
 else
   echo "Nothing was updated"
