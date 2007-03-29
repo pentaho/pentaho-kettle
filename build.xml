@@ -68,7 +68,7 @@
 	    	   debug="true"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	    	   memorymaximumsize="256M"
-	    	   compiler="javac"
+	    	   fork="true"
 	    	>
 
 	    	<classpath id="cp-kettle">
