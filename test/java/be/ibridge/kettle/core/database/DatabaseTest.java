@@ -21,7 +21,7 @@ public class DatabaseTest extends TestCase
             "<name>db</name>" +
             "<server>127.0.0.1</server>" +
             "<type>H2</type>" +
-            "<access>Native</access>" +
+            "<access>Native</access>" + 
             "<database>mem:db</database>" +
             "<port></port>" +
             "<username>sa</username>" +
