@@ -1783,7 +1783,7 @@ public class Spoon implements AddUndoPositionInterface
             tmpGC.dispose();
             img.dispose();
             
-            Rectangle rect = new Rectangle(0, 0, point.x + 200-offset, point.y+11);
+            Rectangle rect = new Rectangle(0, 0, point.x + 100-offset, point.y+11);
             Rectangle iconBounds = icon.getBounds();
             
             final Image image = new Image(display, rect.width, rect.height);
