@@ -58,8 +58,6 @@ import org.eclipse.swt.events.ExpandAdapter;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -75,10 +73,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.printing.Printer;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -1814,6 +1810,8 @@ public class Spoon implements AddUndoPositionInterface
             layout.verticalSpacing = Const.MARGIN;
             historyComposite.setLayout(layout);
             
+            ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
+            
             List pluginHistory = props.getPluginHistory();
             String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
             
@@ -1829,7 +1827,7 @@ public class Spoon implements AddUndoPositionInterface
                     String pluginDescription = stepPlugin.getTooltip(locale);
                     boolean isPlugin = stepPlugin.isPlugin();
                     
-                    addExpandBarItemLine(historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
+                    addExpandBarItemLine(historyExpandItem, historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
                 }
             }
             
@@ -1841,7 +1839,6 @@ public class Spoon implements AddUndoPositionInterface
             scrolledHistoryComposite.setExpandHorizontal(true);
             scrolledHistoryComposite.setExpandVertical(true);
             
-            ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
             historyExpandItem.setControl(scrolledHistoryComposite);
             historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
             setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY);
@@ -1854,6 +1851,7 @@ public class Spoon implements AddUndoPositionInterface
             ExpandItem item = mainExpandBar.getItem(2);
             expanded = item.getExpanded();
             item.setExpanded(false);
+            item.getControl().dispose();
             item.dispose();
         }
         
@@ -1921,6 +1919,8 @@ public class Spoon implements AddUndoPositionInterface
                 layout.verticalSpacing = Const.MARGIN;
                 composite.setLayout(layout);
                 
+                ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+
                 for (int j=0;j<basesteps.length;j++)
                 {
                     if (basesteps[j].getCategory(locale).equalsIgnoreCase(basecat[i]))
@@ -1930,7 +1930,7 @@ public class Spoon implements AddUndoPositionInterface
                         String pluginDescription = basesteps[j].getTooltip(locale);
                         boolean isPlugin = basesteps[j].isPlugin();
                         
-                        addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, basesteps[j]);
+                        addExpandBarItemLine(item, composite, stepimg, pluginName, pluginDescription, isPlugin, basesteps[j]);
                     }
                 }
                 
@@ -1942,7 +1942,6 @@ public class Spoon implements AddUndoPositionInterface
                 scrolledComposite.setExpandHorizontal(true);
                 scrolledComposite.setExpandVertical(true);
                 
-                ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
                 item.setControl(scrolledComposite);
                 item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
                 setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i]);
@@ -1962,6 +1961,8 @@ public class Spoon implements AddUndoPositionInterface
             layout.verticalSpacing = Const.MARGIN;
             composite.setLayout(layout);
             
+            ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
+
             //////////////////////////////////////////////////////////////////////////////////////////////////
             // JOBS
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1977,7 +1978,7 @@ public class Spoon implements AddUndoPositionInterface
             
             for (int i=0;i<specialText.length;i++)
             {
-                addExpandBarItemLine(composite, specialImage[i], specialText[i], specialTooltip[i], false, specialText[i]);
+                addExpandBarItemLine(item, composite, specialImage[i], specialText[i], specialTooltip[i], false, specialText[i]);
             }
             
             JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
@@ -1991,7 +1992,7 @@ public class Spoon implements AddUndoPositionInterface
                     String pluginDescription = baseEntries[i].getTooltip();
                     boolean isPlugin = baseEntries[i].isPlugin();
                     
-                    addExpandBarItemLine(composite, stepimg, pluginName, pluginDescription, isPlugin, baseEntries[i]);
+                    addExpandBarItemLine(item, composite, stepimg, pluginName, pluginDescription, isPlugin, baseEntries[i]);
                 }
             }
 
@@ -2003,7 +2004,6 @@ public class Spoon implements AddUndoPositionInterface
             scrolledComposite.setExpandHorizontal(true);
             scrolledComposite.setExpandVertical(true);
             
-            ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
             item.setControl(scrolledComposite);
             setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES);
             item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
@@ -2013,6 +2013,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 ExpandItem historyItem = mainExpandBar.getItem(2);
                 historyItem.setExpanded(false);
+                historyItem.getControl().dispose();
                 historyItem.dispose();
             }
         }
@@ -2023,24 +2024,8 @@ public class Spoon implements AddUndoPositionInterface
         previousShowJob =  showJob;        
     }
     
-    private void addExpandBarItemLine(Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
+    private void addExpandBarItemLine(ExpandItem expandItem, Composite composite, Image image, String pluginName, String pluginDescription, boolean isPlugin, Object plugin)
     {
-        final Image stepimg;
-        if (image==null)
-        {
-            stepimg=new Image(shell.getDisplay(), Const.ICON_SIZE, Const.ICON_SIZE);
-            composite.addDisposeListener(
-                new DisposeListener()
-                {
-                    public void widgetDisposed(DisposeEvent event) { stepimg.dispose(); } 
-                }
-            );
-        }
-        else
-        {
-            stepimg=image;
-        }
-        
         // Add a line with the step as a new composite
         Composite lineComposite = new Composite(composite, SWT.NONE);
         props.setLook(lineComposite);
@@ -2048,22 +2033,15 @@ public class Spoon implements AddUndoPositionInterface
         lineComposite.addKeyListener(defKeys);
         lineComposite.addKeyListener(modKeys);
         
-        Canvas canvas = new Canvas(lineComposite, SWT.NO_BACKGROUND);
+        Label canvas = new Label(lineComposite, SWT.NONE);
         canvas.setToolTipText(pluginDescription);
         props.setLook(canvas);
-        canvas.addPaintListener(new PaintListener()
-            {
-                public void paintControl(PaintEvent e)
-                {
-                    e.gc.drawImage(stepimg, 0, 0);
-                }
-            }
-        );
+        canvas.setImage(image);
         FormData fdCanvas = new FormData();
-        fdCanvas.left=new FormAttachment(0,0);
-        fdCanvas.right=new FormAttachment(0,stepimg.getBounds().width);
-        fdCanvas.top=new FormAttachment(0,0);
-        fdCanvas.bottom=new FormAttachment(0,stepimg.getBounds().height);
+        fdCanvas.left=new FormAttachment(0, 0);
+        fdCanvas.right=new FormAttachment(0, image.getBounds().width);
+        fdCanvas.top=new FormAttachment(0, 0);
+        fdCanvas.bottom=new FormAttachment(0, image.getBounds().height);
         canvas.setLayoutData(fdCanvas);
         
         Label name = new Label(lineComposite, SWT.LEFT);
@@ -2076,25 +2054,9 @@ public class Spoon implements AddUndoPositionInterface
         fdName.right=new FormAttachment(100,0);
         fdName.top=new FormAttachment(canvas, 0, SWT.CENTER);
         name.setLayoutData(fdName);
-
-        /*
-        Label desc = new Label(lineComposite, SWT.LEFT);
-        props.setLook(desc);
-        desc.setText(pluginDescription);
-        desc.setToolTipText(pluginDescription);
-        FormData fdDesc = new FormData();
-        fdDesc.left=new FormAttachment(canvas, Const.MARGIN);
-        fdDesc.right=new FormAttachment(100,0);
-        fdDesc.top=new FormAttachment(name, Const.MARGIN);
-        desc.setLayoutData(fdDesc);  
-        */
         
         addDragSourceToLine(canvas, plugin);
         addDragSourceToLine(name, plugin);
-        // addDragSourceToLine(desc, plugin);
-        
-        lineComposite.setLayoutData(new GridData());
-        
     }
 
     private void addDragSourceToLine(final Control control, final Object plugin)
