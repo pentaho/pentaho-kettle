@@ -144,6 +144,8 @@ public class Props implements Cloneable
     
     private static final String STRING_SHOW_WELCOME_PAGE_ON_STARTUP = "ShowWelcomePageOnStartup";
 
+    private static final String STRING_SHOW_BRANDING_GRAPHICS = "ShowBrandingGraphics";
+
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
 
     private LogWriter log = LogWriter.getInstance();
@@ -1521,4 +1523,16 @@ public class Props implements Cloneable
 
         shell.setSize(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
     }    
+    
+    public boolean isBrandingActive()
+    {
+        String show = properties.getProperty(STRING_SHOW_BRANDING_GRAPHICS, "Y");
+        return "Y".equalsIgnoreCase(show);
+    }
+    
+    public void setBrandingActive(boolean active)
+    {
+        properties.setProperty(STRING_SHOW_BRANDING_GRAPHICS, active?"Y":"N");
+    }
+
 }

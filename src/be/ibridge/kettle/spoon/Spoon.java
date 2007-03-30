@@ -348,6 +348,8 @@ public class Spoon implements AddUndoPositionInterface
     
     private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
     
+    private boolean stepHistoryChanged;
+    
     public Spoon(LogWriter l, Repository rep)
     {
         this(l, null, null, rep);
@@ -1638,7 +1640,7 @@ public class Spoon implements AddUndoPositionInterface
         ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
         treeItem.setControl(selectionTree);
         treeItem.setHeight(shell.getBounds().height);
-        setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE);
+        setHeaderImage(treeItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_MAIN_TREE, 0);
         
         // Add a tree memory as well...
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
@@ -1765,103 +1767,116 @@ public class Spoon implements AddUndoPositionInterface
         ExpandItem expandItem = new ExpandItem(mainExpandBar, SWT.NONE);
         expandItem.setControl(composite);
         expandItem.setHeight(shell.getBounds().height);
-        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE);
+        setHeaderImage(expandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_SPOON_CORE_OBJECTS_TREE, 0);
         
         refreshCoreObjects();
     }
     
-    private void setHeaderImage(ExpandItem expandItem, Image icon, String string)
+    private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset)
     {
-        // Draw just an image with text and all...
-        Image img = new Image(display, 1, 1);
-        GC tmpGC = new GC(img);
-        org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
-        tmpGC.dispose();
-        img.dispose();
-        
-        Rectangle rect = new Rectangle(0, 0, point.x + 100, point.y+11);
-        Rectangle iconBounds = icon.getBounds();
-        
-        final Image image = new Image(display, rect.width, rect.height);
-        GC gc = new GC(image);
-        drawPentahoGradient(gc, rect, false);
-        gc.drawImage(icon, 0, 2);
-        gc.setForeground(GUIResource.getInstance().getColorBlack());
-        gc.setFont(GUIResource.getInstance().getFontBold());
-        gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
-        expandItem.setImage(image);
-        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
+        if (props.isBrandingActive())
+        {
+            // Draw just an image with text and all...
+            Image img = new Image(display, 1, 1);
+            GC tmpGC = new GC(img);
+            org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
+            tmpGC.dispose();
+            img.dispose();
+            
+            Rectangle rect = new Rectangle(0, 0, point.x + 200-offset, point.y+11);
+            Rectangle iconBounds = icon.getBounds();
+            
+            final Image image = new Image(display, rect.width, rect.height);
+            GC gc = new GC(image);
+            drawPentahoGradient(gc, rect, false);
+            gc.drawImage(icon, 0, 2);
+            gc.setForeground(GUIResource.getInstance().getColorBlack());
+            gc.setFont(GUIResource.getInstance().getFontBold());
+            gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
+            expandItem.setImage(image);
+            expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
+        }
+        else
+        {
+            expandItem.setImage(icon);
+            expandItem.setText(string);
+        }
     }
 
     private void refreshCoreObjectsHistory()
     {
-        boolean showTrans = getActiveTransformation()!=null;
-        if (showTrans)
+        if (stepHistoryChanged || mainExpandBar.getItemCount()<3)
         {
-            // create the history expand-item.
-            ScrolledComposite scrolledHistoryComposite = new ScrolledComposite(mainExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-    
-            scrolledHistoryComposite.setLayout(new FillLayout());
-            
-            Composite historyComposite = new Composite(scrolledHistoryComposite, SWT.NONE);
-            props.setLook(historyComposite);
-            GridLayout layout = new GridLayout ();
-            layout.marginLeft = 15;
-            layout.verticalSpacing = Const.MARGIN;
-            historyComposite.setLayout(layout);
-            
-            ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
-            
-            List pluginHistory = props.getPluginHistory();
-            String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-            
-            for (int i=0;i<pluginHistory.size();i++)
+            boolean showTrans = getActiveTransformation()!=null;
+            if (showTrans)
             {
-                ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
+                // create the history expand-item.
+                ScrolledComposite scrolledHistoryComposite = new ScrolledComposite(mainExpandBar, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+        
+                scrolledHistoryComposite.setLayout(new FillLayout());
                 
-                StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
-                if (stepPlugin!=null)
+                Composite historyComposite = new Composite(scrolledHistoryComposite, SWT.NONE);
+                props.setLook(historyComposite);
+                GridLayout layout = new GridLayout ();
+                layout.marginLeft = 15;
+                layout.verticalSpacing = Const.MARGIN;
+                historyComposite.setLayout(layout);
+                
+                ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
+                
+                List pluginHistory = props.getPluginHistory();
+                String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+                
+                for (int i=0;i<pluginHistory.size();i++)
                 {
-                    final Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(stepPlugin.getID()[0]);
-                    String pluginName   = stepPlugin.getDescription(locale)+" ("+usage.getNrUses()+")";
-                    String pluginDescription = stepPlugin.getTooltip(locale);
-                    boolean isPlugin = stepPlugin.isPlugin();
+                    ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
                     
-                    addExpandBarItemLine(historyExpandItem, historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
+                    StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(usage.getObjectName());
+                    if (stepPlugin!=null)
+                    {
+                        final Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(stepPlugin.getID()[0]);
+                        String pluginName   = stepPlugin.getDescription(locale)+" ("+usage.getNrUses()+")";
+                        String pluginDescription = stepPlugin.getTooltip(locale);
+                        boolean isPlugin = stepPlugin.isPlugin();
+                        
+                        addExpandBarItemLine(historyExpandItem, historyComposite, stepimg, pluginName, pluginDescription, isPlugin, stepPlugin);
+                    }
                 }
+                
+                historyComposite.layout();
+                org.eclipse.swt.graphics.Rectangle bounds = historyComposite.getBounds();
+                
+                scrolledHistoryComposite.setMinSize(bounds.width, bounds.height);
+                scrolledHistoryComposite.setContent(historyComposite);
+                scrolledHistoryComposite.setExpandHorizontal(true);
+                scrolledHistoryComposite.setExpandVertical(true);
+                
+                historyExpandItem.setControl(scrolledHistoryComposite);
+                historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+                setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY, 0);
+                scrolledHistoryComposite.layout(true, true);
             }
             
-            historyComposite.layout();
-            org.eclipse.swt.graphics.Rectangle bounds = historyComposite.getBounds();
+            boolean expanded = false;
+            if (mainExpandBar.getItemCount()>3-(showTrans?0:1))
+            {
+                ExpandItem item = mainExpandBar.getItem(2);
+                expanded = item.getExpanded();
+                item.setExpanded(false);
+                // item.getControl().dispose();
+                item.dispose();
+            }
             
-            scrolledHistoryComposite.setMinSize(bounds.width, bounds.height);
-            scrolledHistoryComposite.setContent(historyComposite);
-            scrolledHistoryComposite.setExpandHorizontal(true);
-            scrolledHistoryComposite.setExpandVertical(true);
+            if (showTrans)
+            {
+                mainExpandBar.getItem(2).setExpanded(expanded);
+            }
+            resizeExpandBar(mainExpandBar);
             
-            historyExpandItem.setControl(scrolledHistoryComposite);
-            historyExpandItem.setHeight(scrolledHistoryComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-            setHeaderImage(historyExpandItem, GUIResource.getInstance().getImageLogoSmall(), STRING_HISTORY);
-            scrolledHistoryComposite.layout(true, true);
+            mainExpandBar.redraw();
+            
+            stepHistoryChanged=false;
         }
-        
-        boolean expanded = false;
-        if (mainExpandBar.getItemCount()>3-(showTrans?0:1))
-        {
-            ExpandItem item = mainExpandBar.getItem(2);
-            expanded = item.getExpanded();
-            item.setExpanded(false);
-            item.getControl().dispose();
-            item.dispose();
-        }
-        
-        if (showTrans)
-        {
-            mainExpandBar.getItem(2).setExpanded(expanded);
-        }
-        resizeExpandBar(mainExpandBar);
-        
-        mainExpandBar.redraw();
     }
     
     private boolean previousShowTrans;
@@ -1944,7 +1959,7 @@ public class Spoon implements AddUndoPositionInterface
                 
                 item.setControl(scrolledComposite);
                 item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
-                setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i]);
+                setHeaderImage(item, GUIResource.getInstance().getImageArrow(), basecat[i], layout.marginLeft);
             }
         }
         
@@ -2005,7 +2020,7 @@ public class Spoon implements AddUndoPositionInterface
             scrolledComposite.setExpandVertical(true);
             
             item.setControl(scrolledComposite);
-            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES);
+            setHeaderImage(item, GUIResource.getInstance().getImageArrow(), STRING_JOB_ENTRIES, layout.marginLeft);
             item.setHeight(scrolledComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y+10);
             item.setExpanded(true);
             
@@ -4946,6 +4961,7 @@ public class Spoon implements AddUndoPositionInterface
                     
                     // Also store it in the pluginHistory list...
                     props.increasePluginHistory(stepPlugin.getID()[0]);
+                    stepHistoryChanged=true;
         
                     refreshTree();
                 }

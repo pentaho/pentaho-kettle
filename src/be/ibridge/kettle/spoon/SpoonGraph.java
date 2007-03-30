@@ -66,6 +66,7 @@ import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
+import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Redrawable;
 import be.ibridge.kettle.core.Row;
@@ -2000,7 +2001,7 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
     public Image getTransformationImage(Device device, int x, int y, boolean branded)
     {
         TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
-        Image img = transPainter.getTransformationImage(device, branded);
+        Image img = transPainter.getTransformationImage(device, Props.getInstance().isBrandingActive());
 
         return img;
     }

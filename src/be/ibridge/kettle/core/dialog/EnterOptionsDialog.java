@@ -142,6 +142,9 @@ public class EnterOptionsDialog extends Dialog
     private Label        wlOriginalLook;
     private Button       wOriginalLook;
 
+    private Label        wlBranding;
+    private Button       wBranding;
+
 	private Label        wlShowTips;
 	private Button       wShowTips;
 
@@ -874,7 +877,25 @@ public class EnterOptionsDialog extends Dialog
         fdOriginalLook.top  = new FormAttachment(wAntiAlias, margin);
         fdOriginalLook.right= new FormAttachment(100, 0);
         wOriginalLook.setLayoutData(fdOriginalLook);
-        
+
+        // Show branding graphics
+        wlBranding=new Label(wLookComp, SWT.RIGHT);
+        wlBranding.setText(Messages.getString("EnterOptionsDialog.Branding.Label"));
+        props.setLook(wlBranding);
+        FormData fdlBranding = new FormData();
+        fdlBranding.left = new FormAttachment(0, 0);
+        fdlBranding.top  = new FormAttachment(wOriginalLook, margin);
+        fdlBranding.right= new FormAttachment(middle, -margin);
+        wlBranding.setLayoutData(fdlBranding);
+        wBranding=new Button(wLookComp, SWT.CHECK);
+        props.setLook(wBranding);
+        wBranding.setSelection(props.isBrandingActive());
+        FormData fdBranding = new FormData();
+        fdBranding.left = new FormAttachment(middle, 0);
+        fdBranding.top  = new FormAttachment(wOriginalLook, margin);
+        fdBranding.right= new FormAttachment(100, 0);
+        wBranding.setLayoutData(fdBranding);
+
         // DefaultLocale line
         wlDefaultLocale=new Label(wLookComp, SWT.RIGHT);
         wlDefaultLocale.setText(Messages.getString("EnterOptionsDialog.DefaultLocale.Label"));
@@ -882,7 +903,7 @@ public class EnterOptionsDialog extends Dialog
         FormData fdlDefaultLocale = new FormData();
         fdlDefaultLocale.left = new FormAttachment(0, 0);
         fdlDefaultLocale.right= new FormAttachment(middle, -margin);
-        fdlDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
+        fdlDefaultLocale.top  = new FormAttachment(wBranding, margin);
         wlDefaultLocale.setLayoutData(fdlDefaultLocale);
         wDefaultLocale=new Combo(wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER);
         wDefaultLocale.setItems(GlobalMessages.localeDescr);
@@ -890,7 +911,7 @@ public class EnterOptionsDialog extends Dialog
         FormData fdDefaultLocale = new FormData();
         fdDefaultLocale.left = new FormAttachment(middle, 0);
         fdDefaultLocale.right= new FormAttachment(100, -margin);
-        fdDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
+        fdDefaultLocale.top  = new FormAttachment(wBranding, margin);
         wDefaultLocale.setLayoutData(fdDefaultLocale);
         // language selections...
         int idxDefault = Const.indexOfString(LanguageChoice.getInstance().getDefaultLocale().toString(), GlobalMessages.localeCodes);
@@ -1424,21 +1445,23 @@ public class EnterOptionsDialog extends Dialog
 
         props.setMaxNrLinesInLog                     ( Const.toInt(wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES) );
 		props.setMaxUndo                             ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
-		props.setShowTips                            ( wShowTips.getSelection()    );
-        props.setShowWelcomePageOnStartup            ( wShowWelcome.getSelection() );
-		props.setUseDBCache                          ( wUseCache.getSelection()    );
-		props.setOpenLastFile                        ( wOpenLast.getSelection()    );
-		props.setAutoSave                            ( wAutoSave.getSelection()    );
-        props.setOnlyUsedConnectionsSavedToXML       ( wDBConnXML.getSelection()   );
-        props.setAskAboutReplacingDatabaseConnections( wAskReplaceDB.getSelection());
-        props.setReplaceDatabaseConnections          ( wReplaceDB.getSelection()   );
-		props.setSaveConfirmation                    ( wSaveConf.getSelection()    );
-		props.setAutoSplit                           ( wAutoSplit.getSelection()   );
-        props.setShowCopyOrDistributeWarning         ( wCopyDistrib.getSelection() );
-        props.setRepositoriesDialogAtStartupShown    ( wShowRep.getSelection()     );
-        props.setAntiAliasingEnabled                 ( wAntiAlias.getSelection()   );
-        props.setExitWarningShown                    ( wExitWarning.getSelection() );
-        props.setOSLookShown                         ( wOriginalLook.getSelection());
+        
+		props.setShowTips                            ( wShowTips.getSelection()     );
+        props.setShowWelcomePageOnStartup            ( wShowWelcome.getSelection()  );
+		props.setUseDBCache                          ( wUseCache.getSelection()     );
+		props.setOpenLastFile                        ( wOpenLast.getSelection()     );
+		props.setAutoSave                            ( wAutoSave.getSelection()     );
+        props.setOnlyUsedConnectionsSavedToXML       ( wDBConnXML.getSelection()    );
+        props.setAskAboutReplacingDatabaseConnections( wAskReplaceDB.getSelection() );
+        props.setReplaceDatabaseConnections          ( wReplaceDB.getSelection()    );
+		props.setSaveConfirmation                    ( wSaveConf.getSelection()     );
+		props.setAutoSplit                           ( wAutoSplit.getSelection()    );
+        props.setShowCopyOrDistributeWarning         ( wCopyDistrib.getSelection()  );
+        props.setRepositoriesDialogAtStartupShown    ( wShowRep.getSelection()      );
+        props.setAntiAliasingEnabled                 ( wAntiAlias.getSelection()    );
+        props.setExitWarningShown                    ( wExitWarning.getSelection()  );
+        props.setOSLookShown                         ( wOriginalLook.getSelection() );
+        props.setBrandingActive                      ( wBranding.getSelection()     );
 
         int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
         if ( defaultLocaleIndex < 0 || 

@@ -60,6 +60,7 @@ import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
+import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Redrawable;
 import be.ibridge.kettle.core.SnapAllignDistribute;
@@ -1680,7 +1681,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
         
 		Image img = new Image(disp, area.x, area.y);
 		GC gc = new GC(img);
-		drawJob(gc, true);
+		drawJob(gc, Props.getInstance().isBrandingActive());
 		e.gc.drawImage(img, 0, 0);
 		gc.dispose();
 		img.dispose();
