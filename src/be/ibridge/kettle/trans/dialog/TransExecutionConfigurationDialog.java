@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -92,6 +93,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         display = parent.getDisplay();
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
         
         FormLayout formLayout = new FormLayout ();
         formLayout.marginWidth  = Const.FORM_MARGIN;
