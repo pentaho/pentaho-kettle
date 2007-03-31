@@ -21,6 +21,7 @@
 
 package be.ibridge.kettle.trans.dialog;
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -100,6 +101,7 @@ public class TransHopDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageHop());
 
 		lsMod = new ModifyListener()
 		{
