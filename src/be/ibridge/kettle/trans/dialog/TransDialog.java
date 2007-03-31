@@ -99,8 +99,8 @@ public class TransDialog extends Dialog
 	private Text wExtendeddescription;
 
 	// Trans Status
-	private Label wlTransstatus;
-	private  CCombo wTransstatus;
+	private Label    wlTransstatus;
+	private CCombo   wTransstatus;
 	private FormData fdlTransstatus, fdTransstatus;
 
 	//Trans version
@@ -389,7 +389,8 @@ public class TransDialog extends Dialog
 		wTransstatus = new CCombo(wTransComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wTransstatus.add(Messages.getString("TransDialog.Draft_Transstatus.Label"));
 		wTransstatus.add(Messages.getString("TransDialog.Production_Transstatus.Label"));
-		//wTransstatus.select(-1); // +1: starts at -1
+		wTransstatus.add("");
+		wTransstatus.select(-1); // +1: starts at -1
 
 		props.setLook(wTransstatus);
 		fdTransstatus= new FormData();
@@ -416,8 +417,6 @@ public class TransDialog extends Dialog
 		fdTransversion.top  = new FormAttachment(wTransstatus, margin);
 		fdTransversion.right= new FormAttachment(100, 0);
 		wTransversion.setLayoutData(fdTransversion);
-
-
 
 		// Directory:
 		Label wlDirectory = new Label(wTransComp, SWT.RIGHT);
@@ -569,7 +568,6 @@ public class TransDialog extends Dialog
         /// END OF TRANS TAB
         /////////////////////////////////////////////////////////////
     }
-
 
     private void addLogTab()
     {
@@ -1403,7 +1401,7 @@ public class TransDialog extends Dialog
 		if (transMeta.getDescription()!=null)   wTransdescription.setText        ( transMeta.getDescription());
 		if (transMeta.getExtendedDescription()!=null)   wExtendeddescription.setText        ( transMeta.getExtendedDescription());
 		if (transMeta.getTransversion()!=null)   wTransversion.setText        ( transMeta.getTransversion());
-		wTransstatus.select        ( transMeta.getTransstatus()-1);
+		wTransstatus.select( transMeta.getTransstatus()-1 );
 				
 
 		if (transMeta.getCreatedUser()!=null)     wCreateUser.setText          ( transMeta.getCreatedUser() );
@@ -1540,7 +1538,15 @@ public class TransDialog extends Dialog
 		transMeta.setDescription(       wTransdescription.getText()                      );
 		transMeta.setExtendedDescription(       wExtendeddescription.getText()           );
 		transMeta.setTransversion(       wTransversion.getText()                         );
-		transMeta.setTransstatus(       wTransstatus.getSelectionIndex()   +1            );
+		
+		if ( wTransstatus.getSelectionIndex() != 2 )
+		{
+		    transMeta.setTransstatus( wTransstatus.getSelectionIndex() + 1 );
+		}
+		else
+		{
+			transMeta.setTransstatus( -1 );
+		}
 		
 		try
 		{

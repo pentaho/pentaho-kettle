@@ -204,7 +204,7 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
         modifiedDate = new Value("modifiedDate", Value.VALUE_TYPE_DATE).sysdate(); //$NON-NLS-1$
         directory = new RepositoryDirectory();
 		description=null;
-		job_status=1;
+		job_status=-1;
         job_version=null;
 		extended_description=null;
         useBatchId=true;
@@ -506,7 +506,10 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
 		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
 		retval.append("    ").append(XMLHandler.addTagValue("job_version", job_version));
-		retval.append("    ").append(XMLHandler.addTagValue("job_status", job_status));
+		if ( job_status >= 0 )
+		{
+		    retval.append("    ").append(XMLHandler.addTagValue("job_status", job_status));
+		}
 
         retval.append("  ").append(XMLHandler.addTagValue("directory", directory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("  ").append(XMLHandler.addTagValue("created_user", created_user)); //$NON-NLS-1$ //$NON-NLS-2$

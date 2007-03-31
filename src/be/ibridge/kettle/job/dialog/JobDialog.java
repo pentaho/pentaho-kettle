@@ -12,8 +12,6 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
-
-
  
 package be.ibridge.kettle.job.dialog;
 
@@ -134,22 +132,22 @@ public class JobDialog extends Dialog
 	private Text wExtendeddescription;
 	private FormData fdlExtendeddescription, fdExtendeddescription;
 
-	// Trans Status
-	private Label wlJobstatus;
-	private  CCombo wJobstatus;
+	// Job Status
+	private Label    wlJobstatus;
+	private CCombo   wJobstatus;
 	private FormData fdlJobstatus, fdJobstatus;
 
-	//Trans version
+	// Job version
 	private Text         wJobversion;
 
 	private int middle;
 	private int margin;
 
-	//Job creation
+	// Job creation
 	private Text         wCreateUser;
 	private Text         wCreateDate;
 
-	//Job modification
+	// Job modification
 	private Text         wModUser;
 	private Text         wModDate;
 
@@ -252,6 +250,7 @@ public class JobDialog extends Dialog
 		}
 		return jobMeta;
 	}
+	
 	private void addJobTab()
 	{
 		//////////////////////////
@@ -340,6 +339,7 @@ public class JobDialog extends Dialog
 		wJobstatus = new CCombo(wJobComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wJobstatus.add(Messages.getString("JobDialog.Draft_Jobstatus.Label"));
 		wJobstatus.add(Messages.getString("JobDialog.Production_Jobstatus.Label"));
+		wJobstatus.add("");
 		wJobstatus.select(-1); // +1: starts at -1
 
 		props.setLook(wJobstatus);
@@ -534,8 +534,6 @@ public class JobDialog extends Dialog
 		wLogTab=new CTabItem(wTabFolder, SWT.NONE);
 		wLogTab.setText(Messages.getString("JobDialog.LogTab.Label")); //$NON-NLS-1$
 
-   
-		
 		FormLayout LogLayout = new FormLayout ();
 		LogLayout.marginWidth  = Const.MARGIN;
 		LogLayout.marginHeight = Const.MARGIN;
@@ -573,7 +571,7 @@ public class JobDialog extends Dialog
 				}
 			}
 		}
-			);
+		);
 
 		wLogconnection=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLogconnection);
@@ -690,10 +688,7 @@ public class JobDialog extends Dialog
 				sharedObjectsFileChanged = true;
 			}
 		}
-			);
-
- 
-
+		);
 
 		FormData fdLogComp = new FormData();
 		fdLogComp.left  = new FormAttachment(0, 0);
@@ -701,19 +696,15 @@ public class JobDialog extends Dialog
 		fdLogComp.right = new FormAttachment(100, 0);
 		fdLogComp.bottom= new FormAttachment(100, 0);
 		wLogComp.setLayoutData(fdLogComp);
-
 		  
 		wLogComp.layout();
 		wLogTab.setControl(wLogComp);
-
 	        
 		/////////////////////////////////////////////////////////////
 		/// END OF LOG TAB
 		/////////////////////////////////////////////////////////////
-
-
-
 	}
+	
 	public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
@@ -732,7 +723,7 @@ public class JobDialog extends Dialog
 		if (jobMeta.getDescription()!=null)    wJobdescription.setText      ( jobMeta.getDescription());
 		if (jobMeta.getExtendedDescription()!=null)    wExtendeddescription.setText      ( jobMeta.getExtendedDescription());
 		if (jobMeta.getJobversion()!=null)   wJobversion.setText        ( jobMeta.getJobversion());
-		wJobstatus.select     ( jobMeta.getJobstatus() -1);
+		wJobstatus.select( jobMeta.getJobstatus() -1);
 		
 		if (jobMeta.getDirectory()!=null)      wDirectory.setText    ( jobMeta.getDirectory().getPath() );
 		
@@ -785,7 +776,16 @@ public class JobDialog extends Dialog
 		jobMeta.setDescription(wJobdescription.getText());
 		jobMeta.setExtendedDescription(wExtendeddescription.getText()  );
 		jobMeta.setJobversion(wJobversion.getText() );
-		jobMeta.setJobstatus( wJobstatus.getSelectionIndex()   +1  );
+		if ( wJobstatus.getSelectionIndex() != 2 )
+		{
+			// Saving the index as meta data is in fact pretty bad, but since
+			// it was already in ...
+		    jobMeta.setJobstatus( wJobstatus.getSelectionIndex() + 1 );
+		}
+		else
+		{
+		    jobMeta.setJobstatus( -1  );
+		}
 		jobMeta.setLogConnection( jobMeta.findDatabase(wLogconnection.getText()) );
         jobMeta.setLogTable( wLogtable.getText() );
         

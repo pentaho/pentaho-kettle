@@ -313,7 +313,7 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         
         name = null;
 		description=null;
-		trans_status=1;
+		trans_status=-1;
 		trans_version=null;
 		extended_description=null;
         filename = null;
@@ -2356,7 +2356,10 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
 		retval.append("    ").append(XMLHandler.addTagValue("description", description)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("extended_description", extended_description)); 
 		retval.append("    ").append(XMLHandler.addTagValue("trans_version", trans_version));
-		retval.append("    ").append(XMLHandler.addTagValue("trans_status", trans_status));
+		if ( trans_status >= 0 )
+		{
+		    retval.append("    ").append(XMLHandler.addTagValue("trans_status", trans_status));
+		}
         retval.append("    ").append(XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    <log>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
