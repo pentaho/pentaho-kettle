@@ -193,6 +193,7 @@ public class RepositoryExplorerDialog extends Dialog
             Shell parent = getParent();
     		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     		props.setLook(shell);
+			shell.setImage(GUIResource.getInstance().getImageConnection());
     		shell.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     		
     		FormLayout formLayout = new FormLayout ();
