@@ -19,8 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import org.eclipse.swt.graphics.Image;
 import java.util.Properties;
-
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -208,6 +209,8 @@ public class DatabaseDialog extends Dialog
         Shell parent = getParent();
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
+		//image
+		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
 
         lsMod = new ModifyListener()
         {
