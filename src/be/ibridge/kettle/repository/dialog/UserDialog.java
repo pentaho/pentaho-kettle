@@ -21,6 +21,8 @@
 
 package be.ibridge.kettle.repository.dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -94,6 +96,7 @@ public class UserDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
