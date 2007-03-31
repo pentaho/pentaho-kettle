@@ -16,6 +16,8 @@
 package be.ibridge.kettle.job.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -178,6 +180,7 @@ public class JobDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
+		shell.setImage((Image) GUIResource.getInstance().getImageChefGraph());
 		
 		lsMod = new ModifyListener() 
 		{
