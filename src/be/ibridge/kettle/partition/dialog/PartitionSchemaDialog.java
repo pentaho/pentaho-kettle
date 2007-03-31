@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -88,6 +90,7 @@ public class PartitionSchemaDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
+		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
 		
 		lsMod = new ModifyListener() 
 		{
