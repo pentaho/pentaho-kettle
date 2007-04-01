@@ -21,6 +21,7 @@
 
 package be.ibridge.kettle.spoon.dialog;
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.ShellAdapter;
@@ -74,6 +75,7 @@ public class ShowCreditsDialog extends Dialog
 		
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
