@@ -23,6 +23,7 @@ package be.ibridge.kettle.core.dialog;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -228,6 +229,7 @@ public class EnterOptionsDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE );
         props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
