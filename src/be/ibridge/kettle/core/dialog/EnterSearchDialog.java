@@ -1,6 +1,7 @@
 package be.ibridge.kettle.core.dialog;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -60,6 +61,7 @@ public class EnterSearchDialog
     {
         shell = new Shell(parentShell,  SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
         props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
         shell.setText(Messages.getString("EnterSearchDialog.Shell.Title"));
         
         FormLayout formLayout = new FormLayout ();
