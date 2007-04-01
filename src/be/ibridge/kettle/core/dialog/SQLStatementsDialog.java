@@ -18,6 +18,7 @@ package be.ibridge.kettle.core.dialog;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
@@ -99,6 +100,7 @@ public class SQLStatementsDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX);
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageConnection());
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
