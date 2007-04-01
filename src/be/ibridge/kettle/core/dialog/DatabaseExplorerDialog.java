@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -173,6 +174,8 @@ public class DatabaseExplorerDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
+		shell.setImage(GUIResource.getInstance().getImageConnection());
+
 		shell.setText(Messages.getString("DatabaseExplorerDialog.Title", dbMeta.toString()));
 		
 		FormLayout formLayout = new FormLayout ();
