@@ -148,6 +148,7 @@ import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.util.ImageUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.core.widget.TreeMemory;
@@ -1502,7 +1503,21 @@ public class Spoon implements AddUndoPositionInterface
         final Image imFileNew = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
         tiFileNew.setImage(imFileNew);
         tiFileNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newFile(); }});
-        tiFileNew.setToolTipText(Messages.getString("Spoon.Tooltip.NewTranformation"));//New transformation, clear all settings
+        tiFileNew.setToolTipText(Messages.getString("Spoon.Tooltip.NewFile"));
+
+        final ToolItem tiFileNewTrans = new ToolItem(tBar, SWT.PUSH);
+        final Image imFileNewTrans = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new RGB(192, 192, 192)); 
+        tiFileNewTrans.setImage(imFileNewTrans);
+        tiFileNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newTransFile(); }});
+        tiFileNewTrans.setToolTipText(Messages.getString("Spoon.Tooltip.NewTranformation"));
+
+        final ToolItem tiFileNewJob = new ToolItem(tBar, SWT.PUSH);
+        final Image imFileNewJob = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newjob.png")), new RGB(192, 192, 192)); 
+        tiFileNewJob.setImage(imFileNewJob);
+        tiFileNewJob.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newJobFile(); }});
+        tiFileNewJob.setToolTipText(Messages.getString("Spoon.Tooltip.NewJob"));
+
+        new ToolItem(tBar, SWT.SEPARATOR);
 
         final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH);
         final Image imFileOpen = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 

@@ -16,7 +16,6 @@
 package be.ibridge.kettle.repository.dialog;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;

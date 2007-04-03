@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -386,25 +385,14 @@ public class GUIResource
         
         // Makes transparent images "on the fly"
         //
-        imageSpoonGraph = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png")), new RGB(255,255,255));
-        imageChefGraph  = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
-        imageLogoSmall  = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")), new RGB(255,255,255));
-        imageArrow      = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
-        imageBanner     = makeImageTransparent(new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
+        imageSpoonGraph = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png")), new RGB(255,255,255));
+        imageChefGraph  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
+        imageLogoSmall  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")), new RGB(255,255,255));
+        imageArrow      = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
+        imageBanner     = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
         
         // Rotate logo once left.
         imageLogoLeft = new Image(display, ImageUtil.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
-    }
-    
-    public Image makeImageTransparent(Image tempImage, RGB transparentColor)
-    {
-        ImageData imageData = tempImage.getImageData();
-        int pixelIndex = imageData.palette.getPixel(new RGB(255,255,255));
-        imageData.transparentPixel = pixelIndex;
-        Image image = new Image(display, imageData);
-        tempImage.dispose();
-        
-        return image;
     }
 
     /**

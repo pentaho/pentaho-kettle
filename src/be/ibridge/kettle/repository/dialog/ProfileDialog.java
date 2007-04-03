@@ -21,8 +21,6 @@
 
 package be.ibridge.kettle.repository.dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -42,6 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.repository.PermissionMeta;

@@ -1,7 +1,10 @@
 package be.ibridge.kettle.core.util;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 public class ImageUtil
 {
@@ -75,5 +78,16 @@ public class ImageUtil
         // destBytesPerLine is used as scanlinePad to ensure that no padding is
         // required
         return new ImageData(srcData.width, srcData.height, srcData.depth, srcData.palette, destBytesPerLine, newData);
+    }
+    
+    public static Image makeImageTransparent(Display display, Image tempImage, RGB transparentColor)
+    {
+        ImageData imageData = tempImage.getImageData();
+        int pixelIndex = imageData.palette.getPixel(transparentColor);
+        imageData.transparentPixel = pixelIndex;
+        Image image = new Image(display, imageData);
+        tempImage.dispose();
+        
+        return image;
     }
 }
