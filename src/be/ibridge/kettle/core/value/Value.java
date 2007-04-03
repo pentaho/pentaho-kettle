@@ -2052,7 +2052,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			switch(getType())
 			{
-	            case VALUE_TYPE_BIGNUMBER : setValue(getBigNumber().divide(v.getBigNumber(), BigDecimal.ROUND_UP)); break;
+	            case VALUE_TYPE_BIGNUMBER : setValue(getBigNumber().divide(v.getBigNumber(), BigDecimal.ROUND_HALF_UP)); break;
 				case VALUE_TYPE_NUMBER    : setValue(getNumber()/v.getNumber()); break;
 				case VALUE_TYPE_INTEGER   : setValue(getInteger()/v.getInteger()); break;
 				case VALUE_TYPE_BOOLEAN   :
