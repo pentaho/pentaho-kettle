@@ -142,6 +142,7 @@ public class Calculator extends BaseStep implements StepInterface
                 case CalculatorMetaFunction.CALC_DIVIDE             :   // A / B
                     {
                         value = new Value(fn.getFieldName(), fieldA);
+                        value.setType(fn.getValueType());
                         value.divide(fieldB);
                     }
                     break;
