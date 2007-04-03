@@ -23,6 +23,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -648,5 +649,13 @@ public class StepLoader
             }
         }
         return null;
+    }
+
+    /**
+     * @return the pluginList
+     */
+    public List getPluginList()
+    {
+        return pluginList;
     }
 }
