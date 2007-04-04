@@ -715,7 +715,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                                     // get a data Handler to manipulate this file type;
     								files.setDataHandler(new DataHandler(fds));
     								// include the file in the data source
-    								files.setFileName(fds.getName());
+    								files.setFileName(file.getName().getBaseName());
     								// add the part with the file in the BodyPart();
     								parts.addBodyPart(files);
                                     
@@ -745,7 +745,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                                 if (found)
                                 {
     								FileObject file = resultFile.getFile();
-    								ZipEntry zipEntry = new ZipEntry(file.getName().getURI());
+    								ZipEntry zipEntry = new ZipEntry(file.getName().getBaseName());
     								zipOutputStream.putNextEntry(zipEntry);
     
     								// Now put the content of this file into this archive...

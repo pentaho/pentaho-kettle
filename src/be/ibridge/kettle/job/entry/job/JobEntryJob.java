@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.job;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
@@ -33,6 +35,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -557,8 +560,18 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             {
                 log.removeAppender(appender);
                 appender.close();
+                try
+                {
+                    ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, KettleVFS.getFileObject(appender.getFile().getAbsolutePath()), parentJob.getJobname(), getName());
+                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+                }
+                catch(IOException e)
+                {
+                    log.logError(toString(), "Error getting file object from file ["+appender.getFile()+"] : "+e.toString());
+                }
             }
             log.setLogLevel(backupLogLevel);
+            
         }
         
         if (result.getNrErrors() > 0)
