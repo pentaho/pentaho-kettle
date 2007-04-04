@@ -445,6 +445,8 @@ public class EnterMappingDialog extends Dialog
         boolean found = false;
 
         int sourceIndex = wSource.getSelectionIndex();
+        if (sourceIndex<0) return false;
+        
         // Skip eventhing after the bracket...
         String sourceStr = wSource.getItem(sourceIndex).toUpperCase();
 
