@@ -313,10 +313,10 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		input=(ScriptValuesMetaMod)in;
 		try{
 			ImageLoader xl = new ImageLoader();
-			imageActiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream("/images/faScript.png"))[0]);
-			imageInactiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream("/images/fScript.png"))[0]);
-			imageActiveStartScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream("/images/sScript.png"))[0]);
-			imageActiveEndScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream("/images/eScript.png"))[0]);
+			imageActiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"faScript.png"))[0]);
+			imageInactiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"fScript.png"))[0]);
+			imageActiveStartScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"sScript.png"))[0]);
+			imageActiveEndScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"eScript.png"))[0]);
 		}catch(Exception e){
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
