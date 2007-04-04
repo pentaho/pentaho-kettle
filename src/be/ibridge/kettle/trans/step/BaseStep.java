@@ -1188,6 +1188,18 @@ public class BaseStep extends Thread
         if (referenceRow == null)
         {
             referenceRow = new Row(row); // copy it!
+            
+            // Check for double fieldnames.
+            // 
+            String[] fieldnames = row.getFieldNames();
+            Arrays.sort(fieldnames);
+            for (int i=0;i<fieldnames.length-1;i++)
+            {
+                if (fieldnames[i].equals(fieldnames[i+1]))
+                {
+                    throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[i]));
+                }
+            }
         }
         else
         {
@@ -1220,18 +1232,6 @@ public class BaseStep extends Thread
                 if (referenceValue.getType()!=compareValue.getType())
                 {
                     throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.MixingTypes", ""+(i+1), Const.CR, referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" " +compareValue.toStringMeta()));               
-                }
-            }
-            
-            // Check for double fieldnames.
-            // 
-            String[] fieldnames = row.getFieldNames();
-            Arrays.sort(fieldnames);
-            for (int i=0;i<fieldnames.length-1;i++)
-            {
-                if (fieldnames[i].equals(fieldnames[i+1]))
-                {
-                    throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[i]));
                 }
             }
         }

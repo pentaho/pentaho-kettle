@@ -4276,7 +4276,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                                 if (prevName.equalsIgnoreCase(sortedNames[x]))
                                 {
                                     // Give a warning!!
-                                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING,
+                                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
                                             Messages.getString("TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description", prevName ), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
                                     remarks.add(cr);
                                 }
