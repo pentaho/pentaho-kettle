@@ -381,9 +381,10 @@ public class Database
 
             if (databaseMeta.supportsOptionsInURL())
             {
-                if (!Const.isEmpty(username))
+                if (!Const.isEmpty(username) || !Const.isEmpty(password))
                 {
-                    connection = DriverManager.getConnection(url, username, Const.NVL(password, ""));
+                	// also allow for empty username with given password, in this case username must be given with one space 
+                    connection = DriverManager.getConnection(url, Const.NVL(username, " "), Const.NVL(password, ""));
                 }
                 else
                 {
