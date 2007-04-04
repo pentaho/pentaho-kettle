@@ -1410,7 +1410,7 @@ public class Props implements Cloneable
     
     public int getDefaultPreviewSize()
     {
-        return Const.toInt(properties.getProperty(STRING_DEFAULT_PREVIEW_SIZE), 100);
+        return Const.toInt(properties.getProperty(STRING_DEFAULT_PREVIEW_SIZE), 1000);
     }
     
     public boolean areOnlyUsedConnectionsSavedToXML()
