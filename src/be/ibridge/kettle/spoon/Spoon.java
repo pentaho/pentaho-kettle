@@ -7847,7 +7847,7 @@ public class Spoon implements AddUndoPositionInterface
         executionConfiguration.setExecutingClustered(cluster);
         
         executionConfiguration.getUsedVariables(transMeta);
-        executionConfiguration.getUsedArguments(transMeta, executionConfiguration.getArgumentStrings());
+        executionConfiguration.getUsedArguments(transMeta, arguments);
         executionConfiguration.setReplayDate(replayDate);
         executionConfiguration.setLocalPreviewing(preview);
         
@@ -7896,6 +7896,7 @@ public class Spoon implements AddUndoPositionInterface
                         );
             }
         }
+        arguments = executionConfiguration.getArgumentStrings();
     }
     
     public void executeJob(JobMeta jobMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
