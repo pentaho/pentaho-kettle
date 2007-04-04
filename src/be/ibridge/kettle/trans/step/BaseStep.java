@@ -263,7 +263,7 @@ public class BaseStep extends Thread
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_EXPERIMENTAL),
+                    .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
         };
 
     public static final String category_order[] =

@@ -7847,7 +7847,7 @@ public class Spoon implements AddUndoPositionInterface
         executionConfiguration.setExecutingClustered(cluster);
         
         executionConfiguration.getUsedVariables(transMeta);
-        executionConfiguration.getUsedArguments(transMeta, arguments);
+        executionConfiguration.getUsedArguments(transMeta, executionConfiguration.getArgumentStrings());
         executionConfiguration.setReplayDate(replayDate);
         executionConfiguration.setLocalPreviewing(preview);
         
