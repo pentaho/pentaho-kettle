@@ -4529,7 +4529,6 @@ public class Spoon implements AddUndoPositionInterface
             if (id==SWT.YES)
             {
                 saved=save(transMeta, fname);
-                transMeta.setFilename(fname);
             }
         }
         
@@ -4538,6 +4537,11 @@ public class Spoon implements AddUndoPositionInterface
     
     private boolean save(TransMeta transMeta, String fname)
     {
+        transMeta.setFilename(fname);
+        if (Const.isEmpty(transMeta.getName()) || isDefaultTransformationName(transMeta.getName()))
+        {
+            transMeta.nameFromFilename();
+        }
         boolean saved = false;
         String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
         try
@@ -8062,11 +8066,6 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(transMeta.getName()) && Const.isEmpty(transMeta.getFilename()))
             return STRING_TRANS_NO_NAME;
         
-        if (Const.isEmpty(transMeta.getName()) || isDefaultTransformationName(transMeta.getName()))
-        {
-            transMeta.nameFromFilename();
-        }
-
         return transMeta.getName();
     }
     
@@ -8074,11 +8073,6 @@ public class Spoon implements AddUndoPositionInterface
     {
         if (Const.isEmpty(jobMeta.getName()) && Const.isEmpty(jobMeta.getFilename()))
             return STRING_JOB_NO_NAME;
-
-        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobnName(jobMeta.getName()))
-        {
-            jobMeta.nameFromFilename();
-        }
 
         return jobMeta.getName();
     }
@@ -8533,7 +8527,6 @@ public class Spoon implements AddUndoPositionInterface
             if (id==SWT.YES)
             {
                 saved=saveJob(jobMeta, fname);
-                jobMeta.setFilename(fname);
             }
         }
         
@@ -8714,6 +8707,12 @@ public class Spoon implements AddUndoPositionInterface
     
     private boolean saveJob(JobMeta jobMeta, String fname)
     {
+        jobMeta.setFilename(fname);
+        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobnName(jobMeta.getName()))
+        {
+            jobMeta.nameFromFilename();
+        }
+
         boolean saved = false;
         String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
         try
