@@ -5112,7 +5112,6 @@ public class Spoon implements AddUndoPositionInterface
         
         String fname = null;
         String name = null;
-        long id = -1L;
         ChangedFlagInterface changed = null;
 
         TransMeta transMeta = getActiveTransformation();
@@ -5121,7 +5120,6 @@ public class Spoon implements AddUndoPositionInterface
             changed = transMeta;
             fname = transMeta.getFilename();
             name = transMeta.getName();
-            id = transMeta.getID();
         }
         JobMeta jobMeta = getActiveJob();
         if (jobMeta!=null)
@@ -5129,9 +5127,7 @@ public class Spoon implements AddUndoPositionInterface
             changed = jobMeta;
             fname = jobMeta.getFilename();
             name = jobMeta.getName();
-            id = jobMeta.getID();
         }
-        
 
         String text = "";
         
@@ -5144,25 +5140,30 @@ public class Spoon implements AddUndoPositionInterface
             text+= APPL_TITLE+" - ";
         }
         
-        if (rep!=null && id>0)
-        {
-            if (Const.isEmpty(name))
-            {
-                text+=Messages.getString("Spoon.Various.NoName");//"[no name]"
-            }
-            else
-            {
-                text+=name;
-            }
-        }
-        else
+        if (Const.isEmpty(name))
         {
             if (!Const.isEmpty(fname))
             {
                 text+=fname;
             }
+            else
+            {
+                String tab = getActiveTabText();
+                if (!Const.isEmpty(tab)) 
+                {
+                    text+=tab;
+                }
+                else
+                {
+                    text+=Messages.getString("Spoon.Various.NoName");//"[no name]"
+                }
+            }
         }
-        
+        else
+        {
+            text+=name;
+        }
+
         if (changed!=null && changed.hasChanged())
         {
             text+=" "+Messages.getString("Spoon.Various.Changed");
