@@ -18,7 +18,6 @@ package be.ibridge.kettle.core.dialog;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
@@ -31,12 +30,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -146,11 +145,8 @@ public class PreviewRowsDialog extends Dialog
         // Mmm, if we don't get any rows in the buffer: show a dialog box.
         if (buffer == null || buffer.size() == 0)
         {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-            mb.setMessage(Messages.getString("PreviewRowsDialog.NoRows.Message"));
-            mb.setText(Messages.getString("PreviewRowsDialog.NoRows.Text"));
-            mb.open();
-
+            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_WARNING, Messages.getString("PreviewRowsDialog.NoRows.Text"), Messages.getString("PreviewRowsDialog.NoRows.Message"));
+            dialog.open();
             shell.dispose();
             return null;
         }

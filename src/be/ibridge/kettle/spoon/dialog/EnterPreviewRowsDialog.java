@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
@@ -193,17 +192,8 @@ public class EnterPreviewRowsDialog extends Dialog
 		ArrayList buffer = (ArrayList)buffers.get(nr);
 		String    name   = (String)names.get(nr);
 		
-		if (buffer.size()>0)
-		{
-			PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, name, buffer);
-			prd.open();		
-		}
-		else
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING );
-			mb.setMessage(Messages.getString("EnterPreviewRowsDialog.Dialog.NoRowsFound.Message")); //No rows found in previewing this step.
-			mb.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.NoRowsFound.Title")); //WARNING
-			mb.open();
-		}
+		PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, name, buffer);
+		prd.open();		
+
 	}
 }
