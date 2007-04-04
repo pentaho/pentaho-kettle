@@ -21,6 +21,7 @@
 package be.ibridge.kettle.trans.step;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -1201,9 +1202,7 @@ public class BaseStep extends Thread
         // First check the number of fields
         if (referenceRow.size() != row.size())
         {
-            throw new KettleRowException("We detected rows with varying number of fields, this is not allowed in a transformation.  "
-                    + "Check your settings."+Const.CR+"The first row contained " + referenceRow.size() + " fields, this one contains " + row.size() + " : "
-                    + row);
+            throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.Varying", Const.CR, ""+referenceRow.size(), ""+row.size(), row.toString()));
         }
         else
         {
@@ -1215,12 +1214,24 @@ public class BaseStep extends Thread
 
                 if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName()))
                 {
-                    throw new KettleRowException("The name of field #" + (i+1) + " is not the same as in the first row received: you're mixing rows with different layout!" + Const.CR + "Field '"+referenceValue.getName() +" "+ referenceValue.toStringMeta() + "' does not have the same name as field '" + compareValue.getName()+" " +compareValue.toStringMeta()+"'");
+                    throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.MixingLayout", ""+(i+1), Const.CR, referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" " +compareValue.toStringMeta()));
                 }
 
                 if (referenceValue.getType()!=compareValue.getType())
                 {
-                    throw new KettleRowException("The data type of field #" + (i+1) + " is not the same as the first row received: you're mixing rows with different layout!" + Const.CR + "Field '"+referenceValue.getName() +" "+ referenceValue.toStringMeta() + "' does not have the same data type as field '" + compareValue.getName()+" " +compareValue.toStringMeta()+"'");
+                    throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.MixingTypes", ""+(i+1), Const.CR, referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" " +compareValue.toStringMeta()));               
+                }
+            }
+            
+            // Check for double fieldnames.
+            // 
+            String[] fieldnames = row.getFieldNames();
+            Arrays.sort(fieldnames);
+            for (int i=0;i<fieldnames.length-1;i++)
+            {
+                if (fieldnames[i].equals(fieldnames[i+1]))
+                {
+                    throw new KettleRowException(Messages.getString("BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[i]));
                 }
             }
         }
