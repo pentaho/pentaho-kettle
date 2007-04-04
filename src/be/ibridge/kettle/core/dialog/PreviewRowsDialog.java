@@ -18,6 +18,7 @@ package be.ibridge.kettle.core.dialog;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Rectangle;
