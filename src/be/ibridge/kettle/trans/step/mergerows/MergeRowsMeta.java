@@ -383,30 +383,24 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
-        /*
 		CheckResult cr;
 		
 		if (getReferenceStepName()!=null && getCompareStepName()!=null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Both 'true' and 'false' steps are specified.  I know how to split the incoming stream(s) of data.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsOK"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		if (getReferenceStepName()==null && getCompareStepName()==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Neither 'true' and 'false' steps are specified.  Only when the condition is true, rows are sent to the next steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsMissing"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Please specify both the 'true' AND 'false' steps.  That way Kettle know for sure where to send the data after computing the condition.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepinfo);
 			remarks.add(cr);
 		}
-        */
-        
-        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MergeRowsMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
-        remarks.add(cr);
-
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
