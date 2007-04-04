@@ -1363,7 +1363,12 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        // Focus is lost: apply changes.
+                        String newname = text.getText();
+                        if (renameTransformation(fname, newname, frepdir)) 
+                        {
+                            ti.setText(newname);
+                        }
                         text.dispose();
 					}
 				}
@@ -1548,7 +1553,12 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        // Focus is lost: apply changes
+                        String newname = text.getText();
+                        if (renameJob(fname, newname, frepdir)) 
+                        {
+                            ti.setText(newname);
+                        }
                         text.dispose();
 					}
 				}
@@ -1682,7 +1692,12 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				public void focusLost(FocusEvent arg0) 
 				{
-                    // Focus is lost: don't change anything UNLESS you hit enter!
+                    // Focus is lost: apply changes
+                    String newname = text.getText();
+                    if (renameJob(name, repdir, newname)) 
+                    {
+                        ti.setText(newname);
+                    }
                     text.dispose();
 				}
 			}
@@ -1852,7 +1867,12 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        // Focus is lost: apply changes
+                        String newname = text.getText();
+                        if (renameUser(name, newname)) 
+                        {
+                            ti.setText(newname);
+                        }
                         text.dispose();
 					}
 				}
@@ -1948,7 +1968,12 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        // Focus is lost: apply changes
+                        String newname = text.getText();
+                        if (renameProfile(name, newname)) 
+                        {
+                            ti.setText(newname);
+                        }
                         text.dispose();
 					}
 				}
@@ -2155,7 +2180,12 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: don't change anything UNLESS you hit enter!
+						// Focus is lost: apply changes
+                        String newname = text.getText();
+                        if (renameDatabase(name, newname)) 
+                        {
+                            ti.setText(newname);
+                        }
                         text.dispose();
 					}
 				}
@@ -2251,7 +2281,12 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				public void focusLost(FocusEvent arg0) 
 				{
-					// Focus is lost: don't change anything UNLESS you hit enter!
+					// Focus is lost: apply changes
+                    String newname = text.getText();
+                    if (renameDirectory(repdir, name, newname)) 
+                    {
+                        ti.setText(newname);
+                    }
 					text.dispose();
 				}
 			}
