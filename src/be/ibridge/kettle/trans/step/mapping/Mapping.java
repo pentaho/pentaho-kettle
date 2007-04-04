@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.mapping;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -131,6 +132,19 @@ public class Mapping extends BaseStep implements StepInterface
 			data.renameFieldIndexes = new ArrayList();
 			data.renameFieldNames   = new ArrayList();
 			
+            // See if the same field get's mapped to a different target multiple times
+            // To do this, we simply check if the inputFields contains doubles.
+            String[] inputFields = new String[meta.getInputField().length];
+            for (int i=0;i<inputFields.length;i++) inputFields[i]=meta.getInputField()[i];
+            Arrays.sort(inputFields);
+            for (int i=0;i<inputFields.length-1;i++)
+            {
+                if (inputFields[i].equalsIgnoreCase(inputFields[i+1]))
+                {
+                    throw new KettleException(Messages.getString("Mapping.Exception.SameFieldMappedTwice", inputFields[i]));
+                }
+            }
+            
 			for (int i=0;i<meta.getInputField().length;i++)
 			{
 				if (meta.getInputField()[i]!=null && meta.getInputField()[i].length()>0)
@@ -171,6 +185,7 @@ public class Mapping extends BaseStep implements StepInterface
 					return false;
 				}
 			}
+            
 		} // end of first block
 		
 		for (int i=0;i<data.renameFieldIndexes.size();i++)
