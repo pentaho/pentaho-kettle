@@ -160,6 +160,9 @@ public class EnterOptionsDialog extends Dialog
 	private Label        wlAutoSave;
 	private Button       wAutoSave;
 
+    private Label        wlOnlyActiveFile;
+    private Button       wOnlyActiveFile;
+
     private Label        wlDBConnXML;
     private Button       wDBConnXML;
 
@@ -1126,13 +1129,31 @@ public class EnterOptionsDialog extends Dialog
         fdAutoSave.right= new FormAttachment(100, 0);
         wAutoSave.setLayoutData(fdAutoSave);
 
+        // Auto save changed files?
+        wlOnlyActiveFile=new Label(wGeneralComp, SWT.RIGHT);
+        wlOnlyActiveFile.setText(Messages.getString("EnterOptionsDialog.OnlyActiveFile.Label"));
+        props.setLook(wlOnlyActiveFile);
+        FormData fdlOnlyActiveFile = new FormData();
+        fdlOnlyActiveFile.left = new FormAttachment(0, 0);
+        fdlOnlyActiveFile.top  = new FormAttachment(wAutoSave, margin);
+        fdlOnlyActiveFile.right= new FormAttachment(middle, -margin);
+        wlOnlyActiveFile.setLayoutData(fdlOnlyActiveFile);
+        wOnlyActiveFile=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wOnlyActiveFile);
+        wOnlyActiveFile.setSelection(props.isOnlyActiveFileShownInTree());
+        FormData fdOnlyActiveFile = new FormData();
+        fdOnlyActiveFile.left = new FormAttachment(middle, 0);
+        fdOnlyActiveFile.top  = new FormAttachment(wAutoSave, margin);
+        fdOnlyActiveFile.right= new FormAttachment(100, 0);
+        wOnlyActiveFile.setLayoutData(fdOnlyActiveFile);
+
         // Only save used connections to XML?
         wlDBConnXML=new Label(wGeneralComp, SWT.RIGHT);
         wlDBConnXML.setText(Messages.getString("EnterOptionsDialog.OnlySaveUsedConnections.Label"));
         props.setLook(wlDBConnXML);
         FormData fdlDBConnXML = new FormData();
         fdlDBConnXML.left = new FormAttachment(0, 0);
-        fdlDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdlDBConnXML.top  = new FormAttachment(wOnlyActiveFile, margin);
         fdlDBConnXML.right= new FormAttachment(middle, -margin);
         wlDBConnXML.setLayoutData(fdlDBConnXML);
         wDBConnXML=new Button(wGeneralComp, SWT.CHECK);
@@ -1140,7 +1161,7 @@ public class EnterOptionsDialog extends Dialog
         wDBConnXML.setSelection(props.areOnlyUsedConnectionsSavedToXML());
         FormData fdDBConnXML = new FormData();
         fdDBConnXML.left = new FormAttachment(middle, 0);
-        fdDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdDBConnXML.top  = new FormAttachment(wOnlyActiveFile, margin);
         fdDBConnXML.right= new FormAttachment(100, 0);
         wDBConnXML.setLayoutData(fdDBConnXML);
 

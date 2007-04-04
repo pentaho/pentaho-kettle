@@ -148,6 +148,8 @@ public class Props implements Cloneable
 
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
 
+    private static final String STRING_ONLY_SHOW_ACTIVE_FILE = "OnlyShowActiveFileInTree";
+
     private LogWriter log = LogWriter.getInstance();
 	private Properties properties;
 	
@@ -1526,7 +1528,7 @@ public class Props implements Cloneable
     
     public boolean isBrandingActive()
     {
-        String show = properties.getProperty(STRING_SHOW_BRANDING_GRAPHICS, "Y");
+        String show = properties.getProperty(STRING_SHOW_BRANDING_GRAPHICS, "N");
         return "Y".equalsIgnoreCase(show);
     }
     
@@ -1535,4 +1537,14 @@ public class Props implements Cloneable
         properties.setProperty(STRING_SHOW_BRANDING_GRAPHICS, active?"Y":"N");
     }
 
+    public boolean isOnlyActiveFileShownInTree()
+    {
+        String show = properties.getProperty(STRING_ONLY_SHOW_ACTIVE_FILE, "Y");
+        return "Y".equalsIgnoreCase(show);
+    }
+    
+    public void setOnlyActiveFileShownInTree(boolean show)
+    {
+        properties.setProperty(STRING_ONLY_SHOW_ACTIVE_FILE, show?"Y":"N");
+    }
 }

@@ -74,7 +74,7 @@ import be.ibridge.kettle.trans.HasDatabasesInterface;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
+public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
@@ -289,6 +289,11 @@ public class JobMeta implements Cloneable, XMLInterface, UndoInterface, HasDatab
             return t1.getFilename().compareTo(t2.getFilename());
         }
         return t1.getName().compareTo(t2.getName());
+    }
+    
+    public int compareTo(Object o)
+    {
+        return compare(this, o);
     }
 
     public boolean equals(Object obj)

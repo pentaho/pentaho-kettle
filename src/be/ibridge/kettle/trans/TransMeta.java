@@ -86,7 +86,7 @@ import be.ibridge.kettle.trans.step.StepPartitioningMeta;
  * @author Matt
  *
  */
-public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface, UndoInterface, HasDatabasesInterface
+public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface
 {
     public static final String XML_TAG = "transformation";
 
@@ -270,6 +270,11 @@ public class TransMeta implements XMLInterface, Comparator, ChangedFlagInterface
         }
         return t1.getName().compareTo(t2.getName()); 
     } 
+    
+    public int compareTo(Object o)
+    {
+        return compare(this, o);
+    }
     
     public boolean equals(Object obj)
     {

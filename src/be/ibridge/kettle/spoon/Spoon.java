@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -335,7 +336,7 @@ public class Spoon implements AddUndoPositionInterface
     
     private TransExecutionConfiguration executionConfiguration;
 
-    private TreeItem tiTrans, tiJobs;
+    // private TreeItem tiTrans, tiJobs;
 
     private Menu spoonMenu; // Connections, Steps & hops
     private MenuItem miFileClose, miFileSave, miFileSaveAs, miFilePrint;
@@ -1660,12 +1661,6 @@ public class Spoon implements AddUndoPositionInterface
         // Add a tree memory as well...
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
         
-        tiTrans  = new TreeItem(selectionTree, SWT.NONE); tiTrans.setText(STRING_TRANSFORMATIONS);
-        tiTrans.setImage(GUIResource.getInstance().getImageBol());
-
-        tiJobs   = new TreeItem(selectionTree, SWT.NONE); tiJobs.setText(STRING_JOBS);
-        tiJobs.setImage(GUIResource.getInstance().getImageBol());
-
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ doubleClickedInTree(); } });
@@ -2821,8 +2816,10 @@ public class Spoon implements AddUndoPositionInterface
                     ArrayList collection = new ArrayList();
                     collection.addAll(tabMap.values());
 					
+                    // See which core objects to show
+                    //
                     for (Iterator iter = collection.iterator(); iter.hasNext();)
-                    {                   	
+                    {
                         TabMapEntry entry = (TabMapEntry) iter.next();
                         if (event.item.equals(entry.getTabItem())) 
                         {
@@ -2860,7 +2857,9 @@ public class Spoon implements AddUndoPositionInterface
                             }                            
                         }
                     }
-
+                    
+                    // Also refresh the tree
+                    refreshTree();
 				}        	
             });
         
@@ -4621,208 +4620,257 @@ public class Spoon implements AddUndoPositionInterface
         if (shell.isDisposed()) return;
         
         GUIResource guiResource = GUIResource.getInstance();
+        TransMeta activeTransMeta = getActiveTransformation();
+        JobMeta activeJobMeta = getActiveJob();
+        boolean showAll = activeTransMeta==null && activeJobMeta==null;
         
         // get a list of transformations from the transformation map
-        Collection transformations = transformationMap.values();
+        List transformations = new ArrayList(transformationMap.values());
+        Collections.sort(transformations);
         TransMeta[] transMetas = (TransMeta[]) transformations.toArray(new TransMeta[transformations.size()]);
-
+        
         // get a list of jobs from the job map
-        Collection jobs = jobMap.values();
+        List jobs = new ArrayList(jobMap.values());
+        Collections.sort(jobs);
         JobMeta[] jobMetas = (JobMeta[]) jobs.toArray(new JobMeta[jobs.size()]);
 
         // Refresh the content of the tree for those transformations
         //
         // First remove the old ones.
-        tiTrans.removeAll();
-        tiJobs.removeAll();
-
+        selectionTree.removeAll();
+        
         // Now add the data back 
         //
-        for (int t=0;t<transMetas.length;t++)
+        if (!props.isOnlyActiveFileShownInTree() || showAll || activeTransMeta!=null )
         {
-            TransMeta transMeta = transMetas[t];
+            TreeItem tiTrans = new TreeItem(selectionTree, SWT.NONE); 
+            tiTrans.setText(STRING_TRANSFORMATIONS);
+            tiTrans.setImage(GUIResource.getInstance().getImageBol());
             
-            // Add a tree item with the name of transformation
-            //
-            TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
-            String name = makeTransGraphTabName(transMeta);
-            if (Const.isEmpty(name)) name = STRING_TRANS_NO_NAME;
-            tiTransName.setText(name);
-            tiTransName.setImage(guiResource.getImageBol());
-            
-            ///////////////////////////////////////////////////////
-            //
-            // Now add the database connections
-            //
-            TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiDbTitle.setText(STRING_CONNECTIONS);
-            tiDbTitle.setImage(guiResource.getImageConnection());
-            
-            // Draw the connections themselves below it.
-            for (int i=0;i<transMeta.nrDatabases();i++)
+            // Set expanded if this is the only transformation shown.
+            if (props.isOnlyActiveFileShownInTree())
             {
-                DatabaseMeta databaseMeta = transMeta.getDatabase(i);
-                TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-                tiDb.setText(databaseMeta.getName());
-                if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
-                tiDb.setImage(guiResource.getImageConnection());
+                TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiTrans, true);
             }
 
-            ///////////////////////////////////////////////////////
-            //
-            // The steps
-            //
-            TreeItem tiStepTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiStepTitle.setText(STRING_STEPS);
-            tiStepTitle.setImage(guiResource.getImageBol());
-            
-            // Put the steps below it.
-            for (int i=0;i<transMeta.nrSteps();i++)
+            for (int t=0;t<transMetas.length;t++)
             {
-                StepMeta stepMeta = transMeta.getStep(i);
-                TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
-                tiStep.setText(stepMeta.getName());
-                if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold());
-                if (!stepMeta.isDrawn()) tiStep.setForeground(guiResource.getColorGray());
-                tiStep.setImage(guiResource.getImageBol());
-            }
-            
-            ///////////////////////////////////////////////////////
-            //
-            // The hops
-            //
-            TreeItem tiHopTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiHopTitle.setText(STRING_HOPS);
-            tiHopTitle.setImage(guiResource.getImageHop());
-            
-            // Put the steps below it.
-            for (int i=0;i<transMeta.nrTransHops();i++)
-            {
-                TransHopMeta hopMeta = transMeta.getTransHop(i);
-                TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
-                tiHop.setText(hopMeta.toString());
-                tiHop.setImage(guiResource.getImageHop());
-            }
+                TransMeta transMeta = transMetas[t];
+                
+                if (!props.isOnlyActiveFileShownInTree() || showAll || (activeTransMeta!=null && activeTransMeta.equals(transMeta)))
+                {
+                    // Add a tree item with the name of transformation
+                    //
+                    TreeItem tiTransName = new TreeItem(tiTrans, SWT.NONE);
+                    String name = makeTransGraphTabName(transMeta);
+                    if (Const.isEmpty(name)) name = STRING_TRANS_NO_NAME;
+                    tiTransName.setText(name);
+                    tiTransName.setImage(guiResource.getImageBol());
+                    
+                    // Set expanded if this is the only transformation shown.
+                    if (props.isOnlyActiveFileShownInTree())
+                    {
+                        TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiTransName, true);
+                    }
 
-            ///////////////////////////////////////////////////////
-            //
-            // The partitions
-            //
-            TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiPartitionTitle.setText(STRING_PARTITIONS);
-            tiPartitionTitle.setImage(guiResource.getImageConnection());
-            
-            // Put the steps below it.
-            for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
-            {
-                PartitionSchema partitionSchema = (PartitionSchema) transMeta.getPartitionSchemas().get(i);
-                TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
-                tiPartition.setText(partitionSchema.getName());
-                tiPartition.setImage(guiResource.getImageBol());
-                if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold());
-            }
-
-            ///////////////////////////////////////////////////////
-            //
-            // The slaves
-            //
-            TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiSlaveTitle.setText(STRING_SLAVES);
-            tiSlaveTitle.setImage(guiResource.getImageBol());
-            
-            // Put the steps below it.
-            for (int i=0;i<transMeta.getSlaveServers().size();i++)
-            {
-                SlaveServer slaveServer = (SlaveServer) transMeta.getSlaveServers().get(i);
-                TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
-                tiSlave.setText(slaveServer.getName());
-                tiSlave.setImage(guiResource.getImageBol());
-                if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
-            }
-            
-            ///////////////////////////////////////////////////////
-            //
-            // The clusters
-            //
-            TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
-            tiClusterTitle.setText(STRING_CLUSTERS);
-            tiClusterTitle.setImage(guiResource.getImageBol());
-            
-            // Put the steps below it.
-            for (int i=0;i<transMeta.getClusterSchemas().size();i++)
-            {
-                ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(i);
-                TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
-                tiCluster.setText(clusterSchema.toString());
-                tiCluster.setImage(guiResource.getImageBol());
-                if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold());
+                    ///////////////////////////////////////////////////////
+                    //
+                    // Now add the database connections
+                    //
+                    TreeItem tiDbTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiDbTitle.setText(STRING_CONNECTIONS);
+                    tiDbTitle.setImage(guiResource.getImageConnection());
+                    
+                    // Draw the connections themselves below it.
+                    for (int i=0;i<transMeta.nrDatabases();i++)
+                    {
+                        DatabaseMeta databaseMeta = transMeta.getDatabase(i);
+                        TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
+                        tiDb.setText(databaseMeta.getName());
+                        if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
+                        tiDb.setImage(guiResource.getImageConnection());
+                    }
+        
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The steps
+                    //
+                    TreeItem tiStepTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiStepTitle.setText(STRING_STEPS);
+                    tiStepTitle.setImage(guiResource.getImageBol());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<transMeta.nrSteps();i++)
+                    {
+                        StepMeta stepMeta = transMeta.getStep(i);
+                        TreeItem tiStep = new TreeItem(tiStepTitle, SWT.NONE);
+                        tiStep.setText(stepMeta.getName());
+                        if (stepMeta.isShared()) tiStep.setFont(guiResource.getFontBold());
+                        if (!stepMeta.isDrawn()) tiStep.setForeground(guiResource.getColorGray());
+                        tiStep.setImage(guiResource.getImageBol());
+                    }
+                    
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The hops
+                    //
+                    TreeItem tiHopTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiHopTitle.setText(STRING_HOPS);
+                    tiHopTitle.setImage(guiResource.getImageHop());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<transMeta.nrTransHops();i++)
+                    {
+                        TransHopMeta hopMeta = transMeta.getTransHop(i);
+                        TreeItem tiHop = new TreeItem(tiHopTitle, SWT.NONE);
+                        tiHop.setText(hopMeta.toString());
+                        tiHop.setImage(guiResource.getImageHop());
+                    }
+        
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The partitions
+                    //
+                    TreeItem tiPartitionTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiPartitionTitle.setText(STRING_PARTITIONS);
+                    tiPartitionTitle.setImage(guiResource.getImageConnection());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
+                    {
+                        PartitionSchema partitionSchema = (PartitionSchema) transMeta.getPartitionSchemas().get(i);
+                        TreeItem tiPartition = new TreeItem(tiPartitionTitle, SWT.NONE);
+                        tiPartition.setText(partitionSchema.getName());
+                        tiPartition.setImage(guiResource.getImageBol());
+                        if (partitionSchema.isShared()) tiPartition.setFont(guiResource.getFontBold());
+                    }
+        
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The slaves
+                    //
+                    TreeItem tiSlaveTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiSlaveTitle.setText(STRING_SLAVES);
+                    tiSlaveTitle.setImage(guiResource.getImageBol());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<transMeta.getSlaveServers().size();i++)
+                    {
+                        SlaveServer slaveServer = (SlaveServer) transMeta.getSlaveServers().get(i);
+                        TreeItem tiSlave = new TreeItem(tiSlaveTitle, SWT.NONE);
+                        tiSlave.setText(slaveServer.getName());
+                        tiSlave.setImage(guiResource.getImageBol());
+                        if (slaveServer.isShared()) tiSlave.setFont(guiResource.getFontBold());
+                    }
+                    
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The clusters
+                    //
+                    TreeItem tiClusterTitle = new TreeItem(tiTransName, SWT.NONE);
+                    tiClusterTitle.setText(STRING_CLUSTERS);
+                    tiClusterTitle.setImage(guiResource.getImageBol());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<transMeta.getClusterSchemas().size();i++)
+                    {
+                        ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(i);
+                        TreeItem tiCluster = new TreeItem(tiClusterTitle, SWT.NONE);
+                        tiCluster.setText(clusterSchema.toString());
+                        tiCluster.setImage(guiResource.getImageBol());
+                        if (clusterSchema.isShared()) tiCluster.setFont(guiResource.getFontBold());
+                    }
+                }
             }
         }
         
-        // Now add the jobs
-        //
-        for (int t=0;t<jobMetas.length;t++)
+        if (!props.isOnlyActiveFileShownInTree() || showAll || activeJobMeta!=null )
         {
-            JobMeta jobMeta = jobMetas[t];
-            
-            // Add a tree item with the name of job
-            //
-            TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
-            String name = makeJobGraphTabName(jobMeta);
-            if (Const.isEmpty(name)) name = STRING_JOB_NO_NAME;
-            tiJobName.setText(name);
-            tiJobName.setImage(guiResource.getImageBol());
-            
-            ///////////////////////////////////////////////////////
-            //
-            // Now add the database connections
-            //
-            TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
-            tiDbTitle.setText(STRING_CONNECTIONS);
-            tiDbTitle.setImage(guiResource.getImageConnection());
-            
-            // Draw the connections themselves below it.
-            for (int i=0;i<jobMeta.nrDatabases();i++)
+            TreeItem tiJobs = new TreeItem(selectionTree, SWT.NONE); 
+            tiJobs.setText(STRING_JOBS);
+            tiJobs.setImage(GUIResource.getInstance().getImageBol());
+
+            // Set expanded if this is the only job shown.
+            if (props.isOnlyActiveFileShownInTree())
             {
-                DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
-                TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
-                tiDb.setText(databaseMeta.getName());
-                if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
-                tiDb.setImage(guiResource.getImageConnection());
+                tiJobs.setExpanded(true);
+                TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiJobs, true);
             }
 
-            ///////////////////////////////////////////////////////
+            // Now add the jobs
             //
-            // The job entries
-            //
-            TreeItem tiJobEntriesTitle = new TreeItem(tiJobName, SWT.NONE);
-            tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
-            tiJobEntriesTitle.setImage(guiResource.getImageBol());
-            
-            // Put the steps below it.
-            for (int i=0;i<jobMeta.nrJobEntries();i++)
+            for (int t=0;t<jobMetas.length;t++)
             {
-                JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
-                
-                TreeItem tiJobEntry = Const.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
-                if (tiJobEntry!=null) continue; // only show it once
-                
-                tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
-                tiJobEntry.setText(jobEntry.getName());
-                // if (jobEntry.isShared()) tiStep.setFont(guiResource.getFontBold()); TODO: allow job entries to be shared as well...
-                if (jobEntry.isStart())
+                JobMeta jobMeta = jobMetas[t];
+             
+                if (!props.isOnlyActiveFileShownInTree() || showAll || (activeJobMeta!=null && activeJobMeta.equals(jobMeta)))
                 {
-                    tiJobEntry.setImage(GUIResource.getInstance().getImageStart());
-                }
-                else
-                if (jobEntry.isDummy())
-                {
-                    tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
-                }
-                else
-                {
-                    Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getTypeDesc());
-                    tiJobEntry.setImage(image);
+                    // Add a tree item with the name of job
+                    //
+                    TreeItem tiJobName = new TreeItem(tiJobs, SWT.NONE);
+                    String name = makeJobGraphTabName(jobMeta);
+                    if (Const.isEmpty(name)) name = STRING_JOB_NO_NAME;
+                    tiJobName.setText(name);
+                    tiJobName.setImage(guiResource.getImageBol());
+                    
+                    // Set expanded if this is the only job shown.
+                    if (props.isOnlyActiveFileShownInTree())
+                    {
+                        TreeMemory.getInstance().storeExpanded(STRING_SPOON_MAIN_TREE, tiJobName, true);
+                    }
+
+                    ///////////////////////////////////////////////////////
+                    //
+                    // Now add the database connections
+                    //
+                    TreeItem tiDbTitle = new TreeItem(tiJobName, SWT.NONE);
+                    tiDbTitle.setText(STRING_CONNECTIONS);
+                    tiDbTitle.setImage(guiResource.getImageConnection());
+                    
+                    // Draw the connections themselves below it.
+                    for (int i=0;i<jobMeta.nrDatabases();i++)
+                    {
+                        DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
+                        TreeItem tiDb = new TreeItem(tiDbTitle, SWT.NONE);
+                        tiDb.setText(databaseMeta.getName());
+                        if (databaseMeta.isShared()) tiDb.setFont(guiResource.getFontBold());
+                        tiDb.setImage(guiResource.getImageConnection());
+                    }
+        
+                    ///////////////////////////////////////////////////////
+                    //
+                    // The job entries
+                    //
+                    TreeItem tiJobEntriesTitle = new TreeItem(tiJobName, SWT.NONE);
+                    tiJobEntriesTitle.setText(STRING_JOB_ENTRIES);
+                    tiJobEntriesTitle.setImage(guiResource.getImageBol());
+                    
+                    // Put the steps below it.
+                    for (int i=0;i<jobMeta.nrJobEntries();i++)
+                    {
+                        JobEntryCopy jobEntry = jobMeta.getJobEntry(i);
+                        
+                        TreeItem tiJobEntry = Const.findTreeItem(tiJobEntriesTitle, jobEntry.getName());
+                        if (tiJobEntry!=null) continue; // only show it once
+                        
+                        tiJobEntry = new TreeItem(tiJobEntriesTitle, SWT.NONE);
+                        tiJobEntry.setText(jobEntry.getName());
+                        // if (jobEntry.isShared()) tiStep.setFont(guiResource.getFontBold()); TODO: allow job entries to be shared as well...
+                        if (jobEntry.isStart())
+                        {
+                            tiJobEntry.setImage(GUIResource.getInstance().getImageStart());
+                        }
+                        else
+                        if (jobEntry.isDummy())
+                        {
+                            tiJobEntry.setImage(GUIResource.getInstance().getImageDummy());
+                        }
+                        else
+                        {
+                            Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getTypeDesc());
+                            tiJobEntry.setImage(image);
+                        }
+                    }
                 }
             }
         }
