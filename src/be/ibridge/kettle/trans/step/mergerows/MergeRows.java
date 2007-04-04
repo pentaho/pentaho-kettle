@@ -228,62 +228,6 @@ public class MergeRows extends BaseStep implements StepInterface
         if (referenceRow!=null && compareRow!=null)
         {
             BaseStep.safeModeChecking(referenceRow, compareRow);
-
-            /*
-            // Compare the key types
-        	String keyFields[] = meta.getKeyFields();
-            int nrKeyFields = keyFields.length;
-            
-            for (int i=0;i<nrKeyFields;i++)
-            {
-            	if (referenceRow.searchValueIndex(keyFields[i]) != 
-            		compareRow.searchValueIndex(keyFields[i]))
-            	{
-            		return false;
-            	}
-            	Value refValue = referenceRow.searchValue(keyFields[i]);
-                if (refValue == null)
-                {
-                	return false;
-                }
-            	Value compareValue = compareRow.searchValue(keyFields[i]);
-                if (compareValue == null)
-                {
-                	return false;
-                }          
-                if ( ! refValue.equalValueType(compareValue) )
-                {
-                	return false;
-                }
-            }
-            
-            // Compare the value types
-        	String valueFields[] = meta.getValueFields();
-            int nrValueFields = valueFields.length;
-
-            for (int i=0;i<nrValueFields;i++)
-            {
-            	if (referenceRow.searchValueIndex(valueFields[i]) != 
-            		compareRow.searchValueIndex(valueFields[i]))
-            	{
-            		return false;
-            	}            	
-            	Value refValue = referenceRow.searchValue(valueFields[i]);
-                if (refValue == null)
-                {
-                	return false;
-                }
-            	Value compareValue = compareRow.searchValue(valueFields[i]);
-                if (compareValue == null)
-                {
-                	return false;
-                }          
-                if ( ! refValue.equalValueType(compareValue) )
-                {
-                	return false;
-                }
-            }
-            */            
         }
     }
 
