@@ -19,17 +19,19 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.filesfromresult.Messages;
 
 public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface {
 
     public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String[] input, String[] output, Row info) {
         // See if we have input streams leading to this step!
-        if (input.length>0) {
+        if (input.length>0) 
+        {
             CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
-        } else {
-            CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FilesFromResultMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+        } 
+        else 
+        {
+            CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }
