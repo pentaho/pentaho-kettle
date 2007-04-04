@@ -149,6 +149,17 @@ public class MergeJoin extends BaseStep implements StepInterface
             	v.setNull();
             	data.two_dummy.setValue(i, v);
             }
+            
+            // Verify that the 2 rows (one_dummy and two_dummy) all have different field names...
+            for (int i=0;i<data.one_dummy.size();i++)
+            {
+                Value dummy = data.one_dummy.getValue(i);
+                int idx = data.two_dummy.searchValueIndex(dummy.getName());
+                if (idx>=0)
+                {
+                    throw new KettleStepException(Messages.getString("MergeJoin.Exception.DuplicateFieldnamesInResult", dummy.getName()));
+                }
+            }
         }
 
         if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
