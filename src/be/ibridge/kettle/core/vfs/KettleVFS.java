@@ -15,6 +15,8 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.i18n.GlobalMessages;
 
 public class KettleVFS
 {
@@ -108,6 +110,14 @@ public class KettleVFS
     
     public static OutputStream getOutputStream(FileObject fileObject, boolean append) throws IOException
     {
+        FileObject parent = fileObject.getParent();
+        if (parent!=null)
+        {
+            if (!parent.exists())
+            {
+                throw new IOException(GlobalMessages.getString(Row.class.getPackage().getName(), "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFilename(parent)));
+            }
+        }
         fileObject.createFile();
         FileContent content = fileObject.getContent();
         return content.getOutputStream(append);
