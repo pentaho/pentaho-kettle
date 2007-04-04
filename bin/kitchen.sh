@@ -17,111 +17,36 @@ do
   CLASSPATH=$CLASSPATH:$f
 done
 
+
 # **************************************************
 # ** Platform specific libraries ...              **
 # **************************************************
 
 JAVA_BIN=java
-LIBPATH="NONE"
 
-case `uname -s` in 
-	AIX)
-		LIBPATH=libswt/aix/
-		;;
-		
-	OS400)
-		LIBPATH=libswt/aix/
-		;;
-		 
-	SunOS) 
-		LIBPATH=libswt/solaris/
-		;;
-
-	Darwin)
-		LIBPATH=libswt/osx/
-		JAVA_BIN=libswt/osx/java_swt
-		chmod +x $JAVA_BIN
-		;;
-
-	Linux)
-    	ARCH=`uname -m`
-		case $ARCH in
-			x86_64)
-				LIBPATH=libswt/linux/x86_64/
-				;;
-
-			i[3-6]86)
-				LIBPATH=libswt/linux/x86/
-				;;
-
-			ppc)
-				LIBPATH=libswt/linux/ppc/
-				;;
-
-			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-		esac
-		;;
-
-	FreeBSD)
-	    ARCH=`uname -m`
-		case $ARCH in
-			x86_64)
-				LIBPATH=libswt/freebsd/x86_64/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			i[3-6]86)
-				LIBPATH=libswt/freebsd/x86/
-				;;
-
-			ppc)
-				LIBPATH=libswt/freebsd/ppc/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-		esac
-		;;
-		
-	HP-UX) 
-		LIBPATH=libswt/hpux/
-		;;
-	CYGWIN*)
-		./Kitchen.bat
-		# exit
-		;;
-
-	*) 
-		echo Kitchen is not supported on this hosttype : `uname -s`
-		exit
-		;;
-esac 
-
-export LIBPATH
-
-if [ "$LIBPATH" != "NONE" ]
+# circumvention for the IBM JVM behavior (seems to be a problem with the IBM JVM native compiler)
+if [ `uname -s` = "OS400" ]
 then
-  for f in `find $LIBPATH -name '*.jar'`
-  do
-    CLASSPATH=$CLASSPATH:$f
-  done
+  CLASSPATH=${CLASSPATH}:$BASEDIR/libswt/aix/swt.jar
 fi
 
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 512m to higher values in case you run out of memory.  **
+# ** Change 128m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx512m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+if [ -z "$JAVAMAXMEM" ]; then
+  JAVAMAXMEM="512"
+fi
+
+OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+
+if [ "$1" = "-x" ]; then
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext
+  OPT="-Xruntracer $OPT"
+  shift
+fi
 
 # ***************
 # ** Run...    **

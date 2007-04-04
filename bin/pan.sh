@@ -27,7 +27,7 @@ JAVA_BIN=java
 # circumvention for the IBM JVM behavior (seems to be a problem with the IBM JVM native compiler)
 if [ `uname -s` = "OS400" ]
 then
-  CLASSPATH=${CLASSPATH}:libswt/aix/swt.jar
+  CLASSPATH=${CLASSPATH}:$BASEDIR/libswt/aix/swt.jar
 fi
 
 
@@ -40,7 +40,7 @@ if [ -z "$JAVAMAXMEM" ]; then
   JAVAMAXMEM="256"
 fi
 
-OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
 
 if [ "$1" = "-x" ]; then
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext
