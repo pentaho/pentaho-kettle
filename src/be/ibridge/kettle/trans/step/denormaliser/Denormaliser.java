@@ -100,6 +100,16 @@ public class Denormaliser extends BaseStep implements StepInterface
                 data.fieldNameIndex[i] = idx;
                 subjects.put(new Integer(idx), new Integer(idx));
                 
+                // See if by accident, the value fieldname isn't the same as the key fieldname.
+                // This is not supported of-course and given the complexity of the step, you can miss:
+                if (data.fieldNameIndex[i]==data.keyFieldNr)
+                {
+                    logError(Messages.getString("Denormaliser.Log.ValueFieldSameAsKeyField", field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
+                    setErrors(1);
+                    stopAll();
+                    return false;
+                }
+
                 // Fill a hashtable with the key strings and the position(s) of the field(s) in the row to take.
                 // Store the indexes in a List so that we can accommodate multiple key/value pairs...
                 // 
