@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.mergejoin;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -333,6 +334,15 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		stepMeta1  = StepMeta.findStep(steps, stepName1);
 		stepMeta2 = StepMeta.findStep(steps, stepName2);
 	}
+    
+    public String[] getInfoSteps()
+    {
+        List list = new ArrayList();
+        if (stepMeta1!=null) list.add(stepMeta1.getName());
+        if (stepMeta2!=null) list.add(stepMeta2.getName());
+        if (list.size()==0) return null;
+        return (String[])list.toArray(new String[list.size()]);
+    }
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
