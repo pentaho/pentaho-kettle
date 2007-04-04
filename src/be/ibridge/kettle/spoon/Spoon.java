@@ -3931,6 +3931,9 @@ public class Spoon implements AddUndoPositionInterface
                 if (!importfile) jobMeta.clearChanged();
                 jobMeta.setFilename(fname);
                 addChefGraph(jobMeta);
+                
+                refreshTree();
+                refreshHistory();
                 loaded=true;
             }
             
