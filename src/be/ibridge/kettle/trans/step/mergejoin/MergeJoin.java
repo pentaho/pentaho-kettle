@@ -112,14 +112,37 @@ public class MergeJoin extends BaseStep implements StepInterface
             }
 
             Value v;
-            data.one_dummy = data.one!=null ? new Row(data.one) : new Row();
+            
+            // Calculate one_dummy...
+            if (data.one!=null)
+            {
+                data.one_dummy = new Row(data.one);
+            }
+            else
+            {
+                // no input data found, go with the metadata only...
+                //
+                data.one_dummy = new Row(getTransMeta().getStepFields(meta.getStepMeta1()));
+            }
             for (int i=0; i < data.one_dummy.size(); ++i)
             {
             	v = data.one_dummy.getValue(i);
             	v.setNull();
             	data.one_dummy.setValue(i, v);
             }
-            data.two_dummy = data.two!=null ? new Row(data.two) : new Row();
+            
+            // Calculate two_dummy...
+            //
+            if (data.two!=null)
+            {
+                data.two_dummy = new Row(data.two);
+            }
+            else
+            {
+                // no input data found, go with the metadata only...
+                //
+                data.two_dummy = new Row(getTransMeta().getStepFields(meta.getStepMeta2()));
+            }
             for (int i=0; i < data.two_dummy.size(); ++i)
             {
             	v = data.two_dummy.getValue(i);
