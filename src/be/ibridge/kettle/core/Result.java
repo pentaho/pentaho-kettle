@@ -360,6 +360,7 @@ public class Result implements Cloneable
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
         resultFiles.putAll(res.getResultFiles());
+        rows.addAll(res.getRows());
     }
 
     /**
