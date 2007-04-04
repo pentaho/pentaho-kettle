@@ -18,6 +18,7 @@ package be.ibridge.kettle.trans.step.mergerows;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
@@ -76,9 +77,13 @@ public class MergeRows extends BaseStep implements StepInterface
     		data.one=getRowFrom(meta.getReferenceStepName());
             data.two=getRowFrom(meta.getCompareStepName());
             
-            if (!isInputLayoutValid(data.one, data.two))
+            try
             {
-            	throw new KettleException(Messages.getString("MergeRows.Exception.InvalidLayoutDetected"));
+                checkInputLayoutValid(data.one, data.two);
+            }
+            catch(KettleRowException e)
+            {
+            	throw new KettleException(Messages.getString("MergeRows.Exception.InvalidLayoutDetected"), e);
             }            
 
             if (data.one!=null)
@@ -212,27 +217,31 @@ public class MergeRows extends BaseStep implements StepInterface
     /**
      * Checks whether 2 template rows are compatible for the mergestep. 
      * 
-     * @param refRow Reference row
+     * @param referenceRow Reference row
      * @param compareRow Row to compare to
      * 
      * @return true when templates are compatible.
+     * @throws KettleRowException in case there is a compatibility error.
      */
-    protected boolean isInputLayoutValid(Row refRow, Row compareRow)
+    protected void checkInputLayoutValid(Row referenceRow, Row compareRow) throws KettleRowException
     {
-        if (refRow!=null && compareRow!=null)
+        if (referenceRow!=null && compareRow!=null)
         {
+            BaseStep.safeModeChecking(referenceRow, compareRow);
+
+            /*
             // Compare the key types
         	String keyFields[] = meta.getKeyFields();
             int nrKeyFields = keyFields.length;
             
             for (int i=0;i<nrKeyFields;i++)
             {
-            	if (refRow.searchValueIndex(keyFields[i]) != 
+            	if (referenceRow.searchValueIndex(keyFields[i]) != 
             		compareRow.searchValueIndex(keyFields[i]))
             	{
             		return false;
             	}
-            	Value refValue = refRow.searchValue(keyFields[i]);
+            	Value refValue = referenceRow.searchValue(keyFields[i]);
                 if (refValue == null)
                 {
                 	return false;
@@ -254,12 +263,12 @@ public class MergeRows extends BaseStep implements StepInterface
 
             for (int i=0;i<nrValueFields;i++)
             {
-            	if (refRow.searchValueIndex(valueFields[i]) != 
+            	if (referenceRow.searchValueIndex(valueFields[i]) != 
             		compareRow.searchValueIndex(valueFields[i]))
             	{
             		return false;
             	}            	
-            	Value refValue = refRow.searchValue(valueFields[i]);
+            	Value refValue = referenceRow.searchValue(valueFields[i]);
                 if (refValue == null)
                 {
                 	return false;
@@ -273,11 +282,9 @@ public class MergeRows extends BaseStep implements StepInterface
                 {
                 	return false;
                 }
-            }            
+            }
+            */            
         }
-        
-        // we got here, all seems to be ok.
-        return true;
     }
 
 	//
