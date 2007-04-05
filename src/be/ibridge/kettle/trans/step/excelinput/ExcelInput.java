@@ -30,6 +30,7 @@ import jxl.LabelCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 
 import org.apache.commons.vfs.FileObject;
 
@@ -472,7 +473,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 				addResultFile(resultFile);
 				
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
-				data.workbook = Workbook.getWorkbook(data.file.getContent().getInputStream());
+                WorkbookSettings ws = new WorkbookSettings();
+                ws.setEncoding("UTF16BE");
+				data.workbook = Workbook.getWorkbook(data.file.getContent().getInputStream(), ws);
+                
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...
 				data.sheetnr = 0;
