@@ -513,11 +513,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         wlFields.setLayoutData(fdlFields);
 
         final int FieldsCols = 1;
-        int rows = jobEntry.arguments == null
-                                             ? 1
-                                             : (jobEntry.arguments.length == 0
-                                                                              ? 0
-                                                                              : jobEntry.arguments.length);
+        int rows = jobEntry.arguments == null ? 1 : (jobEntry.arguments.length == 0 ? 0 : jobEntry.arguments.length);
         final int FieldsRows = rows;
 
         ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
