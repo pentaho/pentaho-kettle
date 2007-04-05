@@ -1805,7 +1805,7 @@ public class Spoon implements AddUndoPositionInterface
         gc.drawImage(icon, 0, 2);
         // gc.setForeground(GUIResource.getInstance().getColorBlack());
         // gc.setBackground(expandItem.getParent().getBackground());
-        // gc.setFont(GUIResource.getInstance().getFontBold());
+        gc.setFont(GUIResource.getInstance().getFontBold());
         gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
         expandItem.setImage( ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)) );
         expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
