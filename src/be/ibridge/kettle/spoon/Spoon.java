@@ -1626,6 +1626,7 @@ public class Spoon implements AddUndoPositionInterface
         composite.setLayout(fillLayout);
         
         mainExpandBar = new ExpandBar(composite, SWT.NO_BACKGROUND);
+        props.setLook(mainExpandBar);
         mainExpandBar.setSpacing(0);
 
         mainExpandBar.addExpandListener(new ExpandAdapter()
@@ -1644,6 +1645,7 @@ public class Spoon implements AddUndoPositionInterface
             }
         );
         mainExpandBar.setBackground(GUIResource.getInstance().getColorBackground());
+        mainExpandBar.setForeground(GUIResource.getInstance().getColorBlack());
 
         // // Split the left side of the screen in half
         // leftSash = new SashForm(mainExpandBar, SWT.VERTICAL);
@@ -1784,33 +1786,36 @@ public class Spoon implements AddUndoPositionInterface
     
     private void setHeaderImage(ExpandItem expandItem, Image icon, String string, int offset)
     {
+        // Draw just an image with text and all...
+        Image img = new Image(display, 1, 1);
+        GC tmpGC = new GC(img);
+        org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
+        tmpGC.dispose();
+        img.dispose();
+        
+        Rectangle rect = new Rectangle(0, 0, point.x + 100-offset, point.y+11);
+        Rectangle iconBounds = icon.getBounds();
+        
+        final Image image = new Image(display, rect.width, rect.height);
+        GC gc = new GC(image);
         if (props.isBrandingActive())
         {
-            // Draw just an image with text and all...
-            Image img = new Image(display, 1, 1);
-            GC tmpGC = new GC(img);
-            org.eclipse.swt.graphics.Point point = tmpGC.textExtent(STRING_SPOON_MAIN_TREE);
-            tmpGC.dispose();
-            img.dispose();
-            
-            Rectangle rect = new Rectangle(0, 0, point.x + 100-offset, point.y+11);
-            Rectangle iconBounds = icon.getBounds();
-            
-            final Image image = new Image(display, rect.width, rect.height);
-            GC gc = new GC(image);
             drawPentahoGradient(gc, rect, false);
-            gc.drawImage(icon, 0, 2);
-            gc.setForeground(GUIResource.getInstance().getColorBlack());
-            gc.setFont(GUIResource.getInstance().getFontBold());
-            gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
-            expandItem.setImage(image);
-            expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
         }
-        else
+        gc.drawImage(icon, 0, 2);
+        // gc.setForeground(GUIResource.getInstance().getColorBlack());
+        // gc.setBackground(expandItem.getParent().getBackground());
+        // gc.setFont(GUIResource.getInstance().getFontBold());
+        gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
+        expandItem.setImage( ImageUtil.makeImageTransparent(display, image, new RGB(255, 255, 255)) );
+        expandItem.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent event) { image.dispose(); } });
+        
+        /*
         {
             expandItem.setImage(icon);
             expandItem.setText(string);
         }
+        */
     }
 
     private void refreshCoreObjectsHistory()
