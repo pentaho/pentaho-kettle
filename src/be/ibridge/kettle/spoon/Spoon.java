@@ -1803,7 +1803,7 @@ public class Spoon implements AddUndoPositionInterface
             drawPentahoGradient(gc, rect, false);
         }
         gc.drawImage(icon, 0, 2);
-        // gc.setForeground(GUIResource.getInstance().getColorBlack());
+        gc.setForeground(GUIResource.getInstance().getColorBlack());
         // gc.setBackground(expandItem.getParent().getBackground());
         gc.setFont(GUIResource.getInstance().getFontBold());
         gc.drawText(string, iconBounds.width+5, (iconBounds.height-point.y)/2+2, true);
