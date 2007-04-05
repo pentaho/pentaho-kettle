@@ -32,6 +32,8 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface
 	
     public Hashtable hashtable;
 
+    public int emptyFieldIndex;
+
 	/**
 	 * 
 	 */

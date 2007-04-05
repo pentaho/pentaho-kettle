@@ -20,7 +20,6 @@ import java.util.Hashtable;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -72,38 +71,64 @@ public class ValueMapper extends BaseStep implements StepInterface
                 log.logError(toString(), message);
                 setErrors(1);
                 stopAll();
-                throw new KettleStepException(message);
+                return false;
             }
+            
+            // If there is an empty entry: we map null or "" to the target at the index
+            // 0 or 1 empty mapping is allowed, not 2 or more.
+            // 
+            for (int i=0;i<meta.getSourceValue().length;i++)
+            {
+                if (Const.isEmpty(meta.getSourceValue()[i]))
+                {
+                    if (data.emptyFieldIndex<0)
+                    {
+                        data.emptyFieldIndex=i;
+                    }
+                    else
+                    {
+                        throw new KettleException(Messages.getString("ValueMapper.RuntimeError.OnlyOneEmptyMappingAllowed.VALUEMAPPER0004"));
+                    }
+                }
+            }
+            
 		}
 
         Value value = r.getValue(data.keynr);
-        String source = value.getString();
         
-        String target;
-        if (source!=null && (target=(String)data.hashtable.get(source))!=null )
+        String source = value.getString();
+        String target = null;
+        
+        // Null/Empty mapping to value...
+        //
+        if (data.emptyFieldIndex>=0 && (value.isNull() || Const.isEmpty(source)) )
         {
-            if (meta.getTargetField()!=null && meta.getTargetField().length()>0)
-            {
-                Value extraValue = new Value(meta.getTargetField(), target);
-                r.addValue(extraValue);
-            }
-            else
-            {
-                int type = value.getType();
-                value.setValue(target);
-                if (type!=value.getType()) // when changed from integer to string, convert back to the original data type...
-                {
-                    value.setType(type);
-                }
-            }
+            target = meta.getTargetValue()[data.emptyFieldIndex]; // that's all there is to it.
         }
         else
         {
-            if (meta.getTargetField()!=null && meta.getTargetField().length()>0)
+            if (!Const.isEmpty(source))
             {
-                Value emptyValue = new Value(meta.getTargetField(), Value.VALUE_TYPE_STRING);
-                emptyValue.setNull();
-                r.addValue(emptyValue);
+                target=(String)data.hashtable.get(source);
+            }
+        }
+
+        if (!Const.isEmpty(meta.getTargetField()))
+        {
+            // Did we find anything to map to?
+            Value extraValue = new Value(meta.getTargetField(), target);
+            if (Const.isEmpty(target)) extraValue.setNull();
+            r.addValue(extraValue);
+        }
+        else
+        {
+            int type = value.getType();
+
+            // Don't set the original value to null if we don't have a target.
+            if (!Const.isEmpty(target)) value.setValue(target);
+            if (type!=value.getType()) // when changed from integer to string, convert back to the original data type...
+            {
+                value.setType(type);
             }
         }
         
@@ -128,6 +153,7 @@ public class ValueMapper extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 		    data.hashtable = new Hashtable();
+            data.emptyFieldIndex=-1;
             
             // Add all source to target mappings in here...
             for (int i=0;i<meta.getSourceValue().length;i++)
@@ -135,14 +161,17 @@ public class ValueMapper extends BaseStep implements StepInterface
                 String src = meta.getSourceValue()[i];
                 String tgt = meta.getTargetValue()[i];
             
-                if (src!=null && tgt!=null)
+                if (!Const.isEmpty(src) && !Const.isEmpty(tgt))
                 {
                     data.hashtable.put(src, tgt);
                 }
                 else
                 {
-                    log.logError(toString(), Messages.getString("ValueMapper.RuntimeError.ValueNotSpecified.VALUEMAPPER0002", ""+i)); //$NON-NLS-1$ //$NON-NLS-2$
-                    return false;
+                    if (Const.isEmpty(tgt))
+                    {
+                        log.logError(toString(), Messages.getString("ValueMapper.RuntimeError.ValueNotSpecified.VALUEMAPPER0002", ""+i)); //$NON-NLS-1$ //$NON-NLS-2$
+                        return false;
+                    }
                 }
             }
             return true;
