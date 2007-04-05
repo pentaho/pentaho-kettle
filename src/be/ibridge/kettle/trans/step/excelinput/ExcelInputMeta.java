@@ -184,6 +184,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The step to accept filenames from */
     private StepMeta acceptingStep;
+    
+    /** The encoding to use for reading: null or empty string means system default encoding */
+    private String encoding;
 
 	public ExcelInputMeta()
 	{
@@ -463,6 +466,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownumfield");			
 			rowLimit           = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
+            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 			sheetField      = XMLHandler.getTagValue(stepnode, "sheetfield");
 			fileField       = XMLHandler.getTagValue(stepnode, "filefield");
 
@@ -654,6 +658,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
 		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
 		retval.append("    "+XMLHandler.addTagValue("limit",           rowLimit));
+        retval.append("    "+XMLHandler.addTagValue("encoding",        encoding));
 
         retval.append("    " + XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
         retval.append("    " + XMLHandler.addTagValue("accept_field", acceptingField));
@@ -736,7 +741,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			sheetRowNumberField =    rep.getStepAttributeString (id_step, "sheetrownumfield");
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownumfield");
 			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
-	
+            encoding          =      rep.getStepAttributeString (id_step, "encoding");
+
             acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
             acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
             acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
@@ -811,7 +817,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "sheetrownumfield", sheetRowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownumfield",     rowNumberField);			
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
-			
+            rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);
+
             rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames);
             rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField);
             rep.saveStepAttribute(id_transformation, id_step, "accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") );
@@ -1149,5 +1156,21 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     public String[] getUsedLibraries()
     {
         return new String[] { "jxl.jar", };
+    }
+
+    /**
+     * @return the encoding
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+    /**
+     * @param encoding the encoding to set
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
     }
 }

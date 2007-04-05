@@ -474,7 +474,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 				
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
                 WorkbookSettings ws = new WorkbookSettings();
-                ws.setEncoding("UTF16BE");
+                if (!Const.isEmpty(meta.getEncoding()))
+                {
+                    ws.setEncoding(meta.getEncoding());
+                }
 				data.workbook = Workbook.getWorkbook(data.file.getContent().getInputStream(), ws);
                 
 				data.errorHandler.handleFile(data.file);

@@ -20,6 +20,7 @@
 
 package be.ibridge.kettle.trans.step.excelinput;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -33,12 +34,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -171,6 +174,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
 
+    private Label        wlEncoding;
+    private CCombo       wEncoding;
+    private FormData     fdlEncoding, fdEncoding;
+
 	private Button       wbGetFields;
 
 	private TableView    wFields;
@@ -223,7 +230,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private ExcelInputMeta input;
 	private int middle;
 	private int margin;
-	
+    private boolean  gotEncodings = false; 
+    
 	private ModifyListener lsMod;
 	
 	public ExcelInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -737,6 +745,40 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
+        wlEncoding=new Label(wContentComp, SWT.RIGHT);
+        wlEncoding.setText(Messages.getString("ExcelInputDialog.Encoding.Label"));
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(wLimit, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(wLimit, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
 		fdContentComp.top   = new FormAttachment(0, 0);
@@ -1093,6 +1135,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (meta.getSheetRowNumberField()!=null) wInclSheetRownumField.setText(meta.getSheetRowNumberField());
 		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
 		wLimit.setText(""+meta.getRowLimit());
+        if (meta.getEncoding()!=null) wEncoding.setText(meta.getEncoding());
 		
 		log.logDebug(toString(), "getting fields info...");
 		for (int i=0;i<meta.getField().length;i++)
@@ -1179,6 +1222,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// copy info to Meta class (input)
 		meta.setRowLimit( Const.toLong(wLimit.getText(), 0) );
+        meta.setEncoding( wEncoding.getText() );
 		meta.setFileField( wInclFilenameField.getText() );
 		meta.setSheetField( wInclSheetnameField.getText() );
 		meta.setSheetRowNumberField( wInclSheetRownumField.getText() );
@@ -1770,6 +1814,28 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             mb.setMessage(Messages.getString("ExcelInputDialog.NoFilesFound.DialogMessage"));
             mb.setText(Messages.getString("System.Dialog.Error.Title"));
             mb.open(); 
+        }
+    }
+    
+    private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
         }
     }
 
