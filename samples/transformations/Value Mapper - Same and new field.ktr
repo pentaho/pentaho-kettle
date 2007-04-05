@@ -1,43 +1,274 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
-    <directory>/</directory>
+    <name>Value Mapper  Same and new field</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
-    </info>
+    </dependencies>
+    <partitionschemas>
+        <partitionschema>
+          <name>Local MySQL</name>
+          <partition>            <id>P1</id>
+          </partition>          <partition>            <id>P2</id>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>        </partitionschema>
+        <partitionschema>
+          <name>MySQL EC2 Schema</name>
+          <partition>            <id>P2</id>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>          <partition>            <id>P5</id>
+          </partition>        </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>SS 1</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>SS 2</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>SS Master</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_5</name><hostname>domU-12-31-33-00-03-EA.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_4</name><hostname>domU-12-31-33-00-02-55.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_SLAVE_3</name><hostname>domU-12-31-33-00-03-FB.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>Sam 8080</name><hostname>192.168.1.11</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>EC_MASTER_1</name><hostname>domU-12-31-33-00-03-9C.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>Laptop 8081</name><hostname>192.168.1.10</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>Localhost 8081</name><hostname>192.168.1.10</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+    </slaveservers>
+    <clusterschemas>
+        <clusterschema>
+          <name>SS</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>SS 1</name>
+            <name>SS 2</name>
+            <name>SS Master</name>
+          </slaveservers>
+        </clusterschema>
+        <clusterschema>
+          <name>EC2</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>100000</sockets_buffer_size>
+          <sockets_flush_interval>0</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>EC_MASTER_1</name>
+            <name>EC_SLAVE_2</name>
+            <name>EC_SLAVE_3</name>
+            <name>EC_SLAVE_4</name>
+            <name>EC_SLAVE_5</name>
+          </slaveservers>
+        </clusterschema>
+        <clusterschema>
+          <name>Local</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>Y</sockets_compressed>
+          <slaveservers>
+            <name>Laptop 8081</name>
+            <name>Sam 8080</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;04&#47;05 14:10:02.140</modified_date>
+  </info>
   <notepads>
-    </notepads>
+    <notepad>
+      <note>Mapping values in the same field, leaving original unmpaped values intact.</note>
+      <xloc>524</xloc>
+      <yloc>130</yloc>
+      <width>364</width>
+      <heigth>23</heigth>
+    </notepad>
+    <notepad>
+      <note>Mapping values to a new field, unmapped source values are set to null</note>
+      <xloc>536</xloc>
+      <yloc>486</yloc>
+      <width>347</width>
+      <heigth>23</heigth>
+    </notepad>
+  </notepads>
+  <connection>
+    <name>MySQL Local test</name>
+    <server>192.168.1.10</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Partitioned DB</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>DB1</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>DB1</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>DB2</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>DB3</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>DB4</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>localhost</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>localhost</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>localhost</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>localhost</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>P1</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>P2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>P3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>P4</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_0</code><attribute>matt</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_1</code><attribute>matt</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_2</code><attribute>matt</attribute></attribute>
+      <attribute><code>CLUSTER_USERNAME_3</code><attribute>matt</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>Y</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Oracle ORCL Acer8104</name>
+    <server>192.168.1.10</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>orcl</database>
+    <port>1521</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL EC2</name>
+    <server>domU-12-31-33-00-02-58.usma1.compute.amazonaws.com</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CLUSTER_DBNAME_0</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_1</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_2</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_3</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_DBNAME_4</code><attribute>test</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_0</code><attribute>domU-12-31-33-00-03-96.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_1</code><attribute>domU-12-31-33-00-03-9A.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_2</code><attribute>domU-12-31-33-00-03-A5.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_3</code><attribute>domU-12-31-33-00-03-9B.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_HOSTNAME_4</code><attribute>domU-12-31-33-00-03-B8.usma1.compute.amazonaws.com</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_0</code><attribute>P2</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_1</code><attribute>P3</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_2</code><attribute>P4</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_3</code><attribute>P5</attribute></attribute>
+      <attribute><code>CLUSTER_PARTITION_4</code><attribute>P6</attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_0</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_1</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_2</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_3</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PASSWORD_4</code><attribute>Encrypted </attribute></attribute>
+      <attribute><code>CLUSTER_PORT_0</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_1</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_2</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_3</code><attribute>3306</attribute></attribute>
+      <attribute><code>CLUSTER_PORT_4</code><attribute>3306</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>Y</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>One</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>Five</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>Four</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>One</from><to>NewField</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>NewField</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>NewField</to><enabled>Y</enabled> </hop>  <hop> <from>Four</from><to>NewField</to><enabled>Y</enabled> </hop>  <hop> <from>Five</from><to>NewField</to><enabled>Y</enabled> </hop>  </order>
-
+  <hop> <from>One</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>Same</from><to>SameField</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>Four</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>Five</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>Empty</from><to>Same</to><enabled>Y</enabled> </hop>  <hop> <from>One</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>Four</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>Five</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>Empty</from><to>New</to><enabled>Y</enabled> </hop>  <hop> <from>New</from><to>NewField</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>One</name>
+    <name>Empty</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>N</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>A</name>
@@ -46,42 +277,16 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>One</nullif>
+        <nullif/>
         <length>-1</length>
         <precision>-1</precision>
         </field>
       </fields>
     <limit>1</limit>
+     <cluster_schema/>
     <GUI>
-      <xloc>89</xloc>
-      <yloc>45</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Two</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>N</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>A</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Two</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>
-      </fields>
-    <limit>1</limit>
-    <GUI>
-      <xloc>89</xloc>
-      <yloc>142</yloc>
+      <xloc>93</xloc>
+      <yloc>535</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -92,6 +297,11 @@
     <description/>
     <distribute>N</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>A</name>
@@ -106,61 +316,10 @@
         </field>
       </fields>
     <limit>1</limit>
+     <cluster_schema/>
     <GUI>
-      <xloc>89</xloc>
-      <yloc>433</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>SameField</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <field_to_use>A</field_to_use>
-    <target_field/>
-    <fields>
-      <field>
-        <source_value>Two</source_value>
-        <target_value>2</target_value>
-        </field>
-      <field>
-        <source_value>Three</source_value>
-        <target_value>3</target_value>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>275</xloc>
-      <yloc>160</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Three</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>N</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>A</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>Three</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>
-      </fields>
-    <limit>1</limit>
-    <GUI>
-      <xloc>89</xloc>
-      <yloc>239</yloc>
+      <xloc>93</xloc>
+      <yloc>437</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -171,6 +330,11 @@
     <description/>
     <distribute>N</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>A</name>
@@ -185,9 +349,29 @@
         </field>
       </fields>
     <limit>1</limit>
+     <cluster_schema/>
     <GUI>
-      <xloc>89</xloc>
-      <yloc>336</yloc>
+      <xloc>93</xloc>
+      <yloc>339</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>New</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>354</xloc>
+      <yloc>535</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -198,6 +382,11 @@
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <field_to_use>A</field_to_use>
     <target_field>B</target_field>
     <fields>
@@ -209,12 +398,172 @@
         <source_value>Three</source_value>
         <target_value>3</target_value>
         </field>
+      <field>
+        <source_value/>
+        <target_value>999</target_value>
+        </field>
       </fields>
+     <cluster_schema/>
     <GUI>
-      <xloc>285</xloc>
-      <yloc>332</yloc>
+      <xloc>615</xloc>
+      <yloc>535</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step>
+    <name>One</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>N</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>One</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>89</xloc>
+      <yloc>45</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Same</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>352</xloc>
+      <yloc>45</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>SameField</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>A</field_to_use>
+    <target_field/>
+    <fields>
+      <field>
+        <source_value>Two</source_value>
+        <target_value>2</target_value>
+        </field>
+      <field>
+        <source_value>Three</source_value>
+        <target_value>3</target_value>
+        </field>
+      <field>
+        <source_value/>
+        <target_value>999</target_value>
+        </field>
+      </fields>
+     <cluster_schema/>
+    <GUI>
+      <xloc>615</xloc>
+      <yloc>45</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Three</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>N</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Three</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>93</xloc>
+      <yloc>241</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Two</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>N</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Two</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>89</xloc>
+      <yloc>143</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
 </transformation>

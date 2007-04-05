@@ -16,6 +16,7 @@
 package be.ibridge.kettle.core.dialog;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -54,6 +55,13 @@ public class ShowMessageDialog extends Dialog
     private int returnValue;
 
     private Shell parent;
+    
+    /** Timeout of dialog in seconds */
+    private int timeOut;
+
+    private List buttons;
+
+    private List adapters;
 
     /**
      * Dialog to allow someone to show a text with an icon in front
@@ -127,7 +135,7 @@ public class ShowMessageDialog extends Dialog
         if (hasIcon)
         {
             fdlDesc.left = new FormAttachment(wIcon, margin*2);
-            fdlDesc.top = new FormAttachment(wIcon, 0, SWT.CENTER);
+            fdlDesc.top = new FormAttachment(0, margin);
         }
         else
         {
@@ -138,33 +146,44 @@ public class ShowMessageDialog extends Dialog
         wlDesc.setLayoutData(fdlDesc);
         
 
-        List buttons = new ArrayList();
+        buttons = new ArrayList();
+        adapters = new ArrayList();
+        
         if ( (flags & SWT.OK) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(Messages.getString("System.Button.OK"));
-            button.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.OK); } });
+            final String ok = Messages.getString("System.Button.OK"); 
+            button.setText(ok);
+            SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.OK); } }; 
+            button.addSelectionListener(selectionAdapter);
+            adapters.add(selectionAdapter);
             buttons.add(button);
         }
         if ( (flags & SWT.CANCEL) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
             button.setText(Messages.getString("System.Button.Cancel"));
-            button.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.CANCEL); } });
+            SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.CANCEL); } };
+            button.addSelectionListener(selectionAdapter);
+            adapters.add(selectionAdapter);
             buttons.add(button);
         }
         if ( (flags & SWT.YES) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
             button.setText(Messages.getString("System.Button.Yes"));
-            button.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.YES); } });
+            SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.YES); } };
+            button.addSelectionListener(selectionAdapter);
+            adapters.add(selectionAdapter);
             buttons.add(button);
         }
         if ( (flags & SWT.NO) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
             button.setText(Messages.getString("System.Button.No"));
-            button.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.NO); } });
+            SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.NO); } };
+            button.addSelectionListener(selectionAdapter);
+            adapters.add(selectionAdapter);
             buttons.add(button);
         }
         
@@ -173,12 +192,34 @@ public class ShowMessageDialog extends Dialog
         // Detect [X] or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-        shell.pack();
+        shell.layout();
+        shell.pack(true);
         
+        final Button button = (Button) buttons.get(0);
+        final SelectionAdapter selectionAdapter = (SelectionAdapter) adapters.get(0);
+        final String ok = button.getText();
+        long startTime = new Date().getTime();
+
         shell.open();
         while (!shell.isDisposed())
         {
-            if (!display.readAndDispatch()) display.sleep();
+            if (!display.readAndDispatch())
+            {
+                display.sleep();
+                
+                if (timeOut>0)
+                {
+                    long time = new Date().getTime();
+                    long diff = (time-startTime)/1000;
+                    button.setText(ok+" ("+(timeOut-diff)+")");
+                    
+                    if (diff>=timeOut)
+                    {
+                       selectionAdapter.widgetSelected(null);
+                    }
+                }
+
+            }
         }
         return returnValue;
     }
@@ -204,6 +245,22 @@ public class ShowMessageDialog extends Dialog
     {
         this.returnValue = returnValue;
         dispose();
+    }
+
+    /**
+     * @return the timeOut
+     */
+    public int getTimeOut()
+    {
+        return timeOut;
+    }
+
+    /**
+     * @param timeOut the timeOut to set
+     */
+    public void setTimeOut(int timeOut)
+    {
+        this.timeOut = timeOut;
     }
 
 }

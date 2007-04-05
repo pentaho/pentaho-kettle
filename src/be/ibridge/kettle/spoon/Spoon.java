@@ -142,6 +142,7 @@ import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
 import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
+import be.ibridge.kettle.core.dialog.ShowMessageDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -633,10 +634,15 @@ public class Spoon implements AddUndoPositionInterface
         }
         else
         {
+            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
+            dialog.setTimeOut(2);
+            dialog.open();
+            /*
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
             mb.setMessage("'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message")); // Transformation is already loaded
             mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); // Sorry!
             mb.open();
+            */
         }
         
         return key;
@@ -656,10 +662,15 @@ public class Spoon implements AddUndoPositionInterface
         }
         else
         {
+            ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
+            dialog.setTimeOut(2);
+            dialog.open();
+            /*
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
             mb.setMessage("'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message")); // Transformation is already loaded
             mb.setText(Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title")); // Sorry!
             mb.open();
+            */
         }
         
         return key;
