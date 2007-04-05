@@ -4042,7 +4042,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public boolean isDefaultJobnName(String name)
+    public boolean isDefaultJobName(String name)
     {
         if (!name.startsWith(STRING_JOB)) return false;
         
@@ -8066,6 +8066,11 @@ public class Spoon implements AddUndoPositionInterface
         if (Const.isEmpty(transMeta.getName()) && Const.isEmpty(transMeta.getFilename()))
             return STRING_TRANS_NO_NAME;
         
+        if (Const.isEmpty(transMeta.getName()) || isDefaultTransformationName(transMeta.getName()))
+        {
+            transMeta.nameFromFilename();
+        }
+
         return transMeta.getName();
     }
     
@@ -8073,6 +8078,11 @@ public class Spoon implements AddUndoPositionInterface
     {
         if (Const.isEmpty(jobMeta.getName()) && Const.isEmpty(jobMeta.getFilename()))
             return STRING_JOB_NO_NAME;
+
+        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobName(jobMeta.getName()))
+        {
+            jobMeta.nameFromFilename();
+        }
 
         return jobMeta.getName();
     }
@@ -8708,7 +8718,7 @@ public class Spoon implements AddUndoPositionInterface
     private boolean saveJob(JobMeta jobMeta, String fname)
     {
         jobMeta.setFilename(fname);
-        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobnName(jobMeta.getName()))
+        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobName(jobMeta.getName()))
         {
             jobMeta.nameFromFilename();
         }
