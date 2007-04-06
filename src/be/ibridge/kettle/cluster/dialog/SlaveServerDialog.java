@@ -59,40 +59,40 @@ public class SlaveServerDialog extends Dialog
 
 	private Shell     shell;
 
-    // Service
-    private Text     wName;
+	// Service
+	private Text     wName;
 	private TextVar  wHostname,  wPort, wUsername,  wPassword;
-    private Button   wMaster;
+	private Button   wMaster;
 
-    // Proxy
-    private TextVar   wProxyHost, wProxyPort,  wNonProxyHosts;
+	// Proxy
+	private TextVar   wProxyHost, wProxyPort,  wNonProxyHosts;
 
 	private Button    wOK, wCancel;
 	
-    private ModifyListener lsMod;
+	private ModifyListener lsMod;
 
 	private Props     props;
 
-    private int middle;
-    private int margin;
+	private int middle;
+	private int margin;
 
-    private SlaveServer originalServer;
-    private boolean ok;
+	private SlaveServer originalServer;
+	private boolean ok;
     
 	public SlaveServerDialog(Shell par, SlaveServer slaveServer)
 	{
 		super(par, SWT.NONE);
 		this.slaveServer=(SlaveServer) slaveServer.clone();
-        this.originalServer=slaveServer;
+		this.originalServer=slaveServer;
 		props=Props.getInstance();
-        ok=false;
+		ok=false;
 	}
 	
 	public boolean open() 
 	{
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
- 		props.setLook(shell);
+		props.setLook(shell);
 		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
 		
 		lsMod = new ModifyListener() 
@@ -110,7 +110,7 @@ public class SlaveServerDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Slave Server dialog");
+		shell.setText(Messages.getString("SlaveServerDialog.Shell.Title"));
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
@@ -128,10 +128,10 @@ public class SlaveServerDialog extends Dialog
 		// The rest stays above the buttons...
 		
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
- 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
-        addServiceTab();
-        addProxyTab();
+		addServiceTab();
+		addProxyTab();
         
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -143,21 +143,21 @@ public class SlaveServerDialog extends Dialog
 		
 		// Add listeners
 		wOK.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { ok(); } } );
-        wCancel.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { cancel(); } } );
+		wCancel.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { cancel(); } } );
 		
-        SelectionAdapter selAdapter=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+		SelectionAdapter selAdapter=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		wUsername.addSelectionListener(selAdapter);
 		wPassword.addSelectionListener(selAdapter);
 		wHostname.addSelectionListener(selAdapter);
-        wPort.addSelectionListener(selAdapter);
-        wProxyHost.addSelectionListener(selAdapter);
-        wProxyPort.addSelectionListener(selAdapter);
-        wNonProxyHosts.addSelectionListener(selAdapter);
+		wPort.addSelectionListener(selAdapter);
+		wProxyHost.addSelectionListener(selAdapter);
+		wProxyPort.addSelectionListener(selAdapter);
+		wNonProxyHosts.addSelectionListener(selAdapter);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 	
-        wTabFolder.setSelection(0);
+		wTabFolder.setSelection(0);
         
 		getData();
 
@@ -165,263 +165,264 @@ public class SlaveServerDialog extends Dialog
 		
 		shell.open();
 		Display display = parent.getDisplay();
-		while (!shell.isDisposed()) {
+		while (!shell.isDisposed()) 
+		{
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		return ok;
 	}
 	
-    private void addServiceTab()
-    {
-        //////////////////////////
-        // START OF DB TAB   ///
-        //////////////////////////
-        wServiceTab=new CTabItem(wTabFolder, SWT.NONE);
-        wServiceTab.setText("Service");
+	private void addServiceTab()
+	{
+		//////////////////////////
+		// START OF DB TAB   ///
+		//////////////////////////
+		wServiceTab=new CTabItem(wTabFolder, SWT.NONE);
+		wServiceTab.setText("Service");
         
-        wServiceComp = new Composite(wTabFolder, SWT.NONE);
-        props.setLook(wServiceComp);
+		wServiceComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wServiceComp);
 
-        FormLayout GenLayout = new FormLayout();
-        GenLayout.marginWidth  = Const.FORM_MARGIN;
-        GenLayout.marginHeight = Const.FORM_MARGIN;
-        wServiceComp.setLayout(GenLayout);
+		FormLayout GenLayout = new FormLayout();
+		GenLayout.marginWidth  = Const.FORM_MARGIN;
+		GenLayout.marginHeight = Const.FORM_MARGIN;
+		wServiceComp.setLayout(GenLayout);
 
-        // What's the name
-        Label wlName = new Label(wServiceComp, SWT.RIGHT); 
-        props.setLook(wlName);
-        wlName.setText("Slave server name  ");
-        FormData fdlName = new FormData();
-        fdlName.top   = new FormAttachment(0, 0);
-        fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlName.right = new FormAttachment(middle, -margin);
-        wlName.setLayoutData(fdlName);
+		// What's the name
+		Label wlName = new Label(wServiceComp, SWT.RIGHT); 
+		props.setLook(wlName);
+		wlName.setText(Messages.getString("SlaveServerDialog.ServerName.Label")); 
+		FormData fdlName = new FormData();
+		fdlName.top   = new FormAttachment(0, 0);
+		fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlName.right = new FormAttachment(middle, -margin);
+		wlName.setLayoutData(fdlName);
 
-        wName = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wName);
-        wName.addModifyListener(lsMod);
-        FormData fdName = new FormData();
-        fdName.top  = new FormAttachment(0, 0);
-        fdName.left = new FormAttachment(middle, 0); // To the right of the label
-        fdName.right= new FormAttachment(95, 0);
-        wName.setLayoutData(fdName);
+		wName = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wName);
+		wName.addModifyListener(lsMod);
+		FormData fdName = new FormData();
+		fdName.top  = new FormAttachment(0, 0);
+		fdName.left = new FormAttachment(middle, 0); // To the right of the label
+		fdName.right= new FormAttachment(95, 0);
+		wName.setLayoutData(fdName);
 
-        // What's the hostname
-        Label wlHostname = new Label(wServiceComp, SWT.RIGHT); 
-        props.setLook(wlHostname);
-        wlHostname.setText("Hostname or IP address  ");
-        FormData fdlHostname = new FormData();
-        fdlHostname.top   = new FormAttachment(wName, margin*2);
-        fdlHostname.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlHostname.right = new FormAttachment(middle, -margin);
-        wlHostname.setLayoutData(fdlHostname);
+		// What's the hostname
+		Label wlHostname = new Label(wServiceComp, SWT.RIGHT); 
+		props.setLook(wlHostname); 
+		wlHostname.setText(Messages.getString("SlaveServerDialog.HostIP.Label"));
+		FormData fdlHostname = new FormData();
+		fdlHostname.top   = new FormAttachment(wName, margin*2);
+		fdlHostname.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlHostname.right = new FormAttachment(middle, -margin);
+		wlHostname.setLayoutData(fdlHostname);
 
-        wHostname = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wHostname);
-        wHostname.addModifyListener(lsMod);
-        FormData fdHostname = new FormData();
-        fdHostname.top  = new FormAttachment(wName, margin*2);
-        fdHostname.left = new FormAttachment(middle, 0); // To the right of the label
-        fdHostname.right= new FormAttachment(95, 0);
-        wHostname.setLayoutData(fdHostname);
+		wHostname = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wHostname);
+		wHostname.addModifyListener(lsMod);
+		FormData fdHostname = new FormData();
+		fdHostname.top  = new FormAttachment(wName, margin*2);
+		fdHostname.left = new FormAttachment(middle, 0); // To the right of the label
+		fdHostname.right= new FormAttachment(95, 0);
+		wHostname.setLayoutData(fdHostname);
 
-        // What's the service URL?
-        Label wlPort = new Label(wServiceComp, SWT.RIGHT); 
-        props.setLook(wlPort);
-        wlPort.setText("Port (empty is port 80)  ");
-        FormData fdlPort = new FormData();
-        fdlPort.top   = new FormAttachment(wHostname, margin);
-        fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlPort.right = new FormAttachment(middle, -margin);
-        wlPort.setLayoutData(fdlPort);
+		// What's the service URL?
+		Label wlPort = new Label(wServiceComp, SWT.RIGHT); 
+		props.setLook(wlPort);
+		wlPort.setText(Messages.getString("SlaveServerDialog.Port.Label"));
+		FormData fdlPort = new FormData();
+		fdlPort.top   = new FormAttachment(wHostname, margin);
+		fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlPort.right = new FormAttachment(middle, -margin);
+		wlPort.setLayoutData(fdlPort);
 
-        wPort = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wPort);
-        wPort.addModifyListener(lsMod);
-        FormData fdPort = new FormData();
-        fdPort.top  = new FormAttachment(wHostname, margin);
-        fdPort.left = new FormAttachment(middle, 0); // To the right of the label
-        fdPort.right= new FormAttachment(95, 0);
-        wPort.setLayoutData(fdPort);
+		wPort = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wPort);
+		wPort.addModifyListener(lsMod);
+		FormData fdPort = new FormData();
+		fdPort.top  = new FormAttachment(wHostname, margin);
+		fdPort.left = new FormAttachment(middle, 0); // To the right of the label
+		fdPort.right= new FormAttachment(95, 0);
+		wPort.setLayoutData(fdPort);
         
-        // Username
-        Label wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
-        wlUsername.setText("Username  "); 
-        props.setLook(wlUsername);
-        FormData fdlUsername = new FormData();
-        fdlUsername.top  = new FormAttachment(wPort, margin);
-        fdlUsername.left = new FormAttachment(0,0); 
-        fdlUsername.right= new FormAttachment(middle, -margin);
-        wlUsername.setLayoutData(fdlUsername);
+		// Username
+		Label wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
+		wlUsername.setText(Messages.getString("SlaveServerDialog.UserName.Label")); 
+		props.setLook(wlUsername);
+		FormData fdlUsername = new FormData();
+		fdlUsername.top  = new FormAttachment(wPort, margin);
+		fdlUsername.left = new FormAttachment(0,0); 
+		fdlUsername.right= new FormAttachment(middle, -margin);
+		wlUsername.setLayoutData(fdlUsername);
 
-        wUsername = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wUsername);
-        wUsername.addModifyListener(lsMod);
-        FormData fdUsername = new FormData();
-        fdUsername.top  = new FormAttachment(wPort, margin);
-        fdUsername.left = new FormAttachment(middle, 0); 
-        fdUsername.right= new FormAttachment(95, 0);
-        wUsername.setLayoutData(fdUsername);
-
-        
-        // Password
-        Label wlPassword = new Label(wServiceComp, SWT.RIGHT ); 
-        wlPassword.setText("Password  "); 
-        props.setLook(wlPassword);
-        FormData fdlPassword = new FormData();
-        fdlPassword.top  = new FormAttachment(wUsername, margin);
-        fdlPassword.left = new FormAttachment(0,0);
-        fdlPassword.right= new FormAttachment(middle, -margin);
-        wlPassword.setLayoutData(fdlPassword);
-
-        wPassword = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wPassword);
-        wPassword.setEchoChar('*');
-        wPassword.addModifyListener(lsMod);
-        FormData fdPassword = new FormData();
-        fdPassword.top  = new FormAttachment(wUsername, margin);
-        fdPassword.left = new FormAttachment(middle, 0); 
-        fdPassword.right= new FormAttachment(95, 0);
-        wPassword.setLayoutData(fdPassword);
-
-        // Master
-        Label wlMaster = new Label(wServiceComp, SWT.RIGHT ); 
-        wlMaster.setText("Is the master  "); 
-        props.setLook(wlMaster);
-        FormData fdlMaster = new FormData();
-        fdlMaster.top  = new FormAttachment(wPassword, margin);
-        fdlMaster.left = new FormAttachment(0,0);
-        fdlMaster.right= new FormAttachment(middle, -margin);
-        wlMaster.setLayoutData(fdlMaster);
-
-        wMaster = new Button(wServiceComp, SWT.CHECK );
-        props.setLook(wMaster);
-        FormData fdMaster = new FormData();
-        fdMaster.top  = new FormAttachment(wPassword, margin);
-        fdMaster.left = new FormAttachment(middle, 0); 
-        fdMaster.right= new FormAttachment(95, 0);
-        wMaster.setLayoutData(fdMaster);
+		wUsername = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wUsername);
+		wUsername.addModifyListener(lsMod);
+		FormData fdUsername = new FormData();
+		fdUsername.top  = new FormAttachment(wPort, margin);
+		fdUsername.left = new FormAttachment(middle, 0); 
+		fdUsername.right= new FormAttachment(95, 0);
+		wUsername.setLayoutData(fdUsername);
 
         
-        fdServiceComp=new FormData();
-        fdServiceComp.left  = new FormAttachment(0, 0);
-        fdServiceComp.top   = new FormAttachment(0, 0);
-        fdServiceComp.right = new FormAttachment(100, 0);
-        fdServiceComp.bottom= new FormAttachment(100, 0);
-        wServiceComp.setLayoutData(fdServiceComp);
+		// Password
+		Label wlPassword = new Label(wServiceComp, SWT.RIGHT ); 
+		wlPassword.setText(Messages.getString("SlaveServerDialog.Password.Label")); 
+		props.setLook(wlPassword);
+		FormData fdlPassword = new FormData();
+		fdlPassword.top  = new FormAttachment(wUsername, margin);
+		fdlPassword.left = new FormAttachment(0,0);
+		fdlPassword.right= new FormAttachment(middle, -margin);
+		wlPassword.setLayoutData(fdlPassword);
+
+		wPassword = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wPassword);
+		wPassword.setEchoChar('*');
+		wPassword.addModifyListener(lsMod);
+		FormData fdPassword = new FormData();
+		fdPassword.top  = new FormAttachment(wUsername, margin);
+		fdPassword.left = new FormAttachment(middle, 0); 
+		fdPassword.right= new FormAttachment(95, 0);
+		wPassword.setLayoutData(fdPassword);
+
+		// Master
+		Label wlMaster = new Label(wServiceComp, SWT.RIGHT ); 
+		wlMaster.setText(Messages.getString("SlaveServerDialog.IsTheMaster.Label")); 
+		props.setLook(wlMaster);
+		FormData fdlMaster = new FormData();
+		fdlMaster.top  = new FormAttachment(wPassword, margin);
+		fdlMaster.left = new FormAttachment(0,0);
+		fdlMaster.right= new FormAttachment(middle, -margin);
+		wlMaster.setLayoutData(fdlMaster);
+
+		wMaster = new Button(wServiceComp, SWT.CHECK );
+		props.setLook(wMaster);
+		FormData fdMaster = new FormData();
+		fdMaster.top  = new FormAttachment(wPassword, margin);
+		fdMaster.left = new FormAttachment(middle, 0); 
+		fdMaster.right= new FormAttachment(95, 0);
+		wMaster.setLayoutData(fdMaster);
+
+        
+		fdServiceComp=new FormData();
+		fdServiceComp.left  = new FormAttachment(0, 0);
+		fdServiceComp.top   = new FormAttachment(0, 0);
+		fdServiceComp.right = new FormAttachment(100, 0);
+		fdServiceComp.bottom= new FormAttachment(100, 0);
+		wServiceComp.setLayoutData(fdServiceComp);
     
-        wServiceComp.layout();
-        wServiceTab.setControl(wServiceComp);
+		wServiceComp.layout();
+		wServiceTab.setControl(wServiceComp);
         
-        /////////////////////////////////////////////////////////////
-        /// END OF GEN TAB
-        /////////////////////////////////////////////////////////////
-    }
+		/////////////////////////////////////////////////////////////
+		/// END OF GEN TAB
+		/////////////////////////////////////////////////////////////
+	}
     
-    private void addProxyTab()
-    {
-        //////////////////////////
-        // START OF POOL TAB///
-        ///
-        wProxyTab=new CTabItem(wTabFolder, SWT.NONE);
-        wProxyTab.setText("Proxy");
+	private void addProxyTab()
+	{
+		//////////////////////////
+		// START OF POOL TAB///
+		///
+		wProxyTab=new CTabItem(wTabFolder, SWT.NONE);
+		wProxyTab.setText("Proxy");
 
-        FormLayout poolLayout = new FormLayout ();
-        poolLayout.marginWidth  = Const.FORM_MARGIN;
-        poolLayout.marginHeight = Const.FORM_MARGIN;
+		FormLayout poolLayout = new FormLayout ();
+		poolLayout.marginWidth  = Const.FORM_MARGIN;
+		poolLayout.marginHeight = Const.FORM_MARGIN;
         
-        wProxyComp = new Composite(wTabFolder, SWT.NONE);
-        props.setLook(wProxyComp);
-        wProxyComp.setLayout(poolLayout);
+		wProxyComp = new Composite(wTabFolder, SWT.NONE);
+		props.setLook(wProxyComp);
+		wProxyComp.setLayout(poolLayout);
 
-        // What's the data tablespace name?
-        Label wlProxyHost = new Label(wProxyComp, SWT.RIGHT); 
-        props.setLook(wlProxyHost);
-        wlProxyHost.setText("Proxy server hostname: "); 
-        FormData fdlProxyHost = new FormData();
-        fdlProxyHost.top   = new FormAttachment(0, 0);
-        fdlProxyHost.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlProxyHost.right = new FormAttachment(middle, -margin);
-        wlProxyHost.setLayoutData(fdlProxyHost);
+		// What's the data tablespace name?
+		Label wlProxyHost = new Label(wProxyComp, SWT.RIGHT); 
+		props.setLook(wlProxyHost);
+		wlProxyHost.setText(Messages.getString("SlaveServerDialog.ProxyServerName.Label")); 
+		FormData fdlProxyHost = new FormData();
+		fdlProxyHost.top   = new FormAttachment(0, 0);
+		fdlProxyHost.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlProxyHost.right = new FormAttachment(middle, -margin);
+		wlProxyHost.setLayoutData(fdlProxyHost);
 
-        wProxyHost = new TextVar(wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
-        props.setLook(wProxyHost);
-        wProxyHost.addModifyListener(lsMod);
-        FormData fdProxyHost = new FormData();
-        fdProxyHost.top  = new FormAttachment(0, 0);
-        fdProxyHost.left = new FormAttachment(middle, 0); // To the right of the label
-        fdProxyHost.right= new FormAttachment(95, 0);
-        wProxyHost.setLayoutData(fdProxyHost);
+		wProxyHost = new TextVar(wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
+		props.setLook(wProxyHost);
+		wProxyHost.addModifyListener(lsMod);
+		FormData fdProxyHost = new FormData();
+		fdProxyHost.top  = new FormAttachment(0, 0);
+		fdProxyHost.left = new FormAttachment(middle, 0); // To the right of the label
+		fdProxyHost.right= new FormAttachment(95, 0);
+		wProxyHost.setLayoutData(fdProxyHost);
 
-        // What's the initial pool size
-        Label wlProxyPort = new Label(wProxyComp, SWT.RIGHT); 
-        props.setLook(wlProxyPort);
-        wlProxyPort.setText("The proxy server port: "); 
-        FormData fdlProxyPort = new FormData();
-        fdlProxyPort.top   = new FormAttachment(wProxyHost, margin);
-        fdlProxyPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlProxyPort.right = new FormAttachment(middle, -margin);
-        wlProxyPort.setLayoutData(fdlProxyPort);
+		// What's the initial pool size
+		Label wlProxyPort = new Label(wProxyComp, SWT.RIGHT); 
+		props.setLook(wlProxyPort);
+		wlProxyPort.setText(Messages.getString("SlaveServerDialog.ProxyServerPort.Label")); 
+		FormData fdlProxyPort = new FormData();
+		fdlProxyPort.top   = new FormAttachment(wProxyHost, margin);
+		fdlProxyPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlProxyPort.right = new FormAttachment(middle, -margin);
+		wlProxyPort.setLayoutData(fdlProxyPort);
 
-        wProxyPort = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wProxyPort);
-        wProxyPort.addModifyListener(lsMod);
-        FormData fdProxyPort = new FormData();
-        fdProxyPort.top  = new FormAttachment(wProxyHost, margin);
-        fdProxyPort.left = new FormAttachment(middle, 0); // To the right of the label
-        fdProxyPort.right= new FormAttachment(95, 0);
-        wProxyPort.setLayoutData(fdProxyPort);
+		wProxyPort = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wProxyPort);
+		wProxyPort.addModifyListener(lsMod);
+		FormData fdProxyPort = new FormData();
+		fdProxyPort.top  = new FormAttachment(wProxyHost, margin);
+		fdProxyPort.left = new FormAttachment(middle, 0); // To the right of the label
+		fdProxyPort.right= new FormAttachment(95, 0);
+		wProxyPort.setLayoutData(fdProxyPort);
 
-        // What's the maximum pool size
-        Label wlNonProxyHosts = new Label(wProxyComp, SWT.RIGHT); 
-        props.setLook(wlNonProxyHosts);
-        wlNonProxyHosts.setText("Ignore proxy for hosts: regexp | separated: "); 
-        FormData fdlNonProxyHosts = new FormData();
-        fdlNonProxyHosts.top   = new FormAttachment(wProxyPort, margin);
-        fdlNonProxyHosts.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
-        wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
+		// What's the maximum pool size
+		Label wlNonProxyHosts = new Label(wProxyComp, SWT.RIGHT); 
+		props.setLook(wlNonProxyHosts);
+		wlNonProxyHosts.setText(Messages.getString("SlaveServerDialog.IgnoreProxyForHosts.Label")); 
+		FormData fdlNonProxyHosts = new FormData();
+		fdlNonProxyHosts.top   = new FormAttachment(wProxyPort, margin);
+		fdlNonProxyHosts.left  = new FormAttachment(0, 0);  // First one in the left top corner
+		fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
+		wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
 
-        wNonProxyHosts = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wNonProxyHosts);
-        wNonProxyHosts.addModifyListener(lsMod);
-        FormData fdNonProxyHosts = new FormData();
-        fdNonProxyHosts.top  = new FormAttachment(wProxyPort, margin);
-        fdNonProxyHosts.left = new FormAttachment(middle, 0); // To the right of the label
-        fdNonProxyHosts.right= new FormAttachment(95, 0);
-        wNonProxyHosts.setLayoutData(fdNonProxyHosts);
+		wNonProxyHosts = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		props.setLook(wNonProxyHosts);
+		wNonProxyHosts.addModifyListener(lsMod);
+		FormData fdNonProxyHosts = new FormData();
+		fdNonProxyHosts.top  = new FormAttachment(wProxyPort, margin);
+		fdNonProxyHosts.left = new FormAttachment(middle, 0); // To the right of the label
+		fdNonProxyHosts.right= new FormAttachment(95, 0);
+		wNonProxyHosts.setLayoutData(fdNonProxyHosts);
 
         
-        fdProxyComp = new FormData();
-        fdProxyComp.left  = new FormAttachment(0, 0);
-        fdProxyComp.top   = new FormAttachment(0, 0);
-        fdProxyComp.right = new FormAttachment(100, 0);
-        fdProxyComp.bottom= new FormAttachment(100, 0);
-        wProxyComp.setLayoutData(fdProxyComp);
+		fdProxyComp = new FormData();
+		fdProxyComp.left  = new FormAttachment(0, 0);
+		fdProxyComp.top   = new FormAttachment(0, 0);
+		fdProxyComp.right = new FormAttachment(100, 0);
+		fdProxyComp.bottom= new FormAttachment(100, 0);
+		wProxyComp.setLayoutData(fdProxyComp);
 
-        wProxyComp.layout();
-        wProxyTab.setControl(wProxyComp);
-    }
+		wProxyComp.layout();
+		wProxyTab.setControl(wProxyComp);
+	}
 
-    public void dispose()
+	public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
 	}
     
-    public void getData()
+	public void getData()
 	{
-        wName    .setText( Const.NVL(slaveServer.getName(),     "") );
-        wHostname.setText( Const.NVL(slaveServer.getHostname(), "") );
-        wPort    .setText( Const.NVL(slaveServer.getPort(),     "") );
-        wUsername.setText( Const.NVL(slaveServer.getUsername(), "") );
+		wName    .setText( Const.NVL(slaveServer.getName(),     "") );
+		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") );
+		wPort    .setText( Const.NVL(slaveServer.getPort(),     "") );
+		wUsername.setText( Const.NVL(slaveServer.getUsername(), "") );
 		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") );
 
-        wProxyHost.setText( Const.NVL(slaveServer.getProxyHostname(), ""));
-        wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), ""));
-        wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), ""));
+		wProxyHost.setText( Const.NVL(slaveServer.getProxyHostname(), ""));
+		wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), ""));
+		wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), ""));
         
-        wMaster.setSelection( slaveServer.isMaster() );
+		wMaster.setSelection( slaveServer.isMaster() );
         
 		wName.setFocus();
 	}
@@ -434,41 +435,41 @@ public class SlaveServerDialog extends Dialog
 	
 	public void ok()
 	{
-        getInfo();
-        originalServer.setName    (slaveServer.getName());
-        originalServer.setHostname(slaveServer.getHostname());
-        originalServer.setPort    (slaveServer.getPort());
-        originalServer.setUsername(slaveServer.getUsername());
-        originalServer.setPassword(slaveServer.getPassword());
+		getInfo();
+		originalServer.setName    (slaveServer.getName());
+		originalServer.setHostname(slaveServer.getHostname());
+		originalServer.setPort    (slaveServer.getPort());
+		originalServer.setUsername(slaveServer.getUsername());
+		originalServer.setPassword(slaveServer.getPassword());
 
-        originalServer.setProxyHostname(slaveServer.getProxyHostname());
-        originalServer.setProxyPort(slaveServer.getProxyPort());
-        originalServer.setNonProxyHosts(slaveServer.getNonProxyHosts());
+		originalServer.setProxyHostname(slaveServer.getProxyHostname());
+		originalServer.setProxyPort(slaveServer.getProxyPort());
+		originalServer.setNonProxyHosts(slaveServer.getNonProxyHosts());
 
-        originalServer.setMaster( slaveServer.isMaster() );
+		originalServer.setMaster( slaveServer.isMaster() );
 
-        originalServer.setChanged();
+		originalServer.setChanged();
 
-        ok=true;
+		ok=true;
         
-        dispose();
+		dispose();
 	}
     
-    // Get dialog info in securityService
+	// Get dialog info in securityService
 	private void getInfo()
-    {
-        slaveServer.setName    (wName    .getText());
-        slaveServer.setHostname(wHostname.getText());
-        slaveServer.setPort    (wPort    .getText());
-        slaveServer.setUsername(wUsername.getText());
-        slaveServer.setPassword(wPassword.getText());
+	{
+		slaveServer.setName    (wName    .getText());
+		slaveServer.setHostname(wHostname.getText());
+		slaveServer.setPort    (wPort    .getText());
+		slaveServer.setUsername(wUsername.getText());
+		slaveServer.setPassword(wPassword.getText());
 
-        slaveServer.setProxyHostname(wProxyHost.getText());
-        slaveServer.setProxyPort(wProxyPort.getText());
-        slaveServer.setNonProxyHosts(wNonProxyHosts.getText());
+		slaveServer.setProxyHostname(wProxyHost.getText());
+		slaveServer.setProxyPort(wProxyPort.getText());
+		slaveServer.setNonProxyHosts(wNonProxyHosts.getText());
 
-        slaveServer.setMaster(wMaster.getSelection());
-    }
+		slaveServer.setMaster(wMaster.getSelection());
+	}
 
 	public void test()
 	{
@@ -476,22 +477,25 @@ public class SlaveServerDialog extends Dialog
 		{
 			getInfo();
             
-            String xml = "<sample/>";
+			String xml = "<sample/>";
             
-            String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH);
+			String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH);
             
-            String message = "Testing reply from server URL: "+slaveServer.constructUrl(AddTransServlet.CONTEXT_PATH)+Const.CR+"Using content: "+Const.CR+Const.CR;
-            message+=xml;
-            message+=Const.CR+Const.CR;
-            message+="Reply was:"+Const.CR+Const.CR;
-            message+=reply+Const.CR;
+			String message = Messages.getString("SlaveServer.Replay.Info1")
+				+slaveServer.constructUrl(AddTransServlet.CONTEXT_PATH)+Const.CR+
+				Messages.getString("SlaveServer.Replay.Info2") +Const.CR+Const.CR;
+			message+=xml;
+			message+=Const.CR+Const.CR;
+			message+="Reply was:"+Const.CR+Const.CR;
+			message+=reply+Const.CR;
             
-			EnterTextDialog dialog = new EnterTextDialog(shell, "XML", "The XML returned is:", message);
-            dialog.open();
+			EnterTextDialog dialog = new EnterTextDialog(shell, "XML", Messages.getString("SlaveServer.RetournedXMLInfo"), message);
+			dialog.open();
 		}
 		catch(Exception e)
 		{
-			new ErrorDialog(shell, "Error", "Unable to get a reply back from URL ["+slaveServer.getHostname()+"]", e);
+			new ErrorDialog(shell, Messages.getString("SlaveServer.ExceptionError"), Messages.getString("SlaveServer.ExceptionUnableGetReplay.Error1")
+				+slaveServer.getHostname()+ Messages.getString("SlaveServer.ExceptionUnableGetReplay.Error2"), e);
 		}		
 	}
 }
