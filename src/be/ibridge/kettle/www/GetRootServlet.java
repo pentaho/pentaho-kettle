@@ -28,9 +28,6 @@ public class GetRootServlet extends HttpServlet
         
         if (log.isDebug()) log.logDebug(toString(), "Root requested");
         
-        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        // baseRequest.setHandled(true);
-
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
         

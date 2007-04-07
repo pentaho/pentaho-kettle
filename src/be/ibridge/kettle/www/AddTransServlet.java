@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.HttpConnection;
-import org.mortbay.jetty.Request;
-
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
@@ -136,11 +133,6 @@ public class AddTransServlet extends HttpServlet
             out.println("</BODY>");
             out.println("</HTML>");
         }
-
-        // response.flushBuffer();
-        
-        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        baseRequest.setHandled(true);
     }
     
     public String toString()
