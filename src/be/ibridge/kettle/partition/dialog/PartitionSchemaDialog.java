@@ -107,7 +107,7 @@ public class PartitionSchemaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Database Partitioning schema dialog");
+		shell.setText(Messages.getString("PartitionSchemaDialog.Shell.Title"));
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
@@ -117,7 +117,7 @@ public class PartitionSchemaDialog extends Dialog
 		wOK.setText(" &OK ");
 
         wGet    = new Button(shell, SWT.PUSH); 
-        wGet.setText(" &Import partitions");
+        wGet.setText(Messages.getString("PartitionSchema.ImportPartitions"));
 
 		wCancel = new Button(shell, SWT.PUSH); 
 		wCancel.setText(" &Cancel ");
@@ -130,7 +130,7 @@ public class PartitionSchemaDialog extends Dialog
         // What's the schema name??
         Label wlName = new Label(shell, SWT.RIGHT); 
         props.setLook(wlName);
-        wlName.setText("Partition schema name  ");
+        wlName.setText(Messages.getString("PartitionSchemaDialog.PartitionName.Label"));
         FormData fdlServiceURL = new FormData();
         fdlServiceURL.top   = new FormAttachment(0, 0);
         fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -148,7 +148,7 @@ public class PartitionSchemaDialog extends Dialog
 
         // Schema list:
         Label wlPartitions = new Label(shell, SWT.RIGHT);
-        wlPartitions.setText("Partitions  ");
+        wlPartitions.setText(Messages.getString("PartitionSchemaDialog.Partitions.Label"));
         props.setLook(wlPartitions);
         FormData fdlPartitions=new FormData();
         fdlPartitions.left  = new FormAttachment(0, 0);
@@ -158,7 +158,7 @@ public class PartitionSchemaDialog extends Dialog
         
         ColumnInfo[] partitionColumns=new ColumnInfo[] 
             {
-                new ColumnInfo("Partition ID", ColumnInfo.COLUMN_TYPE_TEXT, false, false),
+                new ColumnInfo(Messages.getString("PartitionSchemaDialog.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
             };
         wPartitions=new TableView(shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -275,7 +275,8 @@ public class PartitionSchemaDialog extends Dialog
         
         if (dbNames.length>0)
         {
-            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames, "Select the database", "Select the partitioned database to import from");
+            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, dbNames, Messages.getString("PartitionSchema.SelectDatabase"), 
+						Messages.getString("PartitionSchema.SelectPartitionnedDatabase"));
             String dbName = dialog.open();
             if (dbName!=null)
             {
