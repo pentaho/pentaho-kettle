@@ -2071,14 +2071,26 @@ public class Const
      */
     public static String filenameOnly(String sFullPath)
     {
-        if (Const.isEmpty(sFullPath))
-            return sFullPath;
+        if (Const.isEmpty(sFullPath)) return sFullPath;
         
         int idx = sFullPath.lastIndexOf(FILE_SEPARATOR);
         if (idx != -1)
+        {
             return sFullPath.substring(idx + 1);
+        }
         else
-            return sFullPath;
+        {
+            idx = sFullPath.lastIndexOf("/"); // URL, VFS
+            if (idx != -1)
+            {
+                return sFullPath.substring(idx + 1);
+            }
+            else
+            {
+                return sFullPath;
+            }
+        }
+            
     }
     
     /**
