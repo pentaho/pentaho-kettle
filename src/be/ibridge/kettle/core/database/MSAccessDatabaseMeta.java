@@ -268,6 +268,9 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 				retval+="TEXT";
 			}
 			break;
+		case Value.VALUE_TYPE_BINARY:
+			retval+=" LONGBINARY";	
+			break;
 		default:
 			retval+=" UNKNOWN";
 			break;
@@ -349,5 +352,9 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     {
         return new String[] { };
     }
-
+    
+    public boolean supportsGetBlob()
+    {
+        return false;
+    }    
 }
