@@ -331,6 +331,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 									res.setValue( ((Integer)result).longValue() );
 								}else if (classType.equalsIgnoreCase("java.lang.Long")){
 									res.setValue( ((Long)result).longValue() );
+                                }else if (classType.equalsIgnoreCase("java.lang.Double")){
+                                    res.setValue( (long)((Double)result).doubleValue() );
 								}else if (classType.equalsIgnoreCase("java.lang.String")){
 									res.setValue( (new Long((String)result)).longValue() );									
 								}else if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")){
