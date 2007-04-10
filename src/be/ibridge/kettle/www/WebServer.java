@@ -1,6 +1,7 @@
 package be.ibridge.kettle.www;
 
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
@@ -20,7 +21,6 @@ public class WebServer
     public  static final int PORT = 80;
 
     private Server             server;
-    private HashUserRealm      userRealm;
     
     private TransformationMap  transformationMap;
 
@@ -32,8 +32,6 @@ public class WebServer
         this.transformationMap = transformationMap;
         this.hostname = hostname;
         this.port = port;
-        
-        userRealm = new HashUserRealm("Kettle", "pwd/kettle.pwd");
         
         startServer();
     }
@@ -47,8 +45,6 @@ public class WebServer
     {
         server = new Server();
 
-        server.addUserRealm(userRealm);
-
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);;
         constraint.setRoles( new String[] { Constraint.ANY_ROLE } );
@@ -59,21 +55,17 @@ public class WebServer
         constraintMapping.setPathSpec("/*");
 
         SecurityHandler securityHandler = new SecurityHandler();
-        securityHandler.setUserRealm(userRealm);
+        securityHandler.setUserRealm(new HashUserRealm("Kettle", "pwd/kettle.pwd"));
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
                
         // Add all the servlets...
         //
         ContextHandlerCollection contexts = new ContextHandlerCollection();
-        server.setHandler(contexts);
-
-        Context security = new Context(contexts, "/*", Context.SECURITY);
-        security.addHandler(securityHandler);
-
+        
         // Root
         Context root = new Context(contexts, GetRootServlet.CONTEXT_PATH, Context.SESSIONS);
         root.addServlet(new ServletHolder(new GetRootServlet()), "/*");
-
+        
         // Carte Status
         Context status = new Context(contexts, GetStatusServlet.CONTEXT_PATH, Context.SESSIONS);
         status.addServlet(new ServletHolder(new GetStatusServlet(transformationMap)), "/*");
@@ -102,6 +94,8 @@ public class WebServer
         Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
         addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
         
+        server.setHandlers(new Handler[] { securityHandler, contexts });
+
         // Start execution
         createListeners();
         
