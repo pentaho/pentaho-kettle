@@ -635,7 +635,7 @@ public class Spoon implements AddUndoPositionInterface
         else
         {
             ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
-            dialog.setTimeOut(2);
+            dialog.setTimeOut(6);
             dialog.open();
             /*
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
@@ -663,7 +663,7 @@ public class Spoon implements AddUndoPositionInterface
         else
         {
             ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
-            dialog.setTimeOut(2);
+            dialog.setTimeOut(6);
             dialog.open();
             /*
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
