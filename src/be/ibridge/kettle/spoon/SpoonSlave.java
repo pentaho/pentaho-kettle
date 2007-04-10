@@ -120,6 +120,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Input"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Output"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Updated"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SpoonLog.Column.Rejected"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Errors"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Active"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -140,6 +141,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
 		colinf[12].setAllignement(SWT.RIGHT);
+        colinf[13].setAllignement(SWT.RIGHT);
 
 		wTree = new Tree(sash, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
@@ -405,7 +407,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
             SlaveServerTransStatus transStatus = (SlaveServerTransStatus) slaveServerStatus.getTransStatusList().get(i);
             TreeItem transItem = new TreeItem(wTree, SWT.NONE);
             transItem.setText(0, transStatus.getTransName());
-            transItem.setText(8, transStatus.getStatusDescription());
+            transItem.setText(9, transStatus.getStatusDescription());
             
             try
             {
