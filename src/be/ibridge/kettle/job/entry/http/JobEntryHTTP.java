@@ -340,7 +340,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
         // Get previous result rows...
         List resultRows;
-        String urlFieldnameToUse = URL_FIELDNAME;
+        String urlFieldnameToUse;
+        
+        if (Const.isEmpty(urlFieldname)) urlFieldnameToUse = URL_FIELDNAME;
+        else urlFieldnameToUse = urlFieldname;
+        
 
         if (runForEveryRow)
         {
@@ -480,20 +484,20 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             catch(MalformedURLException e)
             {
                 result.setNrErrors(1);
-                e.printStackTrace();
                 log.logError(toString(), "The specified URL is not valid ["+url+"] : "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
             }
             catch(IOException e)
             {
                 result.setNrErrors(1);
-                e.printStackTrace();
                 log.logError(toString(), "I was unable to save the HTTP result to file because of a I/O error: "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
             }
             catch(Exception e)
             {
                 result.setNrErrors(1);
-                e.printStackTrace();
                 log.logError(toString(), "Error getting file from HTTP : "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
             }
             finally
             {
