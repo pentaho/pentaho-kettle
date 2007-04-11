@@ -463,6 +463,9 @@ public class Const
     /** The step partition ID */
     public static final String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX+".Step.Partition.ID";
 
+    /** The slave transformation number */
+    public static final String INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER = INTERNAL_VARIABLE_PREFIX+".Slave.Transformation.Number";
+
     /** The step name */
     public static final String INTERNAL_VARIABLE_STEP_NAME = INTERNAL_VARIABLE_PREFIX+".Step.Name";
 
