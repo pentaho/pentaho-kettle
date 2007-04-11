@@ -924,7 +924,7 @@ public class Trans
 		{
 			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
 			BaseStep rt=(BaseStep)sid.step;
-			rt.stopAll();
+			rt.stopped=true;
 
 			// Cancel queries etc. by force...
 			StepInterface si = (StepInterface)rt;
