@@ -53,10 +53,6 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	 */
 	public int getNotFoundTK(boolean use_autoinc)
 	{
-		if ( supportsAutoInc() && use_autoinc)
-		{
-			return 1;
-		}
 		return super.getNotFoundTK(use_autoinc);
 	}
 	
