@@ -34,6 +34,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
@@ -1290,6 +1291,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 				logError(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
 				return false;
 			}
+            
+            String nr = KettleVariables.getInstance().getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
+            if (!Const.isEmpty(nr))
+            {
+                // TODO: add metadata to configure this.
+                logBasic("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
+            }
+
 
 			return true;
 		}

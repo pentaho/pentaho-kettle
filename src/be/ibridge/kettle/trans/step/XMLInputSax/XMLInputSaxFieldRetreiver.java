@@ -11,6 +11,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleValueException;
 /**
  * Parse XML document using SAX and retreive fields
@@ -74,11 +76,11 @@ public class XMLInputSaxFieldRetreiver extends DefaultHandler{
             sp.parse(sourceFile, this);
             
         }catch(SAXException se) {
-            se.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(se));
         }catch(ParserConfigurationException pce) {
-            pce.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(pce));
         }catch (IOException ie) {
-            ie.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(ie));
         }
     }
     
@@ -226,7 +228,7 @@ public class XMLInputSaxFieldRetreiver extends DefaultHandler{
 			    }
 			}
 		} catch (KettleValueException e) {
-			e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 			throw new SAXException(_counter+","+counter+((XMLInputSaxFieldPosition)_pathToRootElement.get(_pathToRootElement.size()-1)).toString(),e);
 			
 		}
@@ -250,7 +252,7 @@ public class XMLInputSaxFieldRetreiver extends DefaultHandler{
 		path[2]=new XMLvInputFieldPosition("Ea=managedObject/class:BTS");
 	} catch (KettleValueException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 	}
     //System.out.println(new xmlElement("hello","hello","hello").equals(new xmlElement("hello","hello","hello")));
     XMLvSaxFieldRetreiver spe = new XMLvSaxFieldRetreiver("D:\\NOKIA\\Project\\Ressources\\CASA-1.XML",path,"name");

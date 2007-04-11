@@ -501,7 +501,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Error writing ended tag line: "+e.toString());
-			e.printStackTrace();
+            logError(Const.getStackTracker(e));
 			retval=true;
 		}
 		
@@ -574,7 +574,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Error writing header line: "+e.toString());
-			e.printStackTrace();
+            logError(Const.getStackTracker(e));
 			retval=true;
 		}
 		linesOutput++;

@@ -603,7 +603,7 @@ public class ChefLog extends Composite implements TabItemInterface
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            log.logError(toString(), Const.getStackTracker(e));
         }
     }
 

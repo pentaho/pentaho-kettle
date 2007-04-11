@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -410,7 +411,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
             try {
 				inputPosition[i] = new XMLInputSaxFieldPosition("position"+(i+1),XMLInputSaxFieldPosition.XML_ELEMENT_POS);
 			} catch (KettleValueException e) {
-				e.printStackTrace();
+				LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
 			}
         }
 

@@ -409,8 +409,8 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			e.printStackTrace();
 			log.logError(toString(), "Error getting files from SCP : "+e.getMessage());
+            log.logError(toString(), Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible
 			try {

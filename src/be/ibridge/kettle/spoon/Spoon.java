@@ -7288,8 +7288,8 @@ public class Spoon implements AddUndoPositionInterface
         catch(KettleException ke)
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
+            log.logError(APP_NAME, Const.getStackTracker(ke));
             spoon.rep=null;
-            // ke.printStackTrace();
         }
                 
         spoon.open ();
@@ -7306,7 +7306,8 @@ public class Spoon implements AddUndoPositionInterface
         catch(Throwable e)
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
-            e.printStackTrace();
+            log.logError(APP_NAME, Const.getStackTracker(e));
+
         }
         spoon.dispose();
 
@@ -7771,7 +7772,9 @@ public class Spoon implements AddUndoPositionInterface
                 if (show) addSpoonGraph(slaveTrans);
                 if (post)
                 {
-                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
+                    TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
+                    transConfiguration.getTransExecutionConfiguration().getVariables().addValue(new Value(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i)));
+                    String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {

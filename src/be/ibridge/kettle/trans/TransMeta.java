@@ -3942,8 +3942,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
         catch (Exception e)
         {
-            System.out.println(Messages.getString("TransMeta.Exception.ErrorOfSortingSteps") + e); //$NON-NLS-1$
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Messages.getString("TransMeta.Exception.ErrorOfSortingSteps") + e); //$NON-NLS-1$
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
         }
     }
 
@@ -4402,7 +4402,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             throw new RuntimeException(e);
         }
     }

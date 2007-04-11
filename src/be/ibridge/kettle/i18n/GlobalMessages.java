@@ -120,7 +120,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -141,7 +141,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -162,7 +162,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -182,7 +182,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -202,7 +202,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -222,7 +222,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -242,7 +242,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }
@@ -262,7 +262,7 @@ public class GlobalMessages
             }
             catch (MissingResourceException fe)
             {
-                fe.printStackTrace();
+                LogWriter.getInstance().logError("Internationalisation/Translation error", Const.getStackTracker(e));
                 return '!' + key + '!';
             }
         }

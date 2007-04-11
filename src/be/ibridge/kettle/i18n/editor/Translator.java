@@ -699,7 +699,7 @@ public class Translator
         catch(Throwable e)
         {
             log.logError(APP_NAME, "An unexpected error occurred : "+e.getMessage());
-            e.printStackTrace();
+            log.logError(APP_NAME, Const.getStackTracker(e));
         }
     }
 

@@ -220,7 +220,7 @@ public class RepositoriesMeta
 		catch(Exception e)
 		{
 			log.logError(toString(), "Error reading information from file : "+e.toString());
-			e.printStackTrace();
+            log.logError(toString(), Const.getStackTracker(e));
 			clear();
 			return false;
 		}

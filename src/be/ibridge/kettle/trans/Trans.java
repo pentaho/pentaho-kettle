@@ -612,8 +612,8 @@ public class Trans
             try {
                 threads[i].join();
             } catch(Exception ex) {
-                ex.printStackTrace();
                 log.logError("Error with init thread: " + ex.getMessage(), ex.getMessage());
+                log.logError(toString(), Const.getStackTracker(ex));
             }
         }
         

@@ -1,5 +1,6 @@
 package be.ibridge.kettle.test.local;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 
@@ -40,7 +41,7 @@ public class TLTest extends Thread
         catch(Exception e)
         {
             System.out.println("Exception occurred: "+e.toString());
-            e.printStackTrace();
+            System.out.println(Const.getStackTracker(e));
         }
         
         System.out.println("TLTest finished, TODAY="+vars.getVariable(TODAY, "?"));

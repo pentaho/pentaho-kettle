@@ -198,8 +198,8 @@ public class JobEntryLoader
                                 }
                                 catch (Exception e)
                                 {
-                                    e.printStackTrace();
-                                    System.out.println("Error reading plugin XML file: " + e.toString());
+                                    log.logError(toString(), "Error reading plugin XML file: " + e.toString());
+                                    log.logError(toString(), Const.getStackTracker(e));
                                     return false;
                                 }
                             }

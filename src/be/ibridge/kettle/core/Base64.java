@@ -340,7 +340,7 @@ public class Base64
         }   // end try
         catch( java.io.IOException e )
         {
-            e.printStackTrace();
+            LogWriter.getInstance().logError("Base64 encoder", Const.getStackTracker(e));
             return null;
         }   // end catch
         finally
@@ -469,7 +469,7 @@ public class Base64
             }   // end try
             catch( java.io.IOException e )
             {
-                e.printStackTrace();
+                LogWriter.getInstance().logError("Base64 encoder", Const.getStackTracker(e));
                 return null;
             }   // end catch
             finally
@@ -791,12 +791,12 @@ public class Base64
         }   // end try
         catch( java.io.IOException e )
         {
-            e.printStackTrace();
+            LogWriter.getInstance().logError("Base64 decoder", Const.getStackTracker(e));
             obj = null;
         }   // end catch
         catch( java.lang.ClassNotFoundException e )
         {
-            e.printStackTrace();
+            LogWriter.getInstance().logError("Base64 decoder", Const.getStackTracker(e));
             obj = null;
         }   // end catch
         finally

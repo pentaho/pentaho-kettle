@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -69,7 +70,7 @@ public class UpgradeRepositoryProgressDialog
                 }
                 catch (KettleException e)
                 {
-                    e.printStackTrace();
+                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                     throw new InvocationTargetException(e, Messages.getString("UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage()));
                 }
             }
@@ -83,7 +84,7 @@ public class UpgradeRepositoryProgressDialog
         catch (InvocationTargetException e)
         {
             LogWriter.getInstance().logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             showErrorDialog(e);
 
             retval = false;
@@ -91,7 +92,7 @@ public class UpgradeRepositoryProgressDialog
         catch (InterruptedException e)
         {
             LogWriter.getInstance().logError(UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: " + e.toString());
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             showErrorDialog(e);
 
             retval = false;

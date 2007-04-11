@@ -378,8 +378,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			e.printStackTrace();
 			log.logError(toString(), "Error getting files from SFTP : "+e.getMessage());
+            log.logError(toString(), Const.getStackTracker(e));
 		} finally {
 			// close connection, if possible
 			try {

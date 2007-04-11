@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -58,7 +59,7 @@ public class RepositoryExportProgressDialog
                 }
                 catch (KettleException e)
                 {
-                    e.printStackTrace();
+                    LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                     throw new InvocationTargetException(e, Messages.getString("RepositoryExportDialog.Error.CreateUpdate", e.getMessage()));
                 }
             }
@@ -72,14 +73,14 @@ public class RepositoryExportProgressDialog
         catch (InvocationTargetException e)
         {
             LogWriter.getInstance().logError(RepositoryExportProgressDialog.class.toString(), "Error creating repository: " + e.toString());
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             new ErrorDialog(shell, Messages.getString("RepositoryExportDialog.ErrorExport.Title"), Messages.getString("RepositoryExportDialog.ErrorExport.Message"), e);
             retval = false;
         }
         catch (InterruptedException e)
         {
             LogWriter.getInstance().logError(RepositoryExportProgressDialog.class.toString(), "Error creating repository: " + e.toString());
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
             new ErrorDialog(shell, Messages.getString("RepositoryExportDialog.ErrorExport.Title"), Messages.getString("RepositoryExportDialog.ErrorExport.Message"), e);
             retval = false;
         }

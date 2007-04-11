@@ -2563,7 +2563,7 @@ public class Database
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+            log.logError(toString(), Const.getStackTracker(e));
 			throw new KettleDatabaseException("Unable to determine if indexes exists on table ["+tablename+"]", e);
 		}
 	}

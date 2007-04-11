@@ -195,7 +195,7 @@ public class DatabaseDialog extends Dialog
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
         }
 
         System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$

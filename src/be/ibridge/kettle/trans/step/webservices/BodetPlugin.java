@@ -356,7 +356,7 @@ public class BodetPlugin extends BaseStep implements StepInterface
 		} 
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+            logError(Const.getStackTracker(e));
 		}
 		finally
 		{
@@ -530,7 +530,7 @@ public class BodetPlugin extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+            logError(Const.getStackTracker(e));
 		}
 	}
 }

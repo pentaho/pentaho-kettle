@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.ColumnInfo;
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -438,7 +439,7 @@ public class BodetPluginSWTPane extends BaseStepDialog implements StepDialogInte
         				}
         			}
         		} catch (KettleStepException e) {
-        			e.printStackTrace();
+                    log.logError(toString(), Const.getStackTracker(e));
         		}
         	}
         });

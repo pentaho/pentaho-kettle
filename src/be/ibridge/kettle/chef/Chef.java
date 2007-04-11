@@ -1605,8 +1605,7 @@ public class Chef implements AddUndoPositionInterface
             }
             catch (KettleException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.logError(toString(), Const.getStackTracker(e));
             }
 		}
 	}
@@ -1682,8 +1681,7 @@ public class Chef implements AddUndoPositionInterface
             }
             catch (KettleException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.logError(toString(), Const.getStackTracker(e));
             }
 		}
 	}
@@ -2534,10 +2532,9 @@ public class Chef implements AddUndoPositionInterface
         {
             jobMeta.readDatabases(rep);
         }
-        catch (KettleException e1)
+        catch (KettleException e)
         {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            log.logError(toString(), Const.getStackTracker(e));
         }
 		setFilename(null);
 		jobMeta.setName(jobname);

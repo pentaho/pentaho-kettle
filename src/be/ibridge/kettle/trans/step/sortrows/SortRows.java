@@ -190,7 +190,7 @@ public class SortRows extends BaseStep implements StepInterface
 			catch(Exception e)
 			{
 				logError("Error reading back tmp-files : "+e.toString());
-				e.printStackTrace();
+                logError(Const.getStackTracker(e));
 			}
 		}
 		
