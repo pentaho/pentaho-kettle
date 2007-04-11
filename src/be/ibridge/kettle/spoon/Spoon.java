@@ -9149,6 +9149,10 @@ public class Spoon implements AddUndoPositionInterface
                     {
                         transMeta.setFilename(Const.createFilename(directory, transname, Const.STRING_TRANS_DEFAULT_EXT));
                     }
+                    
+                    // Add the source & target db
+                    transMeta.addDatabase(sourceDbInfo);
+                    transMeta.addDatabase(targetDbInfo);
 
                     //
                     // Add a note
