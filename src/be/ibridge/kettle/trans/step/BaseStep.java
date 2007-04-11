@@ -1602,6 +1602,7 @@ public class BaseStep extends Thread
     public void stopAll()
     {
         stopped = true;
+        trans.stopAll();
     }
 
     public boolean isStopped()
