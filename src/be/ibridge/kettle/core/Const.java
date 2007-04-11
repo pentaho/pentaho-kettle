@@ -466,6 +466,9 @@ public class Const
     /** The slave transformation number */
     public static final String INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER = INTERNAL_VARIABLE_PREFIX+".Slave.Transformation.Number";
 
+    /** The size of the cluster : number of slaves */
+    public static final String INTERNAL_VARIABLE_CLUSTER_SIZE = INTERNAL_VARIABLE_PREFIX+".Cluster.Size";
+
     /** The step name */
     public static final String INTERNAL_VARIABLE_STEP_NAME = INTERNAL_VARIABLE_PREFIX+".Step.Name";
 

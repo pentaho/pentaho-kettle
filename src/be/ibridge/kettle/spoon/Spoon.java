@@ -7773,7 +7773,9 @@ public class Spoon implements AddUndoPositionInterface
                 if (post)
                 {
                     TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-                    transConfiguration.getTransExecutionConfiguration().getVariables().addValue(new Value(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i)));
+                    Row variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                    variables.addValue(new Value(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i)));
+                    variables.addValue(new Value(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length)));
                     String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

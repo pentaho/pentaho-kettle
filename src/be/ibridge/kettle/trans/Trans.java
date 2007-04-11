@@ -1914,7 +1914,12 @@ public class Trans
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                 if (executionConfiguration.isClusterPosting())
                 {
-                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
+                    Row variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                    variables.addValue(new Value(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i)));
+                    variables.addValue(new Value(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length)));
+
+                    String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
