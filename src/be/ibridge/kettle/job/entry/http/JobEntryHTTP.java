@@ -18,7 +18,6 @@ package be.ibridge.kettle.job.entry.http;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -373,7 +372,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         {
             Row row = (Row)resultRows.get(i);
             
-            FileOutputStream    outputFile   = null;
+            OutputStream        outputFile   = null;
             OutputStream        uploadStream = null;
             BufferedInputStream fileStream   = null;
             InputStream         input        = null;
@@ -422,7 +421,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                 }
                 
                 // Create the output File...
-                outputFile = new FileOutputStream(new File(realTargetFile), fileAppended);
+                outputFile = KettleVFS.getOutputStream(realTargetFile, fileAppended);
                 
                 // Get a stream for the specified URL
     		    server = new URL(urlToUse);
