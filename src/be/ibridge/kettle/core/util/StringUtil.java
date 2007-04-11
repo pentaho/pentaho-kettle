@@ -267,4 +267,22 @@ public class StringUtil
 
         return systemProperties.getProperty(variable, defaultValue);
     }
+    
+    public static final String generateRandomString(int length, String prefix, String postfix, boolean uppercase)
+    {
+        StringBuffer buffer = new StringBuffer();
+
+        if (!Const.isEmpty(prefix)) buffer.append(prefix);
+
+        for (int i=0;i<length;i++)
+        {
+            int c = 'a'+(int)(Math.random()*26);
+            buffer.append((char)c);
+        }
+        if (!Const.isEmpty(postfix)) buffer.append(postfix);
+        
+        if (uppercase) return buffer.toString().toUpperCase();
+        
+        return buffer.toString();
+    }
 }
