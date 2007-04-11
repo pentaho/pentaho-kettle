@@ -230,6 +230,16 @@ public class TransSplitter
         transMeta.setClusterSchemas(originalTransformation.getClusterSchemas());
         transMeta.setDatabases(originalTransformation.getDatabases());
 
+        // Feedback
+        transMeta.setFeedbackShown(originalTransformation.isFeedbackShown());
+        transMeta.setFeedbackSize(originalTransformation.getFeedbackSize());
+        
+        // Priority management
+        transMeta.setUsingThreadPriorityManagment(originalTransformation.isUsingThreadPriorityManagment());
+
+        // Unique connections
+        transMeta.setUsingUniqueConnections(originalTransformation.isUsingUniqueConnections());
+
         return transMeta;
     }
     
