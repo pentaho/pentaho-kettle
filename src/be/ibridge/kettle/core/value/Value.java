@@ -1362,8 +1362,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 else
                 {
                     String string = getString();
-                    dos.writeInt(string.length());
-                    dos.writeChars(string);                
+                    byte[] chars = string.getBytes(Const.XML_ENCODING);
+                    dos.writeInt(chars.length);
+                    dos.write(chars);                
                 }
                 break;
             case VALUE_TYPE_BIGNUMBER:
@@ -1416,6 +1417,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 	}
 
+    /**
+     * Read the metadata and data for this Value object from the specified data input stream
+     * @param dis
+     * @throws IOException
+     */
     public void readObj(DataInputStream dis) throws IOException
     {
         // type
@@ -1450,9 +1456,25 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 }
                 else
                 {
-                    StringBuffer buffer = new StringBuffer();
-                    for (int i=0;i<stringLength;i++) buffer.append( dis.readChar() );
-                    setValue(buffer.toString());
+                    // TODO: check if assembling strings in pieces like this is OK for Unicode double-byte stuff.
+                    //
+                    // read this as a buffer not character by character
+                    byte chars[] = new byte[stringLength];
+                    int n = dis.read(chars);
+                    if (n == stringLength)
+                    {
+                        setValue(new String(chars, Const.XML_ENCODING));
+                    }
+                    else
+                    {
+                        StringBuffer buffer = new StringBuffer(new String(chars, 0, n, Const.XML_ENCODING));
+                        while (n != -1)
+                        {
+                            n = dis.read(chars);
+                            buffer.append(new String(chars, 0, n, Const.XML_ENCODING));
+                        }
+                        setValue(buffer.toString());
+                    }
                 }
                 break;
             case VALUE_TYPE_BIGNUMBER:
@@ -1543,8 +1565,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     else
                     {
                         String string = getString();
-                        dos.writeInt(string.length());
-                        dos.writeChars(string);
+                        byte[] chars = string.getBytes(Const.XML_ENCODING);
+                        dos.writeInt(chars.length);
+                        dos.write(chars); 
                     }
                     break;
                 case VALUE_TYPE_BIGNUMBER:
@@ -1617,9 +1640,25 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     }
                     else
                     {
-                        StringBuffer buffer = new StringBuffer();
-                        for (int i=0;i<stringLength;i++) buffer.append( dis.readChar() );
-                        setValue(buffer.toString());
+                        // TODO: check if assembling strings in pieces like this is OK for Unicode double-byte stuff.
+                        //
+                        // read this as a buffer not character by character
+                        byte chars[] = new byte[stringLength];
+                        int n = dis.read(chars);
+                        if (n == stringLength)
+                        {
+                            setValue(new String(chars, Const.XML_ENCODING));
+                        }
+                        else
+                        {
+                            StringBuffer buffer = new StringBuffer(new String(chars, 0, n, Const.XML_ENCODING));
+                            while (n != -1)
+                            {
+                                n = dis.read(chars);
+                                buffer.append(new String(chars, 0, n, Const.XML_ENCODING));
+                            }
+                            setValue(buffer.toString());
+                        }
                     }
                     break;
                 case VALUE_TYPE_BIGNUMBER:
