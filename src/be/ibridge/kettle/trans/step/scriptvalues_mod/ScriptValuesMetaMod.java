@@ -457,7 +457,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			}
 		}
 		
-		if (prev!=null && prev.size()>0 && strActiveScript.length()>0)		{
+		if (prev!=null && strActiveScript.length()>0)		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 
