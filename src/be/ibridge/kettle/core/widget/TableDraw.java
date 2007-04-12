@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.trans.step.textfileinput.TextFileInputField;
 
 /**
  * Widget to draw the character of a fixed length text-file in a graphical way.
@@ -191,7 +190,7 @@ public class TableDraw extends Canvas
 						}
 					}
 					
-					TextFileInputField field = getFieldOnPosition(posx);
+					TextFileInputFieldInterface field = getFieldOnPosition(posx);
 					if (field!=null && !field.getName().equalsIgnoreCase(prevfieldname))
 					{
 						setToolTipText(field.getName()+" : length="+field.getLength());
@@ -202,11 +201,11 @@ public class TableDraw extends Canvas
 		);
 	}
 	
-	private TextFileInputField getFieldOnPosition(int x)
+	private TextFileInputFieldInterface getFieldOnPosition(int x)
 	{
 		for(int i=0;i<fields.size();i++)
 		{
-			TextFileInputField field = (TextFileInputField)fields.get(i);
+			TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
 			int pos = field.getPosition();
 			int len = field.getLength();
 			if (pos<=x && pos+len>x) return field;
@@ -222,7 +221,7 @@ public class TableDraw extends Canvas
 		
 		for (int i=0;i<fields.size();i++)
 		{
-			TextFileInputField field = (TextFileInputField)fields.get(i);
+			TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
 			
 			int pos = field.getPosition();
 			int len = field.getLength();
@@ -252,9 +251,9 @@ public class TableDraw extends Canvas
 				// OK, let's add a new field, but split the length of the previous field
 				// We want to keep this list sorted, so add at position lowest_larger.
 				// We want to change the previous entry and add another after it.
-				TextFileInputField prevfield = (TextFileInputField)fields.get(highest_smaller);
+                TextFileInputFieldInterface prevfield = (TextFileInputFieldInterface)fields.get(highest_smaller);
 				int newlength = prevfield.getLength() - ( x - prevfield.getPosition());
-				TextFileInputField field = new TextFileInputField(getNewFieldname(), x, newlength);
+                TextFileInputFieldInterface field = prevfield.createNewInstance(getNewFieldname(), x, newlength);
 				fields.add(highest_smaller+1, field);
 
 				// Don't forget to make the previous field shorter
@@ -267,8 +266,8 @@ public class TableDraw extends Canvas
 			{
 				// Now we need to remove the field with the same starting position
 				// The previous field need to receive extra length
-				TextFileInputField prevfield = (TextFileInputField)fields.get(highest_smaller);
-				TextFileInputField field     = (TextFileInputField)fields.get(idx);
+                TextFileInputFieldInterface prevfield = (TextFileInputFieldInterface)fields.get(highest_smaller);
+                TextFileInputFieldInterface field     = (TextFileInputFieldInterface)fields.get(idx);
 				prevfield.setLength(prevfield.getLength()+field.getLength());
 				// Remove the field
 				fields.remove(idx);
@@ -296,7 +295,7 @@ public class TableDraw extends Canvas
 	{
 		for (int i=0;i<fields.size();i++)
 		{
-			TextFileInputField field     = (TextFileInputField)fields.get(i);
+            TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
 			
 			if ( name.equalsIgnoreCase(field.getName()) ) return true;
 		}
@@ -431,7 +430,7 @@ public class TableDraw extends Canvas
 		gc.setBackground(red);
 		for (int i=0;i<fields.size();i++)
 		{
-			int x = ((TextFileInputField)fields.get(i)).getPosition();
+			int x = ((TextFileInputFieldInterface)fields.get(i)).getPosition();
 			if (x>=fromx && x<=tox)
 			{
 				drawMarker(gc, x, area.y);

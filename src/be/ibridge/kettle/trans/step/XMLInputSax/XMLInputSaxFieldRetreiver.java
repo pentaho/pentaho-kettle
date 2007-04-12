@@ -169,8 +169,7 @@ public class XMLInputSaxFieldRetreiver extends DefaultHandler{
 			                _pathToRootElement.add(new XMLInputSaxFieldPosition(qName,el.getAttribute(),el.getAttributeValue()));  // to test with clone
 			                if(counter==pathToRootElement.size()-1)
 			                {
-			                    int i=0;
-			                    while(i<attributes.getLength())
+			                    for (int i=0;i<attributes.getLength();i++)
 			                    {
 			                    	XMLInputSaxFieldPosition tempP=new XMLInputSaxFieldPosition(attributes.getQName(i),XMLInputSaxFieldPosition.XML_ATTRIBUTE,i+1);
 			                    	_pathToRootElement.add(tempP);
@@ -182,7 +181,6 @@ public class XMLInputSaxFieldRetreiver extends DefaultHandler{
 			                        {
 			                            fields.add(tempF);
 			                        }
-			                        i++;
 			                    }
 			                }
 			                counterUp();

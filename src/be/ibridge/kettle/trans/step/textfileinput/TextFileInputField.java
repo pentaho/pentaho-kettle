@@ -24,6 +24,7 @@ import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.widget.TextFileInputFieldInterface;
 
 /**
  * Describes a single field in a text file
@@ -32,7 +33,7 @@ import be.ibridge.kettle.core.value.Value;
  * @since 19-04-2004
  *
  */
-public class TextFileInputField implements Cloneable
+public class TextFileInputField implements Cloneable, TextFileInputFieldInterface
 {
 	private String 	name;
 	private int 	position;
@@ -673,5 +674,10 @@ public class TextFileInputField implements Cloneable
 			return;
 		} 
 	}
+
+    public TextFileInputFieldInterface createNewInstance(String newFieldname, int x, int newlength)
+    {
+        return new TextFileInputField(newFieldname, x, newlength);
+    }
 
 }

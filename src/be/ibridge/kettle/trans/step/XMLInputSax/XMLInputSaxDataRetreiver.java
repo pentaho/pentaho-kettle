@@ -226,6 +226,11 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
         //set the _counter level
         position[_counter+1]+=1;
         _counter++;
+        
+        if (qName.equalsIgnoreCase("meetdata"))
+        {
+            System.out.println("qName="+qName);
+        }
         try {
 			if(!rootFound)
 			{
@@ -307,7 +312,7 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
         try {
 			tempVal = new String(ch,start,length);
 			
-            if (tempVal.equals("01-2040-0021-92602-00-000000"))
+            if (tempVal.equals("1"))
             {
                 System.out.println("tempVal="+tempVal);
             }

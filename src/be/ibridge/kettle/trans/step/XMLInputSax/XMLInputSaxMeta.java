@@ -721,6 +721,21 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     			return (String)definitionAttribute.get(i);
     		}
     	}
+        
+        // Also look for a normal attribute...
+        for (int i=0;i<inputFields.length;i++)
+        {
+            XMLInputSaxField field = inputFields[i];
+            XMLInputSaxFieldPosition positions[] = field.getFieldPosition();
+            for (int p=0;p<positions.length;p++)
+            {
+                XMLInputSaxFieldPosition position = positions[p];
+                if (position.getType()==XMLInputSaxFieldPosition.XML_ATTRIBUTE)
+                {
+                    return position.getName();
+                }
+            }
+        }
     	return null;
     }
     
