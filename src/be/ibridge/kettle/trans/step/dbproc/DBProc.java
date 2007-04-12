@@ -15,6 +15,8 @@
  
 package be.ibridge.kettle.trans.step.dbproc;
 
+import java.util.ArrayList;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
@@ -57,7 +59,7 @@ public class DBProc extends BaseStep implements StepInterface
 		{
 			first=false;
 			data.argnrs=new int[meta.getArgument().length];
-			
+			data.addnrs=new ArrayList();
 			for (i=0;i<meta.getArgument().length;i++)
 			{
 				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT //$NON-NLS-1$
@@ -73,6 +75,11 @@ public class DBProc extends BaseStep implements StepInterface
 				{
 					data.argnrs[i]=-1;
 				}
+                
+                if (meta.getArgumentDirection()[i].equalsIgnoreCase("OUT") || meta.getArgumentDirection()[i].equalsIgnoreCase("INOUT")) // OUT or INOUT //$NON-NLS-1$
+                {
+                    data.addnrs.add(new Integer(data.argnrs[i])); // Given the logic above, ONLY the INOUT args have a valid index (meaning >=0)
+                }
 			}
 			data.db.setProcLookup(meta.getProcedure(), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
 			                      meta.getResultName(), meta.getResultType());
@@ -81,9 +88,20 @@ public class DBProc extends BaseStep implements StepInterface
 		data.db.setProcValues(row, data.argnrs, meta.getArgumentDirection(), !Const.isEmpty(meta.getResultName())); 
 
 		add=data.db.callProcedure(meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType());
+        // We are only expecting the OUT and INOUT arguments here.
+        // The INOUT values need to replace the value with the same name in the row.
+        //
 		for (i=0;i<add.size();i++)
 		{
-			row.addValue( add.getValue(i) );
+            int idx = ((Integer)data.addnrs.get(i)).intValue();
+            if (idx<0)
+            {
+                row.addValue( add.getValue(i) ); // new for OUT
+            }
+            else
+            {
+                row.setValue(idx, add.getValue(i) ); // replace for INOUT
+            }
 		}
 	}
 	

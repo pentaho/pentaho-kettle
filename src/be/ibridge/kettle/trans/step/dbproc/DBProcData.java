@@ -16,6 +16,8 @@
 
 package be.ibridge.kettle.trans.step.dbproc;
 
+import java.util.List;
+
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -30,7 +32,8 @@ public class DBProcData extends BaseStepData implements StepDataInterface
 {
 	public int argnrs[];
 	public Database db;
-
+    public List addnrs;
+    
 	/**
 	 * 
 	 */
