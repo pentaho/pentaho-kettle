@@ -1,8 +1,7 @@
 package be.ibridge.kettle.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -19,6 +19,7 @@ import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.trans.step.StepMeta;
 
@@ -66,82 +67,89 @@ public class SharedObjects
 
     public SharedObjects(String sharedObjectsFile) throws KettleXMLException
     {
-        this.filename = createFilename(sharedObjectsFile);
-        this.objectsMap = new Hashtable();
-
-        // Extra information
-        File file = new File(filename);
-        
-        // If we have a shared file, load the content, otherwise, just keep this one empty
-        if (file.exists()) 
+        try
         {
-            LogWriter.getInstance().logDetailed("SharedObjects", "Reading the shared objects file ["+file+"]");
-            Document document = XMLHandler.loadXMLFile(file);
-            Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
-            if (sharedObjectsNode!=null)
+            this.filename = createFilename(sharedObjectsFile);
+            this.objectsMap = new Hashtable();
+    
+            // Extra information
+            FileObject file = KettleVFS.getFileObject(filename);
+            
+            // If we have a shared file, load the content, otherwise, just keep this one empty
+            if (file.exists()) 
             {
-                List privateSlaveServers = new ArrayList();
-                ArrayList privateDatabases = new ArrayList();
-                
-                NodeList childNodes = sharedObjectsNode.getChildNodes();
-                // First load databases & slaves
-                //
-                for (int i=0;i<childNodes.getLength();i++)
+                LogWriter.getInstance().logDetailed("SharedObjects", "Reading the shared objects file ["+file+"]");
+                Document document = XMLHandler.loadXMLFile(file);
+                Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
+                if (sharedObjectsNode!=null)
                 {
-                    Node node = childNodes.item(i);
-                    String nodeName = node.getNodeName();
+                    List privateSlaveServers = new ArrayList();
+                    ArrayList privateDatabases = new ArrayList();
                     
-                    SharedObjectInterface isShared = null;
+                    NodeList childNodes = sharedObjectsNode.getChildNodes();
+                    // First load databases & slaves
+                    //
+                    for (int i=0;i<childNodes.getLength();i++)
+                    {
+                        Node node = childNodes.item(i);
+                        String nodeName = node.getNodeName();
+                        
+                        SharedObjectInterface isShared = null;
+        
+                        if (nodeName.equals(DatabaseMeta.XML_TAG))
+                        {    
+                            isShared = new DatabaseMeta(node);
+                            privateDatabases.add(isShared);
+                        }
+                        else if (nodeName.equals(SlaveServer.XML_TAG)) 
+                        {
+                            isShared = new SlaveServer(node);
+                            privateSlaveServers.add(isShared);
+                        }
     
-                    if (nodeName.equals(DatabaseMeta.XML_TAG))
-                    {    
-                        isShared = new DatabaseMeta(node);
-                        privateDatabases.add(isShared);
+                        if (isShared!=null)
+                        {
+                            isShared.setShared(true);
+                            storeObject(isShared);
+                        }
                     }
-                    else if (nodeName.equals(SlaveServer.XML_TAG)) 
-                    {
-                        isShared = new SlaveServer(node);
-                        privateSlaveServers.add(isShared);
-                    }
-
-                    if (isShared!=null)
-                    {
-                        isShared.setShared(true);
-                        storeObject(isShared);
-                    }
-                }
-
-                // Then load the other objects that might reference databases & slaves
-                //
-                for (int i=0;i<childNodes.getLength();i++)
-                {
-                    Node node = childNodes.item(i);
-                    String nodeName = node.getNodeName();
-                    
-                    SharedObjectInterface isShared = null;
     
-                    if (nodeName.equals(StepMeta.XML_TAG))        
-                    { 
-                        StepMeta stepMeta = new StepMeta(node, privateDatabases, null);
-                        stepMeta.setDraw(false); // don't draw it, keep it in the tree.
-                        isShared = stepMeta;
-                    }
-                    else if (nodeName.equals(PartitionSchema.XML_TAG)) 
+                    // Then load the other objects that might reference databases & slaves
+                    //
+                    for (int i=0;i<childNodes.getLength();i++)
                     {
-                        isShared = new PartitionSchema(node);
-                    }
-                    else if (nodeName.equals(ClusterSchema.XML_TAG)) 
-                    {   
-                        isShared = new ClusterSchema(node, privateSlaveServers);
-                    }
-                    
-                    if (isShared!=null)
-                    {
-                        isShared.setShared(true);
-                        storeObject(isShared);
+                        Node node = childNodes.item(i);
+                        String nodeName = node.getNodeName();
+                        
+                        SharedObjectInterface isShared = null;
+        
+                        if (nodeName.equals(StepMeta.XML_TAG))        
+                        { 
+                            StepMeta stepMeta = new StepMeta(node, privateDatabases, null);
+                            stepMeta.setDraw(false); // don't draw it, keep it in the tree.
+                            isShared = stepMeta;
+                        }
+                        else if (nodeName.equals(PartitionSchema.XML_TAG)) 
+                        {
+                            isShared = new PartitionSchema(node);
+                        }
+                        else if (nodeName.equals(ClusterSchema.XML_TAG)) 
+                        {   
+                            isShared = new ClusterSchema(node, privateSlaveServers);
+                        }
+                        
+                        if (isShared!=null)
+                        {
+                            isShared.setShared(true);
+                            storeObject(isShared);
+                        }
                     }
                 }
             }
+        }
+        catch(Exception e)
+        {
+            throw new KettleXMLException("Unexpected problem reading shared objects from XML file", e);
         }
     }
     
@@ -197,9 +205,7 @@ public class SharedObjects
 
     public void saveToFile() throws IOException
     {
-        File file = new File(filename);
-        
-        FileOutputStream outputStream = new FileOutputStream(file);
+        OutputStream outputStream = KettleVFS.getOutputStream(filename, false);
         
         PrintStream out = new PrintStream(outputStream);
         
