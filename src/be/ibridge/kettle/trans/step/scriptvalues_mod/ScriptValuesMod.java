@@ -26,7 +26,6 @@
 package be.ibridge.kettle.trans.step.scriptvalues_mod;
 
 import java.util.Date;
-import java.util.Locale;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
@@ -121,7 +120,6 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			
 			data.cx = Context.enter();
 			data.cx.setOptimizationLevel(9);
-			data.cx.setLocale(Locale.ENGLISH);
 			data.scope = data.cx.initStandardObjects(null,true);
 			
 			first = false;
