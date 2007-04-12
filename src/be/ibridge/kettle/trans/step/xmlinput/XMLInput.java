@@ -196,30 +196,34 @@ public class XMLInput extends BaseStep implements StepInterface
                 break;
             case Value.VALUE_TYPE_NUMBER:
                 // System.out.println("Convert value to Number :"+v);
-            	String decimal = ".";
-            	if (xmlInputField.getDecimalSymbol()!=null  && xmlInputField.getDecimalSymbol().length()>0 )
-            		decimal = xmlInputField.getDecimalSymbol();
                 if (xmlInputField.getFormat()!=null && xmlInputField.getFormat().length()>0)
                 {
-                    if (xmlInputField.getGroupSymbol()!=null && xmlInputField.getGroupSymbol().length()>0)
+                    if (xmlInputField.getDecimalSymbol()!=null && xmlInputField.getDecimalSymbol().length()>0)
                     {
-                        if (xmlInputField.getCurrencySymbol()!=null && xmlInputField.getCurrencySymbol().length()>0)
+                        if (xmlInputField.getGroupSymbol()!=null && xmlInputField.getGroupSymbol().length()>0)
                         {
-                            v.str2num(xmlInputField.getFormat(), decimal, xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
+                            if (xmlInputField.getCurrencySymbol()!=null && xmlInputField.getCurrencySymbol().length()>0)
+                            {
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
+                            }
+                            else
+                            {
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol());
+                            }
                         }
                         else
                         {
-                            v.str2num(xmlInputField.getFormat(), decimal, xmlInputField.getGroupSymbol());
+                            v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol());
                         }
                     }
                     else
                     {
-                        v.str2num(xmlInputField.getFormat(), decimal);
-                    }
+                        v.str2num(xmlInputField.getFormat()); // just a format mask
+                   }
                 }
                 else
                 {
-                    v.str2num(null, decimal);
+                    v.str2num();
                 }
                 v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
                 break;

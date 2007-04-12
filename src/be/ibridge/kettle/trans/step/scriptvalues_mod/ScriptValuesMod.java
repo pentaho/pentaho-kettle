@@ -319,8 +319,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 									Value v = (Value)Context.toType(result, Value.class);
 									res.setValue( v.getNumber() );
 								}else{
-									Number nb = (Number) result;
-									res.setValue( nb.doubleValue() ); 
+									res.setValue( ((Double)result).doubleValue() ); 
 								}
 								break;
 							case Value.VALUE_TYPE_INTEGER:
@@ -400,7 +399,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 			}catch(Exception e){
 				logError(Messages.getString("ScriptValuesMod.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
 	            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-	            setErrors(getErrors()+1);
+	            setErrors(getErrors()+1);				
 				return false;
 			}
 			return true;
