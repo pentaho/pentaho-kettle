@@ -673,7 +673,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
             // Read objects from the shared XML file & the repository
             try
             {
-                sharedObjectsFile = XMLHandler.getTagValue(jobnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
+                sharedObjectsFile = XMLHandler.getTagValue(jobnode, "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
                 readSharedObjects(rep);
             }
             catch(Exception e)
