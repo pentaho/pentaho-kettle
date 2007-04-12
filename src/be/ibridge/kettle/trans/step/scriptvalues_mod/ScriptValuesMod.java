@@ -400,9 +400,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					res.setNull();
 				}
 			}catch(Exception e){
-				//TODO: Proper exception handling!!!
-				e.printStackTrace();
-				System.out.println("getValue from JScript" + e.toString());
+				logError(Messages.getString("ScriptValuesMod.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
+	            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+	            setErrors(getErrors()+1);
 				return false;
 			}
 			return true;
