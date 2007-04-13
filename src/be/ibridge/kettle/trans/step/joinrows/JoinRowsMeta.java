@@ -375,4 +375,8 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		return new JoinRowsData();
 	}
 
+    public boolean excludeFromRowLayoutVerification()
+    {
+        return true;
+    }
 }

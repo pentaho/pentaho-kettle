@@ -713,6 +713,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
         this.usingIntegerPair = usingIntegerPair;
     }
     
-    
+    public boolean excludeFromRowLayoutVerification()
+    {
+        return true;
+    }
 
 }

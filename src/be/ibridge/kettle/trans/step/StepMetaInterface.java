@@ -137,6 +137,12 @@ public interface StepMetaInterface
 	 * @param steps optionally search the info step in a list of steps
 	 */
 	public void searchInfoAndTargetSteps(ArrayList steps);
+    
+    /**
+     * This method is added to exclude certain steps from layout checking.  
+     * @since 2.5.0
+     */
+    public boolean excludeFromRowLayoutVerification();
 	
 	/**
 	 * We know which dialog to open...

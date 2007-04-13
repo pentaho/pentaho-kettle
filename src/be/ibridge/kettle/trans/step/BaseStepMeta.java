@@ -261,4 +261,13 @@ public class BaseStepMeta implements Cloneable
     {
         return false;
     }
+    
+    /**
+     * This method is added to exclude certain steps from layout checking.  
+     * @since 2.5.0
+     */
+    public boolean excludeFromRowLayoutVerification()
+    {
+        return false;
+    }
 }

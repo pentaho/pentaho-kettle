@@ -3504,7 +3504,10 @@ public class Spoon implements AddUndoPositionInterface
         
         try
         {
-            transMeta.checkRowMixingStatically(newHop.getToStep(), null);
+            if (!newHop.getToStep().getStepMetaInterface().excludeFromRowLayoutVerification())
+            {
+                transMeta.checkRowMixingStatically(newHop.getToStep(), null);
+            }
         }
         catch(KettleRowException re)
         {
