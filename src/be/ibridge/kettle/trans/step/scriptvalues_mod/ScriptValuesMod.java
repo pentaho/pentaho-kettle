@@ -319,7 +319,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 									Value v = (Value)Context.toType(result, Value.class);
 									res.setValue( v.getNumber() );
 								}else{
-									res.setValue( ((Double)result).doubleValue() ); 
+									Number nb = (Number)result;
+									res.setValue( nb.doubleValue() ); 
 								}
 								break;
 							case Value.VALUE_TYPE_INTEGER:

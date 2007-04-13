@@ -1338,7 +1338,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 							case Value.VALUE_TYPE_NUMBER : strItemToAdd=v.getName()+".getNumber()"; break; //$NON-NLS-1$
 							case Value.VALUE_TYPE_INTEGER: strItemToAdd=v.getName()+".getInteger()"; break; //$NON-NLS-1$
 							case Value.VALUE_TYPE_DATE   : strItemToAdd=v.getName()+".getDate()"; break; //$NON-NLS-1$
-							case Value.VALUE_TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBool()"; break; //$NON-NLS-1$
+							case Value.VALUE_TYPE_BOOLEAN: strItemToAdd=v.getName()+".getBoolean()"; break; //$NON-NLS-1$
 							default: strItemToAdd=v.getName(); break;
 						}
 						TreeItem itemInputFields = new TreeItem(item, SWT.NULL);
