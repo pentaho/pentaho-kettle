@@ -204,16 +204,16 @@ public class XMLInput extends BaseStep implements StepInterface
                         {
                             if (xmlInputField.getCurrencySymbol()!=null && xmlInputField.getCurrencySymbol().length()>0)
                             {
-                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol(), xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
                             }
                             else
                             {
-                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol());
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol(), xmlInputField.getGroupSymbol());
                             }
                         }
                         else
                         {
-                            v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol());
+                            v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol());
                         }
                     }
                     else
@@ -420,7 +420,4 @@ public class XMLInput extends BaseStep implements StepInterface
 			markStop();
 		}
 	}
-
-
-
 }
