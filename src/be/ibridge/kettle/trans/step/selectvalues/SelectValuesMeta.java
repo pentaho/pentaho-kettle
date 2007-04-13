@@ -395,10 +395,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				row=new Row();
 				for (int i=0;i<selectName.length;i++)
 				{
-					Value v = r.searchValue(selectName[i]).Clone();
+					Value v = r.searchValue(selectName[i]);
 					
 					if (v!=null)  // We found the value
 					{
+						v = v.Clone();
 						// Do we need to rename ?
 						if (!v.getName().equals(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
 						{
