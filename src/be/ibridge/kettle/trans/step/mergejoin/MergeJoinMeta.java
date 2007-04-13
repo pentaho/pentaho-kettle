@@ -109,6 +109,11 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.keyFields2 = keyFields2;
     }
+    
+    public boolean excludeFromRowLayoutVerification()
+    {
+        return true;
+    }
 
     public MergeJoinMeta()
 	{
