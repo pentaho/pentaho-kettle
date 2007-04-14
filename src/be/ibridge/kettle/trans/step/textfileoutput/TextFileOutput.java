@@ -740,7 +740,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Excpetion trying to close file: " + e.toString());
+			logError("Exception trying to close file: " + e.toString());
 			setErrors(1);
 			retval = false;
 		}
