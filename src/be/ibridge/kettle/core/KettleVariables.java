@@ -33,7 +33,15 @@ public class KettleVariables
     public static final KettleVariables getInstance()
     {
         Thread thread = Thread.currentThread();
-        KettleVariables kettleVariables = LocalVariables.getKettleVariables(thread.getName());
+        return getNamedInstance(thread.getName());
+    }
+
+    /**
+     * @return the Kettle Variables for the current thread
+     */
+    public static final KettleVariables getNamedInstance(String name)
+    {
+        KettleVariables kettleVariables = LocalVariables.getKettleVariables(name);
         if (kettleVariables==null)
         {
             /*
@@ -57,7 +65,7 @@ public class KettleVariables
             kettleVariables = LocalVariables.getRoot();
             if (kettleVariables==null)
             {
-                throw new RuntimeException("Unable to find Kettle Variables for thread ["+thread.getName()+"]");
+                throw new RuntimeException("Unable to find Kettle Variables for thread ["+name+"]");
             }
         }
         // Add the internal variables, just to make sure that they are always present 
@@ -65,7 +73,7 @@ public class KettleVariables
         //
         EnvUtil.addInternalVariables(kettleVariables);
         return kettleVariables;
-    }
+    }    
     
     /**
      * Create the KettleVariables object and uses the argument as starting point.

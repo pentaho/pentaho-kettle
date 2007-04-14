@@ -411,7 +411,7 @@ public class Trans
 					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
 
                     // Create the kettle variables...
-                    LocalVariables.getInstance().createKettleVariables(((BaseStep)step).getName(), Thread.currentThread().getName(), true);
+                    LocalVariables.getInstance().createKettleVariables(((BaseStep)step).getName(), Thread.currentThread().getName(), false);
 
 					// Save the step too
 					combi.step = step;

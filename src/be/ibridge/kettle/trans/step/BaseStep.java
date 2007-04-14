@@ -449,7 +449,7 @@ public class BaseStep extends Thread
         log = LogWriter.getInstance();
         this.stepMeta = stepMeta;
         this.stepDataInterface = stepDataInterface;
-        this.stepcopy += copyNr;
+        this.stepcopy = copyNr;
         this.transMeta = transMeta;
         this.trans = trans;
         this.stepname = stepMeta.getName();
@@ -1619,13 +1619,13 @@ public class BaseStep extends Thread
     {
         Calendar cal = Calendar.getInstance();
         start_time = cal.getTime();
-
+                
         setInternalVariables();
     }
 
     public void setInternalVariables()
     {
-        KettleVariables kettleVariables = KettleVariables.getInstance();
+        KettleVariables kettleVariables = KettleVariables.getNamedInstance(getName());
 
         kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
         kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
@@ -2063,6 +2063,5 @@ public class BaseStep extends Thread
     public void setLinesRejected(long linesRejected)
     {
         this.linesRejected = linesRejected;
-    }
-
+    }    
 }
