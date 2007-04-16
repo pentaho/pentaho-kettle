@@ -25,6 +25,7 @@
  
 package be.ibridge.kettle.trans.step.scriptvalues_mod;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.mozilla.javascript.Context;
@@ -391,7 +392,43 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 							case Value.VALUE_TYPE_BOOLEAN: 
 								res.setValue( ((Boolean)result).booleanValue()); 
 								break;
-							default: res.setNull();
+							case Value.VALUE_TYPE_BIGNUMBER:
+								if (classType.equalsIgnoreCase("org.mozilla.javascript.Undefined")){
+									res.setNull();
+								}else if (classType.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")){
+									// Is it a BigDecimal class ?
+									try {
+										BigDecimal bd = (BigDecimal)Context.toType(result, BigDecimal.class);
+										res.setValue( bd );
+									}catch(Exception e){
+										Value v = (Value)Context.toType(result, Value.class);
+										if (!v.isNull()) res.setValue( v.getBigNumber() );
+										else res.setNull();
+									}
+								}else if (classType.equalsIgnoreCase("java.lang.Byte")){
+									BigDecimal bd = new BigDecimal( ((java.lang.Byte)result).longValue() );
+									res.setValue( bd );
+								}else if (classType.equalsIgnoreCase("java.lang.Short")){
+									BigDecimal bd = new BigDecimal( ((Short)result).longValue() );
+									res.setValue( bd );
+								}else if (classType.equalsIgnoreCase("java.lang.Integer")){
+									BigDecimal bd = new BigDecimal( ((Integer)result).longValue() );
+									res.setValue( bd );
+								}else if (classType.equalsIgnoreCase("java.lang.Long")){
+									BigDecimal bd = new BigDecimal( ((Long)result).longValue() );
+									res.setValue( bd );
+                                }else if (classType.equalsIgnoreCase("java.lang.Double")){
+                                	BigDecimal bd = new BigDecimal( ((Double)result).longValue() );
+                                	res.setValue( bd );
+								}else if (classType.equalsIgnoreCase("java.lang.String")){
+									BigDecimal bd = new BigDecimal( (new Long((String)result)).longValue() );
+									res.setValue( bd );
+								}else {
+									throw new RuntimeException("JavaScript conversion to BigNumber not implemented for " + classType.toString());
+								}
+								break;
+								
+							default: throw new RuntimeException("JavaScript conversion not implemented for " + res.getTypeDesc());
 
 					}
 				}else{
