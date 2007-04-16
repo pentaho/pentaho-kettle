@@ -68,7 +68,9 @@ import be.ibridge.kettle.trans.step.playlist.FilePlayListReplay;
  */
 public class TextFileInput extends BaseStep implements StepInterface
 {
-	private TextFileInputMeta meta;
+	private static final int BUFFER_SIZE_INPUT_STREAM = 50000;
+
+    private TextFileInputMeta meta;
 
 	private TextFileInputData data;
 
@@ -86,16 +88,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 	{
 		StringBuffer line = new StringBuffer(256);
 		int c = 0;
-		boolean mixedMode=format.equalsIgnoreCase("mixed"); // for a small performance optimization
-
+		
 		try
 		{
-			while (c >= 0)
-			{
-				c = reader.read();
-				
-				if (!mixedMode)
-				{	// no mixed mode
+            if (!format.equalsIgnoreCase("mixed"))
+            {   // no mixed mode
+                while (c >= 0)
+                {
+                    c = reader.read();
+                    
 					if (c == '\n' || c == '\r')
 					{
 						if (format.equalsIgnoreCase("DOS")) 
@@ -112,10 +113,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 						return line.toString();
 					}
 					if (c >= 0) line.append((char) c);	
-				}
-				else // in mixed mode we suppose the LF is the last char and CR is ignored
-					// not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
-				{
+                }
+			}
+			else // in mixed mode we suppose the LF is the last char and CR is ignored
+				// not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
+			{
+                while (c >= 0)
+                {
+                    c = reader.read();
+                    
 					if (c == '\n')
 					{
 						return line.toString();
@@ -135,8 +141,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			if (line.length() == 0)
 			{
-				log.logError("get line", "Exception reading line: " + e.toString());
-				return null;
+				throw new KettleFileException("Exception reading line: " + e.toString(), e);
 			}
 			return line.toString();
 		}
@@ -1142,11 +1147,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.zi), meta.getEncoding());
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi, BUFFER_SIZE_INPUT_STREAM), meta.getEncoding());
 				}
 				else
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.zi));
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi, BUFFER_SIZE_INPUT_STREAM));
 				}
 			}
 			else if (sFileCompression != null && sFileCompression.equals("GZip"))
@@ -1156,22 +1161,22 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi), meta.getEncoding());
+					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi, BUFFER_SIZE_INPUT_STREAM), meta.getEncoding());
 				}
 				else
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi));
+					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi, BUFFER_SIZE_INPUT_STREAM));
 				}
 			}
 			else
 			{
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.fr), meta.getEncoding());
+					data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM), meta.getEncoding());
 				}
 				else
 				{
-					data.isr = new InputStreamReader(new BufferedInputStream(data.fr));
+					data.isr = new InputStreamReader(new BufferedInputStream(data.fr, BUFFER_SIZE_INPUT_STREAM));
 				}
 			}
 
