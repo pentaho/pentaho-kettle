@@ -18,7 +18,6 @@ package be.ibridge.kettle.trans.step.socketwriter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -31,12 +30,11 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class SocketWriterData extends BaseStepData implements StepDataInterface
 {
-
-	public ServerSocket serverSocket;
     public DataOutputStream outputStream;
     public Socket clientSocket;
     public DataInputStream inputStream;
     public int flushInterval;
+    public ServerClientSocket serverClientSocket;
     
     /**
 	 * 

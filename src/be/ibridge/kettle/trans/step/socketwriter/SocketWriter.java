@@ -19,7 +19,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.net.ServerSocket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -71,7 +70,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             {
                 int bufferSize = Const.toInt( StringUtil.environmentSubstitute(meta.getBufferSize()), 1000);
                 
-                data.clientSocket = data.serverSocket.accept(); 
+                data.clientSocket = data.serverClientSocket.accept(); 
                 
                 if (meta.isCompressed())
                 {
@@ -121,13 +120,14 @@ public class SocketWriter extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
             try
-            
             {
                 int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
+                data.serverClientSocket = new ServerClientSocket(port);
                 
-                data.serverSocket       = new ServerSocket(port);
+                // Kick off a thread in the background...
+                // Let's hope it doesn't mess up the init threads here...
+                new Thread(data.serverClientSocket).start();
                 
-    		    // Add init code here.
     		    return true;
             }
             catch(Exception e)
@@ -148,7 +148,7 @@ public class SocketWriter extends BaseStep implements StepInterface
         try { data.outputStream.close(); } catch(Exception e) {}
         try { data.inputStream.close(); } catch(Exception e) {}
         try { data.clientSocket.close(); } catch(Exception e) {}
-        try { data.serverSocket.close(); } catch(Exception e) {}
+        try { data.serverClientSocket.getServerSocket().close(); } catch(Exception e) {}
         
         super.dispose(smi, sdi);
     }
