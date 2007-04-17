@@ -20,6 +20,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -47,6 +48,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class SocketReader extends BaseStep implements StepInterface
 {
 	public static final String STRING_FINISHED = "Finished";
+    private static final int TIMEOUT_IN_SECONDS = 30;
     private SocketReaderMeta meta;
 	private SocketReaderData data;
 	
@@ -67,30 +69,57 @@ public class SocketReader extends BaseStep implements StepInterface
             if (first)
             {
                 // Connect to the server socket (started during init)
+                // Because the accept() call on the server socket can be called after we reached this code
+                // it is best to build in a retry loop with a time-out here.
+                // 
+                long startTime = new Date().getTime();
+                boolean connected=false;
+                KettleException lastException=null;
                 
-                try
+                while ( !connected && ( TIMEOUT_IN_SECONDS > (new Date().getTime()-startTime)/1000 ) ) // timeout with retry until connected
                 {
-                    int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
-                    int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
+                    try
+                    {
+                        int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
+                        int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
+                        
+                        data.socket = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
+                        connected=true;
+
+                        if (meta.isCompressed())
+                        {
+                            data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.socket.getOutputStream()), bufferSize));
+                            data.inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.socket.getInputStream()), bufferSize));
+                        }
+                        else
+                        {
+                            data.outputStream = new DataOutputStream(new BufferedOutputStream(data.socket.getOutputStream(), bufferSize));
+                            data.inputStream  = new DataInputStream(new BufferedInputStream(data.socket.getInputStream(), bufferSize));
+                        }
+                        lastException=null;
+                    }
+                    catch(Exception e)
+                    {
+                        lastException=new KettleException("Unable to open socket to server "+StringUtil.environmentSubstitute(meta.getHostname())+" port "+StringUtil.environmentSubstitute(meta.getPort()), e);
+                    }
                     
-                    data.socket = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
-                    if (meta.isCompressed())
+                    if (lastException!=null) // Sleep for a second
                     {
-                        data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.socket.getOutputStream()), bufferSize));
-                        data.inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.socket.getInputStream()), bufferSize));
-                    }
-                    else
-                    {
-                        data.outputStream = new DataOutputStream(new BufferedOutputStream(data.socket.getOutputStream(), bufferSize));
-                        data.inputStream  = new DataInputStream(new BufferedInputStream(data.socket.getInputStream(), bufferSize));
+                        Thread.sleep(1000);
                     }
                 }
-                catch(Exception e)
+                
+                if (lastException!=null)
                 {
-                    logError("Error initialising step: "+e.toString());
-                    logError(Const.getStackTracker(e));
-                    throw new KettleException("Unable to open socket to server "+StringUtil.environmentSubstitute(meta.getHostname())+" port "+StringUtil.environmentSubstitute(meta.getPort()), e);
+                    logError("Error initialising step: "+lastException.toString());
+                    logError(Const.getStackTracker(lastException));
+                    throw lastException;
                 }
+                else
+                {
+                    if (data.inputStream==null) throw new KettleException("Unable to connect to the SocketWriter in the "+TIMEOUT_IN_SECONDS+"s timeout period.");
+                }
+                
                 
                 data.row = new Row(data.inputStream); // This is the metadata
                 first=false;
