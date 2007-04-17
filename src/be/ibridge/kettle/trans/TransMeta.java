@@ -194,6 +194,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     private boolean             feedbackShown;
     private int                 feedbackSize;
     
+    /** flag to indicate thread management usage.  Set to default to false from version 2.5.0 on. Before that it was enabled by default. */
     private boolean             usingThreadPriorityManagment;
     
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
@@ -374,7 +375,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
         
-        usingThreadPriorityManagment = true;
+        usingThreadPriorityManagment = false; // set to false in version 2.5.0
     }
 
     public void clearUndo()
