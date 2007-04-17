@@ -472,9 +472,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.AddValuesToRow")+add); //$NON-NLS-1$
         
         int size = add.size();
-        if (meta.getCacheSize()>=0)
+        if (meta.getCacheSize()>=0 && !meta.isUpdate()) // don't return date from-to fields.
         {
-            size-=2; // don't return date from-to fields.
+            size-=2; 
         }
 		for (int i=0;i<size;i++)
 		{
