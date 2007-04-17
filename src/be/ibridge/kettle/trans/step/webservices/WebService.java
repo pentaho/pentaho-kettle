@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -349,11 +350,18 @@ public class WebService extends BaseStep implements StepInterface
                             WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
                             if (meta.getFieldsOut().size() == 1 && field != null)
                             {
-                                r.addValue(getValue(vReader.getElementText(), field));
+                                Value value = new Value(field.getName(), field.getType());
+                                setValue(vReader.getElementText(), value, field);
+                                r.addValue(value);
                                 putRow(r);
                             }
                             else
                             {
+                                for (Iterator itrField = meta.getFieldsOut().iterator(); itrField.hasNext();)
+                                {
+                                    WebServiceField curField = (WebServiceField) itrField.next();
+                                    r.addValue(new Value(curField.getName(), curField.getType()));
+                                }
                                 processing = true;
                             }
                         }
@@ -362,7 +370,7 @@ public class WebService extends BaseStep implements StepInterface
                             WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
                             if (field != null)
                             {
-                                r.addValue(getValue(vReader.getElementText(), field));
+                                setValue(vReader.getElementText(), r.searchValue(field.getName()), field);
                             }
                         }
                         else if (oneValueRowProcessing)
@@ -371,7 +379,9 @@ public class WebService extends BaseStep implements StepInterface
                             if (field != null)
                             {
                                 r = new Row();
-                                r.addValue(getValue(vReader.getElementText(), field));
+                                Value value = new Value(field.getName(), field.getType());
+                                setValue(vReader.getElementText(), value, field);
+                                r.addValue(value);
                                 putRow(r);
                             }
                         }
@@ -401,9 +411,8 @@ public class WebService extends BaseStep implements StepInterface
         }
     }
     
-    private Value getValue(String vNodeValue, WebServiceField field) throws XMLStreamException, ParseException
+    private void setValue(String vNodeValue, Value value, WebServiceField field) throws XMLStreamException, ParseException
     {
-        Value value = new Value(field.getName(), field.getType());
         if (vNodeValue == null)
         {
             value.setNull();
@@ -471,6 +480,5 @@ public class WebService extends BaseStep implements StepInterface
                 value.setValue(vNodeValue);
             }
         }
-        return value;
     }
 }

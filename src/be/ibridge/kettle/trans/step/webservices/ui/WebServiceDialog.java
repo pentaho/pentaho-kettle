@@ -14,8 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -46,6 +44,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
@@ -62,6 +61,7 @@ import be.ibridge.kettle.trans.step.webservices.wsdl.WsdlOpParameterContainer;
 import be.ibridge.kettle.trans.step.webservices.wsdl.WsdlOperation;
 import be.ibridge.kettle.trans.step.webservices.wsdl.WsdlOperationContainer;
 import be.ibridge.kettle.trans.step.webservices.wsdl.WsdlParamContainer;
+import be.ibridge.kettle.trans.step.webservices.wsdl.XsdType;
 import be.ibridge.kettle.trans.step.webservices.wsdl.WsdlOpParameter.ParameterMode;
 
 public class WebServiceDialog extends BaseStepDialog implements StepDialogInterface
@@ -605,13 +605,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                                                false),
                                                 new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, vFieldsName, true),}; //$NON-NLS-1$
 
-        fieldInTableView = new TableView(vCompositeTabFieldIn, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, new ModifyListener()
-        {
-            public void modifyText(ModifyEvent arg0)
-            {
-                //On ne fait rien
-            }
-        }, Props.getInstance());
+        fieldInTableView = new TableView(vCompositeTabFieldIn, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, Props.getInstance());
 
         GridData vGridData = new GridData(GridData.FILL_BOTH);
         fieldInTableView.setLayoutData(vGridData);
@@ -627,13 +621,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 //On doit récupérer les champs de l'étape précédente !
                 try
                 {
-                    Row vRow = transMeta.getPrevStepFields(stepname);
-                    if (vRow != null)
+                    Row r = transMeta.getPrevStepFields(stepname);
+                    if (r != null)
                     {
-                        for (int i = 0; i < vRow.size(); ++i)
-                        {
-                            fieldInTableView.add(new String[] {vRow.getValue(i).getName(), ""}); //$NON-NLS-1$
-                        }
+                        BaseStepDialog.getFieldsFromPrevious(r, fieldInTableView, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
                     }
                 }
                 catch (KettleStepException e)
@@ -672,6 +663,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             }
         }
         fieldInTableView.setRowNums();
+        fieldInTableView.optWidth(true);
     }
 
     private void addTabFieldOut()
@@ -689,52 +681,70 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         ColumnInfo[] colinf = new ColumnInfo[] {new ColumnInfo(Messages.getString("WebServiceDialog.NameColumn.Column"), //$NON-NLS-1$
                                                                ColumnInfo.COLUMN_TYPE_TEXT,
-                                                               false,
-                                                               true),
+                                                               false),
                                                 new ColumnInfo(Messages.getString("WebServiceDialog.WsNameColumn.Column"), //$NON-NLS-1$
                                                                ColumnInfo.COLUMN_TYPE_TEXT,
                                                                false,
-                                                               true),
-                                                new ColumnInfo(Messages.getString("WebServiceDialog.TypeColumn.Column"), //$NON-NLS-1$
-                                                               ColumnInfo.COLUMN_TYPE_TEXT,
-                                                               false,
-                                                               true),};
+                                                               true)};
 
-        fieldOutTableView = new TableView(vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, new ModifyListener()
-        {
-            public void modifyText(ModifyEvent arg0)
-            {
-                // TODO je ne sais pas trop à quoi cela sert
-                System.out.println("Modification"); //$NON-NLS-1$
-            }
-        }, Props.getInstance());
+        fieldOutTableView = new TableView(vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  null, Props.getInstance());
 
         GridData vGridData = new GridData(GridData.FILL_BOTH);
         fieldOutTableView.setLayoutData(vGridData);
 
+        Button vButton = new Button(vCompositeTabFieldOut, SWT.NONE);
+        vButton.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+        vGridData = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
+        vButton.setLayoutData(vGridData);
+        vButton.addMouseListener(new MouseAdapter()
+        {
+            public void mouseDown(MouseEvent arg0)
+            {
+                Row r = getWebServiceFields();
+                if (r != null)
+                {
+                    BaseStepDialog.getFieldsFromPrevious(r, fieldOutTableView, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null);
+                }
+            }
+        });
+
         // Ajout des données
         fieldOutTableView.table.removeAll();
-        String[] outParams = outWsdlParamContainer.getParamNames();
-        for (int cpt = 0; cpt < outParams.length; cpt++)
+        
+        for (Iterator itr = meta.getFieldsOut().iterator(); itr.hasNext();)
         {
-            WebServiceField field = meta.getFieldOutFromWsName(outParams[cpt]);
+            WebServiceField field = (WebServiceField) itr.next();
             TableItem vTableItem = new TableItem(fieldOutTableView.table, SWT.NONE);
-            if (field != null)
+            vTableItem.setText(1, field.getName());
+            vTableItem.setText(2, field.getWsName());
+        }
+        if (fieldOutTableView.table.getItemCount() == 0)
+        {
+            Row r = getWebServiceFields();
+            for (int i = 0; i < r.size(); ++i)
             {
-                vTableItem.setText(1, field.getName());
-                vTableItem.setText(2, field.getWsName());
-                vTableItem.setText(3, field.getXsdType());
-            }
-            else
-            {
-                vTableItem.setText(1, outParams[cpt]);
-                vTableItem.setText(2, outParams[cpt]);
-                vTableItem.setText(3, outWsdlParamContainer.getParamType(outParams[cpt]));
+                TableItem vTableItem = new TableItem(fieldOutTableView.table, SWT.NONE);
+                vTableItem.setText(1, r.getValue(i).getName());
+                vTableItem.setText(2, r.getValue(i).getName());
             }
         }
         fieldOutTableView.setRowNums();
+        fieldOutTableView.optWidth(true);
     }
 
+    private Row getWebServiceFields()
+    {
+        Row r = new Row();
+        String[] outParams = outWsdlParamContainer.getParamNames();
+        // If we have already saved fields mapping, we only show these mappings
+        for (int cpt = 0; cpt < outParams.length; cpt++)
+        {
+            Value value = new Value(outParams[cpt], XsdType.xsdTypeToKettleType(outWsdlParamContainer.getParamType(outParams[cpt])));
+            r.addValue(value);
+        }
+        return r;
+    }
+    
     private void removeTabField(CTabItem tab)
     {
         if (tab != null)
