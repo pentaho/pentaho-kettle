@@ -76,7 +76,8 @@ public class SocketReader extends BaseStep implements StepInterface
                 boolean connected=false;
                 KettleException lastException=null;
                 
-                while ( !connected && ( TIMEOUT_IN_SECONDS > (new Date().getTime()-startTime)/1000 ) ) // timeout with retry until connected
+                // timeout with retry until connected
+                while ( !connected && ( TIMEOUT_IN_SECONDS > (new Date().getTime()-startTime)/1000 ) && !isStopped())
                 {
                     try
                     {
