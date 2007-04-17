@@ -19,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.ServerSocket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -57,20 +58,13 @@ public class SocketWriter extends BaseStep implements StepInterface
 		meta=(SocketWriterMeta)smi;
 		data=(SocketWriterData)sdi;
 
-		Row r=getRow();    // get row, set busy!
-		if (r==null)  // no more input to be expected...
-		{
-			setOutputDone();
-			return false;
-		}
-        
         try
         {
             if (first)
             {
                 int bufferSize = Const.toInt( StringUtil.environmentSubstitute(meta.getBufferSize()), 1000);
                 
-                data.clientSocket = data.serverClientSocket.accept(); 
+                data.clientSocket = data.serverSocket.accept(); 
                 
                 if (meta.isCompressed())
                 {
@@ -84,7 +78,30 @@ public class SocketWriter extends BaseStep implements StepInterface
                 }
                 
                 data.flushInterval = Const.toInt( StringUtil.environmentSubstitute(meta.getFlushInterval()), 4000);
-                
+            }
+        }
+        catch (Exception e)
+        {
+            logError("Error accepting from socket : "+e.toString());
+            logError("Stack trace: "+Const.CR+Const.getStackTracker(e));
+            
+            setErrors(1);
+            stopAll();
+            setOutputDone();
+            return false;
+        }
+        
+		Row r=getRow();    // get row, set busy!
+		if (r==null)  // no more input to be expected...
+		{
+			setOutputDone();
+			return false;
+		}
+        
+        try
+        {
+            if (first)
+            {
                 r.write(data.outputStream);
                 first=false;
             }
@@ -122,13 +139,9 @@ public class SocketWriter extends BaseStep implements StepInterface
             try
             {
                 int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
-                data.serverClientSocket = new ServerClientSocket(port);
+                data.serverSocket = new ServerSocket(port);
                 
-                // Kick off a thread in the background...
-                // Let's hope it doesn't mess up the init threads here...
-                new Thread(data.serverClientSocket).start();
-                
-    		    return true;
+                return true;
             }
             catch(Exception e)
             {
@@ -146,9 +159,9 @@ public class SocketWriter extends BaseStep implements StepInterface
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
         try { data.outputStream.close(); } catch(Exception e) {}
-        try { data.inputStream.close(); } catch(Exception e) {}
+        try { data.inputStream.close();  } catch(Exception e) {}
         try { data.clientSocket.close(); } catch(Exception e) {}
-        try { data.serverClientSocket.getServerSocket().close(); } catch(Exception e) {}
+        try { data.serverSocket.close(); } catch(Exception e) {}
         
         super.dispose(smi, sdi);
     }
