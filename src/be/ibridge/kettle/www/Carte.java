@@ -84,7 +84,7 @@ public class Carte
         TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation(A, "A");
         transMeta.setName("Row generator test");
         transMeta.setSizeRowset(2500);
-        transMeta.setFeedbackSize(250000);
+        transMeta.setFeedbackSize(50000);
         transMeta.setUsingThreadPriorityManagment(false);
 
         return new Trans(LogWriter.getInstance(), transMeta);

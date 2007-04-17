@@ -12,6 +12,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
 
 public class StartTransServlet extends HttpServlet
@@ -69,6 +70,11 @@ public class StartTransServlet extends HttpServlet
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {
+                // Log to a String & save appender for re-use later.
+                Log4jStringAppender appender = LogWriter.createStringAppender();
+                log.addAppender(appender);
+                transformationMap.addAppender(transName, appender);
+                
                 trans.execute(null);
 
                 String message = "Transformation '"+transName+"' was started.";

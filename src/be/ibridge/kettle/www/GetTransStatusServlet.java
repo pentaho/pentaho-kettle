@@ -110,7 +110,7 @@ public class GetTransStatusServlet extends HttpServlet
                 out.println("<HTML>");
                 out.println("<HEAD>");
                 out.println("<TITLE>Kettle transformation status</TITLE>");
-                out.println("<META http-equiv=\"Refresh\" content=\"5;url=/kettle/transStatus?name="+transName+"\">");
+                out.println("<META http-equiv=\"Refresh\" content=\"10;url=/kettle/transStatus?name="+transName+"\">");
                 out.println("</HEAD>");
                 out.println("<BODY>");
                 out.println("<H1>Transformation status</H1>");
@@ -169,9 +169,17 @@ public class GetTransStatusServlet extends HttpServlet
                     if (appender!=null)
                     {
                         out.println("<p>");
+                        /*
                         out.println("<pre>");
                         out.println(appender.getBuffer().toString());
                         out.println("</pre>");
+                        */
+                        out.println("<textarea id=\"translog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"+appender.getBuffer().toString()+"</textarea>");
+                        
+                        out.println("<script type=\"text/javascript\"> ");
+                        out.println("  translog.scrollTop=translog.scrollHeight; ");
+                        out.println("</script> ");
+                        out.println("<p>");
                     }
                 }
                 catch (Exception ex)
