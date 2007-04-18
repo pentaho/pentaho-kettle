@@ -39,10 +39,11 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Do nothing.  Pass all input data to the next steps.
+ * Read data from a TCP/IP socket supplied by SocketWriter.
+ * The data coming over the socket is one serialized Row object including metadata and then a series of serialized rows, data only. 
  * 
  * @author Matt
- * @since 2-jun-2003
+ * @since 01-dec-2006
  */
 
 public class SocketReader extends BaseStep implements StepInterface
