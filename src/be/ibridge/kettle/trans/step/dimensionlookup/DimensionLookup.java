@@ -570,7 +570,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
             List samples = new ArrayList();
             
             // Take 10 sample technical keys....
-            for (int i=0;i<keys.size();i+=keys.size()/5)
+            int stepsize=keys.size()/5;
+            if (stepsize<1) stepsize=1; //make shure we have no endless loop
+            for (int i=0;i<keys.size();i+=stepsize)
             {
                 byte[] key = (byte[]) keys.get(i);
                 byte[] value = data.cache.get(key);
