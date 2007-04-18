@@ -1169,7 +1169,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
                         {
                             public boolean tableItemInserted(TableItem tableItem, Value v)
                             {
-                                int idx = wUpIns.indexOfString(v.getName(), 2);
+                                int idx = wKey.indexOfString(v.getName(), 2);
                                 if ( idx<0 &&
                                     !v.getName().equalsIgnoreCase(wTk.getText()) &&
                                     !v.getName().equalsIgnoreCase(wVersion.getText()) &&
