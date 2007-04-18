@@ -246,6 +246,10 @@ public class WebService extends BaseStep implements StepInterface
             {
                 processRows(vHttpMethod.getResponseBodyAsStream());
             }
+            else if (responseCode == 401)
+            {
+                throw new KettleStepException(Messages.getString("WebServices.ERROR0011.Authentication"));
+            }
             else
             {
                 logError(new String(vHttpMethod.getResponseBody()));

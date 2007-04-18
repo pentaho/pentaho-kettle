@@ -14,6 +14,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -41,6 +43,7 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -271,13 +274,14 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wlHttpPassword.setLayoutData(fdlHttpPassword);
         wHttpPassword = new TextVar(gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHttpPassword.setToolTipText(Messages.getString("WebServiceDialog.HttpPassword.Tooltip")); //$NON-NLS-1$
+        wHttpPassword.setEchoChar('*');
         props.setLook(wHttpPassword);
         FormData fdHttpPassword = new FormData();
         fdHttpPassword.top = new FormAttachment(wHttpLogin, margin);
         fdHttpPassword.left = new FormAttachment(middle, 0);
         fdHttpPassword.right = new FormAttachment(100, 0);
         wHttpPassword.setLayoutData(fdHttpPassword);
-
+        
         FormData fdHttpAuth = new FormData();
         fdHttpAuth.left = new FormAttachment(0, 0);
         fdHttpAuth.right = new FormAttachment(100, 0);
@@ -353,6 +357,36 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
         compositeTabWebService.layout();
         tabItemWebService.setControl(compositeTabWebService);
+        
+        //          OK, if the password contains a variable, we don't want to have the password hidden...
+        wHttpPassword.addModifyListener(new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                DatabaseDialog.checkPasswordVisible(wHttpPassword.getTextWidget());
+            }
+        });
+        wURL.addListener(SWT.Selection, new Listener()
+        {
+            public void handleEvent(Event e)
+            {
+                load();
+            }
+        });
+
+        SelectionAdapter selAdapter = new SelectionAdapter()
+        {
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                ok();
+            }
+        };
+        wHttpPassword.addSelectionListener(selAdapter);
+        wHttpLogin.addSelectionListener(selAdapter);
+        wStep.addSelectionListener(selAdapter);
+        wProxyHost.addSelectionListener(selAdapter);
+        wProxyPort.addSelectionListener(selAdapter);
+        wStepname.addSelectionListener(selAdapter);
     }
 
     private void selectWSDLOperation(String anOperationName) throws KettleStepException
@@ -767,6 +801,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         wProxyPort.setText(meta.getProxyPort() == null ? "" : meta.getProxyPort()); //$NON-NLS-1$
         wHttpLogin.setText(meta.getHttpLogin() == null ? "" : meta.getHttpLogin()); //$NON-NLS-1$
         wHttpPassword.setText(meta.getHttpPassword() == null ? "" : meta.getHttpPassword()); //$NON-NLS-1$
+        DatabaseDialog.checkPasswordVisible(wHttpPassword.getTextWidget());
         wStep.setText(Integer.toString(meta.getCallStep()));
         if (wURL.getText() != null && !"".equals(wURL.getText())) //$NON-NLS-1$
         {
