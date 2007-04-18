@@ -20,7 +20,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -73,12 +72,12 @@ public class SocketReader extends BaseStep implements StepInterface
                 // Because the accept() call on the server socket can be called after we reached this code
                 // it is best to build in a retry loop with a time-out here.
                 // 
-                long startTime = new Date().getTime();
+                long startTime = System.currentTimeMillis();
                 boolean connected=false;
                 KettleException lastException=null;
                 
-                // timeout with retry until connected
-                while ( !connected && ( TIMEOUT_IN_SECONDS > (new Date().getTime()-startTime)/1000 ) && !isStopped())
+                //// timeout with retry until connected
+                while ( !connected && (TIMEOUT_IN_SECONDS > (System.currentTimeMillis()-startTime)/1000) && !isStopped())
                 {
                     try
                     {
