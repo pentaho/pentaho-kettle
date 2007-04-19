@@ -1031,18 +1031,18 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (meta.noEmptyLines() && line.length() == 0)
 		{
 			filterOK=false;
-		}
-		
-		filterOK = data.filterProcessor.doFilters(line);
-		if ( ! filterOK )
-		{
-			if ( data.filterProcessor.isStopProcessing())
+		} else {
+			// check the filters
+			filterOK = data.filterProcessor.doFilters(line);
+			if ( ! filterOK )
 			{
-			    data.doneReading = true;
+				if ( data.filterProcessor.isStopProcessing())
+				{
+				    data.doneReading = true;
+				}
 			}
 		}
 		
-		// check the filters
 		return filterOK;
 	}
 
