@@ -1645,7 +1645,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                         // read this as a buffer not character by character
                         byte chars[] = new byte[stringLength];
                         int n = dis.read(chars);
-                        if (n == stringLength)
+                        if (n == stringLength || n==-1)
                         {
                             setValue(new String(chars, Const.XML_ENCODING));
                         }
