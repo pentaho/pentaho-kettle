@@ -243,6 +243,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				}
 			}
 			catch(Exception e){
+				logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
+				logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return ERROR_TRANSFORMATION;
@@ -465,8 +467,11 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 				}else{
 					if (log.isDetailed()) logDetailed(("No end Script found!"));
 				}
-			}catch(Exception es){
-				System.out.println("Exception processing StartScript " + es.toString());
+			}catch(Exception e){
+				logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
+				logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
 			}
 
 			if (data.cx!=null) Context.exit();
