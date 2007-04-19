@@ -1124,7 +1124,7 @@ var str2= substr(str1, 6);
 var str3= substr(str1, 6, 13);
 Alert("Input : " + str1);
 Alert("From position 6: " + str2);
-Alert("From position 6 until 13 : " + str2);
+Alert("From position 6 until 13 : " + str3);
 </sample>
       <type>0</type>
       <Arguments>
