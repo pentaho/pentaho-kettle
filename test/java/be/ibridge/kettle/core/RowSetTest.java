@@ -91,21 +91,34 @@ public class RowSetTest extends TestCase
         assertTrue(set.isFull());
         assertEquals(3, set.size());        
 
+/*********************************************************************
+ *  This was made in more restrict in v2.5.0 with a new RowSet 
+ *  implementation. After v2.5.0 you may not try to put more rows
+ *  in a rowset then it can hold (this functionality was also never
+ *  used in PDI anyway).
+ * 
         // Add another row. State: 2 3 4 5
         // Note that we can still add rows after the set is full.
         set.putRow(r5);
         assertTrue(!set.isEmpty());
         assertTrue(set.isFull());
         assertEquals(4, set.size());        
+ *********************************************************************/
 
-        // Pop off row. State: 3 4 5 
+        // Pop off row. State: 3 4  
         r = set.getRow();
         v = r.searchValue("ROWNR");
         assertEquals(2L, v.getInteger()); 
         assertTrue(!set.isEmpty());
-        assertTrue(set.isFull());
-        assertEquals(3, set.size());
+        assertTrue(!set.isFull());
+        assertEquals(2, set.size());
 
+        // Add another row. State: 3 4 5
+        set.putRow(r5);
+        assertTrue(!set.isEmpty());
+        assertTrue(set.isFull());
+        assertEquals(3, set.size());        
+        
         // Pop off row. State: 4 5 
         r = set.getRow();
         v = r.searchValue("ROWNR");
@@ -130,6 +143,8 @@ public class RowSetTest extends TestCase
         assertTrue(!set.isFull());
         assertEquals(0, set.size());
 
+        /*********************************************************************
+         *  This was changed v2.5.0 with a new RowSet         
         // Pop off row. State:
         try  {
             r = set.getRow();
@@ -139,7 +154,8 @@ public class RowSetTest extends TestCase
         { }
         assertTrue(set.isEmpty());
         assertTrue(!set.isFull());
-        assertEquals(0, set.size());        
+        assertEquals(0, set.size());
+        **********************************************************************/        
 	}
 
 	/**
