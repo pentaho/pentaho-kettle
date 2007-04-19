@@ -2410,7 +2410,8 @@ public class Repository
         String sql = "SELECT DISTINCT ID_CLUSTER FROM R_CLUSTER_SLAVE WHERE ID_SLAVE = " + id_slave;
 
         ArrayList list = database.getRows(sql, 100);
-        String[] transList = new String[list.size()];
+        ArrayList clusterList = new ArrayList();
+
         for (int i=0;i<list.size();i++)
         {
             long id_cluster_schema = ((Row)list.get(i)).getInteger("ID_CLUSTER", -1L); 
@@ -2420,13 +2421,13 @@ public class Repository
                 if (transRow!=null)
                 {
                     String clusterName = transRow.getString("NAME", "<name not found>");
-                    transList[i]=clusterName;
+                    if (clusterName!=null) clusterList.add(clusterName);
                 }
             }
             
         }
 
-        return transList;
+        return (String[]) clusterList.toArray(new String[clusterList.size()]);
     }
 
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleDatabaseException

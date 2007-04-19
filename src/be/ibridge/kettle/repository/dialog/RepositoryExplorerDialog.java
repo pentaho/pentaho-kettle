@@ -194,7 +194,7 @@ public class RepositoryExplorerDialog extends Dialog
     		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     		props.setLook(shell);
 			shell.setImage(GUIResource.getInstance().getImageConnection());
-    		shell.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+    		shell.setText(Messages.getString("RepositoryExplorerDialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     		
     		FormLayout formLayout = new FormLayout ();
     		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -2820,8 +2820,8 @@ public class RepositoryExplorerDialog extends Dialog
                 else
                 {
                     MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.AlreadyExists.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.PartitionSchema.Create.AlreadyExists.Title")); //$NON-NLS-1$
                     mb.open();
                 }
                     // Refresh tree...
@@ -2830,8 +2830,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell,Messages.getString("RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.PartitionSchema.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         finally
         {
@@ -2864,8 +2864,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Edit.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Edit.UnexpectedError.Message")+partitionSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.PartitionSchema.Edit.UnexpectedError.Message")+partitionSchemaName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         finally
         {
@@ -2894,8 +2894,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Delete.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.PartitionSchema.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.PartitionSchema.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -2918,8 +2918,8 @@ public class RepositoryExplorerDialog extends Dialog
                 else
                 {
                     MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.AlreadyExists.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.AlreadyExists.Title")); //$NON-NLS-1$
+                    mb.setMessage(Messages.getString("RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("RepositoryExplorerDialog.Cluster.Create.AlreadyExists.Title")); //$NON-NLS-1$
                     mb.open();
                 }
                     // Refresh tree...
@@ -2928,8 +2928,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         finally
         {
@@ -2962,8 +2962,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Edit.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Edit.UnexpectedError.Message")+clusterName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message")+clusterName+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         finally
         {
@@ -2992,8 +2992,8 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Delete.UnexpectedError.Title"), 
-                    Messages.getString("RepositoryExplorerDialog.Dialog.Cluster.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Title"), 
+                    Messages.getString("RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }
