@@ -16,9 +16,6 @@
  
 
 package be.ibridge.kettle.core;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import be.ibridge.kettle.trans.step.BaseStep;
 
@@ -31,87 +28,90 @@ import be.ibridge.kettle.trans.step.BaseStep;
  */
 public class RowSet
 {
-	public final static int ERR_NO_ERROR        = 0;
-	public final static int ERR_ROW_IS_BUSY     = 1;
-	
-	private List list;
-	private boolean done;
-	public int read_pointer;
-	public int write_pointer;
-	
-	// public int size_rowset;
-	
-	// public int empty_calls;
-	// public int full_calls;
-	
-	private  String    originStepName;
-	private  int       originStepCopy;
-	private  String    destinationStepName;
-	private  int       destinationStepCopy;
-		
-	private BaseStep thread_from;
-	private BaseStep thread_to;
-	
-	private int maxsize;
-	
-	public RowSet(int maxsize)
-	{
-        this.maxsize = maxsize;
+    public final static int ERR_NO_ERROR        = 0;
+    public final static int ERR_ROW_IS_BUSY     = 1;
+
+    private Row[] queArray; 
+    private int   maxSize;
+    private int   front;
+    private int   rear;
+    private int   nItems;
+    
+    private boolean done;
         
-        // create new linked list with 0 elements.
-        list = Collections.synchronizedList( new LinkedList() ); 
-		done=false;
-	}
-	
-	//
-	// We always add rows to the end of the linked list
-	// 
-	public synchronized void putRow(Row r)
-	{
-		list.add(r);
-	}
-	
-	//
-	// We always read rows from the beginning of the linked list
-	// Once we read the row, we remove it from the list
-	// 
-	public synchronized Row getRow()
-	{
-		Row r = (Row)list.get(0);
-		list.remove(0);
-		
-		return r;
-	}
+    private  String    originStepName;
+    private  int       originStepCopy;
+    private  String    destinationStepName;
+    private  int       destinationStepCopy;
+        
+    private BaseStep thread_from;
+    private BaseStep thread_to; 
+    
+    public RowSet(int maxSize)
+    {
+        this.maxSize = maxSize;
+        
+        // create new queue with 0 elements. 
+        queArray = new Row[maxSize];
+        front    = 0;
+        rear     = -1;
+        nItems   = 0;        
+        done     = false;
+    }
+    
+    //
+    // We always add rows to the end of the linked queue
+    // 
+    public synchronized void putRow(Row r)
+    {
+        if (rear == maxSize - 1) // deal with wraparound
+            rear = -1;
+        queArray[++rear] = r;    // increment rear and insert
+        nItems++;                // one more item
+    }
+    
+    //
+    // We always read rows from the beginning of the linked queue
+    // Once we read the row, we remove it from the queue
+    // 
+    public synchronized Row getRow()
+    {
+        Row temp = queArray[front++]; // get value and incr front
+        if (front == maxSize)         // deal with wraparound
+            front = 0;
+        nItems--;                     // one less item
+        return temp;
+    }
 
     public synchronized Row lookAtFirst()
     {
-        return (Row) list.get(0);
+        return queArray[front];
     }
 
-	public synchronized boolean isEmpty()
-	{
-		return (list.size()==0);
-	}
-	
-	// Don't let the buffer get too big, we might run out 
+    public synchronized boolean isEmpty()
+    {
+        return (nItems == 0);
+    }
+    
+    // Don't let the buffer get too big, we might run out 
     // of memory if the following steps are working slower
-	//
-	public synchronized boolean isFull()
-	{
-		return (list.size()>=maxsize);
-	}
-	
-	public synchronized void setDone()
-	{
-		done=true;
-	}
-	
-	public synchronized boolean isDone()
-	{
-		return done;
-	}
-	
-	/**
+    //
+    public synchronized boolean isFull()
+    {
+        return (nItems == maxSize);
+    }
+    
+    public synchronized void setDone()
+    {
+        done=true;
+    }
+    
+    public synchronized boolean isDone()
+    {
+        return done;
+    }
+    
+    /**
      * @return Returns the originStepName.
      */
     public synchronized String getOriginStepName()
@@ -142,86 +142,85 @@ public class RowSet
     {
         return destinationStepCopy;
     }
-	
-	
-	// Name of a rowset should be unique:
-	// Take: name of orinating step
-	// Then " - "
-	// Then: name of target step
-	// Then: " version "
-	// Then: the copynr
-	
-	//public void setName(String n)
-	//{
-	//	name=n;
-	//}
-	
-	public synchronized String getName()
-	{
-		return toString();
-	}
-	
-	public synchronized int size()
-	{
-		return list.size();
-	}
+    
+    
+    // Name of a rowset should be unique:
+    // Take: name of orinating step
+    // Then " - "
+    // Then: name of target step
+    // Then: " version "
+    // Then: the copynr
+    
+    //public void setName(String n)
+    //{
+    //  name=n;
+    //}
+    
+    public synchronized String getName()
+    {
+        return toString();
+    }
+    
+    public synchronized int size()
+    {
+        return nItems;
+    }
 
-	public synchronized void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
-	{
-		originStepName        = from;
-		originStepCopy        = from_copy;
-		destinationStepName   = to;
-		destinationStepCopy   = to_copy;
-	}
-	
-	public synchronized void setThreadFromTo(BaseStep from, BaseStep to)
-	{
-		thread_from = from;
-		thread_to   = to;
-	}
-	    
-	public synchronized boolean setPriorityFrom(int prior)
-	{
-		if ( thread_from == null ||
-		     thread_from.getPriority()==prior ||
-		     !thread_from.isAlive()
-		   )  return true;
-		   
-		try
-		{
-			thread_from.setPriority(prior);
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
+    public synchronized void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
+    {
+        originStepName        = from;
+        originStepCopy        = from_copy;
+        destinationStepName   = to;
+        destinationStepCopy   = to_copy;
+    }
+    
+    public synchronized void setThreadFromTo(BaseStep from, BaseStep to)
+    {
+        thread_from = from;
+        thread_to   = to;
+    }
+        
+    public synchronized boolean setPriorityFrom(int prior)
+    {
+        if ( thread_from == null ||
+             thread_from.getPriority()==prior ||
+             !thread_from.isAlive()
+           )  return true;
+           
+        try
+        {
+            thread_from.setPriority(prior);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
 
-	public synchronized boolean setPriorityTo(int prior)
-	{
-		if ( thread_to == null ||
-			 thread_to.getPriority()==prior ||
-			 !thread_to.isAlive()
-		   )  return true;
+    public synchronized boolean setPriorityTo(int prior)
+    {
+        if ( thread_to == null ||
+             thread_to.getPriority()==prior ||
+             !thread_to.isAlive()
+           )  return true;
 
-		try
-		{
-			thread_to.setPriority(prior);
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
-		
-	public synchronized String toString()
-	{
-		return originStepName + "." + originStepCopy + 
+        try
+        {
+            thread_to.setPriority(prior);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+        
+    public synchronized String toString()
+    {
+        return originStepName + "." + originStepCopy + 
                " - " +
-		       destinationStepName + "." + destinationStepCopy
-		       ; 
-	}
-	
+               destinationStepName + "." + destinationStepCopy
+               ; 
+    }   
 }
