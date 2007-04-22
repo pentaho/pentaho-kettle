@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.trans.step.streamlookup;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -96,7 +97,20 @@ public class StreamLookup extends BaseStep implements StepInterface
 				    data.nullIf[i].setValue(false); 
 				;
 				break;
-			default: data.nullIf[i].setNull(); break;
+			case Value.VALUE_TYPE_BIGNUMBER: 
+				try { data.nullIf[i].setValue( new BigDecimal(meta.getValueDefault()[i]) ); }
+				catch(Exception e) { data.nullIf[i].setValue(new BigDecimal(0)); data.nullIf[i].setNull(); }
+				break;
+			default: 
+				// if a default value is given and no conversion is implmented throw an error
+				if (meta.getValueDefault()[i] != null && meta.getValueDefault()[i].trim().length()>0 ) {
+					throw new RuntimeException(Messages.getString("StreamLookup.Exception.ConversionNotImplemented") +" " + data.nullIf[i].getTypeDesc());
+				} else {
+					// no default value given: just set it to null
+					data.nullIf[i].setNull();
+					break;
+				}
+				
 			}
 		}
 	}
