@@ -54,14 +54,22 @@ public class KettleVFS
         }
         
         String filename;
-        if (relativeFilename)
+        if (vfsFilename.startsWith("\\\\"))
         {
             File file = new File(vfsFilename);
-            filename = file.getAbsolutePath();
+            filename = file.toURI().toString();
         }
         else
         {
-            filename = vfsFilename;
+            if (relativeFilename)
+            {
+                File file = new File(vfsFilename);
+                filename = file.getAbsolutePath();
+            }
+            else
+            {
+                filename = vfsFilename;
+            }
         }
         
         FileObject fileObject = fsManager.resolveFile( filename );
