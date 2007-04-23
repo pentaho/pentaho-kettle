@@ -1651,6 +1651,7 @@ public class Spoon implements AddUndoPositionInterface
                         for (int i=0;i<mainExpandBar.getItemCount();i++) if (i!=idx) mainExpandBar.getItem(i).setExpanded(false);
                         Control control = item.getControl();
                         control.setFocus();
+                        refreshCoreObjectsHistory(); // only refreshes when visible. 
                     }
                 }
             }
@@ -1834,6 +1835,14 @@ public class Spoon implements AddUndoPositionInterface
         if (stepHistoryChanged || mainExpandBar.getItemCount()<3)
         {
             boolean showTrans = getActiveTransformation()!=null;
+
+            // See if we need to bother.
+            if (2<mainExpandBar.getItemCount() && mainExpandBar.getItemCount()>=3-(showTrans?0:1))
+            {
+                ExpandItem item = mainExpandBar.getItem(2);
+                if (!item.getExpanded()) return; // no, don't bother
+            }
+            
             if (showTrans)
             {
                 // create the history expand-item.
@@ -1853,7 +1862,7 @@ public class Spoon implements AddUndoPositionInterface
                 List pluginHistory = props.getPluginHistory();
                 String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
                 
-                for (int i=0;i<pluginHistory.size();i++)
+                for (int i=0;i<pluginHistory.size() && i<10;i++) // top 10 maximum, the rest is not interesting anyway -- for GUI performance reasons
                 {
                     ObjectUsageCount usage = (ObjectUsageCount) pluginHistory.get(i);
                     
