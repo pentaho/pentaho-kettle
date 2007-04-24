@@ -290,7 +290,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required step image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
