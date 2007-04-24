@@ -963,7 +963,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 				
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
-        if (input.getCacheSize()>=0) wCacheSize.setText(""+input.getCacheSize()); //$NON-NLS-1$
+        if (input.getCacheSize()>=-1) wCacheSize.setText(""+input.getCacheSize()); //$NON-NLS-1$
 
 		wMinyear.setText(""+input.getMinYear()); //$NON-NLS-1$
 		wMaxyear.setText(""+input.getMaxYear()); //$NON-NLS-1$
