@@ -216,12 +216,14 @@ public class SortRows extends BaseStep implements StepInterface
 			{
 				// We now have "filenr" rows waiting: which one is the smallest?
 				//
-				for (i=0;i<data.rowbuffer.size() && !isStopped();i++)
+				if (log.isRowLevel())
 				{
-					Row b = (Row)data.rowbuffer.get(i);
-					if (log.isRowLevel()) logRowlevel("--BR#"+i+": "+b.toString());
+				    for (i=0;i<data.rowbuffer.size() && !isStopped();i++)
+				    {
+					    Row b = (Row)data.rowbuffer.get(i);
+					    logRowlevel("--BR#"+i+": "+b.toString());
+				    }
 				}
-				//
 				
 				smallest=0;
 				r1=(Row)data.rowbuffer.get(smallest);
