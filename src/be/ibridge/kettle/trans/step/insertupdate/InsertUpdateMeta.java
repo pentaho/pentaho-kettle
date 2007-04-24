@@ -710,14 +710,31 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
                 Row tableFields = new Row();
                 
                 // Now change the field names
+                // the key fields
+                if (keyLookup!=null) {
+                	for (int i = 0; i < keyLookup.length; i++) {
+						Value v = prev.searchValue(keyStream[i]);
+						if (v != null) {
+							Value tableField = new Value(v);
+							tableField.setName(keyLookup[i]);
+							tableFields.addValue(tableField);
+						} else {
+							throw new KettleStepException("Unable to find field ["+keyStream[i]+ "] in the input rows");
+						}
+					}
+                }
+                // the lookup fields
                 for (int i=0;i<updateLookup.length;i++)
                 {
                     Value v = prev.searchValue(updateStream[i]);
                     if (v!=null)
                     {
-                        Value tableField = new Value(v);
-                        tableField.setName(updateLookup[i]);
-                        tableFields.addValue(tableField);                        
+                    	Value vk=tableFields.searchValue(updateStream[i]);
+                    	if (vk==null) { // do not add again when already added as key fields
+                    		Value tableField = new Value(v);
+                    		tableField.setName(updateLookup[i]);
+                    		tableFields.addValue(tableField);
+                    	}
                     }
                     else
                     {
