@@ -2941,24 +2941,34 @@ public class Spoon implements AddUndoPositionInterface
                             event.doit=close;
                             
                             // Also clean up the log/history associated with this transformation/job
-                            //
-                            if (event.doit && entry.getObject() instanceof SpoonGraph)
+                            //                            
+                            if (event.doit)
                             {
-                                TransMeta transMeta = (TransMeta)entry.getObject().getManagedObject();
-                                closeTransformation(transMeta);
-                                refreshTree();
-                            }
-                            if (event.doit && entry.getObject() instanceof ChefGraph)
-                            {
-                                JobMeta jobMeta = (JobMeta)entry.getObject().getManagedObject();
-                                closeJob(jobMeta);
-                                refreshTree();
-                            }
-                            if (event.doit && entry.getObject() instanceof SpoonBrowser)
-                            {
-                                closeSpoonBrowser();
-                                refreshTree();
-                            }
+                                if (entry.getObject() instanceof SpoonGraph)
+                                {
+                                    TransMeta transMeta = (TransMeta)entry.getObject().getManagedObject();
+                                    closeTransformation(transMeta);
+                                    refreshTree();
+                                }
+                                else if (entry.getObject() instanceof ChefGraph)
+                                {
+                                    JobMeta jobMeta = (JobMeta)entry.getObject().getManagedObject();
+                                    closeJob(jobMeta);
+                                    refreshTree();
+                                }
+                                else if (entry.getObject() instanceof SpoonBrowser)
+                                {
+                                    closeSpoonBrowser();
+                                    refreshTree();
+                                }
+                                
+                                if (entry.getObject() instanceof Composite)
+                                {
+                                    Composite comp = (Composite)entry.getObject();
+                                    if (comp != null && !comp.isDisposed())
+                                        comp.dispose();
+                                }
+                            }                            
                         }
                     }
                 }
