@@ -276,7 +276,7 @@ public class StepErrorMetaDialog extends Dialog
 
         // What's the maximum % of errors allowed?
         Label wlMaxPct = new Label(composite, SWT.RIGHT ); 
-        wlMaxPct.setText("Max % errors allowed (empt==100) "); 
+        wlMaxPct.setText("Max % errors allowed (empty==100%) "); 
         props.setLook(wlMaxPct);
         FormData fdlMaxPct = new FormData();
         fdlMaxPct.top  = new FormAttachment(wMaxErrors, margin);
