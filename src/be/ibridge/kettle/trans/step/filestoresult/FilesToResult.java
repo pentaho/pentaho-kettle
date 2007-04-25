@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.filestoresult;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
@@ -56,7 +57,11 @@ public class FilesToResult extends BaseStep implements StepInterface
 		Row r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
-		    getTransMeta().getResultFiles().addAll( data.filenames );
+			Iterator it = data.filenames.iterator();
+			while ( it.hasNext() )
+			{
+		        addResultFile((ResultFile)it.next());
+			}
 			logBasic(Messages.getString("FilesToResult.Log.AddedNrOfFiles", String.valueOf(data.filenames.size())));
 			setOutputDone();
 			return false;
