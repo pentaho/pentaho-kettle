@@ -65,7 +65,7 @@ public class Pan
 
 		// The options: 
 		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename;
+		StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename;
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -77,7 +77,7 @@ public class Pan
 			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
 			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
 			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfileOld=new StringBuffer(), false, true),
 			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir=new StringBuffer(), true, false),
 			    new CommandLineOption("listtrans", "List the transformations in the specified directory", optionListtrans=new StringBuffer(), true, false),
 			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
@@ -107,6 +107,14 @@ public class Pan
         
         LogWriter log;
         LogWriter.setConsoleAppenderDebug();
+        
+        if (Const.isEmpty(optionLogfile) && !Const.isEmpty(optionLogfileOld))
+        {
+           // if the old style of logging name is filled in, and the new one is not
+           // overwrite the new by the old
+           optionLogfile = optionLogfileOld;
+        }
+        
         if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
