@@ -15,6 +15,7 @@ public class XsdType
 	public final static String FLOAT = "float";
 	public final static String BINARY = "base64Binary";
 	
+    public final static String[] TYPES = new String[] {STRING, INTEGER, SHORT, BOOLEAN, DATE, TIME, DATE_TIME, DOUBLE, FLOAT, BINARY};
 	
 	public static int xsdTypeToKettleType(String aXsdType)
 	{

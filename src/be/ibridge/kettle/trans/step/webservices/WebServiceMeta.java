@@ -384,7 +384,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         for (Iterator iter = getFieldsIn().iterator(); iter.hasNext();)
         {
             WebServiceField paramCour = (WebServiceField) iter.next();
-            if (paramCour.getName().equals(name))
+            if (name.equals(paramCour.getName()))
             {
                 param = paramCour;
                 break;
