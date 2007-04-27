@@ -7,8 +7,10 @@ import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -92,6 +94,10 @@ public class WebService extends BaseStep implements StepInterface
         Row vCurrentRow = getRow();
         if (nbRowProcess == 0)
         {
+            if (vCurrentRow != null)
+            {
+                defineIndexList(vCurrentRow);
+            }
             startXML();
         }
 
@@ -118,6 +124,24 @@ public class WebService extends BaseStep implements StepInterface
         return vCurrentRow != null;
     }
 
+    private List indexList;
+    private void defineIndexList(Row vCurrentRow)
+    {
+        indexList = new ArrayList();
+        for (Iterator itrField = meta.getFieldsIn().iterator(); itrField.hasNext();)
+        {
+            WebServiceField curField = (WebServiceField) itrField.next();
+            for (int i = 0; i < vCurrentRow.getFieldNames().length; ++i)
+            {
+                Value vCurrentValue = vCurrentRow.getValue(i);
+                if (vCurrentValue.getName().equals(curField.getName()))
+                {
+                    indexList.add(new Integer(i));
+                }
+            }
+        }
+    }
+    
     private void parseRow(Row vCurrentRow)
     {
         if (meta.getInFieldArgumentName() != null)
@@ -125,9 +149,9 @@ public class WebService extends BaseStep implements StepInterface
             xml.append("        <" + NS_PREFIX + ":").append(meta.getInFieldArgumentName()).append(">\n");
         }
 
-        for (int i = 0; i < vCurrentRow.getFieldNames().length; ++i)
+        for (Iterator itrIndex = indexList.iterator(); itrIndex.hasNext();)
         {
-            Value vCurrentValue = vCurrentRow.getValue(i);
+            Value vCurrentValue = vCurrentRow.getValue(((Integer) itrIndex.next()).intValue());
             WebServiceField field = meta.getFieldInFromName(vCurrentValue.getName());
             if (field != null)
             {
@@ -236,7 +260,7 @@ public class WebService extends BaseStep implements StepInterface
         {
             vHttpMethod.setURI(new URI(vURLService, false));
             vHttpMethod.setRequestHeader("Content-Type", "text/xml;charset=UTF-8");
-            vHttpMethod.setRequestHeader("SOAPAction", "\"" + meta.getOperationNamespace() + meta.getOperationName() + "\"");
+            vHttpMethod.setRequestHeader("SOAPAction", "\"" + meta.getOperationNamespace() + "/" + meta.getOperationName() + "\"");
 
             RequestEntity requestEntity = new ByteArrayRequestEntity(xml.toString().getBytes("UTF-8"), "UTF-8");
             vHttpMethod.setRequestEntity(requestEntity);
@@ -364,7 +388,10 @@ public class WebService extends BaseStep implements StepInterface
                                 for (Iterator itrField = meta.getFieldsOut().iterator(); itrField.hasNext();)
                                 {
                                     WebServiceField curField = (WebServiceField) itrField.next();
-                                    r.addValue(new Value(curField.getName(), curField.getType()));
+                                    if (curField.getName() != null && !"".equals(curField.getName()))
+                                    {
+                                        r.addValue(new Value(curField.getName(), curField.getType()));
+                                    }
                                 }
                                 processing = true;
                             }
@@ -374,7 +401,11 @@ public class WebService extends BaseStep implements StepInterface
                             WebServiceField field = meta.getFieldOutFromWsName(vReader.getLocalName());
                             if (field != null)
                             {
-                                setValue(vReader.getElementText(), r.searchValue(field.getName()), field);
+                                Value value = r.searchValue(field.getName());
+                                if (value != null)
+                                {
+                                    setValue(vReader.getElementText(), value, field);
+                                }
                             }
                         }
                         else if (oneValueRowProcessing)

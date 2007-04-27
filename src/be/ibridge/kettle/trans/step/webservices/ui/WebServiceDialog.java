@@ -393,6 +393,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                                                                false,
                                                                true)};
         fieldInTableView = new TableView(vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 0,  lsMod, Props.getInstance());
+        fieldInTableView.setReadonly(true);
         fieldInTableView.table.removeAll();
         String containerName = inWsdlParamContainer == null ? meta.getInFieldContainerName() : inWsdlParamContainer.getContainerName();
         tabItemFieldIn.setText(containerName == null ? "in" : containerName);
@@ -603,7 +604,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 if (oldTableView != null)
                 {
                     String previousField = getField(oldTableView.table.getItems(), wsName);
-                    if (previousField != null)
+                    if (previousField != null && !"".equals(previousField))
                     {
                         vTableItem.setText(1, previousField);
                     }
@@ -611,6 +612,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                     {
                         vTableItem.setText(1, wsName);
                     }
+                }
+                else
+                {
+                    vTableItem.setText(1, wsName);
                 }
             }
         }
@@ -689,7 +694,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             {
                 WebServiceField field = (WebServiceField) itr.next();
                 TableItem vTableItem = new TableItem(fieldInTableView.table, SWT.NONE);
-                vTableItem.setText(1, field.getName());
+                if (field.getName() != null)
+                {
+                    vTableItem.setText(1, field.getName());
+                }
                 vTableItem.setText(2, field.getWsName());
                 vTableItem.setText(3, field.getXsdType());
             }
@@ -710,7 +718,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             {
                 WebServiceField field = (WebServiceField) itr.next();
                 TableItem vTableItem = new TableItem(fieldOutTableView.table, SWT.NONE);
-                vTableItem.setText(1, field.getName());
+                if (field.getName() != null)
+                {
+                    vTableItem.setText(1, field.getName());
+                }
                 vTableItem.setText(2, field.getWsName());
                 vTableItem.setText(3, field.getXsdType());
             }
@@ -794,11 +805,15 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
             for (int i = 0; i < nbRow; ++i)
             {
                 TableItem vTableItem = fieldOutTableView.getNonEmpty(i);
-                WebServiceField field = new WebServiceField();
-                field.setName(vTableItem.getText(1));
-                field.setWsName(vTableItem.getText(2));
-                field.setXsdType(vTableItem.getText(3));
-                meta.addFieldOut(field);
+                // If output name is null we do not add the field
+                if (!"".equals(vTableItem.getText(1)))
+                {
+                    WebServiceField field = new WebServiceField();
+                    field.setName(vTableItem.getText(1));
+                    field.setWsName(vTableItem.getText(2));
+                    field.setXsdType(vTableItem.getText(3));
+                    meta.addFieldOut(field);
+                }
             }
         }
     }
