@@ -74,6 +74,12 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 	}
 	
+	public String getSchemaTableCombination(String schema_name, String table_part)
+	{
+		// Something special for MSSQL		
+		return schema_name+".."+table_part;
+	}    
+    
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
