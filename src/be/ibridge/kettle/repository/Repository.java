@@ -15,9 +15,8 @@
 
 package be.ibridge.kettle.repository;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleDependencyException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.JobPlugin;
@@ -5423,12 +5423,11 @@ public class Repository
         {
             if (monitor!=null) monitor.subTask("Saving XML to file ["+xmlFilename+"]");
 
-            File f = new File(xmlFilename);
             try
             {
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(xml.toString().getBytes(Const.XML_ENCODING));
-                fos.close();
+                OutputStream os = KettleVFS.getOutputStream(xmlFilename, false);
+                os.write(xml.toString().getBytes(Const.XML_ENCODING));
+                os.close();
             }
             catch(IOException e)
             {
