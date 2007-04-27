@@ -2271,7 +2271,6 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                     String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
                     if (sourceStep!=null)
                     {
-                        
                     }
                 }
                 
@@ -5573,7 +5572,10 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                    }
                    else
                    {
-                       BaseStep.safeModeChecking(referenceRow, row);
+                       if ( ! stepMeta.getStepMetaInterface().excludeFromRowLayoutVerification())
+                       {
+                    	   BaseStep.safeModeChecking(referenceRow, row);
+                       }                       
                    }
                }
                catch(KettleStepException e)
