@@ -65,7 +65,7 @@ public class Kitchen
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-        StringBuffer optionLogfile, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion;
+        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion;
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -77,7 +77,7 @@ public class Kitchen
 			    new CommandLineOption("file", "The filename (Job XML) to launch", optionFilename=new StringBuffer()),
 			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
 			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfileOld=new StringBuffer(), false, true),
 			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir=new StringBuffer(), true, false),
 			    new CommandLineOption("listjobs", "List the jobs in the specified directory", optionListjobs=new StringBuffer(), true, false),
 			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
@@ -104,6 +104,14 @@ public class Kitchen
 		// System.out.println("Level="+loglevel);
         LogWriter log;
         LogWriter.setConsoleAppenderDebug();
+        
+        if (Const.isEmpty(optionLogfile) && !Const.isEmpty(optionLogfileOld))
+        {
+           // if the old style of logging name is filled in, and the new one is not
+           // overwrite the new by the old
+           optionLogfile = optionLogfileOld;
+        }
+        
         if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
