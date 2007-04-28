@@ -1748,7 +1748,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             
             rep.insertTransformation(this); // save the top level information for the transformation
             rep.closeTransAttributeInsertPreparedStatement();
-
+            
             // Save the partition schemas
             for (int i=0;i<partitionSchemas.size();i++)
             {
@@ -1761,7 +1761,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                 boolean isUsedByTransformation = isUsingPartitionSchema(partitionSchema);
                 partitionSchema.saveRep(rep, getID(), isUsedByTransformation);
             }
-
+            
             // Save the slaves
             for (int i=0;i<slaveServers.size();i++)
             {
@@ -1789,7 +1789,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
                 TransDependency td = getDependency(i);
                 td.saveRep(rep, getID());
-            }
+            }           
             
             // Save the step error handling information as well!
             for (int i=0;i<nrSteps();i++)
@@ -1801,7 +1801,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                     stepErrorMeta.saveRep(rep, getId(), stepMeta.getID());
                 }
             }
-
+            rep.closeStepAttributeInsertPreparedStatement();
+            
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingFinished")); //$NON-NLS-1$
 
         	if (monitor!=null) monitor.subTask(Messages.getString("TransMeta.Monitor.UnlockingRepository")); //$NON-NLS-1$
@@ -2271,6 +2272,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                     String sourceStep = rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_source_step");
                     if (sourceStep!=null)
                     {
+                        StepErrorMeta stepErrorMeta = new StepErrorMeta(rep, stepMeta, steps);
+                        stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.                        
                     }
                 }
                 
