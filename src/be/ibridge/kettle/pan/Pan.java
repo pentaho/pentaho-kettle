@@ -168,8 +168,8 @@ public class Pan
         JobEntryLoader jeloader = JobEntryLoader.getInstance();
         if (!jeloader.read())
         {
-            log.logError("Pan", "Error loading job entries & plugins... halting Kitchen!");
-            return;
+            log.logError("Pan", "Error loading job entries & plugins... halting Pan!");
+            System.exit(8);
         }
         
 		Date start, stop;
@@ -350,6 +350,7 @@ public class Pan
 			trans=null;
 			transMeta=null;
 			System.out.println("Processing has stopped because of an error: "+e.getMessage());
+			System.exit(1);
 		}
 
 		if (trans==null)
@@ -361,8 +362,13 @@ public class Pan
                )
             {
                 System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
+                System.exit(7);
             }
-            System.exit(7);
+			else
+			{
+				System.exit(0);
+			}
+            
 		}
 		
 		try
