@@ -94,7 +94,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
     private Label wlDirectory;
 
-    private TextVar wDirectory;
+    private Text wDirectory;
 
     private FormData fdlDirectory, fdDirectory;
 
@@ -277,7 +277,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         fdlDirectory.right = new FormAttachment(middle, 0);
         wlDirectory.setLayoutData(fdlDirectory);
 
-        wDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDirectory = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wDirectory);
         wDirectory.setToolTipText(Messages.getString("JobJob.Repository.Tooltip"));
         wDirectory.addModifyListener(lsMod);
