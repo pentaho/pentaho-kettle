@@ -389,38 +389,57 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					java.util.Date dIn2 = (java.util.Date)Context.toType(ArgList[1], java.util.Date.class);
 					String strType = Context.toString(ArgList[2]);
 					int iRC=0;
-					Calendar startDate = Calendar.getInstance(); 
+
+					Calendar startDate = Calendar.getInstance();
 					Calendar endDate = Calendar.getInstance();
 					startDate.setTime(dIn1);
 					endDate.setTime(dIn2);
+
+					/* Changed by: 	Ingo Klose, SHS VIVEON AG,
+					 * Date:		27.04.2007
+					 *
+					 * Calculating time differences using getTimeInMillis() leads to false results
+					 * when crossing Daylight Savingstime borders. In order to get correct results
+					 * the time zone offsets have to be added.
+					 *
+					 * Fix: 		1. 	calculate correct milli seconds for start and end date
+					 * 				2. 	replace endDate.getTimeInMillis() with endL
+					 * 					and startDate.getTimeInMillis() with startL
+					 */
+					long endL = endDate.getTimeInMillis() + endDate.getTimeZone().getOffset( endDate.getTimeInMillis() );
+					long startL = startDate.getTimeInMillis() + startDate.getTimeZone().getOffset( startDate.getTimeInMillis() );
+
 					if(strType.toLowerCase().equals("y")){
 						return new Double(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR));
 					}else if(strType.toLowerCase().equals("m")){
 						int iMonthsToAdd = (int)(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
 						return new Double((endDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH)) + iMonthsToAdd);
 					}else if(strType.toLowerCase().equals("d")){
-						return new Double(((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 86400000));
+						return new Double(((endL - startL) / 86400000));
 					}else if(strType.toLowerCase().equals("wd")){
 						int iOffset = -1;
 						if(endDate.before(startDate)) iOffset = 1;
-						while (endDate.getTimeInMillis()<startDate.getTimeInMillis() || endDate.getTimeInMillis()>startDate.getTimeInMillis()) {
+						while (endL<startL || endL>startL) {
 							int day = endDate.get(Calendar.DAY_OF_WEEK);
 							if ((day != Calendar.SATURDAY) && (day != Calendar.SUNDAY))	iRC++;
 							endDate.add(Calendar.DATE, iOffset);
 						}
 						return new Double(iRC);
 					}else if(strType.toLowerCase().equals("w")){
-						int iDays = (int)((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 86400000);
+						int iDays = (int)((endL - startL) / 86400000);
 						return new Double(iDays/7);
 					}else if(strType.toLowerCase().equals("ss")){
-						return new Double(((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 1000));
+						return new Double(((endL - startL) / 1000));
 					}else if(strType.toLowerCase().equals("mi")){
-						return new Double(((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 60000));
+						return new Double(((endL - startL) / 60000));
 					}else if(strType.toLowerCase().equals("hh")){
-						return new Double(((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 3600000));
+						return new Double(((endL - startL) / 3600000));
 					}else{
-						return new Double(((endDate.getTimeInMillis() - startDate.getTimeInMillis()) / 86400000));
+						return new Double(((endL - startL) / 86400000));
 					}
+					/*
+			         * End Bugfix
+					 */
 				}
 			}catch(Exception e){
 				throw Context.reportRuntimeError(e.toString());
