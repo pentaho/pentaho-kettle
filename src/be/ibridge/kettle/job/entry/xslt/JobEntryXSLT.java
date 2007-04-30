@@ -135,10 +135,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			xslfilename = rep.getJobEntryAttributeString(id_jobentry, "xslfilename");
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
-			
-
-
-
 		}
 		catch(KettleException dbe)
 		{
@@ -155,6 +151,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 			rep.saveJobEntryAttribute(id_job, getID(), "xmlfilename", xmlfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "xslfilename", xslfilename);
+			rep.saveJobEntryAttribute(id_job, getID(), "outputfilename", outputfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
 		}
 		catch(KettleDatabaseException dbe)
@@ -178,8 +175,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     {
         return StringUtil.environmentSubstitute(getxslFilename());
     }
-
-
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
@@ -361,19 +356,16 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		return xmlfilename;
 	}
 
-
 	public String getoutputFilename()
 	{
 		return outputfilename;
 	}
 
 
-
 	public void setoutputFilename(String outputfilename)
 	{
 		this.outputfilename = outputfilename;
 	}
-
 
 	public void setxslFilename(String filename)
 	{
