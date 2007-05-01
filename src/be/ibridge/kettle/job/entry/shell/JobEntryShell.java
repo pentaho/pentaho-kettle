@@ -406,12 +406,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C",  KettleVFS.getFilename(fileObject) };
+                base = new String[] { "command.com", "/C",  optionallyQuoteField(KettleVFS.getFilename(fileObject), "\"") };
             }
             else
             if( Const.getOS().startsWith( "Windows" ) )
             {
-                base = new String[] { "cmd.exe", "/C", KettleVFS.getFilename(fileObject) };
+                base = new String[] { "cmd.exe", "/C", optionallyQuoteField(KettleVFS.getFilename(fileObject), "\"") };
             }
             else 
             {
@@ -518,8 +518,23 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         {
             result.setResult( true );
         }
-
     }
+    
+	private String optionallyQuoteField(String field, String quote)
+	{
+        if (Const.isEmpty(field) || Const.isEmpty(quote)) return null;
+        
+        // If the field already contains quotes, we don't touch it anymore, just return the same string...
+        // also return it if no spaces are found
+        if (field.indexOf(quote)>=0 || field.indexOf(' ')<0 )
+        {
+            return field;
+        }
+        else
+        {
+        	return quote + field + quote;
+        }
+	}
 
 	public boolean evaluates()
 	{
