@@ -457,7 +457,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 		Row r = (Row)cmdRows.get(i);
                 		for (int j=0;j<r.size();j++)
                 		{
-                			cmds.add(r.getValue(j).getString());
+                			cmds.add(optionallyQuoteField(r.getValue(j).getString(), "\""));
                 		}
                 	}
                 }
@@ -485,7 +485,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                     for (int i=0;i<args.length;i++) 
                     {
                     	cmdline.append(' ');
-                        cmdline.append(args[i]);
+                        cmdline.append(optionallyQuoteField(args[i], "\""));
                     }
                 	cmdline.append('"');
                 	cmds.add(cmdline.toString());
@@ -570,7 +570,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     
 	private String optionallyQuoteField(String field, String quote)
 	{
-        if (Const.isEmpty(field) || Const.isEmpty(quote)) return null;
+        if (Const.isEmpty(field) ) return "\"\"";
         
         // If the field already contains quotes, we don't touch it anymore, just return the same string...
         // also return it if no spaces are found
