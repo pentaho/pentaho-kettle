@@ -406,12 +406,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C",  optionallyQuoteField(KettleVFS.getFilename(fileObject), "\"") };
+                base = new String[] { "command.com", "/C" };
             }
             else
             if( Const.getOS().startsWith( "Windows" ) )
             {
-                base = new String[] { "cmd.exe", "/C", optionallyQuoteField(KettleVFS.getFilename(fileObject), "\"") };
+                base = new String[] { "cmd.exe", "/C" };
             }
             else 
             {
@@ -426,29 +426,77 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);
     
-                // Add the arguments from previous results...
-                for (int i=0;i<cmdRows.size();i++) // Normally just one row, but once in a while to remain compatible we have multiple. 
+                if( Const.getOS().equals( "Windows 95" ) ||
+                	Const.getOS().startsWith( "Windows" ) ) 
                 {
-                    Row r = (Row)cmdRows.get(i);
-                    for (int j=0;j<r.size();j++)
-                    {
-                        cmds.add(r.getValue(j).getString());
-                    }
-                } 
-                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
+                	// for windows all arguments including the command itself need to be
+                	// included in 1 argument to cmd/command.
+
+                	StringBuffer cmdline = new StringBuffer(300);
+                	
+                	cmdline.append('"');
+                	cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+                	// Add the arguments from previous results...
+                	for (int i=0;i<cmdRows.size();i++) // Normally just one row, but once in a while to remain compatible we have multiple. 
+                	{
+                		Row r = (Row)cmdRows.get(i);
+                		for (int j=0;j<r.size();j++)
+                		{
+                			cmdline.append(' ');
+                			cmdline.append(r.getValue(j).getString());                			
+                		}
+                	}
+                	cmdline.append('"');
+                	cmds.add(cmdline.toString());
+                }
+                else
+                {
+                	// Add the arguments from previous results...
+                	for (int i=0;i<cmdRows.size();i++) // Normally just one row, but once in a while to remain compatible we have multiple. 
+                	{
+                		Row r = (Row)cmdRows.get(i);
+                		for (int j=0;j<r.size();j++)
+                		{
+                			cmds.add(r.getValue(j).getString());
+                		}
+                	}
+                }
+                cmd = (String[]) cmds.toArray(new String[cmds.size()]);                
             }
             else
             if (args!=null)
-            {
+            {            	
                 ArrayList cmds = new ArrayList();
     
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);
-    
-                for (int i=0;i<args.length;i++) 
+                
+                if( Const.getOS().equals( "Windows 95" ) ||
+                    	Const.getOS().startsWith( "Windows" ) ) 
                 {
-                    cmds.add(args[i]);
-                } 
+                	// for windows all arguments including the command itself need to be
+                	// included in 1 argument to cmd/command.
+
+                	StringBuffer cmdline = new StringBuffer(300);
+
+                	cmdline.append('"');
+                	cmdline.append(optionallyQuoteField(KettleVFS.getFilename(fileObject), "\""));
+
+                    for (int i=0;i<args.length;i++) 
+                    {
+                    	cmdline.append(' ');
+                        cmdline.append(args[i]);
+                    }
+                	cmdline.append('"');
+                	cmds.add(cmdline.toString());
+                }
+                else
+                {    
+                    for (int i=0;i<args.length;i++) 
+                    {
+                        cmds.add(args[i]);
+                    }
+                }
                 cmd = (String[]) cmds.toArray(new String[cmds.size()]);
             }
             
