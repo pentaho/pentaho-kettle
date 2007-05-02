@@ -359,6 +359,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                             args[i] = resultRow.getValue(i).getString();
                         }
                     }
+                    else
+                    {
+                    	cmdRows = rows;
+                    }
                 }
                 else
                 {
@@ -443,7 +447,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 		for (int j=0;j<r.size();j++)
                 		{
                 			cmdline.append(' ');
-                			cmdline.append(r.getValue(j).getString());                			
+                			cmdline.append(optionallyQuoteField(r.getValue(j).getString(), "\""));                			
                 		}
                 	}
                 	cmdline.append('"');
@@ -463,8 +467,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 }
                 cmd = (String[]) cmds.toArray(new String[cmds.size()]);                
             }
-            else
-            if (args!=null)
+            else if (args!=null)
             {            	
                 ArrayList cmds = new ArrayList();
     
