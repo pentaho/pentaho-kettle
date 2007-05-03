@@ -3917,7 +3917,8 @@ public class Database
 					case DatabaseMeta.TYPE_DATABASE_DBASE       :  
 					case DatabaseMeta.TYPE_DATABASE_GENERIC     :  
 					case DatabaseMeta.TYPE_DATABASE_SYBASE      :
-					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(version)+") values (1)"; break;
+					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  
+                    case DatabaseMeta.TYPE_DATABASE_DERBY       :  isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(version)+") values (1)"; break;
 					default: isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break;
 					}					
 				}

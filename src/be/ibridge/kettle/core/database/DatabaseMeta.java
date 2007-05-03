@@ -193,8 +193,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
     public static final int TYPE_DATABASE_SQLITE      =  26;
 
+    /**
+     * Connection to an Apache Derby database
+     */
+    public static final int TYPE_DATABASE_DERBY       =  27;
 
-
+    
+    
 	/**
 	 * Connect natively through JDBC thin driver to the database.
 	 */

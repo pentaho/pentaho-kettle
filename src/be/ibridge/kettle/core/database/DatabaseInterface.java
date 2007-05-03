@@ -58,6 +58,7 @@ public interface DatabaseInterface extends Cloneable
             NetezzaDatabaseMeta.class,
             UniVerseDatabaseMeta.class,
             SQLiteDatabaseMeta.class,
+            DerbyDatabaseMeta.class,
 		};
 	
 	/**
