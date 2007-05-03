@@ -27,14 +27,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Folder;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.URLName;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
@@ -409,14 +406,22 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 					st.connect();
 
 				}
-
-
 		
 				log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LoggedWithUser.Label") + user);
+			
 							
 				//Open default folder   INBOX 
 				Folder f = st.getFolder("INBOX");
-				f.open(Folder.READ_ONLY); 
+
+
+				if (delete)
+				{
+					f.open(Folder.READ_WRITE); 
+				}
+				else
+				{
+					f.open(Folder.READ_ONLY); 
+				}
 					
 				if (f == null) 
 				{
@@ -428,8 +433,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	  
 					log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder1.Label") 
 						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder2.Label")  + f.getMessageCount());
-					log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalNewMessagesFolder1.Label") 
-						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalNewMessagesFolder2.Label")  + f.getNewMessageCount());
+					log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder1.Label") 
+						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder2.Label")  + f.getUnreadMessageCount());
 		   						
 		    			
 					// Get emails 
@@ -498,6 +503,17 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 								current_file_POP.add(filename_message);
 								current_filepath_POP.add(filename_message.getPath());
 
+
+								// Check attachments
+								Object content = msg_POP.getContent();
+								if (content instanceof Multipart) 
+								{
+									handleMultipart(getRealOutputDirectory(),(Multipart)content);
+								} 
+								
+																
+															
+								// Check if mail has to be deleted
 								if (delete)
 								{
 									log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.DeleteEmail.Label"));
@@ -556,6 +572,65 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		return result;
 	}
 
+	public static void handleMultipart(String foldername,Multipart multipart) 
+		throws MessagingException, IOException 
+	{
+		for (int i=0, n=multipart.getCount(); i<n; i++) 
+		{
+			handlePart(foldername,multipart.getBodyPart(i));
+		}
+	}
+
+	public static void handlePart(String foldername,Part part) 
+		throws MessagingException, IOException 
+	{
+		String disposition = part.getDisposition();
+		String contentType = part.getContentType();
+
+
+		if ((disposition != null) && ( disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE) ) ) 
+		{
+	 		saveFile(foldername,MimeUtility.decodeText(part.getFileName()), part.getInputStream());
+		} 
+		
+		
+	}
+
+
+	public static void saveFile(String foldername,String filename,
+		InputStream input) throws IOException 
+	{
+	
+		LogWriter log = LogWriter.getInstance();
+
+		if (filename == null) 
+		{
+			filename = File.createTempFile("xx", ".out").getName();
+		}
+		// Do no overwrite existing file
+		File file = new File(foldername,filename);
+		for (int i=0; file.exists(); i++) 
+		{
+			file = new File(foldername,filename+i);
+		}
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+		BufferedInputStream bis = new BufferedInputStream(input);
+		int aByte;
+		while ((aByte = bis.read()) != -1) 
+		{
+			bos.write(aByte);
+		}
+
+
+		bos.flush();
+		bos.close();
+		bis.close();
+	}
+
+
+
 
 	public boolean evaluates()
 	{
@@ -571,14 +646,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		 // Get  messages ..
 		try 
 		{
-			int newMsgs = folder.getNewMessageCount();
+			int unreadMsgs = folder.getUnreadMessageCount();
 			int msgCount   = folder.getMessageCount();
 			Message msgsAll[] = folder.getMessages();
-
+				
 
 			if (retrievemails ==1)
 			{
-				Message msgsNew[] = folder.getMessages(msgCount - newMsgs + 1, msgCount);
+				Message msgsNew[] = folder.getMessages(msgCount - unreadMsgs + 1, msgCount);
 				return(msgsNew);
 				
 			}
