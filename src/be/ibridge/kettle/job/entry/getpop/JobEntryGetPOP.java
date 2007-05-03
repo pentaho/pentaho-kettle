@@ -162,8 +162,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			super.loadRep(rep, id_jobentry, databases);
 			servername = rep.getJobEntryAttributeString(id_jobentry, "servername");
 			username = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password        = rep.getJobEntryAttributeString(id_jobentry, "usessl");
-			usessl          = rep.getJobEntryAttributeBoolean(id_jobentry, "delete");
+			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
+			usessl          = rep.getJobEntryAttributeBoolean(id_jobentry, "usessl");
 			int intSSLPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "sslport");
 			sslport = rep.getJobEntryAttributeString(id_jobentry, "sslport"); // backward compatible.
 			if (intSSLPort>0 && Const.isEmpty(sslport)) sslport = Integer.toString(intSSLPort);
