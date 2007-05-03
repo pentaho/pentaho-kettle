@@ -591,15 +591,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		throws MessagingException, IOException 
 	{
 		String disposition = part.getDisposition();
-		String contentType = part.getContentType();
-
+		// String contentType = part.getContentType();
 
 		if ((disposition != null) && ( disposition.equalsIgnoreCase(Part.ATTACHMENT) || disposition.equalsIgnoreCase(Part.INLINE) ) ) 
 		{
 	 		saveFile(foldername,MimeUtility.decodeText(part.getFileName()), part.getInputStream());
 		} 
-		
-		
 	}
 
 
@@ -607,7 +604,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		InputStream input) throws IOException 
 	{
 	
-		LogWriter log = LogWriter.getInstance();
+		// LogWriter log = LogWriter.getInstance();
 
 		if (filename == null) 
 		{
