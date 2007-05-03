@@ -359,7 +359,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		wlListmails.setLayoutData(fdlListmails);
 		wListmails = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wListmails.add(Messages.getString("JobGetPOP.RetrieveAllMails.Label"));
-		wListmails.add(Messages.getString("JobGetPOP.RetrieveNewMails.Label"));
+		wListmails.add(Messages.getString("JobGetPOP.RetrieveUnreadMails.Label"));
 		wListmails.add(Messages.getString("JobGetPOP.RetrieveFirstMails.Label"));
 		wListmails.select(0); // +1: starts at -1
 
