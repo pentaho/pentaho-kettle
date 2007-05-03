@@ -1,7 +1,6 @@
 package be.ibridge.kettle.core;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
-import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TransferData;
 
 public class XMLTransfer extends ByteArrayTransfer
@@ -21,7 +20,7 @@ public class XMLTransfer extends ByteArrayTransfer
     {
         if (!checkMyType(object) /*|| !isSupportedType(transferData)*/ )
         {
-            DND.error(DND.ERROR_INVALID_DATA);
+            return; // DND.error(DND.ERROR_INVALID_DATA);
         }
 
         try
