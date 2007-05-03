@@ -2085,7 +2085,6 @@ public class Spoon implements AddUndoPositionInterface
         
         Label canvas = new Label(lineComposite, SWT.NONE);
         canvas.setToolTipText(pluginDescription);
-        if (plugin instanceof StepPlugin) canvas.setToolTipText(pluginDescription+Const.CR+Const.CR+((StepPlugin)plugin).getClassname());
         props.setLook(canvas);
         canvas.setImage(image);
         FormData fdCanvas = new FormData();
@@ -2099,7 +2098,6 @@ public class Spoon implements AddUndoPositionInterface
         props.setLook(name);
         name.setText(pluginName);
         name.setToolTipText(pluginDescription);
-        if (plugin instanceof StepPlugin) name.setToolTipText(pluginDescription+Const.CR+Const.CR+((StepPlugin)plugin).getClassname());
         if (isPlugin) name.setFont(GUIResource.getInstance().getFontBold());
         FormData fdName = new FormData();
         fdName.left=new FormAttachment(canvas,Const.MARGIN);
