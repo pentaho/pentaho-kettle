@@ -77,10 +77,17 @@ public class DerbyDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            String url="jdbc:derby://"+hostname;
-            if (!Const.isEmpty(port)) url+=":"+port;
-            url+="/"+databaseName;
-            return url;
+            if (!Const.isEmpty(hostname))
+            {
+                String url="jdbc:derby://"+hostname;
+                if (!Const.isEmpty(port)) url+=":"+port;
+                url+="/"+databaseName;
+                return url;
+            }
+            else // Simple format: jdbc:derby:<dbname>
+            {
+                return "jdbc:derby:"+databaseName;
+            }
         }
         else
         {
