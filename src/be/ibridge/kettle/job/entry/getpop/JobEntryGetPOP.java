@@ -350,6 +350,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		
 		//Properties prop = System.getProperties();
 		Properties prop = new Properties();
+		prop.setProperty("mail.pop3s.rsetbeforequit","true"); 
+		prop.setProperty("mail.pop3.rsetbeforequit","true"); 
 		
 		//Create session object
 		//Session sess = Session.getDefaultInstance(prop,null);
@@ -409,19 +411,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		
 				log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.LoggedWithUser.Label") + user);
 			
-							
 				//Open default folder   INBOX 
 				Folder f = st.getFolder("INBOX");
-
-
-				if (delete)
-				{
-					f.open(Folder.READ_WRITE); 
-				}
-				else
-				{
-					f.open(Folder.READ_ONLY); 
-				}
+				
 					
 				if (f == null) 
 				{
@@ -430,9 +422,20 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				}
 				else 
 				{
+					// Open folder
+					if (delete)
+					{
+						f.open(Folder.READ_WRITE); 
+					}
+					else
+					{
+						f.open(Folder.READ_ONLY); 
+					}
+				
+					Message messageList[] = f.getMessages();
 	  
 					log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder1.Label") 
-						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder2.Label")  + f.getMessageCount());
+						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalMessagesFolder2.Label")  + messageList.length);
 					log.logDetailed(toString(), Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder1.Label") 
 						+ f.getName() + Messages.getString("JobGetMailsFromPOP.TotalUnreadMessagesFolder2.Label")  + f.getUnreadMessageCount());
 		   						
@@ -497,6 +500,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 								while ((length_POP = in_POP.read(buffer_POP, 0, 1024)) != -1) 
 								{
 									os_filename.write(buffer_POP, 0, length_POP);
+									
+										
 								}
 								os_filename.close();
 								nb_email_POP++;
@@ -524,7 +529,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 						}
 					}
-					// Close and exit 
+					// Close and exit
+
 					if(f != null) f.close(false);
 					if (st != null) st.close();
 
@@ -647,14 +653,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		try 
 		{
 			int unreadMsgs = folder.getUnreadMessageCount();
-			int msgCount   = folder.getMessageCount();
 			Message msgsAll[] = folder.getMessages();
+			int msgCount   = msgsAll.length;
 				
 
 			if (retrievemails ==1)
 			{
-				Message msgsNew[] = folder.getMessages(msgCount - unreadMsgs + 1, msgCount);
-				return(msgsNew);
+				Message msgsUnread[] = folder.getMessages(msgCount - unreadMsgs + 1, msgCount);
+				return(msgsUnread);
 				
 			}
 			else
