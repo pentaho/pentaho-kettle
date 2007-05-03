@@ -300,7 +300,7 @@
 	  -->
 		
 	  <target name="zip" depends="distrib" description="generate the Kettle-${version}.zip file">
-	  	<echo>Generating the Kettle distribution packageKettle-${version}.zip ...</echo>
+	  	<echo>Generating the Kettle distribution package Kettle-${version}.zip ...</echo>
 	  	<jar jarfile="Kettle-${version}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
