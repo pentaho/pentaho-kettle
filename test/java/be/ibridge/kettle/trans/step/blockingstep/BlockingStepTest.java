@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
-package be.ibridge.kettle.trans.step.injector;
+package be.ibridge.kettle.trans.step.blockingstep;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,13 +36,14 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
+import be.ibridge.kettle.trans.step.injector.InjectorMeta;
 
 /**
- * Test class for the Injector step.
+ * Test class for the BlockingStep step.
  *
  * @author Sven Boden
  */
-public class InjectorTest extends TestCase
+public class BlockingStepTest extends TestCase
 {
 	public List createData()
 	{
@@ -132,10 +133,10 @@ public class InjectorTest extends TestCase
     }
 	
 	/**
-	 * Test case for injector step... also a show case on how
-	 * to use injector.
+	 * Test case for blocking step step. Injector step to a blocking step
+	 * to a dummy step. rows go in, only 1 row should be output (the last one).
 	 */
-    public void testInjector() throws Exception
+    public void testBlockingStep() throws Exception
     {
         LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
@@ -144,7 +145,7 @@ public class InjectorTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("injectortest");
+        transMeta.setName("blockingsteptest");
     	
         StepLoader steploader = StepLoader.getInstance();            
 
@@ -154,33 +155,67 @@ public class InjectorTest extends TestCase
         String injectorStepname = "injector step";
         InjectorMeta im = new InjectorMeta();
         
-        // Set the information of the injector.
-                
+        // Set the information of the injector.                
         String injectorPid = steploader.getStepPluginID(im);
         StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
         transMeta.addStep(injectorStep);
 
         // 
-        // Create a dummy step
+        // Create a dummy step 1
         //
-        String dummyStepname = "dummy step";            
-        DummyTransMeta dm = new DummyTransMeta();
+        String dummyStepname1 = "dummy step 1";            
+        DummyTransMeta dm1 = new DummyTransMeta();
 
-        String dummyPid = steploader.getStepPluginID(dm);
-        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
-        transMeta.addStep(dummyStep);                              
+        String dummyPid1 = steploader.getStepPluginID(dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        transMeta.addStep(dummyStep1);                              
 
-        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep);
+        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
         transMeta.addTransHop(hi);
+
+        // 
+        // Create a blocking step
+        //
+        String blockingStepname = "blocking step";            
+        BlockingStepMeta bm = new BlockingStepMeta();
+
+        String blockingStepPid = steploader.getStepPluginID(bm);
+        StepMeta blockingStep = new StepMeta(blockingStepPid, blockingStepname, (StepMetaInterface)bm);
+        transMeta.addStep(blockingStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(dummyStep1, blockingStep);
+        transMeta.addTransHop(hi2);        
+        
+        // 
+        // Create a dummy step 2
+        //
+        String dummyStepname2 = "dummy step 2";            
+        DummyTransMeta dm2 = new DummyTransMeta();
+
+        String dummyPid2 = steploader.getStepPluginID(dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        transMeta.addStep(dummyStep2);                              
+
+        TransHopMeta hi3 = new TransHopMeta(blockingStep, dummyStep2);
+        transMeta.addTransHop(hi3);        
+        
                 
         // Now execute the transformation...
         Trans trans = new Trans(log, transMeta);
 
         trans.prepareExecution(null);
                 
-        StepInterface si = trans.getStepInterface(dummyStepname, 0);
-        RowStepCollector rc = new RowStepCollector();
-        si.addRowListener(rc);
+        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
+        RowStepCollector dummyRc1 = new RowStepCollector();
+        si.addRowListener(dummyRc1);
+
+        si = trans.getStepInterface(blockingStepname, 0);
+        RowStepCollector blockingRc = new RowStepCollector();
+        si.addRowListener(blockingRc);
+               
+        si = trans.getStepInterface(dummyStepname2, 0);
+        RowStepCollector dummyRc2 = new RowStepCollector();
+        si.addRowListener(dummyRc2);
         
         RowProducer rp = trans.addRowProducer(injectorStepname, 0);
         trans.startThreads();
@@ -197,7 +232,19 @@ public class InjectorTest extends TestCase
 
         trans.waitUntilFinished();   
         
-        List resultRows = rc.getRowsRead();
-        checkRows(resultRows, inputList);
+        // The results should be that dummy1 gets all rows.
+        // blocking step should receive all rows (but only send the 
+        // last one through). dummy2 should only get the last row.
+        
+        List resultRows1 = dummyRc1.getRowsRead();
+        checkRows(resultRows1, inputList);
+        
+        List resultRows2 = blockingRc.getRowsRead();
+        checkRows(resultRows2, inputList);
+                
+        List resultRows3 = dummyRc2.getRowsRead();
+        List lastList = new ArrayList();
+        lastList.add(inputList.get(inputList.size() - 1));
+        checkRows(resultRows3, lastList);
     }
 }

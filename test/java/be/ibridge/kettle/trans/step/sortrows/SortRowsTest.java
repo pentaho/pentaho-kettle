@@ -50,6 +50,9 @@ import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
  * The combination lookup step is abused to assign a increasing number
  * to the rows. So that later on we can the rows order by that number
  * in order to check whether sort is working.
+ * 
+ * This is one of the older testcases, it's probably not best to start
+ * from this one for new testcases.
  *
  * @author Sven Boden
  */

@@ -13,11 +13,9 @@
  **                                                                   **
  **********************************************************************/
 
-package be.ibridge.kettle.trans.step.injector;
+package be.ibridge.kettle.trans.step.rowgenerator;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +24,6 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.trans.RowProducer;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -38,11 +35,14 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 
 /**
- * Test class for the Injector step.
+ * Test class for the RowGenerator step.
+ * 
+ * For the moment only the basic stuff is verified. Formats, lengths, precision
+ * should best also be tested. TODO
  *
  * @author Sven Boden
  */
-public class InjectorTest extends TestCase
+public class RowGeneratorTest extends TestCase
 {
 	public List createData()
 	{
@@ -50,13 +50,9 @@ public class InjectorTest extends TestCase
 		Row r = new Row();
 		
 		Value values[] = {
-			    new Value("field1", "KETTLE1"),               // String
-				new Value("field2", 123L),                    // integer
-				new Value("field3", 10.5D),                   // double
-				new Value("field4", new Date()),              // Date
-				new Value("field5", true),                    // Boolean
-				new Value("field6", new BigDecimal(123.45)),  // BigDecimal
-				new Value("field7", new BigDecimal(123.60))   // BigDecimal
+			    new Value("string", "string_value"),
+				new Value("boolean", true),
+				new Value("integer", 20L)
 		};
 
 		for (int i=0; i < values.length; i++ )
@@ -64,41 +60,9 @@ public class InjectorTest extends TestCase
 			r.addValue(values[i]);
 		}
 		
-		Row r1 = new Row();
-		Value values1[] = {
-			    new Value("field1", "KETTLE2"),               // String
-				new Value("field2", 500L),                    // integer
-				new Value("field3", 20.0D),                   // double
-				new Value("field4", new Date()),              // Date
-				new Value("field5", false),                   // Boolean
-				new Value("field6", new BigDecimal(123.45)),  // BigDecimal
-				new Value("field7", new BigDecimal(123.60))   // BigDecimal				
-		};
-
-		for (int i=0; i < values1.length; i++ )
-		{
-			r1.addValue(values1[i]);
-		}
-
-		Row r2 = new Row();
-		Value values2[] = {
-			    new Value("field1", "KETTLE3"),               // String
-				new Value("field2", 500L),                    // integer
-				new Value("field3", 20.0D),                   // double
-				new Value("field4", new Date()),              // Date
-				new Value("field5", false),                   // Boolean
-				new Value("field6", new BigDecimal(123.45)),  // BigDecimal
-				new Value("field7", new BigDecimal(123.60))   // BigDecimal				
-		};
-
-		for (int i=0; i < values2.length; i++ )
-		{
-			r2.addValue(values2[i]);
-		}
-		
 		list.add(r);
-		list.add(r1);
-		list.add(r2);
+		list.add(r);
+		list.add(r);
 		
 		return list;
 	}
@@ -132,10 +96,9 @@ public class InjectorTest extends TestCase
     }
 	
 	/**
-	 * Test case for injector step... also a show case on how
-	 * to use injector.
+	 * Test case for Row Generator step.
 	 */
-    public void testInjector() throws Exception
+    public void testRowGenerator() throws Exception
     {
         LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
@@ -144,21 +107,36 @@ public class InjectorTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("injectortest");
+        transMeta.setName("row generatortest");
     	
         StepLoader steploader = StepLoader.getInstance();            
 
         // 
-        // create an injector step...
+        // create a row generator step...
         //
-        String injectorStepname = "injector step";
-        InjectorMeta im = new InjectorMeta();
+        String rowGeneratorStepname = "row generator step";
+        RowGeneratorMeta rm = new RowGeneratorMeta();
         
-        // Set the information of the injector.
+        // Set the information of the row generator.                
+        String rowGeneratorPid = steploader.getStepPluginID(rm);
+        StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid, rowGeneratorStepname, (StepMetaInterface)rm);
+        transMeta.addStep(rowGeneratorStep);
+        
+        //
+        // Do the following specs 3 times.
+        //
+        String fieldName[] = { "string", "boolean", "integer" };
+        String type[]      = { "String", "Boolean", "Integer" };
+        String value[]     = { "string_value", "true", "20"   };
+        int    intDummies[] =  { -1, -1, -1 };
                 
-        String injectorPid = steploader.getStepPluginID(im);
-        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
-        transMeta.addStep(injectorStep);
+        rm.setDefault();
+        rm.setFieldName(fieldName);
+        rm.setFieldType(type);
+        rm.setValue(value);
+        rm.setFieldLength(intDummies);
+        rm.setFieldPrecision(intDummies);        
+        rm.setRowLimit("3");
 
         // 
         // Create a dummy step
@@ -170,7 +148,7 @@ public class InjectorTest extends TestCase
         StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
         transMeta.addStep(dummyStep);                              
 
-        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep);
+        TransHopMeta hi = new TransHopMeta(rowGeneratorStep, dummyStep);
         transMeta.addTransHop(hi);
                 
         // Now execute the transformation...
@@ -182,22 +160,11 @@ public class InjectorTest extends TestCase
         RowStepCollector rc = new RowStepCollector();
         si.addRowListener(rc);
         
-        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
-        trans.startThreads();
-        
-        // add rows
-        List inputList = createData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
-        {
-        	Row r = (Row)it.next();
-        	rp.putRow(r);
-        }   
-        rp.finished();
-
+        trans.startThreads();        
         trans.waitUntilFinished();   
         
+        List checkList = createData();
         List resultRows = rc.getRowsRead();
-        checkRows(resultRows, inputList);
+        checkRows(resultRows, checkList);
     }
 }

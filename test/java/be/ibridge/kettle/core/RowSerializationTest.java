@@ -32,7 +32,7 @@ import be.ibridge.kettle.core.value.Value;
 /**
  * Test class for the bug #3775 "Sort Rows Step". This testcase
  * makes sure that a Row written on a stream is read back in the same
- * state. This especially checks for "" and null characters.
+ * state. This especially checks for "" and nulls.
  *
  * @author Sven Boden
  */
@@ -68,8 +68,7 @@ public class RowSerializationTest extends TestCase
 			new Value("field4", (Date)null),          // Date
 			new Value("field5", true),                // Boolean
 			new Value("field6", (BigDecimal)null)     // BigDecimal
-		};
-		
+		};		
 		
         Row r1 = new Row();
         for (int i=0; i < values1.length; i++ )
