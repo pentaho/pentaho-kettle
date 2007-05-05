@@ -43,9 +43,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /*
  * Created on 4-apr-2003
- *
  */
-
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private  String rowLimit;
@@ -66,8 +64,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
-	
 	
     /**
      * @return Returns the currency.
@@ -229,8 +225,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
         this.value = value;
     }
     
-    
-    
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -244,9 +238,9 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		fieldFormat    = new String[nrfields];
 		fieldLength    = new int[nrfields];
 		fieldPrecision = new int[nrfields];
-		currency    = new String[nrfields];
-		decimal     = new String[nrfields];
-		group       = new String[nrfields];
+		currency       = new String[nrfields];
+		decimal        = new String[nrfields];
+		group          = new String[nrfields];
 		value          = new String[nrfields];
 	}
 	
@@ -263,12 +257,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			retval.fieldName[i]   = fieldName[i];
 			retval.fieldType[i]   = fieldType[i];
 			retval.fieldFormat[i] = fieldFormat[i];
-			retval.currency[i] = currency[i];
-			retval.decimal[i]  = decimal[i];
-			retval.group[i]    = group[i];
-			retval.value[i]        = value[i];
-			retval.fieldLength[i]        = fieldLength[i]; 
-			retval.fieldPrecision[i]     = fieldPrecision[i]; 
+			retval.currency[i]    = currency[i];
+			retval.decimal[i]     = decimal[i];
+			retval.group[i]       = group[i];
+			retval.value[i]       = value[i];
+			retval.fieldLength[i]     = fieldLength[i]; 
+			retval.fieldPrecision[i]  = fieldPrecision[i]; 
 		}
 		
 		return retval;
@@ -292,19 +286,19 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 				fieldName[i]   = XMLHandler.getTagValue(fnode, "name");
 				fieldType[i]   = XMLHandler.getTagValue(fnode, "type");
 				fieldFormat[i] = XMLHandler.getTagValue(fnode, "format");
-				currency[i] = XMLHandler.getTagValue(fnode, "currency");
-				decimal[i]  = XMLHandler.getTagValue(fnode, "decimal");
-				group[i]    = XMLHandler.getTagValue(fnode, "group");
-				value[i]        = XMLHandler.getTagValue(fnode, "nullif");
-				slength         = XMLHandler.getTagValue(fnode, "length");
-				sprecision      = XMLHandler.getTagValue(fnode, "precision");
+				currency[i]    = XMLHandler.getTagValue(fnode, "currency");
+				decimal[i]     = XMLHandler.getTagValue(fnode, "decimal");
+				group[i]       = XMLHandler.getTagValue(fnode, "group");
+				value[i]       = XMLHandler.getTagValue(fnode, "nullif");
+				slength        = XMLHandler.getTagValue(fnode, "length");
+				sprecision     = XMLHandler.getTagValue(fnode, "precision");
 				
 				fieldLength[i]    = Const.toInt(slength, -1);
 				fieldPrecision[i] = Const.toInt(sprecision, -1);
 			}
 			
 			// Is there a limit on the number of rows we process?
-            rowLimit=XMLHandler.getTagValue(stepnode, "limit");
+            rowLimit = XMLHandler.getTagValue(stepnode, "limit");
 		}
 		catch(Exception e)
 		{
@@ -327,10 +321,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
             fieldFormat[i]    = "\u00A40,000,000.00;\u00A4-0,000,000.00";
             fieldLength[i]    = 9;
             fieldPrecision[i] = 2;
-            currency[i]    = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
-            decimal[i]     = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
-            group[i]       = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
-            value[i]       = "-";
+            currency[i]       = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
+            decimal[i]        = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
+            group[i]          = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
+            value[i]          = "-";
 		}
 			
 		rowLimit="10";
@@ -360,28 +354,28 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i=0;i<fieldName.length;i++)
 		{
 			if (fieldName[i]!=null && fieldName[i].length()!=0)
 			{
-				retval.append("      <field>"+Const.CR);
-				retval.append("        "+XMLHandler.addTagValue("name",      fieldName[i]));
-				retval.append("        "+XMLHandler.addTagValue("type",      fieldType[i]));
-				retval.append("        "+XMLHandler.addTagValue("format",    fieldFormat[i]));
-				retval.append("        "+XMLHandler.addTagValue("currency",  currency[i]));
-				retval.append("        "+XMLHandler.addTagValue("decimal",   decimal[i]));
-				retval.append("        "+XMLHandler.addTagValue("group",     group[i]));
-				retval.append("        "+XMLHandler.addTagValue("nullif",    value[i]));
-				retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
-				retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
-				retval.append("        </field>"+Const.CR);
+				retval.append("      <field>").append(Const.CR);
+				retval.append("        ").append(XMLHandler.addTagValue("name",      fieldName[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("type",      fieldType[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("format",    fieldFormat[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("currency",  currency[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("decimal",   decimal[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("group",     group[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("nullif",    value[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("length",    fieldLength[i]));
+				retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i]));
+				retval.append("      </field>").append(Const.CR);
 			}
 		}
-		retval.append("      </fields>"+Const.CR);
-		retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
+		retval.append("    </fields>").append(Const.CR);
+		retval.append("    ").append(XMLHandler.addTagValue("limit", rowLimit));
 
 		return retval.toString();
 	}
@@ -401,10 +395,10 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 				fieldType[i]      =       rep.getStepAttributeString (id_step, i, "field_type");
 	
 				fieldFormat[i]    =       rep.getStepAttributeString (id_step, i, "field_format");
-				currency[i]    =       rep.getStepAttributeString (id_step, i, "field_currency");
-				decimal[i]     =       rep.getStepAttributeString (id_step, i, "field_decimal");
-				group[i]       =       rep.getStepAttributeString (id_step, i, "field_group");
-				value[i]           =       rep.getStepAttributeString (id_step, i, "field_nullif");
+				currency[i]       =       rep.getStepAttributeString (id_step, i, "field_currency");
+				decimal[i]        =       rep.getStepAttributeString (id_step, i, "field_decimal");
+				group[i]          =       rep.getStepAttributeString (id_step, i, "field_group");
+				value[i]          =       rep.getStepAttributeString (id_step, i, "field_nullif");
 				fieldLength[i]    =  (int)rep.getStepAttributeInteger(id_step, i, "field_length");
 				fieldPrecision[i] =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
 			}
@@ -497,7 +491,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
         RowGeneratorData data = new RowGeneratorData();
         RowGeneratorMeta meta = (RowGeneratorMeta) stepMeta.getStepMetaInterface();
         RowGenerator.buildRow(meta, data, remarks);
-
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
@@ -514,5 +507,4 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new RowGeneratorData();
 	}
-
 }

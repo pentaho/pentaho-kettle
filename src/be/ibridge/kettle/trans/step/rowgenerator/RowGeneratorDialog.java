@@ -60,7 +60,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 
-
 public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlLimit;
@@ -206,7 +205,6 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-
 		lsResize = new Listener() 
 		{
 			public void handleEvent(Event event) 
@@ -288,7 +286,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         try
         {
             getInfo(new RowGeneratorMeta()); // to see if there is an exception
-            getInfo(input); // to put the content on the input structure for real if all is well.
+            getInfo(input);                  // to put the content on the input structure for real if all is well.
             dispose();
         }
         catch(KettleException e)
@@ -312,12 +310,12 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
             meta.getFieldName()[i]   = item.getText(1);
             meta.getFieldType()[i]   = item.getText(2);
             meta.getFieldFormat()[i] = item.getText(3);
-            String slength = item.getText(4);
-            String sprec   = item.getText(5);
-            meta.getCurrency()[i] = item.getText(6);
-            meta.getDecimal()[i]  = item.getText(7);
-            meta.getGroup()[i]    = item.getText(8);
-            meta.getValue()[i]        = item.getText(9);
+            String slength           = item.getText(4);
+            String sprec             = item.getText(5);
+            meta.getCurrency()[i]    = item.getText(6);
+            meta.getDecimal()[i]     = item.getText(7);
+            meta.getGroup()[i]       = item.getText(8);
+            meta.getValue()[i]       = item.getText(9);
             
             meta.getFieldLength()[i]    = Const.toInt( slength, -1);
             meta.getFieldPrecision()[i] = Const.toInt( sprec  , -1);
@@ -329,8 +327,6 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         {
             throw new KettleException( Messages.getString("RowGeneratorDialog.Wrong.RowLimit.Number") );
         }
-        
-
     }
 
     public String toString()
@@ -384,5 +380,4 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
             prd.open();
         }
     }
-
 }

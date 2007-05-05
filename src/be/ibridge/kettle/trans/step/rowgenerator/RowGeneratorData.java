@@ -27,8 +27,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 
 /**
  * @author Matt
- * @since 24-jan-2005
- *
+ * @since 24-jan-2005 
  */
 public class RowGeneratorData extends BaseStepData implements StepDataInterface
 {
@@ -40,18 +39,14 @@ public class RowGeneratorData extends BaseStepData implements StepDataInterface
     public Row constants;
     public long rowLimit;
     
-	/**
-	 * 
-	 */
 	public RowGeneratorData()
 	{
 		super();
 
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
+		nf   = NumberFormat.getInstance();
+		df   = (DecimalFormat)nf;
+		dfs  = new DecimalFormatSymbols();
+		daf  = new SimpleDateFormat();
+		dafs = new DateFormatSymbols();
 	}
-
 }
