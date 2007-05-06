@@ -90,20 +90,23 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("ignore_errors",      ignoreErrors));
-		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous",  argFromPrevious));
-		retval.append("      ").append(XMLHandler.addTagValue("delete_folder",      deleteFolder));
-		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));
+		retval.append("      ").append(XMLHandler.addTagValue("ignore_errors",      ignoreErrors)).append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous",  argFromPrevious)).append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("delete_folder",      deleteFolder)).append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders)).append(Const.CR);
 		
-
+		retval.append("      <fields>").append(Const.CR);
 		if (arguments!=null)
 		{
 			for (int i=0;i<arguments.length;i++)
 			{
-				retval.append("      ").append(XMLHandler.addTagValue("name"+i,     arguments[i]));
-				retval.append("      ").append(XMLHandler.addTagValue("filemask"+i, filemasks[i]));
+				retval.append("        <field>").append(Const.CR);
+				retval.append("          ").append(XMLHandler.addTagValue("name",     arguments[i]));
+				retval.append("          ").append(XMLHandler.addTagValue("filemask", filemasks[i]));
+				retval.append("        </field>").append(Const.CR);
 			}
 		}
+		retval.append("      </fields>").append(Const.CR);
 		
 		return retval.toString();
 	}
@@ -114,25 +117,26 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadXML(entrynode, databases);
-			ignoreErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode,       "ignore_errors"));
-			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode,   "arg_from_previous") );
-			deleteFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode,      "delete_folder") );
-			includeSubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "include_subfolders") );
-	
-			// How many arguments?
-			int argnr = 0;
-			while ( XMLHandler.getTagValue(entrynode, "name"+argnr)!=null) 	argnr++;
-			arguments = new String[argnr];
-			filemasks = new String[argnr];
+			ignoreErrors      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "ignore_errors"));
+			argFromPrevious   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous") );
+			deleteFolder      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "delete_folder") );
+			includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders") );
 			
+			Node fields = XMLHandler.getSubNode(entrynode, "fields");
+			
+            // How many field arguments?
+			int nrFields = XMLHandler.countNodes(fields, "field");			
+			arguments = new String[nrFields];
+			filemasks = new String[nrFields];
 			
 			// Read them all...
-			for (int a=0;a<argnr;a++) 
+			for (int i = 0; i < nrFields; i++)
 			{
-				arguments[a]=XMLHandler.getTagValue(entrynode, "name"+a);
-				filemasks[a]=XMLHandler.getTagValue(entrynode, "filemask"+a);
-
-			}
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				
+				arguments[i] = XMLHandler.getTagValue(fnode, "name");
+				filemasks[i] = XMLHandler.getTagValue(fnode, "filemask");
+		    }
 		}
 		catch(KettleXMLException xe)
 		{
@@ -146,9 +150,9 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			ignoreErrors = rep.getJobEntryAttributeBoolean(id_jobentry,      "ignore_errors");
-			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry,   "arg_from_previous");
-			deleteFolder = rep.getJobEntryAttributeBoolean(id_jobentry,      "delete_folder");
+			ignoreErrors      = rep.getJobEntryAttributeBoolean(id_jobentry, "ignore_errors");
+			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+			deleteFolder      = rep.getJobEntryAttributeBoolean(id_jobentry, "delete_folder");
 			includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 	
 			// How many arguments?
@@ -186,7 +190,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 			{
 				for (int i=0;i<arguments.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getID(), i, "argument", arguments[i]);
+					rep.saveJobEntryAttribute(id_job, getID(), i, "name",     arguments[i]);
 					rep.saveJobEntryAttribute(id_job, getID(), i, "filemask", filemasks[i]);
 				}
 			}

@@ -368,7 +368,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		fdlFilemask.right = new FormAttachment(middle, -margin);
 		wlFilemask.setLayoutData(fdlFilemask);
 		wFilemask = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
-				                Messages.getString("JobDeleteFile.Wildcard.Tooltip"));
+				                Messages.getString("JobDeleteFiles.Wildcard.Tooltip"));
 		props.setLook(wFilemask);
 		wFilemask.addModifyListener(lsMod);
 		fdFilemask = new FormData();
