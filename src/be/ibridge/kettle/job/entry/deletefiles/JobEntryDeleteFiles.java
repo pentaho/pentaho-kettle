@@ -90,10 +90,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("ignore_errors",      ignoreErrors)).append(Const.CR);
-		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous",  argFromPrevious)).append(Const.CR);
-		retval.append("      ").append(XMLHandler.addTagValue("delete_folder",      deleteFolder)).append(Const.CR);
-		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders)).append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("ignore_errors",      ignoreErrors));
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous",  argFromPrevious));
+		retval.append("      ").append(XMLHandler.addTagValue("delete_folder",      deleteFolder));
+		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));
 		
 		retval.append("      <fields>").append(Const.CR);
 		if (arguments!=null)
