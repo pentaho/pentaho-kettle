@@ -21,10 +21,6 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -43,40 +39,32 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.Selectors;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSelectInfo;
 
-
 /**
- * This defines a 'delete file' job entry. Its main use would be to delete 
- * trigger files, but it will delete any file.
+ * This defines a 'delete files' job entry.
  * 
  * @author Samatar Hassan
  * @since 06-05-2007
- *
  */
 public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobEntryInterface
 {
-	private String filename;
-	private boolean ignoreerreurs;
+	private boolean ignoreErrors;
 	public  boolean argFromPrevious;
-	public boolean deletefolder;
-	public  boolean includesubfolders;
+	public  boolean deleteFolder;
+	public  boolean includeSubfolders;
 	public  String  arguments[];
 	public  String  filemasks[];
-	
-
 	
 	public JobEntryDeleteFiles(String n)
 	{
 		super(n, "");
-		filename=null;
-		ignoreerreurs=false;
+		ignoreErrors=false;
 		argFromPrevious=false;
 		arguments=null;
-		deletefolder=false;
-		includesubfolders=false;	
+		deleteFolder=false;
+		includeSubfolders=false;	
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_DELETE_FILES);
 	}
@@ -99,24 +87,23 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer(50);
+        StringBuffer retval = new StringBuffer(300);
 		
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("ignoreerreurs", ignoreerreurs));
-		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-		retval.append("      ").append(XMLHandler.addTagValue("deletefolder", deletefolder));
-		retval.append("      ").append(XMLHandler.addTagValue("includesubfolders", includesubfolders));
+		retval.append("      ").append(XMLHandler.addTagValue("ignore_errors",      ignoreErrors));
+		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous",  argFromPrevious));
+		retval.append("      ").append(XMLHandler.addTagValue("delete_folder",      deleteFolder));
+		retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));
 		
 
 		if (arguments!=null)
+		{
 			for (int i=0;i<arguments.length;i++)
 			{
-				retval.append("      ").append(XMLHandler.addTagValue("name"+i, arguments[i]));
-				retval.append("      ").append(XMLHandler.addTagValue("Filemask"+i, filemasks[i]));
+				retval.append("      ").append(XMLHandler.addTagValue("name"+i,     arguments[i]));
+				retval.append("      ").append(XMLHandler.addTagValue("filemask"+i, filemasks[i]));
 			}
-
-
-
+		}
 		
 		return retval.toString();
 	}
@@ -127,10 +114,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadXML(entrynode, databases);
-			ignoreerreurs = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "ignoreerreurs"));
-			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-			deletefolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "deletefolder") );
-			includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "includesubfolders") );
+			ignoreErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode,       "ignore_errors"));
+			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode,   "arg_from_previous") );
+			deleteFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode,      "delete_folder") );
+			includeSubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "include_subfolders") );
 	
 			// How many arguments?
 			int argnr = 0;
@@ -143,15 +130,13 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 			for (int a=0;a<argnr;a++) 
 			{
 				arguments[a]=XMLHandler.getTagValue(entrynode, "name"+a);
-				filemasks[a]=XMLHandler.getTagValue(entrynode, "Filemask"+a);
+				filemasks[a]=XMLHandler.getTagValue(entrynode, "filemask"+a);
 
 			}
-
-
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'delete file' from XML node", xe);
+			throw new KettleXMLException("Unable to load job entry of type 'delete files' from XML node", xe);
 		}
 	}
 
@@ -161,10 +146,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			ignoreerreurs = rep.getJobEntryAttributeBoolean(id_jobentry, "ignoreerreurs");
-			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-			deletefolder = rep.getJobEntryAttributeBoolean(id_jobentry, "deletefolder");
-			includesubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "includesubfolders");
+			ignoreErrors = rep.getJobEntryAttributeBoolean(id_jobentry,      "ignore_errors");
+			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry,   "arg_from_previous");
+			deleteFolder = rep.getJobEntryAttributeBoolean(id_jobentry,      "delete_folder");
+			includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
 	
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name");
@@ -180,7 +165,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'delete file' from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException("Unable to load job entry of type 'delete files' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
 	
@@ -191,12 +176,11 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		{
 			super.saveRep(rep, id_job);
 			
-            rep.saveJobEntryAttribute(id_job, getID(), "ignoreerreurs", ignoreerreurs);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-			rep.saveJobEntryAttribute(id_job, getID(), "deletefolder", deletefolder);
-			rep.saveJobEntryAttribute(id_job, getID(), "includesubfolders", includesubfolders);
+            rep.saveJobEntryAttribute(id_job, getID(), "ignore_errors",      ignoreErrors);
+			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous",  argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "delete_folder",      deleteFolder);
+			rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
 			
-	
 			// save the arguments...
 			if (arguments!=null)
 			{
@@ -209,12 +193,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type 'delete file' to the repository for id_job="+id_job, dbe);
+			throw new KettleException("Unable to save job entry of type 'delete files' to the repository for id_job="+id_job, dbe);
 		}
 	}
 
-
-	
 	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -222,91 +204,73 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 		List rows = result.getRows();
 		Row resultRow = null;
 
-		boolean resultat=true ;	
-		boolean execResultat;
-		
+		boolean rcode=true ;	
 
 		String args[] = arguments;
 		String fmasks[] = filemasks;
 		result.setResult( true );
-
 		
-		resultat=true;
+		rcode=true;
 		
 		if (argFromPrevious)
 		{
-			log.logDetailed(toString(), "Found "+(rows!=null?rows.size():0)+" previous result rows");
+		    log.logDetailed(toString(), "Found "+(rows!=null?rows.size():0)+" previous result rows");
 		}
 
-			
-			if (argFromPrevious && rows!=null) // Copy the input row to the (command line) arguments
+		if (argFromPrevious && rows!=null) // Copy the input row to the (command line) arguments
+		{
+			for (int iteration=0;iteration<rows.size();iteration++) 
 			{
-				
-				for (int iteration=0;iteration<rows.size();iteration++) 
+				resultRow = (Row) rows.get(iteration);
+				args = new String[resultRow.size()];
+				fmasks = new String[resultRow.size()];
+
+				args[iteration] = resultRow.getValue(0).getString();
+				fmasks[iteration] = resultRow.getValue(1).getString();
+
+				if(rcode)
 				{
-					resultRow = (Row) rows.get(iteration);
-					args = new String[resultRow.size()];
-					fmasks = new String[resultRow.size()];
+					// ok we can process this file/folder
+					log.logDetailed(toString(), "Processing row ["  + args[iteration] + "]..wildcard ["+ fmasks[iteration]+"] ?");
 
-					//for (int i=0;i<resultRow.size();i++)
-					//{
-					args[iteration] = resultRow.getValue(0).getString();
-					fmasks[iteration] = resultRow.getValue(1).getString();
-
-					if(resultat)
+					if(! ProcessFile(args[iteration],fmasks[iteration]))
 					{
-						// ok we can process this file/folder
-	
-						log.logDetailed(toString(), "Processing row ["  + args[iteration] + "]..wildcard ["+ fmasks[iteration]+"] ?");
-
-						if(! ProcessFile(args[iteration],fmasks[iteration]))
-						{
-							resultat=false;
-						}
+						rcode=false;
 					}
-					else
-					{
-						log.logDetailed(toString(), "Ignoring row ["  + args[iteration] + "]..wildcard ["+ fmasks[iteration]+"] ?");
-					}
-					
-					//}
-
 				}
-		
-			}
-			else if (arguments!=null)
-			{
-				
-				for (int i=0;i<arguments.length;i++)
+				else
 				{
-					if(resultat)
+					log.logDetailed(toString(), "Ignoring row ["  + args[iteration] + "]..wildcard ["+ fmasks[iteration]+"] ?");
+				}
+			}
+		}
+		else if (arguments!=null)
+		{
+			for (int i=0;i<arguments.length;i++)
+			{
+				if(rcode)
+				{
+					// ok we can process this file/folder
+					log.logDetailed(toString(), "Processing argument ["  + arguments[i] + "].. wildcard ["+ filemasks[i]+"] ?");
+					if(!ProcessFile(arguments[i],filemasks[i]))
 					{
-						// ok we can process this file/folder
-						log.logDetailed(toString(), "Processing argument ["  + arguments[i] + "].. wildcard ["+ filemasks[i]+"] ?");
-						if(!ProcessFile(arguments[i],filemasks[i]))
-						{
-							resultat=false;
-						}
+						rcode=false;
 					}
-					else
-					{
-						log.logDetailed(toString(), "Ignoring argument ["  + arguments[i] + "].. wildcard ["+ filemasks[i]+"] ?");
-					}
-
+				}
+				else
+				{
+					log.logDetailed(toString(), "Ignoring argument ["  + arguments[i] + "].. wildcard ["+ filemasks[i]+"] ?");
 				}
 
 			}
-		
-		if(!resultat && ignoreerreurs)
+		}		
+		if(!rcode && ignoreErrors)
 		{
 			result.setResult( false );
 			result.setNrErrors(1);
 		}
-		
 
-
-		result.setResult( resultat );
-
+		result.setResult( rcode );
 		
 		return result;
 	}
@@ -315,7 +279,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		boolean resultatex= false ;
+		boolean rcode = false ;
 		FileObject filefolder = null;
 		String realFilefoldername = StringUtil.environmentSubstitute(filename);
 		String realwilcard = StringUtil.environmentSubstitute(wildcard);
@@ -329,16 +293,15 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 				// the file or folder exists
 				if (filefolder.getType() == FileType.FOLDER)
 				{
-					// it's a folder
-					log.logDetailed(toString(), "Processing folder ["+realFilefoldername+"]");
+					// It's a folder
+					if ( log.isDetailed())
+					    log.logDetailed(toString(), "Processing folder ["+realFilefoldername+"]");
 					// Delete Files
 					int Nr=filefolder.delete(new TextFileSelector(realwilcard));
-					log.logDetailed(toString(), "Total deleted subfolders/files = "+Nr);
-
-					resultatex=true;
-							
-		
-
+					
+					if ( log.isDetailed())
+					    log.logDetailed(toString(), "Total deleted subfolders/files = "+Nr);
+					rcode=true;
 				}
 				else
 				{
@@ -348,39 +311,24 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 					if ( !deleted )
 					{
 						log.logError(toString(), "Could not delete file ["+realFilefoldername+"].");
-
-											    	
 					}
 					else
 					{
 						log.logBasic(toString(), "File ["+filename+"] deleted!");
-						resultatex=true;
+						rcode=true;
 					}
-
-
 				}
-				
-
 			}
-
 			else
 			{
-
 				// File already deleted, no reason to try to delete it
 				log.logBasic(toString(), "File or folder ["+realFilefoldername+"] already deleted.");
-
-					resultatex=true;
-				
-
+				rcode=true;
 			}
-				
-
-		}
-		
+		}		
 		catch (IOException e) 
 		{
-			log.logError(toString(), "Could not process ["+realFilefoldername+"], exception: " + e.getMessage());
-					
+			log.logError(toString(), "Could not process ["+realFilefoldername+"], exception: " + e.getMessage());					
 		}
 		finally 
 		{
@@ -392,18 +340,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 				}
 				catch ( IOException ex ) {};
 			}
-			
 		}
-	
-		
-		
-            
-	return resultatex;
-		
-	
+
+	    return rcode;
 	}
-
-
 
 	private class TextFileSelector implements FileSelector 
 	{
@@ -417,77 +357,70 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 				fileExtension=extension.replace('.',' ').replace('*',' ').replace('$',' ').trim();
 			}
 		}
-
 		 
 		public boolean includeFile(FileSelectInfo info) 
 		{
-			boolean retour=false;
+			boolean rcode=false;
 			try
 			{
-				
 				String extension=info.getFile().getName().getExtension();
 				if (extension.equals(fileExtension) ||  Const.isEmpty(fileExtension))
 				{
 					if (info.getFile().getType() == FileType.FOLDER)
 					{
-						if (deletefolder && includesubfolders)
+						if (deleteFolder && includeSubfolders)
 						{
-							retour= true;
+							rcode= true;
 						}
 						else
 						{
-							retour= false;
+							rcode= false;
 						}
 					}
 					else
 					{
-						retour= true;
+						rcode= true;
 					}
 				}
 				else
 				{
-					retour= false;
+					rcode= false;
 				}
 			}
 			catch (Exception e) 
 			{
-				log.logError(toString(), "Error, exception: " + e.getMessage());
-					
+				log.logError(toString(), "Error exception: " + e.getMessage());				
 			}
-			return retour;
-
+			return rcode;
 		}
 
 		public boolean traverseDescendents(FileSelectInfo info) 
 		{
-			return includesubfolders;
+			return includeSubfolders;
 		}
 	}
-
-	
-
 
 	public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
 	{
         return new JobEntryDeleteFilesDialog(shell,this,jobMeta);
     }
 
-	public boolean isIgnoreErreurs() {
-		return ignoreerreurs;
+	public boolean isIgnoreErrors() {
+		return ignoreErrors;
 	}
 
-	public void setIgnoreErreurs(boolean failIfFileExists) {
-		this.ignoreerreurs = failIfFileExists;
+	public void setIgnoreErrors(boolean ignoreErrors) {
+		this.ignoreErrors = ignoreErrors;
 	}
-	public void setDeleteFolder(boolean deletefolder) 
+	
+	public void setDeleteFolder(boolean deleteFolder) 
 	{
-		this.deletefolder = deletefolder;
+		this.deleteFolder = deleteFolder;
 	}
-	public void setIncludesubfolders(boolean includesubfolders) 
+	public void setIncludeSubfolders(boolean includeSubfolders) 
 	{
-		this.includesubfolders = includesubfolders;
+		this.includeSubfolders = includeSubfolders;
 	}
-
 	
 	public boolean evaluates()
 	{
