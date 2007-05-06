@@ -37,13 +37,11 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
-
 /**
- * This defines an SQL job entry.
+ * This defines a MySQL job entry.
  * 
- * @author Matt
- * @since 05-11-2003
- *
+ * @author Samatar Hassan
+ * @since Jan-2007
  */
 public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface
 {
@@ -104,23 +102,23 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		StringBuffer retval = new StringBuffer(200);
 		
 		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("schemaname",  schemaname));
-		retval.append("      ").append(XMLHandler.addTagValue("tablename",  tablename));
-		retval.append("      ").append(XMLHandler.addTagValue("filename",  filename));
-		retval.append("      ").append(XMLHandler.addTagValue("separator",  separator));
-		retval.append("      ").append(XMLHandler.addTagValue("enclosed",  enclosed));
-		retval.append("      ").append(XMLHandler.addTagValue("linestarted",  linestarted));
+		retval.append("      ").append(XMLHandler.addTagValue("schemaname",      schemaname));
+		retval.append("      ").append(XMLHandler.addTagValue("tablename",       tablename));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",        filename));
+		retval.append("      ").append(XMLHandler.addTagValue("separator",       separator));
+		retval.append("      ").append(XMLHandler.addTagValue("enclosed",        enclosed));
+		retval.append("      ").append(XMLHandler.addTagValue("linestarted",     linestarted));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
 		
-		retval.append("      ").append(XMLHandler.addTagValue("replacedata",  replacedata));
-		retval.append("      ").append(XMLHandler.addTagValue("ignorelines",  ignorelines));
-		retval.append("      ").append(XMLHandler.addTagValue("listattribut",  listattribut));
+		retval.append("      ").append(XMLHandler.addTagValue("replacedata",     replacedata));
+		retval.append("      ").append(XMLHandler.addTagValue("ignorelines",     ignorelines));
+		retval.append("      ").append(XMLHandler.addTagValue("listattribut",    listattribut));
 
-		retval.append("      ").append(XMLHandler.addTagValue("localinfile",  localinfile));
+		retval.append("      ").append(XMLHandler.addTagValue("localinfile",     localinfile));
 		
-		retval.append("      ").append(XMLHandler.addTagValue("prorityvalue",  prorityvalue));
+		retval.append("      ").append(XMLHandler.addTagValue("prorityvalue",    prorityvalue));
 		
-		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
+		retval.append("      ").append(XMLHandler.addTagValue("connection",      connection==null?null:connection.getName()));
 		
 		return retval.toString();
 	}
@@ -130,24 +128,21 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.loadXML(entrynode, databases);
-			schemaname     = XMLHandler.getTagValue(entrynode, "schemaname");
-			tablename     = XMLHandler.getTagValue(entrynode, "tablename");
-			filename     = XMLHandler.getTagValue(entrynode, "filename");
-			separator     = XMLHandler.getTagValue(entrynode, "separator");
-			enclosed     = XMLHandler.getTagValue(entrynode, "enclosed");
+			schemaname  = XMLHandler.getTagValue(entrynode, "schemaname");
+			tablename   = XMLHandler.getTagValue(entrynode, "tablename");
+			filename    = XMLHandler.getTagValue(entrynode, "filename");
+			separator   = XMLHandler.getTagValue(entrynode, "separator");
+			enclosed    = XMLHandler.getTagValue(entrynode, "enclosed");
 			
 			linestarted     = XMLHandler.getTagValue(entrynode, "linestarted");
-			lineterminated     = XMLHandler.getTagValue(entrynode, "lineterminated");
-			replacedata = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacedata"));
+			lineterminated  = XMLHandler.getTagValue(entrynode, "lineterminated");
+			replacedata     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacedata"));
 			ignorelines     = XMLHandler.getTagValue(entrynode, "ignorelines");
-			listattribut     = XMLHandler.getTagValue(entrynode, "listattribut");
-
-			localinfile = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
-		
-			prorityvalue     = Const.toInt(XMLHandler.getTagValue(entrynode, "prorityvalue"), -1);
-
-			String dbname = XMLHandler.getTagValue(entrynode, "connection");
-			connection    = DatabaseMeta.findDatabase(databases, dbname);
+			listattribut    = XMLHandler.getTagValue(entrynode, "listattribut");
+			localinfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));		
+			prorityvalue    = Const.toInt(XMLHandler.getTagValue(entrynode, "prorityvalue"), -1);
+			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
+			connection      = DatabaseMeta.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
 		{
@@ -161,21 +156,18 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			schemaname  = rep.getJobEntryAttributeString(id_jobentry, "schemaname");
-			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
-			filename  = rep.getJobEntryAttributeString(id_jobentry, "filename");
-			separator  = rep.getJobEntryAttributeString(id_jobentry, "separator");
-			enclosed  = rep.getJobEntryAttributeString(id_jobentry, "enclosed");
-			
-			linestarted  = rep.getJobEntryAttributeString(id_jobentry, "linestarted");
-			lineterminated  = rep.getJobEntryAttributeString(id_jobentry, "lineterminated");
-
-			replacedata = rep.getJobEntryAttributeBoolean(id_jobentry, "replacedata");
-			ignorelines  = rep.getJobEntryAttributeString(id_jobentry, "ignorelines");
-			listattribut  = rep.getJobEntryAttributeString(id_jobentry, "listattribut");
-
-			localinfile=rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
-			prorityvalue=(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
+			schemaname      =      rep.getJobEntryAttributeString(id_jobentry,  "schemaname");
+			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
+			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");
+			separator       =      rep.getJobEntryAttributeString(id_jobentry,  "separator");
+			enclosed        =      rep.getJobEntryAttributeString(id_jobentry,  "enclosed");			
+			linestarted     =      rep.getJobEntryAttributeString(id_jobentry,  "linestarted");
+			lineterminated  =      rep.getJobEntryAttributeString(id_jobentry,  "lineterminated");
+			replacedata     =      rep.getJobEntryAttributeBoolean(id_jobentry, "replacedata");
+			ignorelines     =      rep.getJobEntryAttributeString(id_jobentry,  "ignorelines");
+			listattribut    =      rep.getJobEntryAttributeString(id_jobentry,  "listattribut");
+			localinfile     =      rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
+			prorityvalue    =(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
 			
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
@@ -201,24 +193,18 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		try
 		{
 			super.saveRep(rep, id_job);
-			rep.saveJobEntryAttribute(id_job, getID(), "schemaname", schemaname);
-			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "separator", separator);
-			rep.saveJobEntryAttribute(id_job, getID(), "enclosed", enclosed);
-			
-			rep.saveJobEntryAttribute(id_job, getID(), "linestarted", linestarted);
+			rep.saveJobEntryAttribute(id_job, getID(), "schemaname",     schemaname);
+			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
+			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
+			rep.saveJobEntryAttribute(id_job, getID(), "separator",      separator);
+			rep.saveJobEntryAttribute(id_job, getID(), "enclosed",       enclosed);			
+			rep.saveJobEntryAttribute(id_job, getID(), "linestarted",    linestarted);
 			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
-			rep.saveJobEntryAttribute(id_job, getID(), "replacedata", replacedata);
-			rep.saveJobEntryAttribute(id_job, getID(), "ignorelines", ignorelines);
-			rep.saveJobEntryAttribute(id_job, getID(), "listattribut", listattribut);	
-	
-			rep.saveJobEntryAttribute(id_job, getID(), "localinfile", localinfile);		
-			
-			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue", prorityvalue);	
-
-
-
+			rep.saveJobEntryAttribute(id_job, getID(), "replacedata",    replacedata);
+			rep.saveJobEntryAttribute(id_job, getID(), "ignorelines",    ignorelines);
+			rep.saveJobEntryAttribute(id_job, getID(), "listattribut",   listattribut);		
+			rep.saveJobEntryAttribute(id_job, getID(), "localinfile",    localinfile);					
+			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue",   prorityvalue);	
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
@@ -227,12 +213,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			throw new KettleException("Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job="+id_job, dbe);
 		}
 	}
-
 	
 	public void setTablename(String tablename)
 	{
 		this.tablename = tablename;
 	}
+
 	public void setSchemaname(String schemaname)
 	{
 		this.schemaname = schemaname;
@@ -289,11 +275,10 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			// User has specified a file, We can continue ...
 			String realFilename = getRealFilename(); 
 			File file = new File(realFilename);
-			if ((file.exists() && file.canRead()) ||  isLocalInfile()==false)
+			if ((file.exists() && file.canRead()) || isLocalInfile()==false)
 			{
 				// User has specified an existing file, We can continue ...
 				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
-
 
 				if (connection!=null)
 				{
@@ -318,7 +303,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								realTablename= realSchemaname + "." + realTablename;
 							}
 
-
 							// Set the REPLACE or IGNORE 
 							if (isReplacedata())
 							{
@@ -328,14 +312,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							{
 								ReplaceIgnore="IGNORE";
 							}
-
 						
 							// Set the IGNORE LINES
 							if (Const.toInt(getRealIgnorelines(),0)>0)
 							{
 								IgnoreNbrLignes = "IGNORE " + getRealIgnorelines() + " LINES";
 							}
-						
 
 							// Set list of Column 
 							if (getRealListattribut()!= null)
@@ -348,7 +330,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							if (isLocalInfile())
 							{
 								LocalExec = "LOCAL";
-
 							}
 					
 							// Prority
@@ -356,7 +337,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							{
 								//LOW
 								PriorityText = "LOW_PRIORITY";
-
 							}
 							else if(prorityvalue == 2)
 							{
@@ -372,23 +352,18 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								if (getRealSeparator() != null )
 								{
 									FieldTerminatedby = FieldTerminatedby + "TERMINATED BY '" +  Const.replace(getRealSeparator(), "'", "''") +"'";
-								
-								}
-								
+								}								
 								if (getRealEnclosed() != null )
 								{				
 									FieldTerminatedby = FieldTerminatedby + " ENCLOSED BY '" +  Const.replace(getRealEnclosed(), "'", "''") +"'";
 									
 								}
-
 								if (getRealEscaped() != null )
 								{
 
 										FieldTerminatedby = FieldTerminatedby + " ESCAPED BY '" +  Const.replace(getRealEscaped(), "'", "''") +"'";
 									
 								}
-								
-							
 							}
 							
 							// LINES ...
@@ -396,39 +371,30 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							{
 								LineTerminatedby="LINES ";
 
-
 								// Line starting By
 								if (getRealLinestarted() != null)
 								{
 									LineTerminatedby =LineTerminatedby + "STARTING BY '" +  Const.replace(getRealLinestarted(), "'", "''") +"'";
 								}
 
-
 								// Line terminating By
 								if (getRealLineterminated() != null)
 								{
 									LineTerminatedby =LineTerminatedby + " TERMINATED BY '" +  Const.replace(getRealLineterminated(), "'", "''") +"'";
 								}
-
-								
 							}
-
 							
 							String SQLBULKLOAD="LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename + 	"' " + ReplaceIgnore + 
-							" INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
-
+                     						   " INTO TABLE " + realTablename + " " + FieldTerminatedby + " " + LineTerminatedby + " " + IgnoreNbrLignes + " " +  ListOfColumn  + ";";
 
 							try
 							{
 								// Run the SQL
 								db.execStatements(SQLBULKLOAD);
 
-
 								// Everything is OK...we can deconnect now
 								db.disconnect();
 								result.setResult(true);
-
-							
 							}
 							catch(KettleDatabaseException je)
 							{
@@ -436,9 +402,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								result.setNrErrors(1);
 								log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
 							}
-							
-
-
 						}
 						else
 						{
@@ -447,8 +410,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 							result.setNrErrors(1);
 							log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 						}
-
-
 					}
 					catch(KettleDatabaseException dbe)
 					{
@@ -456,29 +417,20 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 						result.setNrErrors(1);
 						log.logError(toString(), "An error occurred executing this entry: "+dbe.getMessage());
 					}
-					
-
-
 				}
-
 				else
 				{
 					// No database connection is defined
 					result.setNrErrors(1);
 					log.logError(toString(),  Messages.getString("JobMysqlBulkLoad.Nodatabase.Label"));
 				}
-
-
 			}
 			else
 			{
 				// the file doesn't exist
 				result.setNrErrors(1);
 				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
-
 			}
-
-
 		}
 		else
 		{
@@ -486,9 +438,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			result.setNrErrors(1);
 			log.logError(toString(), Messages.getString("JobMysqlBulkLoad.Nofilename.Label"));
 		}
-
 		return result;
-
 	}
 
 	public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
@@ -516,14 +466,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		this.localinfile = localinfile;
 	}
-
-
 	
 	public boolean isLocalInfile() 
 	{
 		return localinfile;
 	}
-
 
 	public void setFilename(String filename)
 	{
@@ -536,25 +483,25 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	}
     
 	public String getRealFilename()
-	{
- 
+	{ 
 		String RealFile= StringUtil.environmentSubstitute(getFilename());
 		return RealFile.replace('\\','/');
 	}
+	
 	public void setSeparator(String separator)
 	{
 		this.separator = separator;
 	}
+	
 	public void setLineterminated(String lineterminated)
 	{
 		this.lineterminated = lineterminated;
 	}
+	
 	public void setLinestarted(String linestarted)
 	{
 		this.linestarted = linestarted;
 	}
-
-	
 
 	public String getEnclosed()
 	{
@@ -569,6 +516,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		this.enclosed = enclosed;
 	}
+	
 	public String getEscaped()
 	{
 		return escaped;
@@ -583,28 +531,31 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		this.escaped = escaped;
 	}
+	
 	public String getSeparator()
 	{
 		return separator;
 	}
+	
 	public String getLineterminated()
 	{
 		return lineterminated;
 	}
+	
 	public String getLinestarted()
 	{
 		return linestarted;
 	}
+	
 	public String getRealLinestarted()
 	{
 		return StringUtil.environmentSubstitute(getLinestarted());
 	}
+
 	public String getRealLineterminated()
 	{
 		return StringUtil.environmentSubstitute(getLineterminated());
 	}
-
-
     
 	public String getRealSeparator()
 	{
@@ -615,6 +566,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	{
 		this.ignorelines = ignorelines;
 	}
+	
 	public String getIgnorelines()
 	{
 		return ignorelines;
@@ -625,12 +577,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		return StringUtil.environmentSubstitute(getIgnorelines());
 	}
 
-
-
 	public void setListattribut(String listattribut)
 	{
 		this.listattribut = listattribut;
 	}
+	
 	public String getListattribut()
 	{
 		return listattribut;
@@ -643,23 +594,20 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 	private String MysqlString(String listcolumns)
 	{
-		/* handle forbiden char like '
+		/* 
+		 * Handle forbiden char like '
 		 */
-		String ReturnString="";
+		String returnString="";
 		String[] split = listcolumns.split(",");	
 
 		for (int i=0;i<split.length;i++) 
 		{
-			if(ReturnString.equals(""))
-				ReturnString =  "`" + Const.trim(split[i]) + "`";
+			if (returnString.equals(""))
+				returnString =  "`" + Const.trim(split[i]) + "`";
 			else
-				ReturnString = ReturnString +  ", `" + Const.trim(split[i]) + "`";
-
+				returnString = returnString +  ", `" + Const.trim(split[i]) + "`";
 		}
 
-		return ReturnString;
-	
-
-	}
-	
+		return returnString;
+	}	
 }
