@@ -38,25 +38,23 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
-
 /**
- * This defines an SQL job entry.
+ * This defines a ping job entry.
  * 
- * @author Matt
- * @since 05-11-2003
+ * @author Samatar Hassan
+ * @since Mar-2007
  *
  */
-
 public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String hostname;
-	private String nbrpaquets;
+	private String nbrPackets;
 	
 	public JobEntryPing(String n)
 	{
 		super(n, "");
 		hostname=null;
-		nbrpaquets="2";
+		nbrPackets="2";
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_PING);
 	}
@@ -80,10 +78,13 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-		
+        
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("hostname",   hostname));
-		retval.append("      ").append(XMLHandler.addTagValue("nbrpaquets",   nbrpaquets));
+		retval.append("      ").append(XMLHandler.addTagValue("hostname",    hostname));
+		retval.append("      ").append(XMLHandler.addTagValue("nbr_packets", nbrPackets));
+
+		// TODO: The following line may be removed 3 versions after 2.5.0
+		retval.append("      ").append(XMLHandler.addTagValue("nbrpaquets",  nbrPackets));
 		
 		return retval.toString();
 	}
@@ -93,9 +94,20 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		try
 		{
+			String nbrPaquets; 
+			
 			super.loadXML(entrynode, databases);
-			hostname      = XMLHandler.getTagValue(entrynode, "hostname");
-			nbrpaquets     = XMLHandler.getTagValue(entrynode, "nbrpaquets");
+			hostname   = XMLHandler.getTagValue(entrynode, "hostname");
+			nbrPackets = XMLHandler.getTagValue(entrynode, "nbr_packets");
+			
+			// TODO: The following lines may be removed 3 versions after 2.5.0
+			nbrPaquets = XMLHandler.getTagValue(entrynode, "nbrpaquets");
+			if ( nbrPackets == null && nbrPaquets != null )
+			{
+				// if only nbrpaquets exists this means that the file was
+				// save by a version 2.5.0 ping job entry
+				nbrPackets = nbrPaquets;
+			}
 		}
 		catch(KettleXMLException xe)
 		{
@@ -108,9 +120,20 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		try
 		{
+			String nbrPaquets;
+			
 			super.loadRep(rep, id_jobentry, databases);
-			hostname = rep.getJobEntryAttributeString(id_jobentry, "hostname");
-			nbrpaquets = rep.getJobEntryAttributeString(id_jobentry, "nbrpaquets");
+			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
+			nbrPackets = rep.getJobEntryAttributeString(id_jobentry, "nbr_packets");
+			
+			// TODO: The following lines may be removed 3 versions after 2.5.0
+			nbrPaquets = rep.getJobEntryAttributeString(id_jobentry, "nbrpaquets");
+			if ( nbrPackets == null && nbrPaquets != null )
+			{
+				// if only nbrpaquets exists this means that the file was
+				// save by a version 2.5.0 ping job entry
+				nbrPackets = nbrPaquets;
+			}			
 		}
 		catch(KettleException dbe)
 		{
@@ -125,8 +148,10 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		{
 			super.saveRep(rep, id_job);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "hostname", hostname);
-			rep.saveJobEntryAttribute(id_job, getID(), "nbrpaquets",      nbrpaquets);
+			rep.saveJobEntryAttribute(id_job, getID(), "hostname",    hostname);
+			rep.saveJobEntryAttribute(id_job, getID(), "nbr_packets", nbrPackets);
+			// TODO: The following line may be removed 3 versions after 2.5.0
+			rep.saveJobEntryAttribute(id_job, getID(), "nbrpaquets",  nbrPackets);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -149,19 +174,19 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         return StringUtil.environmentSubstitute(getHostname());
     }
 	
-	public String getNbrPaquets()
+	public String getNbrPackets()
 	{
-		return nbrpaquets;
+		return nbrPackets;
 	}
 
-	public String getRealNbrPaquets()
+	public String getRealNbrPackets()
 	{
-		return  StringUtil.environmentSubstitute(getNbrPaquets());
+		return  StringUtil.environmentSubstitute(getNbrPackets());
 	}
 	
-	public void setNbrPaquets(String nbrpaquets)
+	public void setNbrPackets(String nbrPackets)
 	{
-		this.nbrpaquets = nbrpaquets;
+		this.nbrPackets = nbrPackets;
 	}
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
@@ -182,7 +207,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
             {
                 String lignePing = "";
 
-                int NbrPaquetsSend = Const.toInt(getRealNbrPaquets(), -1);
+                int NbrPaquetsSend = Const.toInt(getRealNbrPackets(), -1);
 
                 if (NbrPaquetsSend < 1 || NbrPaquetsSend > 1000)
                 {
@@ -190,9 +215,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                     NbrPaquetsSend = 2;
                 }
 
-                log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label") + NbrPaquetsSend);
-
-                log.logDetailed(toString(), Messages.getString("JobPing.PingingHost1.Label") + ip + Messages.getString("JobPing.PingingHost2.Label"));
+                if ( log.isDetailed() )
+                {
+                    log.logDetailed(toString(), Messages.getString("JobPing.NbrPackets.Label") + NbrPaquetsSend);
+                    log.logDetailed(toString(), Messages.getString("JobPing.PingingHost1.Label") + ip + Messages.getString("JobPing.PingingHost2.Label"));
+                }
 
                 Process processPing = Runtime.getRuntime().exec("ping " + ip + " -n " + NbrPaquetsSend);
 
@@ -207,7 +234,6 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                 {
                     log.logDetailed(toString(), lignePing);
                     // We succeed only when 0% lost of data
-
                 }
                 if (processPing.exitValue()==0)
                 {
@@ -216,7 +242,6 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
                     result.setResult(true);
                 }
             }
-
             catch (IOException ex)
             {
                 log.logError(toString(), Messages.getString("JobPing.Error.Label") + ex.getMessage());
@@ -224,7 +249,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         }
         else
         {
-            // No Host was specified
+            // No host was specified
             log.logError(toString(), Messages.getString("JobPing.SpecifyHost.Label"));
         }
 

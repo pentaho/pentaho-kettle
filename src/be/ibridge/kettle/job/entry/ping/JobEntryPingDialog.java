@@ -51,33 +51,26 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
- * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
- * script to be executed)
+ * This dialog allows you to edit the ping job entry settings. 
  * 
- * @author Matt
- * @since 19-06-2003
+ * @author Samatar Hassan
+ * @since  Mar-2007
  */
 public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterface
 {
-
-
-    private Label wlName;
-
-    private Text wName;
-
+    private Label    wlName;
+    private Text     wName;
     private FormData fdlName, fdName;
 
-    private Label wlHostname;
-
-    private TextVar wHostname;
-
+    private Label    wlHostname;
+    private TextVar  wHostname;
     private FormData fdlHostname,  fdHostname;
 
-	private Label        wlNbrPaquets;
-	private TextVar      wNbrPaquets;
-	private FormData     fdlNbrPaquets, fdNbrPaquets;
+	private Label    wlNbrPackets;
+	private TextVar  wNbrPackets;
+	private FormData fdlNbrPackets, fdNbrPackets;
 
-    private Button wOK, wCancel;
+    private Button   wOK, wCancel;
 
     private Listener lsOK, lsCancel;
 
@@ -175,27 +168,24 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
             }
         });
 
-       
-
 		// Nbr response to get
-		wlNbrPaquets = new Label(shell, SWT.RIGHT);
-		wlNbrPaquets.setText(Messages.getString("JobPing.NbrPaquets.Label"));
-		props.setLook(wlNbrPaquets);
-		fdlNbrPaquets = new FormData();
-		fdlNbrPaquets.left = new FormAttachment(0, 0);
-		fdlNbrPaquets.right = new FormAttachment(middle, 0);
-		fdlNbrPaquets.top = new FormAttachment(wHostname, margin);
-		wlNbrPaquets.setLayoutData(fdlNbrPaquets);
+		wlNbrPackets = new Label(shell, SWT.RIGHT);
+		wlNbrPackets.setText(Messages.getString("JobPing.NbrPaquets.Label"));
+		props.setLook(wlNbrPackets);
+		fdlNbrPackets = new FormData();
+		fdlNbrPackets.left = new FormAttachment(0, 0);
+		fdlNbrPackets.right = new FormAttachment(middle, 0);
+		fdlNbrPackets.top = new FormAttachment(wHostname, margin);
+		wlNbrPackets.setLayoutData(fdlNbrPackets);
 
-		wNbrPaquets = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wNbrPaquets);
-		wNbrPaquets.addModifyListener(lsMod);
-		fdNbrPaquets = new FormData();
-		fdNbrPaquets.left = new FormAttachment(middle, 0);
-		fdNbrPaquets.top = new FormAttachment(wHostname, margin);
-		fdNbrPaquets.right = new FormAttachment(100, 0);
-		wNbrPaquets.setLayoutData(fdNbrPaquets);
-
+		wNbrPackets = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wNbrPackets);
+		wNbrPackets.addModifyListener(lsMod);
+		fdNbrPackets = new FormData();
+		fdNbrPackets.left = new FormAttachment(middle, 0);
+		fdNbrPackets.top = new FormAttachment(wHostname, margin);
+		fdNbrPackets.right = new FormAttachment(100, 0);
+		wNbrPackets.setLayoutData(fdNbrPackets);
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
@@ -283,10 +273,8 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
         wName.selectAll();
         if (jobEntry.getHostname() != null)
             wHostname.setText(jobEntry.getHostname());
-		if (jobEntry.getNbrPaquets() != null)
-			wNbrPaquets.setText(jobEntry.getNbrPaquets());
-
-
+		if (jobEntry.getNbrPackets() != null)
+			wNbrPackets.setText(jobEntry.getNbrPackets());
     }
 
     private void cancel()
@@ -300,8 +288,7 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
     {
         jobEntry.setName(wName.getText());
         jobEntry.setHostname(wHostname.getText());
-		jobEntry.setNbrPaquets(wNbrPaquets.getText());
-
+		jobEntry.setNbrPackets(wNbrPackets.getText());
 	
         dispose();
     }
@@ -320,5 +307,4 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
     {
         return false;
     }
-
 }
