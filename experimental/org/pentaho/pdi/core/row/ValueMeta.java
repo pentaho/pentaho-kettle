@@ -441,4 +441,46 @@ public class ValueMeta implements ValueMetaInterface
             }
         }
     }
+
+    public Object cloneValueData(Object object) throws KettleValueException
+    {
+        if (object==null) return null;
+        
+        switch(storageType)
+        {
+        case ValueMetaInterface.STORAGE_TYPE_NORMAL:
+            switch(type)
+            {
+            case ValueMetaInterface.TYPE_STRING : 
+                return object; 
+            case ValueMetaInterface.TYPE_INTEGER : 
+                return new Integer( ((Integer)object).intValue() ); 
+            case ValueMetaInterface.TYPE_NUMBER : 
+                return new Double( ((Double)object).doubleValue() ); 
+            case ValueMetaInterface.TYPE_BIGNUMBER: 
+                return new BigDecimal( ((BigDecimal)object).toString() ); 
+            case ValueMetaInterface.TYPE_DATE: 
+                return new Date( ((Date)object).getTime() );
+            case ValueMetaInterface.TYPE_BOOLEAN: 
+                return new Boolean( ((Boolean)object).booleanValue() );
+            case ValueMetaInterface.TYPE_BINARY: 
+                byte[] source = (byte[])object;
+                byte[] target = new byte[source.length];
+                for (int x=0;x<source.length;x++) target[x] = source[x]; 
+                return target;
+            case ValueMetaInterface.TYPE_SERIALIZABLE:
+                return object; // can't really clone this one.
+            default: 
+                throw new KettleValueException("Unknown type "+type+" specified.");
+            }
+            
+        case ValueMetaInterface.STORAGE_TYPE_INDEXED:
+            // This is easier: we always expect an integer here, so we return the same integer. 
+            return new Integer( ((Integer)object).intValue() );
+            
+        default: 
+            throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+        }
+    }
+
 }

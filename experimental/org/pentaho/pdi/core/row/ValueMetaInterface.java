@@ -90,4 +90,5 @@ public interface ValueMetaInterface
     
     /** Convert the supplied data to String */
     public String convertToString(Object object) throws KettleValueException;
+    public Object cloneValueData(Object object) throws KettleValueException;
 }

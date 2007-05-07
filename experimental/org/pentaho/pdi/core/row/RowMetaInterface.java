@@ -25,5 +25,11 @@ public interface RowMetaInterface
      * @throws KettleValueException in case there was a problem converting the data.
      */
     public String getString(Object[] dataRow, int index) throws KettleValueException;
+    
+    /**
+     * @return a cloned Object[] object.
+     * @throws KettleValueException in case something is not quite right with the expected data
+     */
+    public Object[] cloneRow(Object[] objects) throws KettleValueException;
 
 }

@@ -66,4 +66,28 @@ public class RowMeta implements RowMetaInterface
         // We use a method in the ValueMetaInterface to convert to String
         return meta.convertToString(dataRow[index]);
     }
+    
+    
+    /**
+     * @return a cloned Object[] object.
+     * @throws KettleValueException in case something is not quite right with the expected data
+     */
+    public Object[] cloneRow(Object[] objects) throws KettleValueException
+    {
+        Object[] newObjects = new Object[objects.length];
+        for (int i=0;i<objects.length;i++)
+        {
+            if (objects[i]==null)
+            {
+                newObjects[i] = null; 
+            }
+            else
+            {
+                ValueMetaInterface valueMeta = getValueMeta(i);
+                newObjects[i] = valueMeta.cloneValueData(objects[i]);
+            }
+        }
+        return newObjects;
+    }
+
 }
