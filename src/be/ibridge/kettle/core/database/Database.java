@@ -1625,7 +1625,12 @@ public class Database
 		{
 			if (pstmt_seq==null)
 			{
-				pstmt_seq=connection.prepareStatement(databaseMeta.getSeqNextvalSQL(databaseMeta.stripCR(schemaSequence)));
+				String sql = databaseMeta.getSeqNextvalSQL(databaseMeta.stripCR(schemaSequence));
+				if ( Const.isEmpty(sql) )
+				{
+					throw new KettleDatabaseException("Database sequences not supported by connection");
+				}
+				pstmt_seq=connection.prepareStatement(sql);
 			}
 			ResultSet rs=null;
 			try 
