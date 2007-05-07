@@ -6,7 +6,6 @@
  **                                                                   **
  **********************************************************************/
 
-
 package be.ibridge.kettle.job.entry.delay;
 
 import org.eclipse.swt.SWT;
@@ -40,34 +39,31 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
-
 /**
- * This dialog allows you to edit the File compare job entry settings.
+ * This dialog allows you to edit the delay job entry settings.
  *
- * @author samatar Hassan
+ * @author Samatar Hassan
  * @since  21-02-2007
  */
 public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterface
 {
-
-
 	private Label        wlName;
 	private Text         wName;
 	private FormData     fdlName, fdName;
 
-	private Label wlScaleTime;
-	private  CCombo wScaleTime;
+	private Label    wlScaleTime;
+	private CCombo   wScaleTime;
 	private FormData fdlScaleTime, fdScaleTime;
 
-	private LabelTextVar      wMaximumTimeout;
+	private LabelTextVar wMaximumTimeout;
 	private FormData     fdMaximumTimeout;
 
-	private Button wOK, wCancel;
+	private Button   wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
 	private JobEntryDelay jobEntry;
-	private Shell       	shell;
-	private Props       	props;
+	private Shell      	  shell;
+	private Props         props;
 
 	private SelectionAdapter lsDef;
 
@@ -142,18 +138,15 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 
 		// Whenever something changes, set the tooltip to the expanded version:
 		wMaximumTimeout.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				wMaximumTimeout.setToolTipText(StringUtil.environmentSubstitute( wMaximumTimeout.getText() ) );
-			}
-		}
-			);
+		    {
+			    public void modifyText(ModifyEvent e)
+			    {
+				    wMaximumTimeout.setToolTipText(StringUtil.environmentSubstitute( wMaximumTimeout.getText() ) );
+			    }
+		    }
+		);
 
-
-
-
-		//Scale time
+		// Scale time
 		wlScaleTime = new Label(shell, SWT.RIGHT);
 		wlScaleTime.setText("");
 		props.setLook(wlScaleTime);
@@ -181,10 +174,6 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		fdScaleTime.right = new FormAttachment(100, 0);
 		wScaleTime.setLayoutData(fdScaleTime);
 
-
-
-	
-		
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel = new Button(shell, SWT.PUSH);
@@ -203,7 +192,6 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 
 		wName.addSelectionListener( lsDef );
 		wMaximumTimeout.addSelectionListener( lsDef );
-
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -237,7 +225,6 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		if (jobEntry.getMaximumTimeout()!= null) wMaximumTimeout.setText( jobEntry.getMaximumTimeout() );
 
 		wScaleTime.select(jobEntry.scaletime );
-
 	}
 
 	private void cancel()
