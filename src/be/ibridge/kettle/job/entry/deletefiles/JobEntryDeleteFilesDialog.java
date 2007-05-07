@@ -88,27 +88,23 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 	private boolean changed;
 
 	private Label wlPrevious;
-
 	private Button wPrevious;
-
 	private FormData fdlPrevious, fdPrevious;
 
 	private Label wlFields;
-
 	private TableView wFields;
-
 	private FormData fdlFields, fdFields;
 
 	private Group wSettings;
 	private FormData fdSettings;
 
-	private Label wlFilemask;
-	private TextVar wFilemask;
+	private Label    wlFilemask;
+	private TextVar  wFilemask;
 	private FormData fdlFilemask, fdFilemask;
 
-	private Button       wbdFilename; // Delete
-	private Button       wbeFilename; // Edit
-	private Button       wbaFilename; // Add or change
+	private Button   wbdFilename; // Delete
+	private Button   wbeFilename; // Edit
+	private Button   wbaFilename; // Add or change
 	private FormData fdbeFilename, fdbaFilename, fdbdFilename;
 
 	public JobEntryDeleteFilesDialog(Shell parent, JobEntryDeleteFiles jobEntry, JobMeta jobMeta)
@@ -280,6 +276,17 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 				jobEntry.setChanged();
 				wlFields.setEnabled(!jobEntry.argFromPrevious);
 				wFields.setEnabled(!jobEntry.argFromPrevious);
+				
+				wFilename.setEnabled(!jobEntry.argFromPrevious);
+				wlFilename.setEnabled(!jobEntry.argFromPrevious);
+				wbFilename.setEnabled(!jobEntry.argFromPrevious);
+				
+				wlFilemask.setEnabled(!jobEntry.argFromPrevious);
+				wFilemask.setEnabled(!jobEntry.argFromPrevious);
+				
+				wbdFilename.setEnabled(!jobEntry.argFromPrevious);
+				wbeFilename.setEnabled(!jobEntry.argFromPrevious);
+				wbaFilename.setEnabled(!jobEntry.argFromPrevious);
 			}
 		});
 		fdSettings = new FormData();
