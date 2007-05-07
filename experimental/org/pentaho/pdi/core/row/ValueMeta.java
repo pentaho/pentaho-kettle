@@ -269,6 +269,10 @@ public class ValueMeta implements ValueMetaInterface
     
     public String convertToString(Object object) throws KettleValueException
     {
+        if (object==null) // NULL 
+        {
+            return null;
+        }
         switch(type)
         {
         case TYPE_STRING:
@@ -334,6 +338,8 @@ public class ValueMeta implements ValueMetaInterface
 
     private String convertDateToString(Date date)
     {
+        if (date==null) return null;
+        
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         if (Const.isEmpty(conversionMask))
         {
@@ -348,6 +354,8 @@ public class ValueMeta implements ValueMetaInterface
     
     private String convertNumberToString(Double number) throws KettleValueException
     {
+        if (number==null) return null;
+        
         DecimalFormat df = getDecimalFormat();
         
         try
@@ -377,6 +385,8 @@ public class ValueMeta implements ValueMetaInterface
 
     private String convertIntegerToString(Integer number) throws KettleValueException
     {
+        if (number==null) return null;
+
         DecimalFormat df = getDecimalFormat();
         
         try
@@ -391,21 +401,26 @@ public class ValueMeta implements ValueMetaInterface
     
     private String convertBigNumberToString(BigDecimal number) throws KettleValueException
     {
-        DecimalFormat df = getDecimalFormat();
-        
-        try
+        if (number==null) return null;
+
+        String string = number.toString();
+        if (!".".equalsIgnoreCase(decimalSymbol))
         {
-            return df.format(number);
+            string = Const.replace(string, ".", decimalSymbol.substring(0, 1));
         }
-        catch(Exception e)
-        {
-            throw new KettleValueException("Couldn't convert BigNumber to String ", e);
-        }
+        return string;
     }
     
     private String convertBooleanToString(Boolean bool)
     {
-        return bool.booleanValue()?"Y":"N";
+        if (length>=3)
+        {
+            return bool.booleanValue()?"true":"false";
+        }
+        else
+        {
+            return bool.booleanValue()?"Y":"N";
+        }
     }
     
     private String convertBinaryToString(byte[] binary) throws KettleValueException
@@ -426,8 +441,4 @@ public class ValueMeta implements ValueMetaInterface
             }
         }
     }
-
-
-
-
 }

@@ -7,11 +7,11 @@ import be.ibridge.kettle.core.exception.KettleValueException;
 
 public class RowMeta implements RowMetaInterface
 {
-    private List valueMeta;
+    private List valueMetaList;
 
     public RowMeta()
     {
-        valueMeta = new ArrayList();
+        valueMetaList = new ArrayList();
     }
 
     /**
@@ -19,7 +19,7 @@ public class RowMeta implements RowMetaInterface
      */
     public List getValueMeta()
     {
-        return valueMeta;
+        return valueMetaList;
     }
 
     /**
@@ -27,7 +27,7 @@ public class RowMeta implements RowMetaInterface
      */
     public void setValueMeta(List valueMeta)
     {
-        this.valueMeta = valueMeta;
+        this.valueMetaList = valueMeta;
     }
 
     /**
@@ -37,7 +37,17 @@ public class RowMeta implements RowMetaInterface
      */
     public void addMetaValue(ValueMetaInterface meta)
     {
-        valueMeta.add(meta);
+        valueMetaList.add(meta);
+    }
+    
+    /**
+     * Get the value metadata on the specified index.
+     * @param index The index to get the value metadata from
+     * @return The value metadata specified by the index.
+     */
+    public ValueMetaInterface getValueMeta(int index)
+    {
+        return (ValueMetaInterface) valueMetaList.get(index);
     }
     
     /**
@@ -50,18 +60,10 @@ public class RowMeta implements RowMetaInterface
      */
     public String getString(Object[] dataRow, int index) throws KettleValueException
     {
-        ValueMetaInterface meta = (ValueMetaInterface) valueMeta.get(index);
+        ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
         
-        // If the metadata says it's a String, we can simply cast it and go with that.
-        if (meta.getType()==ValueMetaInterface.TYPE_STRING) 
-        {
-            return (String)dataRow[index];
-        }
-        else
-        {
-            // We need to convert the stored data type to String
-            // We use a method in the ValueMetaInterface to convert to String
-            return meta.convertToString(dataRow[index]);
-        }
+        // We need to convert the stored data type to String
+        // We use a method in the ValueMetaInterface to convert to String
+        return meta.convertToString(dataRow[index]);
     }
 }
