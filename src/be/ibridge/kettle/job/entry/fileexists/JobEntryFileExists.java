@@ -14,9 +14,10 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.fileexists;
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
@@ -27,6 +28,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -147,17 +149,25 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	
 		if (filename!=null)
 		{
-            String realFilename = getRealFilename(); 
-			File file = new File(realFilename);
-			if (file.exists() && file.canRead())
-			{
-				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
-				result.setResult( true );
-			}
-			else
-			{
-				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
-			}
+            String realFilename = getRealFilename();
+            try
+            {
+                FileObject file = KettleVFS.getFileObject(realFilename);
+                if (file.exists() && file.isReadable())
+                {
+                    log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+                    result.setResult( true );
+                }
+                else
+                {
+                    log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
+                }
+            }
+            catch (IOException e)
+            {
+                result.setNrErrors(1);
+                log.logError(toString(), "Unexpected error checking filename existance: "+e.toString());
+            }
 		}
 		else
 		{
