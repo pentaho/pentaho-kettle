@@ -115,12 +115,14 @@ public class BlockingStep extends BaseStep implements StepInterface {
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
 		{
-			logBasic("Opening tmp-file ...");		
+			logBasic(Messages.getString("BlockingStep.Log.Openfiles"));	
+	
+			
 			try
 			{
 				FileObject fileObject = (FileObject)data.files.get(0);
 				String filename = KettleVFS.getFilename(fileObject);
-				if (log.isDetailed()) logDetailed("Opening tmp-file: ["+filename+"]");
+				if (log.isDetailed()) logDetailed(Messages.getString("BlockingStep.Log.Openfilename1")+filename+Messages.getString("BlockingStep.Log.Openfilename2"));
 				InputStream fi=fileObject.getContent().getInputStream();
 				DataInputStream di;
 				data.fis.add(fi);
@@ -139,7 +141,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
 				// How long is the buffer?
 				int buffersize=di.readInt();
 
-				if (log.isDetailed()) logDetailed("["+filename+"] expecting "+buffersize+" rows...");
+				if (log.isDetailed()) logDetailed(Messages.getString("BlockingStep.Log.BufferSize1")+filename+
+										  Messages.getString("BlockingStep.Log.BufferSize2")+ buffersize+ " " + Messages.getString("BlockingStep.Log.BufferSize3"));
 
 				if (buffersize>0)
 				{
@@ -150,7 +153,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 			}
 			catch(Exception e)
 			{
-				logError("Error reading back tmp-file : "+e.toString());
+				logError(Messages.getString("BlockingStepMeta.ErrorReadingFile")+e.toString());
                 logError(Const.getStackTracker(e));
 			}
 		}
@@ -201,7 +204,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 					}
 					catch(IOException e)
 					{
-						logError("Unable to close/delete file #0 --> "+file.toString());
+						logError(Messages.getString("BlockingStepMeta.UnableDeleteFile")+file.toString());
 						setErrors(1);
 						stopAll();
 						return null;
