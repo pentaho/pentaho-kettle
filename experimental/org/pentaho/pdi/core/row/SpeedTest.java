@@ -178,14 +178,22 @@ public class SpeedTest
     {
         SpeedTest speedTest = new SpeedTest();
         
-        System.out.println("Time to run 'String10' test "+ITERATIONS+" times : "+speedTest.runTestStrings10(ITERATIONS)+" ms");
-        System.out.println("Time to run 'Mixed10' test "+ITERATIONS+" times : "+speedTest.runTestMixed10(ITERATIONS)+" ms");
+        long timeString10 = speedTest.runTestStrings10(ITERATIONS);
+        System.out.println("Time to run 'String10' test "+ITERATIONS+" times : "+timeString10+" ms ("+(1000*ITERATIONS/timeString10)+" r/s)");
+        long timeMixed10 = speedTest.runTestMixed10(ITERATIONS);
+        System.out.println("Time to run 'Mixed10' test "+ITERATIONS+" times : "+timeMixed10+" ms ("+(1000*ITERATIONS/timeMixed10)+" r/s)");
         System.out.println();
-        System.out.println("Time to run 'String100' test "+ITERATIONS+" times : "+speedTest.runTestStrings100(ITERATIONS)+" ms");
-        System.out.println("Time to run 'Mixed100' test "+ITERATIONS+" times : "+speedTest.runTestMixed100(ITERATIONS)+" ms");
+
+        long timeString100 = speedTest.runTestStrings100(ITERATIONS);
+        System.out.println("Time to run 'String100' test "+ITERATIONS+" times : "+timeString100+" ms ("+(1000*ITERATIONS/timeString100)+" r/s)");
+        long timeMixed100 = speedTest.runTestMixed100(ITERATIONS);
+        System.out.println("Time to run 'Mixed100' test "+ITERATIONS+" times : "+timeMixed100+" ms ("+(1000*ITERATIONS/timeMixed100)+" r/s)");
         System.out.println();
-        System.out.println("Time to run 'String1000' test "+ITERATIONS+" times : "+speedTest.runTestStrings1000(ITERATIONS)+" ms");
-        System.out.println("Time to run 'Mixed1000' test "+ITERATIONS+" times : "+speedTest.runTestMixed1000(ITERATIONS)+" ms");
+
+        long timeString1000 = speedTest.runTestStrings1000(ITERATIONS);
+        System.out.println("Time to run 'String1000' test "+ITERATIONS+" times : "+timeString1000+" ms ("+(1000*ITERATIONS/timeString1000)+" r/s)");
+        long timeMixed1000 = speedTest.runTestMixed1000(ITERATIONS);
+        System.out.println("Time to run 'Mixed1000' test "+ITERATIONS+" times : "+timeMixed1000+" ms ("+(1000*ITERATIONS/timeMixed1000)+" r/s)");
         System.out.println();
     }
 

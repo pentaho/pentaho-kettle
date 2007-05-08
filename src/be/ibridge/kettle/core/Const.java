@@ -84,7 +84,7 @@ public class Const
 	/**
 	 * Fetch size in rows when querying a database
 	 */
-	public static final int FETCH_SIZE = 1000;
+	public static final int FETCH_SIZE = 5000;
 
 	/**
 	 * Sort size: how many rows do we sort in memory at once?

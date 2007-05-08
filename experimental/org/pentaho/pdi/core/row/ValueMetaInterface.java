@@ -1,10 +1,12 @@
 package org.pentaho.pdi.core.row;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Date;
 
 import be.ibridge.kettle.core.exception.KettleValueException;
 
-public interface ValueMetaInterface
+public interface ValueMetaInterface extends Cloneable
 {
     /** Value type indicating that the value has no type set */
     public static final int TYPE_NONE        = 0;
@@ -88,7 +90,86 @@ public interface ValueMetaInterface
     
     /* Conversion methods */
     
-    /** Convert the supplied data to String */
-    public String convertToString(Object object) throws KettleValueException;
     public Object cloneValueData(Object object) throws KettleValueException;
+    
+    /** Convert the supplied data to a String */
+    public String convertToString(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to a Number */
+    public Double convertToNumber(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to a BigNumber */
+    public BigDecimal convertToBigNumber(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to an Integer*/
+    public Long convertToInteger(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to a Date */
+    public Date convertToDate(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to a Boolean */
+    public Boolean convertToBoolean(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to binary data */
+    public byte[] convertToBinary(Object object) throws KettleValueException;
+
+    /**
+     * @return a copy of this value meta object
+     */
+    public Object clone();
+    
+    /**
+     * Checks wheter or not the value is a String.
+     * @return true if the value is a String.
+     */
+    public boolean isString();
+
+    /**
+     * Checks whether or not this value is a Date
+     * @return true if the value is a Date
+     */
+    public boolean isDate();
+
+    /**
+     * Checks whether or not the value is a Big Number
+     * @return true is this value is a big number
+     */
+    public boolean isBigNumber();
+
+    /**
+     * Checks whether or not the value is a Number
+     * @return true is this value is a number
+     */
+    public boolean isNumber();
+
+    /**
+     * Checks whether or not this value is a boolean
+     * @return true if this value has type boolean.
+     */
+    public boolean isBoolean();
+
+    /**
+     * Checks whether or not this value is of type Serializable
+     * @return true if this value has type Serializable
+     */
+    public boolean isSerializableType();
+
+    /**
+     * Checks whether or not this value is of type Binary
+     * @return true if this value has type Binary
+     */
+    public boolean isBinary(); 
+    
+    /**
+     * Checks whether or not this value is an Integer
+     * @return true if this value is an integer
+     */
+    public boolean isInteger();
+
+    /**
+     * Checks whether or not this Value is Numeric
+     * A Value is numeric if it is either of type Number or Integer
+     * @return true if the value is either of type Number or Integer
+     */
+    public boolean isNumeric();
 }
