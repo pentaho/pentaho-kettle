@@ -553,7 +553,7 @@ public class ValueMeta implements ValueMetaInterface
             case ValueMetaInterface.TYPE_STRING : 
                 return object; 
             case ValueMetaInterface.TYPE_INTEGER : 
-                return new Long( ((Long)object).intValue() ); 
+                return new Long( ((Long)object).longValue() ); 
             case ValueMetaInterface.TYPE_NUMBER : 
                 return new Double( ((Double)object).doubleValue() ); 
             case ValueMetaInterface.TYPE_BIGNUMBER: 
@@ -575,7 +575,7 @@ public class ValueMeta implements ValueMetaInterface
             
         case ValueMetaInterface.STORAGE_TYPE_INDEXED:
             // This is easier: we always expect an Long here, so we return the same Long. 
-            return new Long( ((Long)object).intValue() );
+            return new Long( ((Integer)object).intValue() );
             
         default: 
             throw new KettleValueException("Unknown storage type "+storageType+" specified.");

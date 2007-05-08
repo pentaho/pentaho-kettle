@@ -79,7 +79,7 @@ public class SpeedTest
         ValueMetaInterface meta2 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_NUMBER, 12, 4);
         metaMixed10.addMetaValue(meta2);
 
-        rowMixed10[i*5 + 3] = new Integer( (int)(Math.random() * 1000000) );
+        rowMixed10[i*5 + 3] = new Long( (long)(Math.random() * 1000000) );
         ValueMetaInterface meta3 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_INTEGER, 8);
         metaMixed10.addMetaValue(meta3);
         

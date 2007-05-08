@@ -12,20 +12,21 @@ import be.ibridge.kettle.core.util.EnvUtil;
 public class DBSpeedTest
 {
     public static final int FEEDBACK_SIZE = 10000000;
+    public static final String SQL = "SELECT * FROM customer_speed";
     public DBSpeedTest()
     {
     }
     
     public void testNewCode() throws KettleDatabaseException
     {
-        DatabaseMeta dbMeta = new DatabaseMeta("MySQL test", "MYSQL", "JDBC", "localhost", "test", "3306", "matt", "abcd");
+        DatabaseMeta dbMeta = new DatabaseMeta("MySQL test", "MYSQL", "JDBC", "192.168.1.11", "test", "3306", "root", "abcd");
         Database database = new Database(dbMeta);
         database.connect();
 
         // Read the whole table..
         long startTime = System.currentTimeMillis();
             
-        ResultSet resultSet = database.openQuery("SELECT * FROM customer_speed");
+        ResultSet resultSet = database.openQuery(SQL);
         Object[] data = database.getRow(resultSet);
         int nr=0;
         while(data!=null)
@@ -54,7 +55,7 @@ public class DBSpeedTest
         // Read the whole table..
         long startTime = System.currentTimeMillis();
             
-        ResultSet resultSet = database.openQuery("SELECT * FROM customer_speed");
+        ResultSet resultSet = database.openQuery(SQL);
         Row data = database.getRow(resultSet);
         int nr=0;
         while(data!=null)
