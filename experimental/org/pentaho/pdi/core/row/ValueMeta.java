@@ -582,7 +582,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    public String convertToString(Object object) throws KettleValueException
+    public String getString(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -653,7 +653,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    public Double convertToNumber(Object object) throws KettleValueException
+    public Double getNumber(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -712,7 +712,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    public Long convertToInteger(Object object) throws KettleValueException
+    public Long getInteger(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -771,7 +771,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    public BigDecimal convertToBigNumber(Object object) throws KettleValueException
+    public BigDecimal getBigNumber(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -830,7 +830,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    public Boolean convertToBoolean(Object object) throws KettleValueException
+    public Boolean getBoolean(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -884,7 +884,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    public Date convertToDate(Object object) throws KettleValueException
+    public Date getDate(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {
@@ -939,7 +939,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    public byte[] convertToBinary(Object object) throws KettleValueException
+    public byte[] getBinary(Object object) throws KettleValueException
     {
         if (object==null) // NULL 
         {

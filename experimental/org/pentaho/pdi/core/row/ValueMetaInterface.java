@@ -93,25 +93,25 @@ public interface ValueMetaInterface extends Cloneable
     public Object cloneValueData(Object object) throws KettleValueException;
     
     /** Convert the supplied data to a String */
-    public String convertToString(Object object) throws KettleValueException;
+    public String getString(Object object) throws KettleValueException;
 
     /** Convert the supplied data to a Number */
-    public Double convertToNumber(Object object) throws KettleValueException;
+    public Double getNumber(Object object) throws KettleValueException;
 
     /** Convert the supplied data to a BigNumber */
-    public BigDecimal convertToBigNumber(Object object) throws KettleValueException;
+    public BigDecimal getBigNumber(Object object) throws KettleValueException;
 
     /** Convert the supplied data to an Integer*/
-    public Long convertToInteger(Object object) throws KettleValueException;
+    public Long getInteger(Object object) throws KettleValueException;
 
     /** Convert the supplied data to a Date */
-    public Date convertToDate(Object object) throws KettleValueException;
+    public Date getDate(Object object) throws KettleValueException;
 
     /** Convert the supplied data to a Boolean */
-    public Boolean convertToBoolean(Object object) throws KettleValueException;
+    public Boolean getBoolean(Object object) throws KettleValueException;
 
     /** Convert the supplied data to binary data */
-    public byte[] convertToBinary(Object object) throws KettleValueException;
+    public byte[] getBinary(Object object) throws KettleValueException;
 
     /**
      * @return a copy of this value meta object

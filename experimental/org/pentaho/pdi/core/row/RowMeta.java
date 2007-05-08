@@ -91,7 +91,7 @@ public class RowMeta implements RowMetaInterface
     public String getString(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToString(dataRow[index]);
+        return meta.getString(dataRow[index]);
     }
     
     /**
@@ -105,7 +105,7 @@ public class RowMeta implements RowMetaInterface
     public Long getInteger(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToInteger(dataRow[index]);
+        return meta.getInteger(dataRow[index]);
     }
 
     /**
@@ -119,7 +119,7 @@ public class RowMeta implements RowMetaInterface
     public Double getNumber(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToNumber(dataRow[index]);
+        return meta.getNumber(dataRow[index]);
     }
 
     /**
@@ -133,7 +133,7 @@ public class RowMeta implements RowMetaInterface
     public Date getDate(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToDate(dataRow[index]);
+        return meta.getDate(dataRow[index]);
     }
 
     /**
@@ -147,7 +147,7 @@ public class RowMeta implements RowMetaInterface
     public BigDecimal getBigNumber(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToBigNumber(dataRow[index]);
+        return meta.getBigNumber(dataRow[index]);
     }
 
     /**
@@ -161,7 +161,7 @@ public class RowMeta implements RowMetaInterface
     public Boolean getBoolean(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToBoolean(dataRow[index]);
+        return meta.getBoolean(dataRow[index]);
     }
     
     /**
@@ -175,7 +175,7 @@ public class RowMeta implements RowMetaInterface
     public byte[] getBinary(Object[] dataRow, int index) throws KettleValueException
     {
         ValueMetaInterface meta = (ValueMetaInterface) valueMetaList.get(index);
-        return meta.convertToBinary(dataRow[index]);
+        return meta.getBinary(dataRow[index]);
     }
 
     /**

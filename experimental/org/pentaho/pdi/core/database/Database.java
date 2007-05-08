@@ -810,7 +810,7 @@ public class Database
                 if (object!=null) 
                 {
                     debug="Number, not null, getting number from value";
-                    double num = v.convertToNumber(object).doubleValue();
+                    double num = v.getNumber(object).doubleValue();
                     if (databaseMeta.supportsFloatRoundingOnUpdate() && v.getPrecision()>=0)
                     {
                         debug="Number, rounding to precision ["+v.getPrecision()+"]";
@@ -830,11 +830,11 @@ public class Database
 				{
 					if (databaseMeta.supportsSetLong())
 					{
-                        ps.setLong(pos, v.convertToInteger(object).longValue() );
+                        ps.setLong(pos, v.getInteger(object).longValue() );
 					}
 					else
 					{
-                        double d = v.convertToNumber(object).doubleValue();
+                        double d = v.getNumber(object).doubleValue();
 					    if (databaseMeta.supportsFloatRoundingOnUpdate() && v.getPrecision()>=0)
                         {
                             ps.setDouble(pos, d );
@@ -856,7 +856,7 @@ public class Database
 				{
 					if (object!=null) 
 					{
-						ps.setString(pos, v.convertToString(object));
+						ps.setString(pos, v.getString(object));
 					}
 					else 
 					{
@@ -867,7 +867,7 @@ public class Database
 				{
 					if (object!=null)
 					{
-                        String string = v.convertToString(object);
+                        String string = v.getString(object);
                         
 						int maxlen = databaseMeta.getMaxTextFieldLength();
 						int len    = string.length();
@@ -899,7 +899,7 @@ public class Database
 				debug="Date";
 				if (object!=null) 
 				{
-					long dat = v.convertToInteger(object).longValue(); // converts using Date.getTime()
+					long dat = v.getInteger(object).longValue(); // converts using Date.getTime()
                     
 					if(v.getPrecision()==1 || !databaseMeta.supportsTimeStampToDateConversion())
                     {
@@ -931,7 +931,7 @@ public class Database
                 {
                     if (object!=null)
                     {
-                        ps.setBoolean(pos, v.convertToBoolean(object).booleanValue());
+                        ps.setBoolean(pos, v.getBoolean(object).booleanValue());
                     }
                     else 
                     {
@@ -942,7 +942,7 @@ public class Database
                 {
     				if (object!=null)
                     {
-                        ps.setString(pos, v.convertToBoolean(object).booleanValue()?"Y":"N");
+                        ps.setString(pos, v.getBoolean(object).booleanValue()?"Y":"N");
                     }
     				else 
                     {
@@ -954,7 +954,7 @@ public class Database
                 debug="BigNumber";
                 if (object!=null) 
                 {
-                    ps.setBigDecimal(pos, v.convertToBigNumber(object));
+                    ps.setBigDecimal(pos, v.getBigNumber(object));
                 }
                 else 
                 {
@@ -965,7 +965,7 @@ public class Database
 				debug="Binary";
 				if (object!=null) 
 				{
-                    ps.setBytes(pos, v.convertToBinary(object));
+                    ps.setBytes(pos, v.getBinary(object));
 				}
 				else
 				{
