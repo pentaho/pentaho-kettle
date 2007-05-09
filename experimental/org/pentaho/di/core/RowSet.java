@@ -18,8 +18,8 @@
 package org.pentaho.di.core;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.trans.step.BaseStep;
 
-import be.ibridge.kettle.trans.step.BaseStep;
 
 /**
  * Contains a buffer of rows.  Getting rows from the buffer or putting rows in the buffer is synchronised to allow concurrent use of multiple Threads.

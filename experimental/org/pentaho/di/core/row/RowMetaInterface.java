@@ -1,9 +1,12 @@
 package org.pentaho.di.core.row;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public interface RowMetaInterface extends Cloneable
@@ -24,7 +27,7 @@ public interface RowMetaInterface extends Cloneable
      * 
      * @param meta The metadata value to add
      */
-    public void addMetaValue(ValueMetaInterface meta);
+    public void addValueMeta(ValueMetaInterface meta);
     
     /**
      * Get the value metadata on the specified index.
@@ -143,5 +146,56 @@ public interface RowMetaInterface extends Cloneable
      * @return The value metadata or null if nothing was found
      */
     public ValueMetaInterface searchValueMeta(String valueName);
+    
+    /**
+     * Searches the index of a value meta with a given name
+     * @param valueName the name of the value metadata to look for
+     * @return the index or -1 in case we didn't find the value
+     */
+    public int indexOfValue(String valueName);
+    
+    /**
+     * Add a number of fields from another row (append to the end)
+     * @param rowMeta The row of metadata values to add
+     */
+    public void addRowMeta(RowMetaInterface rowMeta);
+    
+    /**
+     * Merge the values of row r to this Row metadata.
+     * Merge means: only the values that are not yet in the row are added
+     * (comparing on the value name).
+     *
+     * @param r The row metadata to be merged with this row metadata
+     */
+    public void mergeRowMeta(RowMetaInterface r);
 
+    /**
+     * Get an array of the names of all the Values in the Row.
+     * @return an array of Strings: the names of all the Values in the Row.
+     */
+    public String[] getFieldNames();
+
+    /**
+     * Write a serialized version of this class (Row Metadata) to the specified outputStream
+     * @param outputStream the outputstream to write to
+     * @param data the data to write after the metadata
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public void writeMeta(DataOutputStream outputStream) throws KettleFileException;
+    
+    /**
+     * Write a serialized version of the supplied data to the outputStream (based on the metadata but not the metadata itself)
+     * @param outputStream the outputstream to write to
+     * @param data the data to write after the metadata
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public void writeData(DataOutputStream outputStream, Object[] data) throws KettleFileException;
+
+    /**
+     * De-serialize a row of data (no metadata is read) from an input stream
+     * @param inputStream the inputstream to read from
+     * @return a new row of data
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public Object[] readData(DataInputStream inputStream) throws KettleFileException;
 }

@@ -85,7 +85,7 @@ public class Database
 	// private ResultSetMetaData rsmd;
 	private DatabaseMetaData  dbmd;
 	
-	private RowMetaInterface rowinfo; 
+	private RowMetaInterface rowMeta; 
 	
 	private int written;
 	
@@ -122,7 +122,7 @@ public class Database
 		databaseMeta = inf;
 		
 		pstmt = null;
-		rowinfo = null;
+		rowMeta = null;
 		dbmd = null;
 		
 		rowlimit=0;
@@ -1624,7 +1624,7 @@ public class Database
             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-			rowinfo = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
+			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
 		}
 		catch(SQLException ex)
 		{
@@ -1692,7 +1692,7 @@ public class Database
              // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
             // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
             // 
-            rowinfo = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
+            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
 		}
 		catch(SQLException ex)
 		{
@@ -1878,7 +1878,7 @@ public class Database
 							Object[] row = getRow(res);
 							while (row!=null)
 							{
-								String column = rowinfo.getString(row, "column_name", "");
+								String column = rowMeta.getString(row, "column_name", "");
 								int idx = Const.indexOfString(column, idx_fields);
 								if (idx>=0) exists[idx]=true;
 								
@@ -1912,7 +1912,7 @@ public class Database
 							Object[] row = getRow(res);
 							while (row!=null)
 							{
-								String column = rowinfo.getString(row, "COLUMN_NAME", "");
+								String column = rowMeta.getString(row, "COLUMN_NAME", "");
 								int idx = Const.indexOfString(column, idx_fields);
 								if (idx>=0) 
 								{
@@ -2210,7 +2210,7 @@ public class Database
 	{
         if (rm==null) return null;
 		
-		rowinfo = new RowMeta();
+		rowMeta = new RowMeta();
 		
 		try
 		{
@@ -2229,9 +2229,9 @@ public class Database
                 }
                 
 				ValueMetaInterface v = getValueFromSQLType(name, rm, i, ignoreLength);
-				rowinfo.addMetaValue(v);			
+				rowMeta.addValueMeta(v);			
 			}
-			return rowinfo;
+			return rowMeta;
 		}
 		catch(SQLException ex)
 		{
@@ -2466,12 +2466,12 @@ public class Database
 			throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
 		}
 
-        if (rowinfo==null)
+        if (rowMeta==null)
         {
-			rowinfo = getRowInfo(rsmd);
+			rowMeta = getRowInfo(rsmd);
         }
 
-		return getRow(rs, rsmd, rowinfo);
+		return getRow(rs, rsmd, rowMeta);
 	}
 
 	/**
@@ -3031,7 +3031,7 @@ public class Database
 			res = ps.executeQuery();
 			
 			debug = "getRowInfo()";
-			rowinfo = getRowInfo(res.getMetaData());
+			rowMeta = getRowInfo(res.getMetaData());
 			
 			debug = "getRow(res)";
 			Object[] ret = getRow(res);
@@ -3182,7 +3182,7 @@ public class Database
 			// Not found?
 			if (tabFields.searchValueMeta( v.getName() )==null )
 			{
-				missing.addMetaValue(v); // nope --> Missing!
+				missing.addValueMeta(v); // nope --> Missing!
 			}
 		}
 
@@ -3203,7 +3203,7 @@ public class Database
 		    // Found in table, not in input ?        
 		    if (fields.searchValueMeta( v.getName() )==null )
 		    {
-			    surplus.addMetaValue(v); // yes --> surplus!
+			    surplus.addValueMeta(v); // yes --> surplus!
 		    }
 		}
 
@@ -3241,7 +3241,7 @@ public class Database
 				if (mod)
 				{
                     // System.out.println("Desired field: ["+desiredField.toStringMeta()+"], current field: ["+currentField.toStringMeta()+"]");
-                    modify.addMetaValue(desiredField);
+                    modify.addValueMeta(desiredField);
 				}
 			}
 		}
@@ -3307,7 +3307,7 @@ public class Database
 				try { sel_stmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement sel_stmt", e); }
 				sel_stmt=null;
 			}
-			return new RowMetaAndData(rowinfo, row);
+			return new RowMetaAndData(rowMeta, row);
 		}
 		else
 		{
@@ -3333,9 +3333,9 @@ public class Database
 				try { sel_stmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement sel_stmt", e); }
 				sel_stmt=null;
 			}
-            rowinfo=null;
+            rowMeta=null;
             
-			return new RowMetaAndData(rowinfo, row);
+			return new RowMetaAndData(rowMeta, row);
 		}
 		else
 		{
@@ -3395,7 +3395,7 @@ public class Database
                     val = new ValueMeta(name, ValueMetaInterface.TYPE_BIGNUMBER);
                 }
                 
-				par.addMetaValue(val);
+				par.addValueMeta(val);
 			}
 		}
 		// Oops: probably the database or JDBC doesn't support it.
@@ -3441,7 +3441,7 @@ public class Database
 			{
 				ValueMetaInterface inf=inform.getValueMeta(i);
 				ValueMetaInterface v = (ValueMetaInterface) inf.clone();
-				par.addMetaValue(v);
+				par.addValueMeta(v);
 			}
 		}
 		else
@@ -3449,7 +3449,7 @@ public class Database
 			for (int i=0;i<q;i++)
 			{
 				ValueMetaInterface v = new ValueMeta("name"+i, ValueMetaInterface.TYPE_NUMBER);
-				par.addMetaValue(v);
+				par.addValueMeta(v);
 			}
 		}
 
@@ -3463,27 +3463,27 @@ public class Database
 		
 		if (use_batchid)
 		{
-			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8);   r.addMetaValue(v);
+			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8);   r.addValueMeta(v);
 		}
 		
-		v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50); r.addMetaValue(v);
-		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15); r.addMetaValue(v);
-		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10); r.addMetaValue(v);
-		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE   );     r.addMetaValue(v);
-		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE   );     r.addMetaValue(v);
-		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE   );     r.addMetaValue(v);
-		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE   );     r.addMetaValue(v);
-		v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE   );     r.addMetaValue(v);
+		v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50); r.addValueMeta(v);
+		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15); r.addValueMeta(v);
+		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
+		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
+		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
+		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
+		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
+		v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
 
 		if (use_logfield)
 		{
 			v=new ValueMeta("LOG_FIELD",   ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH);   
-			r.addMetaValue(v);
+			r.addValueMeta(v);
 		}
 
 		return r;
@@ -3496,35 +3496,32 @@ public class Database
 
 		if (use_jobid)
 		{
-			v=new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, 8); r.addMetaValue(v);
+			v=new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, 8); r.addValueMeta(v);
 		}
 		
-		v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING, 50);    r.addMetaValue(v);
-		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING, 15);    r.addMetaValue(v);
-		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10,0); r.addMetaValue(v);
-		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE  );        r.addMetaValue(v);
-		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE  );        r.addMetaValue(v);
-		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE  );        r.addMetaValue(v);
-		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE  );        r.addMetaValue(v);
-        v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE  );        r.addMetaValue(v);
+		v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING, 50);    r.addValueMeta(v);
+		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING, 15);    r.addValueMeta(v);
+		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
+		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
+		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
+		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
+        v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
 
 		if (use_logfield)
 		{
 			v=new ValueMeta("LOG_FIELD", ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH);   
-			r.addMetaValue(v);
+			r.addValueMeta(v);
 		}
 
 		return r;
 	}
 	
-    /*
-     * TODO: re-add support for writing log records.
-     * 
 	public void writeLogRecord(   String logtable,
 		                          boolean use_id,
 		                          long id,
@@ -3616,44 +3613,50 @@ public class Database
     		{
     			pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
     			
-    			Row r = new Row();
+    			RowMetaInterface rowMeta = new RowMeta();
+                List data = new ArrayList();
     			if (job)
     			{
     				if (use_id)
     				{
-    					r.addValue( new Value("ID_BATCH",          	id          	));
+    					rowMeta.addValueMeta( new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER));
+                        data.add(new Long(id));
     				}
-    				r.addValue( new Value("TRANSNAME",            name           ));
+    				rowMeta.addValueMeta( new ValueMeta("TRANSNAME", ValueMetaInterface.TYPE_STRING));
+                    data.add(name);
     			}
     			else
     			{
     				if (use_id)
     				{
-    					r.addValue( new Value("ID_JOB",          	id          	));
+    					rowMeta.addValueMeta( new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER));
+                        data.add(new Long(id));
     				}
-    				r.addValue( new Value("JOBNAME",            name           ));
+    				rowMeta.addValueMeta( new ValueMeta("JOBNAME", ValueMetaInterface.TYPE_STRING));
+                    data.add(name);
     			}
-    			r.addValue( new Value("STATUS",          status       ));
-    			r.addValue( new Value("LINES_READ",      (long)read   ));
-    			r.addValue( new Value("LINES_WRITTEN",   (long)written));
-    			r.addValue( new Value("LINES_UPDATED",   (long)updated));
-    			r.addValue( new Value("LINES_INPUT",     (long)input  ));
-    			r.addValue( new Value("LINES_OUTPUT",    (long)output ));
-    			r.addValue( new Value("ERRORS",          (long)errors ));
-    			r.addValue( new Value("STARTDATE",       startdate    ));
-    			r.addValue( new Value("ENDDATE",         enddate      ));
-    			r.addValue( new Value("LOGDATE",         logdate      ));
-    			r.addValue( new Value("DEPDATE",         depdate      ));
-    			r.addValue( new Value("REPLAYDATE",      replayDate      ));
+    			rowMeta.addValueMeta( new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING )); data.add(status);
+    			rowMeta.addValueMeta( new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(read));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(written));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(updated));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(input));
+    			rowMeta.addValueMeta( new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(output));
+    			rowMeta.addValueMeta( new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER)); data.add(new Long(errors));
+    			rowMeta.addValueMeta( new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE   )); data.add(startdate);
+    			rowMeta.addValueMeta( new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE   )); data.add(enddate);
+    			rowMeta.addValueMeta( new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE   )); data.add(logdate);
+    			rowMeta.addValueMeta( new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE   )); data.add(depdate);
+    			rowMeta.addValueMeta( new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE   )); data.add(replayDate);
     
-    			if (log_string!=null && log_string.length()>0)
+    			if (!Const.isEmpty(log_string))
     			{
-    				Value large = new Value("LOG_FIELD",       log_string     );
+    				ValueMetaInterface large = new ValueMeta("LOG_FIELD",       ValueMetaInterface.TYPE_STRING);
     				large.setLength(DatabaseMeta.CLOB_LENGTH);
-    				r.addValue( large );
+    				rowMeta.addValueMeta( large );
+                    data.add(log_string);
     			}
     
-    			setValues(r);
+    			setValues(rowMeta, data.toArray(new Object[data.size()]));
     
     			pstmt.executeUpdate();
     			pstmt.close(); pstmt=null;
@@ -3665,19 +3668,12 @@ public class Database
     		}
         }
 	}
-        */
-	
-    /*
-     * TODO: re-enable support for getting the last log date
-	public Row getLastLogDate( String logtable, 
-							   String name,
-							   boolean job, 
-							   String status
-							  )
-		throws KettleDatabaseException
+
+	public Object[] getLastLogDate( String logtable, String name, boolean job, String status ) throws KettleDatabaseException
 	{
-		Row row=null;
-		String jobtrans = job?"JOBNAME":"TRANSNAME";
+        Object[] row = null;
+        
+        String jobtrans = job?"JOBNAME":"TRANSNAME";
 		
 		String sql = "";
 		sql+=" SELECT ENDDATE, DEPDATE, STARTDATE";
@@ -3691,15 +3687,14 @@ public class Database
 		{
 			pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
 			
-			Row r = new Row();
-			r.addValue( new Value("TRANSNAME", name      ));
-			
-			setValues(r);
+			RowMetaInterface r = new RowMeta();
+			r.addValueMeta( new ValueMeta("TRANSNAME", ValueMetaInterface.TYPE_STRING));
+			setValues(r, new Object[] { name });
 			
 			ResultSet res = pstmt.executeQuery();
 			if (res!=null)
 			{
-				rowinfo = getRowInfo(res.getMetaData());
+				rowMeta = getRowInfo(res.getMetaData());
 				row = getRow(res);
 				res.close();
 			}
@@ -3712,21 +3707,20 @@ public class Database
 		
 		return row;
 	}
-    */
     
 
 
-    public synchronized Long getNextValue(Hashtable counters, String tableName, ValueMetaInterface val_key) throws KettleDatabaseException
+    public synchronized Long getNextValue(Hashtable counters, String tableName, String val_key) throws KettleDatabaseException
     {
         return getNextValue(counters, null, tableName, val_key);
     }
     
-	public synchronized Long getNextValue(Hashtable counters, String schemaName, String tableName, ValueMetaInterface val_key) throws KettleDatabaseException
+	public synchronized Long getNextValue(Hashtable counters, String schemaName, String tableName, String val_key) throws KettleDatabaseException
 	{
         Long nextValue = null;
         
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-		String lookup = schemaTable+"."+databaseMeta.quoteField(val_key.getName());
+		String lookup = schemaTable+"."+databaseMeta.quoteField(val_key);
 		
 		// Try to find the previous sequence value...
 		Counter counter = null;
@@ -3734,7 +3728,7 @@ public class Database
         
 		if (counter==null)
 		{
-			RowMetaAndData rmad = getOneRow("SELECT MAX("+databaseMeta.quoteField(val_key.getName())+") FROM "+schemaTable);
+			RowMetaAndData rmad = getOneRow("SELECT MAX("+databaseMeta.quoteField(val_key)+") FROM "+schemaTable);
 			if (rmad!=null)
 			{
                 long previous;
@@ -3885,7 +3879,7 @@ public class Database
 	
 	public RowMetaInterface getReturnRowMeta()
 	{
-		return rowinfo;
+		return rowMeta;
 	}
 	
 	public String[] getTableTypes() throws KettleDatabaseException
@@ -4056,9 +4050,9 @@ public class Database
                 for (int i=0;i<rows.size();i++)
                 {
                     Object[] row = (Object[])rows.get(i);
-                    String procCatalog = rowinfo.getString(row, "PROCEDURE_CAT", null);
-                    String procSchema  = rowinfo.getString(row, "PROCEDURE_SCHEMA", null);
-                    String procName    = rowinfo.getString(row, "PROCEDURE_NAME", "");
+                    String procCatalog = rowMeta.getString(row, "PROCEDURE_CAT", null);
+                    String procSchema  = rowMeta.getString(row, "PROCEDURE_SCHEMA", null);
+                    String procName    = rowMeta.getString(row, "PROCEDURE_NAME", "");
  
                     String name = "";
                     if (procCatalog!=null) name+=procCatalog+".";
@@ -4184,5 +4178,13 @@ public class Database
     public void setCopy(int copy)
     {
         this.copy = copy;
+    }
+
+    /**
+     * @return the row metadata of the last query
+     */
+    public RowMetaInterface getRowMeta()
+    {
+        return rowMeta;
     }
 }

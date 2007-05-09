@@ -1,6 +1,15 @@
 package org.pentaho.di.core.row;
 
-public class RowData
+/**
+ * 
+ * We use this class to do row manipulations like add, delete, resize, etc.
+ * That way, when we want to go for a metadata driven system with 
+ * hiding deletes, oversized arrays etc, we can change these methods to find occurences.
+ * 
+ * @author Matt
+ *
+ */
+public class RowDataUtil
 {
     /**
      * Resize an object array
@@ -41,5 +50,25 @@ public class RowData
             newObjects[i-1]=objects[i];
         }
         return newObjects;
+    }
+    
+    /**
+     * Add two arrays and make one new one.
+     * @param one The first array
+     * @param two The second array
+     * @return a new Array containing all elements from one and two after one another
+     */
+    public static Object[] addRowData(Object[] one, Object[] two)
+    {
+        Object[] result = new Object[one.length + two.length];
+        for (int i=0;i<one.length;i++)
+        {
+            result[i] = one[i];
+        }
+        for (int i=0;i<two.length;i++)
+        {
+            result[one.length+i] = two[i];
+        }
+        return result;
     }
 }

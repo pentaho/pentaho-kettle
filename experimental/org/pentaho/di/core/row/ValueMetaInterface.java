@@ -1,9 +1,12 @@
 package org.pentaho.di.core.row;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public interface ValueMetaInterface extends Cloneable
@@ -34,6 +37,8 @@ public interface ValueMetaInterface extends Cloneable
     
     /** Value type indicating that the value contains binary data: BLOB, CLOB, ... */
     public static final int TYPE_BINARY      = 8;
+
+    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", }; 
 
     
     
@@ -172,4 +177,40 @@ public interface ValueMetaInterface extends Cloneable
      * @return true if the value is either of type Number or Integer
      */
     public boolean isNumeric();
+    
+    /**
+     * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
+     * @return A String describing the type of value.
+     */
+    public String getTypeDesc();
+    
+    /**
+     * a String text representation of this Value, optionally padded to the specified length
+     * @return a String text representation of this Value, optionally padded to the specified length
+     */
+    public String toStringMeta();
+    
+    /**
+     * Write the content of this class (metadata) to the specified output stream.
+     * @param outputStream the outputstream to write to
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public void writeMeta(DataOutputStream outputStream) throws KettleFileException;
+
+    /**
+     * Serialize the content of the specified data object to the outputStream.  No metadata is written.
+     * @param outputStream the outputstream to write to
+     * @param object the data object to serialize
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public void writeData(DataOutputStream outputStream, Object object) throws KettleFileException;
+
+    /**
+     * De-serialize data from an inputstream.  No metadata is read or changed.
+     * @param inputStream the input stream to read from 
+     * @return a new data object
+     * @throws KettleFileException in case a I/O error occurs
+     */
+    public Object readData(DataInputStream inputStream) throws KettleFileException;
+    
 }

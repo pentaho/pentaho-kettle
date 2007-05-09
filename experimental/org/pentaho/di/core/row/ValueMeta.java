@@ -1,5 +1,8 @@
 package org.pentaho.di.core.row;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -10,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public class ValueMeta implements ValueMetaInterface
@@ -1068,4 +1072,338 @@ public class ValueMeta implements ValueMetaInterface
     {
         return t==TYPE_INTEGER || t==TYPE_NUMBER || t==TYPE_BIGNUMBER;
     }
+    
+    /**
+     * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
+     * @return A String describing the type of value.
+     */
+    public String getTypeDesc()
+    {
+        return typeCodes[type];
+    }
+
+    
+    /**
+     * a String text representation of this Value, optionally padded to the specified length
+     * @return a String text representation of this Value, optionally padded to the specified length
+     */
+    public String toStringMeta()
+    {
+        // We (Sven Boden) did explicit performance testing for this
+        // part. The original version used Strings instead of StringBuffers,
+        // performance between the 2 does not differ that much. A few milliseconds
+        // on 100000 iterations in the advantage of StringBuffers. The
+        // lessened creation of objects may be worth it in the long run.
+        StringBuffer retval=new StringBuffer(getTypeDesc());
+
+        switch(getType())
+        {
+        case TYPE_STRING :
+            if (getLength()>0) retval.append('(').append(getLength()).append(')');  
+            break;
+        case TYPE_NUMBER :
+        case TYPE_BIGNUMBER :
+            if (getLength()>0)
+            {
+                retval.append('(').append(getLength());
+                if (getPrecision()>0)
+                {
+                    retval.append(", ").append(getPrecision());
+                }
+                retval.append(')');
+            }
+            break;
+        case TYPE_INTEGER:
+            if (getLength()>0)
+            {
+                retval.append('(').append(getLength()).append(')');
+            }
+            break;
+        default: break;
+        }
+
+        return retval.toString();
+    }
+
+    public void writeData(DataOutputStream outputStream, Object object) throws KettleFileException
+    {
+        try
+        {
+            // Is the value NULL?
+            outputStream.writeBoolean(object==null);
+
+            if (object!=null) // otherwise there is no point
+            {
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:
+                    // Handle Content -- only when not NULL
+                    switch(getType())
+                    {
+                    case TYPE_STRING     : writeString(outputStream, (String)object); break;
+                    case TYPE_BIGNUMBER  : writeBigNumber(outputStream, (BigDecimal)object); break;
+                    case TYPE_DATE       : writeDate(outputStream, (Date)object); break;
+                    case TYPE_NUMBER     : writeNumber(outputStream, (Double)object); break;
+                    case TYPE_BOOLEAN    : writeBoolean(outputStream, (Boolean)object); break;
+                    case TYPE_INTEGER    : writeInteger(outputStream, (Long)object); break;
+                    case TYPE_BINARY     : writeBinary(outputStream, (byte[])object); break;
+                    default: throw new KettleFileException("Unable to serialize data type "+getType());
+                    }
+                    break;
+                case STORAGE_TYPE_INDEXED:
+                    writeInteger(outputStream, (Integer)object); // just an index 
+                    break;
+                default: throw new KettleFileException("Unknown storage type "+getStorageType());
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to write value data to output stream", e);
+        }
+        
+    }
+    
+    public Object readData(DataInputStream inputStream) throws KettleFileException
+    {
+        try
+        {
+            // Is the value NULL?
+            if (inputStream.readBoolean()) return null; // done
+
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:
+                // Handle Content -- only when not NULL
+                switch(getType())
+                {
+                case TYPE_STRING     : return readString(inputStream);
+                case TYPE_BIGNUMBER  : return readBigNumber(inputStream);
+                case TYPE_DATE       : return readDate(inputStream);
+                case TYPE_NUMBER     : return readNumber(inputStream);
+                case TYPE_BOOLEAN    : return readBoolean(inputStream);
+                case TYPE_INTEGER    : return readInteger(inputStream);
+                case TYPE_BINARY     : return readBinary(inputStream);
+                default: throw new KettleFileException("Unable to de-serialize data of type "+getType());
+                }
+            case STORAGE_TYPE_INDEXED:
+                return readSmallInteger(inputStream); // just an index: 4-bytes should be enough.
+                
+            default: throw new KettleFileException("Unknown storage type "+getStorageType());
+            }
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to read value data from input stream", e);
+        }
+    }
+
+    
+    private void writeString(DataOutputStream outputStream, String string) throws IOException
+    {
+        // Write the length and then the bytes
+        byte[] chars = string.getBytes(Const.XML_ENCODING);
+        outputStream.writeInt(chars.length);
+        outputStream.write(chars);         
+    }
+
+    private String readString(DataInputStream inputStream) throws IOException
+    {
+        // Read the length and then the bytes
+        int length = inputStream.readInt();
+        byte[] chars = new byte[length];
+        inputStream.read(chars);
+        return new String(chars, Const.XML_ENCODING);         
+    }
+
+    private void writeBigNumber(DataOutputStream outputStream, BigDecimal number) throws IOException
+    {
+        String string = number.toString();
+        writeString(outputStream, string);
+    }
+
+    private BigDecimal readBigNumber(DataInputStream inputStream) throws IOException
+    {
+        String string = readString(inputStream);
+        return new BigDecimal(string);
+    }
+
+    private void writeDate(DataOutputStream outputStream, Date date) throws IOException
+    {
+        outputStream.writeLong(date.getTime());
+    }
+    
+    private Date readDate(DataInputStream inputStream) throws IOException
+    {
+        long time = inputStream.readLong();
+        return new Date(time);
+    }
+
+    private void writeBoolean(DataOutputStream outputStream, Boolean bool) throws IOException
+    {
+        outputStream.writeBoolean(bool.booleanValue());
+    }
+    
+    private Boolean readBoolean(DataInputStream inputStream) throws IOException
+    {
+        return new Boolean( inputStream.readBoolean() );
+    }
+    
+    private void writeNumber(DataOutputStream outputStream, Double number) throws IOException
+    {
+        outputStream.writeDouble(number.doubleValue());
+    }
+
+    private Double readNumber(DataInputStream inputStream) throws IOException
+    {
+        return new Double( inputStream.readDouble() );
+    }
+
+    private void writeInteger(DataOutputStream outputStream, Long number) throws IOException
+    {
+        outputStream.writeLong(number.longValue());
+    }
+
+    private Long readInteger(DataInputStream inputStream) throws IOException
+    {
+        return new Long( inputStream.readLong() );
+    }
+
+    private void writeInteger(DataOutputStream outputStream, Integer number) throws IOException
+    {
+        outputStream.writeInt(number.intValue());
+    }
+    
+    private Integer readSmallInteger(DataInputStream inputStream) throws IOException
+    {
+        return new Integer( inputStream.readInt() );
+    }
+    
+    private void writeBinary(DataOutputStream outputStream, byte[] binary) throws IOException
+    {
+        outputStream.writeInt(binary.length);
+        outputStream.write(binary);
+    }
+    
+    private byte[] readBinary(DataInputStream inputStream) throws IOException
+    {
+        int size = inputStream.readInt();
+        byte[] buffer = new byte[size];
+        inputStream.read(buffer);
+        return buffer;
+    }
+
+
+    public void writeMeta(DataOutputStream outputStream) throws KettleFileException
+    {
+        try
+        {
+            int type=getType();
+    
+            // Handle type
+            outputStream.writeInt(type);
+            
+            // Handle storage type
+            outputStream.writeInt(storageType);
+            
+            if (storageType==STORAGE_TYPE_INDEXED)
+            {
+                // Save the indexed strings...
+                if (index==null)
+                {
+                    outputStream.writeInt(-1); // null
+                }
+                else
+                {
+                    outputStream.writeInt(index.length);
+                    for (int i=0;i<index.length;i++)
+                    {
+                        switch(type)
+                        {
+                        case TYPE_STRING:    writeString(outputStream, (String)index[i]); break; 
+                        case TYPE_NUMBER:    writeNumber(outputStream, (Double)index[i]); break; 
+                        case TYPE_INTEGER:   writeInteger(outputStream, (Long)index[i]); break; 
+                        case TYPE_DATE:      writeDate(outputStream, (Date)index[i]); break; 
+                        case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
+                        case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
+                        case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
+                        default: throw new KettleFileException("Unable to serialize indexe storage type for data type "+getType());
+                        }
+                    }
+                }
+            }
+            
+            // Handle name-length
+            writeString(outputStream, name);  
+            
+            // length & precision
+            outputStream.writeInt(getLength());
+            outputStream.writeInt(getPrecision());
+            
+            // TODO: add origin, comments, masks, etc.
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to write value metadata to output stream", e);
+        }
+    }
+    
+    public ValueMeta(DataInputStream inputStream) throws KettleFileException
+    {
+        this();
+        
+        try
+        {
+            // Handle type
+            type=inputStream.readInt();
+    
+            // Handle storage type
+            storageType = inputStream.readInt();
+            
+            // Read the data in the index
+            if (storageType==STORAGE_TYPE_INDEXED)
+            {
+                int indexSize = inputStream.readInt();
+                if (indexSize<0)
+                {
+                    index=null;
+                }
+                else
+                {
+                    index=new Object[indexSize];
+                    for (int i=0;i<indexSize;i++)
+                    {
+                        switch(type)
+                        {
+                        case TYPE_STRING:    index[i] = readString(inputStream); break; 
+                        case TYPE_NUMBER:    index[i] = readNumber(inputStream); break; 
+                        case TYPE_INTEGER:   index[i] = readInteger(inputStream); break; 
+                        case TYPE_DATE:      index[i] = readDate(inputStream); break; 
+                        case TYPE_BIGNUMBER: index[i] = readBigNumber(inputStream); break; 
+                        case TYPE_BOOLEAN:   index[i] = readBoolean(inputStream); break; 
+                        case TYPE_BINARY:    index[i] = readBinary(inputStream); break;
+                        default: throw new KettleFileException("Unable to de-serialize indexed storage type for data type "+getType());
+                        }
+                    }
+                }
+
+            }
+            
+            // name
+            name = readString(inputStream);  
+            
+            // length & precision
+            length = inputStream.readInt();
+            precision = inputStream.readInt();
+            
+            // TODO: add origin, comments, masks, etc.
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to read value metadata from input stream", e);
+        }
+    }
+
+
+
 }

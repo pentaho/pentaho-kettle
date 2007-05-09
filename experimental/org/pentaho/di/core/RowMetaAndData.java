@@ -8,6 +8,10 @@ public class RowMetaAndData
 
     private Object[]         data;
 
+    public RowMetaAndData()
+    {
+    }
+    
     /**
      * @param rowMeta
      * @param data

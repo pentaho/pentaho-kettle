@@ -1,10 +1,14 @@
 package org.pentaho.di.core.row;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public class RowMeta implements RowMetaInterface
@@ -22,7 +26,7 @@ public class RowMeta implements RowMetaInterface
         for (int i=0;i<size();i++)
         {
             ValueMetaInterface valueMeta = getValueMeta(i);
-            rowMeta.addMetaValue( (ValueMetaInterface)valueMeta.clone() );
+            rowMeta.addValueMeta( (ValueMetaInterface)valueMeta.clone() );
         }
         return rowMeta;
     }
@@ -65,7 +69,7 @@ public class RowMeta implements RowMetaInterface
      * 
      * @param meta The metadata value to add
      */
-    public void addMetaValue(ValueMetaInterface meta)
+    public void addValueMeta(ValueMetaInterface meta)
     {
         valueMetaList.add(meta);
     }
@@ -228,6 +232,11 @@ public class RowMeta implements RowMetaInterface
         return getInteger(dataRow, index);
     }
 
+    /**
+     * Searches the index of a value meta with a given name
+     * @param valueName the name of the value metadata to look for
+     * @return the index or -1 in case we didn't find the value
+     */
     public int indexOfValue(String valueName)
     {
         for (int i=0;i<valueMetaList.size();i++)
@@ -251,5 +260,109 @@ public class RowMeta implements RowMetaInterface
         }
         return null;
     }
+
+    public void addRowMeta(RowMetaInterface rowMeta)
+    {
+        for (int i=0;i<rowMeta.size();i++)
+        {
+            addValueMeta(rowMeta.getValueMeta(i));
+        }
+    }
+    
+    /**
+     * Merge the values of row r to this Row.
+     * Merge means: only the values that are not yet in the row are added
+     * (comparing on the value name).
+     *
+     * @param r The row to be merged with this row
+     */
+    public void mergeRowMeta(RowMetaInterface r)
+    {
+        for (int x=0;x<r.size();x++)
+        {
+            ValueMetaInterface field = r.getValueMeta(x);
+            if (searchValueMeta(field.getName())==null)
+            {
+                addValueMeta(field); // Not in list yet: add
+            }
+        }
+    }
+
+    /**
+     * Get an array of the names of all the Values in the Row.
+     * @return an array of Strings: the names of all the Values in the Row.
+     */
+    public String[] getFieldNames()
+    {
+        String retval[] = new String[size()];
+
+        for (int i=0;i<size();i++)
+        {
+            retval[i]=getValueMeta(i).getName();
+        }
+
+        return retval;
+    }
+
+    /**
+     * Write ONLY the specified data to the outputStream
+     * @throws KettleFileException  in case things go awry
+     */
+    public void writeData(DataOutputStream outputStream, Object[] data) throws KettleFileException
+    {
+        // Write all values in the row
+        for (int i=0;i<size();i++) getValueMeta(i).writeData(outputStream, data[i]);
+    }
+
+    /**
+     * Write ONLY the specified metadata to the outputStream
+     * @throws KettleFileException  in case things go awry
+     */
+    public void writeMeta(DataOutputStream outputStream) throws KettleFileException
+    {
+        // First handle the number of fields in a row
+        try
+        {
+            outputStream.writeInt(size());
+        }
+        catch (IOException e)
+        {
+            throw new KettleFileException("Unable to write nr of metadata values", e);
+        }
+
+        // Write all values in the row
+        for (int i=0;i<size();i++) getValueMeta(i).writeMeta(outputStream);
+
+    }
+    
+    public RowMeta(DataInputStream inputStream) throws KettleFileException
+    {
+        this();
+        
+        int nr;
+        try
+        {
+            nr = inputStream.readInt();
+        }
+        catch (IOException e)
+        {
+            throw new KettleFileException("Unable to read nr of metadata values", e);
+        }
+        for (int i=0;i<nr;i++)
+        {
+            addValueMeta( new ValueMeta(inputStream) );
+        }
+    }
+
+    public Object[] readData(DataInputStream inputStream) throws KettleFileException
+    {
+        Object[] data = new Object[size()];
+        for (int i=0;i<size();i++)
+        {
+            data[i] = getValueMeta(i).readData(inputStream);
+        }
+        return data;
+    }
+
 
 }

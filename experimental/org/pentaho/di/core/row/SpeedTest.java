@@ -65,27 +65,27 @@ public class SpeedTest
     {
         rowString10[i]      = StringUtil.generateRandomString(20, "", "", false);
         ValueMetaInterface meta = new ValueMeta("String"+(i+1), ValueMetaInterface.TYPE_STRING, 20);
-        metaString10.addMetaValue(meta);
+        metaString10.addValueMeta(meta);
 
         rowMixed10[i*5 + 0] = StringUtil.generateRandomString(20, "", "", false);
         ValueMetaInterface meta0 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_STRING, 20);
-        metaMixed10.addMetaValue(meta0);
+        metaMixed10.addValueMeta(meta0);
 
         rowMixed10[i*5 + 1] = new Date();
         ValueMetaInterface meta1 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_DATE);
-        metaMixed10.addMetaValue(meta1);
+        metaMixed10.addValueMeta(meta1);
         
         rowMixed10[i*5 + 2] = new Double( Math.random() * 1000000 );
         ValueMetaInterface meta2 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_NUMBER, 12, 4);
-        metaMixed10.addMetaValue(meta2);
+        metaMixed10.addValueMeta(meta2);
 
         rowMixed10[i*5 + 3] = new Long( (long)(Math.random() * 1000000) );
         ValueMetaInterface meta3 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_INTEGER, 8);
-        metaMixed10.addMetaValue(meta3);
+        metaMixed10.addValueMeta(meta3);
         
         rowMixed10[i*5 + 4] = new Boolean( Math.random() > 0.5 ? true : false );
         ValueMetaInterface meta4 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_BOOLEAN);
-        metaMixed10.addMetaValue(meta4);
+        metaMixed10.addValueMeta(meta4);
     }
 
     public long runTestStrings10(int iterations) throws KettleValueException
