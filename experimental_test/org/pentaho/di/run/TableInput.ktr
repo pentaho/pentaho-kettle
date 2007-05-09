@@ -55,13 +55,13 @@
   <notepads>
   </notepads>
   <connection>
-    <name>MySQL Sam</name>
-    <server>192.168.1.11</server>
+    <name>MySQL Local test</name>
+    <server>localhost</server>
     <type>MYSQL</type>
     <access>Native</access>
     <database>test</database>
     <port>3306</port>
-    <username>root</username>
+    <username>matt</username>
     <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
     <servername/>
     <data_tablespace/>
@@ -108,7 +108,7 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>MySQL Sam</connection>
+    <connection>MySQL Local test</connection>
     <sql>SELECT *
 FROM customer_speed
 </sql>

@@ -160,8 +160,7 @@ public class TableInput extends BaseStep implements StepInterface
                 return false; // end of data or error.
             }
         }
-
-        if (data.thisrow != null)
+        else
         {
             putRow(data.rowMeta, data.thisrow); // fill the rowset(s). (wait for empty)
             data.thisrow = data.nextrow;

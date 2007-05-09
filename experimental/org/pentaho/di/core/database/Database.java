@@ -2456,22 +2456,22 @@ public class Database
 	 */
 	public Object[] getRow(ResultSet rs) throws KettleDatabaseException
 	{
-        ResultSetMetaData rsmd = null;
-		try
-		{
-			rsmd = rs.getMetaData();
-		}
-		catch(SQLException e)
-		{
-			throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
-		}
-
         if (rowMeta==null)
         {
-			rowMeta = getRowInfo(rsmd);
+            ResultSetMetaData rsmd = null;
+            try
+            {
+                rsmd = rs.getMetaData();
+            }
+            catch(SQLException e)
+            {
+                throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
+            }
+
+            rowMeta = getRowInfo(rsmd);
         }
 
-		return getRow(rs, rsmd, rowMeta);
+		return getRow(rs, null, rowMeta);
 	}
 
 	/**
@@ -2479,11 +2479,11 @@ public class Database
 	 * @param rs The resultset to get the row from
 	 * @return one row or null if no row was found on the resultset or if an error occurred.
 	 */
-	public Object[] getRow(ResultSet rs, ResultSetMetaData resultSetMetaData, RowMetaInterface rowInfo) throws KettleDatabaseException
+	public Object[] getRow(ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo) throws KettleDatabaseException
 	{
 		try
 		{
-			int nrcols=resultSetMetaData.getColumnCount();
+			int nrcols=rowInfo.size();
 			Object[] data = new Object[nrcols];
             
 			if (rs.next())
