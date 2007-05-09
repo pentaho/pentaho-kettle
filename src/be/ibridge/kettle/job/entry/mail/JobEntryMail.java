@@ -616,9 +616,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 				msg.setRecipients(Message.RecipientType.BCC, addressBCc);
 			}
 
-
-		
-			msg.setSubject(StringUtil.environmentSubstitute(subject));
+			if (!Const.isEmpty(StringUtil.environmentSubstitute(subject)))
+			{
+				msg.setSubject(StringUtil.environmentSubstitute(subject));
+			}
+					
 			msg.setSentDate(new Date());
 			StringBuffer messageText = new StringBuffer();
 
