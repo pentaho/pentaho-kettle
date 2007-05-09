@@ -211,7 +211,34 @@ public class RowMeta implements RowMetaInterface
             else
             {
                 ValueMetaInterface valueMeta = getValueMeta(i);
-                newObjects[i] = valueMeta.cloneValueData(objects[i]);
+
+                if (valueMeta.isIndexed())
+                {
+                    newObjects[i] = objects[i];                    
+                }
+                else
+                {
+                    switch(valueMeta.getType())
+                    {
+                    case ValueMeta.TYPE_STRING: 
+                    case ValueMeta.TYPE_NUMBER: 
+                    case ValueMeta.TYPE_INTEGER: 
+                    case ValueMeta.TYPE_BOOLEAN:
+                    case ValueMeta.TYPE_BIGNUMBER: // primitive data types: we can only overwrite these, not change them
+                        newObjects[i] = objects[i];
+                        break;
+                    case ValueMeta.TYPE_DATE:
+                        newObjects[i] = new Date( ((Date)objects[i]).getTime() ); // just to make sure: very inexpensive too.
+                        break;
+                    case ValueMeta.TYPE_BINARY:
+                        byte[] origin = (byte[]) objects[i];
+                        byte[] target = new byte[origin.length];
+                        System.arraycopy(origin, 0, target, 0, origin.length);
+                        newObjects[i] = target;
+                        break;
+                    default: throw new KettleValueException("Unable to make copy of value type: "+valueMeta.getType());
+                    }
+                }
             }
         }
         return newObjects;

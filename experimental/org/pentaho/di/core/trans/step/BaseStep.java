@@ -40,6 +40,11 @@ import org.pentaho.di.core.trans.StepPlugin;
 import org.pentaho.di.core.trans.StepPluginMeta;
 import org.pentaho.di.core.trans.Trans;
 import org.pentaho.di.core.trans.TransMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
+import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
@@ -51,73 +56,6 @@ import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.trans.step.XMLInputSax.XMLInputSaxMeta;
-import be.ibridge.kettle.trans.step.abort.AbortMeta;
-import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
-import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
-import be.ibridge.kettle.trans.step.addxml.AddXMLMeta;
-import be.ibridge.kettle.trans.step.aggregaterows.AggregateRowsMeta;
-import be.ibridge.kettle.trans.step.blockingstep.BlockingStepMeta;
-import be.ibridge.kettle.trans.step.calculator.CalculatorMeta;
-import be.ibridge.kettle.trans.step.combinationlookup.CombinationLookupMeta;
-import be.ibridge.kettle.trans.step.constant.ConstantMeta;
-import be.ibridge.kettle.trans.step.cubeinput.CubeInputMeta;
-import be.ibridge.kettle.trans.step.cubeoutput.CubeOutputMeta;
-import be.ibridge.kettle.trans.step.databasejoin.DatabaseJoinMeta;
-import be.ibridge.kettle.trans.step.databaselookup.DatabaseLookupMeta;
-import be.ibridge.kettle.trans.step.dbproc.DBProcMeta;
-import be.ibridge.kettle.trans.step.delete.DeleteMeta;
-import be.ibridge.kettle.trans.step.denormaliser.DenormaliserMeta;
-import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
-import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
-import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
-import be.ibridge.kettle.trans.step.exceloutput.ExcelOutputMeta;
-import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
-import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
-import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
-import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
-import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
-import be.ibridge.kettle.trans.step.formula.FormulaMeta;
-import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
-import be.ibridge.kettle.trans.step.getvariable.GetVariableMeta;
-import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
-import be.ibridge.kettle.trans.step.http.HTTPMeta;
-import be.ibridge.kettle.trans.step.injector.InjectorMeta;
-import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
-import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
-import be.ibridge.kettle.trans.step.mapping.MappingMeta;
-import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
-import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
-import be.ibridge.kettle.trans.step.mergejoin.MergeJoinMeta;
-import be.ibridge.kettle.trans.step.mergerows.MergeRowsMeta;
-import be.ibridge.kettle.trans.step.normaliser.NormaliserMeta;
-import be.ibridge.kettle.trans.step.nullif.NullIfMeta;
-import be.ibridge.kettle.trans.step.rowgenerator.RowGeneratorMeta;
-import be.ibridge.kettle.trans.step.rowsfromresult.RowsFromResultMeta;
-import be.ibridge.kettle.trans.step.rowstoresult.RowsToResultMeta;
-import be.ibridge.kettle.trans.step.scriptvalues.ScriptValuesMeta;
-import be.ibridge.kettle.trans.step.scriptvalues_mod.ScriptValuesMetaMod;
-import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
-import be.ibridge.kettle.trans.step.setvariable.SetVariableMeta;
-import be.ibridge.kettle.trans.step.socketreader.SocketReaderMeta;
-import be.ibridge.kettle.trans.step.socketwriter.SocketWriterMeta;
-import be.ibridge.kettle.trans.step.sortedmerge.SortedMergeMeta;
-import be.ibridge.kettle.trans.step.sortrows.SortRowsMeta;
-import be.ibridge.kettle.trans.step.sql.ExecSQLMeta;
-import be.ibridge.kettle.trans.step.streamlookup.StreamLookupMeta;
-import be.ibridge.kettle.trans.step.systemdata.SystemDataMeta;
-import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
-import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
-import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
-import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
-import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
-import be.ibridge.kettle.trans.step.update.UpdateMeta;
-import be.ibridge.kettle.trans.step.valuemapper.ValueMapperMeta;
-import be.ibridge.kettle.trans.step.webservices.WebServiceMeta;
-import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
-import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
-import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
-import be.ibridge.kettle.trans.step.orabulkloader.OraBulkLoaderMeta;
 
 public class BaseStep extends Thread
 {
@@ -138,12 +76,17 @@ public class BaseStep extends Thread
 
     public static final StepPluginMeta[] steps =
         {
-            new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages
+        new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages.getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
+        new StepPluginMeta(DummyTransMeta.class, "Dummy", Messages.getString("BaseStep.TypeLongDesc.Dummy"), Messages.getString("BaseStep.TypeTooltipDesc.Dummy", Const.CR), "DUM.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(TableInputMeta.class, "TableInput", Messages.getString("BaseStep.TypeLongDesc.TableInput"), Messages.getString("BaseStep.TypeTooltipDesc.TableInput"), "TIP.png", CATEGORY_INPUT),
+        new StepPluginMeta(SocketReaderMeta.class, "SocketReader", Messages.getString("BaseStep.TypeLongDesc.SocketReader"), Messages.getString("BaseStep.TypeTooltipDesc.SocketReader"), "SKR.png", CATEGORY_INLINE),
+        new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages.getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_INLINE),
+
+        /*
+                new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(TableInputMeta.class, "TableInput", Messages.getString("BaseStep.TypeLongDesc.TableInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.TableInput"), "TIP.png", CATEGORY_INPUT),
             new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(SelectValuesMeta.class, "SelectValues", Messages.getString("BaseStep.TypeLongDesc.SelectValues"), Messages.getString(
@@ -162,16 +105,12 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
             new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"),
                     Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
-            new StepPluginMeta(DummyTransMeta.class, "Dummy", Messages.getString("BaseStep.TypeLongDesc.Dummy"), Messages.getString(
-                    "BaseStep.TypeTooltipDesc.Dummy", Const.CR), "DUM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString(
                     "BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
             new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages
                     .getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
             new StepPluginMeta(SystemDataMeta.class, "SystemInfo", Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), Messages
                     .getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), "SYS.png", CATEGORY_INPUT),
-            new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
             new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages
                     .getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
             new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages
@@ -258,10 +197,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
             new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages
                     .getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
-            new StepPluginMeta(SocketReaderMeta.class, "SocketReader", Messages.getString("BaseStep.TypeLongDesc.SocketReader"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SocketReader"), "SKR.png", CATEGORY_INLINE),
-            new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_INLINE),
             new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
                     .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
             new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
@@ -271,7 +206,8 @@ public class BaseStep extends Thread
             new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),                     
+                    .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
+           */                     
         };
 
     public static final String category_order[] =

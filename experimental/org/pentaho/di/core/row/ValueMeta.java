@@ -187,6 +187,11 @@ public class ValueMeta implements ValueMetaInterface
         this.storageType = storageType;
     }
     
+    public boolean isIndexed()
+    {
+        return storageType == STORAGE_TYPE_INDEXED;
+    }
+    
     /**
      * @return the type
      */
@@ -545,6 +550,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
+    /*
     public Object cloneValueData(Object object) throws KettleValueException
     {
         if (object==null) return null;
@@ -585,6 +591,7 @@ public class ValueMeta implements ValueMetaInterface
             throw new KettleValueException("Unknown storage type "+storageType+" specified.");
         }
     }
+    */
 
     public String getString(Object object) throws KettleValueException
     {
@@ -1405,5 +1412,35 @@ public class ValueMeta implements ValueMetaInterface
     }
 
 
+    /**
+     * get an array of String describing the possible types a Value can have.
+     * @return an array of String describing the possible types a Value can have.
+     */
+    public static final String[] getTypes()
+    {
+        String retval[] = new String[typeCodes.length-1];
+        System.arraycopy(typeCodes, 1, retval, 0, typeCodes.length-1);
+        return retval;
+    }
+
+    /**
+     * Convert the String description of a type to an integer type.
+     * @param desc The description of the type to convert
+     * @return The integer type of the given String.  (Value.VALUE_TYPE_...)
+     */
+    public static final int getType(String desc)
+    {
+        int i;
+
+        for (i=1;i<typeCodes.length;i++)
+        {
+            if (typeCodes[i].equalsIgnoreCase(desc))
+            {
+                return i; 
+            }
+        }
+
+        return TYPE_NONE;
+    }
 
 }
