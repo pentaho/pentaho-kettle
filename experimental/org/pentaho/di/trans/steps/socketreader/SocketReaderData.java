@@ -21,8 +21,8 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.trans.step.BaseStepData;
-import org.pentaho.di.core.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
 
 
 /**

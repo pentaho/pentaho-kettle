@@ -22,8 +22,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.trans.step.BaseStepData;
-import org.pentaho.di.core.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * @author Matt

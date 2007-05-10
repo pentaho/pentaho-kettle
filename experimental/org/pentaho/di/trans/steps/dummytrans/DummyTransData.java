@@ -16,8 +16,8 @@
 
 package org.pentaho.di.trans.steps.dummytrans;
 
-import org.pentaho.di.core.trans.step.BaseStepData;
-import org.pentaho.di.core.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.BaseStepData;
+import org.pentaho.di.trans.step.StepDataInterface;
 
 
 /**

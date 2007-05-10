@@ -23,13 +23,13 @@ import java.net.ServerSocket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.pentaho.di.core.trans.Trans;
-import org.pentaho.di.core.trans.TransMeta;
-import org.pentaho.di.core.trans.step.BaseStep;
-import org.pentaho.di.core.trans.step.StepDataInterface;
-import org.pentaho.di.core.trans.step.StepInterface;
-import org.pentaho.di.core.trans.step.StepMeta;
-import org.pentaho.di.core.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;

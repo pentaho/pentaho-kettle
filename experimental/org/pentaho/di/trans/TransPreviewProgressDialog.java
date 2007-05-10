@@ -13,8 +13,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.trans.Trans;
-import org.pentaho.di.core.trans.TransMeta;
 
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;

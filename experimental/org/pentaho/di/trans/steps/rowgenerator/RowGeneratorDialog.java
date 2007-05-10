@@ -41,13 +41,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.trans.Trans;
-import org.pentaho.di.core.trans.TransMeta;
-import org.pentaho.di.core.trans.step.BaseStepDialog;
-import org.pentaho.di.core.trans.step.BaseStepMeta;
-import org.pentaho.di.core.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.TransPreviewProgressDialog;
+import org.pentaho.di.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;

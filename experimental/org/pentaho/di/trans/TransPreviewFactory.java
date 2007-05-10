@@ -1,10 +1,7 @@
 package org.pentaho.di.trans;
 
-import org.pentaho.di.core.trans.StepLoader;
-import org.pentaho.di.core.trans.TransHopMeta;
-import org.pentaho.di.core.trans.TransMeta;
-import org.pentaho.di.core.trans.step.StepMeta;
-import org.pentaho.di.core.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 public class TransPreviewFactory
