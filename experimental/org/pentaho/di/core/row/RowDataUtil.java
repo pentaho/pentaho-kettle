@@ -82,13 +82,18 @@ public class RowDataUtil
     {
         Object[] data = new Object[rowData.length - index.length];
         
-        int count=0;
-        for (int i=0;i<rowData.length;i++)
+        int count=data.length-1;
+        int removenr=index.length-1;
+        for (int i=rowData.length-1;i>=0;i--)
         {
-            if (i!=index[i])
+            if (removenr>=0 && i==index[removenr])
+            {
+                removenr--;
+            }
+            else
             {
                 data[count] = rowData[i];
-                count++;
+                count--;
             }
         }
         

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Select Values</name>
-    <description>Tests the functionality and performance of the &quot;Select Values&quot; step (Select tab)</description>
+    <name>Select Values Meta</name>
+    <description>Tests the functionality and performance of the &quot;Select Values&quot; step (Change metadata or type)</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -179,7 +179,7 @@
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>250000</limit>
+    <limit>1000000</limit>
      <cluster_schema/>
     <GUI>
       <xloc>149</xloc>
@@ -199,71 +199,57 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <fields>      <field>        <name>Field10</name>
-        <rename>anotherName10</rename>
+    <fields>      <meta>        <name>Field1</name>
+        <rename>NewField1</rename>
+        <type>-</type>
+        <length>30</length>
+        <precision>-2</precision>
+      </meta>      <meta>        <name>Field2</name>
+        <rename>NewField2</rename>
+        <type>-</type>
+        <length>7</length>
+        <precision>2</precision>
+      </meta>      <meta>        <name>Field3</name>
+        <rename>NewField3</rename>
+        <type>Number</type>
+        <length>7</length>
+        <precision>2</precision>
+      </meta>      <meta>        <name>Field4</name>
+        <rename>NewField4</rename>
+        <type>-</type>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field9</name>
-        <rename>anotherName9</rename>
+      </meta>      <meta>        <name>Field5</name>
+        <rename>NewField5</rename>
+        <type>-</type>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field8</name>
-        <rename>anotherName8</rename>
+      </meta>      <meta>        <name>Field6</name>
+        <rename>NewField6</rename>
+        <type>-</type>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field7</name>
-        <rename>anotherName7</rename>
+      </meta>      <meta>        <name>Field7</name>
+        <rename>NewField7</rename>
+        <type>-</type>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field6</name>
-        <rename>anotherName6</rename>
+      </meta>      <meta>        <name>Field8</name>
+        <rename>NewField8</rename>
+        <type>-</type>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field5</name>
-        <rename>anotherName5</rename>
+      </meta>      <meta>        <name>Field9</name>
+        <rename>NewField9</rename>
+        <type>-</type>
         <length>-2</length>
+        <precision>0</precision>
+      </meta>      <meta>        <name>Field10</name>
+        <rename>NewField10</rename>
+        <type>Integer</type>
+        <length>9</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Field4</name>
-        <rename>anotherName4</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field3</name>
-        <rename>anotherName3</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field2</name>
-        <rename>anotherName2</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field1</name>
-        <rename>anotherName1</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field1</name>
-        <rename>copy1</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field2</name>
-        <rename>copy2</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field3</name>
-        <rename>copy3</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field4</name>
-        <rename>copy4</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field5</name>
-        <rename>copy5</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Field6</name>
-        <rename>copy6</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>    </fields>     <cluster_schema/>
+      </meta>    </fields>     <cluster_schema/>
     <GUI>
       <xloc>342</xloc>
       <yloc>152</yloc>

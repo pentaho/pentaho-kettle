@@ -16,7 +16,7 @@ public class RunTableInput
         StepLoader.getInstance().read();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/TableInput.ktr");
+        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr");
         System.out.println("Name of transformation: "+transMeta.getName());
         
         long startTime = System.currentTimeMillis();

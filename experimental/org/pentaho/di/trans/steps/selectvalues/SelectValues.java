@@ -15,6 +15,8 @@
  
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.util.Arrays;
+
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -197,22 +199,11 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 			
 			// Sort removenrs descending.  So that we can delete in ascending order...
-			for (int i=0;i<data.removenrs.length;i++)
-			{
-				for (int j=0;j<data.removenrs.length-1;j++)
-				{
-					if (data.removenrs[j] < data.removenrs[j+1]) // swap
-					{
-						int dummy          = data.removenrs[j];
-						data.removenrs[j]  = data.removenrs[j+1];
-						data.removenrs[j+1]= dummy;
-					}
-				}
-			}
+            Arrays.sort(data.removenrs);
             
             // Patch the output metadata as well...
             //
-            for (int i=0;i<data.removenrs.length;i++)
+            for (int i=data.removenrs.length-1;i>=0;i--)
             {
                 data.outputMeta.removeValueMeta(data.removenrs[i]);
             }

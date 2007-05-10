@@ -1,4 +1,4 @@
-package org.pentaho.di.run.rowgenerator;
+package org.pentaho.di.run.selectvalues;
 
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
@@ -9,7 +9,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
 
-public class RunRowGenerator
+public class RunSelectValuesDelete
 {
     public static void main(String[] args) throws KettleXMLException
     {
@@ -17,7 +17,7 @@ public class RunRowGenerator
         StepLoader.getInstance().read();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows.ktr");
+        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/selectvalues/SelectValuesDelete.ktr");
         System.out.println("Name of transformation: "+transMeta.getName());
         
         long startTime = System.currentTimeMillis();

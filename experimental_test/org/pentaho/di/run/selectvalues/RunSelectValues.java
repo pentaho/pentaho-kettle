@@ -17,7 +17,7 @@ public class RunSelectValues
         StepLoader.getInstance().read();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/SelectValues.ktr");
+        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/selectvalues/SelectValues.ktr");
         System.out.println("Name of transformation: "+transMeta.getName());
         
         long startTime = System.currentTimeMillis();
