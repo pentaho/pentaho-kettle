@@ -93,14 +93,36 @@ public class DBProc extends BaseStep implements StepInterface
         //
 		for (i=0;i<add.size();i++)
 		{
-            int idx = ((Integer)data.addnrs.get(i)).intValue();
-            if (idx<0)
+            if (Const.isEmpty(meta.getArgument()))
             {
-                row.addValue( add.getValue(i) ); // new for OUT
+                int idx = ((Integer)data.addnrs.get(i)).intValue();
+                if (idx<0)
+                {
+                    row.addValue( add.getValue(i) ); // new for OUT
+                }
+                else
+                {
+                    row.setValue(idx, add.getValue(i) ); // replace for INOUT
+                }
             }
             else
             {
-                row.setValue(idx, add.getValue(i) ); // replace for INOUT
+                if (i>0)
+                {
+                    int idx = ((Integer)data.addnrs.get(i)).intValue();
+                    if (idx<0)
+                    {
+                        row.addValue( add.getValue(i) ); // new for OUT
+                    }
+                    else
+                    {
+                        row.setValue(idx, add.getValue(i) ); // replace for INOUT
+                    }
+                }
+                else
+                {
+                    row.addValue( add.getValue(i) ); // the function return value
+                }
             }
 		}
 	}
