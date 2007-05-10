@@ -1,8 +1,8 @@
-package org.pentaho.di.run;
+package org.pentaho.di.run.rowgenerator;
 
-import org.pentaho.di.core.trans.StepLoader;
-import org.pentaho.di.core.trans.Trans;
-import org.pentaho.di.core.trans.TransMeta;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 import be.ibridge.kettle.core.LogWriter;

@@ -1,14 +1,15 @@
-package org.pentaho.di.run;
+package org.pentaho.di.run.selectvalues;
 
-import org.pentaho.di.core.trans.StepLoader;
-import org.pentaho.di.core.trans.Trans;
-import org.pentaho.di.core.trans.TransMeta;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
 
-public class RunTableInput
+public class RunSelectValues
 {
     public static void main(String[] args) throws KettleXMLException
     {
@@ -16,7 +17,7 @@ public class RunTableInput
         StepLoader.getInstance().read();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/TableInput.ktr");
+        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/SelectValues.ktr");
         System.out.println("Name of transformation: "+transMeta.getName());
         
         long startTime = System.currentTimeMillis();
@@ -29,8 +30,10 @@ public class RunTableInput
         
         long stopTime = System.currentTimeMillis();
         
+        RowGeneratorMeta rowGeneratorMeta = (RowGeneratorMeta) transMeta.findStep("Generate Rows").getStepMetaInterface();
+        
         double seconds = (double)(stopTime - startTime) / 1000;
-        long   records = 1110110L;
+        long   records = Long.parseLong( rowGeneratorMeta.getRowLimit() );
         double speed = (double)records / (seconds);
         
         System.out.println("records : "+records);
