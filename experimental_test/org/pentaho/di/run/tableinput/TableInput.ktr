@@ -37,13 +37,6 @@
     <dependencies>
     </dependencies>
     <partitionschemas>
-        <partitionschema>
-          <name>MySQL Partitioning schema</name>
-          <partition>            <id>P1</id>
-          </partition>          <partition>            <id>P2</id>
-          </partition>          <partition>            <id>P3</id>
-          </partition>          <partition>            <id>P4</id>
-          </partition>        </partitionschema>
     </partitionschemas>
     <slaveservers>
     </slaveservers>
@@ -55,13 +48,13 @@
   <notepads>
   </notepads>
   <connection>
-    <name>MySQL Local test</name>
-    <server>localhost</server>
+    <name>MySQL server</name>
+    <server>192.168.1.11</server>
     <type>MYSQL</type>
     <access>Native</access>
     <database>test</database>
     <port>3306</port>
-    <username>matt</username>
+    <username>root</username>
     <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
     <servername/>
     <data_tablespace/>
@@ -108,7 +101,7 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>MySQL Local test</connection>
+    <connection>MySQL server</connection>
     <sql>SELECT *
 FROM customer_speed
 </sql>

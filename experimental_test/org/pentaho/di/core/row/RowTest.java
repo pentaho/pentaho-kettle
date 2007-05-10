@@ -16,7 +16,7 @@ public class RowTest extends TestCase
 {
     public void testNormalStringConversion() throws KettleValueException
     {
-        Object[] rowData1 = new Object[] { "sampleString", new Date(1178535853203L), new Double(9123.00), new Integer(12345), new BigDecimal("123456789012345678.9349"), new Boolean(true), };
+        Object[] rowData1 = new Object[] { "sampleString", new Date(1178535853203L), new Double(9123.00), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(true), };
         RowMetaInterface rowMeta1 = createTestRowMetaNormalStringConversion1();
         
         assertEquals("sampleString", rowMeta1.getString(rowData1, 0));        
@@ -26,7 +26,7 @@ public class RowTest extends TestCase
         assertEquals("123456789012345678.9349", rowMeta1.getString(rowData1, 4));
         assertEquals("Y", rowMeta1.getString(rowData1, 5));
         
-        Object[] rowData2 = new Object[] { null, new Date(1178535853203L), new Double(9123.9), new Integer(12345), new BigDecimal("123456789012345678.9349"), new Boolean(false), };
+        Object[] rowData2 = new Object[] { null, new Date(1178535853203L), new Double(9123.9), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(false), };
         RowMetaInterface rowMeta2 = createTestRowMetaNormalStringConversion2();
         
         assertTrue( rowMeta2.getString(rowData2, 0)==null);        
