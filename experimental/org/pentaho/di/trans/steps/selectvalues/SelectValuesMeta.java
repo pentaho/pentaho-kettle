@@ -374,116 +374,86 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public RowMetaInterface getFields(RowMetaInterface r, String name, RowMetaInterface info) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info) throws KettleStepException
 	{
         RowMetaInterface row=null;
 
 		if (selectName!=null && selectName.length>0)  // SELECT values
 		{
-			if (r==null)  // give back rename values 
+			// 0. Start with an empty row
+			// 1. Keep only the selected values
+			// 2. Rename the selected values
+			// 3. Keep the order in which they are specified... (not the input order!)
+			//
+			
+			row=new RowMeta();
+			for (int i=0;i<selectName.length;i++)
 			{
-				row=new RowMeta();
-				for (int i=0;i<selectRename.length;i++)
+				ValueMetaInterface v = inputRowMeta.searchValueMeta(selectName[i]);
+				
+				if (v!=null)  // We found the value
 				{
-					ValueMetaInterface v=new ValueMeta(selectRename[i], ValueMetaInterface.TYPE_NONE);
+					v = (ValueMetaInterface) v.clone();
+					// Do we need to rename ?
+					if (!v.getName().equals(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
+					{
+						v.setName(selectRename[i]);
+						v.setOrigin(name);
+					}
+					if (selectLength[i]!=-2   ) { v.setLength(selectLength[i]);       v.setOrigin(name); } 
+					if (selectPrecision[i]!=-2) { v.setPrecision(selectPrecision[i]); v.setOrigin(name); }
+					
+					// Add to the resulting row!
 					row.addValueMeta(v);
 				}
 			}
-			else          // select / rename in existing values...         
-			{
-				// 0. Start with an empty row
-				// 1. Keep only the selected values
-				// 2. Rename the selected values
-				// 3. Keep the order in which they are specified... (not the input order!)
-				//
-				
-				row=new RowMeta();
-				for (int i=0;i<selectName.length;i++)
-				{
-					ValueMetaInterface v = r.searchValueMeta(selectName[i]);
-					
-					if (v!=null)  // We found the value
-					{
-						v = (ValueMetaInterface) v.clone();
-						// Do we need to rename ?
-						if (!v.getName().equals(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
-						{
-							v.setName(selectRename[i]);
-							v.setOrigin(name);
-						}
-						if (selectLength[i]!=-2   ) { v.setLength(selectLength[i]);       v.setOrigin(name); } 
-						if (selectPrecision[i]!=-2) { v.setPrecision(selectPrecision[i]); v.setOrigin(name); }
-						
-						// Add to the resulting row!
-						row.addValueMeta(v);
-					}
-				}
-				
-				// OK, now remove all from r and re-add row:
-				r.clear();
-				r.addRowMeta(row);
-			}
+
+            // OK, now remove all from r and re-add row:
+            inputRowMeta.clear();
+            inputRowMeta.addRowMeta(row);
 		}
 		
 		if (deleteName!=null && deleteName.length>0)  // DESELECT values from the stream...
 		{
-			if (r!=null)
+			for (int i=0;i<deleteName.length;i++)
 			{
-				for (int i=0;i<deleteName.length;i++)
-				{
-					try
-                    {
-                        r.removeValueMeta(deleteName[i]);
-                    }
-                    catch (KettleValueException e)
-                    {
-                        throw new KettleStepException(e);
-                    }
-				}
-			}
-			else
-			{
-				row = new RowMeta(); // Return empty row...
+				try
+                {
+                    inputRowMeta.removeValueMeta(deleteName[i]);
+                }
+                catch (KettleValueException e)
+                {
+                    throw new KettleStepException(e);
+                }
 			}
 		}
 
 		if (metaName!=null && metaName.length>0) // METADATA mode: change the meta-data of the values mentioned...
 		{
-			if (r!=null)
+			for (int i=0;i<metaName.length;i++)
 			{
-				for (int i=0;i<metaName.length;i++)
+				int idx = inputRowMeta.indexOfValue(metaName[i]);
+				if (idx>=0)  // We found the value
 				{
-					int idx = r.indexOfValue(metaName[i]);
-					if (idx>=0)  // We found the value
+					// This is the value we need to change:
+					ValueMetaInterface v = inputRowMeta.getValueMeta(idx);
+					
+					// Do we need to rename ?
+					if (!v.getName().equals(metaRename[i]) && metaRename[i]!=null && metaRename[i].length()>0)
 					{
-						// This is the value we need to change:
-						ValueMetaInterface v = r.getValueMeta(idx);
-						
-						// Do we need to rename ?
-						if (!v.getName().equals(metaRename[i]) && metaRename[i]!=null && metaRename[i].length()>0)
-						{
-							v.setName(metaRename[i]);
-							v.setOrigin(name);
-						}
-						// Change the type?
-						if (metaType[i]!=ValueMetaInterface.TYPE_NONE)
-						{
-							v.setType(metaType[i]);
-						}
-						if (metaLength[i]!=-2   ) { v.setLength(metaLength[i]);       v.setOrigin(name); } 
-						if (metaPrecision[i]!=-2) { v.setPrecision(metaPrecision[i]); v.setOrigin(name); }
+						v.setName(metaRename[i]);
+						v.setOrigin(name);
 					}
+					// Change the type?
+					if (metaType[i]!=ValueMetaInterface.TYPE_NONE)
+					{
+						v.setType(metaType[i]);
+					}
+					if (metaLength[i]!=-2   ) { v.setLength(metaLength[i]);       v.setOrigin(name); } 
+					if (metaPrecision[i]!=-2) { v.setPrecision(metaPrecision[i]); v.setOrigin(name); }
 				}
 			}
-			else
-			{
-				row = new RowMeta();
-			}
 		}
-		
-		if (row==null) row = (RowMetaInterface) r.clone();
-		
-		return row;
 	}
 
 	public String getXML()

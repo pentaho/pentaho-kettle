@@ -21,7 +21,6 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -331,14 +330,9 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit="10";
 	}
 	
-	public RowMetaInterface getFields(RowMetaInterface r, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface info)
 	{
-		RowMetaInterface rowMeta;
-		if (r==null) rowMeta=new RowMeta(); // give back values
-		else         rowMeta=r;         // add to the existing row of values...
-		
-		int i;
-		for (i=0;i<fieldName.length;i++)
+		for (int i=0;i<fieldName.length;i++)
 		{
 			if (fieldName[i]!=null && fieldName[i].length()!=0)
 			{
@@ -351,7 +345,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 				rowMeta.addValueMeta(v);
 			}
 		}
-		return rowMeta;
 	}
 	
 	public String getXML()

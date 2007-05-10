@@ -210,16 +210,12 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-	public RowMetaInterface getFields(RowMetaInterface r, String name, RowMetaInterface info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException
 	{
-        RowMetaInterface row;
-		boolean param=false;
-				
-		if (r==null) row=new RowMeta(); // give back values
-		else         row=r;         // add to the existing row of values...
-		
-		if (databaseMeta==null) return row;
-		
+		if (databaseMeta==null) return; // TODO: throw an exception here
+
+        boolean param=false;
+
 		Database db = new Database(databaseMeta);
         databases = new Database[] { db }; // keep track of it for cancelling purposes...
 
@@ -256,7 +252,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				
 				add = db.getQueryFields(sNewSQL, param);
 				
-				if (add==null) return row;
+				if (add==null) return;
 				for (int i=0;i<add.size();i++)
 				{
 					ValueMetaInterface v=add.getValueMeta(i);
@@ -273,8 +269,6 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				db.disconnect();
 			}
 		}
-			
-		return row;
 	}
 
 	public String getXML()
@@ -481,7 +475,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
 	{
 		// Find the lookupfields...
-        RowMetaInterface out = getFields(null, stepMeta.getName(), info);
+        RowMetaInterface out = new RowMeta(); 
+        getFields(out, stepMeta.getName(), info);
+        
 		if (out!=null)
 		{
 			for (int i=0;i<out.size();i++)

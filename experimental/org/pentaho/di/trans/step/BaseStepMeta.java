@@ -147,21 +147,15 @@ public class BaseStepMeta implements Cloneable
 	      - renamed
 	      - changed
 	        
-	 * @param r Row containing fields that are used as input for the step.
+	 * @param inputRowMeta Row containing fields that are used as input for the step.
 	 * @param name Name of the step
 	 * @param info Fields used as extra lookup information
 	 * 
 	 * @return The fields that are being put out by this step.
 	 */
-	public RowMetaInterface getFields(RowMetaInterface r, String name, RowMetaInterface info) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info) throws KettleStepException
 	{
-        RowMetaInterface row;
-		if (r==null) row=new RowMeta(); // give back values
-		else         row=r;         // add to the existing row of values...
-		
 		// Default: no values are added to the row in the step
-	
-		return row;
 	}
 
     /**
