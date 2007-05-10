@@ -4602,10 +4602,7 @@ public class Spoon implements AddUndoPositionInterface
         catch(Exception e)
         {
             log.logDebug(toString(), Messages.getString("Spoon.Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString());//"Error saving file:"
-            mb.setText(Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"));//"ERROR"
-            mb.open();
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"), Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString(), e);
         }
         
         return saved;
