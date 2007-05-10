@@ -1135,7 +1135,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 			logBasic("Opening file: " + data.filename);
 
-			data.fr = KettleVFS.getInputStream(data.filename);
+			data.fr = KettleVFS.getInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
 
             String sFileCompression = meta.getFileCompression();
