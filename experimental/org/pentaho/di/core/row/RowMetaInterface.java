@@ -198,4 +198,22 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleFileException in case a I/O error occurs
      */
     public Object[] readData(DataInputStream inputStream) throws KettleFileException;
+
+    /**
+     * Clear the row metadata
+     */
+    public void clear();
+
+    /**
+     * Remove a value with a certain name from the row metadata
+     * @param string the name of the value metadata to remove
+     * @throws KettleValueException in case the value couldn't be found in the row metadata
+     */
+    public void removeValueMeta(String string) throws KettleValueException;
+
+    /**
+     * Remove a value metadata object on a certain index in the row
+     * @param index the index to remove the value metadata from
+     */
+    public void removeValueMeta(int index);
 }

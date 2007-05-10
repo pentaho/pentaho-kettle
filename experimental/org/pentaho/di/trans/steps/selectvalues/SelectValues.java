@@ -80,7 +80,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				}
                 
                 // Create the metadata values too...
-                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] );
+                ValueMetaInterface valueMeta = (ValueMetaInterface) rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                 
                 // Optionally change the name
                 if (!Const.isEmpty(meta.getSelectRename()[i]))
@@ -93,7 +93,7 @@ public class SelectValues extends BaseStep implements StepInterface
                 if (meta.getSelectPrecision()[i]!=-2) valueMeta.setPrecision(meta.getSelectPrecision()[i]);
                 
                 // Save this info
-                rowMeta.addValueMeta(valueMeta);
+                data.outputMeta.addValueMeta(valueMeta);
 			}
 			
 			// Check for doubles in the selected fields... AFTER renaming!!
@@ -129,7 +129,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			// 
 			if (data.fieldnrs[i]<rowMeta.size())
 			{
-                ValueMetaInterface valueMeta = data.outputMeta.getValueMeta(i);
+                ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fieldnrs[i] );
                 
 			    // TODO: Clone might be a 'bit' expensive as it is only needed in case you want to copy a single field to 2 or more target fields.
                 // And even then it is only required for the last n-1 target fields.
@@ -336,8 +336,8 @@ public class SelectValues extends BaseStep implements StepInterface
 		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.GotRowFromPreviousStep")+rowData); //$NON-NLS-1$
 
 		Object[] outputData = null;
-		
-		if (data.select)   outputData = selectValues(getInputRowMeta(), rowData);
+
+        if (data.select)   outputData = selectValues(getInputRowMeta(), rowData);
 		if (data.deselect) outputData = removeValues(getInputRowMeta(), rowData);
 		if (data.metadata) outputData = metadataValues(getInputRowMeta(), rowData);
 		

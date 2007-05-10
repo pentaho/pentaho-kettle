@@ -71,4 +71,27 @@ public class RowDataUtil
         }
         return result;
     }
+
+    /**
+     * Remove a number of items in a row of data
+     * @param rowData the row of data to remove from
+     * @param index the index of all the items in the source table to remove.  
+     *        We don't check if the same index gets deleted twice!
+     */
+    public static Object[] removeItems(Object[] rowData, int[] index)
+    {
+        Object[] data = new Object[rowData.length - index.length];
+        
+        int count=0;
+        for (int i=0;i<rowData.length;i++)
+        {
+            if (i!=index[i])
+            {
+                data[count] = rowData[i];
+                count++;
+            }
+        }
+        
+        return data;
+    }
 }

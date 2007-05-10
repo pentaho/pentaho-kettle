@@ -204,42 +204,8 @@ public class RowMeta implements RowMetaInterface
         Object[] newObjects = new Object[objects.length];
         for (int i=0;i<objects.length;i++)
         {
-            if (objects[i]==null)
-            {
-                newObjects[i] = null; 
-            }
-            else
-            {
-                ValueMetaInterface valueMeta = getValueMeta(i);
-
-                if (valueMeta.isIndexed())
-                {
-                    newObjects[i] = objects[i];                    
-                }
-                else
-                {
-                    switch(valueMeta.getType())
-                    {
-                    case ValueMeta.TYPE_STRING: 
-                    case ValueMeta.TYPE_NUMBER: 
-                    case ValueMeta.TYPE_INTEGER: 
-                    case ValueMeta.TYPE_BOOLEAN:
-                    case ValueMeta.TYPE_BIGNUMBER: // primitive data types: we can only overwrite these, not change them
-                        newObjects[i] = objects[i];
-                        break;
-                    case ValueMeta.TYPE_DATE:
-                        newObjects[i] = new Date( ((Date)objects[i]).getTime() ); // just to make sure: very inexpensive too.
-                        break;
-                    case ValueMeta.TYPE_BINARY:
-                        byte[] origin = (byte[]) objects[i];
-                        byte[] target = new byte[origin.length];
-                        System.arraycopy(origin, 0, target, 0, origin.length);
-                        newObjects[i] = target;
-                        break;
-                    default: throw new KettleValueException("Unable to make copy of value type: "+valueMeta.getType());
-                    }
-                }
-            }
+            ValueMetaInterface valueMeta = getValueMeta(i);
+            newObjects[i] = valueMeta.cloneValueData(objects[i]);
         }
         return newObjects;
     }
@@ -391,5 +357,20 @@ public class RowMeta implements RowMetaInterface
         return data;
     }
 
+    public void clear()
+    {
+        valueMetaList.clear();
+    }
 
+    public void removeValueMeta(String valueName) throws KettleValueException
+    {
+        int index = indexOfValue(valueName);
+        if (index<0) throw new KettleValueException("Unable to find value metadata with name '"+valueName+"', so I can't delete it.");
+        valueMetaList.remove(index);
+    }
+
+    public void removeValueMeta(int index)
+    {
+        valueMetaList.remove(index);
+    }
 }

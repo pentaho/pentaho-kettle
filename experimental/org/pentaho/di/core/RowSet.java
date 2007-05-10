@@ -18,7 +18,7 @@
 package org.pentaho.di.core;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.trans.step.BaseStep;
+import org.pentaho.di.trans.step.BaseStep;
 
 
 /**
@@ -66,11 +66,13 @@ public class RowSet
     //
     // We always add rows to the end of the linked queue
     // 
-    public synchronized void putRow(Object[] r)
+    public synchronized void putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
+        this.rowMeta=rowMeta;
+        
         if (rear == maxSize - 1) // deal with wraparound
             rear = -1;
-        queArray[++rear] = r;    // increment rear and insert
+        queArray[++rear] = rowData;    // increment rear and insert
         nItems++;                // one more item
     }
     

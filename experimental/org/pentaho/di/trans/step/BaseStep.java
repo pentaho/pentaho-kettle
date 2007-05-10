@@ -818,7 +818,7 @@ public class BaseStep extends Thread
     
                 // Put the row forward to the next step according to the partition rule.
                 RowSet rs = (RowSet) partitionTargets.get(targetPartition);
-                rs.putRow(row);
+                rs.putRow(rowMeta, row);
                 linesWritten++;
             }
             break;
@@ -829,7 +829,7 @@ public class BaseStep extends Thread
                 for (int r = 0; r < outputRowSets.size(); r++)
                 {
                     RowSet rowSet = (RowSet) outputRowSets.get(r);
-                    rowSet.putRow(row);
+                    rowSet.putRow(rowMeta, row);
                 }
             }
             break;
@@ -840,7 +840,7 @@ public class BaseStep extends Thread
                     // Copy the row to the "next" output rowset.
                     // We keep the next one in out_handling
                     RowSet rs = (RowSet) outputRowSets.get(out_handling);
-                    rs.putRow(row);
+                    rs.putRow(rowMeta, row);
                     linesWritten++;
     
                     // Now determine the next output rowset!
@@ -860,7 +860,7 @@ public class BaseStep extends Thread
                         RowSet rs = (RowSet) outputRowSets.get(i);
                         try
                         {
-                            rs.putRow(rowMeta.cloneRow(row));
+                            rs.putRow(rowMeta, rowMeta.cloneRow(row));
                         }
                         catch (KettleValueException e)
                         {
@@ -870,7 +870,7 @@ public class BaseStep extends Thread
     
                     // set row in first output rowset
                     RowSet rs = (RowSet) outputRowSets.get(0);
-                    rs.putRow(row);
+                    rs.putRow(rowMeta, row);
                     linesWritten++;
                 }
             }
@@ -983,7 +983,7 @@ public class BaseStep extends Thread
         }
 
         // Don't distribute or anything, only go to this rowset!
-        rs.putRow(row);
+        rs.putRow(rowMeta, row);
         linesWritten++;
     }
 
@@ -1006,7 +1006,7 @@ public class BaseStep extends Thread
 
         linesRejected++;
 
-        if (errorRowSet!=null) errorRowSet.putRow(row);
+        if (errorRowSet!=null) errorRowSet.putRow(rowMeta, row);
 
         verifyRejectionRates();
     }

@@ -23,7 +23,7 @@ public class RowProducer
     
     public void putRow(RowMetaInterface rowMeta, Object[] row)
     {
-        rowSet.putRow(row);
+        rowSet.putRow(rowMeta, row);
     }
     
     public void finished()

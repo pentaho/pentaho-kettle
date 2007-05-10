@@ -42,7 +42,7 @@ import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;

@@ -97,7 +97,7 @@ public interface ValueMetaInterface extends Cloneable
     
     /* Conversion methods */
     
-    // public Object cloneValueData(Object object) throws KettleValueException;
+    public Object cloneValueData(Object object) throws KettleValueException;
     
     /** Convert the supplied data to a String */
     public String getString(Object object) throws KettleValueException;

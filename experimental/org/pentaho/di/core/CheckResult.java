@@ -15,7 +15,7 @@
 
 package org.pentaho.di.core;
 
-import org.pentaho.di.core.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * This class is used to store results of transformation and step verifications.

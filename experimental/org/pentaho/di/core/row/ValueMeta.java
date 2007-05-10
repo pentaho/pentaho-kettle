@@ -550,11 +550,39 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
 
-    /*
     public Object cloneValueData(Object object) throws KettleValueException
     {
         if (object==null) return null;
         
+        if (isIndexed())
+        {
+            return object;                    
+        }
+        else
+        {
+            switch(getType())
+            {
+            case ValueMeta.TYPE_STRING: 
+            case ValueMeta.TYPE_NUMBER: 
+            case ValueMeta.TYPE_INTEGER: 
+            case ValueMeta.TYPE_BOOLEAN:
+            case ValueMeta.TYPE_BIGNUMBER: // primitive data types: we can only overwrite these, not change them
+                return object;
+
+            case ValueMeta.TYPE_DATE:
+                return new Date( ((Date)object).getTime() ); // just to make sure: very inexpensive too.
+
+            case ValueMeta.TYPE_BINARY:
+                byte[] origin = (byte[]) object;
+                byte[] target = new byte[origin.length];
+                System.arraycopy(origin, 0, target, 0, origin.length);
+                return target;
+
+            default: throw new KettleValueException("Unable to make copy of value type: "+getType());
+            }
+        }
+        
+        /*
         switch(storageType)
         {
         case ValueMetaInterface.STORAGE_TYPE_NORMAL:
@@ -590,8 +618,8 @@ public class ValueMeta implements ValueMetaInterface
         default: 
             throw new KettleValueException("Unknown storage type "+storageType+" specified.");
         }
+        */
     }
-    */
 
     public String getString(Object object) throws KettleValueException
     {
@@ -1089,6 +1117,12 @@ public class ValueMeta implements ValueMetaInterface
         return typeCodes[type];
     }
 
+
+    public String toString()
+    {
+        return name+" "+toStringMeta();
+    }
+
     
     /**
      * a String text representation of this Value, optionally padded to the specified length
@@ -1422,6 +1456,28 @@ public class ValueMeta implements ValueMetaInterface
         System.arraycopy(typeCodes, 1, retval, 0, typeCodes.length-1);
         return retval;
     }
+    
+    /**
+     * Get an array of String describing the possible types a Value can have.
+     * @return an array of String describing the possible types a Value can have.
+     */
+    public static final String[] getAllTypes()
+    {
+        String retval[] = new String[typeCodes.length];
+        System.arraycopy(typeCodes, 0, retval, 0, typeCodes.length);
+        return retval;
+    }
+    
+    /**
+     * TODO: change Desc to Code all over the place.  Make sure we can localise this stuff later on.
+     * 
+     * @param type the type 
+     * @return the description (code) of the type
+     */
+    public static final String getTypeDesc(int type)
+    {
+        return typeCodes[type];
+    }
 
     /**
      * Convert the String description of a type to an integer type.
@@ -1442,5 +1498,4 @@ public class ValueMeta implements ValueMetaInterface
 
         return TYPE_NONE;
     }
-
 }
