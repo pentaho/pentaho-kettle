@@ -71,7 +71,7 @@ import be.ibridge.kettle.core.vfs.KettleVFS;
  */
 public class TextFileInput extends BaseStep implements StepInterface
 {
-	private static final int BUFFER_SIZE_INPUT_STREAM = 50000;
+	private static final int BUFFER_SIZE_INPUT_STREAM = 500;
 
     private TextFileInputMeta meta;
 
@@ -87,54 +87,71 @@ public class TextFileInput extends BaseStep implements StepInterface
         this.transmeta = transMeta;
 	}
 
-	public static final String getLine(LogWriter log, InputStreamReader reader, String format) throws KettleFileException
+	public static final String getLine(LogWriter log, InputStreamReader reader, int formatNr, StringBuffer line) throws KettleFileException
 	{
-		StringBuffer line = new StringBuffer(256);
 		int c = 0;
-		
+		line.setLength(0);
+        
 		try
 		{
-            if (!format.equalsIgnoreCase("mixed"))
-            {   // no mixed mode
-                while (c >= 0)
+            switch(formatNr)
+            {
+            case TextFileInputMeta.FILE_FORMAT_DOS:
                 {
-                    c = reader.read();
-                    
-					if (c == '\n' || c == '\r')
-					{
-						if (format.equalsIgnoreCase("DOS")) 
-						{
-							c = reader.read(); // skip \n and \r
-						     if( c != '\r' && c != '\n' ) 
-						     { 
-						       // make sure its really a linefeed or cariage return
-						       // raise an error this is not a DOS file 
-						       // so we have pulled a character from the next line
-						       throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");					    		 
-						     }
-						}
-						return line.toString();
-					}
-					if (c >= 0) line.append((char) c);	
+                    while (c >= 0)
+                    {
+                        c = reader.read();
+                        
+                        if (c == '\r' || c == '\n' )
+                        {
+                            c = reader.read(); // skip \n and \r
+                            if( c != '\r' && c != '\n' ) 
+                            { 
+                                // make sure its really a linefeed or cariage return
+                                // raise an error this is not a DOS file
+                                // so we have pulled a character from the next line
+                                throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");                                 
+                            }
+                            return line.toString();
+                        }
+                        if (c >= 0) line.append((char) c);
+                    }
                 }
-			}
-			else // in mixed mode we suppose the LF is the last char and CR is ignored
-				// not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
-			{
-                while (c >= 0)
+                break;
+            case TextFileInputMeta.FILE_FORMAT_UNIX:
                 {
-                    c = reader.read();
-                    
-					if (c == '\n')
-					{
-						return line.toString();
-					}
-					else if (c != '\r')
-					{
-						if (c >= 0) line.append((char) c);
-					}
-				}
-			}
+                    while (c >= 0)
+                    {
+                        c = reader.read();
+                        
+    					if (c == '\n' || c == '\r')
+    					{
+    						return line.toString();
+    					}
+    					if (c >= 0) line.append((char) c);
+                    }
+                }
+                break;
+            case TextFileInputMeta.FILE_FORMAT_MIXED:
+        		 // in mixed mode we suppose the LF is the last char and CR is ignored
+        			// not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
+        		{
+                    while (c >= 0)
+                    {
+                        c = reader.read();
+                        
+        				if (c == '\n')
+        				{
+        					return line.toString();
+        				}
+        				else if (c != '\r')
+        				{
+        					if (c >= 0) line.append((char) c);
+        				}
+        			}
+        		}
+                break;
+            }
 		}
 		catch(KettleFileException e)
 		{
@@ -153,10 +170,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return null;
 	}
 
-	public static final ArrayList convertLineToStrings(LogWriter log, String line, TextFileInputMeta inf) throws KettleException
+	public static final String[] convertLineToStrings(LogWriter log, String line, TextFileInputMeta inf) throws KettleException
 	{
-		ArrayList strings = new ArrayList();
-		int fieldnr;
+		String[] strings = new String[inf.getInputFields().length];
+        int fieldnr;
+        
 		String pol; // piece of line
 
 		try
@@ -172,12 +190,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 				int length = line.length();
 				boolean dencl = false;
 
+                int len_encl = (inf.getEnclosure() == null ? 0 : inf.getEnclosure().length());
+                int len_esc = (inf.getEscapeCharacter() == null ? 0 : inf.getEscapeCharacter().length());
+
 				while (pos < length)
 				{
 					int from = pos;
 					int next;
-					int len_encl = (inf.getEnclosure() == null ? 0 : inf.getEnclosure().length());
-					int len_esc = (inf.getEscapeCharacter() == null ? 0 : inf.getEscapeCharacter().length());
 
 					boolean encl_found;
 					boolean contains_escaped_enclosures = false;
@@ -320,7 +339,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 
 					// Now add pol to the strings found!
-					strings.add(pol);
+					strings[fieldnr]=pol;
 
 					pos = next + 1;
 					fieldnr++;
@@ -328,7 +347,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if ( pos == length )
 				{
 					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
-					strings.add("");
+					strings[fieldnr]= "";
+                    fieldnr++;
 				}
 			}
 			else
@@ -342,17 +362,17 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 					if (field.getPosition() + field.getLength() <= length)
 					{
-						strings.add(line.substring(field.getPosition(), field.getPosition() + field.getLength()));
+						strings[i] = line.substring(field.getPosition(), field.getPosition() + field.getLength());
 					}
 					else
 					{
 						if (field.getPosition() < length)
 						{
-							strings.add(line.substring(field.getPosition()));
+							strings[i] = line.substring(field.getPosition());
 						}
 						else
 						{
-							strings.add("");
+							strings[i] = "";
 						}
 					}
 				}
@@ -414,7 +434,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			// System.out.println("Convertings line to string ["+line+"]");
-			ArrayList strings = convertLineToStrings(log, textFileLine.line, info);
+			String[] strings = convertLineToStrings(log, textFileLine.line, info);
 
 			for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
 			{
@@ -433,9 +453,9 @@ public class TextFileInput extends BaseStep implements StepInterface
                 String ifnull = fieldnr < nrfields ? f.getIfNullValue() : "";
 				int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
 
-				if (fieldnr < strings.size())
+				if (fieldnr < strings.length)
 				{
-					String pol = (String) strings.get(fieldnr);
+					String pol = strings[fieldnr];
 					try
 					{
 						value = convertValue(pol, field, type, format, length, precision, group, decimal, currency, nullif,ifnull, trim_type, ldf, ldfs,
@@ -545,28 +565,20 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	public static final Object convertValue( String pol, String field_name, int field_type, String field_format, 
 			                                int field_length, int field_precision, String num_group, String num_decimal, 
-			                                String num_currency, String nullif, String ifNull, int trim_type, 
+			                                String num_currency, String nullif, String ifNull, int trim_type,
 			                                DecimalFormat ldf, DecimalFormatSymbols ldfs, 
 			                                SimpleDateFormat ldaf, DateFormatSymbols ldafs
 			                               ) throws Exception
 	{
 		Object value=null;
 
-		// If no nullif field is supplied, take the default.
-		String null_value = nullif;
-		if (null_value == null)
-		{
-            value=null;
-		}
-		String null_cmp = Const.rightPad(new StringBuffer(null_value), pol.length());
-
-		if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp))
+		if (Const.isEmpty(pol) || pol.equalsIgnoreCase(ifNull))
 		{
             if (ifNull!=null && ifNull.length()!=0)
                 pol = ifNull;
 		}
         
-        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp)) 
+        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullif)) 
         {
             value=null;
         }
@@ -576,28 +588,39 @@ public class TextFileInput extends BaseStep implements StepInterface
 			{
 				try
 				{
-					StringBuffer strpol = new StringBuffer(pol);
+					
 
 					switch (trim_type)
 					{
 					case TextFileInputMeta.TYPE_TRIM_LEFT:
-						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-							strpol.deleteCharAt(0);
+                        {
+                            StringBuffer strpol = new StringBuffer(pol);
+    						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+    							strpol.deleteCharAt(0);
+                            pol=strpol.toString();
+                        }
 						break;
 					case TextFileInputMeta.TYPE_TRIM_RIGHT:
-						while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
-							strpol.deleteCharAt(strpol.length() - 1);
-						break;
+                        {
+                            StringBuffer strpol = new StringBuffer(pol);
+                            while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+    							strpol.deleteCharAt(strpol.length() - 1);
+                            pol=strpol.toString();
+                        }
+                        break;
 					case TextFileInputMeta.TYPE_TRIM_BOTH:
-						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-							strpol.deleteCharAt(0);
-						while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
-							strpol.deleteCharAt(strpol.length() - 1);
+                        StringBuffer strpol = new StringBuffer(pol);
+                        {
+    						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+    							strpol.deleteCharAt(0);
+    						while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+    							strpol.deleteCharAt(strpol.length() - 1);
+                            pol=strpol.toString();
+                        }
 						break;
 					default:
 						break;
 					}
-					pol = strpol.toString();
 
                     switch(field_type)
                     {
@@ -779,7 +802,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
 				{
-					String line = getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
+					String line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer); // Get one line of data;
 					if (line != null)
 					{
 						// Filter row?
@@ -1187,7 +1210,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				for (int i = 0; i < meta.getNrLinesDocHeader(); i++)
 				{
 					// Just skip these...
-					getLine(log, data.isr, meta.getFileFormat()); // header and footer: not wrapped
+					getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer); // header and footer: not wrapped
 					lineNumberInFile++;
 				}
 			}
@@ -1195,7 +1218,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			String line;
 			for (int i = 0; i < bufferSize && !data.doneReading; i++)
 			{
-				line = getLine(log, data.isr, meta.getFileFormat());
+				line = getLine(log, data.isr, data.fileFormatType, data.lineStringBuffer);
 				if (line != null)
 				{
 					// when there is no header, check the filter for the first line
@@ -1284,8 +1307,21 @@ public class TextFileInput extends BaseStep implements StepInterface
                 // TODO: add metadata to configure this.
                 logBasic("Running on slave server #"+nr+" : assuming that each slave reads a dedicated part of the same file(s)."); 
             }
+            
+            // If no nullif field is supplied, take the default.
+            // String null_value = nullif;
+            // if (null_value == null)
+            // {
+            // //     value="";
+            // }
+            // String null_cmp = Const.rightPad(new StringBuffer(null_value), pol.length());
 
+            // calculate the file format type in advance so we can use a switch
+            data.fileFormatType = meta.getFileFormatTypeNr();
 
+            // calculate the file type in advance CSV or Fixed?
+            data.fileType = meta.getFileTypeNr();
+                
 			return true;
 		}
 		return false;

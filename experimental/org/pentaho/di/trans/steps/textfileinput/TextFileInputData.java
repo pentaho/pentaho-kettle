@@ -98,6 +98,12 @@ public class TextFileInputData extends BaseStepData implements
 
     public RowMetaInterface outputRowMeta;
 
+    public StringBuffer lineStringBuffer;
+
+    public int fileFormatType;
+
+    public int fileType;
+    
 	/**
 	 * 
 	 */
@@ -121,6 +127,8 @@ public class TextFileInputData extends BaseStepData implements
 		zi = null;
 		
 		filterProcessor = null;
+        
+         lineStringBuffer = new StringBuffer(256);
 	}
 
 	public void setDateFormatLenient(boolean lenient) {

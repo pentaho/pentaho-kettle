@@ -70,6 +70,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private static final String STRING_BASE64_PREFIX = "Base64: ";
 
+    public static final int FILE_FORMAT_DOS   = 0;
+    public static final int FILE_FORMAT_UNIX  = 1;
+    public static final int FILE_FORMAT_MIXED = 2;
+
+    public static final int FILE_TYPE_CSV   = 0;
+    public static final int FILE_TYPE_FIXED = 1;
+
 	/** Array of filenames */
 	private String fileName[];
 
@@ -1620,4 +1627,34 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.acceptingStep = acceptingStep;
 	}
+    
+    public int getFileFormatTypeNr()
+    {
+        // calculate the file format type in advance so we can use a switch
+        if (getFileFormat().equalsIgnoreCase("DOS")) 
+        {
+            return FILE_FORMAT_DOS;
+        }
+        else if (getFileFormat().equalsIgnoreCase("unix"))
+        {
+            return TextFileInputMeta.FILE_FORMAT_UNIX;
+        }
+        else 
+        {
+            return TextFileInputMeta.FILE_FORMAT_MIXED;
+        }
+    }
+    
+    public int getFileTypeNr()
+    {
+        // calculate the file type in advance CSV or Fixed?
+        if (getFileType().equalsIgnoreCase("CSV"))
+        {
+            return TextFileInputMeta.FILE_TYPE_CSV;
+        }
+        else
+        {
+            return TextFileInputMeta.FILE_TYPE_FIXED;
+        }
+    }
 }

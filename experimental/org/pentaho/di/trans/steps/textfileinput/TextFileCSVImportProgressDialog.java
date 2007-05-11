@@ -230,16 +230,19 @@ public class TextFileCSVImportProgressDialog
         // Sample <samples> rows...
         debug = "get first line";
 
+        StringBuffer lineBuffer = new StringBuffer(256);
+        int fileFormatType = meta.getFileFormatTypeNr();
+        
         // If the file has a header we overwrite the first line
         // However, if it doesn't have a header, take a new line
         if (meta.hasHeader()) 
         {
-            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+            line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
             fileLineNumber++;
             int skipped=1;
             while (line!=null && skipped<meta.getNrHeaderLines())
             {
-                line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+                line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
                 skipped++;
                 fileLineNumber++;
             }
@@ -466,7 +469,7 @@ public class TextFileCSVImportProgressDialog
 
             // Grab another line...
             debug = "Grab another line";
-            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+            line = TextFileInput.getLine(log, reader, fileFormatType, lineBuffer);
             debug = "End of while loop";
         }
 

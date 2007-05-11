@@ -2288,7 +2288,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		ZipInputStream   zipInputStream = null ;
 		GZIPInputStream  gzipInputStream = null ;
 		InputStream      inputStream  = null;
-        String           fileFormat = wFormat.getText();
+        StringBuffer     lineStringBuffer = new StringBuffer(256);
+        int              fileFormatType = meta.getFileFormatTypeNr();
         
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2346,14 +2347,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     String line = null;
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, reader, fileFormat);
+                        line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
                         if (line != null)
                         {
-                            ArrayList fields = TextFileInput.convertLineToStrings(log, line, meta);
+                            String[] fields = TextFileInput.convertLineToStrings(log, line, meta);
 
-                            for (int i = 0; i < fields.size(); i++)
+                            for (int i = 0; i < fields.length; i++)
                             {
-                                String field = (String) fields.get(i);
+                                String field = fields[i];
                                 if (field == null || field.length() == 0 || (nrInputFields == 0 && !meta.hasHeader()))
                                 {
                                     field = "Field" + (i + 1);
@@ -2598,14 +2599,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	// Get the first x lines
 	private ArrayList getFirst(int nrlines, boolean skipHeaders) throws KettleException
 	{
-		TextFileInputMeta info = new TextFileInputMeta();
-		getInfo(info);
-		FileInputList textFileList = info.getTextFileList();
+		TextFileInputMeta meta = new TextFileInputMeta();
+		getInfo(meta);
+		FileInputList textFileList = meta.getTextFileList();
 		
         InputStream     fi = null;
 		ZipInputStream  zi = null ;
 		GZIPInputStream gzi = null ;
 		InputStream     f  = null;
+        StringBuffer    lineStringBuffer = new StringBuffer(256);
+        int             fileFormatType = meta.getFileFormatTypeNr();
 		
 		ArrayList retval = new ArrayList();
 		
@@ -2616,13 +2619,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				fi = file.getContent().getInputStream();
 				
-				if (info.getFileCompression().equals("Zip"))
+				if (meta.getFileCompression().equals("Zip"))
 				{
 					zi = new ZipInputStream(fi);
 					zi.getNextEntry();
 					f=zi;
 				}
-				else if (info.getFileCompression().equals("GZip"))
+				else if (meta.getFileCompression().equals("GZip"))
 				{
 					gzi = new GZIPInputStream(fi);
 					f=gzi;
@@ -2633,9 +2636,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				}
                 
                 InputStreamReader reader;
-                if (info.getEncoding()!=null && info.getEncoding().length()>0)
+                if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
                 {
-                    reader = new InputStreamReader(f, info.getEncoding());
+                    reader = new InputStreamReader(f, meta.getEncoding());
                 }
                 else
                 {
@@ -2645,42 +2648,42 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 				String firstlines="";
 				int    linenr=0;
-				int    maxnr = nrlines+(info.hasHeader()?info.getNrHeaderLines():0);
+				int    maxnr = nrlines+(meta.hasHeader()?meta.getNrHeaderLines():0);
 				
                 if (skipHeaders)
                 {
                     // Skip the header lines first if more then one, it helps us position
-                    if (info.isLayoutPaged() && info.getNrLinesDocHeader()>0)
+                    if (meta.isLayoutPaged() && meta.getNrLinesDocHeader()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, wFormat.getText());
-                        while (line!=null && skipped<info.getNrLinesDocHeader()-1)
+                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                        while (line!=null && skipped<meta.getNrLinesDocHeader()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, wFormat.getText());
+                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
                         }
                     }
                     
                     // Skip the header lines first if more then one, it helps us position
-                    if (info.hasHeader() && info.getNrHeaderLines()>0)
+                    if (meta.hasHeader() && meta.getNrHeaderLines()>0)
                     {
                         int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, wFormat.getText());
-                        while (line!=null && skipped<info.getNrHeaderLines()-1)
+                        String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
+                        while (line!=null && skipped<meta.getNrHeaderLines()-1)
                         {
                             skipped++;
-                            line = TextFileInput.getLine(log, reader, wFormat.getText());
+                            line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
                         }
                     }
                 }
                 
-				String line = TextFileInput.getLine(log, reader, wFormat.getText());
+				String line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, reader, wFormat.getText());
+					line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
 				}
 			}
 			catch(Exception e)
@@ -2691,12 +2694,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				try
 				{
-					if (info.getFileCompression().equals("Zip") && zi!=null)
+					if (meta.getFileCompression().equals("Zip") && zi!=null)
 					{
 						zi.closeEntry();
 						zi.close();
 					}
-					else if (info.getFileCompression().equals("GZip") && gzi!=null)
+					else if (meta.getFileCompression().equals("GZip") && gzi!=null)
 					{
 						gzi.close();
 					}
