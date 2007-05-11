@@ -20,7 +20,7 @@ public class RunTextFileInputCSV extends TestCase
         StepLoader.getInstance().read();
         LogWriter.getInstance(LogWriter.LOG_LEVEL_BASIC);
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSV.ktr");
+        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSVStrings.ktr");
         System.out.println("Name of transformation: "+transMeta.getName());
         System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
 
