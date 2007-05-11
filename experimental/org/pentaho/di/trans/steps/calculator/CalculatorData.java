@@ -35,25 +35,13 @@ public class CalculatorData extends BaseStepData implements StepDataInterface
     
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface tempRowMeta;
-
-    public int nrTemporaryFields;
-
-    public Object[] tempData;
-
-    // TODO: turn this into a class/structure and allocate one row for each calculation
-    // That way we can speed this up even more.
-    // We just want to be able to pick up the values the indexs and perform the calculations with those.
-    // 
-    public int[] keyNrs;
-
-    public int[] keyNrsA;
-
-    public int[] keyNrsB;
-
-    public int[] keyNrsC;
     
-    
+    public Calculator.FieldIndexes[] fieldIndexes;
 
+    public RowMetaInterface calcRowMeta;
+
+    public int[] tempIndexes;
+    
 	/**
 	 * 
 	 */

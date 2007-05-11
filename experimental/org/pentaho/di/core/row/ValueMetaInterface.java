@@ -214,5 +214,4 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleFileException in case a I/O error occurs
      */
     public Object readData(DataInputStream inputStream) throws KettleFileException;
-    
 }

@@ -20,7 +20,6 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -169,21 +168,19 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public RowMetaInterface getTemporaryFields()
+    public RowMetaInterface getAllFields(RowMetaInterface inputRowMeta)
     {
-        RowMetaInterface rowMeta = new RowMeta();
+        RowMetaInterface rowMeta = (RowMetaInterface) inputRowMeta.clone();
+        
         for (int i=0;i<calculation.length;i++)
         {
             CalculatorMetaFunction fn = calculation[i];
-            if (fn.isRemovedFromResult())
+            if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
             {
-                if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
-                {
-                    ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-                    v.setLength(fn.getValueLength());
-                    v.setPrecision(fn.getValuePrecision());
-                    rowMeta.addValueMeta(v);
-                }
+                ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
+                v.setLength(fn.getValueLength());
+                v.setPrecision(fn.getValuePrecision());
+                rowMeta.addValueMeta(v);
             }
         }
         return rowMeta;

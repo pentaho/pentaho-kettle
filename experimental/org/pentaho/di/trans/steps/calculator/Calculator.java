@@ -15,12 +15,12 @@
  
 package org.pentaho.di.trans.steps.calculator;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -44,6 +44,14 @@ import be.ibridge.kettle.core.exception.KettleValueException;
  */
 public class Calculator extends BaseStep implements StepInterface
 {
+    public class FieldIndexes
+    {
+        public int indexName;
+        public int indexA;
+        public int indexB;
+        public int indexC;
+    };    
+
 	private CalculatorMeta meta;
 	private CalculatorData data;
 
@@ -69,25 +77,29 @@ public class Calculator extends BaseStep implements StepInterface
             first=false;
             data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone(); 
             meta.getFields(data.outputRowMeta, getStepname(), null);
-            data.tempRowMeta = meta.getTemporaryFields();
-            data.tempData = new Object[data.tempRowMeta.size()];
             
-            data.keyNrs  = new int[data.outputRowMeta.size()];
+            // get all metadata, including source rows and temporary fields.
+            data.calcRowMeta = meta.getAllFields(getInputRowMeta()); 
             
+            data.fieldIndexes = new FieldIndexes[meta.getCalculation().length];
+            List tempIndexes = new ArrayList();
+
             // Calculate the indexes of the values and arguments in the target data or temporary data
             // We do this in advance to save time later on.
             //
             for (int i=0;i<meta.getCalculation().length;i++)
             {
                 CalculatorMetaFunction function = meta.getCalculation()[i];
+                data.fieldIndexes[i] = new FieldIndexes();
+                
                 if (!Const.isEmpty(function.getFieldName())) 
                 {
-                    data.keyNrs[i] = data.outputRowMeta.indexOfValue(function.getFieldName());
-                    if (data.keyNrs[i]<0)
+                    data.fieldIndexes[i].indexName = data.outputRowMeta.indexOfValue(function.getFieldName());
+                    if (data.fieldIndexes[i].indexName<0)
                     {
                         // Maybe it's a temporary field
-                        data.keyNrs[i] = data.tempRowMeta.indexOfValue(function.getFieldName());
-                        if (data.keyNrs[i]<0)
+                        data.fieldIndexes[i].indexName = data.tempRowMeta.indexOfValue(function.getFieldName());
+                        if (data.fieldIndexes[i].indexName<0)
                         {
                             // Nope: throw an exception
                             throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+" for calculation #"+(i+1));
@@ -101,12 +113,12 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (!Const.isEmpty(function.getFieldA())) 
                 {
-                    data.keyNrsA[i] = data.outputRowMeta.indexOfValue(function.getFieldA());
-                    if (data.keyNrsA[i]<0)
+                    data.fieldIndexes[i].indexA = data.outputRowMeta.indexOfValue(function.getFieldA());
+                    if (data.fieldIndexes[i].indexA<0)
                     {
                         // Maybe it's a temporary field
-                        data.keyNrsA[i] = data.tempRowMeta.indexOfValue(function.getFieldA());
-                        if (data.keyNrsA[i]<0)
+                        data.fieldIndexes[i].indexA = data.tempRowMeta.indexOfValue(function.getFieldA());
+                        if (data.fieldIndexes[i].indexA<0)
                         {
                             // Nope: throw an exception
                             throw new KettleStepException("Unable to find the first argument field '"+function.getFieldName()+" for calculation #"+(i+1));
@@ -120,12 +132,12 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (!Const.isEmpty(function.getFieldB())) 
                 {
-                    data.keyNrsB[i] = data.outputRowMeta.indexOfValue(function.getFieldB());
-                    if (data.keyNrsB[i]<0)
+                    data.fieldIndexes[i].indexB = data.outputRowMeta.indexOfValue(function.getFieldB());
+                    if (data.fieldIndexes[i].indexB<0)
                     {
                         // Maybe it's a temporary field
-                        data.keyNrsB[i] = data.tempRowMeta.indexOfValue(function.getFieldB());
-                        if (data.keyNrsB[i]<0)
+                        data.fieldIndexes[i].indexB = data.tempRowMeta.indexOfValue(function.getFieldB());
+                        if (data.fieldIndexes[i].indexB<0)
                         {
                             // Nope: throw an exception
                             throw new KettleStepException("Unable to find the second argument field '"+function.getFieldName()+" for calculation #"+(i+1));
@@ -135,18 +147,30 @@ public class Calculator extends BaseStep implements StepInterface
                 
                 if (!Const.isEmpty(function.getFieldC())) 
                 {
-                    data.keyNrsC[i] = data.outputRowMeta.indexOfValue(function.getFieldC());
-                    if (data.keyNrsC[i]<0)
+                    data.fieldIndexes[i].indexC = data.outputRowMeta.indexOfValue(function.getFieldC());
+                    if (data.fieldIndexes[i].indexC<0)
                     {
                         // Maybe it's a temporary field
-                        data.keyNrsC[i] = data.tempRowMeta.indexOfValue(function.getFieldC());
-                        if (data.keyNrsC[i]<0)
+                        data.fieldIndexes[i].indexC = data.tempRowMeta.indexOfValue(function.getFieldC());
+                        if (data.fieldIndexes[i].indexC<0)
                         {
                             // Nope: throw an exception
                             throw new KettleStepException("Unable to find the third argument field '"+function.getFieldName()+" for calculation #"+(i+1));
                         }
                     }
                 }
+                                
+                if (function.isRemovedFromResult())
+                {
+                    tempIndexes.add(new Integer(getInputRowMeta().size()+i));
+                }
+            }
+            
+            // Convert temp indexes to int[]
+            data.tempIndexes = new int[tempIndexes.size()];
+            for (int i=0;i<data.tempIndexes.length;i++)
+            {
+                data.tempIndexes[i] = ((Integer)tempIndexes.get(i)).intValue();
             }
         }
 
@@ -172,278 +196,187 @@ public class Calculator extends BaseStep implements StepInterface
      */
     private Object[] calcFields(RowMetaInterface inputRowMeta, RowMetaInterface outputRowMeta, Object[] r) throws KettleValueException
     {
-        Object[] extraData = new Object[meta.getCalculation().length];
+        // First copy the input data to the new result...
+        Object[] calcData = new Object[data.calcRowMeta.size()];
+        for (int i=0;i<inputRowMeta.size();i++)
+        {
+            calcData[i] = r[i];
+        }
 
         for (int i=0;i<meta.getCalculation().length;i++)
         {
             CalculatorMetaFunction fn = meta.getCalculation()[i];
             if (!Const.isEmpty(fn.getFieldName()))
             {
-                /*
+                // Get the metadata & the data...
+                // ValueMetaInterface metaTarget = data.calcRowMeta.getValueMeta(i);
+                
+                ValueMetaInterface metaA=null;
+                Object dataA=null;
+                
+                if (data.fieldIndexes[i].indexA>=0) 
+                {
+                    metaA = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexA );
+                    dataA = calcData[ data.fieldIndexes[i].indexA ];
+                }
+
+                ValueMetaInterface metaB=null;
+                Object dataB=null;
+
+                if (data.fieldIndexes[i].indexB>=0) 
+                {
+                    metaB = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexB );
+                    dataB = calcData[ data.fieldIndexes[i].indexB ];
+                }
+
+                ValueMetaInterface metaC=null;
+                Object dataC=null;
+
+                if (data.fieldIndexes[i].indexC>=0) 
+                {
+                    metaC = data.calcRowMeta.getValueMeta( data.fieldIndexes[i].indexC );
+                    dataC = calcData[ data.fieldIndexes[i].indexC ];
+                }
+                
+                // TODO: the data types are those of the first argument field, convert to the target field.
+                // Exceptions: 
+                //  - multiply can be string
+                //  - constant is string
+                //  - all date functions except add days/months
+                //  - hex encode / decodes
+                
                 switch(fn.getCalcType())
                 {
                 case CalculatorMetaFunction.CALC_NONE: 
                     break;
                 case CalculatorMetaFunction.CALC_ADD                :  // A + B
                     {
-                        Object[] valueA = 
-                        value = fieldA);
-                        value.plus(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.plus(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SUBTRACT           :   // A - B
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.minus(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.minus(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MULTIPLY           :   // A * B
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.multiply(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.multiply(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DIVIDE             :   // A / B
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.setType(fn.getValueType());
-                        value.divide(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.divide(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SQUARE             :   // A * A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.multiply(fieldA);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.multiply(metaA, dataA, metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SQUARE_ROOT        :   // SQRT( A )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.sqrt();
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.sqrt(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_1          :   // 100 * A / B 
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.multiply(100);
-                        value.divide(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent1(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_2          :  // A - ( A * B / 100 )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Value value2 = new Value(fn.getFieldName(), fieldA);
-                        value2.multiply(fieldB);
-                        value2.divide(100);
-                        value.minus(value2);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_3          :  // A + ( A * B / 100 )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Value value2 = new Value(fn.getFieldName(), fieldA);
-                        value2.multiply(fieldB);
-                        value2.divide(100);
-                        value.plus(value2);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_COMBINATION_1      :  // A + B * C
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Value value2 = new Value(fn.getFieldName(), fieldB);
-                        value2.multiply(fieldC);
-                        value.plus(value2);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.combination1(metaA, dataA, metaB, dataB, metaC, dataC);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_COMBINATION_2      :  // SQRT( A*A + B*B )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);  // A*A
-                        value.multiply(fieldA);
-                        Value value2 = new Value(fn.getFieldName(), fieldB); // B*B
-                        value2.multiply(fieldB);
-                        value.plus(value2);
-                        value.sqrt();
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.combination2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_ROUND_1            :  // ROUND( A )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.round();
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.round(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_ROUND_2            :  //  ROUND( A , B )
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.round((int)fieldB.getInteger());
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.round(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
-                        value = new Value(fn.getFieldName(), fn.getFieldA());
-                        value.convertString(fn.getValueType());
+                        calcData[inputRowMeta.size()+i] = dataA; // A string
                     }
                     break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.nvl(fieldB);
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.nvl(metaA, dataA, metaB, dataB);
                     }
                     break;                    
                 case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.add_days(fieldB.getInteger());
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.addDays(metaA, dataA, metaB, dataB);
                     }
                     break;
                case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
                     {
-                       value = new Value(fn.getFieldName(), fieldA);
-                       Calendar calendar = Calendar.getInstance();
-                       Date date = fieldA.getDate();
-                       if (date!=null)
-                       {
-                           calendar.setTime(date);
-                           value.setValue(calendar.get(Calendar.YEAR));
-                       }
-                       else
-                       {
-                           throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                       }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.yearOfDate(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.MONTH)+1);
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.monthOfDate(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.DAY_OF_YEAR));
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfYear(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.DAY_OF_MONTH));
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfMonth(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.DAY_OF_WEEK));
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfWeek(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        Calendar calendar = Calendar.getInstance();
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.weekOfYear(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR_ISO8601   : // What is the week of year (Integer) of a date ISO8601 style?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);                        
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                        	// Calendar should not be 'promoted' to class level as it's not
-                        	// thread safe (read the java docs).
-                        	Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-                        	calendar.setMinimalDaysInFirstWeek(4);
-                        	calendar.setFirstDayOfWeek(Calendar.MONDAY);
-                            calendar.setTime(date);
-                            value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.weekOfYearISO8601(metaA, dataA);
                     }
                     break;                    
                 case CalculatorMetaFunction.CALC_YEAR_OF_DATE_ISO8601     : // What is the year (Integer) of a date ISO8601 style?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);                        
-                        Date date = fieldA.getDate();
-                        if (date!=null)
-                        {
-                       	    // Calendar should not be 'promoted' to class level as it's not
-                    	    // thread safe (read the java docs).
-                    	    Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-                    	    calendar.setMinimalDaysInFirstWeek(4);
-                    	    calendar.setFirstDayOfWeek(Calendar.MONDAY);
-                            calendar.setTime(date);
-                            
-                            int week  = calendar.get(Calendar.WEEK_OF_YEAR);
-                            int month = calendar.get(Calendar.MONTH);
-                            int year = calendar.get(Calendar.YEAR);
-                            // fix up for the year taking into account ISO8601 weeks
-                            if ( week >= 52 && month == 0  ) year--;
-                            if ( week <= 2  && month == 11 ) year++;
-                            value.setValue(year);
-                        }
-                        else
-                        {
-                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
-                        }
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.yearOfDateISO8601(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_BYTE_TO_HEX_ENCODE   : // Byte to Hex encode string field A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.byteToHexEncode();
+                        calcData[inputRowMeta.size()+i] = ValueDataUtil.byteToHexEncode(metaA, dataA);
                     }
                     break;
+                }
+                
+                /*
                 case CalculatorMetaFunction.CALC_HEX_TO_BYTE_DECODE   : // Hex to Byte decode string field A
                     {
                         value = new Value(fn.getFieldName(), fieldA);
@@ -475,46 +408,17 @@ public class Calculator extends BaseStep implements StepInterface
                     }
                     r.addValue(value); // add to the row!
                 }
+                */
+                
+                // TODO: convert the data to the correct target data type.
+                // 
             }
-            */
-        }
-            
-            /*
-
-        int inpFieldsRemoved = 0;
-        // OK, see which fields we need to remove from the result?
-        for (int i=meta.getCalculation().length-1;i>=0;i--)
-        {
-            CalculatorMetaFunction fn = meta.getCalculation()[i];
-            if (fn.isRemovedFromResult())
-            {
-                // get the index of the value...
-                Integer idx = (Integer) data.indexCache.get(fn.getFieldName());
-                if (idx!=null)
-                {
-                	int y = idx.intValue();
-                	if ( y < rowSize )
-                	{
-                        // value from the original row.
-           	            r.removeValue(idx.intValue());
-           	            inpFieldsRemoved++;
-                	}
-                	else
-                	{
-                		// calculated value used in calculation
-                		r.removeValue(idx.intValue() - inpFieldsRemoved);
-                	}
-                }
-                else
-                {
-                    // calculated value not used in other calculation
-                    r.removeValue(rowSize+i); 
-                }
-            }
-            */
         }
         
-        return extraData;
+        // OK, now we should refrain from adding the temporary fields to the result.
+        // So we remove them.
+        // 
+        return RowDataUtil.removeItems(calcData, data.tempIndexes);
     }
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -524,14 +428,6 @@ public class Calculator extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-		    // Calculate the number of temporary fields...
-            data.nrTemporaryFields = 0;
-            for (int i=0;i<meta.getCalculation().length;i++)
-            {
-                CalculatorMetaFunction calculatorMetaFunction = meta.getCalculation()[i];
-                if (calculatorMetaFunction.isRemovedFromResult()) data.nrTemporaryFields++;
-            }
-            
 		    return true;
 		}
 		return false;
