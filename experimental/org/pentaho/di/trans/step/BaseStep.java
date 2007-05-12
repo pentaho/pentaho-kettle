@@ -41,6 +41,7 @@ import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
+import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
@@ -87,6 +88,8 @@ public class BaseStep extends Thread
         new StepPluginMeta(SelectValuesMeta.class, "SelectValues", Messages.getString("BaseStep.TypeLongDesc.SelectValues"), Messages.getString("BaseStep.TypeTooltipDesc.SelectValues", Const.CR), "SEL.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages.getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
         new StepPluginMeta(CalculatorMeta.class, "Calculator", Messages.getString("BaseStep.TypeLongDesc.Caculator"), Messages.getString("BaseStep.TypeTooltipDesc.Calculator"), "CLC.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
+
 
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
@@ -167,8 +170,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(MergeRowsMeta.class, "MergeRows", Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages
                     .getString("BaseStep.TypeTooltipDesc.MergeRows"), "MRG.png", CATEGORY_JOINS),
-            new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages
                     .getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages
