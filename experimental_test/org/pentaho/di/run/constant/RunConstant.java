@@ -14,7 +14,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
 
 public class RunConstant extends TestCase
 {
-    public void testRowGenerator() throws KettleXMLException
+    public void testConstant() throws KettleXMLException
     {
         EnvUtil.environmentInit();
         StepLoader.getInstance().read();
