@@ -367,14 +367,14 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (meta.getDeleteName()!=null && meta.getDeleteName().length>0) data.deselect = true;
 			if (meta.getMetaName()!=null && meta.getMetaName().length>0) data.metadata = true;
 			
-			boolean atLeaseOne = data.select || data.deselect || data.metadata;
-			if (!atLeaseOne)
+			boolean atLeastOne = data.select || data.deselect || data.metadata;
+			if (!atLeastOne)
 			{
 				setErrors(1);
 				logError(Messages.getString("SelectValues.Log.InputShouldContainData")); //$NON-NLS-1$
 			}
 			
-			return atLeaseOne; // One of those three has to work!
+			return atLeastOne; // One of those three has to work!
 		}
 		else
 		{

@@ -13,7 +13,6 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 
 
-
 /**
  * Step that will abort after having seen 'x' number of rows on its input.
  * 
