@@ -40,6 +40,7 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
@@ -89,8 +90,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages.getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
         new StepPluginMeta(CalculatorMeta.class, "Calculator", Messages.getString("BaseStep.TypeLongDesc.Caculator"), Messages.getString("BaseStep.TypeTooltipDesc.Calculator"), "CLC.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages.getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
 
-
+        
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
@@ -204,8 +206,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
-            new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
                     .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
            */                     
