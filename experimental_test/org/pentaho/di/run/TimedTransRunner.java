@@ -18,6 +18,10 @@ public class TimedTransRunner extends TestCase
     private String filename;
     private int logLevel;
     private long records;
+    private double newRunTime;
+    private double newSpeed;
+    private double oldRunTime;
+    private double oldSpeed;
     
     public TimedTransRunner(String filename, int logLevel, long records)
     {
@@ -26,15 +30,49 @@ public class TimedTransRunner extends TestCase
         this.records = records;
     }
     
-    public void runNewEngine() throws KettleXMLException
+    public void runOldAndNew() throws KettleXMLException
     {
         EnvUtil.environmentInit();
-        if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
         LogWriter.getInstance(logLevel);
         
-        TransMeta transMeta = new TransMeta(filename);
+        runOldEngine();
+        runNewEngine();
+        
+        compareResults();
+    }
+
+    public void runOldEngine() throws KettleXMLException
+    {
+        if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
+
+        be.ibridge.kettle.trans.TransMeta transMeta = new be.ibridge.kettle.trans.TransMeta(filename);
         System.out.println("Name of transformation: "+transMeta.getName());
         System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
+        
+        long startTime = System.currentTimeMillis();
+        
+        // OK, now run this transFormation.
+        be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), transMeta);
+        trans.execute(null);
+        
+        trans.waitUntilFinished();
+        
+        Result result = trans.getResult();
+        assertTrue(result.getNrErrors()==0);
+        
+        long stopTime = System.currentTimeMillis();
+        
+        oldRunTime = (double)(stopTime - startTime) / 1000;
+        oldSpeed = (double)records / (oldRunTime);
+        
+        System.out.println("V2 results: records="+records+", runtime="+oldRunTime+", speed="+oldSpeed);
+    }
+
+    public void runNewEngine() throws KettleXMLException
+    {
+        if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
+
+        TransMeta transMeta = new TransMeta(filename);
         
         long startTime = System.currentTimeMillis();
         
@@ -49,14 +87,18 @@ public class TimedTransRunner extends TestCase
         
         long stopTime = System.currentTimeMillis();
         
-        double seconds = (double)(stopTime - startTime) / 1000;
-        double speed = (double)records / (seconds);
+        newRunTime = (double)(stopTime - startTime) / 1000;
+        newSpeed = (double)records / (newRunTime);
         
-        System.out.println("records : "+records);
-        System.out.println("runtime : "+seconds);
-        System.out.println("speed   : "+speed);
+        System.out.println("V3 results: records="+records+", runtime="+newRunTime+", speed="+newSpeed);
     }
-
+    
+    private void compareResults()
+    {
+        double factor = oldRunTime/newRunTime;
+        System.out.println("V3 / V2 = x"+factor);
+    }
+    
     /**
      * @return the filename
      */
