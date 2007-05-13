@@ -32,7 +32,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.rowgenerator.Messages;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;

@@ -91,7 +91,7 @@
         <precision>2</precision>
       </field>
     </fields>
-    <limit>1000000</limit>
+    <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
     <GUI>
       <xloc>163</xloc>

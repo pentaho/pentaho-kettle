@@ -112,7 +112,7 @@
            </partitioning>
     <fields>
     </fields>
-    <limit>250000</limit>
+    <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
     <GUI>
       <xloc>150</xloc>

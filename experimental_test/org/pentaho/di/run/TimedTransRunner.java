@@ -7,6 +7,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
@@ -22,6 +23,8 @@ public class TimedTransRunner extends TestCase
     private double newSpeed;
     private double oldRunTime;
     private double oldSpeed;
+    private Result oldResult;
+    private Result newResult;
     
     public TimedTransRunner(String filename, int logLevel, long records)
     {
@@ -34,6 +37,10 @@ public class TimedTransRunner extends TestCase
     {
         EnvUtil.environmentInit();
         LogWriter.getInstance(logLevel);
+        
+        // Set environment variables ${NR_OF_ROWS}
+        //
+        KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
         
         runOldEngine();
         runNewEngine();
@@ -57,10 +64,9 @@ public class TimedTransRunner extends TestCase
         
         trans.waitUntilFinished();
         
-        Result result = trans.getResult();
-        assertTrue(result.getNrErrors()==0);
-        
         long stopTime = System.currentTimeMillis();
+        
+        oldResult = trans.getResult();
         
         oldRunTime = (double)(stopTime - startTime) / 1000;
         oldSpeed = (double)records / (oldRunTime);
@@ -82,10 +88,9 @@ public class TimedTransRunner extends TestCase
         
         trans.waitUntilFinished();
         
-        Result result = trans.getResult();
-        assertTrue(result.getNrErrors()==0);
-        
         long stopTime = System.currentTimeMillis();
+
+        newResult = trans.getResult();
         
         newRunTime = (double)(stopTime - startTime) / 1000;
         newSpeed = (double)records / (newRunTime);
@@ -153,5 +158,37 @@ public class TimedTransRunner extends TestCase
     public void setRecords(long records)
     {
         this.records = records;
+    }
+
+    /**
+     * @return the newResult
+     */
+    public Result getNewResult()
+    {
+        return newResult;
+    }
+
+    /**
+     * @param newResult the newResult to set
+     */
+    public void setNewResult(Result newResult)
+    {
+        this.newResult = newResult;
+    }
+
+    /**
+     * @return the oldResult
+     */
+    public Result getOldResult()
+    {
+        return oldResult;
+    }
+
+    /**
+     * @param oldResult the oldResult to set
+     */
+    public void setOldResult(Result oldResult)
+    {
+        this.oldResult = oldResult;
     }
 }
