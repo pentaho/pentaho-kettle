@@ -177,20 +177,21 @@ public class OraBulkLoader extends BaseStep implements StepInterface
                         "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'").append(Const.CR).append(
                         "(");
 
-		String fields[] = meta.getFieldTable();
+		String streamFields[] = meta.getFieldStream();
+		String tableFields[] = meta.getFieldTable();
 		String dateMask[] = meta.getDateMask();
 		
-		if ( fields == null || fields.length == 0 )
+		if ( streamFields == null || streamFields.length == 0 )
 		{
 			throw new KettleException("No fields defined to load to database");
 		}
 		
-		for (int i = 0; i < fields.length; i++)
+		for (int i = 0; i < streamFields.length; i++)
 		{
 			if ( i!=0 ) contents.append(", ").append(Const.CR);
-			contents.append(dm.quoteField(fields[i]));
+			contents.append(dm.quoteField(tableFields[i]));
 			
-			int pos = r.searchValueIndex(fields[i]);
+			int pos = r.searchValueIndex(streamFields[i]);
 			if (pos<0)
 			{
 				throw new KettleException("Could not find field " + 
