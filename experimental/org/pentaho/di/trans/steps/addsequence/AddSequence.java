@@ -19,7 +19,6 @@ import java.util.Hashtable;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -112,7 +111,7 @@ public class AddSequence extends BaseStep implements StepInterface
         if (first)
         {
             first=false;
-            data.outputRowMeta = new RowMeta();
+            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null);
         }
 

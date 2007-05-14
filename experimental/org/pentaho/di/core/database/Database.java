@@ -988,29 +988,52 @@ public class Database
 			throw new KettleDatabaseException("Error setting value #"+pos+" ["+(v==null?"NULL":v.toString())+"] on prepared statement ("+debug+")"+Const.CR+e.toString(), e);
 		}
 	}
-	
+    
+    public void setValues(RowMetaInterface rowMeta, Object[] data, PreparedStatement ps) throws KettleDatabaseException
+    {
+        // now set the values in the row!
+        for (int i=0;i<rowMeta.size();i++)
+        {
+            ValueMetaInterface v = rowMeta.getValueMeta(i);
+            Object object = data[i];
+            
+            try
+            {
+                setValue(ps, v, object, i+1);
+            }
+            catch(KettleDatabaseException e)
+            {
+                throw new KettleDatabaseException("offending row : "+rowMeta, e);
+            }
+        }
+    }	
 
     /**
      * Sets the values of the preparedStatement pstmt.
      * @param rowMeta
      * @param data
      */
-    public void setValues(RowMetaInterface rowMeta, Object[] data, PreparedStatement ps) throws KettleDatabaseException
+    public void setValues(RowMetaInterface rowMeta, Object[] data, PreparedStatement ps, int ignoreThisValueIndex) throws KettleDatabaseException
 	{
 		// now set the values in the row!
+        int index=0;
 		for (int i=0;i<rowMeta.size();i++)
 		{
-			ValueMetaInterface v = rowMeta.getValueMeta(i);
-            Object object = data[i];
-            
-			try
-			{
-				setValue(ps, v, object, i+1);
-			}
-			catch(KettleDatabaseException e)
-			{
-				throw new KettleDatabaseException("offending row : "+rowMeta, e);
-			}
+            if (i!=ignoreThisValueIndex)
+            {
+                ValueMetaInterface v = rowMeta.getValueMeta(i);
+                Object object = data[i];
+                
+                try
+    			{
+    				setValue(ps, v, object, index+1);
+                    index++;
+    			}
+    			catch(KettleDatabaseException e)
+    			{
+    				throw new KettleDatabaseException("offending row : "+rowMeta, e);
+    			}
+            }
 		}
 	}
 

@@ -50,6 +50,7 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 import be.ibridge.kettle.core.Const;
@@ -93,12 +94,11 @@ public class BaseStep extends Thread
         new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages.getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(AddSequenceMeta.class, "Sequence", Messages.getString("BaseStep.TypeLongDesc.AddSequence"), Messages.getString("BaseStep.TypeTooltipDesc.Addsequence"), "SEQ.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages.getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
         
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(FilterRowsMeta.class, "FilterRows", Messages.getString("BaseStep.TypeLongDesc.FilterRows"), Messages
                     .getString("BaseStep.TypeTooltipDesc.FilterRows"), "FLT.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages

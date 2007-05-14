@@ -54,7 +54,7 @@ public class BuildVersion
             InputStream inputStream = getClass().getResourceAsStream( "/"+filename ); // try to find it in the jars...
             if (inputStream==null) // not found
             {
-                System.out.println("Stream not found for filename [/"+filename+"], looking for it on the normal filesystem...");
+                // System.out.println("Stream not found for filename [/"+filename+"], looking for it on the normal filesystem...");
                 try
                 {
                     inputStream = new FileInputStream(filename); // Retry from normal file system

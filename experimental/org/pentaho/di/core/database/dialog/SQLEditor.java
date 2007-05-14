@@ -19,7 +19,6 @@ package org.pentaho.di.core.database.dialog;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -36,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
@@ -45,7 +45,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.DBCache;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
