@@ -67,6 +67,7 @@ public class TimedTransRunner extends TestCase
         System.out.println();
         System.out.println("Name of transformation: "+transMeta.getName());
         System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
+        System.out.println("-----------------------------------------------------------------------------------------------------");
         
         // OK, now run this transFormation.
         be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), transMeta);
@@ -98,7 +99,7 @@ public class TimedTransRunner extends TestCase
     }
 
     private static DecimalFormat recordsDF = new DecimalFormat("###,###,##0");
-    private static DecimalFormat runtimeDF = new DecimalFormat("##0.0");
+    private static DecimalFormat runtimeDF = new DecimalFormat("##0.00");
     private static DecimalFormat speedDF = new DecimalFormat("###,###,##0");
     
     private void printStats(String prefix, long lines, double runTime, double speed)
@@ -141,7 +142,7 @@ public class TimedTransRunner extends TestCase
         printStats("V3 results", records, newRunTime, newSpeed);
     }
     
-    private static DecimalFormat factorDF = new DecimalFormat("##0.0");
+    private static DecimalFormat factorDF = new DecimalFormat("##0.00");
     
     private void compareResults()
     {
