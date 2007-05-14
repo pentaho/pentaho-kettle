@@ -393,4 +393,26 @@ public class RowMeta implements RowMetaInterface
         return buffer.toString();
     }
 
+    /**
+     * Compare 2 rows with each other using certain values in the rows and
+     * also considering the specified ascending clauses of the value metadata.
+
+     * @param rowData1 The first row of data
+     * @param rowData2 The second row of data
+     * @param fieldnrs the fields to compare on (in that order)
+     * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
+     * @throws KettleValueException
+     */
+    public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs[]) throws KettleValueException
+    {
+        for (int i=0;i<fieldnrs.length;i++)
+        {
+            ValueMetaInterface valueMeta = getValueMeta(fieldnrs[i]);
+            
+            int cmp = valueMeta.compare(rowData1[fieldnrs[i]], rowData2[fieldnrs[i]]);
+            if (cmp!=0) return cmp;
+        }
+
+        return 0;
+    }
 }

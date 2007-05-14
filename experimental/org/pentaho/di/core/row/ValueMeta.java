@@ -33,6 +33,8 @@ public class ValueMeta implements ValueMetaInterface
     private String   decimalSymbol;
     private String   groupingSymbol;
     private String   currencySymbol;
+    private boolean  caseInsensitive;
+    private boolean  sortedDescending;
     
     public ValueMeta()
     {
@@ -61,6 +63,7 @@ public class ValueMeta implements ValueMetaInterface
         this.length = length;
         this.precision = precision;
         this.storageType=STORAGE_TYPE_NORMAL;
+        this.sortedDescending=false;
     }
     
     public Object clone()
@@ -288,9 +291,46 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.currencySymbol = currencySymbol;
     }
+    
+    /**
+     * @return the caseInsensitive
+     */
+    public boolean isCaseInsensitive()
+    {
+        return caseInsensitive;
+    }
+
+    /**
+     * @param caseInsensitive the caseInsensitive to set
+     */
+    public void setCaseInsensitive(boolean caseInsensitive)
+    {
+        this.caseInsensitive = caseInsensitive;
+    }
+
+    
+    
+    
+    
 
     // DATE + STRING
     
+    /**
+     * @return the sortedDescending
+     */
+    public boolean isSortedDescending()
+    {
+        return sortedDescending;
+    }
+
+    /**
+     * @param sortedDescending the sortedDescending to set
+     */
+    public void setSortedDescending(boolean sortedDescending)
+    {
+        this.sortedDescending = sortedDescending;
+    }
+
     private String convertDateToString(Date date)
     {
         if (date==null) return null;
@@ -1108,6 +1148,11 @@ public class ValueMeta implements ValueMetaInterface
         return t==TYPE_INTEGER || t==TYPE_NUMBER || t==TYPE_BIGNUMBER;
     }
     
+    public boolean isSortedAscending()
+    {
+        return !isSortedDescending();
+    }
+    
     /**
      * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
      * @return A String describing the type of value.
@@ -1380,8 +1425,24 @@ public class ValueMeta implements ValueMetaInterface
             // length & precision
             outputStream.writeInt(getLength());
             outputStream.writeInt(getPrecision());
+
+            // Origin
+            writeString(outputStream, origin);
+
+            // Comments
+            writeString(outputStream, comments);
             
-            // TODO: add origin, comments, masks, etc.
+            // formatting Mask, decimal, grouping, currency
+            writeString(outputStream, conversionMask);
+            writeString(outputStream, decimalSymbol);
+            writeString(outputStream, groupingSymbol);
+            writeString(outputStream, currencySymbol);
+            
+            // Case sensitivity of compare
+            outputStream.writeBoolean(caseInsensitive);  
+            
+            // Sorting information
+            outputStream.writeBoolean(sortedDescending); 
         }
         catch(IOException e)
         {
@@ -1437,7 +1498,24 @@ public class ValueMeta implements ValueMetaInterface
             length = inputStream.readInt();
             precision = inputStream.readInt();
             
-            // TODO: add origin, comments, masks, etc.
+            // Origin
+            origin = readString(inputStream);
+
+            // Comments
+            comments=readString(inputStream);
+            
+            // formatting Mask, decimal, grouping, currency
+            
+            conversionMask=readString(inputStream);
+            decimalSymbol=readString(inputStream);
+            groupingSymbol=readString(inputStream);
+            currencySymbol=readString(inputStream);
+            
+            // Case sensitivity
+            caseInsensitive = inputStream.readBoolean();
+            
+            // Sorting type
+            sortedDescending = inputStream.readBoolean();
         }
         catch(IOException e)
         {
@@ -1497,5 +1575,90 @@ public class ValueMeta implements ValueMetaInterface
         }
 
         return TYPE_NONE;
+    }
+    
+    public boolean isNull(Object data)
+    {
+        return data==null || (isString() && ((String)data).length()==0);
+    }
+    
+    /**
+     * Compare 2 values of the same data type
+     * @param data1 the first value
+     * @param data2 the second value
+     * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
+     * @throws KettleValueException In case we get conversion errors
+     */
+    public int compare(Object data1, Object data2) throws KettleValueException
+    {
+        boolean n1 = isNull(data1);
+        boolean n2 = isNull(data2);
+
+        // null is always smaller!
+        if (n1 && !n2) return -1;
+        if (!n1 && n2) return 1;
+        if (n1 && n2) return 0;
+
+        int cmp=0;
+        switch (getType())
+        {
+        case TYPE_STRING:
+            {
+                String one = Const.rtrim(getString(data1));
+                String two = Const.rtrim(getString(data2));
+    
+                if (caseInsensitive)
+                {
+                    cmp = one.compareToIgnoreCase(two);
+                }
+                else
+                {
+                    cmp = one.compareTo(two);
+                }
+            }
+            break;
+
+        case TYPE_INTEGER:
+            {
+                cmp = Double.compare(getNumber(data1).doubleValue(), getNumber(data2).doubleValue());
+            }
+            break;
+
+        case TYPE_DATE:
+            {
+                cmp =  Double.compare(getInteger(data1).longValue(), getInteger(data2).longValue());
+            }
+            break;
+
+        case TYPE_BOOLEAN:
+            {
+                if (getBoolean(data1).booleanValue() == getBoolean(data2).booleanValue()) cmp=0; // true == true, false == false
+                else if (getBoolean(data1).booleanValue() && !getBoolean(data2).booleanValue()) cmp=1; // true  > false
+                else cmp=-1; // false < true
+            }
+            break;
+
+        case TYPE_NUMBER:
+            {
+                cmp=Double.compare(getNumber(data1).doubleValue(), getNumber(data2).doubleValue());
+            }
+            break;
+
+        case TYPE_BIGNUMBER:
+            {
+                cmp=getBigNumber(data1).compareTo(getBigNumber(data2));
+            }
+            break;
+        }
+        
+        if (isSortedDescending())
+        {
+            return -cmp;
+        }
+        else
+        {
+            return cmp;
+        }
+        
     }
 }

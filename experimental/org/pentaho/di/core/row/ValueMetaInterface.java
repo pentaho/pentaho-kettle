@@ -51,6 +51,17 @@ public interface ValueMetaInterface extends Cloneable
     
     
     
+    /** Indicating that the rows are not sorted on this key */
+    public static final int SORT_TYPE_NOT_SORTED = 0;
+    
+    /** Indicating that the rows are not sorted ascending on this key */
+    public static final int SORT_TYPE_ASCENDING = 1;
+
+    /** Indicating that the rows are sorted descending on this key */
+    public static final int SORT_TYPE_DESCENDING = 2;
+    
+    
+    
 
     public String   getName();
     public void     setName(String name);
@@ -214,4 +225,14 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleFileException in case a I/O error occurs
      */
     public Object readData(DataInputStream inputStream) throws KettleFileException;
+    
+    /**
+     * Compare 2 values of the same data type
+     * @param data1 the first value
+     * @param data2 the second value
+     * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
+     * @throws KettleValueException In case we get conversion errors
+     */
+    public int compare(Object data1, Object data2) throws KettleValueException;
+
 }
