@@ -90,8 +90,11 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 {
     public static final String XML_TAG = "transformation";
     
-    private static final String CREATED_DATE_FIELDNAME = "created_date";
-    private static final String MODIFIED_DATE_FIELDNAME = "modified_date";
+    // private static final String CREATED_DATE_FIELDNAME = "created_date";
+    // private static final String MODIFIED_DATE_FIELDNAME = "modified_date";
+    
+    // private static final String STRING_CREATED_DATE = "created_date";
+    // private static final String STRING_MODIFIED_DATE = "modified_date";
     
     private static LogWriter    log                = LogWriter.getInstance();
 
@@ -214,9 +217,6 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     public static final int     TYPE_UNDO_POSITION = 4;
 
     public static final String  desc_type_undo[]   = { "", Messages.getString("TransMeta.UndoTypeDesc.UndoChange"), Messages.getString("TransMeta.UndoTypeDesc.UndoNew"), Messages.getString("TransMeta.UndoTypeDesc.UndoDelete"), Messages.getString("TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-
-	private static final String STRING_CREATED_DATE = "created_date";
-    private static final String STRING_MODIFIED_DATE = "modified_date";
 
     private static final String XML_TAG_INFO                = "info";
     private static final String XML_TAG_ORDER               = "order";

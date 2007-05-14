@@ -72,6 +72,24 @@ public class RowDataUtil
         }
         return result;
     }
+    
+    /**
+     * Add a single value to a row of data
+     * 
+     * @param rowData The original row of data
+     * @param extra The extra value to add
+     * @return a new Array containing all elements, including the extra one
+     */
+    public static Object[] addValueData(Object[] rowData, Object extra)
+    {
+        Object[] result = new Object[rowData.length + 1];
+        for (int i=0;i<rowData.length;i++)
+        {
+            result[i] = rowData[i];
+        }
+        result[rowData.length] = extra;
+        return result;
+    }
 
     /**
      * Remove a number of items in a row of data.

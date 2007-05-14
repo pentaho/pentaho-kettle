@@ -53,6 +53,7 @@ public class TimedTransRunner extends TestCase
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
         be.ibridge.kettle.trans.TransMeta transMeta = new be.ibridge.kettle.trans.TransMeta(filename);
+        System.out.println();
         System.out.println("Name of transformation: "+transMeta.getName());
         System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
         

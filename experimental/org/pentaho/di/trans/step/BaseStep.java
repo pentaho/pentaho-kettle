@@ -41,6 +41,7 @@ import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
+import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
@@ -91,7 +92,7 @@ public class BaseStep extends Thread
         new StepPluginMeta(CalculatorMeta.class, "Calculator", Messages.getString("BaseStep.TypeLongDesc.Caculator"), Messages.getString("BaseStep.TypeTooltipDesc.Calculator"), "CLC.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages.getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
-
+        new StepPluginMeta(AddSequenceMeta.class, "Sequence", Messages.getString("BaseStep.TypeLongDesc.AddSequence"), Messages.getString("BaseStep.TypeTooltipDesc.Addsequence"), "SEQ.png", CATEGORY_TRANSFORM),
         
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
@@ -106,8 +107,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.Sortrows"), "SRT.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(AddSequenceMeta.class, "Sequence", Messages.getString("BaseStep.TypeLongDesc.AddSequence"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Addsequence"), "SEQ.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
             new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"),
