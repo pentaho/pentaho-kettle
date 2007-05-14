@@ -216,4 +216,12 @@ public interface RowMetaInterface extends Cloneable
      * @param index the index to remove the value metadata from
      */
     public void removeValueMeta(int index);
+
+    /**
+     * Get the string representation of the data in a row of data
+     * @param row the row of data to convert to string
+     * @return the row of data in string form
+     * @throws KettleValueException in case of a conversion error
+     */
+    public String getString(Object[] row) throws KettleValueException;
 }

@@ -373,4 +373,24 @@ public class RowMeta implements RowMetaInterface
     {
         valueMetaList.remove(index);
     }
+    
+    /**
+     * Get the string representation of the data in a row of data
+     * @param row the row of data to convert to string
+     * @return the row of data in string form
+     * @throws KettleValueException in case of a conversion error
+     */
+    public String getString(Object[] row) throws KettleValueException
+    {
+        StringBuffer buffer = new StringBuffer();
+        for (int i=0;i<size();i++)
+        {
+            if (i>0) buffer.append(", ");
+            buffer.append( "[" );
+            buffer.append( getString(row, i) );
+            buffer.append( "]" );
+        }
+        return buffer.toString();
+    }
+
 }

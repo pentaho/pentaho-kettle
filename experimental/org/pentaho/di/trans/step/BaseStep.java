@@ -665,7 +665,7 @@ public class BaseStep extends Thread
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(row);
+            rowListener.rowWrittenEvent(rowMeta, row);
         }
 
         // Keep adding to terminator_rows buffer...
@@ -929,7 +929,7 @@ public class BaseStep extends Thread
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(row);
+            rowListener.rowWrittenEvent(rowMeta, row);
         }
 
         // Keep adding to terminator_rows buffer...
@@ -1001,7 +1001,7 @@ public class BaseStep extends Thread
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.errorRowWrittenEvent(row);
+            rowListener.errorRowWrittenEvent(rowMeta, row);
         }
 
         linesRejected++;
@@ -1160,7 +1160,7 @@ public class BaseStep extends Thread
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowReadEvent(row);
+            rowListener.rowReadEvent(inputRowMeta, row);
         }
 
         nextInputStream(); // Look for the next input stream to get row from.
@@ -1302,7 +1302,7 @@ public class BaseStep extends Thread
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(rowData);
+            rowListener.rowWrittenEvent(rowMeta, rowData);
         }
 
         return new RowMetaAndData(rowMeta, rowData);

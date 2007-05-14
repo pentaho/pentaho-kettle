@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Text File Input - CSV</name>
-    <description>Read a large CSV file</description>
+    <name>Text File Input - CSV - Strings only</name>
+    <description>Read a large CSV file, all fields as Strings (no conversions)</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -57,6 +57,25 @@
   <order>
   <hop> <from>Text file input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
   <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>334</xloc>
+      <yloc>122</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Text file input</name>
     <type>TextFileInput</type>
     <description/>
@@ -92,9 +111,9 @@
     <format>DOS</format>
     <encoding/>
     <file>
-      <name>D:\temp\customers-random.txt</name>
+      <name>${Internal.Transformation.Filename.Directory}&#47;customers-random-100k.txt</name>
       <filemask/>
-      <file_required/>
+      <file_required>Y</file_required>
       <type>CSV</type>
       <compression>None</compression>
     </file>
@@ -269,25 +288,6 @@
      <cluster_schema/>
     <GUI>
       <xloc>186</xloc>
-      <yloc>122</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
-    <GUI>
-      <xloc>334</xloc>
       <yloc>122</yloc>
       <draw>Y</draw>
       </GUI>

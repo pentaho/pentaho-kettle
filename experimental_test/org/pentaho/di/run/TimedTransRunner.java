@@ -1,10 +1,14 @@
 package org.pentaho.di.run;
 
+import java.text.DecimalFormat;
+
 import junit.framework.TestCase;
 
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RowListener;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
@@ -25,6 +29,13 @@ public class TimedTransRunner extends TestCase
     private double oldSpeed;
     private Result oldResult;
     private Result newResult;
+    
+    private String       newRowListenerStep;
+    private RowListener  newRowListener;
+    
+    private String       oldRowListenerStep;
+    private be.ibridge.kettle.trans.step.RowListener  oldRowListener;
+    
     
     public TimedTransRunner(String filename, int logLevel, long records)
     {
@@ -57,11 +68,22 @@ public class TimedTransRunner extends TestCase
         System.out.println("Name of transformation: "+transMeta.getName());
         System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
         
-        long startTime = System.currentTimeMillis();
-        
         // OK, now run this transFormation.
         be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), transMeta);
-        trans.execute(null);
+        trans.prepareExecution(null);
+        
+        if (!Const.isEmpty(oldRowListenerStep))
+        {
+            be.ibridge.kettle.trans.step.BaseStep baseStep = trans.findRunThread(oldRowListenerStep);
+            if (baseStep!=null)
+            {
+                baseStep.addRowListener(oldRowListener);
+            }
+        }
+
+        long startTime = System.currentTimeMillis();
+        
+        trans.startThreads();
         
         trans.waitUntilFinished();
         
@@ -72,7 +94,16 @@ public class TimedTransRunner extends TestCase
         oldRunTime = (double)(stopTime - startTime) / 1000;
         oldSpeed = (double)records / (oldRunTime);
         
-        System.out.println("V2 results: records="+records+", runtime="+oldRunTime+", speed="+oldSpeed);
+        printStats("V2 results", records, oldRunTime, oldSpeed);
+    }
+
+    private static DecimalFormat recordsDF = new DecimalFormat("###,###,##0");
+    private static DecimalFormat runtimeDF = new DecimalFormat("##0.0");
+    private static DecimalFormat speedDF = new DecimalFormat("###,###,##0");
+    
+    private void printStats(String prefix, long lines, double runTime, double speed)
+    {
+        System.out.println(prefix+", rows: "+recordsDF.format(lines)+",   runtime: "+runtimeDF.format(runTime)+"s,   speed: "+speedDF.format(speed)+" rows/s");
     }
 
     public void runNewEngine() throws KettleXMLException
@@ -81,11 +112,22 @@ public class TimedTransRunner extends TestCase
 
         TransMeta transMeta = new TransMeta(filename);
         
-        long startTime = System.currentTimeMillis();
-        
         // OK, now run this transFormation.
         Trans trans = new Trans(LogWriter.getInstance(), transMeta);
-        trans.execute(null);
+        trans.prepareExecution(null);
+        
+        if (!Const.isEmpty(newRowListenerStep))
+        {
+            BaseStep baseStep = trans.findRunThread(newRowListenerStep);
+            if (baseStep!=null)
+            {
+                baseStep.addRowListener(newRowListener);
+            }
+        }
+        
+        long startTime = System.currentTimeMillis();
+        
+        trans.startThreads();
         
         trans.waitUntilFinished();
         
@@ -96,13 +138,15 @@ public class TimedTransRunner extends TestCase
         newRunTime = (double)(stopTime - startTime) / 1000;
         newSpeed = (double)records / (newRunTime);
         
-        System.out.println("V3 results: records="+records+", runtime="+newRunTime+", speed="+newSpeed);
+        printStats("V3 results", records, newRunTime, newSpeed);
     }
+    
+    private static DecimalFormat factorDF = new DecimalFormat("##0.0");
     
     private void compareResults()
     {
         double factor = oldRunTime/newRunTime;
-        System.out.println("V3 / V2 = x"+factor);
+        System.out.println("V3 / V2 = x"+factorDF.format(factor));
     }
     
     /**
@@ -191,5 +235,17 @@ public class TimedTransRunner extends TestCase
     public void setOldResult(Result oldResult)
     {
         this.oldResult = oldResult;
+    }
+
+    public void addOldRowListener(String stepname, be.ibridge.kettle.trans.step.RowListener rowListener)
+    {
+        this.oldRowListenerStep = stepname;
+        this.oldRowListener = rowListener;
+    }
+
+    public void addNewRowListener(String stepname, RowListener rowListener)
+    {
+        this.newRowListenerStep = stepname;
+        this.newRowListener = rowListener;
     }
 }
