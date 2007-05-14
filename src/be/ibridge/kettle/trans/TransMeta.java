@@ -28,8 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -5218,8 +5216,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         {
             try
             {
-                FileSystemManager fsManager = VFS.getManager();
-                FileObject fileObject = fsManager.resolveFile( filename );
+                FileObject fileObject = KettleVFS.getFileObject(filename);
                 FileName fileName = fileObject.getName();
                 
                 // The filename of the transformation
