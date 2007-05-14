@@ -1,0 +1,4 @@
+The following bug where fixes backported from the 3.0.0-M1 series:
+- Execute Database Procedure (worker), NPE fix for bug #5604 - Matt - 2007-MAY-14
+- Text File Input (worker), file handling fix for bug #5493 - Matt - 2007-MAY-14
+- Database handling of SQL Server (.., instance name), .. fix for bug #5618 - Matt - 2007-MAY-14
