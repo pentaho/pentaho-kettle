@@ -769,7 +769,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	}
 	
 	/**
-	 * @return the Informix servername
+	 * @return the Informix Servername or the Microsoft Instance name
 	 */
 	public String getServername()
 	{
@@ -1474,6 +1474,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	public String getSchemaTableCombination(String schemaName, String tableName)
 	{
         if (Const.isEmpty(schemaName)) return tableName; // no need to look further
+        if (isUsingDoubleDecimalAsSchemaTableSeparator()) return schemaName+".."+tableName;
 		return databaseInterface.getSchemaTableCombination(schemaName, tableName);
 	}
 
@@ -2195,6 +2196,22 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     {
         databaseInterface.setStreamingResults(useStreaming);
     }
+    
+    /**
+     * @return true if the Microsoft SQL server uses two decimals (..) to separate schema and table (default==false).
+     */
+    public boolean isUsingDoubleDecimalAsSchemaTableSeparator()
+    {
+        return databaseInterface.isUsingDoubleDecimalAsSchemaTableSeparator();
+    }
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator)
+    {
+        databaseInterface.setUsingDoubleDecimalAsSchemaTableSeparator(useDoubleDecimalSeparator);
+    }
 
     /**
      * Find a database with a certain name in an arraylist of databases.
@@ -2256,4 +2273,27 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
         return null;
     }
+
+    /**
+     * @return the SQL Server instance
+     */
+    public String getSQLServerInstance()
+    {
+        // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
+        // We want to return <somevalue>
+        // --> MSSQL.instancename
+        return (String) getExtraOptions().get("MSSQL.instance");
+    }
+    
+    /**
+     * @param instanceName the SQL Server instance
+     */
+    public void setSQLServerInstance(String instanceName)
+    {
+        // This is also covered/persisted by JDBC option MS SQL Server / instancename / <somevalue>
+        // We want to return set <somevalue>
+        // --> MSSQL.instancename
+        addExtraOption("MSSQL", "instance", instanceName);
+    }
+    
 }

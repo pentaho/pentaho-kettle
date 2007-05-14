@@ -693,4 +693,14 @@ public interface DatabaseInterface extends Cloneable
      */
     public void setStreamingResults(boolean useStreaming);
 
+    /**
+     * @return true if we use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public boolean isUsingDoubleDecimalAsSchemaTableSeparator();
+
+    /**
+     * @param useDoubleDecimalSeparator true if we should use a double decimal separator to specify schema/table combinations on MS-SQL server
+     */
+    public void setUsingDoubleDecimalAsSchemaTableSeparator(boolean useDoubleDecimalSeparator);
+
 }
