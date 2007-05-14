@@ -45,6 +45,7 @@ import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
@@ -99,6 +100,8 @@ public class BaseStep extends Thread
         new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages.getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
         new StepPluginMeta(SortRowsMeta.class, "SortRows", Messages.getString("BaseStep.TypeLongDesc.SortRows"), Messages.getString("BaseStep.TypeTooltipDesc.Sortrows"), "SRT.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages.getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
+        new StepPluginMeta(InjectorMeta.class, "Injector", Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages.getString("BaseStep.TypeTooltipDesc.Injector"), "INJ.png", CATEGORY_INLINE),
+
         
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
@@ -191,8 +194,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
             new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages
                     .getString("BaseStep.TypeTooltipDesc.BlockingStep"), "BLK.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(InjectorMeta.class, "Injector", Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Injector"), "INJ.png", CATEGORY_INLINE),
             new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
             new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages
