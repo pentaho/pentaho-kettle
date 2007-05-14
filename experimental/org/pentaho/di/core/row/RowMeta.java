@@ -415,4 +415,6 @@ public class RowMeta implements RowMetaInterface
 
         return 0;
     }
+    
+    
 }

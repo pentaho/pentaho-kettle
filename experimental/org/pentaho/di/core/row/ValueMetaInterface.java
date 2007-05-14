@@ -106,6 +106,25 @@ public interface ValueMetaInterface extends Cloneable
     public String   getStringEncoding();
     public void     setStringEncoding(String stringEncoding);
     
+    /**
+     * @return the caseInsensitive
+     */
+    public boolean isCaseInsensitive();
+    
+    /**
+     * @param caseInsensitive the caseInsensitive to set
+     */
+    public void setCaseInsensitive(boolean caseInsensitive);
+    
+    /**
+     * @return the sortedDescending
+     */
+    public boolean isSortedDescending();
+
+    /**
+     * @param sortedDescending the sortedDescending to set
+     */
+    public void setSortedDescending(boolean sortedDescending);    
     /* Conversion methods */
     
     public Object cloneValueData(Object object) throws KettleValueException;
