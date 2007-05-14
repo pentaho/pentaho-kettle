@@ -45,6 +45,7 @@ import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
@@ -97,6 +98,7 @@ public class BaseStep extends Thread
         new StepPluginMeta(AddSequenceMeta.class, "Sequence", Messages.getString("BaseStep.TypeLongDesc.AddSequence"), Messages.getString("BaseStep.TypeTooltipDesc.Addsequence"), "SEQ.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages.getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
         new StepPluginMeta(SortRowsMeta.class, "SortRows", Messages.getString("BaseStep.TypeLongDesc.SortRows"), Messages.getString("BaseStep.TypeTooltipDesc.Sortrows"), "SRT.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages.getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
         
         /*
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
@@ -205,8 +207,6 @@ public class BaseStep extends Thread
                     .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
-            new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
            */                     
         };
 
