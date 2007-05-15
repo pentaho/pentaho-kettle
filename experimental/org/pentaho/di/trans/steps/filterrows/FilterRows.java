@@ -13,18 +13,20 @@
  **                                                                   **
  **********************************************************************/
 
-package be.ibridge.kettle.trans.step.filterrows;
+package org.pentaho.di.trans.steps.filterrows;
+
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.trans.Trans;
-import be.ibridge.kettle.trans.TransMeta;
-import be.ibridge.kettle.trans.step.BaseStep;
-import be.ibridge.kettle.trans.step.StepDataInterface;
-import be.ibridge.kettle.trans.step.StepInterface;
-import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.StepMetaInterface;
+
 
 
 /**
@@ -44,11 +46,11 @@ public class FilterRows extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized boolean keepRow(Row row) throws KettleException
+	private synchronized boolean keepRow(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
 		try
 		{
-	        return meta.getCondition().evaluate(row);
+	        return meta.getCondition().evaluate(rowMeta, row);
 		}
 		catch(Exception e)
 		{
@@ -65,22 +67,27 @@ public class FilterRows extends BaseStep implements StepInterface
 		meta=(FilterRowsMeta)smi;
 		data=(FilterRowsData)sdi;
 
-		Row r=null;
 		boolean keep;
 		
-		r=getRow();       // Get next useable row from input rowset(s)!
+		Object[] r=getRow();       // Get next useable row from input rowset(s)!
 		if (r==null)  // no more input to be expected...
 		{
 			setOutputDone();
 			return false;
 		}
+        
+        if (first)
+        {
+            data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+            meta.getFields(getInputRowMeta(), getStepname(), null);
+        }
 
-		keep=keepRow(r); // Keep this row?
+		keep=keepRow(getInputRowMeta(), r); // Keep this row?
 		if (!meta.chosesTargetSteps())
 		{
 			if (keep)
 			{
-				putRow(r);       // copy row to output rowset(s);
+				putRow(data.outputRowMeta, r);       // copy row to output rowset(s);
 			}
 		}
 		else
@@ -88,12 +95,12 @@ public class FilterRows extends BaseStep implements StepInterface
 		    if (keep)
 		    {
 		        //System.out.println("Sending row to true  :"+info.getSendTrueStepname()+" : "+r);
-		        putRowTo(r, meta.getSendTrueStepname());
+		        putRowTo(data.outputRowMeta, r, meta.getSendTrueStepname());
 		    }
 		    else
 		    {
 		        //System.out.println("Sending row to false :"+info.getSendTrueStepname()+" : "+r);
-		        putRowTo(r, meta.getSendFalseStepname());
+		        putRowTo(data.outputRowMeta, r, meta.getSendFalseStepname());
 		    }
 		}
 		

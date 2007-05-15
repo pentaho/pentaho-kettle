@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
@@ -393,6 +394,26 @@ public class RowMeta implements RowMetaInterface
         return buffer.toString();
     }
 
+    /**
+     * Get an array of strings showing the name of the values in the row
+     * padded to a maximum length, followed by the types of the values.
+     *
+     * @param maxlen The length to which the name will be padded.
+     * @return an array of strings: the names and the types of the fieldnames in the row.
+     */
+    public String[] getFieldNamesAndTypes(int maxlen)
+    {
+        String retval[] = new String[size()];
+
+        for (int i=0;i<size();i++)
+        {
+            ValueMetaInterface v = getValueMeta(i);
+            retval[i]= Const.rightPad(v.getName(), maxlen)+"   ("+v.getTypeDesc()+")";
+        }
+
+        return retval;
+    }
+    
     /**
      * Compare 2 rows with each other using certain values in the rows and
      * also considering the specified ascending clauses of the value metadata.

@@ -107,6 +107,14 @@ public interface ValueMetaInterface extends Cloneable
     public void     setStringEncoding(String stringEncoding);
     
     /**
+     * Determine if an object is null.
+     * This is the case if data==null or if it's an empty string.
+     * @param data the object to test
+     * @return true if the object is considered null.
+     */
+    public boolean isNull(Object data);
+    
+    /**
      * @return the caseInsensitive
      */
     public boolean isCaseInsensitive();
@@ -253,5 +261,24 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException In case we get conversion errors
      */
     public int compare(Object data1, Object data2) throws KettleValueException;
+
+    /**
+     * Compare 2 values of the same data type
+     * @param data1 the first value
+     * @param meta2 the second value's metadata
+     * @param data2 the second value
+     * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
+     * @throws KettleValueException In case we get conversion errors
+     */
+    public int compare(Object data1, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+    
+    /**
+     * Convert the specified data to the data type specified in this object.
+     * @param meta2 the metadata of the object to be converted
+     * @param data2 the data of the object to be converted
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
 
 }

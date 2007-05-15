@@ -1611,6 +1611,12 @@ public class ValueMeta implements ValueMetaInterface
         return TYPE_NONE;
     }
     
+    /**
+     * Determine if an object is null.
+     * This is the case if data==null or if it's an empty string.
+     * @param data the object to test
+     * @return true if the object is considered null.
+     */
     public boolean isNull(Object data)
     {
         return data==null || (isString() && ((String)data).length()==0);
@@ -1658,9 +1664,21 @@ public class ValueMeta implements ValueMetaInterface
             }
             break;
 
+        case TYPE_NUMBER:
+            {
+                cmp=Double.compare(getNumber(data1).doubleValue(), getNumber(data2).doubleValue());
+            }
+            break;
+
         case TYPE_DATE:
             {
                 cmp =  Double.compare(getInteger(data1).longValue(), getInteger(data2).longValue());
+            }
+            break;
+
+        case TYPE_BIGNUMBER:
+            {
+                cmp=getBigNumber(data1).compareTo(getBigNumber(data2));
             }
             break;
 
@@ -1672,17 +1690,26 @@ public class ValueMeta implements ValueMetaInterface
             }
             break;
 
-        case TYPE_NUMBER:
+        case TYPE_BINARY:
             {
-                cmp=Double.compare(getNumber(data1).doubleValue(), getNumber(data2).doubleValue());
+                byte[] b1 = (byte[]) data1;
+                byte[] b2 = (byte[]) data2;
+                
+                int length= b1.length < b2.length ? b1.length : b2.length;
+                
+                for (int i=0;i<length;i++)
+                {
+                    cmp = b1[i] - b2[i];
+                    if (cmp!=0)
+                    {
+                        cmp = Math.abs(cmp);
+                        break;
+                    }
+                }
             }
             break;
-
-        case TYPE_BIGNUMBER:
-            {
-                cmp=getBigNumber(data1).compareTo(getBigNumber(data2));
-            }
-            break;
+        default: 
+            throw new KettleValueException("Comparing values can not be done with data type : "+getType());
         }
         
         if (isSortedDescending())
@@ -1693,6 +1720,47 @@ public class ValueMeta implements ValueMetaInterface
         {
             return cmp;
         }
-        
     }
+    
+    /**
+     * Compare 2 values of the same data type
+     * @param data1 the first value
+     * @param meta2 the second value's metadata
+     * @param data2 the second value
+     * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
+     * @throws KettleValueException In case we get conversion errors
+     */
+    public int compare(Object data1, ValueMetaInterface meta2, Object data2) throws KettleValueException
+    {
+        // Before we can compare data1 to data2 we need to make sure they have the same data type etc.
+        if (getType()==meta2.getType()) return compare(data1, data2);
+        
+        // If the data types are not the same, the first one is the driver...
+        // The second data type is converted to the first one.
+        return compare(data1, convertData(meta2, data2));
+    }
+
+    /**
+     * Convert the specified data to the data type specified in this object.
+     * @param meta2 the metadata of the object to be converted
+     * @param data2 the data of the object to be converted
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException
+    {
+        switch(getType())
+        {
+        case TYPE_STRING    : return meta2.getString(data2);
+        case TYPE_NUMBER    : return meta2.getNumber(data2);
+        case TYPE_INTEGER   : return meta2.getInteger(data2);
+        case TYPE_DATE      : return meta2.getDate(data2);
+        case TYPE_BIGNUMBER : return meta2.getBigNumber(data2);
+        case TYPE_BOOLEAN   : return meta2.getBoolean(data2);
+        case TYPE_BINARY    : return meta2.getBinary(data2);
+        default: 
+            throw new KettleValueException("I can't convert the specified value to data type : "+getType());
+        }
+    }
+    
 }
