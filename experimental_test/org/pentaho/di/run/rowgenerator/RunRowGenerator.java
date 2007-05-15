@@ -25,4 +25,20 @@ public class RunRowGenerator extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void testRowGenerator4numbers() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows4numbers.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                1000000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
 }
