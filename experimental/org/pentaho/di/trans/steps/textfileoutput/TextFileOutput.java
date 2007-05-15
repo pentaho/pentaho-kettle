@@ -176,7 +176,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					ValueMetaInterface v=rowMeta.getValueMeta(i);
                     Object valueData = r[i];
                     
-					writeField(v, valueData, -1);
+					writeField(v, valueData);
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
@@ -192,7 +192,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
 					Object valueData = r[i];
-					writeField(v, valueData, i);
+					writeField(v, valueData);
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
@@ -207,8 +207,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			throw new KettleStepException("Error writing line", e);
 		}
 	}
-	
-    private String formatField(ValueMetaInterface v, Object valueData, int idx) throws KettleValueException
+
+    private String formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
+    {
+        return v.getString(valueData);
+    }
+    
+    private String oldFormatField(ValueMetaInterface v, Object valueData, int idx) throws KettleValueException
     {
         String retval="";
 
@@ -457,11 +462,24 @@ public class TextFileOutput extends BaseStep implements StepInterface
         return retval;
     }
 
-	private void writeField(ValueMetaInterface v, Object valueData, int idx) throws KettleStepException
+    private void writeField(ValueMetaInterface v, Object valueData) throws KettleStepException
+    {
+        try
+        {
+            String str = meta.isFastDump() ? valueData.toString() : formatField(v, valueData);
+            if (str!=null) data.writer.write(str.toCharArray());
+        }
+        catch(Exception e)
+        {
+            throw new KettleStepException("Error writing field content to file", e);
+        }
+    }
+
+	private void oldWriteField(ValueMetaInterface v, Object valueData, int idx) throws KettleStepException
 	{
 		try
 		{
-			String str = meta.isFastDump() ? v.getString(valueData) : formatField(v, valueData, idx);
+			String str = meta.isFastDump() ? v.getString(valueData) : oldFormatField(v, valueData, idx);
             if (str!=null) data.writer.write(str.toCharArray());
 		}
 		catch(Exception e)

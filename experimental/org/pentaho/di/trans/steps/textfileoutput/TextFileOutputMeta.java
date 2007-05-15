@@ -775,6 +775,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				v.setLength(field.getLength());
                 v.setPrecision(field.getPrecision());
+                v.setConversionMask(field.getFormat());
+                v.setDecimalSymbol(field.getDecimalSymbol());
+                v.setGroupingSymbol(field.getGroupingSymbol());
+                v.setCurrencySymbol(field.getCurrencySymbol());
+                v.setOutputPaddingEnabled( isPadded() );
 			}
 		}
 	}

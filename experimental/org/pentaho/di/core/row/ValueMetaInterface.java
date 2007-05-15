@@ -132,7 +132,30 @@ public interface ValueMetaInterface extends Cloneable
     /**
      * @param sortedDescending the sortedDescending to set
      */
-    public void setSortedDescending(boolean sortedDescending);    
+    public void setSortedDescending(boolean sortedDescending);
+    
+    /**
+     * @return true if output padding is enabled (padding to specified length)
+     */
+    public boolean isOutputPaddingEnabled();
+    
+    /**
+     * @param outputPaddingEnabled Set to true if output padding is to be enabled (padding to specified length)
+     */
+    public void setOutputPaddingEnabled(boolean outputPaddingEnabled);
+    
+    /**
+     * @return true if this is a large text field (CLOB, TEXT) with arbitrary length.
+     */
+    public boolean isLargeTextField();
+    
+    /**
+     * @param largeTextField Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
+     */
+    public void setLargeTextField(boolean largeTextField);
+    
+    
+    
     /* Conversion methods */
     
     public Object cloneValueData(Object object) throws KettleValueException;

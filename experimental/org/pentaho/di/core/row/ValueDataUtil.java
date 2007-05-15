@@ -539,4 +539,131 @@ public class ValueDataUtil
         return hexString;
     }
 
+    /**
+     * Right pad a string: adds spaces to a string until a certain length.
+     * If the length is smaller then the limit specified, the String is truncated.
+     * @param ret The string to pad
+     * @param limit The desired length of the padded string.
+     * @return The padded String.
+     */
+    public static final String rightPad(String ret, int limit)
+    {
+        if (ret == null)
+            return rightPad(new StringBuffer(), limit);
+        else
+            return rightPad(new StringBuffer(ret), limit);
+    }
+
+    /**
+     * Right pad a StringBuffer: adds spaces to a string until a certain length.
+     * If the length is smaller then the limit specified, the String is truncated.
+     * @param ret The StringBuffer to pad
+     * @param limit The desired length of the padded string.
+     * @return The padded String.
+     */
+    public static final String rightPad(StringBuffer ret, int limit)
+    {
+        int len = ret.length();
+        int l;
+
+        if (len > limit)
+        {
+            ret.setLength(limit);
+        } else
+        {
+            for (l = len; l < limit; l++)
+                ret.append(' ');
+        }
+        return ret.toString();
+    }
+
+    /**
+     * Replace value occurances in a String with another value.
+     * @param string The original String.
+     * @param repl The text to replace
+     * @param with The new text bit
+     * @return The resulting string with the text pieces replaced.
+     */
+    public static final String replace(String string, String repl, String with)
+    {
+        StringBuffer str = new StringBuffer(string);
+        for (int i = str.length() - 1; i >= 0; i--)
+        {
+            if (str.substring(i).startsWith(repl))
+            {
+                str.delete(i, i + repl.length());
+                str.insert(i, with);
+            }
+        }
+        return str.toString();
+    }
+
+    /**
+     * Alternate faster version of string replace using a stringbuffer as input.
+     * 
+     * @param str The string where we want to replace in
+     * @param code The code to search for
+     * @param repl The replacement string for code
+     */
+    public static void replaceBuffer(StringBuffer str, String code, String repl)
+    {
+        int clength = code.length();
+
+        int i = str.length() - clength;
+
+        while (i >= 0)
+        {
+            String look = str.substring(i, i + clength);
+            if (look.equalsIgnoreCase(code)) // Look for a match!
+            {
+                str.replace(i, i + clength, repl);
+            }
+            i--;
+        }
+    }
+
+    /**
+     * Count the number of spaces to the left of a text. (leading)
+     * @param field The text to examine
+     * @return The number of leading spaces found.
+     */
+    public static final int nrSpacesBefore(String field)
+    {
+        int nr = 0;
+        int len = field.length();
+        while (nr < len && field.charAt(nr) == ' ')
+        {
+            nr++;
+        }
+        return nr;
+    }
+
+    /**
+     * Count the number of spaces to the right of a text. (trailing)
+     * @param field The text to examine
+     * @return The number of trailing spaces found.
+     */
+    public static final int nrSpacesAfter(String field)
+    {
+        int nr = 0;
+        int len = field.length();
+        while (nr < len && field.charAt(field.length() - 1 - nr) == ' ')
+        {
+            nr++;
+        }
+        return nr;
+    }
+
+    /**
+     * Checks whether or not a String consists only of spaces.
+     * @param str The string to check
+     * @return true if the string has nothing but spaces.
+     */
+    public static final boolean onlySpaces(String str)
+    {
+        for (int i = 0; i < str.length(); i++)
+            if (!isSpace(str.charAt(i)))
+                return false;
+        return true;
+    }
 }

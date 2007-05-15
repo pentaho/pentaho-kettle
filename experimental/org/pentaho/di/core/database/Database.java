@@ -2267,6 +2267,7 @@ public class Database
         int length=-1; 
         int precision=-1;
         int valtype=ValueMetaInterface.TYPE_NONE;
+        boolean isClob = false;
 
         int type = rm.getColumnType(i);
         switch(type)
@@ -2284,6 +2285,7 @@ public class Database
         case java.sql.Types.CLOB:  
             valtype=ValueMetaInterface.TYPE_STRING;
             length=DatabaseMeta.CLOB_LENGTH;
+            isClob=true;
             break;
 
         case java.sql.Types.BIGINT:
@@ -2419,6 +2421,7 @@ public class Database
         v.setLength(length);
         v.setPrecision(precision);
         v.setComments(comments);
+        v.setLargeTextField(isClob);
         
         return v;
     }

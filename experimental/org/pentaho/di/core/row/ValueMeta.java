@@ -35,6 +35,8 @@ public class ValueMeta implements ValueMetaInterface
     private String   currencySymbol;
     private boolean  caseInsensitive;
     private boolean  sortedDescending;
+    private boolean  outputPaddingEnabled;
+    private boolean  largeTextField;
     
     public ValueMeta()
     {
@@ -64,6 +66,7 @@ public class ValueMeta implements ValueMetaInterface
         this.precision = precision;
         this.storageType=STORAGE_TYPE_NORMAL;
         this.sortedDescending=false;
+        this.outputPaddingEnabled=false;
     }
     
     public Object clone()
@@ -309,12 +312,6 @@ public class ValueMeta implements ValueMetaInterface
     }
 
     
-    
-    
-    
-
-    // DATE + STRING
-    
     /**
      * @return the sortedDescending
      */
@@ -330,6 +327,44 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.sortedDescending = sortedDescending;
     }
+    
+
+    /**
+     * @return true if output padding is enabled (padding to specified length)
+     */
+    public boolean isOutputPaddingEnabled()
+    {
+        return outputPaddingEnabled;
+    }
+
+    /**
+     * @param outputPaddingEnabled Set to true if output padding is to be enabled (padding to specified length)
+     */
+    public void setOutputPaddingEnabled(boolean outputPaddingEnabled)
+    {
+        this.outputPaddingEnabled = outputPaddingEnabled;
+    }
+
+    /**
+     * @return true if this is a large text field (CLOB, TEXT) with arbitrary length.
+     */
+    public boolean isLargeTextField()
+    {
+        return largeTextField;
+    }
+
+    /**
+     * @param largeTextField Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
+     */
+    public void setLargeTextField(boolean largeTextField)
+    {
+        this.largeTextField = largeTextField;
+    }
+    
+    
+
+    // DATE + STRING
+
 
     private String convertDateToString(Date date)
     {
@@ -675,68 +710,93 @@ public class ValueMeta implements ValueMetaInterface
         {
             return null;
         }
+        String string;
+        
         switch(type)
         {
         case TYPE_STRING:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return (String)object;
-            case STORAGE_TYPE_INDEXED:      return (String) index[((Integer)object).intValue()]; 
+            case STORAGE_TYPE_NORMAL:       string = (String)object; break;
+            case STORAGE_TYPE_INDEXED:      string = (String) index[((Integer)object).intValue()];  break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+            
         case TYPE_DATE:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertDateToString((Date)object);
-            case STORAGE_TYPE_INDEXED:      return convertDateToString((Date)index[((Integer)object).intValue()]);  
+            case STORAGE_TYPE_NORMAL:       string = convertDateToString((Date)object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertDateToString((Date)index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+
         case TYPE_NUMBER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertNumberToString((Double)object);
-            case STORAGE_TYPE_INDEXED:      return convertNumberToString((Double)index[((Integer)object).intValue()]);
+            case STORAGE_TYPE_NORMAL:       string = convertNumberToString((Double)object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertNumberToString((Double)index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+
         case TYPE_INTEGER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertIntegerToString((Long)object);
-            case STORAGE_TYPE_INDEXED:      return convertIntegerToString((Long)index[((Integer)object).intValue()]);
+            case STORAGE_TYPE_NORMAL:       string = convertIntegerToString((Long)object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+
         case TYPE_BIGNUMBER:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertBigNumberToString((BigDecimal)object);
-            case STORAGE_TYPE_INDEXED:      return convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]);
+            case STORAGE_TYPE_NORMAL:       string = convertBigNumberToString((BigDecimal)object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+
         case TYPE_BOOLEAN:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertBooleanToString((Boolean)object);
-            case STORAGE_TYPE_INDEXED:      return convertBooleanToString((Boolean)index[((Integer)object).intValue()]);
+            case STORAGE_TYPE_NORMAL:       string = convertBooleanToString((Boolean)object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
+            break;
+
         case TYPE_BINARY:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return convertBinaryToString((byte[])object);
-            case STORAGE_TYPE_INDEXED:      return convertBinaryToString((byte[])index[((Integer)object).intValue()]);
+            case STORAGE_TYPE_NORMAL:       string = convertBinaryToString((byte[])object); break;
+            case STORAGE_TYPE_INDEXED:      string = convertBinaryToString((byte[])index[((Integer)object).intValue()]); break;
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
-            
+            break;
+
         case TYPE_SERIALIZABLE:
             switch(storageType)
             {
-            case STORAGE_TYPE_NORMAL:       return object.toString(); // just go for the default toString()
-            case STORAGE_TYPE_INDEXED:      return index[((Integer)object).intValue()].toString(); // just go for the default toString()
+            case STORAGE_TYPE_NORMAL:       string = object.toString();  break; // just go for the default toString()
+            case STORAGE_TYPE_INDEXED:      string = index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
-            
+            break;
+
         default: 
             throw new KettleValueException("Unknown type "+type+" specified.");
+        }
+        
+        if (isOutputPaddingEnabled() && getLength()>0)
+        {
+            return ValueDataUtil.rightPad(string, getLength());
+        }
+        else
+        {
+            return string;
         }
     }
 
@@ -1485,6 +1545,9 @@ public class ValueMeta implements ValueMetaInterface
             
             // Sorting information
             outputStream.writeBoolean(sortedDescending); 
+
+            // Padding information
+            outputStream.writeBoolean(outputPaddingEnabled); 
         }
         catch(IOException e)
         {
@@ -1558,6 +1621,9 @@ public class ValueMeta implements ValueMetaInterface
             
             // Sorting type
             sortedDescending = inputStream.readBoolean();
+            
+            // Output padding?
+            outputPaddingEnabled = inputStream.readBoolean();
         }
         catch(IOException e)
         {
@@ -1770,5 +1836,4 @@ public class ValueMeta implements ValueMetaInterface
             throw new KettleValueException("I can't convert the specified value to data type : "+getType());
         }
     }
-    
 }
