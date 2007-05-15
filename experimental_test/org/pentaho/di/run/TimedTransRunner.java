@@ -19,7 +19,6 @@ import be.ibridge.kettle.core.util.EnvUtil;
 
 public class TimedTransRunner extends TestCase
 {
-    private Trans trans;
     private String filename;
     private int logLevel;
     private long records;
@@ -180,14 +179,6 @@ public class TimedTransRunner extends TestCase
     public void setLogLevel(int logLevel)
     {
         this.logLevel = logLevel;
-    }
-
-    /**
-     * @return the trans
-     */
-    public Trans getTrans()
-    {
-        return trans;
     }
 
     /**

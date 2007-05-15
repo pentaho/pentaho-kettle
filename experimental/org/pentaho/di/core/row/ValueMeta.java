@@ -1227,11 +1227,11 @@ public class ValueMeta implements ValueMetaInterface
                     switch(getType())
                     {
                     case TYPE_STRING     : writeString(outputStream, (String)object); break;
-                    case TYPE_BIGNUMBER  : writeBigNumber(outputStream, (BigDecimal)object); break;
-                    case TYPE_DATE       : writeDate(outputStream, (Date)object); break;
                     case TYPE_NUMBER     : writeNumber(outputStream, (Double)object); break;
-                    case TYPE_BOOLEAN    : writeBoolean(outputStream, (Boolean)object); break;
                     case TYPE_INTEGER    : writeInteger(outputStream, (Long)object); break;
+                    case TYPE_DATE       : writeDate(outputStream, (Date)object); break;
+                    case TYPE_BIGNUMBER  : writeBigNumber(outputStream, (BigDecimal)object); break;
+                    case TYPE_BOOLEAN    : writeBoolean(outputStream, (Boolean)object); break;
                     case TYPE_BINARY     : writeBinary(outputStream, (byte[])object); break;
                     default: throw new KettleFileException("Unable to serialize data type "+getType());
                     }
@@ -1264,11 +1264,11 @@ public class ValueMeta implements ValueMetaInterface
                 switch(getType())
                 {
                 case TYPE_STRING     : return readString(inputStream);
-                case TYPE_BIGNUMBER  : return readBigNumber(inputStream);
-                case TYPE_DATE       : return readDate(inputStream);
                 case TYPE_NUMBER     : return readNumber(inputStream);
-                case TYPE_BOOLEAN    : return readBoolean(inputStream);
                 case TYPE_INTEGER    : return readInteger(inputStream);
+                case TYPE_DATE       : return readDate(inputStream);
+                case TYPE_BIGNUMBER  : return readBigNumber(inputStream);
+                case TYPE_BOOLEAN    : return readBoolean(inputStream);
                 case TYPE_BINARY     : return readBinary(inputStream);
                 default: throw new KettleFileException("Unable to de-serialize data of type "+getType());
                 }
@@ -1288,18 +1288,39 @@ public class ValueMeta implements ValueMetaInterface
     private void writeString(DataOutputStream outputStream, String string) throws IOException
     {
         // Write the length and then the bytes
-        byte[] chars = string.getBytes(Const.XML_ENCODING);
-        outputStream.writeInt(chars.length);
-        outputStream.write(chars);         
+        if (string==null)
+        {
+            outputStream.writeInt(-1);
+        }
+        else
+        {
+            byte[] chars = string.getBytes(Const.XML_ENCODING);
+            outputStream.writeInt(chars.length);
+            outputStream.write(chars);
+        }
     }
 
     private String readString(DataInputStream inputStream) throws IOException
     {
         // Read the length and then the bytes
         int length = inputStream.readInt();
+        if (length<0) 
+        {
+            return null;
+        }
+        if (length>30 || length==0) 
+        {
+            IOException e = new IOException("Unexpected length for ("+getName()+")"+length);
+            // System.out.println(Const.getStackTracker(e));
+            throw e;
+        }
+        
         byte[] chars = new byte[length];
-        inputStream.read(chars);
-        return new String(chars, Const.XML_ENCODING);         
+        inputStream.readFully(chars);
+
+        String string = new String(chars, Const.XML_ENCODING);         
+        // System.out.println("Read string("+getName()+"), length "+length+": "+string);
+        return string;
     }
 
     private void writeBigNumber(DataOutputStream outputStream, BigDecimal number) throws IOException
@@ -1311,6 +1332,7 @@ public class ValueMeta implements ValueMetaInterface
     private BigDecimal readBigNumber(DataInputStream inputStream) throws IOException
     {
         String string = readString(inputStream);
+        // System.out.println("Read big number("+getName()+") ["+string+"]");
         return new BigDecimal(string);
     }
 
@@ -1322,6 +1344,7 @@ public class ValueMeta implements ValueMetaInterface
     private Date readDate(DataInputStream inputStream) throws IOException
     {
         long time = inputStream.readLong();
+        // System.out.println("Read Date("+getName()+") ["+new Date(time)+"]");
         return new Date(time);
     }
 
@@ -1332,7 +1355,9 @@ public class ValueMeta implements ValueMetaInterface
     
     private Boolean readBoolean(DataInputStream inputStream) throws IOException
     {
-        return new Boolean( inputStream.readBoolean() );
+        Boolean bool = new Boolean( inputStream.readBoolean() );
+        // System.out.println("Read boolean("+getName()+") ["+bool+"]");
+        return bool;
     }
     
     private void writeNumber(DataOutputStream outputStream, Double number) throws IOException
@@ -1342,7 +1367,9 @@ public class ValueMeta implements ValueMetaInterface
 
     private Double readNumber(DataInputStream inputStream) throws IOException
     {
-        return new Double( inputStream.readDouble() );
+        Double d = new Double( inputStream.readDouble() );
+        // System.out.println("Read number("+getName()+") ["+d+"]");
+        return d;
     }
 
     private void writeInteger(DataOutputStream outputStream, Long number) throws IOException
@@ -1352,7 +1379,9 @@ public class ValueMeta implements ValueMetaInterface
 
     private Long readInteger(DataInputStream inputStream) throws IOException
     {
-        return new Long( inputStream.readLong() );
+        Long l = new Long( inputStream.readLong() );
+        // System.out.println("Read integer("+getName()+") ["+l+"]");
+        return l;
     }
 
     private void writeInteger(DataOutputStream outputStream, Integer number) throws IOException
@@ -1362,7 +1391,9 @@ public class ValueMeta implements ValueMetaInterface
     
     private Integer readSmallInteger(DataInputStream inputStream) throws IOException
     {
-        return new Integer( inputStream.readInt() );
+        Integer i = new Integer( inputStream.readInt() );
+        // System.out.println("Read index integer("+getName()+") ["+i+"]");
+        return i;
     }
     
     private void writeBinary(DataOutputStream outputStream, byte[] binary) throws IOException
@@ -1376,6 +1407,9 @@ public class ValueMeta implements ValueMetaInterface
         int size = inputStream.readInt();
         byte[] buffer = new byte[size];
         inputStream.read(buffer);
+        
+        // System.out.println("Read binary("+getName()+") with size="+size);
+
         return buffer;
     }
 
