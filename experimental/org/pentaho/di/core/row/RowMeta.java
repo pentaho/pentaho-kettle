@@ -184,8 +184,8 @@ public class RowMeta implements RowMetaInterface
     }
 
     /**
-     * Determines whether a value in a row is null.  A value is null when the object is null.
-     * As such, you can just as good write dataRow[index]==null in your code.
+     * Determines whether a value in a row is null.  
+     * A value is null when the object is null or when it's an empty String 
      * 
      * @param dataRow The row of data 
      * @param index the index to reference
@@ -193,7 +193,7 @@ public class RowMeta implements RowMetaInterface
      */
     public boolean isNull(Object[] dataRow, int index)
     {
-        return dataRow[index] == null;
+        return getValueMeta(index).isNull(dataRow[index]);
     }
     
     /**
