@@ -230,8 +230,12 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta          = DatabaseMeta.findDatabase(databases, con);
             String eachRow        = XMLHandler.getTagValue(stepnode, "execute_each_row"); //$NON-NLS-1$
             executedEachInputRow  = "Y".equalsIgnoreCase( eachRow ); //$NON-NLS-1$
-            System.out.println(Messages.getString("ExecSQLMeta.Log.ExecutedEachRow",executedEachInputRow+"")+eachRow+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			sql                   = XMLHandler.getTagValue(stepnode, "sql"); //$NON-NLS-1$
+			
+			insertField           = XMLHandler.getTagValue(stepnode, "insert_field"); //$NON-NLS-1$
+			updateField           = XMLHandler.getTagValue(stepnode, "update_field"); //$NON-NLS-1$			
+			deleteField           = XMLHandler.getTagValue(stepnode, "delete_field"); //$NON-NLS-1$
+			readField             = XMLHandler.getTagValue(stepnode, "read_field"); //$NON-NLS-1$
 
             Node argsnode = XMLHandler.getSubNode(stepnode, "arguments"); //$NON-NLS-1$
             int nrArguments = XMLHandler.countNodes(argsnode, "argument"); //$NON-NLS-1$
@@ -273,23 +277,23 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    "+XMLHandler.addTagValue("execute_each_row", executedEachInputRow)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    "+XMLHandler.addTagValue("sql",        sql)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        retval.append("    ").append(XMLHandler.addTagValue("execute_each_row", executedEachInputRow)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("sql",        sql)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        retval.append("    "+XMLHandler.addTagValue("insert_field",  insertField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("update_field",  updateField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("delete_field",  deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("read_field",    readField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("insert_field",  insertField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("update_field",  updateField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("delete_field",  deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("read_field",    readField)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("    <arguments>"+Const.CR); //$NON-NLS-1$
+        retval.append("    <arguments>").append(Const.CR); //$NON-NLS-1$
         for (int i=0;i<arguments.length;i++)
         {
-            retval.append("       <argument>"+XMLHandler.addTagValue("name", arguments[i], false)+"</argument>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            retval.append("       <argument>").append(XMLHandler.addTagValue("name", arguments[i], false)).append("</argument>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-        retval.append("    </arguments>"+Const.CR); //$NON-NLS-1$
+        retval.append("    </arguments>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
