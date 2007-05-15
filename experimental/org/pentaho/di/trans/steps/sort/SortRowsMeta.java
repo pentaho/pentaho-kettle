@@ -204,7 +204,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         directory = "%%java.io.tmpdir%%";
         prefix = "out";
         sortSize = Const.SORT_SIZE;
-        compressFiles = true;
+        compressFiles = false;
 
         int nrfields = 0;
 
