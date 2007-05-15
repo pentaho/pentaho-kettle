@@ -394,6 +394,10 @@ public class ValueMeta implements ValueMetaInterface
         
         try
         {
+            if (Const.isEmpty(conversionMask) && Const.isEmpty(decimalSymbol) && Const.isEmpty(groupingSymbol)) 
+            {
+                return number.toString();
+            }
             return getDecimalFormat().format(number);
         }
         catch(Exception e)
@@ -451,6 +455,10 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {
+            if (Const.isEmpty(conversionMask) && Const.isEmpty(decimalSymbol) && Const.isEmpty(groupingSymbol)) 
+            {
+                return number.toString();
+            }
             return getDecimalFormat().format(number);
         }
         catch(Exception e)

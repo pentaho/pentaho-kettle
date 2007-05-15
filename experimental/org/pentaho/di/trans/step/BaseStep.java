@@ -56,6 +56,7 @@ import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
@@ -103,11 +104,10 @@ public class BaseStep extends Thread
         new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages.getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
         new StepPluginMeta(InjectorMeta.class, "Injector", Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages.getString("BaseStep.TypeTooltipDesc.Injector"), "INJ.png", CATEGORY_INLINE),
         new StepPluginMeta(FilterRowsMeta.class, "FilterRows", Messages.getString("BaseStep.TypeLongDesc.FilterRows"), Messages.getString("BaseStep.TypeTooltipDesc.FilterRows"), "FLT.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages.getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
 
         
         /*
-            new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
             new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages

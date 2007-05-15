@@ -40,6 +40,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.util.StreamLogger;
@@ -75,18 +76,36 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		boolean result=true;
 		boolean bEndedLineWrote=false;
 		Object[] r=getRow();       // This also waits for a row to be finished.
-		
+
+        if (r!=null && first)
+        {
+            first=false;
+            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            meta.getFields(data.outputRowMeta, getStepname(), null);
+            
+            if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
+            {
+                if (meta.isHeaderEnabled() && data.outputRowMeta!=null)
+                {
+                    writeHeader();
+                }
+            }
+            
+            data.fieldnrs=new int[meta.getOutputFields().length];
+            for (int i=0;i<meta.getOutputFields().length;i++)
+            {
+                data.fieldnrs[i]=data.outputRowMeta.indexOfValue(meta.getOutputFields()[i].getName());
+                if (data.fieldnrs[i]<0)
+                {
+                    throw new KettleStepException("Field ["+meta.getOutputFields()[i].getName()+"] couldn't be found in the input stream!");
+                }
+            }
+        }
+
 		if ( ( r==null && data.outputRowMeta!=null && meta.isFooterEnabled() ) ||
 		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
 		   )
 		{
-            if (r!=null && first)
-            {
-                first=false;
-                data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-                meta.getFields(data.outputRowMeta, getStepname(), null);
-            }
-            
 			if (data.outputRowMeta!=null) 
 			{
 			   if ( meta.isFooterEnabled() )
@@ -116,7 +135,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 				if (meta.isHeaderEnabled() && data.outputRowMeta!=null) if (writeHeader()) linesOutput++;
 			}
-		
 		}
 		
 		if (r==null)  // no more input to be expected...
@@ -132,14 +150,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		result=writeRowToFile(data.outputRowMeta, r);
-		if (!result)
-		{
-			setErrors(1);
-			stopAll();
-			return false;
-		}
-		
+		writeRowToFile(data.outputRowMeta, r);
 		putRow(data.outputRowMeta, r);       // in case we want it to go further...
 		
         if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
@@ -147,38 +158,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return result;
 	}
 
-	private boolean writeRowToFile(RowMetaInterface rowMeta, Object[] r)
+	private void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleStepException
 	{
 		try
 		{	
-			if (first)
-			{
-				first=false;
-				if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
-				{
-					if (meta.isHeaderEnabled() && data.outputRowMeta!=null)
-					{
-						if (writeHeader() )
-                        {
-							return false;
-                        }
-					}
-				}
-				
-				data.fieldnrs=new int[meta.getOutputFields().length];
-				for (int i=0;i<meta.getOutputFields().length;i++)
-				{
-					data.fieldnrs[i]=rowMeta.indexOfValue(meta.getOutputFields()[i].getName());
-					if (data.fieldnrs[i]<0)
-					{
-						logError("Field ["+meta.getOutputFields()[i].getName()+"] couldn't be found in the input stream!");
-						setErrors(1);
-						stopAll();
-						return false;
-					}
-				}
-			}
-
 			if (meta.getOutputFields()==null || meta.getOutputFields().length==0)
 			{
 				/*
@@ -193,7 +176,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					ValueMetaInterface v=rowMeta.getValueMeta(i);
                     Object valueData = r[i];
                     
-					if(!writeField(v, valueData, -1)) return false;
+					writeField(v, valueData, -1);
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
@@ -207,9 +190,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
 						data.writer.write(meta.getSeparator().toCharArray());
 	
-					ValueMetaInterface v =rowMeta.getValueMeta(data.fieldnrs[i]);
+					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
 					Object valueData = r[i];
-					if(!writeField(v, valueData, i)) return false;
+					writeField(v, valueData, i);
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
@@ -221,12 +204,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line :"+e.toString());
-			return false;
+			throw new KettleStepException("Error writing line", e);
 		}
-
-		
-		return true;
 	}
 	
     private String formatField(ValueMetaInterface v, Object valueData, int idx) throws KettleValueException
@@ -276,11 +255,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 //
                 if (Const.isEmpty(meta.getEnclosure()) || Const.isEmpty(separator) || (value.indexOf(separator) < 0 && enclosureIsOptional))
                 {
-                    retval = v.toString();
+                    retval = value;
                 }
                 else
                 {
-                    retval = meta.getEnclosure() + v.toString() + meta.getEnclosure();
+                    retval = meta.getEnclosure() + value + meta.getEnclosure();
                 }
             }
 					    
@@ -364,7 +343,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    retval=v.toString();
+                    retval=v.getString(valueData);
                 }
             }
         }
@@ -398,7 +377,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    retval=v.toString();
+                    retval=v.getString(valueData);
                 }
             }
         }
@@ -444,7 +423,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
             else
             {
-                retval=v.toString();
+                retval=v.getString(valueData);
             }
         }
         
@@ -478,7 +457,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         return retval;
     }
 
-	private boolean writeField(ValueMetaInterface v, Object valueData, int idx)
+	private void writeField(ValueMetaInterface v, Object valueData, int idx) throws KettleStepException
 	{
 		try
 		{
@@ -487,10 +466,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line :"+e.toString());
-			return false;
+			throw new KettleStepException("Error writing field content to file", e);
 		}
-		return true;
 	}
 	
 	private boolean writeEndedLine()

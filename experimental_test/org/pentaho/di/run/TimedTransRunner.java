@@ -45,17 +45,22 @@ public class TimedTransRunner extends TestCase
     
     public void runOldAndNew() throws KettleXMLException
     {
+        init();
+        
+        runOldEngine();
+        runNewEngine();
+        
+        compareResults();
+    }
+
+    public void init()
+    {
         EnvUtil.environmentInit();
         LogWriter.getInstance(logLevel);
         
         // Set environment variables ${NR_OF_ROWS}
         //
         KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
-        
-        runOldEngine();
-        runNewEngine();
-        
-        compareResults();
     }
 
     public void runOldEngine() throws KettleXMLException
@@ -143,7 +148,7 @@ public class TimedTransRunner extends TestCase
     
     private static DecimalFormat factorDF = new DecimalFormat("##0.00");
     
-    private void compareResults()
+    public void compareResults()
     {
         double factor = oldRunTime/newRunTime;
         System.out.println("V3 / V2 = x"+factorDF.format(factor));
