@@ -1406,7 +1406,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         int size = inputStream.readInt();
         byte[] buffer = new byte[size];
-        inputStream.read(buffer);
+        inputStream.readFully(buffer);
         
         // System.out.println("Read binary("+getName()+") with size="+size);
 
