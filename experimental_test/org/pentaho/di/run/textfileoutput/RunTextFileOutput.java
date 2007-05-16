@@ -8,7 +8,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
-public class RunTextFileInputCSV extends TestCase
+public class RunTextFileOutput extends TestCase
 {
     public void test_TEXT_FILE_OUTPUT_00()
     {

@@ -8,8 +8,10 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
-public class SortTableData extends TestCase
+public class RunSortRows extends TestCase
 {
+    private static final int ERROR_LEVEL = LogWriter.LOG_LEVEL_BASIC;
+    
     public void test_SORT_00()
     {
         System.out.println();
@@ -21,7 +23,7 @@ public class SortTableData extends TestCase
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableData.ktr",
-                LogWriter.LOG_LEVEL_ERROR, 
+                ERROR_LEVEL, 
                 100000
             );
         timedTransRunner.runOldAndNew();
