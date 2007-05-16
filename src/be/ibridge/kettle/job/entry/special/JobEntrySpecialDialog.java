@@ -61,7 +61,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 
     private Button wRepeat;
 
-    private Spinner wInterval;
+    private Spinner wIntervalSeconds, wIntervalMinutes;
 
     private CCombo wType;
 
@@ -135,9 +135,13 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         wType.setVisibleItemCount(wType.getItemCount());
         placeControl(shell, Messages.getString("JobSpecial.Type.Label"), wType, wRepeat);
 
-        wInterval = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        placeControl(shell, Messages.getString("JobSpecial.IntervalMinutes.Label"), wInterval,
+        wIntervalSeconds = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        placeControl(shell, Messages.getString("JobSpecial.IntervalSeconds.Label"), wIntervalSeconds,
             wType);
+
+        wIntervalMinutes = new Spinner(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        placeControl(shell, Messages.getString("JobSpecial.IntervalMinutes.Label"), wIntervalMinutes,
+            wIntervalSeconds);
 
         Composite time = new Composite(shell, SWT.NONE);
         time.setLayout(new FillLayout());
@@ -147,7 +151,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         wMinutes = new Spinner(time, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wMinutes.setMinimum(0);
         wMinutes.setMaximum(59);
-        placeControl(shell, Messages.getString("JobSpecial.TimeOfDay.Label"), time, wInterval);
+        placeControl(shell, Messages.getString("JobSpecial.TimeOfDay.Label"), time, wIntervalMinutes);
 
         wDayOfWeek = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wDayOfWeek.addModifyListener(lsMod);
@@ -240,7 +244,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
     {
         wRepeat.setSelection(jobEntry.isRepeat());
         wType.select(jobEntry.getSchedulerType());
-        wInterval.setSelection(jobEntry.getInterval());
+        wIntervalSeconds.setSelection(jobEntry.getIntervalSeconds());
+        wIntervalMinutes.setSelection(jobEntry.getIntervalMinutes());
         wHour.setSelection(jobEntry.getHour());
         wMinutes.setSelection(jobEntry.getMinutes());
         wDayOfWeek.select(jobEntry.getWeekDay());
@@ -260,7 +265,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
     {
         jobEntry.setRepeat(wRepeat.getSelection());
         jobEntry.setSchedulerType(wType.getSelectionIndex());
-        jobEntry.setInterval(wInterval.getSelection());
+        jobEntry.setIntervalSeconds(wIntervalSeconds.getSelection());
+        jobEntry.setIntervalMinutes(wIntervalMinutes.getSelection());
         jobEntry.setHour(wHour.getSelection());
         jobEntry.setMinutes(wMinutes.getSelection());
         jobEntry.setWeekDay(wDayOfWeek.getSelectionIndex());
@@ -309,7 +315,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         wType.setEnabled(true);
         if (NOSCHEDULING.equals(wType.getText()))
         {
-            wInterval.setEnabled(false);
+            wIntervalSeconds.setEnabled(false);
+            wIntervalMinutes.setEnabled(false);
             wDayOfWeek.setEnabled(false);
             wDayOfMonth.setEnabled(false);
             wHour.setEnabled(false);
@@ -317,7 +324,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         }
         else if (INTERVAL.equals(wType.getText()))
         {
-            wInterval.setEnabled(true);
+            wIntervalSeconds.setEnabled(true);
+            wIntervalMinutes.setEnabled(true);
             wDayOfWeek.setEnabled(false);
             wDayOfMonth.setEnabled(false);
             wHour.setEnabled(false);
@@ -325,7 +333,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         }
         else if (DAILY.equals(wType.getText()))
         {
-            wInterval.setEnabled(false);
+            wIntervalSeconds.setEnabled(false);
+            wIntervalMinutes.setEnabled(false);
             wDayOfWeek.setEnabled(false);
             wDayOfMonth.setEnabled(false);
             wHour.setEnabled(true);
@@ -333,7 +342,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         }
         else if (WEEKLY.equals(wType.getText()))
         {
-            wInterval.setEnabled(false);
+            wIntervalSeconds.setEnabled(false);
+            wIntervalMinutes.setEnabled(false);
             wDayOfWeek.setEnabled(true);
             wDayOfMonth.setEnabled(false);
             wHour.setEnabled(true);
@@ -341,7 +351,8 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
         }
         else if (MONTHLY.equals(wType.getText()))
         {
-            wInterval.setEnabled(false);
+            wIntervalSeconds.setEnabled(false);
+            wIntervalMinutes.setEnabled(false);
             wDayOfWeek.setEnabled(false);
             wDayOfMonth.setEnabled(true);
             wHour.setEnabled(true);

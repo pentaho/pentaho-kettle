@@ -55,7 +55,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	private boolean dummy;
 	private boolean repeat = false;
 	private int schedulerType = NOSCHEDULING;
-	private int interval = 60;
+	private int intervalSeconds = 0;
+	private int intervalMinutes = 60;
 	private int dayOfMonth = 1;
 	private int weekDay = 1;
 	private int minutes = 0;
@@ -95,7 +96,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("dummy",         dummy));
 		retval.append("      ").append(XMLHandler.addTagValue("repeat",        repeat));
 		retval.append("      ").append(XMLHandler.addTagValue("schedulerType", schedulerType));
-		retval.append("      ").append(XMLHandler.addTagValue("interval",      interval));
+		retval.append("      ").append(XMLHandler.addTagValue("intervalSeconds",      intervalSeconds));
+		retval.append("      ").append(XMLHandler.addTagValue("intervalMinutes",      intervalMinutes));
 		retval.append("      ").append(XMLHandler.addTagValue("hour",          hour));
 		retval.append("      ").append(XMLHandler.addTagValue("minutes",       minutes));
 		retval.append("      ").append(XMLHandler.addTagValue("weekDay",       weekDay));
@@ -113,7 +115,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			dummy = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "dummy"));
 			repeat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "repeat"));
 			setSchedulerType( Const.toInt(XMLHandler.getTagValue(entrynode, "schedulerType"), NOSCHEDULING) );
-			setInterval	 ( Const.toInt(XMLHandler.getTagValue(entrynode, "interval"), 0) );
+			setIntervalSeconds   ( Const.toInt(XMLHandler.getTagValue(entrynode, "intervalSeconds"), 0) );
+			setIntervalMinutes	 ( Const.toInt(XMLHandler.getTagValue(entrynode, "intervalMinutes"), 0) );
 			setHour      ( Const.toInt(XMLHandler.getTagValue(entrynode, "hour"), 0) );
 			setMinutes   ( Const.toInt(XMLHandler.getTagValue(entrynode, "minutes"), 0) );
 			setWeekDay   ( Const.toInt(XMLHandler.getTagValue(entrynode, "weekDay"), 0) );
@@ -136,7 +139,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			dummy = rep.getJobEntryAttributeBoolean(id_jobentry, "dummy");
 			repeat = rep.getJobEntryAttributeBoolean(id_jobentry, "repeat");
 			schedulerType  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "schedulerType");
-			interval  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "interval");
+			intervalSeconds  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "intervalSeconds");
+			intervalMinutes  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "intervalMinutes");
 			hour  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "hour");
 			minutes  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "minutes");
 			weekDay  = (int)rep.getJobEntryAttributeInteger(id_jobentry, "weekDay");
@@ -161,7 +165,8 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "dummy", dummy);
 			rep.saveJobEntryAttribute(id_job, getID(), "repeat", repeat);
 			rep.saveJobEntryAttribute(id_job, getID(), "schedulerType", schedulerType);
-			rep.saveJobEntryAttribute(id_job, getID(), "interval", interval);
+			rep.saveJobEntryAttribute(id_job, getID(), "intervalSeconds", intervalSeconds);
+			rep.saveJobEntryAttribute(id_job, getID(), "intervalMinutes", intervalMinutes);
 			rep.saveJobEntryAttribute(id_job, getID(), "hour", hour);
 			rep.saveJobEntryAttribute(id_job, getID(), "minutes", minutes);
 			rep.saveJobEntryAttribute(id_job, getID(), "weekDay", weekDay);
@@ -226,7 +231,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	}
 
 	private long getNextIntervalExecutionTime() {
-		return interval*1000*60;
+	    return intervalSeconds * 1000 + intervalMinutes * 1000 * 60;
 	}
 
 	private long getNextMonthlyExecutionTime() {
@@ -346,12 +351,20 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		this.repeat = repeat;
 	}
 
-	public int getInterval() {
-		return interval;
+	public int getIntervalSeconds() {
+	    return intervalSeconds;
 	}
 
-	public void setInterval(int interval) {
-		this.interval = interval;
+	public void setIntervalSeconds(int intervalSeconds) {
+	    this.intervalSeconds = intervalSeconds;
+	}
+    
+	public int getIntervalMinutes() {
+		return intervalMinutes;
+	}
+
+	public void setIntervalMinutes(int intervalMinutes) {
+		this.intervalMinutes = intervalMinutes;
 	}
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
