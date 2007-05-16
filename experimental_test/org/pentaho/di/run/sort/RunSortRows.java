@@ -10,7 +10,7 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunSortRows extends TestCase
 {
-    private static final int ERROR_LEVEL = LogWriter.LOG_LEVEL_BASIC;
+    private static final int ERROR_LEVEL = LogWriter.LOG_LEVEL_ERROR;
     
     public void test_SORT_00()
     {

@@ -22,7 +22,7 @@ public class RunTableOutput extends TestCase
     public void test__TABLE_OUTPUT_01_Simple() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/_01_tableoutput/TableOutputSimple.ktr", 
+                "experimental_test/org/pentaho/di/run/tableoutput/TableOutputSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 100000
             );
@@ -38,7 +38,7 @@ public class RunTableOutput extends TestCase
     public void test__TABLE_OUTPUT_02_FromCSV() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/_01_tableoutput/TableOutputFromCSV.ktr", 
+                "experimental_test/org/pentaho/di/run/tableoutput/TableOutputFromCSV.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 100000
             );
