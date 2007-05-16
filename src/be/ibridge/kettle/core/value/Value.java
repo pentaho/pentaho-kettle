@@ -3775,4 +3775,60 @@ public class Value implements Cloneable, XMLInterface, Serializable
         this.value = valueInterface;
     }
 
+    /**
+     * Merges another Value. That means, that if the other Value has got the same name and is of the
+     * same type as this Value, it's real field value is set as this this' value, if our value is
+     * <code>null</code> or empty
+     * 
+     * @param other The other value
+     */
+    public void merge(Value other)
+    {
+        // Prechecks: Not null (of course) and same name and same type
+        if (other == null || !getName().equals(other.getName()) || getType() != other.getType())
+            return;
+
+        switch (getType())
+        {
+            case VALUE_TYPE_BIGNUMBER:
+                if (getBigNumber() == null)
+                    setValue(other.getBigNumber());
+                break;
+
+            case VALUE_TYPE_BINARY:
+                if (getBytes() == null || getBytes().length == 0)
+                    if (other.getBytes() != null && other.getBytes().length > 0)
+                        setValue(other.getBytes());
+                break;
+
+            case VALUE_TYPE_BOOLEAN:
+                // 'false' cannot be said to be 'empty' (could be set on purpose) so we better don't overwrite
+                // with 'true'.
+                break;
+
+            case VALUE_TYPE_DATE:
+                if (getDate() == null)
+                    setValue(other.getDate());
+                break;
+                
+            case VALUE_TYPE_INTEGER:
+                if (getInteger() == 0l)
+                    setValue(other.getInteger());
+                break;
+
+            case VALUE_TYPE_NUMBER:
+                if (getNumber() == 0.0)
+                    setValue(other.getNumber());
+                break;
+
+            case VALUE_TYPE_SERIALIZABLE:
+                // Cannot transfer serializables
+                break;
+
+            case VALUE_TYPE_STRING:
+                if (Const.isEmpty(getString()) && !Const.isEmpty(other.getString()))
+                    setValue(other.getString());
+                break;
+        }
+    }
 }
