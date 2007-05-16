@@ -68,7 +68,7 @@ public class ValueDate implements ValueInterface, Cloneable
 	public double getNumber()
 	{
 		if (date==null) return 0.0;
-		return (double)date.getTime();
+		return date.getTime();
 	}
 
 	public Date getDate()
@@ -156,6 +156,7 @@ public class ValueDate implements ValueInterface, Cloneable
 
     public BigDecimal getBigNumber()
     {
+        if (date==null) return new BigDecimal(0.0);
         return new BigDecimal(date.getTime());
     }
 
