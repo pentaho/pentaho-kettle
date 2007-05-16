@@ -838,7 +838,10 @@ public class Spoon implements AddUndoPositionInterface
 
         if (rows.size()!=0)
         {
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("Spoon.StringSearchResult.Title"), rows);
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("Spoon.StringSearchResult.Subtitle"), rows);
+            String title = Messages.getString("Spoon.StringSearchResult.Title");
+            String message = Messages.getString("Spoon.StringSearchResult.Message");
+            prd.setTitleMessage(title, message);
             prd.open();
         }
         else
@@ -2395,7 +2398,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (object instanceof Class && object.equals(JobPlugin.class))
                     {
                         JobEntryCopy dummy = null;
-                        if (jobMeta!=null) dummy = jobMeta.findJobEntry("Dummy", 0, true);
+                        if (jobMeta!=null) dummy = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_DUMMY, 0, true);
                         if (JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase(treeObject.getItemText()) && dummy!=null)
                         {
                             // if dummy already exists, add a copy
@@ -8459,12 +8462,12 @@ public class Spoon implements AddUndoPositionInterface
                             return null;
                         }
                         ((JobEntrySpecial)jei).setStart(true);
-                        jei.setName("Start");
+                        jei.setName(JobMeta.STRING_SPECIAL_START);
                     }
                     if (JobMeta.STRING_SPECIAL_DUMMY.equals(type_desc))
                     {
                         ((JobEntrySpecial)jei).setDummy(true);
-                        jei.setName("Dummy");
+                        jei.setName(JobMeta.STRING_SPECIAL_DUMMY);
                     }
                 }
                 
