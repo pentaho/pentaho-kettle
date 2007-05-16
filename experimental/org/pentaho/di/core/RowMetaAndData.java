@@ -2,6 +2,8 @@ package org.pentaho.di.core;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
+import be.ibridge.kettle.core.exception.KettleValueException;
+
 public class RowMetaAndData
 {
     private RowMetaInterface rowMeta;
@@ -54,4 +56,27 @@ public class RowMetaAndData
         this.rowMeta = rowMeta;
     }
 
+    public int hashCode()
+    {
+        try
+        {
+            return rowMeta.hashCode(data);
+        }
+        catch(KettleValueException e)
+        {
+            throw new RuntimeException("Row metadata and data: unable to calculate hashcode because of a data conversion problem", e);
+        }
+    }
+    
+    public boolean equals(Object obj)
+    {
+        try
+        {
+            return rowMeta.compare(data, ((RowMetaAndData)obj).getData())==0;
+        }
+        catch (KettleValueException e)
+        {
+            throw new RuntimeException("Row metadata and data: unable to compare rows because of a data conversion problem", e);
+        }
+    }
 }

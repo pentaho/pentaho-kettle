@@ -1,5 +1,7 @@
 package org.pentaho.di.core.row;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -435,6 +437,90 @@ public class RowMeta implements RowMetaInterface
         }
 
         return 0;
+    }
+    
+    /**
+     * Compare 2 rows with each other using all values in the rows and
+     * also considering the specified ascending clauses of the value metadata.
+
+     * @param rowData1 The first row of data
+     * @param rowData2 The second row of data
+     * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
+     * @throws KettleValueException
+     */
+    public int compare(Object[] rowData1, Object[] rowData2) throws KettleValueException
+    {
+        for (int i=0;i<size();i++)
+        {
+            ValueMetaInterface valueMeta = getValueMeta(i);
+            
+            int cmp = valueMeta.compare(rowData1[i], rowData2[i]);
+            if (cmp!=0) return cmp;
+        }
+
+        return 0;
+    }
+    
+    /**
+     * Calculate a hashcode based on the content (not the index) of the data specified
+     * @param rowData The data to calculate a hashcode with
+     * @return the calculated hashcode
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public int hashCode(Object[] rowData) throws KettleValueException
+    {
+        int hash = 0;
+
+        for (int i=0;i<size();i++)
+        {
+            ValueMetaInterface valueMeta = getValueMeta(i);
+            hash^=valueMeta.hashCode(rowData[i]);
+        }
+        
+        return hash;
+    }
+    
+    /**
+     * Serialize a row of data to byte[]
+     * @param metadata the metadata to use
+     * @param row the row of data
+     * @return a serialized form of the data as a byte array
+     */
+    public static final byte[] extractData(RowMetaInterface metadata, Object[] row)
+    {
+        try
+        {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            metadata.writeData(dataOutputStream, row);
+            dataOutputStream.close();
+            byteArrayOutputStream.close();
+            return byteArrayOutputStream.toByteArray();
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Error serializing row to byte array: "+row, e);
+        }
+    }
+    
+    /**
+     * Create a row of data bases on a serialized format (byte[]) 
+     * @param data the serialized data
+     * @param metadata the metadata to use
+     * @return a new row of data
+     */
+    public static final Object[] getRow(RowMetaInterface metadata, byte[] data)
+    {
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+            return metadata.readData(dataInputStream);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Error de-serializing row of data from byte array", e);
+        }
     }
     
     

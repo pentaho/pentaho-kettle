@@ -245,5 +245,23 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleValueException
      */
     public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs[]) throws KettleValueException;
+    
+    /**
+     * Compare 2 rows with each other using all values in the rows and
+     * also considering the specified ascending clauses of the value metadata.
+
+     * @param rowData1 The first row of data
+     * @param rowData2 The second row of data
+     * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
+     * @throws KettleValueException
+     */
+    public int compare(Object[] rowData1, Object[] rowData2) throws KettleValueException;
  
+    /**
+     * Calculate a hashcode based on the content (not the index) of the data specified
+     * @param rowData The data to calculate a hashcode with
+     * @return the calculated hashcode
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public int hashCode(Object[] rowData) throws KettleValueException;
 }

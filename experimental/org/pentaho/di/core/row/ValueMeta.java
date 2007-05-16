@@ -73,6 +73,8 @@ public class ValueMeta implements ValueMetaInterface
         this.storageType=STORAGE_TYPE_NORMAL;
         this.sortedDescending=false;
         this.outputPaddingEnabled=false;
+        this.decimalSymbol = ""+Const.DEFAULT_DECIMAL_SEPARATOR;
+        this.groupingSymbol = ""+Const.DEFAULT_GROUPING_SEPARATOR;
     }
     
     public Object clone()
@@ -543,10 +545,12 @@ public class ValueMeta implements ValueMetaInterface
         if (number==null) return null;
 
         String string = number.toString();
-        if (!".".equalsIgnoreCase(decimalSymbol))
+        /*
+        if ( !Const.isEmpty(decimalSymbol) && !".".equalsIgnoreCase(decimalSymbol) )
         {
             string = Const.replace(string, ".", decimalSymbol.substring(0, 1));
         }
+        */
         return string;
     }
     
@@ -554,10 +558,13 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (string==null) return null;
 
+        /*
         if (!".".equalsIgnoreCase(decimalSymbol))
         {
             string = Const.replace(string, decimalSymbol.substring(0, 1), ".");
         }
+        */
+        
         return new BigDecimal( string );
     }
 
@@ -1857,5 +1864,47 @@ public class ValueMeta implements ValueMetaInterface
         default: 
             throw new KettleValueException("I can't convert the specified value to data type : "+getType());
         }
+    }
+    
+    /**
+     * Calculate the hashcode of the specified data object
+     * @param object the data value to calculate a hashcode for 
+     * @return the calculated hashcode
+     * @throws KettleValueException 
+     */
+    public int hashCode(Object object) throws KettleValueException
+    {
+        int hash=0;
+        
+        if (isNull(object))
+        {
+            switch(getType())
+            {
+            case TYPE_BOOLEAN   : hash^= 1; break;
+            case TYPE_DATE      : hash^= 2; break;
+            case TYPE_NUMBER    : hash^= 4; break;
+            case TYPE_STRING    : hash^= 8; break;
+            case TYPE_INTEGER   : hash^=16; break;
+            case TYPE_BIGNUMBER : hash^=32; break;
+            case TYPE_NONE      : break;
+            default: break;
+            }
+        }
+        else
+        {
+            switch(getType())
+            {
+            case TYPE_BOOLEAN   : hash^=getBoolean(object).hashCode(); break;
+            case TYPE_DATE      : hash^=getDate(object).hashCode(); break;
+            case TYPE_INTEGER   : hash^=getInteger(object).hashCode(); break;
+            case TYPE_NUMBER    : hash^=getNumber(object).hashCode(); break;
+            case TYPE_STRING    : hash^=getString(object).hashCode(); break;
+            case TYPE_BIGNUMBER : hash^=getBigNumber(object).hashCode(); break;
+            case TYPE_NONE      : break;
+            default: break;
+            }
+        }
+
+        return hash;
     }
 }

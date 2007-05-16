@@ -89,3 +89,49 @@ V2 results, rows: 1.000.000,   runtime: 23,05s,   speed: 43.390 rows/s
 V3 results, rows: 1.000.000,   runtime: 9,03s,   speed: 110.717 rows/s
 V3 / V2 = x2,55
 
+STREAM LOOKUP
+
+Name of transformation: Stream Lookup of Strings (10,000) Normal lookup
+Transformation description: Lookup strings in a table of 10,000 strings, use a normal lookup algorithm (Map)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 11,91s,   speed: 83.984 rows/s
+V3 results, rows: 1.000.000,   runtime: 6,00s,   speed: 166.667 rows/s
+V3 / V2 = x1,98
+
+Name of transformation: Stream Lookup of Strings (10,000) Preserve Memory
+Transformation description: Lookup strings in a table of 10,000 strings, use a serialisation algorithm (HashIndex)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 14,17s,   speed: 70.562 rows/s
+V3 results, rows: 1.000.000,   runtime: 9,70s,   speed: 103.061 rows/s
+V3 / V2 = x1,46
+
+Name of transformation: Stream Lookup of Strings (10,000) Sorted List
+Transformation description: Lookup strings in a table of 10,000 strings, use a sorted list algorithm (List)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 10,91s,   speed: 91.693 rows/s
+V3 results, rows: 1.000.000,   runtime: 5,52s,   speed: 181.324 rows/s
+V3 / V2 = x1,98
+
+TEXT FILE OUTPUT
+
+Name of transformation: Text File Input - CSV
+Transformation description: Read a large CSV file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 21,74s,   speed: 4.601 rows/s
+V3 results, rows: 100.000,   runtime: 14,67s,   speed: 6.816 rows/s
+V3 / V2 = x1,48
+
+Name of transformation: Tex tFile Output data From Table.ktr
+Transformation description: Reads from H2 table CSV_TABLE
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 11,42s,   speed: 8.755 rows/s
+V3 results, rows: 100.000,   runtime: 6,72s,   speed: 14.883 rows/s
+V3 / V2 = x1,70
+
+Name of transformation: Tex tFile Output data From Generator
+Transformation description: Generated rows with all data types occuring twice & dumps these to file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 14,28s,   speed: 7.002 rows/s
+V3 results, rows: 100.000,   runtime: 5,48s,   speed: 18.235 rows/s
+V3 / V2 = x2,60
+

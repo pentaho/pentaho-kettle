@@ -303,5 +303,13 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      */
     public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
+    
+    /**
+     * Calculate the hashcode of the specified data object
+     * @param object the data value to calculate a hashcode for 
+     * @return the calculated hashcode
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public int hashCode(Object object) throws KettleValueException;
 
 }

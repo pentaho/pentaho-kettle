@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Stream Lookup of Strings (10,000) Preserve Memory</name>
+    <description>Lookup strings in a table of 10,000 strings, use a serialisation algorithm (HashIndex)</description>
+    <extended_description/>
+    <trans_version/>
+    <trans_status>0</trans_status>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>100000</feedback_size>
+    <using_thread_priorities>N</using_thread_priorities>
+    <shared_objects_file/>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+        <partitionschema>
+          <name>MySQL Partitioning schema</name>
+          <partition>            <id>P1</id>
+          </partition>          <partition>            <id>P2</id>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>        </partitionschema>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;05&#47;09 17:55:58.156</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+  <hop> <from>A</from><to>id</to><enabled>Y</enabled> </hop>  <hop> <from>id</from><to>A+id</to><enabled>Y</enabled> </hop>  <hop> <from>A+id</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>10k rows</from><to>id2</to><enabled>Y</enabled> </hop>  <hop> <from>id2</from><to>A+id2</to><enabled>Y</enabled> </hop>  <hop> <from>A+id2</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>Text file output</to><enabled>N</enabled> </hop>  </order>
+  <step>
+    <name>10k rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>A</nullif>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>10000</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>67</xloc>
+      <yloc>179</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>A</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>A</nullif>
+        <length>30</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <limit>${NR_OF_ROWS}</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>67</xloc>
+      <yloc>82</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>A+id</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+       <calculation><field_name>key</field_name>
+<calc_type>ADD</calc_type>
+<field_a>A</field_a>
+<field_b>id</field_b>
+<field_c/>
+<value_type>String</value_type>
+<value_length>30</value_length>
+<value_precision>-1</value_precision>
+<remove>N</remove>
+</calculation>
+     <cluster_schema/>
+    <GUI>
+      <xloc>369</xloc>
+      <yloc>82</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>A+id2</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+       <calculation><field_name>key</field_name>
+<calc_type>ADD</calc_type>
+<field_a>A</field_a>
+<field_b>id2</field_b>
+<field_c/>
+<value_type>String</value_type>
+<value_length>30</value_length>
+<value_precision>-1</value_precision>
+<remove>N</remove>
+</calculation>
+     <cluster_schema/>
+    <GUI>
+      <xloc>369</xloc>
+      <yloc>179</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Stream lookup</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <from>A+id2</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key>
+        <name>key</name>
+        <field>key</field>
+      </key>
+      <value>
+        <name>id2</name>
+        <rename>id2</rename>
+        <default>-1</default>
+        <type>Integer</type>
+      </value>
+    </lookup>
+     <cluster_schema/>
+    <GUI>
+      <xloc>546</xloc>
+      <yloc>82</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>id</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+      <valuename>id</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <schema/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name/>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>10000</max_value>
+     <cluster_schema/>
+    <GUI>
+      <xloc>218</xloc>
+      <yloc>82</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>id2</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+      <valuename>id2</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <schema/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name>id2</counter_name>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>10000</max_value>
+     <cluster_schema/>
+    <GUI>
+      <xloc>218</xloc>
+      <yloc>179</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Text file output</name>
+    <type>TextFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding/>
+    <endedLine/>
+    <file>
+      <name>D:\Temp\StreamLookupPreserveMemory</name>
+      <is_command>N</is_command>
+      <extention>txt</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+      </file>
+    <fields>
+      <field>
+        <name>A</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>id</name>
+        <type>Integer</type>
+        <format>0</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>key</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>id2</name>
+        <type>Integer</type>
+        <format>0</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+     <cluster_schema/>
+    <GUI>
+      <xloc>664</xloc>
+      <yloc>211</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+</transformation>

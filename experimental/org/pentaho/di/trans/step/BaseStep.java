@@ -53,6 +53,7 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
+import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
@@ -107,107 +108,57 @@ public class BaseStep extends Thread
         new StepPluginMeta(FilterRowsMeta.class, "FilterRows", Messages.getString("BaseStep.TypeLongDesc.FilterRows"), Messages.getString("BaseStep.TypeTooltipDesc.FilterRows"), "FLT.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages.getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
         new StepPluginMeta(SystemDataMeta.class, "SystemInfo", Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), Messages.getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), "SYS.png", CATEGORY_INPUT),
-
+        new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
         
         /*
-            new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
-            new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"),
-                    Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
-            new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString(
-                    "BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
-            new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
-            new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(InsertUpdateMeta.class, "InsertUpdate", Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.InsertOrUpdate"), "INU.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(UpdateMeta.class, "Update", Messages.getString("BaseStep.TypeLongDesc.Update"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Update"), "UPD.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString(
-                    "BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString(
-                    "BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
-            new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString(
-                    "BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
-            new StepPluginMeta(CubeInputMeta.class, "CubeInput", Messages.getString("BaseStep.TypeLongDesc.CubeInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Cubeinput"), "CIP.png", CATEGORY_INPUT),
-            new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
-            new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
-            new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
-            new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
-            new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
-            new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
-            new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
-            new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
-            new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(MergeRowsMeta.class, "MergeRows", Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MergeRows"), "MRG.png", CATEGORY_JOINS),
-            new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages
-                    .getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
-            new StepPluginMeta(GetVariableMeta.class, "GetVariable", Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.GetVariable"), "GVA.png", CATEGORY_JOB),
-            new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.GetFileNames"), "GFN.png", CATEGORY_INPUT),
-            new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
-            new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
-            new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.BlockingStep"), "BLK.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.AccessOutput"), "ACO.png", CATEGORY_OUTPUT),
-            new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
-            new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
-            new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
-            new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
-            new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
+            new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
+            new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
+            new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
+            new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
+            new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
+            new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
+            new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
+            new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
+            new StepPluginMeta(InsertUpdateMeta.class, "InsertUpdate", Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.InsertOrUpdate"), "INU.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(UpdateMeta.class, "Update", Messages.getString("BaseStep.TypeLongDesc.Update"), Messages.getString("BaseStep.TypeTooltipDesc.Update"), "UPD.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages.getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
+            new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
+            new StepPluginMeta(CubeInputMeta.class, "CubeInput", Messages.getString("BaseStep.TypeLongDesc.CubeInput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeinput"), "CIP.png", CATEGORY_INPUT),
+            new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
+            new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
+            new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
+            new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
+            new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
+            new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
+            new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
+            new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
+            new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
+            new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages.getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(MergeRowsMeta.class, "MergeRows", Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages.getString("BaseStep.TypeTooltipDesc.MergeRows"), "MRG.png", CATEGORY_JOINS),
+            new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
+            new StepPluginMeta(GetVariableMeta.class, "GetVariable", Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.GetVariable"), "GVA.png", CATEGORY_JOB),
+            new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), "GFN.png", CATEGORY_INPUT),
+            new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
+            new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
+            new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages.getString("BaseStep.TypeTooltipDesc.BlockingStep"), "BLK.png", CATEGORY_TRANSFORM),
+            new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages.getString("BaseStep.TypeTooltipDesc.AccessOutput"), "ACO.png", CATEGORY_OUTPUT),
+            new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
+            new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
+            new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages.getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
+            new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages.getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
+            new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages.getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
            */                     
         };
 

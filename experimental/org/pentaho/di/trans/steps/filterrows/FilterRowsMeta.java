@@ -35,11 +35,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 
 

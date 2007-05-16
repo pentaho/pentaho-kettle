@@ -1,4 +1,4 @@
-package org.pentaho.di.run.textfileoutput;
+package org.pentaho.di.run.streamlookup;
 
 import junit.framework.TestCase;
 
@@ -8,20 +8,17 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
-public class RunTextFileInputCSV extends TestCase
+public class RunStreamLookup extends TestCase
 {
-    public void testTextFileInputOutputCSV() throws KettleXMLException
+    public void testStreamLookupStrings10kNormal() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileInputOutputCSV.ktr", 
+                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kNormal.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                100000
+                1000000
             );
         
-        timedTransRunner.init();
-        timedTransRunner.runOldEngine();
-        timedTransRunner.runNewEngine();
-        timedTransRunner.compareResults();
+        timedTransRunner.runOldAndNew();
         
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -30,18 +27,15 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileOutputFromTable() throws KettleXMLException
+    public void testStreamLookupStrings10kPreserveMemory() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromTable.ktr", 
+                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kPreserveMemory.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                100000
+                1000000
             );
         
-        timedTransRunner.init();
-        timedTransRunner.runOldEngine();
-        timedTransRunner.runNewEngine();
-        timedTransRunner.compareResults();
+        timedTransRunner.runOldAndNew();
         
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -50,18 +44,15 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileOutputFromGenerator() throws KettleXMLException
+    public void testStreamLookupStrings10kSortedList() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromGenerator.ktr", 
+                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kSortedList.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                100000
+                1000000
             );
         
-        timedTransRunner.init();
-        timedTransRunner.runOldEngine();
-        timedTransRunner.runNewEngine();
-        timedTransRunner.compareResults();
+        timedTransRunner.runOldAndNew();
         
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
