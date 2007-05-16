@@ -8,7 +8,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
-public class RunRowGenerator extends TestCase
+public class RunSystemData extends TestCase
 {
     public void test_GET_SYSTEM_INFO_00()
     {

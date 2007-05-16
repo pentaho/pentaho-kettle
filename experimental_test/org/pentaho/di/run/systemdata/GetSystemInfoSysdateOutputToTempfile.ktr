@@ -124,7 +124,7 @@
     <encoding/>
     <endedLine/>
     <file>
-      <name>D:\Temp\sysdate</name>
+      <name>${java.io.tmpdir}&#47;GetSystemInfoSysdate</name>
       <is_command>N</is_command>
       <extention>txt</extention>
       <append>N</append>
