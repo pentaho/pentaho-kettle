@@ -125,17 +125,17 @@ public class StepStatus
     {
         String fields[] = new String[15];
         fields[1] = stepname;
-        fields[2] = ""+copy;
-        fields[3] = "" + linesRead;
-        fields[4] = "" + linesWritten;
-        fields[5] = "" + linesInput;
-        fields[6] = "" + linesOutput;
-        fields[7] = "" + linesUpdated;
-        fields[8] = "" + linesRejected;
-        fields[9] = "" + errors;
+        fields[2] = Integer.toString(copy);
+        fields[3] = Long.toString(linesRead);
+        fields[4] = Long.toString(linesWritten);
+        fields[5] = Long.toString(linesInput);
+        fields[6] = Long.toString(linesOutput);
+        fields[7] = Long.toString(linesUpdated);
+        fields[8] = Long.toString(linesRejected);
+        fields[9] = Long.toString(errors);
         fields[10] = statusDescription;
-        fields[11] = "" + seconds;
-        fields[12] = "" + speed;
+        fields[11] = Double.toString(seconds);
+        fields[12] = speed;
         fields[13] = priority;
         fields[14] = sleeps;
         
