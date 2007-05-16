@@ -203,8 +203,8 @@ public class TransHopDialog extends Dialog
 		wFlip = new Button(shell, SWT.PUSH);
 		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
 		fdFlip = new FormData();
-		fdFlip.left = new FormAttachment(wEnabled, margin*5);
-		fdFlip.top  = new FormAttachment(wlTo, margin*5);
+		fdFlip.right = new FormAttachment(100, 0);
+		fdFlip.top  = new FormAttachment(wlTo, 20);
 		wFlip.setLayoutData(fdFlip);
 
 		// Some buttons
