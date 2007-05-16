@@ -38,6 +38,9 @@ public class ValueMeta implements ValueMetaInterface
     private boolean  outputPaddingEnabled;
     private boolean  largeTextField;
     
+    private SimpleDateFormat simpleDateFormat;
+    private DecimalFormat    decimalFormat;
+    
     public ValueMeta()
     {
         this(null, ValueMetaInterface.TYPE_NONE, -1, -1);
@@ -221,6 +224,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         return conversionMask;
     }
+    
     /**
      * @param conversionMask the conversionMask to set
      */
@@ -229,7 +233,6 @@ public class ValueMeta implements ValueMetaInterface
         this.conversionMask = conversionMask;
     }
     
-
     /**
      * @return the encoding
      */
@@ -457,31 +460,41 @@ public class ValueMeta implements ValueMetaInterface
     
     public SimpleDateFormat getSimpleDateFormat()
     {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        if (Const.isEmpty(conversionMask))
+        synchronized(simpleDateFormat)
         {
-            simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT_MASK);
+            if (simpleDateFormat==null)
+            {
+                simpleDateFormat = new SimpleDateFormat();
+                if (Const.isEmpty(conversionMask))
+                {
+                    simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT_MASK);
+                }
+                else
+                {
+                    simpleDateFormat = new SimpleDateFormat(conversionMask);
+                }
+            }
+            return simpleDateFormat;
         }
-        else
-        {
-            simpleDateFormat = new SimpleDateFormat(conversionMask);
-        }
-        return simpleDateFormat;
     }
 
     public DecimalFormat getDecimalFormat()
     {
-        NumberFormat         nf  = NumberFormat.getInstance();
-        DecimalFormat        df  = (DecimalFormat)nf;
-        DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
-    
-        if (!Const.isEmpty(currencySymbol)) dfs.setCurrencySymbol( currencySymbol );
-        if (!Const.isEmpty(groupingSymbol)) dfs.setGroupingSeparator( groupingSymbol.charAt(0) );
-        if (!Const.isEmpty(decimalSymbol)) dfs.setDecimalSeparator( decimalSymbol.charAt(0) );
-        df.setDecimalFormatSymbols(dfs);
-        if (!Const.isEmpty(conversionMask)) df.applyPattern(conversionMask);
-        
-        return df;
+        synchronized(decimalFormat)
+        {
+            if (decimalFormat==null)
+            {
+                decimalFormat        = (DecimalFormat)NumberFormat.getInstance();
+                DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
+            
+                if (!Const.isEmpty(currencySymbol)) decimalFormatSymbols.setCurrencySymbol( currencySymbol );
+                if (!Const.isEmpty(groupingSymbol)) decimalFormatSymbols.setGroupingSeparator( groupingSymbol.charAt(0) );
+                if (!Const.isEmpty(decimalSymbol)) decimalFormatSymbols.setDecimalSeparator( decimalSymbol.charAt(0) );
+                decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+                if (!Const.isEmpty(conversionMask)) decimalFormat.applyPattern(conversionMask);
+            }
+            return decimalFormat;
+        }
     }
 
     private String convertIntegerToString(Long number) throws KettleValueException
