@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunTextFileInputCSV extends TestCase
 {
-    public void testTextFileInputOutputCSV() throws KettleXMLException
+    public void test_TEXT_FILE_OUTPUT_00()
+    {
+        System.out.println();
+        System.out.println("TEXT FILE OUTPUT");
+        System.out.println("==================");
+    }
+    
+    public void test_TEXT_FILE_OUTPUT_01_InputOutputCSV() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileoutput/TextFileInputOutputCSV.ktr", 
@@ -30,7 +37,7 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileOutputFromTable() throws KettleXMLException
+    public void test_TEXT_FILE_OUTPUT_02_CSVFromTable() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromTable.ktr", 
@@ -50,7 +57,7 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileOutputFromGenerator() throws KettleXMLException
+    public void test_TEXT_FILE_OUTPUT_03_CSVFromGenerator() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromGenerator.ktr", 

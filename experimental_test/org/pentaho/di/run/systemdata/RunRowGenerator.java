@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunRowGenerator extends TestCase
 {
-    public void testGetSystemInfoSysdate() throws KettleXMLException
+    public void test_GET_SYSTEM_INFO_00()
+    {
+        System.out.println();
+        System.out.println("GET SYSTEM INFO");
+        System.out.println("==================");
+    }
+    
+    public void test_GET_SYSTEM_INFO_01_Sysdate() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdate.ktr", 
@@ -26,7 +33,7 @@ public class RunRowGenerator extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testGetSystemInfoSysdateTempfile() throws KettleXMLException
+    public void test_GET_SYSTEM_INFO_02_SysdateTempfile() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdateOutputToTempfile.ktr", 

@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunAddSequence extends TestCase
 {
-    public void testAddSequenceToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_00()
+    {
+        System.out.println();
+        System.out.println("ABORT");
+        System.out.println("==================");
+    }
+    
+    public void test_ADD_SEQUENCE_01_AddToEmptyRow() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequence.ktr", 
@@ -26,7 +33,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAddSequenceTo5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_02_AddTo5() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo5.ktr", 
@@ -42,7 +49,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAddSequenceTo10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_03_AddTo10() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo10.ktr", 
@@ -58,7 +65,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void testAdd2SequencesToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_04_Add2ToEmptyRow() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2Sequences.ktr", 
@@ -74,7 +81,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAdd2SequencesTo5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_05_Add2To5() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo5.ktr", 
@@ -90,7 +97,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAdd2SequencesTo10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_06_Add2To10() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo10.ktr", 
@@ -106,7 +113,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAdd4SequencesToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_07_Add4ToEmptyRow() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4Sequences.ktr", 
@@ -122,7 +129,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAdd4SequencesTo5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_08_Add4To5() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo5.ktr", 
@@ -138,7 +145,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testAdd4SequencesTo10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_09_Add4To10() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo10.ktr", 

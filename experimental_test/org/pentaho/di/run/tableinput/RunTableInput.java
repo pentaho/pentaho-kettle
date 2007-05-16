@@ -2,47 +2,34 @@ package org.pentaho.di.run.tableinput;
 
 import junit.framework.TestCase;
 
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.EnvUtil;
 
 public class RunTableInput extends TestCase
 {
-    public void testTableInput() throws KettleXMLException
+    public void test_TABLE_INPUT_00()
     {
-        EnvUtil.environmentInit();
-        StepLoader.getInstance().read();
-        LogWriter.getInstance(LogWriter.LOG_LEVEL_ERROR);
+        System.out.println();
+        System.out.println("TABLE INPUT");
+        System.out.println("==================");
+    }
+    
+    public void test_TABLE_INPUT_01_ReadCustomers() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                1110110
+            );
+        timedTransRunner.runOldAndNew();
         
-        TransMeta transMeta = new TransMeta("experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr");
-        System.out.println("Name of transformation: "+transMeta.getName());
-        System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
-
-        long startTime = System.currentTimeMillis();
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
         
-        // OK, now run this transFormation.
-        Trans trans = new Trans(LogWriter.getInstance(), transMeta);
-        trans.execute(null);
-        
-        trans.waitUntilFinished();
-        
-        Result result = trans.getResult();
-        assertTrue(result.getNrErrors()==0);
-        
-        long stopTime = System.currentTimeMillis();
-        
-        double seconds = (double)(stopTime - startTime) / 1000;
-        long   records = 1110110L;
-        double speed = (double)records / (seconds);
-        
-        System.out.println("records : "+records);
-        System.out.println("runtime : "+seconds);
-        System.out.println("speed   : "+speed);
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
     }
 }

@@ -10,10 +10,49 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunSelectValues extends TestCase
 {
-    public void testSelectValues() throws KettleXMLException
+    public void test_SELECT_VALUES_00()
+    {
+        System.out.println();
+        System.out.println("SELECT VALUES");
+        System.out.println("==================");
+    }
+    
+    public void test_SELECT_VALUES_01_SelectValues() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/selectvalues/SelectValues.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                1000000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_SELECT_VALUES_01_Delete() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesDelete.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                1000000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_SELECT_VALUES_01_Meta() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesMeta.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
                 1000000
             );

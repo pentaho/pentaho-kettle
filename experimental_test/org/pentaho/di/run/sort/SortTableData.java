@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class SortTableData extends TestCase
 {
-    public void testSortTableData() throws KettleXMLException
+    public void test_SORT_00()
+    {
+        System.out.println();
+        System.out.println("SORT ROWS");
+        System.out.println("==================");
+    }
+    
+    public void test_SORT_01_TableData() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableData.ktr",
@@ -26,42 +33,10 @@ public class SortTableData extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testSortTableDataNoCompression() throws KettleXMLException
+    public void test_SORT_02_TableDataNoCompression() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompression.ktr",
-                LogWriter.LOG_LEVEL_ERROR, 
-                100000
-            );
-        timedTransRunner.runOldAndNew();
-        
-        Result oldResult = timedTransRunner.getOldResult();
-        assertTrue(oldResult.getNrErrors()==0);
-        
-        Result newResult = timedTransRunner.getNewResult();
-        assertTrue(newResult.getNrErrors()==0);
-    }
-    
-    public void testSortTableDataFromMySQL() throws KettleXMLException
-    {
-        TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/sort/SortTableDataMySQL.ktr",
-                LogWriter.LOG_LEVEL_ERROR, 
-                100000
-            );
-        timedTransRunner.runOldAndNew();
-        
-        Result oldResult = timedTransRunner.getOldResult();
-        assertTrue(oldResult.getNrErrors()==0);
-        
-        Result newResult = timedTransRunner.getNewResult();
-        assertTrue(newResult.getNrErrors()==0);
-    }
-    
-    public void testSortTableDataNoCompressionFromMySQL() throws KettleXMLException
-    {
-        TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionMySQL.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
                 100000
             );

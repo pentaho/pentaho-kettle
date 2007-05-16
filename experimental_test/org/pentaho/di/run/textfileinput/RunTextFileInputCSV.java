@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunTextFileInputCSV extends TestCase
 {
-    public void testRunTextFileInputCSV() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_00()
+    {
+        System.out.println();
+        System.out.println("TEXT FILE INPUT");
+        System.out.println("==================");
+    }
+    
+    public void test_TEXT_FILE_INPUT_01_CSV() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSV.ktr", 
@@ -26,7 +33,7 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileInputCSVStrings() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_02_CSVStrings() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSVStrings.ktr", 
@@ -42,7 +49,7 @@ public class RunTextFileInputCSV extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void testRunTextFileInputCSVCalculator() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_03_CSVCalculator() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSVCalculator.ktr", 

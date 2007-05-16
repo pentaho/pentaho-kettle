@@ -10,7 +10,14 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunFilterRowsSimple extends TestCase
 {
-    public void testRowGenerator() throws KettleXMLException
+    public void test_FILTER_ROWS_00()
+    {
+        System.out.println();
+        System.out.println("FILTER ROWS");
+        System.out.println("==================");
+    }
+    
+    public void test_FILTER_ROWS_01_Simple() throws KettleXMLException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/filterrows/FilterRowsSimple.ktr", 

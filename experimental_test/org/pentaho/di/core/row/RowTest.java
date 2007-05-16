@@ -33,7 +33,7 @@ public class RowTest extends TestCase
         assertEquals("20070507130413", rowMeta2.getString(rowData2, 1));        
         assertEquals("9.123,9", rowMeta2.getString(rowData2, 2));        
         assertEquals("0012345", rowMeta2.getString(rowData2, 3));        
-        assertEquals("123456789012345678,9349", rowMeta2.getString(rowData2, 4));
+        assertEquals("123456789012345678.9349", rowMeta2.getString(rowData2, 4));
         assertEquals("false", rowMeta2.getString(rowData2, 5));
     }
     
