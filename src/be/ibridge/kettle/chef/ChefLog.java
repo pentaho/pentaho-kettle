@@ -584,7 +584,7 @@ public class ChefLog extends Composite implements TabItemInterface
                         if (res!=null)
                         {
                             treeItem.setText(2, res.getResult()?Messages.getString("ChefLog.Tree.Success"):Messages.getString("ChefLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
-                            treeItem.setText(5, ""+res.getEntryNr()); //$NON-NLS-1$
+                            treeItem.setText(5, Long.toString(res.getEntryNr())); //$NON-NLS-1$
                         }
                         String reason = result.getReason();
                         if (reason!=null)
