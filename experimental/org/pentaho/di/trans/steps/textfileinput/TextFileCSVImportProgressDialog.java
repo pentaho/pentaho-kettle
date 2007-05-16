@@ -7,7 +7,6 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -141,14 +140,15 @@ public class TextFileCSVImportProgressDialog
         String line = "";
         long fileLineNumber = 0;
         
-        NumberFormat nf = NumberFormat.getInstance();
-        DecimalFormat df = (DecimalFormat)nf;
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        SimpleDateFormat daf  = new SimpleDateFormat();
-        daf.setLenient(false);
-        DateFormatSymbols dafs = new DateFormatSymbols();
 
         int nrfields = meta.getInputFields().length;
+        
+        RowMetaInterface outputRowMeta = new RowMeta();
+        meta.getFields(outputRowMeta, null, null);
+
+        RowMetaInterface convertRowMeta = (RowMetaInterface) outputRowMeta.clone();
+        for (int i=0;i<convertRowMeta.size();i++) convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
         // How many null values?
         int nrnull[] = new int[nrfields]; // How many times null value?
@@ -264,7 +264,7 @@ public class TextFileCSVImportProgressDialog
             RowMetaInterface rowMeta = new RowMeta();
             meta.getFields(rowMeta, "stepname", null);
             
-            Object[] r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, df, dfs, daf, dafs, meta.getFilePaths()[0], rownumber);
+            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths()[0], rownumber, null);
 
             rownumber++;
             for (int i = 0; i < nrfields && i < r.length; i++)

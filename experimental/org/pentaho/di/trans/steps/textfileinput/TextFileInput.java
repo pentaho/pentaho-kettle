@@ -18,10 +18,6 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +33,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -72,7 +68,9 @@ import be.ibridge.kettle.core.vfs.KettleVFS;
 public class TextFileInput extends BaseStep implements StepInterface
 {
 	private static final int BUFFER_SIZE_INPUT_STREAM = 500;
-
+    
+    private static LogWriter log = LogWriter.getInstance();
+    
     private TextFileInputMeta meta;
 
 	private TextFileInputData data;
@@ -170,7 +168,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return null;
 	}
 
-	public static final String[] convertLineToStrings(LogWriter log, String line, TextFileInputMeta inf) throws KettleException
+	public static final String[] convertLineToStrings(String line, TextFileInputMeta inf) throws KettleException
 	{
 		String[] strings = new String[inf.getInputFields().length];
         int fieldnr;
@@ -385,136 +383,109 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		return strings;
 	}
-
-	public static final Object[] convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
-			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr) throws KettleException
-	{
-		return convertLineToRow(log, textFileLine, info, ldf, ldfs, ldaf, ldafs, fname, rowNr, null);
-	}
-
-	public static final Object[] convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
-			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr, FileErrorHandler errorHandler)
-			throws KettleException
-	{
+    
+    public static final Object[] convertLineToRow(TextFileLine textFileLine, TextFileInputMeta info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
+    {
         if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0) return null;
-
+        Object[] r = new Object[outputRowMeta.size()];
+        
         int nrfields = info.getInputFields().length;
-        int nrToAllocate = nrfields;
-
-        Long errorCount = null;
-		if (info.isErrorIgnored() && info.getErrorCountField() != null && info.getErrorCountField().length() > 0)
-		{
-			errorCount = new Long(0L);
-            nrToAllocate++;
-		}
-		String errorFields = null;
-		if (info.isErrorIgnored() && info.getErrorFieldsField() != null && info.getErrorFieldsField().length() > 0)
-		{
-			errorFields = "";
-            nrToAllocate++;
-		}
-		String errorText = null;
-		if (info.isErrorIgnored() && info.getErrorTextField() != null && info.getErrorTextField().length() > 0)
-		{
-			errorText = "";
-            nrToAllocate++;
-		}
-        if (info.includeFilename())
-        {
-            nrToAllocate++;
-        }
-        if (info.includeRowNumber())
-        {
-            nrToAllocate++;
-        }
-
-        Object[] r = new Object[nrToAllocate];
         int fieldnr;
         
-		try
-		{
-			// System.out.println("Convertings line to string ["+line+"]");
-			String[] strings = convertLineToStrings(log, textFileLine.line, info);
+        Long errorCount = null;
+        if (info.isErrorIgnored() && info.getErrorCountField() != null && info.getErrorCountField().length() > 0)
+        {
+            errorCount = new Long(0L);
+        }
+        String errorFields = null;
+        if (info.isErrorIgnored() && info.getErrorFieldsField() != null && info.getErrorFieldsField().length() > 0)
+        {
+            errorFields = "";
+        }
+        String errorText = null;
+        if (info.isErrorIgnored() && info.getErrorTextField() != null && info.getErrorTextField().length() > 0)
+        {
+            errorText = "";
+        }
+        
+        try
+        {
+            // System.out.println("Convertings line to string ["+line+"]");
+            String[] strings = convertLineToStrings(textFileLine.line, info);
 
-			for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
-			{
-				TextFileInputField f = info.getInputFields()[fieldnr];
+            for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
+            {
+                TextFileInputField f = info.getInputFields()[fieldnr];
+                ValueMetaInterface valueMeta = outputRowMeta.getValueMeta(fieldnr);
+                ValueMetaInterface convertMeta = convertRowMeta.getValueMeta(fieldnr);
+                
                 Object value;
 
-				String field = fieldnr < nrfields ? f.getName() : "empty" + fieldnr;
-				int type = fieldnr < nrfields ? f.getType() : ValueMetaInterface.TYPE_STRING;
-				String format = fieldnr < nrfields ? f.getFormat() : "";
-				int length = fieldnr < nrfields ? f.getLength() : -1;
-				int precision = fieldnr < nrfields ? f.getPrecision() : -1;
-				String group = fieldnr < nrfields ? f.getGroupSymbol() : "";
-				String decimal = fieldnr < nrfields ? f.getDecimalSymbol() : "";
-				String currency = fieldnr < nrfields ? f.getCurrencySymbol() : "";
-				String nullif = fieldnr < nrfields ? f.getNullString() : "";
+                String nullif = fieldnr < nrfields ? f.getNullString() : "";
                 String ifnull = fieldnr < nrfields ? f.getIfNullValue() : "";
-				int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
+                int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
 
-				if (fieldnr < strings.length)
-				{
-					String pol = strings[fieldnr];
-					try
-					{
-						value = convertValue(pol, field, type, format, length, precision, group, decimal, currency, nullif,ifnull, trim_type, ldf, ldfs,
-								ldaf, ldafs);
-					}
-					catch (Exception e)
-					{
-						// OK, give some feedback!
-						String message = "Couldn't parse field [" + field + "] with value [" + pol + "], format ["+format+"] ldaf=["+ldaf.toLocalizedPattern()+"]";
-						
-						if (info.isErrorIgnored())
-						{
-							log.logBasic(fname, "WARNING: " + message+" : " + e.getMessage());
+                if (fieldnr < strings.length)
+                {
+                    String pol = strings[fieldnr];
+                    try
+                    {
+                        value = convertValue(pol, valueMeta, convertMeta, nullif, ifnull, trim_type);
+                    }
+                    catch (Exception e)
+                    {
+                        // OK, give some feedback!
+                        String message = "Couldn't parse field [" + valueMeta.toStringMeta() + "] with value [" + pol + "], format ["+valueMeta.getConversionMask()+"]";
+                        
+                        if (info.isErrorIgnored())
+                        {
+                            LogWriter.getInstance().logBasic(fname, "WARNING: " + message+" : " + e.getMessage());
 
-							value = null;
+                            value = null;
 
-							if (errorCount != null)
-							{
-								errorCount=new Long( errorCount.longValue()+1L );
-							}
-							if (errorFields != null)
-							{
-								StringBuffer sb = new StringBuffer(errorFields);
-								if (sb.length() > 0) sb.append(", ");
-								sb.append(field);
-								errorFields = sb.toString();
-							}
-							if (errorText != null)
-							{
-								StringBuffer sb = new StringBuffer(errorText);
-								if (sb.length() > 0) sb.append(Const.CR);
-								sb.append(message);
-								errorText=sb.toString();
-							}
-							if (errorHandler != null)
-							{
-								errorHandler.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS);
-							}
+                            if (errorCount != null)
+                            {
+                                errorCount=new Long( errorCount.longValue()+1L );
+                            }
+                            if (errorFields != null)
+                            {
+                                StringBuffer sb = new StringBuffer(errorFields);
+                                if (sb.length() > 0) sb.append("\t"); // TODO document this change
+                                sb.append(valueMeta.getName());
+                                errorFields = sb.toString();
+                            }
+                            if (errorText != null)
+                            {
+                                StringBuffer sb = new StringBuffer(errorText);
+                                if (sb.length() > 0) sb.append(Const.CR);
+                                sb.append(message);
+                                errorText=sb.toString();
+                            }
+                            if (errorHandler != null)
+                            {
+                                errorHandler.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS);
+                            }
 
-							if (info.isErrorLineSkipped()) r=null; // TODO: compensate for stmt: r.setIgnore();
-						}
-						else
-						{
-							throw new KettleException(message, e);
-						}
-					}
-				}
-				else
-				{
-					// No data found: TRAILING NULLCOLS: add null value...
-					value = null;
-				}
+                            if (info.isErrorLineSkipped()) r=null; // compensates for stmt: r.setIgnore();
+                        }
+                        else
+                        {
+                            throw new KettleException(message, e);
+                        }
+                    }
+                }
+                else
+                {
+                    // No data found: TRAILING NULLCOLS: add null value...
+                    value = null;
+                }
 
-				// Now add value to the row!
-				r[fieldnr] = value;
-			}
+                // Now add value to the row!
+                r[fieldnr] = value;
+            }
 
             // Support for trailing nullcols!
-            // TODO: do we really need this?  Should be OK at allocation time.
+            // Should be OK at allocation time, but it doesn't hurt :-)
             if (fieldnr < nrfields)
             {
                 for (int i = fieldnr; i < info.getInputFields().length; i++)
@@ -523,19 +494,19 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
 
-			// Add the error handling fields...
+            // Add the error handling fields...
             int index = nrfields;
-			if (errorCount != null) 
+            if (errorCount != null) 
             {
                 r[index]=errorCount;
                 index++;
             }
-			if (errorFields != null)
+            if (errorFields != null)
             {
                 r[index]=errorFields;
                 index++;
             }
-			if (errorText != null)
+            if (errorText != null)
             {
                 r[index]=errorText;
                 index++;
@@ -554,15 +525,74 @@ public class TextFileInput extends BaseStep implements StepInterface
                 r[index] = new Long(rowNr);
                 index++;
             }
-		}
-		catch (Exception e)
-		{
-			throw new KettleException("Error converting line", e);
-		}
+        }
+        catch (Exception e)
+        {
+            throw new KettleException("Error converting line", e);
+        }
 
-		return r;
-	}
+        return r;
 
+    }
+    
+    public static final Object convertValue( String pol, ValueMetaInterface valueMeta, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException
+    {
+        // null handling and conversion of value to null
+        //
+        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(ifNull))
+        {
+            if (ifNull!=null && ifNull.length()!=0)
+            {
+                pol = ifNull;
+            }
+        }
+        
+        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullif)) 
+        {
+            return null;
+        }
+        
+        // Trimming
+        switch (trim_type)
+        {
+        case TextFileInputMeta.TYPE_TRIM_LEFT:
+            {
+                StringBuffer strpol = new StringBuffer(pol);
+                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+                    strpol.deleteCharAt(0);
+                pol=strpol.toString();
+            }
+            break;
+        case TextFileInputMeta.TYPE_TRIM_RIGHT:
+            {
+                StringBuffer strpol = new StringBuffer(pol);
+                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+                    strpol.deleteCharAt(strpol.length() - 1);
+                pol=strpol.toString();
+            }
+            break;
+        case TextFileInputMeta.TYPE_TRIM_BOTH:
+            StringBuffer strpol = new StringBuffer(pol);
+            {
+                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+                    strpol.deleteCharAt(0);
+                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+                    strpol.deleteCharAt(strpol.length() - 1);
+                pol=strpol.toString();
+            }
+            break;
+        default:
+            break;
+        }
+        
+        // On with the regular program...
+        // Simply call the ValueMeta routines to do the conversion
+        // We need to do some effort here: copy all 
+        //
+        return valueMeta.convertData(convertMeta, pol); 
+    }
+            
+    /*
 	public static final Object convertValue( String pol, String field_name, int field_type, String field_format, 
 			                                int field_length, int field_precision, String num_group, String num_decimal, 
 			                                String num_currency, String nullif, String ifNull, int trim_type,
@@ -718,7 +748,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		
 		return value;
 	}
-
+¨   */
+    
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		Object[] r = null;
@@ -728,6 +759,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (first) // we just got started
 		{
             first = false;
+            
+            // Create the output row metadata
+            data.outputRowMeta = new RowMeta();
+            meta.getFields(data.outputRowMeta, getStepname(), null); // get the metadata populated.  Simple and easy.
+            
+            // Create convertor metadata objects that will contain Date & Number formatters
+            //
+            data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
+            for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
 
             if (meta.isAcceptingFilenames())
             {
@@ -772,10 +812,6 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
             handleMissingFiles();
-
-            // Create a set of metadata
-            data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null); // get the metadata populated.  Simple and easy.
             
 			// Open the first file & read the required rows in the buffer, stop
 			// if it fails...
@@ -893,8 +929,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.pageLinesRead++;
 					data.lineInFile ++;
 					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
-					r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, useNumber,
-							data.dataErrorLineHandler);
+					r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 					if (r != null) putrow = true;
 				}
 				else
@@ -962,8 +997,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					{
 						data.lineInFile ++;
 						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
-						r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, useNumber,
-								data.dataErrorLineHandler);
+						r = convertLineToRow(textLine, meta, data.outputRowMeta, data.convertRowMeta, data.filename, useNumber, data.dataErrorLineHandler);
 						if (r != null)
 						{
 							// System.out.println("Found data row: "+r);

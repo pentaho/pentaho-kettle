@@ -23,8 +23,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import be.ibridge.kettle.core.Const;
-
 
 
 /**
@@ -34,7 +32,10 @@ import be.ibridge.kettle.core.Const;
 public class SortRowsData extends BaseStepData implements StepDataInterface
 {
 	public ArrayList files;
-	public ArrayList    buffer;
+	public Object[]  buffer;
+    public int       bufferSize;
+    public int       getBufferIndex;
+
 	public ArrayList fis, gzis, dis;
 	public ArrayList rowbuffer;
 
@@ -49,7 +50,6 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	{
 		super();
 		
-		buffer=new ArrayList(Const.SORT_SIZE);
 		files=new ArrayList();
 		fis  =new ArrayList();
 		dis  =new ArrayList();

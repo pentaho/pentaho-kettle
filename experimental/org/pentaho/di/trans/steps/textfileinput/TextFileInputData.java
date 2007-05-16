@@ -103,6 +103,8 @@ public class TextFileInputData extends BaseStepData implements
     public int fileFormatType;
 
     public int fileType;
+
+    public RowMetaInterface convertRowMeta;
     
 	/**
 	 * 

@@ -23,8 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -71,7 +70,8 @@ public class SortRows extends BaseStep implements StepInterface
 	{
 		if (r!=null)
 		{
-			data.buffer.add(r);     // Save row
+			data.buffer[data.bufferSize] = r;     // Save row
+            data.bufferSize++;
 		}
 		if (data.files.size()==0 && r==null) // No more records: sort buffer
 		{
@@ -79,8 +79,8 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		
 		// time to write to disk: buffer is full!
-		if (   data.buffer.size()==meta.getSortSize()     // Buffer is full: sort & dump to disk 
-		   || (data.files.size()>0 && r==null && data.buffer.size()>0) // No more records: join from disk 
+		if ( data.bufferSize==meta.getSortSize()     // Buffer is full: sort & dump to disk 
+		   || (data.files.size()>0 && r==null && data.bufferSize>0) // No more records: join from disk 
 		   )
 		{
 			// First sort the rows in buffer[]
@@ -109,12 +109,12 @@ public class SortRows extends BaseStep implements StepInterface
 				}
 			
 				// How many records do we have?
-				dos.writeInt(data.buffer.size());
+				dos.writeInt(data.bufferSize);
                 
-                for (p=0;p<data.buffer.size();p++)
+                for (p=0;p<data.bufferSize;p++)
 				{
                     // Just write the data, nothing else
-                    rowMeta.writeData(dos, (Object[])data.buffer.get(p));
+                    rowMeta.writeData(dos, (Object[])data.buffer[p]);
 				}
 				// Close temp-file
 				dos.close();  // close data stream
@@ -130,7 +130,8 @@ public class SortRows extends BaseStep implements StepInterface
 				return false;
 			}
 			
-			data.buffer.clear();
+            data.bufferSize=0;
+            data.getBufferIndex=0;
 		}
 		
 		
@@ -192,10 +193,11 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (data.files.size()==0)
 		{
-			if (data.buffer.size()>0)
+			if (data.bufferSize>0)
 			{
-				retval=(Object[])data.buffer.get(0);
-				data.buffer.remove(0);
+				retval=(Object[])data.buffer[data.getBufferIndex];
+				data.getBufferIndex++;
+                data.bufferSize--;
 			}
 			else
 			{
@@ -341,6 +343,8 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+            data.buffer = new Object[meta.getSortSize()];
+            data.bufferSize = 0;
 		    // Add init code here.
 		    return true;
 		}
@@ -375,12 +379,12 @@ public class SortRows extends BaseStep implements StepInterface
 	
 	/** Sort the entire vector, if it is not empty
 	 */
-	public void quickSort(ArrayList elements)
+	public void quickSort(Object[] elements)
 	{
 		if (log.isDetailed()) logDetailed("Starting quickSort algorithm..."); 
-		if (! elements.isEmpty())
+		if (data.bufferSize>0)
 		{ 
-            Collections.sort(elements, new Comparator()
+            Arrays.sort(elements, 0, data.bufferSize, new Comparator()
                 {
                     public int compare(Object o1, Object o2)
                     {

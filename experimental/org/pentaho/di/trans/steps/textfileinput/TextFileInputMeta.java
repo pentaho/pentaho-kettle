@@ -28,7 +28,6 @@ import java.util.Locale;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -660,24 +659,24 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit = 0L;
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
 	{
-        RowMetaInterface row;
-		if (r == null)
-			row = new RowMeta(); // give back values
-		else
-			row = r; // add to the existing row of values...
-
 		for (int i = 0; i < inputFields.length; i++)
 		{
 			TextFileInputField field = inputFields[i];
 
 			int type = field.getType();
 			if (type == ValueMetaInterface.TYPE_NONE) type = ValueMetaInterface.TYPE_STRING;
+            
             ValueMetaInterface v = new ValueMeta(field.getName(), type);
 			v.setLength(field.getLength());
             v.setPrecision(field.getPrecision());
 			v.setOrigin(name);
+            v.setConversionMask(field.getFormat());
+            v.setDecimalSymbol(field.getDecimalSymbol());
+            v.setGroupingSymbol(field.getGroupSymbol());
+            v.setCurrencySymbol(field.getCurrencySymbol());
+            
 			row.addValueMeta(v);
 		}
 		if (errorIgnored)

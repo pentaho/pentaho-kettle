@@ -2350,7 +2350,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
                         if (line != null)
                         {
-                            String[] fields = TextFileInput.convertLineToStrings(log, line, meta);
+                            String[] fields = TextFileInput.convertLineToStrings(line, meta);
 
                             for (int i = 0; i < fields.length; i++)
                             {

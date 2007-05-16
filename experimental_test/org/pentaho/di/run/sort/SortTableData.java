@@ -48,4 +48,37 @@ public class SortTableData extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void test_SORT_03_TableDataNoCompressionBuffer50k() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer50k.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_SORT_04_TableDataNoCompressionBuffer100k() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer100k.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
 }

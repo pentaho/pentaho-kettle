@@ -1,6 +1,6 @@
 Started this run on: 2007/05/16 17:04:07
 Notes: 
-- We can probably speed up results for TFI by doing the same trick as with TFO
+- Weird results for Sort: why would this go slower if we run it completely from memory?
 
 TABLE OUTPUT
 ==================
@@ -125,25 +125,50 @@ TEXT FILE OUTPUT
 ==================
 
 Name of transformation: Text File Input - CSV
-Transformation description: Read a large CSV file
+Transformation description: Read a large CSV file, write it back
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 20,45s,   speed: 4.889 rows/s
-V3 results, rows: 100.000,   runtime: 14,34s,   speed: 6.972 rows/s
-V3 / V2 = x1,43
+V2 results, rows: 100.000,   runtime: 21,31s,   speed:  4.692 rows/s
+V3 results, rows: 100.000,   runtime:  6,97s,   speed: 14.349 rows/s
+V3 / V2 = x3,06
 
 Name of transformation: Tex tFile Output data From Table.ktr
 Transformation description: Reads from H2 table CSV_TABLE
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 11,03s,   speed: 9.065 rows/s
-V3 results, rows: 100.000,   runtime: 6,25s,   speed: 16.000 rows/s
-V3 / V2 = x1,77
+V2 results, rows: 100.000,   runtime: 21,61s,   speed:  4.627 rows/s
+V3 results, rows: 100.000,   runtime:  6,64s,   speed: 15.060 rows/s
+V3 / V2 = x3,25
 
 Name of transformation: Tex tFile Output data From Generator
 Transformation description: Generated rows with all data types occuring twice & dumps these to file
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 13,98s,   speed: 7.151 rows/s
-V3 results, rows: 100.000,   runtime: 5,80s,   speed: 17.250 rows/s
-V3 / V2 = x2,41
+V2 results, rows: 100.000,   runtime: 14,33s,   speed:  6.979 rows/s
+V3 results, rows: 100.000,   runtime:  5,44s,   speed: 18.392 rows/s
+V3 / V2 = x2,64
+
+TEXT FILE INPUT
+==================
+
+Name of transformation: Text File Input - CSV
+Transformation description: Read a large CSV file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 15,95s,   speed:  6.268 rows/s
+V3 results, rows: 100.000,   runtime:  5,83s,   speed: 17.159 rows/s
+V3 / V2 = x2,74
+
+Name of transformation: Text File Input - CSV - Strings only
+Transformation description: Read a large CSV file, all fields as Strings (no conversions)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 7,16s,   speed: 13.974 rows/s
+V3 results, rows: 100.000,   runtime: 4,08s,   speed: 24.522 rows/s
+V3 / V2 = x1,75
+
+Name of transformation: Text File Input - CSV + Calculator
+Transformation description: Read a large CSV file, perform a single calculation
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 16,14s,   speed: 6.195 rows/s
+V3 results, rows: 100.000,   runtime: 4,83s,   speed: 20.713 rows/s
+V3 / V2 = x3,34
+
 
 FILTER ROWS
 ==================
@@ -185,22 +210,22 @@ SELECT VALUES
 Name of transformation: Select Values
 Transformation description: Tests the functionality and performance of the "Select Values" step (Select tab)
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 1.000.000,   runtime: 38,11s,   speed: 26.241 rows/s
-V3 results, rows: 1.000.000,   runtime: 4,14s,   speed: 241.488 rows/s
+V2 results, rows: 1.000.000,   runtime: 38,11s,   speed:  26.241 rows/s
+V3 results, rows: 1.000.000,   runtime:  4,14s,   speed: 241.488 rows/s
 V3 / V2 = x9,20
 
 Name of transformation: Select Values Delete
 Transformation description: Tests the functionality and performance of the "Select Values" step (Delete values from row)
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 1.000.000,   runtime: 18,75s,   speed: 53.333 rows/s
-V3 results, rows: 1.000.000,   runtime: 2,86s,   speed: 349.650 rows/s
+V2 results, rows: 1.000.000,   runtime: 18,75s,   speed:  53.333 rows/s
+V3 results, rows: 1.000.000,   runtime:  2,86s,   speed: 349.650 rows/s
 V3 / V2 = x6,56
 
 Name of transformation: Select Values Meta
 Transformation description: Tests the functionality and performance of the "Select Values" step (Change metadata or type)
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 1.000.000,   runtime: 21,00s,   speed: 47.619 rows/s
-V3 results, rows: 1.000.000,   runtime: 3,58s,   speed: 279.486 rows/s
+V2 results, rows: 1.000.000,   runtime: 21,00s,   speed:  47.619 rows/s
+V3 results, rows: 1.000.000,   runtime:  3,58s,   speed: 279.486 rows/s
 V3 / V2 = x5,87
 
 CALCULATOR
@@ -247,23 +272,23 @@ TEXT FILE INPUT
 Name of transformation: Text File Input - CSV
 Transformation description: Read a large CSV file
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 14,92s,   speed: 6.702 rows/s
-V3 results, rows: 100.000,   runtime: 13,24s,   speed: 7.556 rows/s
-V3 / V2 = x1,13
+V2 results, rows: 100.000,   runtime: 16,22s,   speed: 6.166 rows/s
+V3 results, rows: 100.000,   runtime: 4,92s,   speed: 20.317 rows/s
+V3 / V2 = x3,30
 
 Name of transformation: Text File Input - CSV - Strings only
 Transformation description: Read a large CSV file, all fields as Strings (no conversions)
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 6,58s,   speed: 15.202 rows/s
-V3 results, rows: 100.000,   runtime: 4,05s,   speed: 24.716 rows/s
-V3 / V2 = x1,63
+V2 results, rows: 100.000,   runtime: 7,34s,   speed: 13.617 rows/s
+V3 results, rows: 100.000,   runtime: 4,44s,   speed: 22.538 rows/s
+V3 / V2 = x1,66
 
 Name of transformation: Text File Input - CSV + Calculator
 Transformation description: Read a large CSV file, perform a single calculation
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 15,47s,   speed: 6.465 rows/s
-V3 results, rows: 100.000,   runtime: 12,83s,   speed: 7.795 rows/s
-V3 / V2 = x1,21
+V2 results, rows: 100.000,   runtime: 16,06s,   speed: 6.226 rows/s
+V3 results, rows: 100.000,   runtime: 4,69s,   speed: 21.331 rows/s
+V3 / V2 = x3,43
 
 CONSTANT
 ==================
@@ -291,16 +316,30 @@ SORT ROWS
 Name of transformation: Sort table data
 Transformation description: Sorts data from a database table on Name, Firstname
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 29,62s,   speed: 3.376 rows/s
-V3 results, rows: 100.000,   runtime: 25,48s,   speed: 3.924 rows/s
-V3 / V2 = x1,16
+V2 results, rows: 100.000,   runtime: 29,67s,   speed: 3.370 rows/s
+V3 results, rows: 100.000,   runtime: 25,78s,   speed: 3.879 rows/s
+V3 / V2 = x1,15
 
 Name of transformation: Sort table data no compression
 Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 10,19s,   speed: 9.816 rows/s
-V3 results, rows: 100.000,   runtime: 7,02s,   speed: 14.253 rows/s
-V3 / V2 = x1,45
+V2 results, rows: 100.000,   runtime: 9,67s,   speed: 10.339 rows/s
+V3 results, rows: 100.000,   runtime: 6,81s,   speed: 14.680 rows/s
+V3 / V2 = x1,42
+
+Name of transformation: Sort table data no compression - buffer 50k
+Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 50.000 rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 9,58s,   speed: 10.441 rows/s
+V3 results, rows: 100.000,   runtime: 6,74s,   speed: 14.848 rows/s
+V3 / V2 = x1,42
+
+Name of transformation: Sort table data no compression - buffer 100k
+Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 100.001 rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 12,73s,   speed: 7.853 rows/s
+V3 results, rows: 100.000,   runtime: 10,78s,   speed: 9.276 rows/s
+V3 / V2 = x1,18
 
 ROWGENERATOR
 ==================
