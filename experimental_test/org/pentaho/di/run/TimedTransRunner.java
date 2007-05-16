@@ -2,8 +2,6 @@ package org.pentaho.di.run;
 
 import java.text.DecimalFormat;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -17,7 +15,7 @@ import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
 
-public class TimedTransRunner extends TestCase
+public class TimedTransRunner
 {
     private String filename;
     private int logLevel;
