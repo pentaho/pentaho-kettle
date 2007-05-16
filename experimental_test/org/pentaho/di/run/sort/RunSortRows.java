@@ -83,4 +83,51 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
+    public void test_SORT_05_CSVDataNoCompression() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompression.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_SORT_06_CSVDataNoCompressionBuffer50k() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer50k.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
+    public void test_SORT_07_CSVDataNoCompressionBuffer100k() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100k.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
 }
