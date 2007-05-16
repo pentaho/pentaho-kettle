@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name>Text File Input - CSV</name>
-    <description>Read a large CSV file</description>
+    <description>Read a large CSV file, write it back</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -295,7 +295,7 @@
     <encoding/>
     <endedLine/>
     <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;TextFileInputOutputCSV</name>
+      <name>${java.io.tmpdir}&#47;TextFileInputOutputCSV</name>
       <is_command>N</is_command>
       <extention>txt</extention>
       <append>N</append>

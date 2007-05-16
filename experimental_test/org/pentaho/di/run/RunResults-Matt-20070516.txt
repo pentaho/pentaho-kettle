@@ -1,8 +1,6 @@
 Started this run on: 2007/05/16 17:04:07
 Notes: 
-- RowTest failed string conversion: verify
-- Filter rows is slightly slower: what happened?
-- We can speed up results for TFI by doing the same trick as with TFO
+- We can probably speed up results for TFI by doing the same trick as with TFO
 
 TABLE OUTPUT
 ==================
@@ -153,9 +151,9 @@ FILTER ROWS
 Name of transformation: Filter rows : simple condition on 4 numbers
 Transformation description: A > 100 and E < 500
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 1.000.000,   runtime: 3,95s,   speed: 252.972 rows/s
-V3 results, rows: 1.000.000,   runtime: 4,28s,   speed: 233.590 rows/s
-V3 / V2 = x0,92
+V2 results, rows: 1.000.000,   runtime: 9,55s,   speed: 104.745 rows/s
+V3 results, rows: 1.000.000,   runtime: 4,16s,   speed: 240.616 rows/s
+V3 / V2 = x2,30
 
 STREAM LOOKUP
 ==================
@@ -283,9 +281,9 @@ TABLE INPUT
 Name of transformation: Table Input
 Transformation description: 
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 1.110.110,   runtime: 71,22s,   speed: 15.587 rows/s
-V3 results, rows: 1.110.110,   runtime: 40,08s,   speed: 27.699 rows/s
-V3 / V2 = x1,78
+V2 results, rows: 100.000,   runtime: 5,73s,   speed: 17.440 rows/s
+V3 results, rows: 100.000,   runtime: 4,39s,   speed: 22.774 rows/s
+V3 / V2 = x1,31
 
 SORT ROWS
 ==================

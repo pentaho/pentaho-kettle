@@ -126,7 +126,7 @@ FROM CSV_TABLE
     <encoding/>
     <endedLine/>
     <file>
-      <name>D:\Temp\TFOFromTable</name>
+      <name>${java.io.tmpdir}&#47;TFOFromTable</name>
       <is_command>N</is_command>
       <extention>txt</extention>
       <append>N</append>

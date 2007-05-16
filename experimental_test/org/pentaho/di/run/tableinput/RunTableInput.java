@@ -22,7 +22,7 @@ public class RunTableInput extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                1110110
+                100000
             );
         timedTransRunner.runOldAndNew();
         

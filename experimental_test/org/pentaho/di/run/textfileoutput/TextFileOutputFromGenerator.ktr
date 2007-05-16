@@ -77,7 +77,7 @@
     <encoding/>
     <endedLine/>
     <file>
-      <name>D:\Temp\TFOFromGenerator</name>
+      <name>${java.io.tmpdir}&#47;TFOFromGenerator</name>
       <is_command>N</is_command>
       <extention>txt</extention>
       <append>N</append>
