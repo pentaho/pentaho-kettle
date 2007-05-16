@@ -168,7 +168,7 @@ public class Job extends Thread
         }   
         catch(Exception e)
         {
-            String message = "Error allocating new Job : "+e.toString();
+            String message = Messages.getString("Job.Log.ErrorAllocatingNewJob", e.toString());
             LogWriter.getInstance().logError("Create Job in new ClassLoader", message);
             LogWriter.getInstance().logError("Create Job in new ClassLoader", Const.getStackTracker(e));
             throw new KettleException(message, e);
@@ -200,11 +200,11 @@ public class Job extends Thread
             initialized = true;
             
             Result result = execute(); // Run the job
-			endProcessing("end", result);
+			endProcessing(Messages.getString("Job.Status.End"), result);
 		}
 		catch(KettleException je)
 		{
-			log.logError(toString(), "A serious error occurred during job execution!"+Const.CR+je.getMessage());
+			log.logError(toString(), Messages.getString("Job.Log.ErrorExecJob", je.getMessage()));
             log.logError(toString(), Const.getStackTracker(je));
 		}
 	}
@@ -212,7 +212,7 @@ public class Job extends Thread
 	public Result execute() throws KettleException
     {
         // Start the tracking...
-        JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
+        JobEntryResult jerStart = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), Messages.getString("Job.Reason.Started"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
         active = true;
@@ -228,10 +228,10 @@ public class Job extends Thread
         while (jes.isRepeat() || isFirst && !isStopped())
         {
             isFirst = false;
-            res = execute(0, null, startpoint, null, "start");
+            res = execute(0, null, startpoint, null, Messages.getString("Job.Reason.Started"));
         }
         // Save this result...
-        JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
+        JobEntryResult jerEnd = new JobEntryResult(res, Messages.getString("Job.Comment.JobFinished"), Messages.getString("Job.Reason.Finished"), null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
 
         active = false;
@@ -262,7 +262,7 @@ public class Job extends Thread
             throw new KettleJobException("Couldn't find starting point in this job.");
         }
 
-		Result res =  execute(nr, result, startpoint, null, "start of job entry");
+		Result res =  execute(nr, result, startpoint, null, Messages.getString("Job.Reason.StartOfJobentry"));
 
 		return res;
 	}
@@ -284,7 +284,7 @@ public class Job extends Thread
 		JobEntryInterface jei = startpoint.getEntry();
 
         // Track the fact that we are going to launch the next job entry...
-        JobEntryResult jerBefore = new JobEntryResult(null, "Job entry started", reason, startpoint);
+        JobEntryResult jerBefore = new JobEntryResult(null, Messages.getString("Job.Comment.JobStarted"), reason, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
         Result prevResult = null;
@@ -305,7 +305,7 @@ public class Job extends Thread
 		addErrors((int)result.getNrErrors());
 		
         // Save this result as well...
-        JobEntryResult jerAfter = new JobEntryResult(result, "Job entry ended", null, startpoint);
+        JobEntryResult jerAfter = new JobEntryResult(result, Messages.getString("Job.Comment.JobFinished"), null, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 				
 		// Try all next job entries.
@@ -323,17 +323,17 @@ public class Job extends Thread
 			String nextComment = null;
 			if (hi.isUnconditional()) 
 			{
-				nextComment = "Followed unconditional link";
+				nextComment = Messages.getString("Job.Comment.FollowedUnconditional");
 			}
 			else
 			{
 				if (result.getResult())
                 {
-					nextComment = "Followed link after success!";
+					nextComment = Messages.getString("Job.Comment.FollowedSuccess");
                 }
 				else
                 {
-					nextComment = "Followed link after failure!";
+					nextComment = Messages.getString("Job.Comment.FollowedFailure");
                 }
 			}
 
@@ -450,7 +450,7 @@ public class Job extends Thread
 			try
 			{
 				ldb.connect();
-				Row lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end");
+				Row lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, Messages.getString("Job.Status.End"));
 				if (lastr!=null && lastr.size()>0)
 				{
 					Value last = lastr.getValue(0); // #0: last enddate
@@ -474,7 +474,7 @@ public class Job extends Thread
                     }
                 }
 
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start", 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), Messages.getString("Job.Status.Start"), 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   null
