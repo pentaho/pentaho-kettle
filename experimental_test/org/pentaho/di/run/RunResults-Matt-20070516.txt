@@ -46,7 +46,7 @@ V2 results, rows: 1,   runtime: 0,09s,   speed: 11 rows/s
 V3 results, rows: 1,   runtime: 0,11s,   speed: 9 rows/s
 V3 / V2 = x0,85
 
-ABORT
+ADD SEQUENCE
 ==================
 
 Name of transformation: AddSequence

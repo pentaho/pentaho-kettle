@@ -13,7 +13,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_00()
     {
         System.out.println();
-        System.out.println("ABORT");
+        System.out.println("ADD SEQUENCE");
         System.out.println("==================");
     }
     
