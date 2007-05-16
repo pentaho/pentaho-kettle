@@ -221,6 +221,9 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public void mergeRow(Row r)
 	{
+        if (r == null)
+            return;
+
         for (int x=0;x<r.size();x++)
         {
             Value field = r.getValue(x);
@@ -230,6 +233,27 @@ public class Row implements XMLInterface, Comparable, Serializable
             }
         }
 	}
+
+    /**
+     * Merge the data of row r to this Row. That means:
+     * All fields in row r that do exist in this row (same name and same type) and have non-empty values
+     * will have their values written into this row, if the value of that field is empty in this row. 
+     *
+     * @param r The row to be merged with this row
+     */
+    public void mergeData(Row r)
+    {
+        if (r == null)
+            return;
+
+        for (int x = 0; x < r.size(); x++)
+        {
+            Value other = r.getValue(x);
+            Value value = searchValue(other.getName());
+            if (value != null)
+                value.merge(other);
+        }
+    }
 
 	/**
      * Search the Value by name in the row, return the Values index.
