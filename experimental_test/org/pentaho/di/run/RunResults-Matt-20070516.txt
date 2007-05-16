@@ -217,30 +217,58 @@ SORT ROWS
 Name of transformation: Sort table data
 Transformation description: Sorts data from a database table on Name, Firstname
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 29,58s,   speed: 3.381 rows/s
-V3 results, rows: 100.000,   runtime: 24,95s,   speed: 4.008 rows/s
-V3 / V2 = x1,19
+V2 results, rows: 100.000,   runtime: 31,17s,   speed: 3.208 rows/s
+V3 results, rows: 100.000,   runtime: 27,09s,   speed: 3.691 rows/s
+V3 / V2 = x1,15
 
 Name of transformation: Sort table data no compression
 Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 10,44s,   speed: 9.580 rows/s
-V3 results, rows: 100.000,   runtime: 6,92s,   speed: 14.447 rows/s
-V3 / V2 = x1,51
+V2 results, rows: 100.000,   runtime: 11,14s,   speed: 8.976 rows/s
+V3 results, rows: 100.000,   runtime: 6,94s,   speed: 14.415 rows/s
+V3 / V2 = x1,61
 
 Name of transformation: Sort table data no compression - buffer 50k
 Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 50.000 rows
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 9,94s,   speed: 10.062 rows/s
-V3 results, rows: 100.000,   runtime: 6,70s,   speed: 14.919 rows/s
-V3 / V2 = x1,48
+V2 results, rows: 100.000,   runtime: 9,58s,   speed: 10.441 rows/s
+V3 results, rows: 100.000,   runtime: 6,72s,   speed: 14.883 rows/s
+V3 / V2 = x1,43
 
 Name of transformation: Sort table data no compression - buffer 110k
 Transformation description: Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 110.000 rows
 -----------------------------------------------------------------------------------------------------
-V2 results, rows: 100.000,   runtime: 12,83s,   speed: 7.795 rows/s
-V3 results, rows: 100.000,   runtime: 4,83s,   speed: 20.713 rows/s
-V3 / V2 = x2,66
+V2 results, rows: 100.000,   runtime: 13,19s,   speed: 7.583 rows/s
+V3 results, rows: 100.000,   runtime: 5,00s,   speed: 20.000 rows/s
+V3 / V2 = x2,64
+
+Name of transformation: Sort CSV file
+Transformation description: Sort CSV file on name and firstname
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 18,30s,   speed: 5.465 rows/s
+V3 results, rows: 100.000,   runtime: 6,39s,   speed: 15.649 rows/s
+V3 / V2 = x2,86
+
+Name of transformation: Sort CSV file (50k)
+Transformation description: Sort CSV file on name and firstname, buffer 50k rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 17,83s,   speed: 5.609 rows/s
+V3 results, rows: 100.000,   runtime: 6,53s,   speed: 15.309 rows/s
+V3 / V2 = x2,73
+
+Name of transformation: Sort CSV file (110k)
+Transformation description: Sort CSV file on name and firstname, buffer110k rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 21,77s,   speed: 4.594 rows/s
+V3 results, rows: 100.000,   runtime: 4,69s,   speed: 21.336 rows/s
+V3 / V2 = x4,64
+
+Name of transformation: Sort CSV file (110k) write back
+Transformation description: Sort CSV file on name and firstname, buffer110k rows, write back to CSV
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 32,38s,   speed: 3.089 rows/s
+V3 results, rows: 100.000,   runtime: 6,47s,   speed: 15.461 rows/s
+V3 / V2 = x5,01
 
 STREAM LOOKUP
 ==================

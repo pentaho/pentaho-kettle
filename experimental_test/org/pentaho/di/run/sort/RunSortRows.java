@@ -130,4 +130,21 @@ public class RunSortRows extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+
+    public void test_SORT_08_CSVDataNoCompressionBuffer100kWriteBack() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100kWriteBack.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                100000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
 }
