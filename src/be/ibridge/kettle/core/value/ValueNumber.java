@@ -100,7 +100,7 @@ public class ValueNumber implements ValueInterface, Cloneable
 	
 	public void    setDate(Date date)
 	{
-		this.number = (double)date.getTime();
+		this.number = date.getTime();
 	}
 	
 	public void    setBoolean(boolean bool)
@@ -110,7 +110,7 @@ public class ValueNumber implements ValueInterface, Cloneable
 	
 	public void    setInteger(long number)
 	{
-		this.number = (double)number;
+		this.number = number;
 	}
 
 	public int getLength()
