@@ -38,8 +38,11 @@ public class ValueMeta implements ValueMetaInterface
     private boolean  outputPaddingEnabled;
     private boolean  largeTextField;
     
-    private SimpleDateFormat simpleDateFormat;
+    private SimpleDateFormat dateFormat;
+    private boolean dateFormatChanged;
+    
     private DecimalFormat    decimalFormat;
+    private boolean decimalFormatChanged;
     
     public ValueMeta()
     {
@@ -76,7 +79,10 @@ public class ValueMeta implements ValueMetaInterface
     {
         try
         {
-            return super.clone();
+            ValueMeta valueMeta = (ValueMeta) super.clone();
+            valueMeta.dateFormat = null;
+            valueMeta.decimalFormat = null;
+            return valueMeta;
         }
         catch (CloneNotSupportedException e)
         {
@@ -231,6 +237,8 @@ public class ValueMeta implements ValueMetaInterface
     public void setConversionMask(String conversionMask)
     {
         this.conversionMask = conversionMask;
+        dateFormatChanged = true;
+        decimalFormatChanged = true;
     }
     
     /**
@@ -263,6 +271,7 @@ public class ValueMeta implements ValueMetaInterface
     public void setDecimalSymbol(String decimalSymbol)
     {
         this.decimalSymbol = decimalSymbol;
+        decimalFormatChanged = true;
     }
 
     /**
@@ -279,6 +288,7 @@ public class ValueMeta implements ValueMetaInterface
     public void setGroupingSymbol(String groupingSymbol)
     {
         this.groupingSymbol = groupingSymbol;
+        decimalFormatChanged = true;
     }
     
 
@@ -296,6 +306,7 @@ public class ValueMeta implements ValueMetaInterface
     public void setCurrencySymbol(String currencySymbol)
     {
         this.currencySymbol = currencySymbol;
+        decimalFormatChanged = true;
     }
     
     /**
@@ -369,20 +380,20 @@ public class ValueMeta implements ValueMetaInterface
     // DATE + STRING
 
 
-    private String convertDateToString(Date date)
+    private synchronized String convertDateToString(Date date)
     {
         if (date==null) return null;
         
-        return getSimpleDateFormat().format(date);
+        return getDateFormat().format(date);
     }
 
-    private Date convertStringToDate(String string) throws KettleValueException
+    private synchronized Date convertStringToDate(String string) throws KettleValueException
     {
         if (string==null) return null;
         
         try
         {
-            return getSimpleDateFormat().parse(string);
+            return getDateFormat().parse(string);
         }
         catch (ParseException e)
         {
@@ -426,7 +437,7 @@ public class ValueMeta implements ValueMetaInterface
         return new Date( number.longValue() );
     }
 
-    private String convertNumberToString(Double number) throws KettleValueException
+    private synchronized String convertNumberToString(Double number) throws KettleValueException
     {
         if (number==null) return null;
         
@@ -444,7 +455,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    private Double convertStringToNumber(String string) throws KettleValueException
+    private synchronized Double convertStringToNumber(String string) throws KettleValueException
     {
         if (string==null) return null;
         
@@ -458,46 +469,44 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    public SimpleDateFormat getSimpleDateFormat()
+    public synchronized SimpleDateFormat getDateFormat()
     {
-        synchronized(simpleDateFormat)
+        if (dateFormat==null || dateFormatChanged)
         {
-            if (simpleDateFormat==null)
+            dateFormat = new SimpleDateFormat();
+            if (Const.isEmpty(conversionMask))
             {
-                simpleDateFormat = new SimpleDateFormat();
-                if (Const.isEmpty(conversionMask))
-                {
-                    simpleDateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT_MASK);
-                }
-                else
-                {
-                    simpleDateFormat = new SimpleDateFormat(conversionMask);
-                }
+                dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT_MASK);
             }
-            return simpleDateFormat;
-        }
-    }
-
-    public DecimalFormat getDecimalFormat()
-    {
-        synchronized(decimalFormat)
-        {
-            if (decimalFormat==null)
+            else
             {
-                decimalFormat        = (DecimalFormat)NumberFormat.getInstance();
-                DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
+                dateFormat = new SimpleDateFormat(conversionMask);
+            }
             
-                if (!Const.isEmpty(currencySymbol)) decimalFormatSymbols.setCurrencySymbol( currencySymbol );
-                if (!Const.isEmpty(groupingSymbol)) decimalFormatSymbols.setGroupingSeparator( groupingSymbol.charAt(0) );
-                if (!Const.isEmpty(decimalSymbol)) decimalFormatSymbols.setDecimalSeparator( decimalSymbol.charAt(0) );
-                decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
-                if (!Const.isEmpty(conversionMask)) decimalFormat.applyPattern(conversionMask);
-            }
-            return decimalFormat;
+            dateFormatChanged=false;
         }
+        return dateFormat;
     }
 
-    private String convertIntegerToString(Long number) throws KettleValueException
+    public synchronized DecimalFormat getDecimalFormat()
+    {
+        if (decimalFormat==null || decimalFormatChanged)
+        {
+            decimalFormat        = (DecimalFormat)NumberFormat.getInstance();
+            DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
+        
+            if (!Const.isEmpty(currencySymbol)) decimalFormatSymbols.setCurrencySymbol( currencySymbol );
+            if (!Const.isEmpty(groupingSymbol)) decimalFormatSymbols.setGroupingSeparator( groupingSymbol.charAt(0) );
+            if (!Const.isEmpty(decimalSymbol)) decimalFormatSymbols.setDecimalSeparator( decimalSymbol.charAt(0) );
+            decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+            if (!Const.isEmpty(conversionMask)) decimalFormat.applyPattern(conversionMask);
+            
+            decimalFormatChanged=false;
+        }
+        return decimalFormat;
+    }
+
+    private synchronized String convertIntegerToString(Long number) throws KettleValueException
     {
         if (number==null) return null;
 
@@ -515,7 +524,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    private Long convertStringToInteger(String string) throws KettleValueException
+    private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
         if (string==null) return null;
 
@@ -529,7 +538,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    private String convertBigNumberToString(BigDecimal number) throws KettleValueException
+    private synchronized String convertBigNumberToString(BigDecimal number) throws KettleValueException
     {
         if (number==null) return null;
 
@@ -541,7 +550,7 @@ public class ValueMeta implements ValueMetaInterface
         return string;
     }
     
-    private BigDecimal convertStringToBigNumber(String string) throws KettleValueException
+    private synchronized BigDecimal convertStringToBigNumber(String string) throws KettleValueException
     {
         if (string==null) return null;
 
