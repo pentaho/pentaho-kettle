@@ -1,5 +1,6 @@
 package be.ibridge.kettle.core.reflection;
 
+import be.ibridge.kettle.core.Messages;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.value.Value;
 
@@ -47,16 +48,19 @@ public class StringSearchResult
     public Row toRow()
     {
         Row row = new Row();
-        row.addValue(new Value("Transformation or Job", grandParentObject.toString()));
-        row.addValue(new Value("Step or Database", parentObject.toString()));
-        row.addValue(new Value("String", string));
-        row.addValue(new Value("Field name", fieldName));
+        row.addValue(new Value(Messages.getString("SearchResult.TransOrJob"), grandParentObject.toString()));
+        row.addValue(new Value(Messages.getString("SearchResult.StepDatabaseNotice"), parentObject.toString()));
+        row.addValue(new Value(Messages.getString("SearchResult.String"), string));
+        row.addValue(new Value(Messages.getString("SearchResult.FieldName"), fieldName));
         return row;
     }
     
     public String toString()
     {
-        return parentObject.toString()+" : " + string + " ("+fieldName+")";
+        StringBuffer sb = new StringBuffer();
+        sb.append(parentObject.toString()).append(" : ").append(string);
+        sb.append(" (").append(fieldName).append(")");
+        return sb.toString();
     }
 
     /**
