@@ -213,7 +213,7 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
         BaseStepDialog.setSize(shell);
 
         shell.open();
-        props.setDialogSize(shell, "JobEvalDialogSize");
+        props.setDialogSize(shell, "JobAbortDialogSize");
         while (!shell.isDisposed())
         {
             if (!display.readAndDispatch())
