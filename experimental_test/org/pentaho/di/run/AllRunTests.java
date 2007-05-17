@@ -6,6 +6,7 @@ import org.pentaho.di.run.abort.RunAbort;
 import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
 import org.pentaho.di.run.constant.RunConstant;
+import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.filterrows.RunFilterRows;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
@@ -16,6 +17,7 @@ import org.pentaho.di.run.tableinput.RunTableInput;
 import org.pentaho.di.run.tableoutput.RunTableOutput;
 import org.pentaho.di.run.textfileinput.RunTextFileInput;
 import org.pentaho.di.run.textfileoutput.RunTextFileOutput;
+import org.pentaho.di.run.uniquerows.RunUniqueRows;
 
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.EnvUtil;
@@ -103,6 +105,8 @@ public class AllRunTests
         suite.addTestSuite(RunTableInput.class);
         suite.addTestSuite(RunTextFileInput.class);
         suite.addTestSuite(RunTextFileOutput.class);
+        suite.addTestSuite(RunUniqueRows.class);
+        suite.addTestSuite(RunDatabaseLookup.class);
         
         //$JUnit-END$
         return suite;
