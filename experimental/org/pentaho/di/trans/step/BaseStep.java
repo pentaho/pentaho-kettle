@@ -59,6 +59,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
+import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
@@ -109,7 +110,8 @@ public class BaseStep extends Thread
         new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages.getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
         new StepPluginMeta(SystemDataMeta.class, "SystemInfo", Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), Messages.getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), "SYS.png", CATEGORY_INPUT),
         new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
-        
+        new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
+
         /*
             new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
             new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
@@ -124,7 +126,6 @@ public class BaseStep extends Thread
             new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages.getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
             new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
