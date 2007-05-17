@@ -41,7 +41,7 @@ import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
-// data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+
 /**
  *  A step that blocks throughput until the input ends, then it will either output
  *  the last row or the complete input. 
