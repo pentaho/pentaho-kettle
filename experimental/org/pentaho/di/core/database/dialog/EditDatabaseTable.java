@@ -233,7 +233,7 @@ public class EditDatabaseTable extends Dialog
 		
         // TODO add schema-name as well
 		rs = db.openQuery("SELECT * FROM "+dbinfo.quoteField(tablename), null, null, ResultSet.TYPE_SCROLL_SENSITIVE);
-		rowMeta = db.getRowMeta();
+		rowMeta = db.getReturnRowMeta();
         
 		position=1;
 	}

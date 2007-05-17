@@ -64,7 +64,7 @@ public class GetPreviewTableProgressDialog
 					db.connect();
 					
 					rows =  db.getFirstRows(tableName, limit, monitor);
-                    rowMeta = db.getRowMeta();
+                    rowMeta = db.getReturnRowMeta();
 					
 					if (monitor.isCanceled()) 
 						throw new InvocationTargetException(new Exception("This operation was cancelled!"));

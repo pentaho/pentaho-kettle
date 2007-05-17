@@ -196,7 +196,7 @@ public class TableInput extends BaseStep implements StepInterface
         else
         {
             // Keep the metadata
-            data.rowMeta = data.db.getRowMeta();
+            data.rowMeta = data.db.getReturnRowMeta();
             
             // Get the first row...
             data.thisrow = data.db.getRow(data.rs);

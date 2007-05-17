@@ -1,0 +1,42 @@
+Added UniqueRows and DBLookup
+
+UNIQUE ROWS
+==================
+
+Name of transformation: Unique rows : get list of states from customer file
+Transformation description: Get a list of states from customer file, selects, sorts, uniques
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 22,38s,   speed: 4.469 rows/s
+V3 results, rows: 100.000,   runtime: 5,23s,   speed: 19.106 rows/s
+V3 / V2 = x4,27
+
+Name of transformation: Unique rows : get list of states from customer file, add occurences
+Transformation description: Get a list of states from customer file, selects, sorts, uniques.  Adds nr of customers per state.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 22,47s,   speed: 4.451 rows/s
+V3 results, rows: 100.000,   runtime: 4,81s,   speed: 20.777 rows/s
+V3 / V2 = x4,67
+
+
+DATABASE LOOKUP
+==================
+
+Index INDEX IDX_CSV_TABLE_ID not dropped
+Creating index INDEX IDX_CSV_TABLE_ID ...
+Index INDEX IDX_CSV_TABLE_ID created.
+
+Transformation name         : Database Lookup : ID lookup
+Transformation description  : Look up name and firstname in a customer table using an ID
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,45s,   speed: 224.568 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,61s,   speed: 277.085 rows/s
+V3 / V2 = x1,23
+
+Transformation name         : Database Lookup : ID lookup (No Cache)
+Transformation description  : Look up name and firstname in a customer table using an ID. The cache is disabled
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,14s,   speed: 241.488 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,67s,   speed: 272.331 rows/s
+V3 / V2 = x1,13
+
+Index INDEX IDX_CSV_TABLE_ID dropped

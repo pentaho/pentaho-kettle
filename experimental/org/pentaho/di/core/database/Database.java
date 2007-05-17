@@ -4205,12 +4205,4 @@ public class Database
     {
         this.copy = copy;
     }
-
-    /**
-     * @return the row metadata of the last query
-     */
-    public RowMetaInterface getRowMeta()
-    {
-        return rowMeta;
-    }
 }

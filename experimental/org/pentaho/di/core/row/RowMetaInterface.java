@@ -264,4 +264,9 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      */
     public int hashCode(Object[] rowData) throws KettleValueException;
+
+    /**
+     * @return a string with a description of all the metadata values of the complete row of metadata
+     */
+    public String toStringMeta();
 }

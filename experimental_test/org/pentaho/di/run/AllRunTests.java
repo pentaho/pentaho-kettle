@@ -39,7 +39,7 @@ public class AllRunTests
         }
         catch(KettleDatabaseException e)
         {
-            System.out.println("Table CSV_TABLE not dropped");
+            System.out.println("Table CSV_TABLE not dropped: "+e.getMessage());
         }
         h2db.execStatement(
                 "CREATE TABLE CSV_TABLE"+
@@ -65,7 +65,7 @@ public class AllRunTests
         }
         catch(KettleDatabaseException e)
         {
-            System.out.println("Table SIMPLE_TABLE not dropped");
+            System.out.println("Table SIMPLE_TABLE not dropped: "+e.getMessage());
         }
         h2db.execStatement(
                 "CREATE TABLE SIMPLE_TABLE"+

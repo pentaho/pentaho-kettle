@@ -293,7 +293,7 @@ public class SQLEditor extends Dialog
     							try
     							{
     								ArrayList rows = db.getRows(sql, 1000);
-                                    RowMetaInterface rowMeta = db.getRowMeta();
+                                    RowMetaInterface rowMeta = db.getReturnRowMeta();
     								if (rows.size()>0)
     								{
     									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);

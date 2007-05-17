@@ -288,11 +288,10 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
     public RowMetaInterface getErrorFields()
     {
-        return getErrorFields(0L, null, null, null);
+        return getErrorRowMeta(0L, null, null, null);
     }
     
-    // TODO: add method to also reflect the data going back as Object[]
-    public RowMetaInterface getErrorFields(long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    public RowMetaInterface getErrorRowMeta(long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
         RowMetaInterface row = new RowMeta();
         
@@ -324,6 +323,37 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         
         return row;
     }
+    
+    public void addErrorRowData(Object[] row, int startIndex, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    {
+        int index = startIndex;
+        
+        String nrErr = StringUtil.environmentSubstitute(getNrErrorsValuename());
+        if (!Const.isEmpty(nrErr))
+        {
+            row[index] = new Long(nrErrors);
+            index++;
+        }
+        String errDesc = StringUtil.environmentSubstitute(getErrorDescriptionsValuename());
+        if (!Const.isEmpty(errDesc))
+        {
+            row[index] = errorDescriptions;
+            index++;
+        }
+        String errFields = StringUtil.environmentSubstitute(getErrorFieldsValuename());
+        if (!Const.isEmpty(errFields))
+        {
+            row[index] = fieldNames;
+            index++;
+        }
+        String errCodes = StringUtil.environmentSubstitute(getErrorCodesValuename());
+        if (!Const.isEmpty(errCodes))
+        {
+            row[index] = errorCodes;
+            index++;
+        }
+    }
+
 
     /**
      * @return the maxErrors

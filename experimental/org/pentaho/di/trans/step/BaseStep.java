@@ -44,6 +44,7 @@ import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
+import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
@@ -111,9 +112,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(SystemDataMeta.class, "SystemInfo", Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), Messages.getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), "SYS.png", CATEGORY_INPUT),
         new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
         new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
+        new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
 
         /*
-            new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
             new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
             new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
             new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
@@ -330,6 +331,11 @@ public class BaseStep extends Thread
      * step partitioning information of the NEXT step
      */
     private static StepPartitioningMeta  nextStepPartitioningMeta;
+    
+    /** The metadata information of the error output row.  There is only one per step so we cache it */
+    private RowMetaInterface errorRowMeta = null;
+
+
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -940,16 +946,27 @@ public class BaseStep extends Thread
         linesWritten++;
     }
 
-
     public synchronized void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-        
-        RowMetaInterface add = stepErrorMeta.getErrorFields(nrErrors, errorDescriptions, fieldNames, errorCodes);
-        rowMeta.addRowMeta(add);
-        
-        
 
+        if (errorRowMeta==null)
+        {
+            errorRowMeta = (RowMetaInterface) rowMeta.clone();
+            
+            RowMetaInterface add = stepErrorMeta.getErrorRowMeta(nrErrors, errorDescriptions, fieldNames, errorCodes);
+            errorRowMeta.addRowMeta(add);
+        }
+        
+        Object[] errorRowData = new Object[errorRowMeta.size()];
+        for (int i=0;i<rowMeta.size();i++)
+        {
+            errorRowData[i] = row[i];
+        }
+        
+        // Also add the error fields...
+        stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
+        
         // call all rowlisteners...
         for (int i = 0; i < rowListeners.size(); i++)
         {
@@ -959,7 +976,7 @@ public class BaseStep extends Thread
 
         linesRejected++;
 
-        if (errorRowSet!=null) errorRowSet.putRow(rowMeta, row);
+        if (errorRowSet!=null) errorRowSet.putRow(errorRowMeta, errorRowData);
 
         verifyRejectionRates();
     }
@@ -2059,5 +2076,21 @@ public class BaseStep extends Thread
     public void setInputRowMeta(RowMetaInterface rowMeta)
     {
         this.inputRowMeta = rowMeta;
+    }
+
+    /**
+     * @return the errorRowMeta
+     */
+    public RowMetaInterface getErrorRowMeta()
+    {
+        return errorRowMeta;
+    }
+
+    /**
+     * @param errorRowMeta the errorRowMeta to set
+     */
+    public void setErrorRowMeta(RowMetaInterface errorRowMeta)
+    {
+        this.errorRowMeta = errorRowMeta;
     }    
 }

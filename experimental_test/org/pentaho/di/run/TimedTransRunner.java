@@ -67,8 +67,8 @@ public class TimedTransRunner
 
         be.ibridge.kettle.trans.TransMeta transMeta = new be.ibridge.kettle.trans.TransMeta(filename);
         System.out.println();
-        System.out.println("Name of transformation: "+transMeta.getName());
-        System.out.println("Transformation description: "+Const.NVL(transMeta.getDescription(), ""));
+        System.out.println("Transformation name         : "+transMeta.getName());
+        System.out.println("Transformation description  : "+Const.NVL(transMeta.getDescription(), ""));
         System.out.println("-----------------------------------------------------------------------------------------------------");
         
         // OK, now run this transFormation.
