@@ -51,8 +51,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
  * @author Sven Boden
  */
 public class InjectorTest extends TestCase
-{
-	
+{	
 	public RowMetaInterface createRowMetaInterface()
 	{
 		RowMetaInterface rm = new RowMeta();
