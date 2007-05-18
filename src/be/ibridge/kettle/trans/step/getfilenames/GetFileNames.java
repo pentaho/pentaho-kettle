@@ -18,8 +18,10 @@ package be.ibridge.kettle.trans.step.getfilenames;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -70,13 +72,13 @@ public class GetFileNames extends BaseStep implements StepInterface
 					if (format.equalsIgnoreCase("DOS")) 
 					{
 						c = reader.read(); // skip \n and \r
-					     if( c != '\r' && c != '\n' ) 
-					     { 
-					       // make sure its really a linefeed or cariage return
-					       // raise an error this is not a DOS file 
-					       // so we have pulled a character from the next line
-					       throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");
-					     }
+						if( c != '\r' && c != '\n' ) 
+						{ 
+							// make sure its really a linefeed or cariage return
+							// raise an error this is not a DOS file 
+							// so we have pulled a character from the next line
+							throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");
+						}
 					}
 					return line.toString();
 				}
@@ -103,39 +105,109 @@ public class GetFileNames extends BaseStep implements StepInterface
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+	
+		
 		if (data.filenr>=data.files.nrOfFiles())
 		{
 			setOutputDone();
 			return false;
 		}
 		
-		Row r = new Row();
+		try
+		{
+			Row r = new Row();
+			FileObject file = data.files.getFile(data.filenr);
+			
+						
+			if (meta.getFilterFileType().equals("all_files") || (meta.getFilterFileType().equals("only_files") &&  file.getType() == FileType.FILE)
+					|| meta.getFilterFileType().equals("only_folders") &&  file.getType() == FileType.FOLDER)
+			{
+			
+		        
+				Value filename = new Value("filename", KettleVFS.getFilename(file));
+				filename.setLength(500,-1);
+				r.addValue(filename);
+		        
+				Value short_filename = new Value("short_filename", file.getName().getBaseName());
+				short_filename.setLength(500,-1);
+				r.addValue(short_filename);
 		
-		FileObject file = data.files.getFile(data.filenr);
-        
-		Value filename = new Value("filename", KettleVFS.getFilename(file));
-		filename.setLength(500,-1);
-		r.addValue(filename);
-        
-        Value short_filename = new Value("short_filename", file.getName().getBaseName());
-        short_filename.setLength(500,-1);
-        r.addValue(short_filename);
-
-        try
-        {
-            Value path = new Value("path", KettleVFS.getFilename(file.getParent()));
-            path.setLength(500,-1);
-            r.addValue(path);
-        }
-        catch(IOException e)
-        {
-            throw new KettleException(e);
-        }
-
+				try
+				{
+					Value path = new Value("path", KettleVFS.getFilename(file.getParent()));
+					path.setLength(500,-1);
+					r.addValue(path);
+		            
+					Value type = new Value("type", file.getType().toString());
+					type.setLength(500,-1);
+					r.addValue(type);
+		            
+					Value exists = new Value("exists", file.exists());
+					r.addValue(exists);
+		            
+					Value ishidden = new Value("ishidden", file.isHidden());
+					r.addValue(ishidden);
+		            
+					Value isreadable = new Value("isreadable", file.isReadable());
+					r.addValue(isreadable);
+		            
+					Value iswriteable = new Value("iswriteable", file.isWriteable());
+					r.addValue(iswriteable);
+		            
+					Value isattached = new Value("isattached", file.isAttached());
+					r.addValue(isattached);
+		            
+		
+					Date ladate = new Date(file.getContent().getLastModifiedTime());
+					Value lastmodifiedtime = new Value("lastmodifiedtime", ladate.toString());
+					r.addValue(lastmodifiedtime);
+		 
+		            
+					Value size = new Value("size", "");
+		            
+					if (file.getType().equals(FileType.FILE))
+					{
+						size = new Value("size", file.getContent().getSize());
+					}
+		                       
+					r.addValue(size);
+		        		            
+				
+				
+				}
+		             
+		        
+		        
+				catch(IOException e)
+				{
+					throw new KettleException(e);
+				}
+	
+	        
+				Value extension = new Value("extension", file.getName().getExtension());
+				extension.setLength(500,-1);
+				r.addValue(extension);
+		        
+				Value uri = new Value("uri", file.getName().getURI());
+				uri.setLength(500,-1);
+				r.addValue(uri);
+		        
+				Value rooturi = new Value("rooturi", file.getName().getRootURI());
+				uri.setLength(500,-1);
+				r.addValue(rooturi);
+		        	
+				
+				putRow(r);
+				
+					
+			}
+		}
+		catch (Exception e) 
+		{
+			log.logError(toString(), "Error exception: " + e.getMessage());				
+		}
 		
 		data.filenr++;
-		
-		putRow(r);
 		
 		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
 
@@ -145,6 +217,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 	private void handleMissingFiles() throws KettleException
 	{
 		List nonExistantFiles = data.files.getNonExistantFiles();
+		
 
 		if (nonExistantFiles.size() != 0)
 		{
@@ -209,7 +282,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 		catch (Exception e)
 		{
 			logError("Unexpected error : " + e.toString());
-            logError(Const.getStackTracker(e));
+			logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();
 		}

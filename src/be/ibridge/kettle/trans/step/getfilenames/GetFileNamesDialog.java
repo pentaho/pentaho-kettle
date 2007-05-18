@@ -21,6 +21,7 @@
 package be.ibridge.kettle.trans.step.getfilenames;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -68,11 +69,11 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 
-	private CTabItem     wFileTab;
+	private CTabItem     wFileTab,wFilterTab;
 
-	private Composite    wFileComp;
+	private Composite    wFileComp,wFilterComp;
 
-	private FormData     fdFileComp;
+	private FormData     fdFileComp,fdFilterComp;
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
@@ -81,7 +82,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 	private Button       wbaFilename; // Add or change
 	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
-
+	
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
 	private FormData     fdlFilenameList, fdFilenameList;
@@ -92,7 +93,12 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
+	
+	private Label wlFilterFileType;  
+	private  CCombo wFilterFileType;
+	private FormData fdlFilterFileType, fdFilterFileType;
 
+	
 	private GetFileNamesMeta input;
 
     private int middle, margin;
@@ -303,6 +309,65 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
+		
+				
+		
+		//////////////////////////
+		// START OF Filter  TAB ///
+		//////////////////////////
+		wFilterTab=new CTabItem(wTabFolder, SWT.NONE);
+		wFilterTab.setText(Messages.getString("GetFileNamesDialog.FilterTab.TabTitle"));
+
+		wFilterComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wFilterComp);
+
+		FormLayout filesettingLayout = new FormLayout();
+		filesettingLayout.marginWidth  = 3;
+		filesettingLayout.marginHeight = 3;
+		wFilterComp.setLayout(fileLayout);
+		
+		
+		//Filter File Type
+		wlFilterFileType = new Label(wFilterComp, SWT.RIGHT);
+		wlFilterFileType.setText(Messages.getString("GetFileNamesDialog.FilterTab.FileType.Label"));
+		props.setLook(wlFilterFileType);
+		fdlFilterFileType = new FormData();
+		fdlFilterFileType.left = new FormAttachment(0, 0);
+		fdlFilterFileType.right = new FormAttachment(middle, 0);
+		fdlFilterFileType.top = new FormAttachment(0, margin);
+		wlFilterFileType.setLayoutData(fdlFilterFileType);
+		wFilterFileType = new CCombo(wFilterComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.All.Label"));
+		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.OnlyFile.Label"));
+		wFilterFileType.add(Messages.getString("GetFileNamesDialog.FilterTab.FileType.OnlyFolder.Label"));
+		//wFilterFileType.select(0); // +1: starts at -1
+
+		props.setLook(wFilterFileType);
+		fdFilterFileType= new FormData();
+		fdFilterFileType.left = new FormAttachment(middle, 0);
+		fdFilterFileType.top = new FormAttachment(0, 0);
+		fdFilterFileType.right = new FormAttachment(100, 0);
+		wFilterFileType.setLayoutData(fdFilterFileType);
+
+	
+
+		fdFilterComp=new FormData();
+		fdFilterComp.left  = new FormAttachment(0, 0);
+		fdFilterComp.top   = new FormAttachment(0, 0);
+		fdFilterComp.right = new FormAttachment(100, 0);
+		fdFilterComp.bottom= new FormAttachment(100, 0);
+		wFilterComp.setLayoutData(fdFilterComp);
+
+		wFilterComp.layout();
+		wFilterTab.setControl(wFilterComp);
+
+		/////////////////////////////////////////////////////////////
+		/// END OF FILE Filter TAB
+		/////////////////////////////////////////////////////////////
+		
+		
+				
+		
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
@@ -480,6 +545,22 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
+			
+			
+			if (in.getFilterFileType()=="only_files")
+			{
+				wFilterFileType.select(1);
+			}
+			else if (in.getFilterFileType()=="only_folders")
+			{
+				wFilterFileType.select(2);
+			}			
+			else
+			{
+				wFilterFileType.select(0);
+			}
+			
+			
 		}
 		wStepname.selectAll();
 	}
@@ -507,6 +588,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 		in.setFileRequired( wFilenameList.getItems(2) );
+		
+		in.setFilterFileType(wFilterFileType.getSelectionIndex());
+
 	}
 
     // Preview the data
