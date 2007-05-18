@@ -15,6 +15,7 @@
  
 package org.pentaho.di.trans.steps.uniquerows;
 
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -127,14 +128,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 	{
 		if (meta.isCountRows())
 		{
-            Object[] outputRow = new Object[data.outputRowMeta.size()];
-            
-            int idx=0;
-            for (;idx<inputRowMeta.size();idx++)
-            {
-                outputRow[idx] = r[idx];
-            }
-            outputRow[idx]=new Long(count);
+            Object[] outputRow = RowDataUtil.addValueData(r, new Long(count));
             
             return outputRow;
 		}

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.trans.Trans;
@@ -104,13 +105,7 @@ public class HTTP extends BaseStep implements StepInterface
                 String body = bodyBuffer.toString();
                 log.logDebug(toString(), "Response body: "+body);
                 
-                Object[] outputRow = new Object[outputRowMeta.size()];                
-                int idx=0;
-                for (;idx<outputRow.length;idx++)
-                {
-                    outputRow[idx] = row[idx];
-                }
-                outputRow[idx]= body;
+                Object[] outputRow = RowDataUtil.addValueData(row, body);
                 
                 return outputRow;
             }
