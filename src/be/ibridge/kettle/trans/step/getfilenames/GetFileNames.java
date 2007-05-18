@@ -153,11 +153,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 		            
 					Value iswriteable = new Value("iswriteable", file.isWriteable());
 					r.addValue(iswriteable);
-		            
-					Value isattached = new Value("isattached", file.isAttached());
-					r.addValue(isattached);
-		            
-		
+		            		
 					Date ladate = new Date(file.getContent().getLastModifiedTime());
 					Value lastmodifiedtime = new Value("lastmodifiedtime", ladate.toString());
 					r.addValue(lastmodifiedtime);
@@ -171,19 +167,12 @@ public class GetFileNames extends BaseStep implements StepInterface
 					}
 		                       
 					r.addValue(size);
-		        		            
-				
-				
 				}
-		             
-		        
-		        
 				catch(IOException e)
 				{
 					throw new KettleException(e);
 				}
-	
-	        
+
 				Value extension = new Value("extension", file.getName().getExtension());
 				extension.setLength(500,-1);
 				r.addValue(extension);
@@ -195,11 +184,8 @@ public class GetFileNames extends BaseStep implements StepInterface
 				Value rooturi = new Value("rooturi", file.getName().getRootURI());
 				uri.setLength(500,-1);
 				r.addValue(rooturi);
-		        	
 				
 				putRow(r);
-				
-					
 			}
 		}
 		catch (Exception e) 

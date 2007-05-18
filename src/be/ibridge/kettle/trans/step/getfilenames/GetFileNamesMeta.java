@@ -115,8 +115,6 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.fileName = fileName;
 	}
-
-
 	
 	public void setFilterFileType(int filtertypevalue)
 	{
@@ -134,13 +132,10 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	
 	public String getFilterFileType()
 	{	
 		return filterfiletype;
 	}
-	
-	
 	
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
 	{
@@ -163,7 +158,6 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		fileName = new String[nrfiles];
 		fileMask = new String[nrfiles];
 		fileRequired = new String[nrfiles];
-
 	}
 
 	public void setDefault()
@@ -231,12 +225,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		Value iswriteable = new Value("iswriteable", Value.VALUE_TYPE_BOOLEAN);
 		iswriteable.setOrigin(name);
 		row.addValue(iswriteable);  
-        
-		// the isattached     
-		Value isattached = new Value("isattached", Value.VALUE_TYPE_BOOLEAN);
-		iswriteable.setOrigin(name);
-		row.addValue(isattached);  
-        
+                
 		// the lastmodifiedtime     
 		Value lastmodifiedtime = new Value("lastmodifiedtime", Value.VALUE_TYPE_DATE);
 		lastmodifiedtime.setOrigin(name);
@@ -262,31 +251,28 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		Value rooturi = new Value("rooturi", Value.VALUE_TYPE_STRING);
 		rooturi.setOrigin(name);
 		row.addValue(rooturi); 
-         
  
 		return row;
 	}
 
 	public String getXML()
 	{
-		StringBuffer retval = new StringBuffer();
+		StringBuffer retval = new StringBuffer(300);
 			
-		retval.append("    <filter>" + Const.CR);
-		retval.append("      " + XMLHandler.addTagValue("filterfiletype",  filterfiletype));
-		retval.append("  </filter>" + Const.CR);
+		retval.append("    <filter>").append(Const.CR);
+		retval.append("      ").append(XMLHandler.addTagValue("filterfiletype",  filterfiletype));
+		retval.append("    </filter>").append(Const.CR);
 			
 
-		retval.append("    <file>" + Const.CR);
+		retval.append("    <file>").append(Const.CR);
 		
 		for (int i = 0; i < fileName.length; i++)
 		{
-			retval.append("      " + XMLHandler.addTagValue("name", fileName[i]));
-			retval.append("      " + XMLHandler.addTagValue("filemask", fileMask[i]));
-			retval.append("      " + XMLHandler.addTagValue("file_required", fileRequired[i]));
-					
-		
+			retval.append("      ").append(XMLHandler.addTagValue("name", fileName[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
 		}
-		retval.append("  </file>" + Const.CR);
+		retval.append("    </file>").append(Const.CR);
 
 		return retval.toString();
 	}
@@ -295,27 +281,23 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			Node filternode    = XMLHandler.getSubNode(stepnode, "filter");
+			Node filternode         = XMLHandler.getSubNode(stepnode, "filter");
 			Node filterfiletypenode = XMLHandler.getSubNode(filternode, "filterfiletype");
-			filterfiletype = XMLHandler.getNodeValue(filterfiletypenode);
-			
+			filterfiletype          = XMLHandler.getNodeValue(filterfiletypenode);
 					
-			Node filenode    = XMLHandler.getSubNode(stepnode, "file");
+			Node filenode = XMLHandler.getSubNode(stepnode, "file");
 			int nrfiles   = XMLHandler.countNodes(filenode, "name");
 				
 			allocate(nrfiles);
 
 			for (int i = 0; i < nrfiles; i++)
 			{
-				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i);
-				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i);
+				Node filenamenode     = XMLHandler.getSubNodeByNr(filenode, "name", i);
+				Node filemasknode     = XMLHandler.getSubNodeByNr(filenode, "filemask", i);
 				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
-				fileName[i] = XMLHandler.getNodeValue(filenamenode);
-				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
-				fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
-				
-				
-				
+				fileName[i]           = XMLHandler.getNodeValue(filenamenode);
+				fileMask[i]           = XMLHandler.getNodeValue(filemasknode);
+				fileRequired[i]       = XMLHandler.getNodeValue(fileRequirednode);
 			}
 		}
 		catch (Exception e)
@@ -350,8 +332,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
 		try
-		{
-			
+		{			
 			rep.saveStepAttribute(id_transformation, id_step, "filterfiletype", filterfiletype);
 			
 			for (int i = 0; i < fileName.length; i++)
@@ -359,7 +340,6 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name", fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask", fileMask[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
-								
 			}
 		}
 		catch (Exception e)
