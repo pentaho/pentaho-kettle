@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 
 import org.pentaho.di.core.RowSetTest;
 import org.pentaho.di.core.database.DatabaseTest;
+import org.pentaho.di.core.row.RowDataUtilTest;
 import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
@@ -28,6 +29,7 @@ public class AllRegressionTests
         // functionality will also not work.
         suite.addTestSuite(RowSetTest.class);
         suite.addTestSuite(RowTest.class);
+        suite.addTestSuite(RowDataUtilTest.class);        
         suite.addTestSuite(DatabaseTest.class);
         suite.addTestSuite(HopTest.class);
         
