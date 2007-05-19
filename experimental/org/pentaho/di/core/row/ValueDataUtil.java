@@ -11,16 +11,23 @@ public class ValueDataUtil
 {
     public static final String leftTrim(String string)
     {
-         StringBuffer buffer = new StringBuffer(string);
-         while (buffer.length()>0 && buffer.charAt(0)==' ') buffer.deleteCharAt(0);
-         return buffer.toString();
+        int min = 0;
+        int max = string.length() - 1;
+        
+        while (min <= max && isSpace(string.charAt(min)))
+            min++;
+
+        return string.substring(min);
     }
     
     public static final String rightTrim(String string)
     {
-         StringBuffer buffer = new StringBuffer(string);
-         while (buffer.length()>0 && buffer.charAt(buffer.length()-1)==' ') buffer.deleteCharAt(buffer.length()-1);
-         return buffer.toString();
+        int max = string.length() - 1;
+        
+        while (max >= 0  && isSpace(string.charAt(max)))
+            max--;
+
+        return string.substring(0, max + 1);
     }
 
     /**
