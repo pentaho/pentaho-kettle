@@ -359,7 +359,7 @@ public class XMLInputPath extends BaseStep implements StepInterface
 	{			    
 		try
 		{
-			logBasic(Messages.getString("XMLInput.Log.StartingRun"));		
+			logBasic(Messages.getString("XMLInputPath.Log.StartingRun"));		
 			
 			while (processRow(meta, data) && !isStopped());
 		}
