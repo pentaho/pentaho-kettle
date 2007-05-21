@@ -34,11 +34,9 @@ public class CalculatorData extends BaseStepData implements StepDataInterface
     public Map indexCache;
     
     public RowMetaInterface outputRowMeta;
-    public RowMetaInterface tempRowMeta;
+    public RowMetaInterface calcRowMeta;
     
     public Calculator.FieldIndexes[] fieldIndexes;
-
-    public RowMetaInterface calcRowMeta;
 
     public int[] tempIndexes;
     

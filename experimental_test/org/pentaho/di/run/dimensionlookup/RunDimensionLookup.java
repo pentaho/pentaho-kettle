@@ -16,7 +16,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
 public class RunDimensionLookup extends TestCase
 {
     private static DatabaseMeta h2meta = new DatabaseMeta("H2 local", "H2", "JDBC", null, "experimental_test/testdata", null, null, null);
-    
+
     private static void createIndex() throws KettleDatabaseException
     {
         EnvUtil.environmentInit();
@@ -120,7 +120,7 @@ public class RunDimensionLookup extends TestCase
         createIndex();
     }
     
-    public void test__DIMENSION_LOOKUP_01_InitialLoad() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_01_InitialLoadOld() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupInitialLoad.ktr", 
@@ -129,18 +129,56 @@ public class RunDimensionLookup extends TestCase
             );
         timedTransRunner.init();
         timedTransRunner.runOldEngine();
-        truncateDimensionTable();
-        timedTransRunner.runNewEngine();
-        timedTransRunner.compareResults();
+
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+    }
+
+    public void test__DIMENSION_LOOKUP_02_Update20kOld() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupUpdate20k.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                20000
+            );
+        timedTransRunner.init();
+        timedTransRunner.runOldEngine();
 
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
         
+        truncateDimensionTable();
+    }
+
+    public void test__DIMENSION_LOOKUP_03_InitialLoadNew() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupInitialLoad.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.init();
+        timedTransRunner.runNewEngine(true);
+
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DIMENSION_LOOKUP_02_TkLookupCacheOff() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_04_Update20kNew() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupUpdate20k.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                20000
+            );
+        timedTransRunner.init();
+        timedTransRunner.runNewEngine(true);
+
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
+    public void test__DIMENSION_LOOKUP_05_TkLookupCacheOff() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheOff.ktr", 
@@ -156,7 +194,7 @@ public class RunDimensionLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DIMENSION_LOOKUP_03_TkLookup() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_06_TkLookup() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookup.ktr", 
@@ -172,7 +210,7 @@ public class RunDimensionLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DIMENSION_LOOKUP_04_TkLookupCache25k() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_07_TkLookupCache25k() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache25k.ktr", 
@@ -188,7 +226,7 @@ public class RunDimensionLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test__DIMENSION_LOOKUP_05_TkLookupCache50k() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_08_TkLookupCache50k() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache50k.ktr", 
@@ -204,7 +242,7 @@ public class RunDimensionLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test__DIMENSION_LOOKUP_06_TkLookupCacheAll() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_09_TkLookupCacheAll() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheAll.ktr", 

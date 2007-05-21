@@ -98,4 +98,21 @@ public class RunCalculator extends TestCase
         assertTrue(newResult.getNrErrors()==0);
 
     }
+    
+    public void test_CALCULATOR_06_A_plus_B_D_over_E_Temp() throws KettleXMLException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_Temp.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                1000000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
 }

@@ -81,6 +81,18 @@ public class Calculator extends BaseStep implements StepInterface
             // get all metadata, including source rows and temporary fields.
             data.calcRowMeta = meta.getAllFields(getInputRowMeta()); 
             
+            // data.tempRowMeta = new RowMeta();
+            /* get only the temporary fields...
+            for (int i=0;i<data.calcRowMeta.size();i++)
+            {
+                CalculatorMetaFunction fn = meta.getCalculation()[i-getInputRowMeta().size()];
+                if (fn.isRemovedFromResult())
+                {
+                    data.tempRowMeta.addValueMeta( data.calcRowMeta.getValueMeta(i) );
+                }
+            }
+            */
+            
             data.fieldIndexes = new FieldIndexes[meta.getCalculation().length];
             List tempIndexes = new ArrayList();
 
@@ -94,16 +106,11 @@ public class Calculator extends BaseStep implements StepInterface
                 
                 if (!Const.isEmpty(function.getFieldName())) 
                 {
-                    data.fieldIndexes[i].indexName = data.outputRowMeta.indexOfValue(function.getFieldName());
+                    data.fieldIndexes[i].indexName = data.calcRowMeta.indexOfValue(function.getFieldName());
                     if (data.fieldIndexes[i].indexName<0)
                     {
-                        // Maybe it's a temporary field
-                        data.fieldIndexes[i].indexName = data.tempRowMeta.indexOfValue(function.getFieldName());
-                        if (data.fieldIndexes[i].indexName<0)
-                        {
-                            // Nope: throw an exception
-                            throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+" for calculation #"+(i+1));
-                        }
+                        // Nope: throw an exception
+                        throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+" for calculation #"+(i+1));
                     }
                 }
                 else
@@ -113,16 +120,11 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (!Const.isEmpty(function.getFieldA())) 
                 {
-                    data.fieldIndexes[i].indexA = data.outputRowMeta.indexOfValue(function.getFieldA());
+                    data.fieldIndexes[i].indexA = data.calcRowMeta.indexOfValue(function.getFieldA());
                     if (data.fieldIndexes[i].indexA<0)
                     {
-                        // Maybe it's a temporary field
-                        data.fieldIndexes[i].indexA = data.tempRowMeta.indexOfValue(function.getFieldA());
-                        if (data.fieldIndexes[i].indexA<0)
-                        {
-                            // Nope: throw an exception
-                            throw new KettleStepException("Unable to find the first argument field '"+function.getFieldName()+" for calculation #"+(i+1));
-                        }
+                        // Nope: throw an exception
+                        throw new KettleStepException("Unable to find the first argument field '"+function.getFieldName()+" for calculation #"+(i+1));
                     }
                 }
                 else
@@ -132,31 +134,21 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (!Const.isEmpty(function.getFieldB())) 
                 {
-                    data.fieldIndexes[i].indexB = data.outputRowMeta.indexOfValue(function.getFieldB());
+                    data.fieldIndexes[i].indexB = data.calcRowMeta.indexOfValue(function.getFieldB());
                     if (data.fieldIndexes[i].indexB<0)
                     {
-                        // Maybe it's a temporary field
-                        data.fieldIndexes[i].indexB = data.tempRowMeta.indexOfValue(function.getFieldB());
-                        if (data.fieldIndexes[i].indexB<0)
-                        {
-                            // Nope: throw an exception
-                            throw new KettleStepException("Unable to find the second argument field '"+function.getFieldName()+" for calculation #"+(i+1));
-                        }
+                        // Nope: throw an exception
+                        throw new KettleStepException("Unable to find the second argument field '"+function.getFieldName()+" for calculation #"+(i+1));
                     }
                 }
                 
                 if (!Const.isEmpty(function.getFieldC())) 
                 {
-                    data.fieldIndexes[i].indexC = data.outputRowMeta.indexOfValue(function.getFieldC());
+                    data.fieldIndexes[i].indexC = data.calcRowMeta.indexOfValue(function.getFieldC());
                     if (data.fieldIndexes[i].indexC<0)
                     {
-                        // Maybe it's a temporary field
-                        data.fieldIndexes[i].indexC = data.tempRowMeta.indexOfValue(function.getFieldC());
-                        if (data.fieldIndexes[i].indexC<0)
-                        {
-                            // Nope: throw an exception
-                            throw new KettleStepException("Unable to find the third argument field '"+function.getFieldName()+" for calculation #"+(i+1));
-                        }
+                        // Nope: throw an exception
+                        throw new KettleStepException("Unable to find the third argument field '"+function.getFieldName()+" for calculation #"+(i+1));
                     }
                 }
                                 
@@ -176,7 +168,7 @@ public class Calculator extends BaseStep implements StepInterface
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
 
-        Object[] row = calcFields(getInputRowMeta(), data.outputRowMeta, r);		
+        Object[] row = calcFields(getInputRowMeta(), r);		
 		putRow(data.outputRowMeta, row);     // copy row to possible alternate rowset(s).
 
         if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
@@ -194,7 +186,7 @@ public class Calculator extends BaseStep implements StepInterface
      * @return
      * @throws KettleValueException
      */
-    private Object[] calcFields(RowMetaInterface inputRowMeta, RowMetaInterface outputRowMeta, Object[] r) throws KettleValueException
+    private Object[] calcFields(RowMetaInterface inputRowMeta, Object[] r) throws KettleValueException
     {
         // First copy the input data to the new result...
         Object[] calcData = new Object[data.calcRowMeta.size()];

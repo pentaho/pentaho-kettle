@@ -32,6 +32,8 @@ public class TimedTransRunner
     
     private String       oldRowListenerStep;
     private be.ibridge.kettle.trans.step.RowListener  oldRowListener;
+    private be.ibridge.kettle.trans.TransMeta oldTransMeta;
+    private TransMeta newTransMeta;
     
     
     public TimedTransRunner(String filename, int logLevel, long records)
@@ -45,8 +47,8 @@ public class TimedTransRunner
     {
         init();
         
-        runOldEngine();
-        runNewEngine();
+        runOldEngine(true);
+        runNewEngine(false);
         
         compareResults();
     }
@@ -60,19 +62,37 @@ public class TimedTransRunner
         //
         KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
     }
+    
+    public void printOldTransDescription()
+    {
+        System.out.println();
+        System.out.println("Transformation name         : "+oldTransMeta.getName());
+        System.out.println("Transformation description  : "+Const.NVL(oldTransMeta.getDescription(), ""));
+        System.out.println("-----------------------------------------------------------------------------------------------------");
+    }
 
+    public void printNewTransDescription()
+    {
+        System.out.println();
+        System.out.println("Transformation name         : "+newTransMeta.getName());
+        System.out.println("Transformation description  : "+Const.NVL(newTransMeta.getDescription(), ""));
+        System.out.println("-----------------------------------------------------------------------------------------------------");
+    }
+    
     public void runOldEngine() throws KettleXMLException
+    {
+        runOldEngine(true);
+    }
+    
+    public void runOldEngine(boolean printDescription) throws KettleXMLException
     {
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
-        be.ibridge.kettle.trans.TransMeta transMeta = new be.ibridge.kettle.trans.TransMeta(filename);
-        System.out.println();
-        System.out.println("Transformation name         : "+transMeta.getName());
-        System.out.println("Transformation description  : "+Const.NVL(transMeta.getDescription(), ""));
-        System.out.println("-----------------------------------------------------------------------------------------------------");
+        oldTransMeta = new be.ibridge.kettle.trans.TransMeta(filename);
+        if (printDescription) printOldTransDescription();
         
         // OK, now run this transFormation.
-        be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), transMeta);
+        be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), oldTransMeta);
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(oldRowListenerStep))
@@ -111,12 +131,18 @@ public class TimedTransRunner
 
     public void runNewEngine() throws KettleXMLException
     {
+        runNewEngine(false);
+    }
+
+    public void runNewEngine(boolean printDescription) throws KettleXMLException
+    {
         if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
 
-        TransMeta transMeta = new TransMeta(filename);
-        
+        newTransMeta = new TransMeta(filename);
+        if (printDescription) printNewTransDescription();
+
         // OK, now run this transFormation.
-        Trans trans = new Trans(LogWriter.getInstance(), transMeta);
+        Trans trans = new Trans(LogWriter.getInstance(), newTransMeta);
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(newRowListenerStep))
@@ -242,5 +268,37 @@ public class TimedTransRunner
     {
         this.newRowListenerStep = stepname;
         this.newRowListener = rowListener;
+    }
+
+    /**
+     * @return the oldTransMeta
+     */
+    public be.ibridge.kettle.trans.TransMeta getOldTransMeta()
+    {
+        return oldTransMeta;
+    }
+
+    /**
+     * @param oldTransMeta the oldTransMeta to set
+     */
+    public void setOldTransMeta(be.ibridge.kettle.trans.TransMeta oldTransMeta)
+    {
+        this.oldTransMeta = oldTransMeta;
+    }
+
+    /**
+     * @return the newTransMeta
+     */
+    public TransMeta getNewTransMeta()
+    {
+        return newTransMeta;
+    }
+
+    /**
+     * @param newTransMeta the newTransMeta to set
+     */
+    public void setNewTransMeta(TransMeta newTransMeta)
+    {
+        this.newTransMeta = newTransMeta;
     }
 }
