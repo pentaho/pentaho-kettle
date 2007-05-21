@@ -62,6 +62,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathField;
 
 
 public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInterface
@@ -559,6 +560,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			{
 				wFilterFileType.select(0);
 			}
+			
+		
 			
 			
 		}
