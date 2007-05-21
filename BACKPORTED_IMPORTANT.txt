@@ -4,3 +4,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - Database handling of SQL Server (.., instance name), .. fix for bug #5618 - Matt - 2007-MAY-14
 - VFS bug fix in setting internal variables (relative path handling) - Matt - 2007-MAY-14
 - Correctly load statistics columns from xml for Execute SQL step (fix for bug #5434) - Sven B - 2007-May-16
+- Fix for #5643 "Update date Ignore lookup failure" - Sven B - 2007-May-21
