@@ -752,6 +752,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 					{
 						db.connect();
 						
+						if ( getIgnoreFlagField()!=null && 
+							 getIgnoreFlagField().length()>0)
+						{
+						    prev.addValue(new Value(getIgnoreFlagField(), true));
+						}
+						
 						String cr_table = db.getDDL(schemaTable, 
 													prev, 
 													null, 
@@ -862,8 +868,6 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-
-
     /**
      * @return the schemaName
      */
@@ -872,8 +876,6 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
         return schemaName;
     }
 
-
-
     /**
      * @param schemaName the schemaName to set
      */
@@ -881,7 +883,6 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.schemaName = schemaName;
     }
-
     
     public boolean supportsErrorHandling()
     {

@@ -183,7 +183,7 @@ public class Update extends BaseStep implements StepInterface
             
             if (meta.getIgnoreFlagField()!=null && meta.getIgnoreFlagField().length()>0) // add flag field!
             {
-                row.addValue(new Value(meta.getIgnoreFlagField(), false));
+                row.addValue(new Value(meta.getIgnoreFlagField(), true));
             }
 		}
 	}
