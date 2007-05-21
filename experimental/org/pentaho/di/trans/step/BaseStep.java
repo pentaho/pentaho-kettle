@@ -45,6 +45,7 @@ import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
+import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
@@ -113,9 +114,10 @@ public class BaseStep extends Thread
         new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
         new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
+        new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
 
         /*
-            new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
+            new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
             new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
             new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
             new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
@@ -134,7 +136,6 @@ public class BaseStep extends Thread
             new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
-            new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
             new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
             new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),

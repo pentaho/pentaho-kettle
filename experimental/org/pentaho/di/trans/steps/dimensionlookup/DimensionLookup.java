@@ -121,12 +121,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             
             data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null);
-            
-            determineTechKeyCreation();
-            if (getCopy()==0) checkDimZero();
-            
-            setDimLookup(getInputRowMeta());
-            
+                        
             // Lookup values
             data.keynrs = new int[meta.getKeyStream().length];
             for (int i=0;i<meta.getKeyStream().length;i++)
@@ -197,6 +192,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
                 data.cacheValueRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
             }
+            
+            determineTechKeyCreation();
+            if (getCopy()==0) checkDimZero();
+            
+            setDimLookup(getInputRowMeta());
         }
         
         try
@@ -253,7 +253,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}
 		if (data.datefieldnr>=0) valueDate = rowMeta.getDate(row, data.datefieldnr);
 		else valueDate = data.valueDateNow;
-        lookupRow[meta.getKeyStream().length]=valueDate;
+        lookupRow[meta.getKeyStream().length]=valueDate;  // ? >= date_from
+        lookupRow[meta.getKeyStream().length+1]=valueDate; // ? < date_to
 		
 		if (log.isDebug()) logDebug(Messages.getString("DimensionLookup.Log.LookupRow")+data.lookupRowMeta.getString(lookupRow)); //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -268,8 +269,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
         
         if (returnRow==null)
         {
-            data.db.setValues(data.lookupRowMeta, lookupRow);
-            returnRow=data.db.getLookup();
+            data.db.setValues(data.lookupRowMeta, lookupRow, data.prepStatementLookup);
+            returnRow=data.db.getLookup(data.prepStatementLookup);
             
             linesInput++;
             
@@ -516,7 +517,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             inputIndex+=2;
         }
 
-        while (inputIndex<returnRow.length)
+        while (inputIndex<returnRow.length && outputIndex<outputRow.length)
 		{
 			outputRow[outputIndex] = returnRow[inputIndex];
             outputIndex++;
@@ -597,7 +598,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
             data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]) );
         }
         
-        sql += " AND ? >= "+databaseMeta.quoteField(meta.getDateField())+" AND ? < "+databaseMeta.quoteField(meta.getDateTo());
+        sql += " AND ? >= "+databaseMeta.quoteField(meta.getDateFrom())+" AND ? < "+databaseMeta.quoteField(meta.getDateTo());
+        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
+        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
     
         try
         {
