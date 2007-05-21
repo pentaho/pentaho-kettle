@@ -163,6 +163,8 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		int nrfiles = 0;
+		filterfiletype="all_files";
+
 
 		allocate(nrfiles);
 
