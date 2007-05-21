@@ -135,13 +135,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
 
             // Return values
-            if (meta.isUpdate())
+            data.fieldnrs = new int[meta.getFieldStream().length];
+            for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
             {
-                data.fieldnrs = new int[meta.getFieldStream().length];
-                for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
-                {
-                    data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
-                }
+                data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
@@ -1115,8 +1112,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
             // See if the dateValue is between the from and to date ranges...
             // The last 2 values are from and to
             long time = dateValue.getTime();
-            long from = ((Long)row[row.length-2]).longValue(); 
-            long to   = ((Long)row[row.length-1]).longValue(); 
+            long from = ((Date)row[row.length-2]).getTime(); 
+            long to   = ((Date)row[row.length-1]).getTime(); 
             if (time>=from && time<to) // sanity check to see if we have the right version
             {
                 if (log.isRowLevel()) logRowlevel("Cache hit: key="+data.cacheKeyRowMeta.getString(keyValues)+"  values="+data.cacheValueRowMeta.getString(row));

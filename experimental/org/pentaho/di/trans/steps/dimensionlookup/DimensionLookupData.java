@@ -69,8 +69,6 @@ public class DimensionLookupData extends BaseStepData implements StepDataInterfa
 
     public String schemaTable;
 
-
-    
 	/**
 	 * 
 	 */

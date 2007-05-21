@@ -71,7 +71,8 @@ public class RunDimensionLookup extends TestCase
         h2db.disconnect();
     }
 
-    private static void dropIndex() throws KettleDatabaseException
+    /*
+    private static void dropTable() throws KettleDatabaseException
     {
         EnvUtil.environmentInit();
         
@@ -89,6 +90,7 @@ public class RunDimensionLookup extends TestCase
 
         h2db.disconnect();
     }
+    */
 
     private static void truncateDimensionTable() throws KettleDatabaseException
     {
@@ -123,7 +125,7 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupInitialLoad.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                100000
+                250000
             );
         timedTransRunner.init();
         timedTransRunner.runOldEngine();
@@ -137,12 +139,92 @@ public class RunDimensionLookup extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void test__DIMENSION_LOOKUP_02_TkLookupCacheOff() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheOff.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.runOldAndNew();
 
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test__DIMENSION_LOOKUP_03_TkLookup() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookup.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.runOldAndNew();
+
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test__DIMENSION_LOOKUP_04_TkLookupCache25k() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache25k.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.runOldAndNew();
+
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
+    public void test__DIMENSION_LOOKUP_05_TkLookupCache50k() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache50k.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.runOldAndNew();
+
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
+    public void test__DIMENSION_LOOKUP_06_TkLookupCacheAll() throws KettleXMLException, KettleDatabaseException
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheAll.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                250000
+            );
+        timedTransRunner.runOldAndNew();
+
+        Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
     /*
     public void test__DIMENSION_LOOKUP_99() throws KettleDatabaseException
     {
         System.out.println();
-        dropIndex();
+        dropTable();
     }
     */
 }

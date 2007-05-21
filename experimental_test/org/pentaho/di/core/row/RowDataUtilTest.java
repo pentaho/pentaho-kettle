@@ -47,7 +47,7 @@ public class RowDataUtilTest extends TestCase
     	{
     		// TODO: This is still open for discussion, currently the 
     		// implementation will "fail".
-    	    Object arr3[] = RowDataUtil.resizeArray(arr1, 3);
+    	    /*Object arr3[] =*/ RowDataUtil.resizeArray(arr1, 3);
     	    fail("should fail with an exception");
     	}
     	catch ( Exception ex )
