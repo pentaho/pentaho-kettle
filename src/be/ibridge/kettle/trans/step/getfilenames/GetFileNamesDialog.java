@@ -62,7 +62,6 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathField;
 
 
 public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInterface
@@ -547,20 +546,28 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
 			
+			if (in.getFilterFileType() !=null)
+			{
 			
-			if (in.getFilterFileType().equals("only_files"))
-			{
-				wFilterFileType.select(1);
+				if (in.getFilterFileType().equals("only_files"))
+				{
+					wFilterFileType.select(1);
+				}
+				else if (in.getFilterFileType().equals("only_folders"))
+				{
+					wFilterFileType.select(2);
+				}			
+				else
+				{
+					wFilterFileType.select(0);
+				}
+				
 			}
-			else if (in.getFilterFileType().equals("only_folders"))
-			{
-				wFilterFileType.select(2);
-			}			
 			else
 			{
 				wFilterFileType.select(0);
-			}
 			
+			}
 		
 			
 			
