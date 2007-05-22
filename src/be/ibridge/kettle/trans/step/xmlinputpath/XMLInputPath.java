@@ -17,12 +17,14 @@
 package be.ibridge.kettle.trans.step.xmlinputpath;
 
 import org.apache.commons.vfs.FileObject;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
@@ -105,18 +107,21 @@ public class XMLInputPath extends BaseStep implements StepInterface
 				Node resultNode = (Node) xpath.evaluate(xpathvalue,widgetNode, javax.xml.xpath.XPathConstants.NODE);
 			
 				//widgetNode
-				if (resultNode != null) valueNode=resultNode.getTextContent();
+				if (resultNode != null) valueNode=XMLHandler.getNodeValue( resultNode ); // resultNode.getTextContent();
 			}
 			else
 			{
-				// Get attribut value
-				valueNode=widgetNode.getAttributes().getNamedItem(xpathvalue).getTextContent();
-				
-				
+				// Get attribute value
+                NamedNodeMap attributes = widgetNode.getAttributes();
+                if (attributes!=null)
+                {
+                    Node namedItem = widgetNode.getAttributes().getNamedItem(xpathvalue);
+                    if (namedItem!=null)
+                    {
+                        valueNode=XMLHandler.getNodeValue(namedItem); // namedItem.getTextContent();
+                    }
+                }
 			}
-	        
-	    
-	        
 		} 
 		catch (Exception e) 
 		{
