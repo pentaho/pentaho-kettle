@@ -1,0 +1,481 @@
+Added: Dimension Lookup
+
+Table CSV_TABLE dropped
+Table CSV_TABLE created.
+Table SIMPLE_TABLE dropped
+Table SIMPLE_TABLE created
+
+TABLE OUTPUT
+==================
+
+Transformation name         : Table Output Simple
+Transformation description  : Insert a bunch of identical rows in SIMPLE_TABLE with an sequence ID
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 5,05s,   speed: 19.814 rows/s
+V3 results, rows: 100.000,   runtime: 3,34s,   speed: 29.904 rows/s
+V3 / V2 = x1,51
+
+Transformation name         : Table Output - CSV
+Transformation description  : Insert the data from a large CSV file into a database table
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 17,86s,   speed: 5.599 rows/s
+V3 results, rows: 100.000,   runtime: 7,75s,   speed: 12.903 rows/s
+V3 / V2 = x2,30
+
+ABORT
+==================
+
+Transformation name         : Abort Above Limit
+Transformation description  : Tests the functionality and performance of the "Abort" step.
+-----------------------------------------------------------------------------------------------------
+15:16:55,796 ERROR [Abort Above Limit] Abort Above Limit - Errors detected!
+V2 results, rows: 1,   runtime: 0,11s,   speed: 9 rows/s
+15:16:55,968 ERROR [Abort Above Limit] Abort Above Limit - Errors detected!
+V3 results, rows: 1,   runtime: 0,11s,   speed: 9 rows/s
+V3 / V2 = x0,99
+
+Transformation name         : Abort Below Limit
+Transformation description  : Tests the functionality and performance of the "Abort" step.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1,   runtime: 0,09s,   speed: 11 rows/s
+V3 results, rows: 1,   runtime: 0,11s,   speed: 9 rows/s
+V3 / V2 = x0,86
+
+ADD SEQUENCE
+==================
+
+Transformation name         : AddSequence
+Transformation description  : Tests adding a single Long to an empty row.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 2,14s,   speed: 467.071 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,08s,   speed: 481.232 rows/s
+V3 / V2 = x1,03
+
+Transformation name         : AddSequence to 5 fields
+Transformation description  : Tests adding a single Long to a row of 5 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,56s,   speed: 219.154 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,45s,   speed: 407.664 rows/s
+V3 / V2 = x1,86
+
+Transformation name         : AddSequence to 10 fields
+Transformation description  : Tests adding a single Long to a row of 10 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 6,42s,   speed: 155.715 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,12s,   speed: 470.588 rows/s
+V3 / V2 = x3,02
+
+Transformation name         : Add 2 sequences
+Transformation description  : Tests adding 2 sequences to an empty row.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 2,31s,   speed: 432.526 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,14s,   speed: 467.071 rows/s
+V3 / V2 = x1,08
+
+Transformation name         : Add 2 sequence to 5 fields
+Transformation description  : Tests adding 2 sequences to a row of 5 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,61s,   speed: 216.920 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,67s,   speed: 374.251 rows/s
+V3 / V2 = x1,73
+
+Transformation name         : Add 2 sequences to 10 fields
+Transformation description  : Tests adding 2 sequences to a row of 10 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 7,27s,   speed: 137.627 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,74s,   speed: 365.631 rows/s
+V3 / V2 = x2,66
+
+Transformation name         : Add 4 sequences
+Transformation description  : Tests adding 4 sequences to an empty row.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 8,28s,   speed: 120.758 rows/s
+V3 results, rows: 1.000.000,   runtime: 11,86s,   speed: 84.317 rows/s
+V3 / V2 = x0,70
+
+Transformation name         : Add 4 sequence to 5 fields
+Transformation description  : Tests adding 4 sequences to a row of 5 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 15,27s,   speed: 65.505 rows/s
+V3 results, rows: 1.000.000,   runtime: 7,52s,   speed: 133.049 rows/s
+V3 / V2 = x2,03
+
+Transformation name         : Add 4 sequences to 10 fields
+Transformation description  : Tests adding 4 sequences to a row of 10 fields
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 21,61s,   speed: 46.277 rows/s
+V3 results, rows: 1.000.000,   runtime: 7,33s,   speed: 136.463 rows/s
+V3 / V2 = x2,95
+
+CALCULATOR
+==================
+
+Transformation name         : Calculate A+B
+Transformation description  : Adds 2 numbers : C=A+B
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 3,89s,   speed: 257.069 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,14s,   speed: 467.071 rows/s
+V3 / V2 = x1,82
+
+Transformation name         : Calculate A+B : no calculation, just a dummy
+Transformation description  : Adds 2 numbers : C=A+B, removed calculation: just a dummy
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 3,33s,   speed: 300.481 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,09s,   speed: 477.555 rows/s
+V3 / V2 = x1,59
+
+Transformation name         : Calculate A+B, D/E
+Transformation description  : Adds 2 numbers : C=A+B, divide 2 numbers F=D/E
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 7,06s,   speed: 141.603 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,88s,   speed: 347.826 rows/s
+V3 / V2 = x2,46
+
+Transformation name         : Calculate A+B, D/E, G+H days
+Transformation description  : Adds 2 numbers : C=A+B, divide 2 numbers F=D/E, I=G+Hdays
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 17,45s,   speed: 57.297 rows/s
+V3 results, rows: 1.000.000,   runtime: 6,42s,   speed: 155.715 rows/s
+V3 / V2 = x2,72
+
+Transformation name         : Calculate A+B, D/E, G+H days, L=J OR K
+Transformation description  : Adds 2 numbers : C=A+B, divide 2 numbers F=D/E, I=G+Hdays, L=J||J
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 21,78s,   speed: 45.912 rows/s
+V3 results, rows: 1.000.000,   runtime: 6,83s,   speed: 146.456 rows/s
+V3 / V2 = x3,19
+
+Transformation name         : Calculate A+B, D/E (Temp var)
+Transformation description  : Adds 2 numbers : C=A+B, divide 2 numbers F=D/E, use a temporary variable
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 8,78s,   speed: 113.882 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,02s,   speed: 331.675 rows/s
+V3 / V2 = x2,91
+
+CONSTANT
+==================
+
+Transformation name         : Constant
+Transformation description  : Tests the functionality and performance of the "Constant" step.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,88s,   speed: 205.128 rows/s
+V3 results, rows: 1.000.000,   runtime: 0,88s,   speed: 1.142.857 rows/s
+V3 / V2 = x5,57
+
+FILTER ROWS
+==================
+
+Transformation name         : Filter rows : simple condition on 4 numbers
+Transformation description  : A > 100 and E < 500
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 5,69s,   speed: 175.809 rows/s
+V3 results, rows: 1.000.000,   runtime: 4,17s,   speed: 239.693 rows/s
+V3 / V2 = x1,36
+
+ROWGENERATOR
+==================
+
+Transformation name         : GenerateRows : empty
+Transformation description  : Test the generation of empty
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 1,91s,   speed: 524.659 rows/s
+V3 results, rows: 1.000.000,   runtime: 0,78s,   speed: 1.280.410 rows/s
+V3 / V2 = x2,44
+
+Transformation name         : Generate rows : 4 numbers
+Transformation description  : Generate rows with 4 numbers
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,31s,   speed: 231.857 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,16s,   speed: 463.822 rows/s
+V3 / V2 = x2,00
+
+SELECT VALUES
+==================
+
+Transformation name         : Select Values
+Transformation description  : Tests the functionality and performance of the "Select Values" step (Select tab)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 36,67s,   speed: 27.270 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,92s,   speed: 254.972 rows/s
+V3 / V2 = x9,35
+
+Transformation name         : Select Values Delete
+Transformation description  : Tests the functionality and performance of the "Select Values" step (Delete values from row)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 15,34s,   speed: 65.176 rows/s
+V3 results, rows: 1.000.000,   runtime: 2,69s,   speed: 372.024 rows/s
+V3 / V2 = x5,71
+
+Transformation name         : Select Values Meta
+Transformation description  : Tests the functionality and performance of the "Select Values" step (Change metadata or type)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 17,05s,   speed: 58.661 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,20s,   speed: 312.207 rows/s
+V3 / V2 = x5,32
+
+SORT ROWS
+==================
+
+Transformation name         : Sort table data
+Transformation description  : Sorts data from a database table on Name, Firstname
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 29,36s,   speed: 3.406 rows/s
+V3 results, rows: 100.000,   runtime: 25,38s,   speed: 3.941 rows/s
+V3 / V2 = x1,16
+
+Transformation name         : Sort table data no compression
+Transformation description  : Sorts data from a database table on Name, Firstname, doesn't use compression on temp files
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 9,84s,   speed: 10.158 rows/s
+V3 results, rows: 100.000,   runtime: 6,98s,   speed: 14.316 rows/s
+V3 / V2 = x1,41
+
+Transformation name         : Sort table data no compression - buffer 50k
+Transformation description  : Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 50.000 rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 9,72s,   speed: 10.290 rows/s
+V3 results, rows: 100.000,   runtime: 6,48s,   speed: 15.423 rows/s
+V3 / V2 = x1,50
+
+Transformation name         : Sort table data no compression - buffer 110k
+Transformation description  : Sorts data from a database table on Name, Firstname, doesn't use compression on temp files and buffers 110.000 rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 13,12s,   speed: 7.619 rows/s
+V3 results, rows: 100.000,   runtime: 5,16s,   speed: 19.395 rows/s
+V3 / V2 = x2,55
+
+Transformation name         : Sort CSV file
+Transformation description  : Sort CSV file on name and firstname
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 17,55s,   speed: 5.699 rows/s
+V3 results, rows: 100.000,   runtime: 6,19s,   speed: 16.163 rows/s
+V3 / V2 = x2,84
+
+Transformation name         : Sort CSV file (50k)
+Transformation description  : Sort CSV file on name and firstname, buffer 50k rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 17,03s,   speed: 5.872 rows/s
+V3 results, rows: 100.000,   runtime: 6,72s,   speed: 14.883 rows/s
+V3 / V2 = x2,53
+
+Transformation name         : Sort CSV file (110k)
+Transformation description  : Sort CSV file on name and firstname, buffer110k rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 21,98s,   speed: 4.549 rows/s
+V3 results, rows: 100.000,   runtime: 4,67s,   speed: 21.404 rows/s
+V3 / V2 = x4,71
+
+Transformation name         : Sort CSV file (110k) write back
+Transformation description  : Sort CSV file on name and firstname, buffer110k rows, write back to CSV
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 31,88s,   speed: 3.137 rows/s
+V3 results, rows: 100.000,   runtime: 6,44s,   speed: 15.533 rows/s
+V3 / V2 = x4,95
+
+STREAM LOOKUP
+==================
+
+Transformation name         : Stream Lookup of Strings (10,000) Normal lookup
+Transformation description  : Lookup strings in a table of 10,000 strings, use a normal lookup algorithm (Map)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 6,55s,   speed: 152.742 rows/s
+V3 results, rows: 1.000.000,   runtime: 5,16s,   speed: 193.949 rows/s
+V3 / V2 = x1,27
+
+Transformation name         : Stream Lookup of Strings (10,000) Preserve Memory
+Transformation description  : Lookup strings in a table of 10,000 strings, use a serialisation algorithm (HashIndex)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 9,97s,   speed: 100.311 rows/s
+V3 results, rows: 1.000.000,   runtime: 7,64s,   speed: 130.890 rows/s
+V3 / V2 = x1,30
+
+Transformation name         : Stream Lookup of Strings (10,000) Sorted List
+Transformation description  : Lookup strings in a table of 10,000 strings, use a sorted list algorithm (List)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 6,22s,   speed: 160.798 rows/s
+V3 results, rows: 1.000.000,   runtime: 5,20s,   speed: 192.197 rows/s
+V3 / V2 = x1,20
+
+GET SYSTEM INFO
+==================
+
+Transformation name         : Get system info : sysdate
+Transformation description  : Add the system date (variable) to empty rows
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 1,28s,   speed: 780.640 rows/s
+V3 results, rows: 1.000.000,   runtime: 1,05s,   speed: 955.110 rows/s
+V3 / V2 = x1,22
+
+Transformation name         : Get system info : sysdate --> tempfile
+Transformation description  : Add the system date (variable) to empty rows, output to D:\temp file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 88,50s,   speed: 11.299 rows/s
+V3 results, rows: 1.000.000,   runtime: 5,05s,   speed: 198.138 rows/s
+V3 / V2 = x17,54
+
+TABLE INPUT
+==================
+
+Transformation name         : Table Input
+Transformation description  : 
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 4,66s,   speed: 21.478 rows/s
+V3 results, rows: 100.000,   runtime: 3,88s,   speed: 25.806 rows/s
+V3 / V2 = x1,20
+
+TEXT FILE INPUT
+==================
+
+Transformation name         : Text File Input - CSV
+Transformation description  : Read a large CSV file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 13,75s,   speed: 7.273 rows/s
+V3 results, rows: 100.000,   runtime: 4,22s,   speed: 23.702 rows/s
+V3 / V2 = x3,26
+
+Transformation name         : Text File Input - CSV - Strings only
+Transformation description  : Read a large CSV file, all fields as Strings (no conversions)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 5,45s,   speed: 18.339 rows/s
+V3 results, rows: 100.000,   runtime: 3,56s,   speed: 28.066 rows/s
+V3 / V2 = x1,53
+
+Transformation name         : Text File Input - CSV + Calculator
+Transformation description  : Read a large CSV file, perform a single calculation
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 14,33s,   speed: 6.979 rows/s
+V3 results, rows: 100.000,   runtime: 4,41s,   speed: 22.691 rows/s
+V3 / V2 = x3,25
+
+TEXT FILE OUTPUT
+==================
+
+Transformation name         : Text File Input - CSV
+Transformation description  : Read a large CSV file, write it back
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 18,64s,   speed: 5.365 rows/s
+V3 results, rows: 100.000,   runtime: 6,17s,   speed: 16.202 rows/s
+V3 / V2 = x3,02
+
+Transformation name         : Tex tFile Output data From Table.ktr
+Transformation description  : Reads from H2 table CSV_TABLE
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 10,58s,   speed: 9.454 rows/s
+V3 results, rows: 100.000,   runtime: 6,17s,   speed: 16.202 rows/s
+V3 / V2 = x1,71
+
+Transformation name         : Tex tFile Output data From Generator
+Transformation description  : Generated rows with all data types occuring twice & dumps these to file
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 13,94s,   speed: 7.175 rows/s
+V3 results, rows: 100.000,   runtime: 5,27s,   speed: 18.990 rows/s
+V3 / V2 = x2,65
+
+UNIQUE ROWS
+==================
+
+Transformation name         : Unique rows : get list of states from customer file
+Transformation description  : Get a list of states from customer file, selects, sorts, uniques
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 21,11s,   speed: 4.737 rows/s
+V3 results, rows: 100.000,   runtime: 4,97s,   speed: 20.125 rows/s
+V3 / V2 = x4,25
+
+Transformation name         : Unique rows : get list of states from customer file, add occurences
+Transformation description  : Get a list of states from customer file, selects, sorts, uniques.  Adds nr of customers per state.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 100.000,   runtime: 21,12s,   speed: 4.734 rows/s
+V3 results, rows: 100.000,   runtime: 4,81s,   speed: 20.781 rows/s
+V3 / V2 = x4,39
+
+DATABASE LOOKUP
+==================
+
+INDEX IDX_CSV_TABLE_ID not dropped: 
+Couldn't execute SQL: DROP INDEX IDX_CSV_TABLE_ID;
+
+Index IDX_CSV_TABLE_ID not found [42S12-46]
+
+Creating index INDEX IDX_CSV_TABLE_ID ...
+Index INDEX IDX_CSV_TABLE_ID created.
+
+Transformation name         : Database Lookup : ID lookup
+Transformation description  : Look up name and firstname in a customer table using an ID
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,39s,   speed: 227.739 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,61s,   speed: 277.008 rows/s
+V3 / V2 = x1,22
+
+Transformation name         : Database Lookup : ID lookup (No Cache)
+Transformation description  : Look up name and firstname in a customer table using an ID. The cache is disabled
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,16s,   speed: 240.558 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,75s,   speed: 266.667 rows/s
+V3 / V2 = x1,11
+
+Index INDEX IDX_CSV_TABLE_ID dropped
+
+DIMENSION LOOKUP
+==================
+
+Table DIM_CUSTOMER dropped
+Creating table DIM_CUSTOMER ...
+Table DIM_CUSTOMER created.
+
+Transformation name         : Dimension Lookup : initial load 
+Transformation description  : This is the initial load of 100k customers into a SCD
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 33,88s,   speed: 7.380 rows/s
+
+Transformation name         : Dimension Lookup : create 20k new versions
+Transformation description  : Force 20k new dimension versions to be created
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 20.000,   runtime: 26,62s,   speed: 751 rows/s
+Table DIM_CUSTOMER truncated
+
+Transformation name         : Dimension Lookup : initial load 
+Transformation description  : This is the initial load of 100k customers into a SCD
+-----------------------------------------------------------------------------------------------------
+V3 results, rows: 250.000,   runtime: 19,95s,   speed: 12.529 rows/s
+V3 / V2 = x1.70
+
+Transformation name         : Dimension Lookup : create 20k new versions
+Transformation description  : Force 20k new dimension versions to be created
+-----------------------------------------------------------------------------------------------------
+V3 results, rows: 20.000,   runtime: 16,20s,   speed: 1.234 rows/s
+V3 / V2 = x1.64
+
+Transformation name         : Dimension Lookup : TK Lookup, no caching
+Transformation description  : TK lookup test, with cache size set to -1 : off
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 7,73s,   speed: 32.325 rows/s
+V3 results, rows: 250.000,   runtime: 7,48s,   speed: 33.400 rows/s
+V3 / V2 = x1,03
+
+Transformation name         : Dimension Lookup : TK Lookup
+Transformation description  : TK lookup test, with default 5000 rows cache size
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 19,72s,   speed: 12.678 rows/s
+V3 results, rows: 250.000,   runtime: 17,58s,   speed: 14.222 rows/s
+V3 / V2 = x1,12
+
+Transformation name         : Dimension Lookup : TK Lookup, cache 25k
+Transformation description  : TK lookup test, with cache size set to 25000
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 10,77s,   speed: 23.221 rows/s
+V3 results, rows: 250.000,   runtime: 9,67s,   speed: 25.848 rows/s
+V3 / V2 = x1,11
+
+Transformation name         : Dimension Lookup : TK Lookup, cache 50k
+Transformation description  : TK lookup test, with cache size set to 50000
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 11,02s,   speed: 22.694 rows/s
+V3 results, rows: 250.000,   runtime: 9,84s,   speed: 25.396 rows/s
+V3 / V2 = x1,12
+
+Transformation name         : Dimension Lookup : TK Lookup, cache all results
+Transformation description  : TK lookup test, with cache size set to 0 (=cache all)
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 250.000,   runtime: 10,16s,   speed: 24.616 rows/s
+V3 results, rows: 250.000,   runtime: 9,58s,   speed: 26.101 rows/s
+V3 / V2 = x1,06
