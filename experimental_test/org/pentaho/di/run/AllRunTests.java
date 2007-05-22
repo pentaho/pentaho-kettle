@@ -7,6 +7,7 @@ import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
 import org.pentaho.di.run.constant.RunConstant;
 import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
+import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
 import org.pentaho.di.run.filterrows.RunFilterRows;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
@@ -107,6 +108,7 @@ public class AllRunTests
         suite.addTestSuite(RunTextFileOutput.class);
         suite.addTestSuite(RunUniqueRows.class);
         suite.addTestSuite(RunDatabaseLookup.class);
+        suite.addTestSuite(RunDimensionLookup.class);
         
         //$JUnit-END$
         return suite;

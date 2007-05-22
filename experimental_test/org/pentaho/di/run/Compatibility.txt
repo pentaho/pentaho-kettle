@@ -1,0 +1,7 @@
+Calculator
+--------------
+
+Calculator needs a target data type for each calculated field.
+That is because the new step properly performs data conversions.
+Unlike the previous version, we will give a runtime error when no data type is specified.
+

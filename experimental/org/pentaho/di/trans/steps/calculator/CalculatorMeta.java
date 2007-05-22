@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -37,6 +38,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.repository.Repository;
 
@@ -149,23 +151,31 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface info) throws KettleStepException
     {
         for (int i=0;i<calculation.length;i++)
         {
             CalculatorMetaFunction fn = calculation[i];
             if (!fn.isRemovedFromResult())
             {
-                if (fn.getFieldName()!=null && fn.getFieldName().length()>0) // It's a new field!
+                if (!Const.isEmpty( fn.getFieldName()) ) // It's a new field!
                 {
-                    ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-                    v.setLength(fn.getValueLength());
-                    v.setPrecision(fn.getValuePrecision());
-                    v.setOrigin(name);
+                    ValueMetaInterface v = getValueMeta(fn, origin);
                     row.addValueMeta(v);
                 }
             }
         }
+    }
+
+    private ValueMetaInterface getValueMeta(CalculatorMetaFunction fn, String origin)
+    {
+        ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
+        v.setLength(fn.getValueLength());
+        v.setPrecision(fn.getValuePrecision());
+        v.setOrigin(origin);
+        v.setComments(fn.getCalcTypeDesc());
+        
+        return v;
     }
 
     public RowMetaInterface getAllFields(RowMetaInterface inputRowMeta)
@@ -177,9 +187,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             CalculatorMetaFunction fn = calculation[i];
             if (!Const.isEmpty(fn.getFieldName())) // It's a new field!
             {
-                ValueMetaInterface v = new ValueMeta(fn.getFieldName(), fn.getValueType());
-                v.setLength(fn.getValueLength());
-                v.setPrecision(fn.getValuePrecision());
+                ValueMetaInterface v = getValueMeta(fn, null);
                 rowMeta.addValueMeta(v);
             }
         }

@@ -21,6 +21,7 @@ import java.util.List;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -80,18 +81,6 @@ public class Calculator extends BaseStep implements StepInterface
             
             // get all metadata, including source rows and temporary fields.
             data.calcRowMeta = meta.getAllFields(getInputRowMeta()); 
-            
-            // data.tempRowMeta = new RowMeta();
-            /* get only the temporary fields...
-            for (int i=0;i<data.calcRowMeta.size();i++)
-            {
-                CalculatorMetaFunction fn = meta.getCalculation()[i-getInputRowMeta().size()];
-                if (fn.isRemovedFromResult())
-                {
-                    data.tempRowMeta.addValueMeta( data.calcRowMeta.getValueMeta(i) );
-                }
-            }
-            */
             
             data.fieldIndexes = new FieldIndexes[meta.getCalculation().length];
             List tempIndexes = new ArrayList();
@@ -178,7 +167,7 @@ public class Calculator extends BaseStep implements StepInterface
 	}
 
     /**
-     * TODO: Implement it, make it backward compatible.
+     * TODO: Make it backward compatible.
      * 
      * @param inputRowMeta
      * @param outputRowMeta
@@ -195,11 +184,13 @@ public class Calculator extends BaseStep implements StepInterface
             calcData[i] = r[i];
         }
 
-        for (int i=0;i<meta.getCalculation().length;i++)
+        for (int i=0, index=inputRowMeta.size()+i;i<meta.getCalculation().length;i++, index++)
         {
             CalculatorMetaFunction fn = meta.getCalculation()[i];
             if (!Const.isEmpty(fn.getFieldName()))
             {
+                ValueMetaInterface targetMeta = data.calcRowMeta.getValueMeta(index);
+
                 // Get the metadata & the data...
                 // ValueMetaInterface metaTarget = data.calcRowMeta.getValueMeta(i);
                 
@@ -230,12 +221,22 @@ public class Calculator extends BaseStep implements StepInterface
                     dataC = calcData[ data.fieldIndexes[i].indexC ];
                 }
                 
-                // TODO: the data types are those of the first argument field, convert to the target field.
+                //The data types are those of the first argument field, convert to the target field.
                 // Exceptions: 
                 //  - multiply can be string
                 //  - constant is string
                 //  - all date functions except add days/months
                 //  - hex encode / decodes
+                
+                int resultType;
+                if (metaA!=null)
+                {
+                    resultType=metaA.getType();
+                }
+                else
+                {
+                    resultType=ValueMetaInterface.TYPE_NONE;
+                }
                 
                 switch(fn.getCalcType())
                 {
@@ -243,167 +244,181 @@ public class Calculator extends BaseStep implements StepInterface
                     break;
                 case CalculatorMetaFunction.CALC_ADD                :  // A + B
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.plus(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.plus(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SUBTRACT           :   // A - B
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.minus(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.minus(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MULTIPLY           :   // A * B
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.multiply(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.multiply(metaA, dataA, metaB, dataB);
+                        if (metaA.isString() || metaB.isString()) resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DIVIDE             :   // A / B
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.divide(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.divide(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SQUARE             :   // A * A
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.multiply(metaA, dataA, metaA, dataA);
+                        calcData[index] = ValueDataUtil.multiply(metaA, dataA, metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_SQUARE_ROOT        :   // SQRT( A )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.sqrt(metaA, dataA);
+                        calcData[index] = ValueDataUtil.sqrt(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_1          :   // 100 * A / B 
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent1(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.percent1(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_2          :  // A - ( A * B / 100 )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_PERCENT_3          :  // A + ( A * B / 100 )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.percent2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_COMBINATION_1      :  // A + B * C
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.combination1(metaA, dataA, metaB, dataB, metaC, dataC);
+                        calcData[index] = ValueDataUtil.combination1(metaA, dataA, metaB, dataB, metaC, dataC);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_COMBINATION_2      :  // SQRT( A*A + B*B )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.combination2(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.combination2(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_ROUND_1            :  // ROUND( A )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.round(metaA, dataA);
+                        calcData[index] = ValueDataUtil.round(metaA, dataA);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_ROUND_2            :  //  ROUND( A , B )
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.round(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.round(metaA, dataA, metaB, dataB);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
-                        calcData[inputRowMeta.size()+i] = dataA; // A string
+                        calcData[index] = dataA; // A string
+                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.nvl(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.nvl(metaA, dataA, metaB, dataB);
                     }
                     break;                    
                 case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.addDays(metaA, dataA, metaB, dataB);
+                        calcData[index] = ValueDataUtil.addDays(metaA, dataA, metaB, dataB);
                     }
                     break;
                case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.yearOfDate(metaA, dataA);
+                        calcData[index] = ValueDataUtil.yearOfDate(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.monthOfDate(metaA, dataA);
+                        calcData[index] = ValueDataUtil.monthOfDate(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfYear(metaA, dataA);
+                        calcData[index] = ValueDataUtil.dayOfYear(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfMonth(metaA, dataA);
+                        calcData[index] = ValueDataUtil.dayOfMonth(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.dayOfWeek(metaA, dataA);
+                        calcData[index] = ValueDataUtil.dayOfWeek(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.weekOfYear(metaA, dataA);
+                        calcData[index] = ValueDataUtil.weekOfYear(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR_ISO8601   : // What is the week of year (Integer) of a date ISO8601 style?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.weekOfYearISO8601(metaA, dataA);
+                        calcData[index] = ValueDataUtil.weekOfYearISO8601(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;                    
                 case CalculatorMetaFunction.CALC_YEAR_OF_DATE_ISO8601     : // What is the year (Integer) of a date ISO8601 style?
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.yearOfDateISO8601(metaA, dataA);
+                        calcData[index] = ValueDataUtil.yearOfDateISO8601(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_INTEGER;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_BYTE_TO_HEX_ENCODE   : // Byte to Hex encode string field A
                     {
-                        calcData[inputRowMeta.size()+i] = ValueDataUtil.byteToHexEncode(metaA, dataA);
+                        calcData[index] = ValueDataUtil.byteToHexEncode(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
-                }
-                
-                /*
                 case CalculatorMetaFunction.CALC_HEX_TO_BYTE_DECODE   : // Hex to Byte decode string field A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.hexToByteDecode();
+                        calcData[index] = ValueDataUtil.hexToByteDecode(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
-                    break;                    
+                    break;
+                
                 case CalculatorMetaFunction.CALC_CHAR_TO_HEX_ENCODE   : // Char to Hex encode string field A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.charToHexEncode();
+                        calcData[index] = ValueDataUtil.charToHexEncode(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;
                 case CalculatorMetaFunction.CALC_HEX_TO_CHAR_DECODE   : // Hex to Char decode string field A
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.hexToCharDecode();
+                        calcData[index] = ValueDataUtil.hexToCharDecode(metaA, dataA);
+                        resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;                    
                 default:
                     throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());
                 }
                 
-                if (value!=null)
+                // If we don't have a target data type, throw an error.
+                // Otherwise the result is non-deterministic.
+                //
+                if (fn.getValueType()==ValueMetaInterface.TYPE_NONE)
                 {
-                    if (fn.getValueType()!=Value.VALUE_TYPE_NONE) 
-                    {
-                        value.setType(fn.getValueType());
-                        value.setLength(fn.getValueLength(), fn.getValuePrecision());
-                    }
-                    r.addValue(value); // add to the row!
+                    throw new KettleValueException("No datatype is specified for calculation #"+(i+1)+" : "+fn.getFieldName()+" = "+fn.getCalcTypeDesc()+" / "+fn.getCalcTypeLongDesc());
                 }
-                */
                 
-                // TODO: convert the data to the correct target data type.
+                // Convert the data to the correct target data type.
                 // 
+                if (calcData[index]!=null)
+                {
+                    if (fn.getValueType()!=resultType) 
+                    {
+                        ValueMetaInterface resultMeta = new ValueMeta("result", resultType);  // $NON-NLS-1$
+                        calcData[index] = targetMeta.convertData(resultMeta, calcData[index]);
+                    }
+                }
             }
         }
         

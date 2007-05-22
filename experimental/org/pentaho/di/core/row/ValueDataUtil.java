@@ -525,7 +525,77 @@ public class ValueDataUtil
         throw new KettleValueException("The 'yearOfDateISO8601' function only works with dates");
     }
     
-    public static Object byteToHexEncode(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    /**
+     * Change a hexadecimal string into normal ASCII representation. E.g. if Value
+     * contains string "61" afterwards it would contain value "a". If the
+     * hexadecimal string is of odd length a leading zero will be used.
+     *
+     * Note that only the low byte of a character will be processed, this
+     * is for binary transformations.
+     *
+     * @return Value itself
+     * @throws KettleValueException  
+     */    
+    public static String hexToByteDecode(ValueMetaInterface meta, Object data) throws KettleValueException 
+    {
+        if (meta.isNull(data)) 
+        {           
+            return null;
+        }
+        
+        String hexString = meta.getString(data);
+        
+        int len = hexString.length();
+        char chArray[] = new char[(len + 1) / 2];
+        boolean evenByte = true;
+        int nextByte = 0;
+        
+        // we assume a leading 0 if the length is not even.
+        if ((len % 2) == 1)
+            evenByte = false;
+        
+        int nibble;
+        int i, j;
+        for (i = 0, j = 0; i < len; i++)
+        {
+            char    c = hexString.charAt(i);
+            
+            if ((c >= '0') && (c <= '9'))
+                nibble = c - '0';
+            else if ((c >= 'A') && (c <= 'F'))
+                nibble = c - 'A' + 0x0A;
+            else if ((c >= 'a') && (c <= 'f'))
+                nibble = c - 'a' + 0x0A;
+            else
+                throw new KettleValueException("invalid hex digit '" + c + "'.");
+            
+            if (evenByte)
+            {
+                nextByte = (nibble << 4);
+            }
+            else
+            {
+                nextByte += nibble;
+                chArray[j] = (char)nextByte;
+                j++;
+            }
+            
+            evenByte = ! evenByte;
+        }
+        return new String(chArray);
+    }
+    
+    /**
+     * Change a string into its hexadecimal representation. E.g. if Value
+     * contains string "a" afterwards it would contain value "0061".
+     * 
+     * Note that transformations happen in groups of 4 hex characters, so
+     * the value of a characters is always in the range 0-65535.
+     *  
+     * @return 
+     * @throws KettleValueException
+     */
+    public static String byteToHexEncode(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;
 
@@ -543,8 +613,116 @@ public class ValueDataUtil
             hexString.append(hexDigits[s[i] & 0x000F]);        // lo nibble
         }
         
-        return hexString;
+        return hexString.toString();
     }
+    
+    /**
+     * Change a string into its hexadecimal representation. E.g. if Value
+     * contains string "a" afterwards it would contain value "0061".
+     * 
+     * Note that transformations happen in groups of 4 hex characters, so
+     * the value of a characters is always in the range 0-65535.
+     *  
+     * @return A string with Hex code
+     * @throws KettleValueException In case of a data conversion problem.
+     */
+    public static String charToHexEncode(ValueMetaInterface meta, Object data) throws KettleValueException
+    {
+        final char hexDigits[] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+
+        if (meta.isNull(data)) 
+        {
+            return null;
+        }
+        
+        String hex = meta.getString(data);
+        
+        char[] s = hex.toCharArray();
+        StringBuffer hexString = new StringBuffer(2 * s.length);
+        
+        for (int i = 0; i < s.length; i++)
+        {
+            hexString.append(hexDigits[(s[i] & 0xF000) >> 12]); // hex 1
+            hexString.append(hexDigits[(s[i] & 0x0F00) >> 8]);  // hex 2
+            hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]);  // hex 3
+            hexString.append(hexDigits[s[i] & 0x000F]);         // hex 4
+        }
+        
+        return hexString.toString();
+    }
+
+    /**
+     * Change a hexadecimal string into normal ASCII representation. E.g. if Value
+     * contains string "61" afterwards it would contain value "a". If the
+     * hexadecimal string is of a wrong length leading zeroes will be used.
+     *
+     * Note that transformations happen in groups of 4 hex characters, so
+     * the value of a characters is always in the range 0-65535.
+     *
+     * @return A hex-to-char decoded String 
+     * @throws KettleValueException  
+     */    
+    public static String hexToCharDecode(ValueMetaInterface meta, Object data) throws KettleValueException 
+    {
+        if (meta.isNull(data)) 
+        {           
+            return null;
+        }
+        
+        String hexString = meta.getString(data);
+        
+        int len = hexString.length();
+        char chArray[] = new char[(len + 3) / 4];
+        int charNr;
+        int nextChar = 0;
+        
+        // we assume a leading 0s if the length is not right.
+        charNr = (len % 4);
+        if ( charNr == 0 ) charNr = 4;
+        
+        int nibble;
+        int i, j;
+        for (i = 0, j = 0; i < len; i++)
+        {
+            char    c = hexString.charAt(i);
+            
+            if ((c >= '0') && (c <= '9'))
+                nibble = c - '0';
+            else if ((c >= 'A') && (c <= 'F'))
+                nibble = c - 'A' + 0x0A;
+            else if ((c >= 'a') && (c <= 'f'))
+                nibble = c - 'a' + 0x0A;
+            else
+                throw new KettleValueException("invalid hex digit '" + c + "'.");
+
+            if (charNr == 4)
+            {
+                nextChar = (nibble << 12);
+                charNr--;
+            }           
+            else if (charNr == 3)
+            {
+                nextChar += (nibble << 8);
+                charNr--;
+            }
+            else if (charNr == 2)
+            {
+                nextChar += (nibble << 4);
+                charNr--;
+            }
+            else // charNr == 1
+            {
+                nextChar += nibble;
+                chArray[j] = (char)nextChar;
+                charNr = 4;
+                j++;
+            }
+        }
+        
+        return new String(chArray);
+    }
+
+    
 
     /**
      * Right pad a string: adds spaces to a string until a certain length.
