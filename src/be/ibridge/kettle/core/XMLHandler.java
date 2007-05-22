@@ -481,19 +481,14 @@ public class XMLHandler
 	 */
 	public static final String getNodeValue(Node n)
 	{
-		int i;
-		NodeList children;
-		Node childnode;
-		String retval;
-		
 		if (n==null) return null;
 		
 		// Find the child-nodes of this Node n:
-		children=n.getChildNodes();
-		for (i=0;i<children.getLength();i++)  // Try all children
+        NodeList children=n.getChildNodes();
+		for (int i=0;i<children.getLength();i++)  // Try all children
 		{
-			childnode=children.item(i);
-			retval=childnode.getNodeValue();
+            Node childnode=children.item(i);
+			String retval=childnode.getNodeValue();
 			if (retval!=null)  // We found the right value
 			{
 				return retval;
