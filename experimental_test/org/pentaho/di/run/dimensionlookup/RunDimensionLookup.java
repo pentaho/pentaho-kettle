@@ -26,13 +26,13 @@ public class RunDimensionLookup extends TestCase
         try
         {
             h2db.execStatement("DROP TABLE DIM_CUSTOMER;");
-            System.out.println("Table DIM_CUSTOMER dropped");
+            // System.out.println("Table DIM_CUSTOMER dropped");
         }
         catch(KettleDatabaseException e)
         {
-            System.out.println("Table DIM_CUSTOMER not dropped : "+e.getMessage());
+            // System.out.println("Table DIM_CUSTOMER not dropped : "+e.getMessage());
         }
-        System.out.println("Creating table DIM_CUSTOMER ...");
+        // System.out.println("Creating table DIM_CUSTOMER ...");
         
         h2db.execStatement(
                 "CREATE TABLE DIM_CUSTOMER" + 
@@ -66,7 +66,7 @@ public class RunDimensionLookup extends TestCase
                 "    )" + 
                 "    ;"
                 );
-        System.out.println("Table DIM_CUSTOMER created.");
+        // System.out.println("Table DIM_CUSTOMER created.");
 
         h2db.disconnect();
     }
@@ -101,11 +101,11 @@ public class RunDimensionLookup extends TestCase
         try
         {
             h2db.execStatement("TRUNCATE TABLE DIM_CUSTOMER;");
-            System.out.println("Table DIM_CUSTOMER truncated");
+            // System.out.println("Table DIM_CUSTOMER truncated");
         }
         catch(KettleDatabaseException e)
         {
-            System.out.println("Table DIM_CUSTOMER not truncated : "+e.getMessage());
+            // System.out.println("Table DIM_CUSTOMER not truncated : "+e.getMessage());
         }
 
         h2db.disconnect();
