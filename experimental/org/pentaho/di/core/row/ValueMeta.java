@@ -15,6 +15,7 @@ import java.util.Date;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
+import be.ibridge.kettle.core.value.Value;
 
 public class ValueMeta implements ValueMetaInterface
 {
@@ -1906,5 +1907,37 @@ public class ValueMeta implements ValueMetaInterface
         }
 
         return hash;
+    }
+
+    /**
+     * Create an old-style value for backward compatibility reasons
+     * @param data the data to store in the value
+     * @return a newly created Value object
+     * @throws KettleValueException  case there is a data conversion problem
+     */
+    public Value createOriginalValue(Object data) throws KettleValueException
+    {
+       Value value = new Value(name, type);
+       value.setLength(length, precision);
+       
+       if (isNull(data))
+       {
+           value.setNull();
+       }
+       else
+       {
+           switch(value.getType())
+           {
+           case TYPE_STRING       : value.setValue( getString(data) ); break;
+           case TYPE_NUMBER       : value.setValue( getNumber(data).doubleValue() ); break;
+           case TYPE_INTEGER      : value.setValue( getInteger(data).longValue() ); break;
+           case TYPE_DATE         : value.setValue( getDate(data) ); break;
+           case TYPE_BOOLEAN      : value.setValue( getBoolean(data).booleanValue() ); break;
+           case TYPE_BIGNUMBER    : value.setValue( getBigNumber(data) ); break;
+           case TYPE_BINARY       : value.setValue( getBinary(data) ); break;
+           default: throw new KettleValueException("We can't convert data type "+getTypeDesc()+" to an original (V2) Value");
+           }
+       }
+       return value;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
+import be.ibridge.kettle.core.value.Value;
 
 public interface ValueMetaInterface extends Cloneable
 {
@@ -311,5 +312,12 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      */
     public int hashCode(Object object) throws KettleValueException;
-
+    
+    /**
+     * Create an old-style value for backward compatibility reasons
+     * @param data the data to store in the value
+     * @return a newly created Value object
+     * @throws KettleValueException in case there is a data conversion problem 
+     */
+    public Value createOriginalValue(Object data) throws KettleValueException;
 }

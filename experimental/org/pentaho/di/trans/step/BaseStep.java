@@ -53,6 +53,7 @@ import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
@@ -119,21 +120,25 @@ public class BaseStep extends Thread
         new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
         new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
         new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
+        new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
 
         /*
-            new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
-            new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
-            new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(ScriptValuesMetaMod.class, "ScriptValueMod", Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
+
+            new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
+            new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
+
             new StepPluginMeta(InsertUpdateMeta.class, "InsertUpdate", Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.InsertOrUpdate"), "INU.png", CATEGORY_OUTPUT),
             new StepPluginMeta(UpdateMeta.class, "Update", Messages.getString("BaseStep.TypeLongDesc.Update"), Messages.getString("BaseStep.TypeTooltipDesc.Update"), "UPD.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages.getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
+
+            new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
+
+            new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
+            new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
+            new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
+            new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
-            new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
             new StepPluginMeta(CubeInputMeta.class, "CubeInput", Messages.getString("BaseStep.TypeLongDesc.CubeInput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeinput"), "CIP.png", CATEGORY_INPUT),
             new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
