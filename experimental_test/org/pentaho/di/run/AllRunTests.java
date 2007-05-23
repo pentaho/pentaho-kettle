@@ -5,11 +5,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.run.abort.RunAbort;
 import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
+import org.pentaho.di.run.combinationlookup.RunCombinationLookup;
 import org.pentaho.di.run.constant.RunConstant;
 import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
+import org.pentaho.di.run.excelinput.RunExcelInput;
 import org.pentaho.di.run.filterrows.RunFilterRows;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
+import org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
 import org.pentaho.di.run.sort.RunSortRows;
 import org.pentaho.di.run.streamlookup.RunStreamLookup;
@@ -109,6 +112,9 @@ public class AllRunTests
         suite.addTestSuite(RunUniqueRows.class);
         suite.addTestSuite(RunDatabaseLookup.class);
         suite.addTestSuite(RunDimensionLookup.class);
+        suite.addTestSuite(RunExcelInput.class);
+        suite.addTestSuite(RunCombinationLookup.class);
+        suite.addTestSuite(RunScriptValuesMod.class);
         
         //$JUnit-END$
         return suite;
