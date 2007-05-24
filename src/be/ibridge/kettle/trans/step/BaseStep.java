@@ -114,6 +114,7 @@ import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 import be.ibridge.kettle.trans.step.orabulkloader.OraBulkLoaderMeta;
 import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathMeta;
+import be.ibridge.kettle.trans.step.ldifinput.LDIFInputMeta;
 
 public class BaseStep extends Thread
 {
@@ -269,7 +270,9 @@ public class BaseStep extends Thread
             new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
                     .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL), 
 			new StepPluginMeta(XMLInputPathMeta.class, "XMLInputPath", Messages.getString("BaseStep.TypeLongDesc.XMLInputPath"), Messages
-			.getString("BaseStep.TypeTooltipDesc.XMLInputPath"), "XMP.png", CATEGORY_EXPERIMENTAL),        
+			.getString("BaseStep.TypeTooltipDesc.XMLInputPath"), "XMP.png", CATEGORY_EXPERIMENTAL),       
+			new StepPluginMeta(LDIFInputMeta.class, "LDIFInput", Messages.getString("BaseStep.TypeLongDesc.LDIFInput"), Messages
+			.getString("BaseStep.TypeTooltipDesc.LDIFInput"), "LDI.png", CATEGORY_EXPERIMENTAL), 
         };
 
     public static final String category_order[] =
