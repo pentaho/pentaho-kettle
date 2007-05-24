@@ -431,7 +431,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
         }
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(Messages.getString("LDIFInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -472,7 +472,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(Messages.getString("LDIFInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -496,12 +496,12 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoInputExpected"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDIFInputMeta.CheckResult.NoInputExpected"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.NoInput"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDIFInputMeta.CheckResult.NoInput"), stepinfo);
 			remarks.add(cr);
 		}
 		
@@ -509,12 +509,12 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoFiles"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("LDIFInputMeta.CheckResult.NoFiles"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("LDIFInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
 			remarks.add(cr);
 		}
 	}

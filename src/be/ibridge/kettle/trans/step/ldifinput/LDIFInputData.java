@@ -41,8 +41,8 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class LDIFInputData extends BaseStepData implements StepDataInterface 
 {
 	public String thisline, nextline, lastline;
-	public Row previousRow;
-	public int nr_repeats;
+	public Row    previousRow;
+	public int    nr_repeats;
 	
 	public NumberFormat         nf;
 	public DecimalFormat        df;
