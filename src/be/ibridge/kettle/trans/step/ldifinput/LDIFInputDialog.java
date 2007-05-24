@@ -895,7 +895,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		  try 
 		  {
-		    Float number = Float.parseFloat(chaine);
+		    float number = Float.parseFloat(chaine);
 		  }
 		  catch(Exception e)   {return false; }
 		  return true;
