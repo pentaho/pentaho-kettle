@@ -13,8 +13,8 @@
  **                                                                   **
  **********************************************************************/
  
-
 package be.ibridge.kettle.trans.step.ldifinput;
+
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -27,9 +27,8 @@ import be.ibridge.kettle.core.value.Value;
 /**
  * Describes an LDIF field
  * 
- * @author Samatar
+ * @author Samatar Hassan
  * @since 24-05-2007
- *
  */
 public class LDIFInputField implements Cloneable
 {
@@ -49,7 +48,6 @@ public class LDIFInputField implements Cloneable
       Messages.getString("LDIFInputField.TrimType.Right"),
       Messages.getString("LDIFInputField.TrimType.Both")
     };
-    
     
     public final static String POSITION_MARKER  = ",";
     
@@ -90,7 +88,6 @@ public class LDIFInputField implements Cloneable
     {
         this(null, null);
     }
-
 
     public String getXML()
     {
@@ -152,8 +149,7 @@ public class LDIFInputField implements Cloneable
         }
         return 0;
     }
-    
-    
+       
     public final static int getTrimTypeByDesc(String tt)
     {
         if (tt==null) return 0;
@@ -171,15 +167,12 @@ public class LDIFInputField implements Cloneable
         return trimTypeCode[i]; 
     }
     
-    
-    
     public final static String getTrimTypeDesc(int i)
     {
         if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
         return trimTypeDesc[i]; 
     }
     
-
     public Object clone()
 	{
 		try
@@ -201,8 +194,7 @@ public class LDIFInputField implements Cloneable
 		{
 			return null;
 		}
-	}
-	
+	}	
     
 	/**
      * @return Returns the LDIFInputFieldPositions.
@@ -244,8 +236,6 @@ public class LDIFInputField implements Cloneable
 	{
 	   	return  StringUtil.environmentSubstitute(getAttribut());
 	} 
-	    
-	
 	
 	public void setAttribut(String fieldattribut)
 	{
@@ -295,9 +285,8 @@ public class LDIFInputField implements Cloneable
 	{
 		return trimtype;
 	}
-
 	
-  public String getTrimTypeCode()
+    public String getTrimTypeCode()
 	{
 		return getTrimTypeCode(trimtype);
 	}
@@ -389,8 +378,6 @@ public class LDIFInputField implements Cloneable
 
     public void setFieldPosition(String encoded) throws KettleException
     {
-    	
-    	
         try
         {
             String codes[] = encoded.split(POSITION_MARKER);

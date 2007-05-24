@@ -34,10 +34,9 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
-
 /**
- * @author Matt
- * @since 22-jan-2005
+ * @author Samatar Hassan
+ * @since 24-May-2005
  */
 public class LDIFInputData extends BaseStepData implements StepDataInterface 
 {
@@ -45,26 +44,26 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface
 	public Row previousRow;
 	public int nr_repeats;
 	
-	public NumberFormat nf;
-	public DecimalFormat df;
+	public NumberFormat         nf;
+	public DecimalFormat        df;
 	public DecimalFormatSymbols dfs;
-	public SimpleDateFormat daf;
-	public DateFormatSymbols dafs;
+	public SimpleDateFormat     daf;
+	public DateFormatSymbols    dafs;
 	
-	public List    files;
-	public boolean last_file;
+	public List       files;
+	public boolean    last_file;
 	public FileObject file;
-	public int     filenr;
+	public int        filenr;
 	
-	public FileInputStream fr;
-	public ZipInputStream zi;
+	public FileInputStream     fr;
+	public ZipInputStream      zi;
 	public BufferedInputStream is;
-    public Document document;
-    public Node section;
-    public String itemElement;
-    public int itemCount;
-    public int itemPosition;
-    public long rownr;
+    public Document            document;
+    public Node                section;
+    public String              itemElement;
+    public int                 itemCount;
+    public int                 itemPosition;
+    public long                rownr;
 
 	/**
 	 * 
@@ -89,5 +88,4 @@ public class LDIFInputData extends BaseStepData implements StepDataInterface
 		zi=null;
 		is=null;
 	}
-
 }

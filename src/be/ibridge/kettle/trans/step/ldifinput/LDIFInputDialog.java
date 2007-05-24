@@ -21,7 +21,6 @@
 
 package be.ibridge.kettle.trans.step.ldifinput;
 
-
 import java.util.Enumeration;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,7 +80,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
-//import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 
 
 public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -113,7 +111,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
 
-
 	private Label        wlInclFilename;
 	private Button       wInclFilename;
 	private FormData     fdlInclFilename, fdInclFilename;
@@ -133,19 +130,16 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
-
    
 	private TableView    wFields;
 	private FormData     fdFields;
 
 	private LDIFInputMeta input;
 	
-	
 	public static final int dateLengths[] = new int[]
-		{
-			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
-		}
-		;
+	{
+		23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
+	};
 
 	public LDIFInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -169,7 +163,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 				input.setChanged();
 			}
 		};
-		changed         = input.hasChanged();
+		changed = input.hasChanged();
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -310,19 +304,18 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
 		colinfo[ 0]=new ColumnInfo(
-      Messages.getString("LDIFInputDialog.Files.Filename.Column"),
-      ColumnInfo.COLUMN_TYPE_TEXT,
-      false);
+          Messages.getString("LDIFInputDialog.Files.Filename.Column"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false);
 		colinfo[ 1]=new ColumnInfo(
-      Messages.getString("LDIFInputDialog.Files.Wildcard.Column"),
-      ColumnInfo.COLUMN_TYPE_TEXT,
-      false );
+          Messages.getString("LDIFInputDialog.Files.Wildcard.Column"),
+          ColumnInfo.COLUMN_TYPE_TEXT,
+          false);
 		
 		colinfo[0].setUsingVariables(true);
 		colinfo[1].setUsingVariables(true);
-		colinfo[ 1].setToolTip(Messages.getString("LDIFInputDialog.Files.Wildcard.Tooltip"));
-		
-		
+		colinfo[1].setToolTip(Messages.getString("LDIFInputDialog.Files.Wildcard.Tooltip"));
+				
 		wFilenameList = new TableView(wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
@@ -337,7 +330,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
-
 	
 		fdFileComp=new FormData();
 		fdFileComp.left  = new FormAttachment(0, 0);
@@ -353,7 +345,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		/// END OF FILE TAB
 		/////////////////////////////////////////////////////////////
 
-
 		//////////////////////////
 		// START OF CONTENT TAB///
 		///
@@ -368,7 +359,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wContentComp);
 		wContentComp.setLayout(contentLayout);
 		
-        
 
 		wlInclFilename=new Label(wContentComp, SWT.RIGHT);
 		wlInclFilename.setText(Messages.getString("LDIFInputDialog.InclFilename.Label"));
@@ -450,9 +440,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdLimit.top  = new FormAttachment(wInclRownumField, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
-
-
-
        
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -463,7 +450,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		wContentComp.layout();
 		wContentTab.setControl(wContentComp);
-
 
 		// ///////////////////////////////////////////////////////////
 		// / END OF CONTENT TAB
@@ -499,8 +485,6 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-		
-		
 		
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
@@ -835,41 +819,32 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	    		            item.setText(1, attribute_DIF.getName());
 	    		            item.setText(2, attribute_DIF.getName());
 	    		            
-	    		            String AttributValue=GetValue(attributes_LDIF ,attribute_DIF.getName());
+	    		            String attributeValue=GetValue(attributes_LDIF ,attribute_DIF.getName());
 	    		            // Try to get the Type
-	    		            if(IsDate(AttributValue))
+	    		            if(IsDate(attributeValue))
 		            		{
 		            			item.setText(3, "Date");
 		            		}
-	    		            else if(IsInteger(AttributValue))
+	    		            else if(IsInteger(attributeValue))
 		            		{
 		            			item.setText(3, "Integer");
 		            		}
-	    		            else if(IsNumber(AttributValue))
+	    		            else if(IsNumber(attributeValue))
 		            		{
 		            			item.setText(3, "Number");
-		            		}
-	    		          
+		            		}	    		          
 	    		            else
 	    		            {
-	    		            	item.setText(3, "String");
-	    		            	
+	    		            	item.setText(3, "String");	    		            
 	    		            }
-		    		            
-    						
-	    		            
-    					}
-    					
+    					}    					
     				}
     			}	
-    		                
             }
-     
-            
+
             wFields.removeEmptyRows();
             wFields.setRowNums();
-            wFields.optWidth(true);
-            
+            wFields.optWidth(true);            
         }
         catch(KettleException e)
         {
@@ -882,34 +857,38 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		}  
 	}
 
-	private boolean IsInteger(String chaine)
+	private boolean IsInteger(String str)
 	{
 		  try 
 		  {
-		    int number = Integer.parseInt(chaine);
+		    int number = Integer.parseInt(str);
 		  }
 		  catch(NumberFormatException e)   {return false; }
 		  return true;
 	}
-	private boolean IsNumber(String chaine)
+	
+	private boolean IsNumber(String str)
 	{
 		  try 
 		  {
-		    float number = Float.parseFloat(chaine);
+		    float number = Float.parseFloat(str);
 		  }
 		  catch(Exception e)   {return false; }
 		  return true;
 	}
-	private boolean IsDate(String chaine)
+	
+	private boolean IsDate(String str)
 	{
+		  // TODO: What about other dates? Maybe something for a CRQ
 		  try 
 		  {
 		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-		        Date resuldate =fdate.parse(chaine);
+		        Date resultdate = fdate.parse(str);
 		  }
 		  catch(Exception e)   {return false; }
 		  return true;
 	}
+	
 	private String GetValue(LDAPAttribute[] attributes_LDIF ,String AttributValue)
 	{
 		String Stringvalue=null;
@@ -919,14 +898,10 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 			LDAPAttribute attribute_DIF = attributes_LDIF[j];
 			if (attribute_DIF.getName().equalsIgnoreCase(AttributValue))
 			{
-
 				Enumeration valuesLDIF = attribute_DIF.getStringValues();
 				// Get the first occurence
 				Stringvalue = (String) valuesLDIF.nextElement();
-
-				
 			}
-			
 		}
 		
 		return Stringvalue;
@@ -986,7 +961,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 		    
             if (field!=null)
             {
-    			TableItem item = wFields.table.getItem(i);
+    			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
     			String xpath	= field.getAttribut();
     			String type     = field.getTypeDesc();
@@ -1001,24 +976,21 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     			
                 if (name    !=null) item.setText( 1, name);
                 if (xpath   !=null) item.setText( 2, xpath);
-    			if (type    !=null) item.setText( 3, type    );
-    			if (format  !=null) item.setText( 4, format  );
-    			if (length  !=null && !"-1".equals(length  )) item.setText( 5, length  );
-    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 6, prec    );
-    			if (curr    !=null) item.setText( 7, curr    );
-    			if (decim   !=null) item.setText( 8, decim   );
-    			if (group   !=null) item.setText( 9, group   );
-    			if (trim    !=null) item.setText( 10, trim    );
-    			if (rep     !=null) item.setText(11, rep     );
-                
+    			if (type    !=null) item.setText( 3, type);
+    			if (format  !=null) item.setText( 4, format);
+    			if (length  !=null && !"-1".equals(length)) item.setText( 5, length);
+    			if (prec    !=null && !"-1".equals(prec)) item.setText( 6, prec);
+    			if (curr    !=null) item.setText( 7, curr);
+    			if (decim   !=null) item.setText( 8, decim);
+    			if (group   !=null) item.setText( 9, group);
+    			if (trim    !=null) item.setText(10, trim);
+    			if (rep     !=null) item.setText(11, rep);                
             }
 		}
-        
         
         wFields.removeEmptyRows();
         wFields.setRowNums();
         wFields.optWidth(true);
-
 
 		setMultiple();
 		setIncludeFilename();
@@ -1086,8 +1058,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(11)) );		
             
 			in.getInputFields()[i] = field;
-		}		
- 
+		}		 
 	}
 	
 	// check if the loop xpath is given
@@ -1106,8 +1077,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
         	return true;
         //}
 	}
-	
-	
+		
 	// Preview the data
 	private void preview()
 	{
@@ -1153,10 +1123,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
        }
 	}
 
-
 	public String toString()
 	{
 		return this.getClass().getName();
 	}
-
 }

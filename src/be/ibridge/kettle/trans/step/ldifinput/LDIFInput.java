@@ -16,13 +16,15 @@
 
 package be.ibridge.kettle.trans.step.ldifinput;
 
-import org.apache.commons.vfs.FileObject;
-import netscape.ldap.util.LDIFAttributeContent;
-import netscape.ldap.util.LDIF;
-import netscape.ldap.util.LDIFRecord;
-import netscape.ldap.util.LDIFContent;
-import netscape.ldap.LDAPAttribute;
 import java.util.Enumeration;
+
+import netscape.ldap.LDAPAttribute;
+import netscape.ldap.util.LDIF;
+import netscape.ldap.util.LDIFAttributeContent;
+import netscape.ldap.util.LDIFContent;
+import netscape.ldap.util.LDIFRecord;
+
+import org.apache.commons.vfs.FileObject;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
@@ -41,7 +43,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputField;
 
 /**
- * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
+ * Read all LDIF files, convert them to rows and writes these to one or more output streams.
  * 
  * @author Samatar
  * @since 24-05-2007
@@ -60,24 +62,17 @@ public class LDIFInput extends BaseStep implements StepInterface
 	{
 		data.rownr=0;
 		for (int i=0;i<data.files.size();i++)
-		{
-	
+		{	
 			if ((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0) 
-			{
-		
+			{		
 				data.file = (FileObject) data.files.get(i);
-		    	
-				logBasic("-----------------------------------");
-		    	
+		    			    	
 				logBasic(Messages.getString("LDIFInput.Log.OpeningFile", data.file.toString()));
 		    	
 				// Fetch files and process each one
-				Processfile(data.file);	
-				
+				Processfile(data.file);					
 				
 				if (log.isDetailed()) logDetailed(Messages.getString("LDIFInput.Log.FileOpened", data.file.toString()));
-		        		
-	
 			}
 	    	
 			//	Add this to the result file names...
@@ -86,44 +81,33 @@ public class LDIFInput extends BaseStep implements StepInterface
 			addResultFile(resultFile);
 	    	
 			// 	 Move file pointer ahead!
-			data.filenr++;	
-			
-		}
-		
+			data.filenr++;				
+		}		
 		setOutputDone();  // signal end to receiver(s)
-		return false;     // This is the end of this step.
-   
-	}
-		
+		return false;     // This is the end of this step.   
+	}		
 	
 	private void Processfile(FileObject file)
 	{
-		
 		try 
-		{
-			
+		{			
 			LDIF InputLDIF = new LDIF(KettleVFS.getFilename(file));
 			
 			for (LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF.nextRecord()) 
 			{
 				// 	Get LDIF Content
 				LDIFContent contentLDIF = recordLDIF.getContent();
-				
 
 				if (((meta.getRowLimit()>0 && data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)
 						&& (contentLDIF.getType()== LDIFContent.ATTRIBUTE_CONTENT))  
 				{
-					
 					// Create new row
 					Row row = buildEmptyRow();	
-					
-					
-					// Get only ATTRIBUTE_CONTENT
-					
+
+					// Get only ATTRIBUTE_CONTENT					
 					LDIFAttributeContent attrContentLDIF = (LDIFAttributeContent) contentLDIF;
 					LDAPAttribute[] attributes_LDIF = attrContentLDIF.getAttributes();
-				
-			
+							
 					// Execute for each Input field...
 					for (int i=0;i<meta.getInputFields().length;i++)
 					{
@@ -236,7 +220,6 @@ public class LDIFInput extends BaseStep implements StepInterface
 			            Value fn = new Value( meta.getRowNumberField(), data.rownr );
 			            row.addValue(fn);
 			        }
-					   	
 			        
 					data.previousRow = new Row(row); // copy it to make sure the next step doesn't change it in between... 
 					data.rownr++;
@@ -254,8 +237,6 @@ public class LDIFInput extends BaseStep implements StepInterface
 			stopAll();
 			setErrors(1);
 		}    
-    		
-		
 	}
 	
 	private String GetValue(LDAPAttribute[] attributes_LDIF ,String AttributValue)
@@ -268,7 +249,6 @@ public class LDIFInput extends BaseStep implements StepInterface
 			LDAPAttribute attribute_DIF = attributes_LDIF[j];
 			if (attribute_DIF.getName().equalsIgnoreCase(AttributValue))
 			{
-
 				Enumeration valuesLDIF = attribute_DIF.getStringValues();
 				
 				while (valuesLDIF.hasMoreElements()) 
@@ -281,16 +261,11 @@ public class LDIFInput extends BaseStep implements StepInterface
 					else
 					{
 						Stringvalue= Stringvalue + "," + valueLDIF;	
-						
 					}
 					i++;
-				
 				}
-				
 			}
-			
 		}
-		
 		return Stringvalue;
 	}
 
@@ -349,7 +324,6 @@ public class LDIFInput extends BaseStep implements StepInterface
 	
 	//
 	// Run is were the action happens!
-	//
 	//
 	public void run()
 	{			    

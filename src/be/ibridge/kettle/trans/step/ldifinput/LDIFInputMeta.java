@@ -73,14 +73,12 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** The fields to import... */
 	private LDIFInputField inputFields[];
 	
-
 	
 	public LDIFInputMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
-	
+		
 	/**
      * @return Returns the input fields.
      */
@@ -104,6 +102,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return fileMask;
     }
+    
     /**
      * @param fileMask The fileMask to set.
      */
@@ -134,8 +133,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     public String getFilenameField()
     {
         return filenameField;
-    }
-    
+    }    
     
     /**
      * @return Returns the RealfilenameField.
@@ -144,9 +142,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
     	return  StringUtil.environmentSubstitute(getFilenameField());
     } 
-    
-    
-    
     
     /**
      * @param filenameField The filenameField to set.
@@ -196,8 +191,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
         return rowLimit;
     }
     
- 
-    
     /**
      * @param rowLimit The rowLimit to set.
      */
@@ -205,7 +198,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.rowLimit = rowLimit;
     }
-
 
     /**
      * @return Returns the rowNumberField.
@@ -221,8 +213,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     public String getRealRowNumberField()
     {
     	return  StringUtil.environmentSubstitute(getRowNumberField());
-    } 
-    
+    }     
     
     /**
      * @param rowNumberField The rowNumberField to set.
@@ -231,8 +222,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.rowNumberField = rowNumberField;
     }
-    
-    
+        
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -255,11 +245,9 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
                 retval.inputFields[i] = (LDIFInputField)inputFields[i].clone();
             }
 		}
-        
 		
 		return retval;
 	}
-
     
     public String getXML()
     {
@@ -285,8 +273,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
             retval.append(field.getXML());
         }
         retval.append("      </fields>"+Const.CR);
-        
-
         retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
 
         return retval.toString();
@@ -301,8 +287,8 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 	
-			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
-			Node fields    = XMLHandler.getSubNode(stepnode,   "fields");
+			Node filenode   = XMLHandler.getSubNode(stepnode,  "file");
+			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
 			int nrFiles     = XMLHandler.countNodes(filenode,  "name");
 			int nrFields    = XMLHandler.countNodes(fields,    "field");
 	
@@ -322,8 +308,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 				LDIFInputField field = new LDIFInputField(fnode);
 				inputFields[i] = field;
 			}
-            
-
 			
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
@@ -339,19 +323,18 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		fileName   = new String [nrfiles];
 		fileMask   = new String [nrfiles];
 		
-		inputFields = new LDIFInputField[nrfields];
-        
+		inputFields = new LDIFInputField[nrfields];        
 	}
 	
 	public void setDefault()
 	{
-		includeFilename    = false;
-		filenameField = "";
-		includeRowNumber    = false;
-		rowNumberField = "";
+		includeFilename  = false;
+		filenameField    = "";
+		includeRowNumber = false;
+		rowNumberField   = "";
 		
-		int nrFiles=0;
-		int nrFields=0;
+		int nrFiles  =0;
+		int nrFields =0;
 
 		allocate(nrFiles, nrFields);	
 		
@@ -366,13 +349,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 		    inputFields[i] = new LDIFInputField("field"+(i+1), null);
 		}
 
-       /* for (int i=0;i<nrPositions;i++)
-        {
-            inputPosition[i] = "position"+(i+1);
-        }*/
-
 		rowLimit=0;
-
 	}
 	
 	public Row getFields(Row r, String name, Row info)
@@ -415,15 +392,15 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			includeFilename   =      rep.getStepAttributeBoolean(id_step, "include");  
-			filenameField     =      rep.getStepAttributeString (id_step, "include_field");
+			includeFilename   = rep.getStepAttributeBoolean(id_step, "include");  
+			filenameField     = rep.getStepAttributeString (id_step, "include_field");
 	
-			includeRowNumber  =      rep.getStepAttributeBoolean(id_step, "rownum");
-			rowNumberField    =      rep.getStepAttributeString (id_step, "rownum_field");
-			rowLimit          =      rep.getStepAttributeInteger(id_step, "limit");
+			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
+			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
+			rowLimit          = rep.getStepAttributeInteger(id_step, "limit");
 	
-			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
-			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");
+			int nrFiles       = rep.countNrStepAttributes(id_step, "file_name");
+			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
             
 			allocate(nrFiles, nrFields);
 
@@ -449,21 +426,9 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setTrimType( LDIFInputField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
 
-               /* String fieldPositionCode = rep.getStepAttributeString(id_step, i, "field_position_code"); 
-                if (fieldPositionCode!=null)
-                {
-                    field.setFieldPosition( fieldPositionCode );
-                }*/
-                
 				inputFields[i] = field;
 			}
-            
-           /* for (int i=0;i<nrPositions;i++)
-            {
-                inputPosition[i] = rep.getStepAttributeString (id_step, i, "input_position"    );
-            }*/
-
-		}
+        }
 		catch(Exception e)
 		{
 			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorReadingRepository"), e);
@@ -504,7 +469,6 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode());
 			}
-            
 		}
 		catch(Exception e)
 		{
@@ -522,12 +486,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
             required[i]="Y";
             subdirs[i]=false;
         }
-         
-        
         return FileInputList.createFileList(StringUtil.environmentSubstitute(fileName), StringUtil.environmentSubstitute(fileMask), required, subdirs);
-         
-
- 
 	}
 	
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -574,6 +533,4 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new LDIFInputData();
 	}
-
-  
 }

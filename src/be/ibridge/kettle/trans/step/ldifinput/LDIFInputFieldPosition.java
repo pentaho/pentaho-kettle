@@ -112,9 +112,7 @@ public class LDIFInputFieldPosition implements Cloneable
         {
             throw new KettleValueException(Messages.getString("LDIFInputFieldPosition.Exception.WrongPositionType", positionType));
         }
-        
-        // Get the element nr
-        
+        // Get the element nr        
     }
     
     /**
@@ -196,5 +194,4 @@ public class LDIFInputFieldPosition implements Cloneable
         
         return encoded;
     }
-
 }
