@@ -18,12 +18,10 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -1312,16 +1310,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			initErrorHandling();
 			initReplayFactory();
-			
-			// If the date format locale is not the default: change the simple date format
-			if ( !meta.getDateFormatLocale().equals(Locale.getDefault()))
-			{
-				// The format will be overwritten, this is simply the default...
-				if (log.isDetailed()) logDetailed("Applying date format locale: "+meta.getDateFormatLocale());
-				data.daf = new SimpleDateFormat("yyy/MM/dd HH:mm:ss.SSS", meta.getDateFormatLocale());
-			}
-			
-			data.setDateFormatLenient(meta.isDateFormatLenient());
 				
 			data.files = meta.getTextFileList();
 			data.filterProcessor = new TextFileFilterProcessor(meta.getFilter());

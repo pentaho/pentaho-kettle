@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
@@ -155,6 +156,25 @@ public interface ValueMetaInterface extends Cloneable
      */
     public void setLargeTextField(boolean largeTextField);
     
+    /**
+     * @return true if the the date formatting (parsing) is to be lenient
+     */
+    public boolean isDateFormatLenient();
+    
+    /**
+     * @param dateFormatLenient true if the the date formatting (parsing) is to be set to lenient
+     */
+    public void setDateFormatLenient(boolean dateFormatLenient);
+    
+    /**
+     * @return the date format locale
+     */
+    public Locale getDateFormatLocale();
+    
+    /**
+     * @param dateFormatLocale the date format locale to set
+     */
+    public void setDateFormatLocale(Locale dateFormatLocale);
     
     
     /* Conversion methods */

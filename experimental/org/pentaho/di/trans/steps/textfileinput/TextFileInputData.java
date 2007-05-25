@@ -17,11 +17,6 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -49,16 +44,6 @@ public class TextFileInputData extends BaseStepData implements
 	public int nr_repeats;
 
 	public int nrLinesOnPage;
-
-	public NumberFormat nf;
-
-	public DecimalFormat df;
-
-	public DecimalFormatSymbols dfs;
-
-	public SimpleDateFormat daf;
-
-	public DateFormatSymbols dafs;
 
 	public FileInputList files;
 
@@ -113,11 +98,6 @@ public class TextFileInputData extends BaseStepData implements
 		super();
 
 		lineBuffer = new ArrayList();
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat) nf;
-		dfs = new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs = new DateFormatSymbols();
 
 		nr_repeats = 0;
 		previous_row = null;
@@ -131,9 +111,5 @@ public class TextFileInputData extends BaseStepData implements
 		filterProcessor = null;
         
          lineStringBuffer = new StringBuffer(256);
-	}
-
-	public void setDateFormatLenient(boolean lenient) {
-		daf.setLenient(lenient);
 	}
 }

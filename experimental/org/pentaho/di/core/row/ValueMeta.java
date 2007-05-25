@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleFileException;
@@ -38,6 +39,8 @@ public class ValueMeta implements ValueMetaInterface
     private boolean  sortedDescending;
     private boolean  outputPaddingEnabled;
     private boolean  largeTextField;
+    private Locale   dateFormatLocale;
+    private boolean  dateFormatLenient;
     
     private SimpleDateFormat dateFormat;
     private boolean dateFormatChanged;
@@ -76,6 +79,7 @@ public class ValueMeta implements ValueMetaInterface
         this.outputPaddingEnabled=false;
         this.decimalSymbol = ""+Const.DEFAULT_DECIMAL_SEPARATOR;
         this.groupingSymbol = ""+Const.DEFAULT_GROUPING_SEPARATOR;
+        this.dateFormatLocale = Locale.getDefault();
     }
     
     public Object clone()
@@ -85,6 +89,7 @@ public class ValueMeta implements ValueMetaInterface
             ValueMeta valueMeta = (ValueMeta) super.clone();
             valueMeta.dateFormat = null;
             valueMeta.decimalFormat = null;
+            if (dateFormatLocale!=null) valueMeta.dateFormatLocale = (Locale) dateFormatLocale.clone();
             return valueMeta;
         }
         catch (CloneNotSupportedException e)
@@ -378,6 +383,40 @@ public class ValueMeta implements ValueMetaInterface
         this.largeTextField = largeTextField;
     }
     
+    /**
+     * @return the dateFormatLenient
+     */
+    public boolean isDateFormatLenient()
+    {
+        return dateFormatLenient;
+    }
+
+    /**
+     * @param dateFormatLenient the dateFormatLenient to set
+     */
+    public void setDateFormatLenient(boolean dateFormatLenient)
+    {
+        this.dateFormatLenient = dateFormatLenient;
+        dateFormatChanged=true;
+    }
+
+    /**
+     * @return the dateFormatLocale
+     */
+    public Locale getDateFormatLocale()
+    {
+        return dateFormatLocale;
+    }
+
+    /**
+     * @param dateFormatLocale the dateFormatLocale to set
+     */
+    public void setDateFormatLocale(Locale dateFormatLocale)
+    {
+        this.dateFormatLocale = dateFormatLocale;
+        dateFormatChanged=true;
+    }
+    
     
 
     // DATE + STRING
@@ -477,13 +516,23 @@ public class ValueMeta implements ValueMetaInterface
         if (dateFormat==null || dateFormatChanged)
         {
             dateFormat = new SimpleDateFormat();
+            String mask;
             if (Const.isEmpty(conversionMask))
             {
-                dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT_MASK);
+                mask = DEFAULT_DATE_FORMAT_MASK;
             }
             else
             {
-                dateFormat = new SimpleDateFormat(conversionMask);
+                mask = conversionMask;
+            }
+            
+            if (dateFormatLocale==null || dateFormatLocale.equals(Locale.getDefault()))
+            {
+                dateFormat = new SimpleDateFormat(mask);
+            }
+            else
+            {
+                dateFormat = new SimpleDateFormat(mask, dateFormatLocale);
             }
             
             dateFormatChanged=false;
@@ -1578,6 +1627,12 @@ public class ValueMeta implements ValueMetaInterface
 
             // Padding information
             outputStream.writeBoolean(outputPaddingEnabled); 
+            
+            // date format lenient?
+            outputStream.writeBoolean(dateFormatLenient);
+            
+            // date format locale?
+            writeString(outputStream, dateFormatLocale!=null ? dateFormatLocale.toString() : null);
         }
         catch(IOException e)
         {
@@ -1654,6 +1709,19 @@ public class ValueMeta implements ValueMetaInterface
             
             // Output padding?
             outputPaddingEnabled = inputStream.readBoolean();
+            
+            // is date parsing lenient?
+            dateFormatLenient = inputStream.readBoolean();
+            
+            String strDateFormatLocale = readString(inputStream);
+            if (Const.isEmpty(strDateFormatLocale)) 
+            {
+                dateFormatLocale = null; 
+            }
+            else
+            {
+                dateFormatLocale = new Locale(strDateFormatLocale);
+            }
         }
         catch(IOException e)
         {
@@ -1940,4 +2008,6 @@ public class ValueMeta implements ValueMetaInterface
        }
        return value;
     }
+
+
 }
