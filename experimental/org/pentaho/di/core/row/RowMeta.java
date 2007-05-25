@@ -66,15 +66,27 @@ public class RowMeta implements RowMetaInterface
         return size()==0;
     }
 
+    public boolean exists(ValueMetaInterface meta)
+    {
+        return searchValueMeta(meta.getName())!=null;
+    }
     
     /**
-     * Add a metadata value, extends the array if needed.
+     * Add a metadata value.
+     * If a value with the same name already exists, it gets renamed.
      * 
      * @param meta The metadata value to add
      */
     public void addValueMeta(ValueMetaInterface meta)
     {
-        valueMetaList.add(meta);
+        if (!exists(meta))
+        {
+            valueMetaList.add(meta);
+        }
+        else
+        {
+            valueMetaList.add(renameValueMetaIfInRow(meta));
+        }
     }
     
     /**
@@ -267,8 +279,8 @@ public class RowMeta implements RowMetaInterface
     
     /**
      * Merge the values of row r to this Row.
-     * Merge means: only the values that are not yet in the row are added
-     * (comparing on the value name).
+     * The values that are not yet in the row are added unchanged.
+     * The values that are in the row are renamed to name[2], name[3], etc.
      *
      * @param r The row to be merged with this row
      */
@@ -281,7 +293,29 @@ public class RowMeta implements RowMetaInterface
             {
                 addValueMeta(field); // Not in list yet: add
             }
+            else
+            {
+                // We want to rename the field to Name[2], Name[3], ...
+                // 
+                addValueMeta(renameValueMetaIfInRow(field));
+            }
         }
+    }
+    
+    private ValueMetaInterface renameValueMetaIfInRow(ValueMetaInterface valueMeta)
+    {
+        // We want to rename the field to Name[2], Name[3], ...
+        // 
+        int index = 1;
+        String name = valueMeta.getName()+"_"+index;
+        while (searchValueMeta(name)!=null)
+        {
+            index++;
+            name = valueMeta.getName()+"_"+index;
+        }
+        // OK, this is the new name to pick
+        valueMeta.setName(name);
+        return valueMeta;
     }
 
     /**

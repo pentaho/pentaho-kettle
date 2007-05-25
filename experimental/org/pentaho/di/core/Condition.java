@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 
@@ -448,9 +449,15 @@ public class Condition implements Cloneable, XMLInterface
 					    	String list[] = Const.splitString(fieldMeta2.getString(field2), ';');
 					    	retval = Const.indexOfString(fieldMeta.getString(field), list)>=0;
 					    	break;
-					case FUNC_CONTAINS      : retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).indexOf(fieldMeta2.getString(field2))>=0:false; break;
-					case FUNC_STARTS_WITH   : retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).startsWith(fieldMeta2.getString(field2)):false; break;
-					case FUNC_ENDS_WITH     : retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).endsWith(fieldMeta2.getString(field2)):false;   break;
+					case FUNC_CONTAINS      : 
+                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).indexOf(fieldMeta2.getString(field2))>=0:false; 
+                        break;
+					case FUNC_STARTS_WITH   : 
+                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).startsWith(fieldMeta2.getString(field2)):false; 
+                        break;
+					case FUNC_ENDS_WITH     : 
+                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).endsWith(fieldMeta2.getString(field2)):false;   
+                        break;
 					default: break;
 				}
 				
@@ -488,7 +495,7 @@ public class Condition implements Cloneable, XMLInterface
 	    }
 	    catch(Exception e)
 	    {
-	        throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"] in part ["+debug+"] for row: "+r+Const.CR+e.toString());
+            throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"] in part ["+debug+"]", e);            
 	    }
 		
         return retval;

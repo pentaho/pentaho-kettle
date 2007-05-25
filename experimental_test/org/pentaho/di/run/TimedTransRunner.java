@@ -174,6 +174,11 @@ public class TimedTransRunner
     
     public void compareResults()
     {
+        compareResults(oldRunTime, newRunTime);
+    }
+    
+    public static final void compareResults(double oldRunTime, double newRunTime)
+    {
         double factor = oldRunTime/newRunTime;
         System.out.println("V3 / V2 = x"+factorDF.format(factor));
     }
@@ -300,5 +305,69 @@ public class TimedTransRunner
     public void setNewTransMeta(TransMeta newTransMeta)
     {
         this.newTransMeta = newTransMeta;
+    }
+
+    /**
+     * @return the newRunTime
+     */
+    public double getNewRunTime()
+    {
+        return newRunTime;
+    }
+
+    /**
+     * @param newRunTime the newRunTime to set
+     */
+    public void setNewRunTime(double newRunTime)
+    {
+        this.newRunTime = newRunTime;
+    }
+
+    /**
+     * @return the newSpeed
+     */
+    public double getNewSpeed()
+    {
+        return newSpeed;
+    }
+
+    /**
+     * @param newSpeed the newSpeed to set
+     */
+    public void setNewSpeed(double newSpeed)
+    {
+        this.newSpeed = newSpeed;
+    }
+
+    /**
+     * @return the oldRunTime
+     */
+    public double getOldRunTime()
+    {
+        return oldRunTime;
+    }
+
+    /**
+     * @param oldRunTime the oldRunTime to set
+     */
+    public void setOldRunTime(double oldRunTime)
+    {
+        this.oldRunTime = oldRunTime;
+    }
+
+    /**
+     * @return the oldSpeed
+     */
+    public double getOldSpeed()
+    {
+        return oldSpeed;
+    }
+
+    /**
+     * @param oldSpeed the oldSpeed to set
+     */
+    public void setOldSpeed(double oldSpeed)
+    {
+        this.oldSpeed = oldSpeed;
     }
 }

@@ -110,6 +110,11 @@ public class RunDimensionLookup extends TestCase
 
         h2db.disconnect();
     }
+
+    private static double oldInitialLoadRuntime;
+    private static double oldUpdate20kRunTime;
+    private static double newInitialLoadRuntime;
+    private static double newUpdate20kRunTime;
     
     public void test__DIMENSION_LOOKUP_00() throws KettleDatabaseException
     {
@@ -130,6 +135,8 @@ public class RunDimensionLookup extends TestCase
         timedTransRunner.init();
         timedTransRunner.runOldEngine();
 
+        oldInitialLoadRuntime = timedTransRunner.getOldRunTime();
+        
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
     }
@@ -144,6 +151,8 @@ public class RunDimensionLookup extends TestCase
         timedTransRunner.init();
         timedTransRunner.runOldEngine();
 
+        oldUpdate20kRunTime = timedTransRunner.getOldRunTime();
+        
         Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
         
@@ -160,8 +169,13 @@ public class RunDimensionLookup extends TestCase
         timedTransRunner.init();
         timedTransRunner.runNewEngine(true);
 
+        newInitialLoadRuntime = timedTransRunner.getNewRunTime();
+        
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
+        
+        // Report on the speed increase...
+        TimedTransRunner.compareResults(oldInitialLoadRuntime, newInitialLoadRuntime);
     }
     
     public void test__DIMENSION_LOOKUP_04_Update20kNew() throws KettleXMLException, KettleDatabaseException
@@ -173,9 +187,14 @@ public class RunDimensionLookup extends TestCase
             );
         timedTransRunner.init();
         timedTransRunner.runNewEngine(true);
+        
+        newUpdate20kRunTime = timedTransRunner.getNewRunTime();
 
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
+        
+        // Report on the speed increase...
+        TimedTransRunner.compareResults(oldUpdate20kRunTime, newUpdate20kRunTime);
     }
 
     public void test__DIMENSION_LOOKUP_05_TkLookupCacheOff() throws KettleXMLException, KettleDatabaseException
