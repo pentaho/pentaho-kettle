@@ -52,11 +52,16 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+//import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+//import be.ibridge.kettle.core.Row;
+//import be.ibridge.kettle.core.XMLHandler;
 
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
@@ -66,6 +71,7 @@ import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
@@ -76,6 +82,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathMeta;
 
 
 public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInterface
@@ -540,7 +547,13 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
 		wFieldsComp.setLayout(fieldsLayout);
  		props.setLook(wFieldsComp);
 		
-
+		wGet=new Button(wFieldsComp, SWT.PUSH);
+		wGet.setText(Messages.getString("XMLInputPathDialog.GetFields.Button"));
+		fdGet=new FormData();
+		fdGet.left=new FormAttachment(50, 0);
+		fdGet.bottom =new FormAttachment(100, 0);
+		wGet.setLayoutData(fdGet);
+		
 		final int FieldsRows=input.getInputFields().length;
 		
 		// Prepare a list of possible formats...
@@ -628,7 +641,7 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
 		fdFields.left  = new FormAttachment(0, 0);
 		fdFields.top   = new FormAttachment(0, 0);
 		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(100, -margin);
+		fdFields.bottom= new FormAttachment(wGet, -margin);
 		wFields.setLayoutData(fdFields);
 
 		fdFieldsComp=new FormData();
@@ -661,10 +674,12 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();      } };
 		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();     } };
 		
 		wOK.addListener     (SWT.Selection, lsOK     );
+		wGet.addListener    (SWT.Selection, lsGet    );
 		wPreview.addListener(SWT.Selection, lsPreview);
 		wCancel.addListener (SWT.Selection, lsCancel );
 		
@@ -845,6 +860,94 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
 		}
 		return stepname;
 	}
+	
+	private void get()
+	{
+
+        try
+        {
+        	XMLInputPathMeta meta = new XMLInputPathMeta();
+        	getInfo(meta);
+        	XMLInputPathField field = new XMLInputPathField();
+        	
+        	//	 check if the path is given 
+    		if (!checkLoopXPath(meta)) return;
+        	
+    		
+            
+            FileInputList inputList = meta.getFiles();
+            // Clear Fields Grid
+            wFields.removeAll();
+            
+            if (inputList.getFiles().size()>0)
+            {
+            	// get encoding. By default UTF-8
+    			String encodage="UTF-8";
+    			if (!Const.isEmpty(meta.getEncoding()))
+    			{
+    				encodage=meta.getEncoding();
+    			}
+    			
+    			javax.xml.parsers.DocumentBuilder builder = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    			org.w3c.dom.Document document = builder.parse(new org.xml.sax.InputSource(new java.io.InputStreamReader(new java.io.FileInputStream(KettleVFS.getFilename(inputList.getFile(0))), encodage)));        
+    	    	
+    			javax.xml.xpath.XPath xpath = javax.xml.xpath.XPathFactory.newInstance().newXPath();
+    			NodeList widgetNodes = (NodeList) xpath.evaluate(meta.getRealLoopXPath(), document,javax.xml.xpath.XPathConstants.NODESET);
+    	        
+    			
+    			if (widgetNodes.getLength() >0)
+    			{
+    				// Let's take the first row
+    				Node widgetNode = widgetNodes.item(0);
+    				
+    				for (int i = 0; i < widgetNode.getChildNodes().getLength(); i++) 
+    				{
+    					
+    					// Get Node Name
+    		            TableItem item = new TableItem(wFields.table, SWT.NONE);
+    		            item.setText(1, widgetNode.getChildNodes().item(i).getNodeName());
+    		            item.setText(2, widgetNode.getChildNodes().item(i).getNodeName());
+    		            item.setText(3,field.ElementTypeDesc[0]);
+
+    					
+    				}
+    				
+    				
+    				for (int i = 0; i < widgetNode.getAttributes().getLength(); i++) 
+    				{
+
+    					// Get Attribut Name
+    		            TableItem item = new TableItem(wFields.table, SWT.NONE);
+    		            item.setText(1, widgetNode.getAttributes().item(i).getNodeName());
+    		            item.setText(2, widgetNode.getAttributes().item(i).getNodeName());
+    		            item.setText(3,field.ElementTypeDesc[1]);
+  
+    					
+    				}
+    				
+    			
+    			}
+    			
+            	
+            }
+            
+            wFields.removeEmptyRows();
+            wFields.setRowNums();
+            wFields.optWidth(true);
+            
+        }
+        /*catch(KettleException e)
+        {
+            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+        }*/
+       
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+        }
+	}
+	
+	
 	private void setEncodings()
     {
         // Encoding of the text file:
@@ -1040,7 +1143,7 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
 	}
 	
 	// check if the loop xpath is given
-	private boolean checkInputPositionsFilled(XMLInputPathMeta meta){
+	private boolean checkLoopXPath(XMLInputPathMeta meta){
         if (meta.getLoopXPath()==null || meta.getLoopXPath().length()<1)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
@@ -1067,7 +1170,7 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
             getInfo(oneMeta);
             
             // check if the path is given
-    		if (!checkInputPositionsFilled(oneMeta)) return;
+    		if (!checkLoopXPath(oneMeta)) return;
 
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
