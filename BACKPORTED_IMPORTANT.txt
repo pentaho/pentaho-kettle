@@ -6,3 +6,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - Correctly load statistics columns from xml for Execute SQL step (fix for bug #5434) - Sven B - 2007-May-16
 - Fix for #5643 "Update date Ignore lookup failure" - Sven B - 2007-May-21
 - patch for #5619 (from Arie Nagel) applied in deletefile entry - Sven B - 2007-May-21
+- patch for #5693 in textfileinput, lenient date parsing now works correctly - Sven B - 2007-May-25
