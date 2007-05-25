@@ -30,7 +30,6 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 
