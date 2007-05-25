@@ -1312,7 +1312,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			initErrorHandling();
 			initReplayFactory();
-			data.setDateFormatLenient(meta.isDateFormatLenient());
 			
 			// If the date format locale is not the default: change the simple date format
 			if ( !meta.getDateFormatLocale().equals(Locale.getDefault()))
@@ -1321,6 +1320,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if (log.isDetailed()) logDetailed("Applying date format locale: "+meta.getDateFormatLocale());
 				data.daf = new SimpleDateFormat("yyy/MM/dd HH:mm:ss.SSS", meta.getDateFormatLocale());
 			}
+			
+			data.setDateFormatLenient(meta.isDateFormatLenient());
 				
 			data.files = meta.getTextFileList();
 			data.filterProcessor = new TextFileFilterProcessor(meta.getFilter());
