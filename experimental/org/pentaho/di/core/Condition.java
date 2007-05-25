@@ -99,6 +99,8 @@ public class Condition implements Cloneable, XMLInterface
 	private int right_fieldnr;
 	
 	private ArrayList list;
+
+    private String right_string;
 	
 	public Condition()
 	{
@@ -369,7 +371,7 @@ public class Condition implements Cloneable, XMLInterface
 	//
 	public boolean evaluate(RowMetaInterface rowMeta, Object[] r)
 	{
-	    // String debug="Start of evaluate";
+	    // Start of evaluate
 		boolean retval = false;
         
 		// If we have 0 items in the list, evaluate the current condition
@@ -456,7 +458,24 @@ public class Condition implements Cloneable, XMLInterface
                         retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).startsWith(fieldMeta2.getString(field2)):false; 
                         break;
 					case FUNC_ENDS_WITH     : 
-                        retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).endsWith(fieldMeta2.getString(field2)):false;   
+                        String string = fieldMeta.getString(field); 
+                        if (!Const.isEmpty(string))
+                        {
+                            if (right_string==null && field2!=null) right_string=fieldMeta2.getString(field2);
+                            if (right_string!=null)
+                            {
+                                retval = string.endsWith(fieldMeta2.getString(field2));
+                            }
+                            else
+                            {
+                                retval = false;
+                            }
+                        }
+                        else
+                        {
+                            retval = false;
+                        }
+                        // retval = fieldMeta.getString(field)!=null?fieldMeta.getString(field).endsWith(fieldMeta2.getString(field2)):false;   
                         break;
 					default: break;
 				}
