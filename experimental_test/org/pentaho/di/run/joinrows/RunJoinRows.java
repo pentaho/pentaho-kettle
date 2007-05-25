@@ -22,7 +22,7 @@ public class RunJoinRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/joinrows/JoinRowsNoCondition.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                10000
+                1000
             );
         timedTransRunner.runOldAndNew();
         
@@ -38,7 +38,7 @@ public class RunJoinRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/joinrows/JoinRowsCondition.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
-                10000
+                1000
             );
         timedTransRunner.runOldAndNew();
         
