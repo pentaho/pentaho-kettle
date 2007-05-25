@@ -26,7 +26,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -107,8 +106,8 @@ public class Condition implements Cloneable, XMLInterface
 		this.operator        = OPERATOR_NONE;
 		this.negate          = false;
 		
-		left_fieldnr = -1;
-		right_fieldnr = -1;
+		left_fieldnr = -2;
+		right_fieldnr = -2;
 		
 		id=-1L;
 	}
@@ -370,10 +369,9 @@ public class Condition implements Cloneable, XMLInterface
 	//
 	public boolean evaluate(RowMetaInterface rowMeta, Object[] r)
 	{
-	    String debug="Start of evaluate";
+	    // String debug="Start of evaluate";
 		boolean retval = false;
-        LogWriter log = LogWriter.getInstance();
-
+        
 		// If we have 0 items in the list, evaluate the current condition
 		// Otherwise, evaluate all sub-conditions
 		//
@@ -381,13 +379,16 @@ public class Condition implements Cloneable, XMLInterface
 	    {
 			if (isAtomic())
 			{
-			    debug="Atomic : get fieldnrs left value";
+			    // Get fieldnrs left value
+                //
 				// Check out the fieldnrs if we don't have them...
-				if (left_valuename!=null  && left_valuename.length()>0  && left_fieldnr<0)  left_fieldnr = rowMeta.indexOfValue(left_valuename);
-			    debug="Atomic : get fieldnrs right value";
-				if (right_valuename!=null && right_valuename.length()>0 && right_fieldnr<0) right_fieldnr = rowMeta.indexOfValue(right_valuename);
+				if (left_valuename!=null  && left_valuename.length()>0  && left_fieldnr<-1)  left_fieldnr = rowMeta.indexOfValue(left_valuename);
+                
+			    // Get fieldnrs right value
+                //
+				if (right_valuename!=null && right_valuename.length()>0 && right_fieldnr<-1) right_fieldnr = rowMeta.indexOfValue(right_valuename);
 				
-			    debug="Atomic : get fieldnrs left field";
+			    // Get fieldnrs left field
                 ValueMetaInterface fieldMeta = null;
 				Object field=null;
 				if (left_fieldnr>=0) 
@@ -400,7 +401,7 @@ public class Condition implements Cloneable, XMLInterface
                     }
                 }
 				
-			    debug="Atomic : get fieldnrs right exact";
+			    // Get fieldnrs right exact
                 ValueMetaInterface fieldMeta2 = right_exact!=null ? right_exact.getValueMeta() : null;
 				Object field2 = right_exact!=null ? right_exact.getValueData() : null;
 				if (field2==null && right_fieldnr>=0) 
@@ -423,7 +424,7 @@ public class Condition implements Cloneable, XMLInterface
                     throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
                 }
 
-                if (log.isDebug()) debug="Atomic : evaluate (function="+Condition.functions[function]+")";
+                // Evaluate
 				switch(function)
 				{
 					case FUNC_EQUAL         : retval = (fieldMeta.compare(field, fieldMeta2, field2)==0); break;
@@ -461,12 +462,13 @@ public class Condition implements Cloneable, XMLInterface
 				}
 				
 				// Only NOT makes sense, the rest doesn't, so ignore!!!!
-                debug="Atomic: optionally negate";
+                // Optionally negate
+                //
 				if (isNegated()) retval=!retval;
 			}
 			else
 			{
-			    debug="Composite : get first";
+			    // Composite : get first
 				Condition cb0 = (Condition)list.get(0);
 				retval = cb0.evaluate(rowMeta, r);
 				
@@ -474,7 +476,8 @@ public class Condition implements Cloneable, XMLInterface
 				// 
 				for (int i=1;i<list.size();i++)
 				{
-				    debug="Composite : evaluate #"+i;
+				    // Composite : evaluate #i
+                    //
 					Condition cb = (Condition)list.get(i);
 					boolean cmp = cb.evaluate(rowMeta, r);
 					switch (cb.getOperator()) 
@@ -488,13 +491,13 @@ public class Condition implements Cloneable, XMLInterface
 					}
 				}
 
-                debug="Composite: optionally negate";
+                // Composite: optionally negate
 				if (isNegated()) retval=!retval;
 			}
 	    }
 	    catch(Exception e)
 	    {
-            throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"] in part ["+debug+"]", e);            
+            throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"]", e);            
 	    }
 		
         return retval;
