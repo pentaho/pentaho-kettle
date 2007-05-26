@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
@@ -96,7 +97,8 @@ public class EnterPreviewRowsDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Title")); //Select the preview step:
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 

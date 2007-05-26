@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -87,7 +88,8 @@ public class PreviewSelectDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("PreviewSelectDialog.Dialog.PreviewSelection.Title")); //Preview selection screen
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+			
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.NONE);
