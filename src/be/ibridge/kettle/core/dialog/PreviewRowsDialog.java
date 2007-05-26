@@ -116,9 +116,9 @@ public class PreviewRowsDialog extends Dialog
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX);
         props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageConnection());
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
-        FormLayout formLayout = new FormLayout();
+	    FormLayout formLayout = new FormLayout();
         formLayout.marginWidth = Const.FORM_MARGIN;
         formLayout.marginHeight = Const.FORM_MARGIN;
 

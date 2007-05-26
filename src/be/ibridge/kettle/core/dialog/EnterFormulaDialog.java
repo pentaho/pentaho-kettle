@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -126,6 +127,7 @@ public class EnterFormulaDialog extends Dialog
 
         shell.setLayout(formLayout);
         shell.setText(title);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
         int margin = Const.MARGIN;
 

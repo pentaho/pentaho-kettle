@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.SourceToTargetMapping;
@@ -158,6 +159,7 @@ public class EnterMappingDialog extends Dialog
 
         shell.setLayout(formLayout);
         shell.setText(Messages.getString("EnterMappingDialog.Title"));
+		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
 
         int margin = Const.MARGIN;
         int buttonSpace = 90;
