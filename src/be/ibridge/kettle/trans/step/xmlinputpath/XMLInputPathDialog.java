@@ -23,7 +23,9 @@ package be.ibridge.kettle.trans.step.xmlinputpath;
 
 
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -60,6 +62,7 @@ import org.w3c.dom.NodeList;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.XMLHandler;
 //import be.ibridge.kettle.core.Row;
 //import be.ibridge.kettle.core.XMLHandler;
 
@@ -887,7 +890,7 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     			{
     				encodage=meta.getEncoding();
     			}
-    			
+    			// Get Fields from the first file 
     			javax.xml.parsers.DocumentBuilder builder = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder();
     			org.w3c.dom.Document document = builder.parse(new org.xml.sax.InputSource(new java.io.InputStreamReader(new java.io.FileInputStream(KettleVFS.getFilename(inputList.getFile(0))), encodage)));        
     	    	
@@ -900,6 +903,8 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     				// Let's take the first row
     				Node widgetNode = widgetNodes.item(0);
     				
+    				String valueNode=null;
+    				
     				for (int i = 0; i < widgetNode.getChildNodes().getLength(); i++) 
     				{
     					
@@ -908,7 +913,28 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     		            item.setText(1, widgetNode.getChildNodes().item(i).getNodeName());
     		            item.setText(2, widgetNode.getChildNodes().item(i).getNodeName());
     		            item.setText(3,field.ElementTypeDesc[0]);
-
+    		             
+    		            // Get Node value
+    		            valueNode=widgetNode.getChildNodes().item(i).getTextContent(); 
+    		           
+    					// Try to get the Type
+    		            if(IsDate(valueNode))
+	            		{;
+	            			item.setText(4, "Date");
+	            		}
+    		            else if(IsInteger(valueNode))
+	            		{
+	            			item.setText(4, "Integer");
+	            		}
+    		            else if(IsNumber(valueNode))
+	            		{
+	            			item.setText(4, "Number");
+	            		}	    		          
+    		            else
+    		            {
+    		            	item.setText(4, "String");	    		            
+    		            }
+    					
     					
     				}
     				
@@ -921,6 +947,28 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     		            item.setText(1, widgetNode.getAttributes().item(i).getNodeName());
     		            item.setText(2, widgetNode.getAttributes().item(i).getNodeName());
     		            item.setText(3,field.ElementTypeDesc[1]);
+    		            
+    		            // Get Node value
+    		            valueNode = widgetNode.getAttributes().item(i).getNodeValue(); 
+    		            
+    		            // Try to get the Type
+    		            if(IsDate(valueNode))
+	            		{
+	            			item.setText(4, "Date");
+	            		}
+    		            else if(IsInteger(valueNode))
+	            		{
+	            			item.setText(4, "Integer");
+	            		}
+    		            else if(IsNumber(valueNode))
+	            		{
+	            			item.setText(4, "Number");
+	            		}	    		          
+    		            else
+    		            {
+    		            	item.setText(4, "String");	    		            
+    		            }
+    					
   
     					
     				}
@@ -947,7 +995,39 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
         }
 	}
 	
-	
+
+private boolean IsInteger(String str)
+{
+	  try 
+	  {
+	    int number = Integer.parseInt(str);
+	  }
+	  catch(NumberFormatException e)   {return false; }
+	  return true;
+}
+
+private boolean IsNumber(String str)
+{
+	  try 
+	  {
+	    float number = Float.parseFloat(str);
+	  }
+	  catch(Exception e)   {return false; }
+	  return true;
+}
+
+private boolean IsDate(String str)
+{
+	  // TODO: What about other dates? Maybe something for a CRQ
+	  try 
+	  {
+	        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
+	        Date resultdate = fdate.parse(str);
+	  }
+	  catch(Exception e)   {return false; }
+	  return true;
+}
+
 	private void setEncodings()
     {
         // Encoding of the text file:
