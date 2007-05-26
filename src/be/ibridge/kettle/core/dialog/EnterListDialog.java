@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
@@ -116,7 +117,8 @@ public class EnterListDialog extends Dialog
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
 		shell.setText(Messages.getString("EnterListDialog.Title"));
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+
 		shell.setLayout(new FormLayout());
 		
 		int margin = Const.MARGIN;

@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.DescriptionInterface;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
@@ -144,6 +145,7 @@ public class EnterTextDialog extends Dialog
 
         shell.setLayout(formLayout);
         shell.setText(title);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 
         int margin = Const.MARGIN;
 

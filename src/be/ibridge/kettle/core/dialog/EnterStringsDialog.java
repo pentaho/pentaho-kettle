@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
@@ -99,7 +100,8 @@ public class EnterStringsDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+
 		int margin = Const.MARGIN;
         
         

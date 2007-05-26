@@ -93,7 +93,8 @@ public class ErrorDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
+
 		int margin = Const.MARGIN;
 
 		// From step line

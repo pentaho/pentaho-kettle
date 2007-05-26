@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -104,7 +105,7 @@ public class StepFieldsDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("StepFieldsDialog.Title"));
-		
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		int margin = Const.MARGIN;
 
 		// Filename line

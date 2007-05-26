@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -88,6 +89,7 @@ public class EnterNumberDialog extends Dialog
         Display display = parent.getDisplay();
 
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
         props.setLook(shell);
 
         FormLayout formLayout = new FormLayout ();

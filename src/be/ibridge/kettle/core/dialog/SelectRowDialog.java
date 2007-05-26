@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -104,6 +105,7 @@ public class SelectRowDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
+		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		int margin = Const.MARGIN;
 
