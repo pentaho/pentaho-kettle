@@ -1,6 +1,5 @@
 package org.pentaho.di;
 
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -13,6 +12,8 @@ import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
+
+import be.ibridge.kettle.trans.step.combinationlookup.CombinationLookupTest;
 
 /**
  * Regression tests for the PDI framework.
@@ -38,6 +39,7 @@ public class AllRegressionTests
         suite.addTestSuite(InjectorTest.class);
         suite.addTestSuite(RowGeneratorTest.class);
         suite.addTestSuite(BlockingStepTest.class);
+        suite.addTestSuite(CombinationLookupTest.class);
         
         return suite;
     }
