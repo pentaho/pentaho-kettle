@@ -745,7 +745,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.XMLFiles"), Messages.getString("System.FileType.AllFiles")});
+						dialog.setFilterNames(new String[] {Messages.getString("LDIFInputDialog.FileType"), Messages.getString("System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -821,6 +821,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	    		            
 	    		            String attributeValue=GetValue(attributes_LDIF ,attribute_DIF.getName());
 	    		            // Try to get the Type
+	    		            
+	    		  
+	    		            
 	    		            if(IsDate(attributeValue))
 		            		{
 		            			item.setText(3, "Date");
@@ -848,11 +851,11 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("LDIFInputMeta.ErrorRetrieveData.DialogTitle"), Messages.getString("LDIFInputMeta.ErrorRetrieveData.DialogMessage"), e);
         }
     	catch(Exception e)
 		{
-    		 new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+    		 new ErrorDialog(shell, Messages.getString("LDIFInputMeta.ErrorRetrieveData.DialogTitle"), Messages.getString("LDIFInputMeta.ErrorRetrieveData.DialogMessage"), e);
 
 		}  
 	}
@@ -1083,7 +1086,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 	{
         try
         {
-            // Create the XML input step
+            // Create the LDIF input step
             LDIFInputMeta oneMeta = new LDIFInputMeta();
             getInfo(oneMeta);
             

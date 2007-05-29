@@ -40,7 +40,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.xmlinput.XMLInputField;
+import be.ibridge.kettle.trans.step.ldifinput.LDIFInputField;
 
 /**
  * Read all LDIF files, convert them to rows and writes these to one or more output streams.
@@ -111,78 +111,79 @@ public class LDIFInput extends BaseStep implements StepInterface
 					// Execute for each Input field...
 					for (int i=0;i<meta.getInputFields().length;i++)
 					{
-						LDIFInputField xmlInputField = meta.getInputFields()[i];
+						LDIFInputField ldifInputField = meta.getInputFields()[i];
 						// Get the Attribut to look for
-						String AttributValue = xmlInputField.getRealAttribut();
+						String AttributValue = ldifInputField.getRealAttribut();
 					
 						// OK, we have the string...
 						Value v = row.getValue(i);
 						v.setValue(GetValue(attributes_LDIF ,AttributValue));
 						
 					    // DO Trimming!
-			            switch(xmlInputField.getTrimType())
-			            {
-			            case XMLInputField.TYPE_TRIM_LEFT  : v.ltrim(); break;
-			            case XMLInputField.TYPE_TRIM_RIGHT : v.rtrim(); break;
-			            case XMLInputField.TYPE_TRIM_BOTH  : v.trim(); break;
-			            default: break;
-			            }
+			      			            
+			            if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_LEFT)
+			            	v.ltrim(); 
+			            else if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_RIGHT)
+			            	v.rtrim(); 
+			            else if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_BOTH)
+			            	v.trim(); 
 			            
+			            			            
 			            //DO CONVERSIONS...
-			            switch(xmlInputField.getType())
+			            switch(ldifInputField.getType())
 			            {
 			            case Value.VALUE_TYPE_STRING:
 			                // System.out.println("Convert value to String :"+v);
 			                break;
 			            case Value.VALUE_TYPE_NUMBER:
 			                // System.out.println("Convert value to Number :"+v);
-			                if (xmlInputField.getFormat()!=null && xmlInputField.getFormat().length()>0)
+			                if (ldifInputField.getFormat()!=null && ldifInputField.getFormat().length()>0)
 			                {
-			                    if (xmlInputField.getDecimalSymbol()!=null && xmlInputField.getDecimalSymbol().length()>0)
+			                    if (ldifInputField.getDecimalSymbol()!=null && ldifInputField.getDecimalSymbol().length()>0)
 			                    {
-			                        if (xmlInputField.getGroupSymbol()!=null && xmlInputField.getGroupSymbol().length()>0)
+			                        if (ldifInputField.getGroupSymbol()!=null && ldifInputField.getGroupSymbol().length()>0)
 			                        {
-			                            if (xmlInputField.getCurrencySymbol()!=null && xmlInputField.getCurrencySymbol().length()>0)
+			                            if (ldifInputField.getCurrencySymbol()!=null && ldifInputField.getCurrencySymbol().length()>0)
 			                            {
-			                                v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol(), xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
+			                                v.str2num(ldifInputField.getFormat(), ldifInputField.getDecimalSymbol(), ldifInputField.getGroupSymbol(), ldifInputField.getCurrencySymbol());
 			                            }
 			                            else
 			                            {
-			                                v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol(), xmlInputField.getGroupSymbol());
+			                                v.str2num(ldifInputField.getFormat(), ldifInputField.getDecimalSymbol(), ldifInputField.getGroupSymbol());
 			                            }
 			                        }
 			                        else
 			                        {
-			                            v.str2num(xmlInputField.getFormat(), xmlInputField.getDecimalSymbol());
+			                            v.str2num(ldifInputField.getFormat(), ldifInputField.getDecimalSymbol());
 			                        }
 			                    }
 			                    else
 			                    {
-			                        v.str2num(xmlInputField.getFormat()); // just a format mask
+			                        v.str2num(ldifInputField.getFormat()); // just a format mask
 			                   }
 			                }
 			                else
 			                {
 			                    v.str2num();
 			                }
-			                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
+			                v.setLength(ldifInputField.getLength(), ldifInputField.getPrecision());
 			                break;
 			            case Value.VALUE_TYPE_INTEGER:
 			                // System.out.println("Convert value to integer :"+v);
 			                v.setValue(v.getInteger());
-			                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
+			                v.setLength(ldifInputField.getLength(), ldifInputField.getPrecision());
 			                break;
 			            case Value.VALUE_TYPE_BIGNUMBER:
 			                // System.out.println("Convert value to BigNumber :"+v);
 			                v.setValue(v.getBigNumber());
-			                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
+			                v.setLength(ldifInputField.getLength(), ldifInputField.getPrecision());
 			                break;
 			            case Value.VALUE_TYPE_DATE:
 			                // System.out.println("Convert value to Date :"+v);
 
-			                if (xmlInputField.getFormat()!=null && xmlInputField.getFormat().length()>0)
+			                if (ldifInputField.getFormat()!=null && ldifInputField.getFormat().length()>0)
 			                {
-			                    v.str2dat(xmlInputField.getFormat());
+			                    v.str2dat(ldifInputField.getFormat());
 			                }
 			                else
 			                {
