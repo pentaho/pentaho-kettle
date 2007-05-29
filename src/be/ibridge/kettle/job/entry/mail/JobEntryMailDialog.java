@@ -15,13 +15,19 @@
 
 package be.ibridge.kettle.job.entry.mail;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -150,11 +156,15 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
     private FormData fdlComment, fdComment;
 
-    private Label wlOnlyComment;
+    private Label wlOnlyComment, wlUseHTML;
 
-    private Button wOnlyComment;
+    private Button wOnlyComment, wUseHTML;
 
-    private FormData fdlOnlyComment, fdOnlyComment;
+    private FormData fdlOnlyComment, fdOnlyComment, fdlUseHTML, fdUseHTML;
+    
+    private Label        wlEncoding;
+    private CCombo       wEncoding;
+    private FormData     fdlEncoding, fdEncoding;
 
     private Button wOK, wCancel;
 
@@ -171,6 +181,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
     private Props props;
 
     private Display display;
+    
+    private boolean  gotEncodings = false;
+    
+
 
     public JobEntryMailDialog(Shell parent, JobEntryMail jobEntry)
     {
@@ -499,6 +513,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
+        
+
+        
         // Only send the comment in the mail body
         wlOnlyComment = new Label(shell, SWT.RIGHT);
         wlOnlyComment.setText(Messages.getString("JobMail.OnlyCommentInBody.Label"));
@@ -522,7 +539,72 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
                 jobEntry.setChanged();
             }
         });
+        
+        
+       
 
+        // Encoding
+        wlEncoding=new Label(shell, SWT.RIGHT);
+        wlEncoding.setText(Messages.getString("JobMail.Encoding.Label"));
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.bottom  = new FormAttachment(wOnlyComment, -margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, margin);
+        fdEncoding.bottom  = new FormAttachment(wOnlyComment,-margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+        
+        
+        // HTML format ?
+        wlUseHTML = new Label(shell, SWT.RIGHT);
+        wlUseHTML.setText(Messages.getString("JobMail.UseHTMLInBody.Label"));
+        props.setLook(wlUseHTML);
+        fdlUseHTML = new FormData();
+        fdlUseHTML.left = new FormAttachment(0, 0);
+        fdlUseHTML.bottom = new FormAttachment(wEncoding, -margin );
+        fdlUseHTML.right = new FormAttachment(middle, -margin);
+        wlUseHTML.setLayoutData(fdlUseHTML);
+        wUseHTML = new Button(shell, SWT.CHECK);
+        props.setLook(wUseHTML);
+        fdUseHTML = new FormData();
+        fdUseHTML.left = new FormAttachment(middle, margin);
+        fdUseHTML.bottom = new FormAttachment(wEncoding, -margin );
+        fdUseHTML.right = new FormAttachment(100, 0);
+        wUseHTML.setLayoutData(fdUseHTML);
+        wUseHTML.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	SetEnabledEncoding();
+            	jobEntry.setChanged();
+            }
+        });
+           
+        
         // Comment line
         wlComment = new Label(shell, SWT.RIGHT);
         wlComment.setText(Messages.getString("JobMail.Comment.Label"));
@@ -540,7 +622,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdComment.left = new FormAttachment(middle, margin);
         fdComment.top = new FormAttachment(wPhone, margin);
         fdComment.right = new FormAttachment(100, 0);
-        fdComment.bottom = new FormAttachment(wOnlyComment, -margin);
+        fdComment.bottom = new FormAttachment(wEncoding, -margin);
         wComment.setLayoutData(fdComment);
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
         wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
@@ -598,6 +680,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
         getData();
 
+        SetEnabledEncoding();
+        
         BaseStepDialog.setSize(shell);
 
         shell.open();
@@ -610,6 +694,13 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         return jobEntry;
     }
 
+    private void SetEnabledEncoding ()
+    {
+        wEncoding.setEnabled(wUseHTML.getSelection());
+        wlEncoding.setEnabled(wUseHTML.getSelection());
+        	
+    }
+    
     protected void setFlags()
     {
         wlTypes.setEnabled(wIncludeFiles.getSelection());
@@ -676,6 +767,18 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             wAuthPass.setText(jobEntry.getAuthenticationPassword());
 
         wOnlyComment.setSelection(jobEntry.isOnlySendComment());
+        
+        wUseHTML.setSelection(jobEntry.isUseHTML());
+        
+        if (jobEntry.getEncoding()!=null) 
+        {
+        	wEncoding.setText(""+jobEntry.getEncoding());
+        }else {
+        	
+        	wEncoding.setText("UTF-8");
+        
+        }
+        
 
         setFlags();
     }
@@ -713,7 +816,33 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         jobEntry.setUsingAuthentication(wUseAuth.getSelection());
         jobEntry.setUsingSecureAuthentication(wUseSecAuth.getSelection());
         jobEntry.setOnlySendComment(wOnlyComment.getSelection());
+        jobEntry.setUseHTML(wUseHTML.getSelection());
+        
+        jobEntry.setEncoding(wEncoding.getText());
 
         dispose();
+    }
+    
+
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
     }
 }

@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.mail;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -97,8 +98,11 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     private String authenticationPassword;
     
     private boolean onlySendComment;
+    private boolean useHTML;
     private boolean usingSecureAuthentication;
     private String port;
+    /** The encoding to use for reading: null or empty string means system default encoding */
+    private String encoding;
     
 	public JobEntryMail(String n)
 	{
@@ -152,6 +156,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         retval.append("      ").append(XMLHandler.addTagValue("auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword)));
 
         retval.append("      ").append(XMLHandler.addTagValue("only_comment", onlySendComment));
+        retval.append("      ").append(XMLHandler.addTagValue("use_HTML", useHTML));
+        retval.append("    "+XMLHandler.addTagValue("encoding",        encoding));
+        
 
         retval.append("      <filetypes>");
         if (fileType!=null)
@@ -193,6 +200,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "auth_password") ) );
 
             setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_comment") ) );
+            setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "use_HTML") ) );
+            
+            
+            setEncoding      ( XMLHandler.getTagValue(entrynode, "encoding") );
             
 			Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
 			int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
@@ -233,6 +244,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			contactPerson   = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
 			contactPhone    = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
 			comment         = rep.getJobEntryAttributeString (id_jobentry, "comment");
+			encoding         = rep.getJobEntryAttributeString (id_jobentry, "encoding");
 			includingFiles  = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
 			
             usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
@@ -241,6 +253,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             authenticationPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "auth_password") );
 
             onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
+            useHTML = rep.getJobEntryAttributeBoolean(id_jobentry, "use_HTML");
+            
+            
 
 			int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
 			allocate(nrTypes);
@@ -279,6 +294,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contactPerson);
 			rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contactPhone);
 			rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
+			rep.saveJobEntryAttribute(id_job, getID(), "encoding", encoding);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includingFiles);
             rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
             rep.saveJobEntryAttribute(id_job, getID(), "use_secure_auth", usingSecureAuthentication);
@@ -286,6 +302,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             rep.saveJobEntryAttribute(id_job, getID(), "auth_password", Encr.encryptPasswordIfNotUsingVariables( authenticationPassword ));
             
             rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
+            rep.saveJobEntryAttribute(id_job, getID(), "use_HTML", useHTML);
+            
+            
 			
 			if (fileType!=null)
 			{
@@ -524,6 +543,40 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     }
     
     
+    /**
+     * @return the useHTML flag
+     */
+    public boolean isUseHTML()
+    {
+        return useHTML;
+    }
+
+    /**
+     * @param useHTML the useHTML to set
+     */
+    public void setUseHTML(boolean UseHTML)
+    {
+        this.useHTML = UseHTML;
+    }
+    
+    
+    /**
+     * @return the encoding
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+    /**
+     * @param encoding the encoding to set
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
+    
+    
 	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -579,6 +632,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			// create a message
 		    Message msg = new MimeMessage(session);
 		    
+	
+		    
 		    String email_address = StringUtil.environmentSubstitute(replyAddress);
 		    if ( !Const.isEmpty(email_address) )
 		    {
@@ -624,6 +679,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			msg.setSentDate(new Date());
 			StringBuffer messageText = new StringBuffer();
 
+			
+			
 
 		    if (comment!=null)
 		    {
@@ -686,8 +743,29 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		    Multipart parts = new MimeMultipart();
 			MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
  	 												 // 1st part
-			part1.setText(messageText.toString());
+			
+			if (useHTML)
+			{
+				
+				if (!Const.isEmpty(getEncoding()))
+				{
+					part1.setContent(messageText.toString(), "text/html; " + "charset=" + getEncoding()); 
+				}
+				else
+				{
+					part1.setContent(messageText.toString(), "text/html; " + "charset=ISO-8859-1"); 
+				}
+				
+			}
+				
+			else
+				part1.setText(messageText.toString());
+							
+			
+			
 			parts.addBodyPart(part1);
+			
+			
 			if (includingFiles && result != null)
 		    {
 				List resultFiles = result.getResultFilesList();
@@ -805,6 +883,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			    }
 			}
 		    msg.setContent(parts);
+			
 
             Transport transport = null;
             try
@@ -921,6 +1000,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		return result;
 	}
 
+   
+    
+
     private void addBacktracking(JobTracker jobTracker, StringBuffer messageText)
     {
         addBacktracking(jobTracker, messageText, 0);
@@ -1017,4 +1099,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     {
         this.port = port;
     }
-}
+    
+
+    
+
+}   
+
+    
+
+   
