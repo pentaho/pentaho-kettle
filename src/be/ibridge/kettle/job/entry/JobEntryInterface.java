@@ -53,6 +53,8 @@ import be.ibridge.kettle.job.entry.abort.JobEntryAbort;
 import be.ibridge.kettle.job.entry.ping.JobEntryPing;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.job.entry.deletefiles.JobEntryDeleteFiles;
+import be.ibridge.kettle.job.entry.success.JobEntrySuccess;
+import be.ibridge.kettle.job.entry.xsdvalidator.JobEntryXSDValidator;
 
 
 /**
@@ -93,6 +95,8 @@ public interface JobEntryInterface
 	public static final int TYPE_JOBENTRY_GET_POP= 25;
 	public static final int TYPE_JOBENTRY_PING= 26;
 	public static final int TYPE_JOBENTRY_DELETE_FILES    = 27;
+	public static final int TYPE_JOBENTRY_SUCCESS    = 28;
+	public static final int TYPE_JOBENTRY_XSD_VALIDATOR    = 29;
 
 	public final static String typeCode[] =
 		{
@@ -123,7 +127,9 @@ public interface JobEntryInterface
 			"ABORT",
 			"GET_POP",
 			"PING",
-			"DELETE_FILES"
+			"DELETE_FILES",
+			"SUCCESS",
+			"XSD_VALIDATOR"
 		};
 
 	public final static String typeDesc[] =
@@ -156,6 +162,8 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.GetPOP.TypeDesc"),
 			Messages.getString("JobEntry.Ping.TypeDesc"),
 			Messages.getString("JobEntry.DeleteFiles.TypeDesc"),
+			Messages.getString("JobEntry.Success.TypeDesc"),
+			Messages.getString("JobEntry.XSDValidator.TypeDesc"),
 		};
 
 	public final static String icon_filename[] = 
@@ -188,6 +196,8 @@ public interface JobEntryInterface
 			"GETPOP.png",
 			"PNG.png",
 			"DFS.png",
+			"SUC.png",
+			"XSD.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -220,6 +230,8 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.GetPOP.Tooltip"),
 			Messages.getString("JobEntry.Ping.Tooltip"),
 			Messages.getString("JobEntry.DeleteFiles.Tooltip"),
+			Messages.getString("JobEntry.Success.Tooltip"),
+			Messages.getString("JobEntry.XSDValidator.Tooltip"),
  		};
 	
 	public final static Class type_classname[] = 
@@ -252,6 +264,8 @@ public interface JobEntryInterface
 			JobEntryGetPOP.class,
 			JobEntryPing.class,
 			JobEntryDeleteFiles.class,
+			JobEntrySuccess.class,
+			JobEntryXSDValidator.class,
 		};
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
