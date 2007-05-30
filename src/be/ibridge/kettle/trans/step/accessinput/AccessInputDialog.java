@@ -390,7 +390,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         fdTable=new FormData();
         fdTable.left = new FormAttachment(middle, 0);
         fdTable.top  = new FormAttachment(0, margin);
-        fdTable.right= new FormAttachment(100, -50);
+        fdTable.right= new FormAttachment(100, -70);
         wTable.setLayoutData(fdTable);
         
         
@@ -1187,7 +1187,8 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			
 
 		    FileInputList inputList = meta.getFiles();
-
+		    
+		
 			 // Open the file (only first file)...
 		
 			d = Database.open(new File(KettleVFS.getFilename(inputList.getFile(0))));	
@@ -1210,7 +1211,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		 catch(Throwable e)
 	        {
-	            new ErrorDialog(shell, Messages.getString("AccessInputMeta.UnableToGetListOfTables.Title"), Messages.getString("AccessOutputDialog.UnableToGetListOfTables.Message"), new Exception(e));
+	            new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), new Exception(e));
 	        }
 	        finally
 	        {
