@@ -21,17 +21,12 @@
 
 package be.ibridge.kettle.trans.step.accessinput;
 
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import netscape.ldap.LDAPAttribute;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -58,14 +53,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
-
-
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
-
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -85,6 +75,9 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
 
 public class AccessInputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -905,7 +898,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		  try 
 		  {
-		    int number = Integer.parseInt(str);
+		    Integer.parseInt(str);
 		  }
 		  catch(NumberFormatException e)   {return false; }
 		  return true;
@@ -915,7 +908,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		  try 
 		  {
-		    float number = Float.parseFloat(str);
+		     Float.parseFloat(str);
 		  }
 		  catch(Exception e)   {return false; }
 		  return true;
@@ -927,30 +920,11 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		  try 
 		  {
 		        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-		        Date resultdate = fdate.parse(str);
+		        fdate.parse(str);
 		  }
 		  catch(Exception e)   {return false; }
 		  return true;
 	}
-	
-	private String GetValue(LDAPAttribute[] attributes_LDIF ,String AttributValue)
-	{
-		String Stringvalue=null;
-        
-		for (int j = 0; j < attributes_LDIF.length; j++) 
-		{
-			LDAPAttribute attribute_DIF = attributes_LDIF[j];
-			if (attribute_DIF.getName().equalsIgnoreCase(AttributValue))
-			{
-				Enumeration valuesLDIF = attribute_DIF.getStringValues();
-				// Get the first occurence
-				Stringvalue = (String) valuesLDIF.nextElement();
-			}
-		}
-		
-		return Stringvalue;
-	}
-
 
 	public void setMultiple()
 	{
