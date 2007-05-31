@@ -982,12 +982,12 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
         }
         /*catch(KettleException e)
         {
-            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogMessage"), e);
         }*/
        
         catch(Exception e)
         {
-            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputPathDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
 	
