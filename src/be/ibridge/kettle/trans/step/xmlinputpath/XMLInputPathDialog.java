@@ -25,7 +25,6 @@ package be.ibridge.kettle.trans.step.xmlinputpath;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -57,11 +56,10 @@ import org.eclipse.swt.widgets.Text;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
-
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -81,7 +79,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
-import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathMeta;
 
 
 public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInterface
@@ -867,7 +864,6 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
         {
         	XMLInputPathMeta meta = new XMLInputPathMeta();
         	getInfo(meta);
-        	XMLInputPathField field = new XMLInputPathField();
         	
         	//	 check if the path is given 
     		if (!checkLoopXPath(meta)) return;
@@ -908,10 +904,10 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     		            TableItem item = new TableItem(wFields.table, SWT.NONE);
     		            item.setText(1, widgetNode.getChildNodes().item(i).getNodeName());
     		            item.setText(2, widgetNode.getChildNodes().item(i).getNodeName());
-    		            item.setText(3,field.ElementTypeDesc[0]);
+    		            item.setText(3, XMLInputPathField.ElementTypeDesc[0]);
     		             
     		            // Get Node value
-    		            valueNode=widgetNode.getChildNodes().item(i).getTextContent(); 
+    		            valueNode=XMLHandler.getNodeValue( widgetNode.getChildNodes().item(i) ); 
     		           
     					// Try to get the Type
     		            if(IsDate(valueNode))
@@ -942,7 +938,7 @@ public class XMLInputPathDialog extends BaseStepDialog implements StepDialogInte
     		            TableItem item = new TableItem(wFields.table, SWT.NONE);
     		            item.setText(1, widgetNode.getAttributes().item(i).getNodeName());
     		            item.setText(2, widgetNode.getAttributes().item(i).getNodeName());
-    		            item.setText(3,field.ElementTypeDesc[1]);
+    		            item.setText(3, XMLInputPathField.ElementTypeDesc[1]);
     		            
     		            // Get Node value
     		            valueNode = widgetNode.getAttributes().item(i).getNodeValue(); 
@@ -996,7 +992,7 @@ private boolean IsInteger(String str)
 {
 	  try 
 	  {
-	    int number = Integer.parseInt(str);
+	     Integer.parseInt(str);
 	  }
 	  catch(NumberFormatException e)   {return false; }
 	  return true;
@@ -1006,7 +1002,7 @@ private boolean IsNumber(String str)
 {
 	  try 
 	  {
-	    float number = Float.parseFloat(str);
+	     Float.parseFloat(str);
 	  }
 	  catch(Exception e)   {return false; }
 	  return true;
@@ -1018,7 +1014,7 @@ private boolean IsDate(String str)
 	  try 
 	  {
 	        SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-	        Date resultdate = fdate.parse(str);
+	        fdate.parse(str);
 	  }
 	  catch(Exception e)   {return false; }
 	  return true;
