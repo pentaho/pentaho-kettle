@@ -189,7 +189,7 @@ public class JobEntrySuccessDialog extends Dialog implements JobEntryDialogInter
         BaseStepDialog.setSize(shell);
 
         shell.open();
-        props.setDialogSize(shell, "JobAbortDialogSize");
+        props.setDialogSize(shell, "JobSuccessDialogSize");
         while (!shell.isDisposed())
         {
             if (!display.readAndDispatch())

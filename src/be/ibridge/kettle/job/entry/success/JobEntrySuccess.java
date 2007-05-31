@@ -31,7 +31,7 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
 /**
- * Job entry type to abort a job.
+ * Job entry type to success a job.
  * 
  * @author Samatar
  * @since 12-02-2007
