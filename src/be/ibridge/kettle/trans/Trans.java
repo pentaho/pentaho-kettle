@@ -1897,7 +1897,7 @@ public class Trans
                 masterServer = transSplitter.getMasterServer();
                 if (executionConfiguration.isClusterPosting())
                 {
-                    String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -1919,7 +1919,7 @@ public class Trans
                     variables.addValue(new Value(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i)));
                     variables.addValue(new Value(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length)));
 
-                    String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
