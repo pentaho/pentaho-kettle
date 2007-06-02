@@ -41,6 +41,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathField;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -111,12 +112,92 @@ public class AccessInput extends BaseStep implements StepInterface
 				// Execute for each Input field...
 				for (int i=0;i<meta.getInputFields().length;i++)
 				{
-
+					AccessInputField accessInputField = meta.getInputFields()[i];
+					
 					Object obj = rw.get(meta.getInputFields()[i].getAttribut());	
 				
 					// OK, we have the string...
 					Value v = row.getValue(i);
 					v.setValue(String.valueOf(obj));
+					
+					
+					// DO Trimming!
+					switch(accessInputField.getTrimType())
+					{
+						case AccessInputField.TYPE_TRIM_LEFT  : v.ltrim(); break;
+						case AccessInputField.TYPE_TRIM_RIGHT : v.rtrim(); break;
+						case AccessInputField.TYPE_TRIM_BOTH  : v.trim(); break;
+						default: break;
+					}
+					
+		            
+					// DO CONVERSIONS...
+					switch(accessInputField.getType())
+					{
+						case Value.VALUE_TYPE_STRING:
+							break;
+						case Value.VALUE_TYPE_NUMBER:
+							// System.out.println("Convert value to Number :"+v);
+							if (accessInputField.getFormat()!=null && accessInputField.getFormat().length()>0)
+							{
+								if (accessInputField.getDecimalSymbol()!=null && accessInputField.getDecimalSymbol().length()>0)
+								{
+									if (accessInputField.getGroupSymbol()!=null && accessInputField.getGroupSymbol().length()>0)
+									{
+										if (accessInputField.getCurrencySymbol()!=null && accessInputField.getCurrencySymbol().length()>0)
+										{
+											v.str2num(accessInputField.getFormat(), accessInputField.getDecimalSymbol(), accessInputField.getGroupSymbol(), accessInputField.getCurrencySymbol());
+										}
+										else
+										{
+											v.str2num(accessInputField.getFormat(), accessInputField.getDecimalSymbol(), accessInputField.getGroupSymbol());
+										}
+									}
+									else
+									{
+										v.str2num(accessInputField.getFormat(), accessInputField.getDecimalSymbol());
+									}
+								}
+								else
+								{
+									v.str2num(accessInputField.getFormat()); // just a format mask
+								}
+							}
+							else
+							{
+								v.str2num();
+							}
+							v.setLength(accessInputField.getLength(), accessInputField.getPrecision());
+							break;
+						case Value.VALUE_TYPE_INTEGER:
+							// System.out.println("Convert value to integer :"+v);
+							v.setValue(v.getInteger());
+							v.setLength(accessInputField.getLength(), accessInputField.getPrecision());
+							break;
+						case Value.VALUE_TYPE_BIGNUMBER:
+							// System.out.println("Convert value to BigNumber :"+v);
+							v.setValue(v.getBigNumber());
+							v.setLength(accessInputField.getLength(), accessInputField.getPrecision());
+							break;
+						case Value.VALUE_TYPE_DATE:
+							// System.out.println("Convert value to Date :"+v);
+
+							if (accessInputField.getFormat()!=null && accessInputField.getFormat().length()>0)
+							{
+								v.str2dat(accessInputField.getFormat());
+							}
+							else
+							{
+								v.setValue(v.getDate());
+							}
+							break;
+						case Value.VALUE_TYPE_BOOLEAN:
+							v.setValue(v.getBoolean());
+							break;
+						default: break;
+					}
+					
+					
 		            
 		            // Do we need to repeat this field if it is null?
 		            if (meta.getInputFields()[i].isRepeated())
@@ -130,12 +211,20 @@ public class AccessInput extends BaseStep implements StepInterface
 		 			
 				}    // End of loop over fields...
 		            
-				   // See if we need to add the filename to the row...  
+				// See if we need to add the filename to the row...  
 		        if (meta.includeFilename() && meta.getFilenameField()!=null && meta.getFilenameField().length()>0)
 		        {
 		            Value fn = new Value( meta.getFilenameField(), KettleVFS.getFilename(data.file));
 		            row.addValue(fn);
 		        }
+		        
+		 	   // See if we need to add the tablename to the row...  
+		        if (meta.includeTablename() && meta.gettablenameField()!=null && meta.gettablenameField().length()>0)
+		        {
+		            Value fn = new Value( meta.gettablenameField(), meta.getRealTableName());
+		            row.addValue(fn);
+		        }
+		        
 		        
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && meta.getRowNumberField()!=null && meta.getRowNumberField().length()>0)
