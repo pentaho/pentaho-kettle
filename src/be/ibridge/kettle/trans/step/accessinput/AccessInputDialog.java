@@ -1045,7 +1045,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
             {
     			TableItem item  = wFields.table.getItem(i);
     			String name     = field.getName();
-    			String xpath	= field.getAttribut();
+    			String xpath	= field.getAttribute();
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
@@ -1138,7 +1138,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			TableItem item  = wFields.getNonEmpty(i);
             
 			field.setName( item.getText(1) );
-			field.setAttribut( item.getText(2) );
+			field.setAttribute( item.getText(2) );
 			field.setType( Value.getType(item.getText(3)) );
 			field.setFormat( item.getText(4) );
 			field.setLength( Const.toInt(item.getText(5), -1) );
@@ -1273,26 +1273,19 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 		        wTable.setText(tablename);
 		    }
 		}
-		 catch(Throwable e)
+		catch(Throwable e)
+	    {
+	        new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), new Exception(e));
+	    }
+	    finally
+	    {
+	        // Don't forget to close the bugger.
+	        try
 	        {
-	            new ErrorDialog(shell, Messages.getString("AccessInputDialog.UnableToGetListOfTables.Title"), Messages.getString("AccessInputDialog.UnableToGetListOfTables.Message"), new Exception(e));
+	            if (d!=null) d.close();
 	        }
-	        finally
-	        {
-	            // Don't forget to close the bugger.
-	            try
-	            {
-	                if (d!=null) d.close();
-	            }
-	            catch(Exception e)
-	            {
-	                
-	            }
-	        }
-				
-		         
+	        catch(Exception e)
+	        {}
+        }
 	}
-
-	
-	
 }

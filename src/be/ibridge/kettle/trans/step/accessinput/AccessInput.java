@@ -16,10 +16,7 @@
 
 package be.ibridge.kettle.trans.step.accessinput;
 
-//import java.util.Enumeration;
 import java.io.File;
-//import java.util.List;
-//import java.util.Iterator;
 import java.util.Map;
 
 import com.healthmarketscience.jackcess.Database;
@@ -41,7 +38,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.xmlinputpath.XMLInputPathField;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -94,8 +90,6 @@ public class AccessInput extends BaseStep implements StepInterface
 		
 		try 
 		{			
-			
-			
         	d = Database.open(new File(KettleVFS.getFilename(data.file)));			
 			Table t=d.getTable(meta.getRealTableName());
 
@@ -104,8 +98,6 @@ public class AccessInput extends BaseStep implements StepInterface
 			int rowCount = 0;
 			while ((rowCount++ < Long.MAX_VALUE) && ((rw = t.getNextRow()) != null)) 
 			{
-				
-				
 				// Create new row
 				Row row = buildEmptyRow();
 						
@@ -114,13 +106,12 @@ public class AccessInput extends BaseStep implements StepInterface
 				{
 					AccessInputField accessInputField = meta.getInputFields()[i];
 					
-					Object obj = rw.get(meta.getInputFields()[i].getAttribut());	
+					Object obj = rw.get(meta.getInputFields()[i].getAttribute());	
 				
 					// OK, we have the string...
 					Value v = row.getValue(i);
 					v.setValue(String.valueOf(obj));
-					
-					
+										
 					// DO Trimming!
 					switch(accessInputField.getTrimType())
 					{
@@ -130,7 +121,6 @@ public class AccessInput extends BaseStep implements StepInterface
 						default: break;
 					}
 					
-		            
 					// DO CONVERSIONS...
 					switch(accessInputField.getType())
 					{
@@ -196,8 +186,6 @@ public class AccessInput extends BaseStep implements StepInterface
 							break;
 						default: break;
 					}
-					
-					
 		            
 		            // Do we need to repeat this field if it is null?
 		            if (meta.getInputFields()[i].isRepeated())
@@ -218,13 +206,12 @@ public class AccessInput extends BaseStep implements StepInterface
 		            row.addValue(fn);
 		        }
 		        
-		 	   // See if we need to add the tablename to the row...  
+ 		 	    // See if we need to add the tablename to the row...  
 		        if (meta.includeTablename() && meta.gettablenameField()!=null && meta.gettablenameField().length()>0)
 		        {
 		            Value fn = new Value( meta.gettablenameField(), meta.getRealTableName());
 		            row.addValue(fn);
-		        }
-		        
+		        }		        
 		        
 		        // See if we need to add the row number to the row...  
 		        if (meta.includeRowNumber() && meta.getRowNumberField()!=null && meta.getRowNumberField().length()>0)
@@ -240,8 +227,7 @@ public class AccessInput extends BaseStep implements StepInterface
 				if (log.isRowLevel()) logRowlevel(Messages.getString("AccessInput.Log.ReadRow", row.toString()));        
 	            
 				putRow(row);
-			}
-			       
+			}			       
 		} 
 		catch(Exception e)
 		{
@@ -249,18 +235,16 @@ public class AccessInput extends BaseStep implements StepInterface
 			stopAll();
 			setErrors(1);
 		} 
-		 finally
+		finally
+	    {
+	        // Don't forget to close the bugger.
+	        try
 	        {
-	            // Don't forget to close the bugger.
-	            try
-	            {
-	                if (d!=null) d.close();
-	            }
-	            catch(Exception e)
-	            {
-	                
-	            }
+	             if (d!=null) d.close();
 	        }
+	        catch(Exception e)
+	        {}
+	    }
 	}
 	
 	

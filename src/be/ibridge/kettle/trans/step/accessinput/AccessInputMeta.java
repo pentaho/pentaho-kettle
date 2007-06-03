@@ -505,7 +505,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			    AccessInputField field = new AccessInputField();
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
-				field.setAttribut( rep.getStepAttributeString (id_step, i, "field_attribut") );
+				field.setAttribute( rep.getStepAttributeString (id_step, i, "field_attribut") );
 				field.setType( Value.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
 				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
@@ -550,7 +550,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 			    AccessInputField field = inputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribut",       field.getAttribut());
+				rep.saveStepAttribute(id_transformation, id_step, i, "fied_attribut",       field.getAttribute());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());

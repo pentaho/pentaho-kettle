@@ -52,7 +52,7 @@ public class AccessInputField implements Cloneable
     public final static String POSITION_MARKER  = ",";
     
 	private String 	  name;
-	private String 	  attribut;
+	private String 	  attribute;
 	private AccessInputFieldPosition[] fieldPosition;
 	
     private int 	  type;
@@ -70,16 +70,16 @@ public class AccessInputField implements Cloneable
     
 	public AccessInputField(String fieldname, AccessInputFieldPosition[] AccessInputFieldPositions)
 	{
-		this.name             = fieldname;
-		this.attribut        = "";
-		this.fieldPosition   = AccessInputFieldPositions;
+		this.name           = fieldname;
+		this.attribute      = "";
+		this.fieldPosition  = AccessInputFieldPositions;
 		this.length         = -1;
 		this.type           = Value.VALUE_TYPE_STRING;
 		this.format         = "";
 		this.trimtype       = TYPE_TRIM_NONE;
-		this.groupSymbol   = "";
-		this.decimalSymbol = "";
-		this.currencySymbol= "";
+		this.groupSymbol    = "";
+		this.decimalSymbol  = "";
+		this.currencySymbol = "";
 		this.precision      = -1;
 		this.repeat         = false;
 	}
@@ -95,7 +95,7 @@ public class AccessInputField implements Cloneable
         
         retval+="      <field>"+Const.CR;
         retval+="        "+XMLHandler.addTagValue("name",         getName());
-        retval+="        "+XMLHandler.addTagValue("attribut",      getAttribut());
+        retval+="        "+XMLHandler.addTagValue("attribute",    getAttribute());
         retval+="        "+XMLHandler.addTagValue("type",         getTypeDesc());
         retval+="        "+XMLHandler.addTagValue("format",       getFormat());
         retval+="        "+XMLHandler.addTagValue("currency",     getCurrencySymbol());
@@ -106,8 +106,7 @@ public class AccessInputField implements Cloneable
         retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeCode());
         retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
         
-
-        retval+="        </field>"+Const.CR;
+        retval+="      </field>"+Const.CR;
         
         return retval;
     }
@@ -115,7 +114,7 @@ public class AccessInputField implements Cloneable
 	public AccessInputField(Node fnode) throws KettleValueException
     {
         setName( XMLHandler.getTagValue(fnode, "name") );
-        setAttribut( XMLHandler.getTagValue(fnode, "attribut") );
+        setAttribute( XMLHandler.getTagValue(fnode, "attribute") );
         setType( Value.getType(XMLHandler.getTagValue(fnode, "type")) );
         setFormat( XMLHandler.getTagValue(fnode, "format") );
         setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
@@ -227,19 +226,19 @@ public class AccessInputField implements Cloneable
 		return name;
 	}
 	
-	public String getAttribut()
+	public String getAttribute()
 	{
-		return attribut;
+		return attribute;
 	}
 	
 	public String getRealAttribut()
 	{
-	   	return  StringUtil.environmentSubstitute(getAttribut());
+	   	return  StringUtil.environmentSubstitute(getAttribute());
 	} 
 	
-	public void setAttribut(String fieldattribut)
+	public void setAttribute(String fieldattribut)
 	{
-		this.attribut = fieldattribut;
+		this.attribute = fieldattribut;
 	}
 	public void setName(String fieldname)
 	{
@@ -291,7 +290,6 @@ public class AccessInputField implements Cloneable
 		return getTrimTypeCode(trimtype);
 	}
   
-
 	public String getTrimTypeDesc()
 	{
 		return getTrimTypeDesc(trimtype);
@@ -302,7 +300,6 @@ public class AccessInputField implements Cloneable
 		this.trimtype= trimtype;
 	}
 	
-
 	public String getGroupSymbol()
 	{
 		return groupSymbol;
