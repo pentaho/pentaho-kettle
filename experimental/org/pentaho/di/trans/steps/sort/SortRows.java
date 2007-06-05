@@ -23,6 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.zip.GZIPInputStream;
@@ -346,6 +347,15 @@ public class SortRows extends BaseStep implements StepInterface
             data.buffer = new Object[meta.getSortSize()];
             data.bufferSize = 0;
 		    // Add init code here.
+            
+            if (meta.getSortSize()>0)
+            {
+                data.rowbuffer=new ArrayList(meta.getSortSize());
+            }
+            else
+            {
+                data.rowbuffer=new ArrayList();
+            }
 		    return true;
 		}
 		return false;

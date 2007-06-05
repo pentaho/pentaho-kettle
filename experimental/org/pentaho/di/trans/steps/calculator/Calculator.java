@@ -109,11 +109,18 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (!Const.isEmpty(function.getFieldA())) 
                 {
-                    data.fieldIndexes[i].indexA = data.calcRowMeta.indexOfValue(function.getFieldA());
-                    if (data.fieldIndexes[i].indexA<0)
+                    if (function.getCalcType()!=CalculatorMetaFunction.CALC_CONSTANT)
                     {
-                        // Nope: throw an exception
-                        throw new KettleStepException("Unable to find the first argument field '"+function.getFieldName()+" for calculation #"+(i+1));
+                        data.fieldIndexes[i].indexA = data.calcRowMeta.indexOfValue(function.getFieldA());
+                        if (data.fieldIndexes[i].indexA<0)
+                        {
+                            // Nope: throw an exception
+                            throw new KettleStepException("Unable to find the first argument field '"+function.getFieldName()+" for calculation #"+(i+1));
+                        }
+                    }
+                    else
+                    {
+                        data.fieldIndexes[i].indexA = -1;
                     }
                 }
                 else
@@ -310,7 +317,7 @@ public class Calculator extends BaseStep implements StepInterface
                     break;
                 case CalculatorMetaFunction.CALC_CONSTANT           : // Set field to constant value...
                     {
-                        calcData[index] = dataA; // A string
+                        calcData[index] = fn.getFieldA(); // A string
                         resultType=ValueMetaInterface.TYPE_STRING;
                     }
                     break;

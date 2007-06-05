@@ -54,7 +54,6 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 		fis  =new ArrayList();
 		dis  =new ArrayList();
 		gzis = new ArrayList();
-		rowbuffer=new ArrayList();
 	}
 
 }
