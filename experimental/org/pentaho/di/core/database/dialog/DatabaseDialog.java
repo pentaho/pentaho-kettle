@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Messages;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.ConnectionPoolUtil;
 import org.pentaho.di.core.database.Database;
@@ -55,6 +56,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.core.dialog.SelectRowDialog;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
@@ -66,6 +68,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
@@ -694,28 +697,35 @@ public class DatabaseDialog extends Dialog
                 new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolValue"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
         };
         colinfo[2].setUsingVariables(true);
-        final ArrayList parameters = DatabaseConnectionPoolParameter.getRowList(BaseDatabaseMeta.poolingParameters, Messages
-                .getString("DatabaseDialog.column.PoolParameter"), Messages.getString("DatabaseDialog.column.PoolDefault"), Messages
-                .getString("DatabaseDialog.column.PoolDescription"));
+        final ArrayList parameters = DatabaseConnectionPoolParameter.getRowList(
+                BaseDatabaseMeta.poolingParameters,
+                Messages.getString("DatabaseDialog.column.PoolParameter"), 
+                Messages.getString("DatabaseDialog.column.PoolDefault"), 
+                Messages.getString("DatabaseDialog.column.PoolDescription"));
         colinfo[0].setSelectionAdapter(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
             {
-                /*
-                 * TODO: re-enable support for Options in the dialog
-                 * 
+                if (parameters.size()<=0) return;
+                
                 SelectRowDialog dialog = new SelectRowDialog(shell, SWT.NONE, parameters);
-                Object[] row = dialog.open();
+                RowMetaAndData row = dialog.open();
                 if (row != null)
                 {
                     // the parameter is the first value
-                    String parameterName = row.getValue(0).getString();
-                    String defaultValue = DatabaseConnectionPoolParameter.findParameter(parameterName, BaseDatabaseMeta.poolingParameters)
-                            .getDefaultValue();
-                    wPoolParameters.setText(Const.NVL(parameterName, ""), e.x, e.y);
-                    wPoolParameters.setText(Const.NVL(defaultValue, ""), e.x + 1, e.y);
+                    try
+                    {
+                        String parameterName = row.getRowMeta().getString(row.getData(), 0);
+                        String defaultValue = DatabaseConnectionPoolParameter.findParameter(parameterName, BaseDatabaseMeta.poolingParameters)
+                                .getDefaultValue();
+                        wPoolParameters.setText(Const.NVL(parameterName, ""), e.x, e.y);
+                        wPoolParameters.setText(Const.NVL(defaultValue, ""), e.x + 1, e.y);
+                    }
+                    catch(KettleValueException ex)
+                    {
+                        new ErrorDialog(shell, "Error", "Unexpected error retrieving selected row data", ex);
+                    }
                 }
-                */
             }
         });
 

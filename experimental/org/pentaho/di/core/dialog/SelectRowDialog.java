@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -63,15 +64,20 @@ public class SelectRowDialog extends Dialog
 	private Props         props;
 	private String        title;
     
-	private Object[] selection;
+	private RowMetaAndData selection;
     private RowMetaInterface rowMeta;
 	
-	public SelectRowDialog(Shell parent, int style, RowMetaInterface rowMeta, ArrayList buf)
+    /**
+     * 
+     * @param parent
+     * @param style
+     * @param buf
+     */
+	public SelectRowDialog(Shell parent, int style, ArrayList buffer)
 	{
 		super(parent, style);
-		buffer=buf;
+		this.buffer=buffer;
 		props=Props.getInstance();
-        this.rowMeta = rowMeta;
 		
 		selection = null;
 	}
@@ -81,7 +87,7 @@ public class SelectRowDialog extends Dialog
 		this.title=title;
 	}
 
-	public Object[] open()
+	public RowMetaAndData open()
 	{
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
@@ -100,8 +106,12 @@ public class SelectRowDialog extends Dialog
 		
 		int margin = Const.MARGIN;
 
+        // Simply exit and close in case we don't have anything to edit or show
+        //
 		if (buffer==null || buffer.size()==0) return null;
 		
+        rowMeta = ((RowMetaAndData)buffer.get(0)).getRowMeta();
+        
 		int FieldsRows=buffer.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[buffer.size()];
@@ -172,7 +182,9 @@ public class SelectRowDialog extends Dialog
 	{
 		for (int i=0;i<buffer.size();i++)
 		{
-			Object[] row = (Object[])buffer.get(i);
+			RowMetaAndData rowMetaAndData = (RowMetaAndData)buffer.get(i);
+            RowMetaInterface rowMeta = rowMetaAndData.getRowMeta();
+            Object[] rowData = rowMetaAndData.getData();
 			
 			for (int c=0;c<rowMeta.size();c++)
 			{
@@ -183,11 +195,11 @@ public class SelectRowDialog extends Dialog
                     {
                         if (v.isNumeric()) 
                         {
-                            show = v.getString(row[c]);
+                            show = v.getString(rowData[c]);
                         }
                         else
                         {
-                            show = v.getString(row[c]);
+                            show = v.getString(rowData[c]);
                         }
                     }
                     catch (KettleValueException e)
@@ -211,7 +223,7 @@ public class SelectRowDialog extends Dialog
 	    int idx[] = wFields.getSelectionIndices();
 	    if (idx.length==0) return;
         
-		selection=(Object[])buffer.get(idx[0]);
+		selection=(RowMetaAndData)buffer.get(idx[0]);
 		dispose();
 	}	
 }

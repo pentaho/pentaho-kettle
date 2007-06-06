@@ -2,8 +2,11 @@ package org.pentaho.di.core.database;
 
 import java.util.ArrayList;
 
-import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.value.Value;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DatabaseConnectionPoolParameter
 {
@@ -97,18 +100,24 @@ public class DatabaseConnectionPoolParameter
     
     public static final ArrayList getRowList(DatabaseConnectionPoolParameter[] poolParameters, String titleParameter, String titleDefaultValue, String titleDescription)
     {
+        RowMetaInterface rowMeta = new RowMeta();
+        
+        rowMeta.addValueMeta( new ValueMeta(titleParameter, ValueMetaInterface.TYPE_STRING) );
+        rowMeta.addValueMeta( new ValueMeta(titleDefaultValue, ValueMetaInterface.TYPE_STRING) );
+        rowMeta.addValueMeta( new ValueMeta(titleDescription, ValueMetaInterface.TYPE_STRING) );
+        
         ArrayList list = new ArrayList();
         
         for (int i=0;i<poolParameters.length;i++)
         {
             DatabaseConnectionPoolParameter p = poolParameters[i];
             
-            Row row = new Row();
+            Object[] row = new Object[rowMeta.size()];
+            row[0] = p.getParameter();
+            row[1] = p.getDefaultValue();
+            row[2] = p.getDescription();
             
-            row.addValue( new Value(titleParameter, p.getParameter()));
-            row.addValue( new Value(titleDefaultValue, p.getDefaultValue()));
-            row.addValue( new Value(titleDescription, p.getDescription()));
-            list.add(row);
+            list.add(new RowMetaAndData(rowMeta, row));
         }
         
         return list;
