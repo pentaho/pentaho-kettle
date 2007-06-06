@@ -52,6 +52,7 @@ import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
 import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
 import be.ibridge.kettle.trans.step.addxml.AddXMLMeta;
 import be.ibridge.kettle.trans.step.aggregaterows.AggregateRowsMeta;
+import be.ibridge.kettle.trans.step.append.AppendMeta;
 import be.ibridge.kettle.trans.step.blockingstep.BlockingStepMeta;
 import be.ibridge.kettle.trans.step.calculator.CalculatorMeta;
 import be.ibridge.kettle.trans.step.combinationlookup.CombinationLookupMeta;
@@ -271,11 +272,14 @@ public class BaseStep extends Thread
             new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
                     .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL), 
 			new StepPluginMeta(XMLInputPathMeta.class, "XMLInputPath", Messages.getString("BaseStep.TypeLongDesc.XMLInputPath"), Messages
-			.getString("BaseStep.TypeTooltipDesc.XMLInputPath"), "XMP.png", CATEGORY_EXPERIMENTAL),       
+           			.getString("BaseStep.TypeTooltipDesc.XMLInputPath"), "XMP.png", CATEGORY_EXPERIMENTAL),       
 			new StepPluginMeta(LDIFInputMeta.class, "LDIFInput", Messages.getString("BaseStep.TypeLongDesc.LDIFInput"), Messages
-			.getString("BaseStep.TypeTooltipDesc.LDIFInput"), "LDI.png", CATEGORY_EXPERIMENTAL), 
+			        .getString("BaseStep.TypeTooltipDesc.LDIFInput"), "LDI.png", CATEGORY_EXPERIMENTAL), 
 			new StepPluginMeta(AccessInputMeta.class, "AccessInput", Messages.getString("BaseStep.TypeLongDesc.AccessInput"), Messages
-			.getString("BaseStep.TypeTooltipDesc.AccessInput"), "ACI.png", CATEGORY_EXPERIMENTAL), 
+			        .getString("BaseStep.TypeTooltipDesc.AccessInput"), "ACI.png", CATEGORY_EXPERIMENTAL),
+			new StepPluginMeta(AppendMeta.class, "Append", Messages.getString("BaseStep.TypeLongDesc.Append"), Messages
+			        .getString("BaseStep.TypeTooltipDesc.Append"), "APP.png", CATEGORY_EXPERIMENTAL), 
+			        
         };
 
     public static final String category_order[] =
