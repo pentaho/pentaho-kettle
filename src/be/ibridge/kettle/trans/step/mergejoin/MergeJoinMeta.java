@@ -27,6 +27,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -359,8 +360,14 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
          */ 
         CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MergeJoinMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
         remarks.add(cr);
-
 	}
+    
+    public Row getFields(Row row, String name, Row info) throws KettleStepException
+    {
+        row.addRow(info);
+        for (int i=0;i<row.size();i++) row.getValue(i).setOrigin(name);
+        return row;
+    }
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
 	{
