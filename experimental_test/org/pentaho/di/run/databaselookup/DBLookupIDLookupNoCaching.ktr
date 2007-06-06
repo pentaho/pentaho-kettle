@@ -55,7 +55,7 @@
   <notepads>
   </notepads>
   <connection>
-    <name>H2 Local</name>
+    <name>TARGET</name>
     <server/>
     <type>H2</type>
     <access>Native</access>
@@ -118,7 +118,7 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>H2 Local</connection>
+    <connection>TARGET</connection>
     <cache>Y</cache>
     <cache_size>0</cache_size>
     <lookup>

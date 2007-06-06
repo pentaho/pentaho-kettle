@@ -62,7 +62,7 @@
     </notepad>
   </notepads>
   <connection>
-    <name>H2 Local</name>
+    <name>TARGET</name>
     <server/>
     <type>H2</type>
     <access>Native</access>
@@ -128,7 +128,7 @@
            </partitioning>
       <schema/>
       <table>DIM_CUSTOMER</table>
-      <connection>H2 Local</connection>
+      <connection>TARGET</connection>
       <commit>1000</commit>
       <update>N</update>
       <fields>

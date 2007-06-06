@@ -71,37 +71,37 @@ public class AllRunTests
         try
         {
             target.execStatements("DROP TABLE CSV_TABLE;");
-            // System.out.println("Table CSV_TABLE dropped");
+            System.out.println("Table CSV_TABLE dropped");
         }
         catch(KettleDatabaseException e)
         {
-            // System.out.println("Table CSV_TABLE not dropped: "+e.getMessage());
+            System.out.println("Table CSV_TABLE not dropped: "+e.getMessage());
         }
         target.execStatements(
                 "CREATE TABLE CSV_TABLE"+
                 "("+
                 "  id INTEGER"+
-                ", name VARCHAR(9)"+
-                ", firstname VARCHAR(13)"+
+                ", name VARCHAR(40)"+
+                ", firstname VARCHAR(40)"+
                 ", zip INTEGER"+
-                ", city VARCHAR(8)"+
+                ", city VARCHAR(20)"+
                 ", birthdate TIMESTAMP"+
-                ", street VARCHAR(11)"+
+                ", street VARCHAR(20)"+
                 ", housenr SMALLINT"+
-                ", stateCode VARCHAR(9)"+
-                ", state VARCHAR(30)"+
+                ", stateCode VARCHAR(20)"+
+                ", state VARCHAR(40)"+
                 ")"+
                 ";");
-        // System.out.println("Table CSV_TABLE created.");
+        System.out.println("Table CSV_TABLE created.");
 
         try
         {
             target.execStatements("DROP TABLE SIMPLE_TABLE;");
-            // System.out.println("Table SIMPLE_TABLE dropped");
+            System.out.println("Table SIMPLE_TABLE dropped");
         }
         catch(KettleDatabaseException e)
         {
-            // System.out.println("Table SIMPLE_TABLE not dropped: "+e.getMessage());
+            System.out.println("Table SIMPLE_TABLE not dropped: "+e.getMessage());
         }
         target.execStatements(
                 "CREATE TABLE SIMPLE_TABLE"+
@@ -114,7 +114,7 @@ public class AllRunTests
                 ", id INTEGER"+
                 ")"+
                 ";");
-        // System.out.println("Table SIMPLE_TABLE created");
+        System.out.println("Table SIMPLE_TABLE created");
         target.disconnect();
     }
     
