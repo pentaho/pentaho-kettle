@@ -19,7 +19,6 @@ package be.ibridge.kettle.core.dialog;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -39,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;

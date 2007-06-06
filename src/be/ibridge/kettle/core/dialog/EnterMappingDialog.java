@@ -34,8 +34,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.WindowProperty;

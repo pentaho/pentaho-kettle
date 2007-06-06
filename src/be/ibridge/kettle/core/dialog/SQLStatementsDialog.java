@@ -18,7 +18,6 @@ package be.ibridge.kettle.core.dialog;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
@@ -36,6 +35,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.SQLStatement;

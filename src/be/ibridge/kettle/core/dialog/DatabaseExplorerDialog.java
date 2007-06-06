@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -47,6 +46,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;

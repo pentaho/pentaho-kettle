@@ -42,8 +42,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
