@@ -41,6 +41,7 @@ public class Delete extends BaseStep implements StepInterface
 	private DeleteMeta meta;
 	private DeleteData data;
 	
+	
 	public Delete(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -107,6 +108,9 @@ public class Delete extends BaseStep implements StepInterface
 	{
 		meta=(DeleteMeta)smi;
 		data=(DeleteData)sdi;
+		
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
 
 		Row r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
@@ -124,11 +128,28 @@ public class Delete extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+	        else
+	        {
+			
+				logError(Messages.getString("Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+	        }
+			
+			 if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(r, 1, errorMessage, null, "TOP001");
+	             r.setIgnore();
+	         }
 		}
 			
 		return true;

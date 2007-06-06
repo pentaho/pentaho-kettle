@@ -673,5 +673,10 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.schemaName = schemaName;
     }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 
 }
