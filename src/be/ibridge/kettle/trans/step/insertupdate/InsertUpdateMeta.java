@@ -940,4 +940,9 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.schemaName = schemaName;
     }
+    
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }
