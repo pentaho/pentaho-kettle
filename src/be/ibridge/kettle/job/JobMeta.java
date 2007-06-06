@@ -1418,8 +1418,10 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         for (i = 0; i < nrJobHops(); i++)
         {
             JobHopMeta hi = getJobHop(i);
-            if (hi.from_entry.equals(jge)) // return the first
-            { return hi; }
+            if (hi!=null && jge!=null && hi.from_entry.equals(jge)) // return the first
+            { 
+                return hi; 
+            }
         }
         return null;
     }
