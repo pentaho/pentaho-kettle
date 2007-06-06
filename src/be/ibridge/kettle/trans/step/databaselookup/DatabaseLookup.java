@@ -286,6 +286,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	{
 		meta=(DatabaseLookupMeta)smi;
 		data=(DatabaseLookupData)sdi;
+		
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
 
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
@@ -309,11 +312,26 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+			
+			if (getStepMeta().isDoingErrorHandling())
+	        {
+                sendToErrorRow = true;
+                errorMessage = e.toString();
+	        }
+	        else
+	        {
+				logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
+				setErrors(1);
+				stopAll();
+				setOutputDone();  // signal end to receiver(s)
+				return false;
+	        }
+			 if (sendToErrorRow)
+	         {
+				 // Simply add this row to the error row
+	             putError(r, 1, errorMessage, null, "TOP001");
+	             r.setIgnore();
+	         }
 		}
 
 		return true;
