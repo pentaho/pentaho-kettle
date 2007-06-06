@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Table Input</name>
-    <description/>
+    <name>Database Lookup : ID lookup Cache 50k</name>
+    <description>Look up name and firstname in a customer table using an ID, cache 50k rows</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -31,24 +31,31 @@
     <sleep_time_full>1</sleep_time_full>
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
-    <feedback_size>100000</feedback_size>
+    <feedback_size>5000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>
     </dependencies>
     <partitionschemas>
+        <partitionschema>
+          <name>MySQL Partitioning schema</name>
+          <partition>            <id>P1</id>
+          </partition>          <partition>            <id>P2</id>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>        </partitionschema>
     </partitionschemas>
     <slaveservers>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
   <modified_user>-</modified_user>
-  <modified_date>2007&#47;05&#47;09 17:55:58.156</modified_date>
+  <modified_date>2007&#47;05&#47;10 23:47:14.437</modified_date>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>TARGET</name>
+    <name>H2 Local</name>
     <server/>
     <type>H2</type>
     <access>Native</access>
@@ -65,16 +72,15 @@
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
       <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
       <attribute><code>MSSQL_DOUBLE_DECIMAL_SEPARATOR</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
       <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
     </attributes>
   </connection>
   <order>
-  <hop> <from>Table input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>Add sequence</to><enabled>Y</enabled> </hop>  <hop> <from>Add sequence</from><to>Database lookup</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
+    <name>Add sequence</name>
+    <type>Sequence</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -83,17 +89,27 @@
            <field_name/>
            <schema_name/>
            </partitioning>
+      <valuename>id</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <schema/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name>id</counter_name>
+      <start_at>1</start_at>
+      <increment_by>11</increment_by>
+      <max_value>100000</max_value>
      <cluster_schema/>
     <GUI>
-      <xloc>279</xloc>
-      <yloc>77</yloc>
+      <xloc>313</xloc>
+      <yloc>132</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Table input</name>
-    <type>TableInput</type>
+    <name>Database lookup</name>
+    <type>DBLookup</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -102,17 +118,60 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>TARGET</connection>
-    <sql>SELECT * FROM CSV_TABLE
-</sql>
-    <limit>0</limit>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
+    <connection>H2 Local</connection>
+    <cache>Y</cache>
+    <cache_size>50000</cache_size>
+    <lookup>
+      <schema/>
+      <table>CSV_TABLE</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+      <key>
+        <name>id</name>
+        <field>id</field>
+        <condition>=</condition>
+        <name2/>
+        </key>
+      <value>
+        <name>NAME</name>
+        <rename>NAME</rename>
+        <default/>
+        <type>String</type>
+        </value>
+      <value>
+        <name>FIRSTNAME</name>
+        <rename>FIRSTNAME</rename>
+        <default/>
+        <type>String</type>
+        </value>
+      </lookup>
      <cluster_schema/>
     <GUI>
-      <xloc>63</xloc>
-      <yloc>77</yloc>
+      <xloc>477</xloc>
+      <yloc>132</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <fields>
+    </fields>
+    <limit>${NR_OF_ROWS}</limit>
+     <cluster_schema/>
+    <GUI>
+      <xloc>157</xloc>
+      <yloc>132</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

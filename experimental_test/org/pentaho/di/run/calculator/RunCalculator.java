@@ -2,6 +2,7 @@ package org.pentaho.di.run.calculator;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -22,6 +23,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -39,6 +42,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_dummy.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -55,6 +60,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -71,6 +78,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -87,6 +96,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays_Booleans.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -104,6 +115,8 @@ public class RunCalculator extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_Temp.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();

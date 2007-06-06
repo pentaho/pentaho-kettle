@@ -15,8 +15,11 @@
  
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
@@ -183,24 +186,44 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		{
 			data.look.put(new RowMetaAndData(data.lookupMeta, lookupRow), new TimedRow(add));
 
-			// See if we have to limit the cache_size.
-			if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
-			{
-				 long last_date=-1L;
-				 Enumeration elem = data.look.elements();
-				 TimedRow smallest=null;
-				 while (elem.hasMoreElements())
-				 {
-				 	TimedRow r=(TimedRow)elem.nextElement();
-				 	long time = r.getLogtime();
-				 	if (last_date<0 || time<last_date) 
-				 	{
-				 		last_date=time;
-				 		smallest=r;
-				 	} 
-				 }
-				 if (smallest!=null) data.look.remove(smallest);
-			}
+            // See if we have to limit the cache_size.
+            // Sample 10% of the rows in the cache.
+            // Remove everything below the second lowest date.
+            // That should on average remove more than 10% of the entries
+            // It's not exact science, but it will be faster than the old algorithm
+            // 
+            if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
+            {
+                List keys = new ArrayList(data.look.keySet());
+                List samples = new ArrayList();
+                int incr = keys.size()/10;
+                if (incr==0) incr=1;
+                for (int k=0;k<keys.size();k+=incr)
+                {
+                    RowMetaAndData key = (RowMetaAndData) keys.get(k);
+                    TimedRow timedRow = (TimedRow) data.look.get(key);
+                    samples.add(timedRow.getLogDate());
+                }
+                
+                Collections.sort(samples);
+                
+                if (samples.size()>1)
+                {
+                    Date smallest = (Date) samples.get(1);
+                    
+                    // Everything below the smallest date goes away...
+                    for (int k=0;k<keys.size();k++)
+                    {
+                        RowMetaAndData key = (RowMetaAndData) keys.get(k);
+                        TimedRow timedRow = (TimedRow) data.look.get(key);
+                        
+                        if (timedRow.getLogDate().compareTo(smallest)<0)
+                        {
+                            data.look.remove(key);
+                        }
+                    }
+                }
+            }
 		} 
 
 		for (int i=0;i<add.length;i++)

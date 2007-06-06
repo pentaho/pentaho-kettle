@@ -55,7 +55,7 @@
   <notepads>
   </notepads>
   <connection>
-    <name>H2 local</name>
+    <name>TARGET</name>
     <server/>
     <type>H2</type>
     <access>Native</access>
@@ -347,7 +347,7 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <connection>H2 local</connection>
+    <connection>TARGET</connection>
     <commit>100</commit>
     <error_ignored>N</error_ignored>
     <ignore_flag_field/>

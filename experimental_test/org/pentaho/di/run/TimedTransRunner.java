@@ -2,6 +2,7 @@ package org.pentaho.di.run;
 
 import java.text.DecimalFormat;
 
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -34,15 +35,19 @@ public class TimedTransRunner
     private be.ibridge.kettle.trans.step.RowListener  oldRowListener;
     private be.ibridge.kettle.trans.TransMeta oldTransMeta;
     private TransMeta newTransMeta;
+    private DatabaseMeta newTargetDatabaseMeta;
+    private be.ibridge.kettle.core.database.DatabaseMeta oldTargetDatabaseMeta;
     
     
-    public TimedTransRunner(String filename, int logLevel, long records)
+    public TimedTransRunner(String filename, int logLevel, be.ibridge.kettle.core.database.DatabaseMeta oldTargetDatabaseMeta, DatabaseMeta newTargetDatabaseMeta, long records)
     {
         this.filename = filename;
         this.logLevel = logLevel;
+        this.oldTargetDatabaseMeta = oldTargetDatabaseMeta;
+        this.newTargetDatabaseMeta = newTargetDatabaseMeta;
         this.records = records;
     }
-    
+
     public void runOldAndNew() throws KettleXMLException
     {
         init();
@@ -90,6 +95,12 @@ public class TimedTransRunner
 
         oldTransMeta = new be.ibridge.kettle.trans.TransMeta(filename);
         if (printDescription) printOldTransDescription();
+        
+        // Replace the TARGET database connection settings with the one provided
+        if (oldTargetDatabaseMeta!=null)
+        {
+            oldTransMeta.addOrReplaceDatabase(oldTargetDatabaseMeta);
+        }
         
         // OK, now run this transFormation.
         be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), oldTransMeta);
@@ -141,6 +152,12 @@ public class TimedTransRunner
         newTransMeta = new TransMeta(filename);
         if (printDescription) printNewTransDescription();
 
+        // Replace the TARGET database connection settings with the one provided
+        if (newTargetDatabaseMeta!=null)
+        {
+            newTransMeta.addOrReplaceDatabase(newTargetDatabaseMeta);
+        }
+        
         // OK, now run this transFormation.
         Trans trans = new Trans(LogWriter.getInstance(), newTransMeta);
         trans.prepareExecution(null);
@@ -369,5 +386,37 @@ public class TimedTransRunner
     public void setOldSpeed(double oldSpeed)
     {
         this.oldSpeed = oldSpeed;
+    }
+
+    /**
+     * @return the oldTargetDatabaseMeta
+     */
+    public be.ibridge.kettle.core.database.DatabaseMeta getOldTargetDatabaseMeta()
+    {
+        return oldTargetDatabaseMeta;
+    }
+
+    /**
+     * @param oldTargetDatabaseMeta the oldTargetDatabaseMeta to set
+     */
+    public void setOldTargetDatabaseMeta(be.ibridge.kettle.core.database.DatabaseMeta oldTargetDatabaseMeta)
+    {
+        this.oldTargetDatabaseMeta = oldTargetDatabaseMeta;
+    }
+
+    /**
+     * @return the newTargetDatabaseMeta
+     */
+    public DatabaseMeta getNewTargetDatabaseMeta()
+    {
+        return newTargetDatabaseMeta;
+    }
+
+    /**
+     * @param newTargetDatabaseMeta the newTargetDatabaseMeta to set
+     */
+    public void setNewTargetDatabaseMeta(DatabaseMeta newTargetDatabaseMeta)
+    {
+        this.newTargetDatabaseMeta = newTargetDatabaseMeta;
     }
 }

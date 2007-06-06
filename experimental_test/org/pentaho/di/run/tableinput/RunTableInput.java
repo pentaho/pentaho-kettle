@@ -2,6 +2,7 @@ package org.pentaho.di.run.tableinput;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -22,6 +23,8 @@ public class RunTableInput extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();

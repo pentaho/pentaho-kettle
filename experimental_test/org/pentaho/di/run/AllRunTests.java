@@ -24,6 +24,8 @@ import org.pentaho.di.run.textfileoutput.RunTextFileOutput;
 import org.pentaho.di.run.uniquerows.RunUniqueRows;
 
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
 
 import junit.framework.Test;
@@ -31,24 +33,51 @@ import junit.framework.TestSuite;
 
 public class AllRunTests
 {
-    public static DatabaseMeta h2meta = new DatabaseMeta("H2 local", "H2", "JDBC", null, "experimental_test/testdata", null, null, null);
+    private static String TARGET_CONNECTION_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
+        "<connection>"+
+        "  <name>TARGET</name>"+
+        "  <server/>"+
+        "  <type>GENERIC</type>"+
+        "  <access>Native</access>"+
+        "  <database>&#47;test</database>"+
+        "  <port/>"+
+        "  <username/>"+
+        "  <password>Encrypted </password>"+
+        "  <servername/>"+
+        "  <data_tablespace/>"+
+        "  <index_tablespace/>"+
+        "  <attributes>"+
+        "    <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>org.apache.derby.jdbc.EmbeddedDriver</attribute></attribute>"+
+        "    <attribute><code>CUSTOM_URL</code><attribute>jdbc:derby:&#47;experimental_test&#47;derbyDB;create=true</attribute></attribute>"+
+        "  </attributes>"+
+        "</connection>";
     
-    private static void createTables() throws KettleDatabaseException
+    public static DatabaseMeta getNewTargetDatabase() throws KettleXMLException
+    {
+        return new DatabaseMeta(TARGET_CONNECTION_XML);
+    }
+
+    public static be.ibridge.kettle.core.database.DatabaseMeta getOldTargetDatabase() throws KettleXMLException
+    {
+        return new be.ibridge.kettle.core.database.DatabaseMeta(TARGET_CONNECTION_XML);
+    }
+
+    private static void createTables() throws KettleException
     {
         EnvUtil.environmentInit();
         
-        Database h2db = new Database(h2meta);
-        h2db.connect();
+        Database target = new Database(getNewTargetDatabase());
+        target.connect();
         try
         {
-            h2db.execStatement("DROP TABLE CSV_TABLE;");
+            target.execStatements("DROP TABLE CSV_TABLE;");
             // System.out.println("Table CSV_TABLE dropped");
         }
         catch(KettleDatabaseException e)
         {
             // System.out.println("Table CSV_TABLE not dropped: "+e.getMessage());
         }
-        h2db.execStatement(
+        target.execStatements(
                 "CREATE TABLE CSV_TABLE"+
                 "("+
                 "  id INTEGER"+
@@ -67,14 +96,14 @@ public class AllRunTests
 
         try
         {
-            h2db.execStatement("DROP TABLE SIMPLE_TABLE;");
+            target.execStatements("DROP TABLE SIMPLE_TABLE;");
             // System.out.println("Table SIMPLE_TABLE dropped");
         }
         catch(KettleDatabaseException e)
         {
             // System.out.println("Table SIMPLE_TABLE not dropped: "+e.getMessage());
         }
-        h2db.execStatement(
+        target.execStatements(
                 "CREATE TABLE SIMPLE_TABLE"+
                 "("+
                 "  stringField VARCHAR(30)"+
@@ -86,10 +115,10 @@ public class AllRunTests
                 ")"+
                 ";");
         // System.out.println("Table SIMPLE_TABLE created");
-        h2db.disconnect();
+        target.disconnect();
     }
     
-    public static Test suite() throws KettleDatabaseException
+    public static Test suite() throws KettleException
     {
         createTables();
         

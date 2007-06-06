@@ -2,6 +2,7 @@ package org.pentaho.di.run.addsequence;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -22,6 +23,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequence.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -38,6 +41,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -54,6 +59,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -70,6 +77,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2Sequences.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -86,6 +95,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -102,6 +113,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -118,6 +131,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4Sequences.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -134,6 +149,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();
@@ -150,6 +167,8 @@ public class RunAddSequence extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 1000000
             );
         timedTransRunner.runOldAndNew();

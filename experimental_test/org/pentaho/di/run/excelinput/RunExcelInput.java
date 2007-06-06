@@ -2,6 +2,7 @@ package org.pentaho.di.run.excelinput;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -22,6 +23,8 @@ public class RunExcelInput extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/excelinput/ExcelInput.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 10000
             );
         timedTransRunner.runOldAndNew();

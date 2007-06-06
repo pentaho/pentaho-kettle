@@ -2,6 +2,7 @@ package org.pentaho.di.run.sort;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -24,6 +25,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableData.ktr",
                 ERROR_LEVEL, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -40,6 +43,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompression.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -56,6 +61,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer50k.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -72,6 +79,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer100k.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -88,6 +97,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompression.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -104,6 +115,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer50k.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -120,6 +133,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100k.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();
@@ -137,6 +152,8 @@ public class RunSortRows extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100kWriteBack.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 100000
             );
         timedTransRunner.runOldAndNew();

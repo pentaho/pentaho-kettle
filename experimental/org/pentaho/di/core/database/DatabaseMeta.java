@@ -841,10 +841,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	 * Constructs a new database using an XML string snippet.
 	 * It expects the snippet to be enclosed in <code>connection</code> tags.
 	 * @param xml The XML string to parse
-	 * @throws KettleXMLException
+	 * @throws KettleXMLException in case there is an XML parsing error
 	 */
-	public DatabaseMeta(String xml)
-		throws KettleXMLException
+	public DatabaseMeta(String xml) throws KettleXMLException
 	{
 		this( XMLHandler.getSubNode(XMLHandler.loadXMLString(xml), "connection") );
 	}

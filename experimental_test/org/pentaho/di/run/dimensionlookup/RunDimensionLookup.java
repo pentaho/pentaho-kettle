@@ -3,29 +3,28 @@ package org.pentaho.di.run.dimensionlookup;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.util.EnvUtil;
 
 public class RunDimensionLookup extends TestCase
 {
-    private static DatabaseMeta h2meta = new DatabaseMeta("H2 local", "H2", "JDBC", null, "experimental_test/testdata", null, null, null);
-
-    private static void createIndex() throws KettleDatabaseException
+    private static void createIndex() throws KettleException
     {
         EnvUtil.environmentInit();
         
-        Database h2db = new Database(h2meta);
-        h2db.connect();
+        Database target = new Database(AllRunTests.getNewTargetDatabase());
+        target.connect();
         try
         {
-            h2db.execStatement("DROP TABLE DIM_CUSTOMER;");
+            target.execStatements("DROP TABLE DIM_CUSTOMER;");
             // System.out.println("Table DIM_CUSTOMER dropped");
         }
         catch(KettleDatabaseException e)
@@ -34,73 +33,52 @@ public class RunDimensionLookup extends TestCase
         }
         // System.out.println("Creating table DIM_CUSTOMER ...");
         
-        h2db.execStatement(
-                "CREATE TABLE DIM_CUSTOMER" + 
-                "(" + 
-                "    customer_tk IDENTITY" + 
-                "    , version INTEGER" + 
-                "    , date_from TIMESTAMP" + 
-                "    , date_to TIMESTAMP" + 
-                "    , id INTEGER" + 
-                "    , name VARCHAR(30)" + 
-                "    , firstname VARCHAR(30)" + 
-                "    , zip INTEGER" + 
-                "    , city VARCHAR(30)" + 
-                "    , birthdate TIMESTAMP" + 
-                "    , street VARCHAR(11)" + 
-                "    , housenr INTEGER" + 
-                "    , stateCode VARCHAR(9)" + 
-                "    , state VARCHAR(30)" + 
-                "    )" + 
+        target.execStatements(
+                "CREATE TABLE DIM_CUSTOMER" + Const.CR + 
+                "(" +  Const.CR + 
+                "    customer_tk BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1)" +  Const.CR + 
+                "    , version INTEGER" +  Const.CR + 
+                "    , date_from TIMESTAMP" +  Const.CR + 
+                "    , date_to TIMESTAMP" +  Const.CR + 
+                "    , id INTEGER" +  Const.CR + 
+                "    , name VARCHAR(30)" +  Const.CR + 
+                "    , firstname VARCHAR(30)" +  Const.CR + 
+                "    , zip INTEGER" +  Const.CR + 
+                "    , city VARCHAR(30)" +  Const.CR + 
+                "    , birthdate TIMESTAMP" +  Const.CR + 
+                "    , street VARCHAR(11)" +  Const.CR + 
+                "    , housenr INTEGER" +  Const.CR + 
+                "    , stateCode VARCHAR(9)" +  Const.CR + 
+                "    , state VARCHAR(30)" +  Const.CR + 
+                "    )" +  Const.CR + 
                 "    ;" + Const.CR +
-                "    CREATE INDEX idx_DIM_CUSTOMER_lookup" + 
-                "     ON DIM_CUSTOMER" + 
-                "    ( " + 
-                "      id" + 
-                "    )" + 
+                "    CREATE INDEX idx_DIM_CUSTOMER_lookup" +  Const.CR + 
+                "     ON DIM_CUSTOMER" +  Const.CR + 
+                "    ( " +  Const.CR + 
+                "      id" +  Const.CR + 
+                "    )" +  Const.CR + 
                 "    ;" + Const.CR +
-                "    CREATE INDEX idx_DIM_CUSTOMER_tk" + 
-                "     ON DIM_CUSTOMER" + 
-                "    ( " + 
-                "      customer_tk" + 
-                "    )" + 
+                "    CREATE INDEX idx_DIM_CUSTOMER_tk" +  Const.CR + 
+                "     ON DIM_CUSTOMER" +  Const.CR + 
+                "    ( " +  Const.CR + 
+                "      customer_tk" +  Const.CR + 
+                "    )" +  Const.CR + 
                 "    ;"
                 );
         // System.out.println("Table DIM_CUSTOMER created.");
 
-        h2db.disconnect();
+        target.disconnect();
     }
 
-    /*
-    private static void dropTable() throws KettleDatabaseException
+    private static void truncateDimensionTable() throws KettleException
     {
         EnvUtil.environmentInit();
         
-        Database h2db = new Database(h2meta);
-        h2db.connect();
+        Database target = new Database(AllRunTests.getNewTargetDatabase());
+        target.connect();
         try
         {
-            h2db.execStatement("DROP TABLE DIM_CUSTOMER;");
-            System.out.println("Table DIM_CUSTOMER dropped");
-        }
-        catch(KettleDatabaseException e)
-        {
-            System.out.println("Table DIM_CUSTOMER not dropped : "+e.getMessage());
-        }
-
-        h2db.disconnect();
-    }
-    */
-
-    private static void truncateDimensionTable() throws KettleDatabaseException
-    {
-        EnvUtil.environmentInit();
-        
-        Database h2db = new Database(h2meta);
-        h2db.connect();
-        try
-        {
-            h2db.execStatement("TRUNCATE TABLE DIM_CUSTOMER;");
+            target.execStatements("TRUNCATE TABLE DIM_CUSTOMER;");
             // System.out.println("Table DIM_CUSTOMER truncated");
         }
         catch(KettleDatabaseException e)
@@ -108,7 +86,7 @@ public class RunDimensionLookup extends TestCase
             // System.out.println("Table DIM_CUSTOMER not truncated : "+e.getMessage());
         }
 
-        h2db.disconnect();
+        target.disconnect();
     }
 
     private static double oldInitialLoadRuntime;
@@ -116,7 +94,7 @@ public class RunDimensionLookup extends TestCase
     private static double newInitialLoadRuntime;
     private static double newUpdate20kRunTime;
     
-    public void test__DIMENSION_LOOKUP_00() throws KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_00() throws KettleException
     {
         System.out.println();
         System.out.println("DIMENSION LOOKUP");
@@ -125,11 +103,13 @@ public class RunDimensionLookup extends TestCase
         createIndex();
     }
     
-    public void test__DIMENSION_LOOKUP_01_InitialLoadOld() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_01_InitialLoadOld() throws KettleException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupInitialLoad.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.init();
@@ -141,11 +121,13 @@ public class RunDimensionLookup extends TestCase
         assertTrue(oldResult.getNrErrors()==0);
     }
 
-    public void test__DIMENSION_LOOKUP_02_Update20kOld() throws KettleXMLException, KettleDatabaseException
+    public void test__DIMENSION_LOOKUP_02_Update20kOld() throws KettleException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupUpdate20k.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 20000
             );
         timedTransRunner.init();
@@ -164,6 +146,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupInitialLoad.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.init();
@@ -183,6 +167,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupUpdate20k.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 20000
             );
         timedTransRunner.init();
@@ -202,6 +188,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheOff.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.runOldAndNew();
@@ -218,6 +206,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookup.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.runOldAndNew();
@@ -234,6 +224,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache25k.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.runOldAndNew();
@@ -250,6 +242,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCache50k.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.runOldAndNew();
@@ -266,6 +260,8 @@ public class RunDimensionLookup extends TestCase
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/dimensionlookup/DimensionLookupTKLookupCacheAll.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
                 250000
             );
         timedTransRunner.runOldAndNew();

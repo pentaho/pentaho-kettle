@@ -55,7 +55,7 @@
   <notepads>
   </notepads>
   <connection>
-    <name>H2 local</name>
+    <name>TARGET</name>
     <server/>
     <type>H2</type>
     <access>Native</access>
@@ -91,7 +91,7 @@
            </partitioning>
       <schema/>
       <table>COMB_HASH</table>
-      <connection>H2 local</connection>
+      <connection>TARGET</connection>
       <commit>1000</commit>
       <cache_size>9999</cache_size>
       <replace>Y</replace>
