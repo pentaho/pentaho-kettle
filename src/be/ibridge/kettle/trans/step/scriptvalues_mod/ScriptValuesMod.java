@@ -453,6 +453,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 		meta=(ScriptValuesMetaMod)smi;
 		data=(ScriptValuesDataMod)sdi;
 		
+		boolean sendToErrorRow=false;
+		String errorMessage = null;
+		
 		Row r=getRow();       // Get row from input rowset & set row busy!
 
 		if (r==null){
@@ -468,10 +471,28 @@ public class ScriptValuesMod extends BaseStep implements StepInterface
 					if (log.isDetailed()) logDetailed(("No end Script found!"));
 				}
 			}catch(Exception e){
-				logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
-				logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
+				
+				if (getStepMeta().isDoingErrorHandling())
+		        {
+	                sendToErrorRow = true;
+	                errorMessage = e.toString();
+		        }
+		        else
+		        {
+				
+					logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$				
+					logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
+					setErrors(1);
+					stopAll();
+		        }
+				
+				 if (sendToErrorRow)
+		         {
+					 // Simply add this row to the error row
+		             putError(r, 1, errorMessage, null, "TOP001");
+		             r.setIgnore();
+		         }
+				
 			}
 
 			if (data.cx!=null) Context.exit();

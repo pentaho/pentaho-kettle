@@ -823,4 +823,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	public ScriptValuesAddClasses[] getAddClasses(){
 		return additionalClasses;
 	}
+	
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
 }
