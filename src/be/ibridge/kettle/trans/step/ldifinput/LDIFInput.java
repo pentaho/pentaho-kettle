@@ -121,11 +121,11 @@ public class LDIFInput extends BaseStep implements StepInterface
 						
 					    // DO Trimming!
 			      			            
-			            if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_LEFT)
+			            if (ldifInputField.getTrimType() == LDIFInputField.TYPE_TRIM_LEFT)
 			            	v.ltrim(); 
-			            else if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_RIGHT)
+			            else if (ldifInputField.getTrimType() == LDIFInputField.TYPE_TRIM_RIGHT)
 			            	v.rtrim(); 
-			            else if (ldifInputField.getTrimType() == ldifInputField.TYPE_TRIM_BOTH)
+			            else if (ldifInputField.getTrimType() == LDIFInputField.TYPE_TRIM_BOTH)
 			            	v.trim(); 
 			            
 			            			            

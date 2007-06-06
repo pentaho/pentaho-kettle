@@ -21,7 +21,6 @@
 package be.ibridge.kettle.trans.step.ldifinput;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.TreeSet;
 
@@ -911,7 +910,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 	private boolean IsInteger(String str) {
 		try {
-			int number = Integer.parseInt(str);
+			Integer.parseInt(str);
 		} catch (NumberFormatException e) {
 			return false;
 		}
@@ -920,7 +919,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 
 	private boolean IsNumber(String str) {
 		try {
-			float number = Float.parseFloat(str);
+			Float.parseFloat(str);
 		} catch (Exception e) {
 			return false;
 		}
@@ -931,7 +930,7 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		// TODO: What about other dates? Maybe something for a CRQ
 		try {
 			SimpleDateFormat fdate = new SimpleDateFormat("yy-mm-dd");
-			Date resultdate = fdate.parse(str);
+			fdate.parse(str);
 		} catch (Exception e) {
 			return false;
 		}
