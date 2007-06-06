@@ -619,4 +619,9 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
+    public boolean supportsErrorHandling()
+    {
+        return true;
+    }
+    
 }
