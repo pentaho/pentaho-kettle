@@ -52,10 +52,11 @@ public interface StepMetaInterface
 	 * Get the fields that are emitted by this step
 	 * @param inputRowMeta The fields that are entering the step.  These are changed to reflect the output metadata.
 	 * @param name The name of the step to be used as origin
-	 * @param info The fields that are used as information by the step
+	 * @param info The input rows metadata that enters the step through the specified channels in the same order as in method getInfoSteps().  The step metadata can then choose what to do with it: ignore it or not.
+     *        Interesting is also that in case of database lookups, the layout of the target database table is put in info[0]
 	 * @throws KettleStepException when an error occurred searching for the fields.
 	 */
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info) throws KettleStepException;
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info) throws KettleStepException;
 
 	/**
 	 * Get the XML that represents the values in this step

@@ -184,7 +184,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
         // change the case insensitive flag too
         for (int i=0;i<row.size();i++)

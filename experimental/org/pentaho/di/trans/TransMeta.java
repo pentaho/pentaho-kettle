@@ -1584,15 +1584,16 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
 
         StepMetaInterface stepint = stepMeta.getStepMetaInterface();
-        RowMetaInterface inform = null;
+        RowMetaInterface inform[] = null;
         StepMeta[] lu = getInfoStep(stepMeta);
-        if (lu != null)
+        if (Const.isEmpty(lu))
         {
-            inform = getStepFields(lu);
+            inform = new RowMetaInterface[] { stepint.getTableFields(), };
         }
         else
         {
-            inform = stepint.getTableFields();
+            inform = new RowMetaInterface[lu.length];
+            for (int i=0;i<lu.length;i++) inform[i] = getStepFields(lu[i]);
         }
 
         stepint.getFields(row, name, inform);

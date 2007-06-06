@@ -298,7 +298,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
 		for (int i=0;i<this.name.length;i++)
 		{

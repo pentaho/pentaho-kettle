@@ -761,7 +761,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
 		// No values are added to the row in this type of step
 		// However, in case of Fixed length records, 

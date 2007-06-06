@@ -173,7 +173,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         fieldName = "result"; //$NON-NLS-1$
     }
 
-    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info) throws KettleStepException    
+    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info) throws KettleStepException    
     {
         if (!Const.isEmpty(fieldName))
         {

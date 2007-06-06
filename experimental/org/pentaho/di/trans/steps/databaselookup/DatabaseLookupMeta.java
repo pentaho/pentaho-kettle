@@ -475,9 +475,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         eatingRowOnLookupFailure = false;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
-		if (info==null)
+		if (Const.isEmpty(info)) // null or length 0
 		{
 			for (int i=0;i<returnValueNewName.length;i++)
 			{
@@ -490,7 +490,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		{
 			for (int i=0;i<returnValueNewName.length;i++)
 			{
-				ValueMetaInterface v=info.searchValueMeta(returnValueField[i]);
+				ValueMetaInterface v=info[0].searchValueMeta(returnValueField[i]);
 				if (v!=null)
 				{
 					v.setName(returnValueNewName[i]);

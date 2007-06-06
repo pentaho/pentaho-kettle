@@ -264,7 +264,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

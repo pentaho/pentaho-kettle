@@ -601,7 +601,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         lineNumberFilesExtension = "line";
 	}
     
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
 	{
 		for (int i=0;i<field.length;i++)
 		{

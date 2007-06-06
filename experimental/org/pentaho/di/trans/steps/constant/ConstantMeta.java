@@ -313,7 +313,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info)
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

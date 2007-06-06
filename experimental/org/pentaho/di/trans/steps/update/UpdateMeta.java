@@ -505,7 +505,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException
+    public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
     {
         if (ignoreFlagField!=null && ignoreFlagField.length()>0)
         {

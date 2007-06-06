@@ -90,22 +90,22 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-       <calculation><field_name>one</field_name>
+       <calculation><field_name>two</field_name>
 <calc_type>CONSTANT</calc_type>
-<field_a>1</field_a>
+<field_a>2</field_a>
 <field_b/>
 <field_c/>
-<value_type>Integer</value_type>
+<value_type>String</value_type>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
 </calculation>
-       <calculation><field_name>id2</field_name>
+       <calculation><field_name>statecode2</field_name>
 <calc_type>ADD</calc_type>
-<field_a>id</field_a>
-<field_b>one</field_b>
+<field_a>stateCode</field_a>
+<field_b>two</field_b>
 <field_c/>
-<value_type>Integer</value_type>
+<value_type>String</value_type>
 <value_length>-1</value_length>
 <value_precision>-1</value_precision>
 <remove>N</remove>
@@ -355,7 +355,7 @@
       <schema/>
       <table>CSV_TABLE</table>
       <key>
-        <name>id2</name>
+        <name>id</name>
         <field>id</field>
         <condition>=</condition>
         <name2/>
@@ -394,7 +394,7 @@
         </value>
       <value>
         <name>stateCode</name>
-        <rename>stateCode</rename>
+        <rename>statecode2</rename>
         </value>
       <value>
         <name>state</name>
@@ -403,7 +403,7 @@
       </lookup>
      <cluster_schema/>
     <GUI>
-      <xloc>484</xloc>
+      <xloc>485</xloc>
       <yloc>123</yloc>
       <draw>Y</draw>
       </GUI>
