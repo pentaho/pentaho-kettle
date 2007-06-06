@@ -11,6 +11,7 @@ import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
 import org.pentaho.di.run.excelinput.RunExcelInput;
 import org.pentaho.di.run.filterrows.RunFilterRows;
+import org.pentaho.di.run.joinrows.RunJoinRows;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
 import org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
@@ -22,6 +23,7 @@ import org.pentaho.di.run.tableoutput.RunTableOutput;
 import org.pentaho.di.run.textfileinput.RunTextFileInput;
 import org.pentaho.di.run.textfileoutput.RunTextFileOutput;
 import org.pentaho.di.run.uniquerows.RunUniqueRows;
+import org.pentaho.di.run.update.RunUpdate;
 
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -145,6 +147,8 @@ public class AllRunTests
         suite.addTestSuite(RunExcelInput.class);
         suite.addTestSuite(RunCombinationLookup.class);
         suite.addTestSuite(RunScriptValuesMod.class);
+        suite.addTestSuite(RunJoinRows.class);
+        suite.addTestSuite(RunUpdate.class);
         
         //$JUnit-END$
         return suite;
