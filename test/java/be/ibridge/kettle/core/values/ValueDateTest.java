@@ -93,14 +93,7 @@ public class ValueDateTest extends TestCase
 
 		assertEquals(0L, vs1.getInteger());
 		assertEquals(1149634923004L,  vs2.getInteger());
-  	    try 
-		{
-		   // historical behaviour
-		   vs1.getBigNumber();
-		   fail("Expected MullPointerException");
-		}
-		catch ( NullPointerException ex )
-		{ }
+		assertEquals(new BigDecimal(0.0), vs1.getBigNumber()); 
 		assertEquals(new BigDecimal(1149634923004L),  vs2.getBigNumber());
 
 		assertNull(vs1.getDate());
