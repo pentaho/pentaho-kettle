@@ -2,6 +2,9 @@
 <transformation>
   <info>
     <name>Excel and Row normaliser</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -9,18 +12,19 @@
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>350</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
@@ -35,10 +39,10 @@
         <partitionschema>
           <name>MySQL EC2 Schema</name>
           <partition>            <id>P2</id>
-            </partition>          <partition>            <id>P3</id>
-            </partition>          <partition>            <id>P4</id>
-            </partition>          <partition>            <id>P5</id>
-            </partition>          </partitionschema>
+          </partition>          <partition>            <id>P3</id>
+          </partition>          <partition>            <id>P4</id>
+          </partition>          <partition>            <id>P5</id>
+          </partition>        </partitionschema>
     </partitionschemas>
     <slaveservers>
          <slaveserver><name>EC_SLAVE_2</name><hostname>domU-12-31-33-00-01-F1.usma1.compute.amazonaws.com</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
@@ -72,41 +76,41 @@
 ... or add an output step.</note>
       <xloc>176</xloc>
       <yloc>399</yloc>
-      <width>268</width>
-      <heigth>37</heigth>
-      </notepad>
+      <width>279</width>
+      <heigth>40</heigth>
+    </notepad>
     <notepad>
       <note>Load the Excel example.</note>
       <xloc>106</xloc>
       <yloc>119</yloc>
-      <width>128</width>
-      <heigth>23</heigth>
-      </notepad>
+      <width>135</width>
+      <heigth>25</heigth>
+    </notepad>
     <notepad>
       <note>Revision notes:
 2006-08-22 Jens Bleuel: created
-2006-11-10 Jens Bleuel: set input file location using Internal variable</note>
+2006-11-10 Jens Bleuel: set input file location using Internal variables</note>
       <xloc>16</xloc>
       <yloc>569</yloc>
-      <width>338</width>
-      <heigth>49</heigth>
-      </notepad>
+      <width>369</width>
+      <heigth>55</heigth>
+    </notepad>
     <notepad>
       <note>This example reads an Excel file with planning data per material and month 
 and uses the Row Normaliser.</note>
       <xloc>36</xloc>
       <yloc>41</yloc>
-      <width>386</width>
-      <heigth>37</heigth>
-      </notepad>
+      <width>407</width>
+      <heigth>40</heigth>
+    </notepad>
     <notepad>
       <note>Map the month columns to 
 one new column.</note>
       <xloc>269</xloc>
       <yloc>118</yloc>
-      <width>150</width>
-      <heigth>37</heigth>
-      </notepad>
+      <width>159</width>
+      <heigth>40</heigth>
+    </notepad>
   </notepads>
   <order>
   <hop> <from>Excel Input</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
@@ -150,6 +154,7 @@ one new column.</note>
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
+    <encoding/>
     <accept_filenames>N</accept_filenames>
     <accept_field/>
     <accept_stepname/>
@@ -408,4 +413,6 @@ one new column.</note>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
 </transformation>
