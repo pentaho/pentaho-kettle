@@ -59,7 +59,8 @@ public class Append extends BaseStep implements StepInterface
 	        	data.processTail = true;
 		    }
     	}
-    	else if ( data.processTail )
+    	
+    	if ( data.processTail )
     	{
     		input = getRowFrom(meta.getTailStepName());
 		    if ( input == null )
