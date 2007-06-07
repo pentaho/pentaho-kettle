@@ -5112,7 +5112,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return A list of StringSearchResult with strings used in the 
      */
-    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
+    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes, boolean includePasswords)
     {
         ArrayList stringList = new ArrayList();
 
@@ -5136,10 +5136,15 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             {
                 DatabaseMeta meta = getDatabase(i);
                 stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
+                if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, "Database hostname"));
                 if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
                 if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
                 if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
                 if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
+                if ( includePasswords )
+                {
+                	if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, "Database password"));
+                }
             }
         }
 
@@ -5156,10 +5161,15 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         return stringList;
     }
 
+    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
+    {
+    	return getStringList(searchSteps, searchDatabases, searchNotes, false);
+    }
+    
     public List getUsedVariables()
     {
         // Get the list of Strings.
-        List stringList = getStringList(true, true, false);
+        List stringList = getStringList(true, true, false, true);
 
         List varList = new ArrayList();
 
