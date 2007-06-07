@@ -3580,7 +3580,13 @@ public class Database
                 long previous;
                 try
                 {
-                    previous = rmad.getRowMeta().getInteger(rmad.getData(), 0).longValue();
+                	Long tmp = rmad.getRowMeta().getInteger(rmad.getData(), 0);
+                	
+                	// A "select max(x)" on a table with no matching rows will return null.
+                	if ( tmp != null )
+                		previous = tmp.longValue();
+                	else
+                		previous = 0L;
                 }
                 catch (KettleValueException e)
                 {
