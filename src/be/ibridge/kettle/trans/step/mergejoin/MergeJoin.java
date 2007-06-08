@@ -76,7 +76,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             
             if (!isInputLayoutValid(data.one, data.two))
             {
-            	throw new KettleException(Messages.getString("MergeJoin.Exception.InvalidLayoutDetected"));
+            	throw new KettleException(Messages.getString("MergeJoin.Exception.InvalidKeyLayoutDetected"));
             }        
 
             if (data.one!=null)
