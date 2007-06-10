@@ -1,4 +1,4 @@
-package org.pentaho.di.run.update;
+package org.pentaho.di.run.delete;
 
 import junit.framework.TestCase;
 
@@ -11,7 +11,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
-public class RunUpdate extends TestCase
+public class RunDelete extends TestCase
 {
     private static void createIndex() throws KettleException
     {
@@ -21,19 +21,19 @@ public class RunUpdate extends TestCase
                 );
     }
 
-    public void test__UPDATE_00() throws KettleException
+    public void test__DELETE_00() throws KettleException
     {
         System.out.println();
-        System.out.println("UPDATE");
+        System.out.println("DELETE");
         System.out.println("==================");
         System.out.println();
         createIndex();
     }
     
-    public void test__UPDATE_01_SimpleTest() throws KettleXMLException, KettleDatabaseException
+    public void test__DELETE_01_SimpleTest() throws KettleXMLException, KettleDatabaseException
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/update/UpdateRowsSimple.ktr", 
+                "experimental_test/org/pentaho/di/run/delete/DeleteRowsSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -46,23 +46,5 @@ public class RunUpdate extends TestCase
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
-    }
-    
-    public void test__UPDATE_02_SimpleTestWithUpdates() throws KettleXMLException, KettleDatabaseException
-    {
-        TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/update/UpdateRowsSimpleWithUpdates.ktr", 
-                LogWriter.LOG_LEVEL_ERROR, 
-                AllRunTests.getOldTargetDatabase(),
-                AllRunTests.getNewTargetDatabase(),
-                100000
-            );
-        timedTransRunner.runOldAndNew();
-
-        Result oldResult = timedTransRunner.getOldResult();
-        assertTrue(oldResult.getNrErrors()==0);
-        
-        Result newResult = timedTransRunner.getNewResult();
-        assertTrue(newResult.getNrErrors()==0);
-    }
+    }    
 }

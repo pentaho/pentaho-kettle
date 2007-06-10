@@ -797,10 +797,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
         {
             try
             {
-                Object[] keys = data.db.getGeneratedKeys(data.prepStatementInsert);
-                if (keys.length>0)
+                RowMetaAndData keys = data.db.getGeneratedKeys(data.prepStatementInsert);
+                if (keys.getRowMeta().size()>0)
                 {
-                    technicalKey = (Long) keys[0];
+                    technicalKey = keys.getRowMeta().getInteger(keys.getData(), 0);
                 }
                 else
                 {

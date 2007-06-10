@@ -1039,10 +1039,10 @@ public class Database
 
 	/** 
 	 * @param ps  The prepared insert statement to use
-	 * @return The generated keys in auto-increment fields as Longs
+	 * @return The generated keys in auto-increment fields 
 	 * @throws KettleDatabaseException in case something goes wrong retrieving the keys.
 	 */
-	public Object[] getGeneratedKeys(PreparedStatement ps) throws KettleDatabaseException 
+	public RowMetaAndData getGeneratedKeys(PreparedStatement ps) throws KettleDatabaseException 
 	{
 		ResultSet keys = null;
 		try
@@ -1051,7 +1051,7 @@ public class Database
 			ResultSetMetaData resultSetMetaData = keys.getMetaData();
 			RowMetaInterface rowMeta = getRowInfo(resultSetMetaData);
 
-			return getRow(keys, resultSetMetaData, rowMeta);
+			return new RowMetaAndData(rowMeta, getRow(keys, resultSetMetaData, rowMeta));
 		}
 		catch(Exception ex) 
 		{
@@ -1069,7 +1069,6 @@ public class Database
 				{
 					throw new KettleDatabaseException("Unable to close resultset of auto-generated keys", e);
 				}
-			
 			}
 		}
 	}

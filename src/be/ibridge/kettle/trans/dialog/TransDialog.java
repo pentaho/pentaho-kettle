@@ -281,6 +281,8 @@ public class TransDialog extends Dialog
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wTransname.addSelectionListener( lsDef );
+        wTransdescription.addSelectionListener( lsDef );
+        wTransversion.addSelectionListener( lsDef );
 		wMaxdatetable.addSelectionListener( lsDef );
 		wMaxdatefield.addSelectionListener( lsDef );
 		wMaxdateoffset.addSelectionListener( lsDef );

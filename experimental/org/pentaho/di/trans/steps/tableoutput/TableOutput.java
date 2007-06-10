@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -205,13 +206,13 @@ public class TableOutput extends BaseStep implements StepInterface
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
-				Object[] extraKeys = data.db.getGeneratedKeys(insertStatement);
+				RowMetaAndData extraKeys = data.db.getGeneratedKeys(insertStatement);
 
-				if ( !Const.isEmpty(extraKeys))
+				if ( extraKeys.getRowMeta().size()>0 )
 				{
   				    // Send out the good word!
   				    // Only 1 key at the moment. (should be enough for now :-)
-				    generatedKey = (Long)extraKeys[0];
+				    generatedKey = extraKeys.getRowMeta().getInteger(extraKeys.getData(), 0);
 				}
 				else
 				{
