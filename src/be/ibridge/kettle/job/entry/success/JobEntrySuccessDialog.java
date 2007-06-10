@@ -116,15 +116,7 @@ public class JobEntrySuccessDialog extends Dialog implements JobEntryDialogInter
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
-
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
-
-        // at the bottom
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
-
+        
         // Filename line
         wlName = new Label(shell, SWT.RIGHT);
         wlName.setText(Messages.getString("JobEntrySuccessDialog.Label"));
@@ -142,7 +134,15 @@ public class JobEntrySuccessDialog extends Dialog implements JobEntryDialogInter
         fdName.top = new FormAttachment(0, margin);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
-		
+
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+
+        // at the bottom
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+	
 	
 		// Add listeners
         lsCancel = new Listener()
