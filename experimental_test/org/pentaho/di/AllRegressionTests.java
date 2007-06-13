@@ -11,10 +11,11 @@ import org.pentaho.di.core.row.ValueDataUtilTest;
 import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.append.AppendTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
+import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
+import org.pentaho.di.trans.steps.sort.SortRowsTest;
 
-import be.ibridge.kettle.trans.step.combinationlookup.CombinationLookupTest;
 
 /**
  * Regression tests for the PDI framework.
@@ -39,8 +40,9 @@ public class AllRegressionTests
         
         suite.addTestSuite(InjectorTest.class);
         suite.addTestSuite(RowGeneratorTest.class);
-        suite.addTestSuite(AppendTest.class);
+        suite.addTestSuite(AppendTest.class);        
         suite.addTestSuite(BlockingStepTest.class);
+        suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         
         return suite;

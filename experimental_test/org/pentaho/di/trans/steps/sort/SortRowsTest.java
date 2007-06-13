@@ -1,0 +1,340 @@
+/**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+
+package org.pentaho.di.trans.steps.sort;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+import junit.framework.TestCase;
+
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.RowProducer;
+import org.pentaho.di.trans.RowStepCollector;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.injector.InjectorMeta;
+
+import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.util.EnvUtil;
+
+
+/**
+ * Test class for the Sort step.
+ * 
+ * TODO: ascii data case sensitive and case insensitive.
+ *
+ * @author Sven Boden
+ */
+public class SortRowsTest extends TestCase
+{
+	public static int MAX_COUNT = 1000;
+	 
+	public RowMetaInterface createRowMetaInterface()
+	{
+		RowMetaInterface rm = new RowMeta();
+		
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("KEY1", ValueMeta.TYPE_STRING),
+			    new ValueMeta("KEY2", ValueMeta.TYPE_STRING),
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}
+	
+	public List createIntegerData()
+	{
+		// Create 
+		List list = new ArrayList();
+		String old_key1 = null;
+		
+		RowMetaInterface rm = createRowMetaInterface();		
+		
+		Random rand = new Random();		
+		for ( int idx = 0; idx < MAX_COUNT; idx++ )
+		{
+			int key1 = Math.abs(rand.nextInt() % 1000000);
+			int key2 = Math.abs(rand.nextInt() % 1000000);
+
+			String key1_string = "" + key1 + "." + idx;
+			String key2_string = "" + key2 + "." + idx;
+			if ( ((idx % 100) == 0) && old_key1 != null )
+			{
+				// have duplicate key1's sometimes
+			    key1_string = old_key1;
+			}
+			Object[] r1 = new Object[] { key1_string, key2_string };	
+		    list.add(new RowMetaAndData(rm, r1));
+		    
+		    old_key1 = key1_string;
+		}
+		return list;
+	}
+	
+	/**
+	 *  Check the list, the list has to be sorted. 
+	 */
+	public void checkRows(List rows, boolean ascending) throws Exception
+	{
+		String prev_key1 = null, prev_key2 = null;
+		int idx = 0;
+		
+	    Iterator it = rows.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	        	
+        	Object[] r1 = rm.getData();
+        	RowMetaInterface rmi = rm.getRowMeta();
+		
+		    String key1 = rmi.getString(r1, "KEY1", "");
+		    String key2 = rmi.getString(r1, "KEY2", "");
+		   
+		    if (prev_key1 != null && prev_key2 != null)
+		    { 
+		       if ( ascending )
+		       {
+		    	   if (prev_key1.compareTo(key1) == 0) 
+		    	   {
+		    		   if ( prev_key2.compareTo(key2) > 0 )
+		    		   {
+		    			   fail("error in sort");
+		    		   }
+		    	   }
+		    	   else if (prev_key1.compareTo(key1) > 0)
+		    	   {
+		    		   fail("error in sort");
+		    	   }
+		       }
+		       else
+		       {
+		    	   if (prev_key1.compareTo(key1) == 0) 
+		    	   {
+		    		   if ( prev_key2.compareTo(key2) < 0 )
+		    		   {
+		    			   fail("error in sort");
+		    		   }
+		    	   }
+		    	   else if (prev_key1.compareTo(key1) < 0)
+		    	   {
+		    		   fail("error in sort");
+		    	   }
+		       }		       
+		   }
+		   prev_key1 = key1;
+		   prev_key2 = key2;
+
+		   idx++;
+  	    }
+  	    if (idx != MAX_COUNT)
+	    {
+	       fail("less rows returned than expected: " + idx);
+	    }
+	}
+	
+	
+	/**
+	 * Test case for sorting step .. ascending order on "numeric" data.
+	 */
+    public void testSortRows1() throws Exception
+    {
+        LogWriter log = LogWriter.getInstance();
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("sortrowstest");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a sort rows step
+        //
+        String sortRowsStepname = "sort rows step";            
+        SortRowsMeta srm = new SortRowsMeta();
+        srm.setSortSize(MAX_COUNT/10);
+        String [] sortFields = { "KEY1", "KEY2" };
+        boolean [] ascendingFields = { true, true };
+        srm.setFieldName(sortFields);
+        srm.setAscending(ascendingFields);
+        srm.setPrefix("SortRowsTest");
+        srm.setDirectory(".");
+
+        String sortRowsStepPid = steploader.getStepPluginID(srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        transMeta.addStep(sortRowsStep);            
+
+        TransHopMeta hi = new TransHopMeta(injectorStep, sortRowsStep);
+        transMeta.addTransHop(hi);        
+        
+        // 
+        // Create a dummy step
+        //
+        String dummyStepname = "dummy step";            
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);                              
+
+        TransHopMeta hi3 = new TransHopMeta(sortRowsStep, dummyStep);
+        transMeta.addTransHop(hi3);        
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(log, transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List inputList = createIntegerData();
+        Iterator it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+ 
+        trans.waitUntilFinished();   
+                                     
+        List resultRows = dummyRc.getRowsRead();
+        checkRows(resultRows, true);
+    }
+    
+	/**
+	 * Test case for sorting step .. descending order on "numeric" data.
+	 */
+    public void testSortRows2() throws Exception
+    {
+        LogWriter log = LogWriter.getInstance();
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("sortrowstest");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a sort rows step
+        //
+        String sortRowsStepname = "sort rows step";            
+        SortRowsMeta srm = new SortRowsMeta();
+        srm.setSortSize(MAX_COUNT/10);
+        String [] sortFields = { "KEY1", "KEY2" };
+        boolean [] ascendingFields = { false, false };
+        srm.setFieldName(sortFields);
+        srm.setAscending(ascendingFields);
+        srm.setPrefix("SortRowsTest");
+        srm.setDirectory(".");
+
+        String sortRowsStepPid = steploader.getStepPluginID(srm);
+        StepMeta sortRowsStep = new StepMeta(sortRowsStepPid, sortRowsStepname, (StepMetaInterface)srm);
+        transMeta.addStep(sortRowsStep);            
+
+        TransHopMeta hi = new TransHopMeta(injectorStep, sortRowsStep);
+        transMeta.addTransHop(hi);        
+        
+        // 
+        // Create a dummy step
+        //
+        String dummyStepname = "dummy step";            
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);                              
+
+        TransHopMeta hi3 = new TransHopMeta(sortRowsStep, dummyStep);
+        transMeta.addTransHop(hi3);        
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(log, transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List inputList = createIntegerData();
+        Iterator it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+ 
+        trans.waitUntilFinished();   
+                                     
+        List resultRows = dummyRc.getRowsRead();
+        checkRows(resultRows, false);
+    }        
+}
