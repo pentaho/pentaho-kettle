@@ -230,7 +230,7 @@ public class SortRows extends BaseStep implements StepInterface
 				{
 					r2=(Object[])data.rowbuffer.get(f);
 					
-					if (r2!=null && data.outputRowMeta.compare(r1, r2, data.fieldnrs)<0)
+					if (r2!=null && data.outputRowMeta.compare(r1, r2, data.fieldnrs)>0)
 					{
 						smallest=f;
 						r1=(Object[])data.rowbuffer.get(smallest);
