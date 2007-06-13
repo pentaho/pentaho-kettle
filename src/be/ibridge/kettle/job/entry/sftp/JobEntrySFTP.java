@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.ResultFile;
@@ -91,7 +92,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+        retval.append("      ").append(XMLHandler.addTagValue("password",     Encr.encryptPasswordIfNotUsingVariables(getPassword())));
 		retval.append("      ").append(XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
@@ -108,7 +109,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			serverName      = XMLHandler.getTagValue(entrynode, "servername");
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
-			password        = XMLHandler.getTagValue(entrynode, "password");
+			password        = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "password") );
 			sftpDirectory   = XMLHandler.getTagValue(entrynode, "sftpdirectory");
 			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
