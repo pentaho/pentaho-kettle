@@ -229,14 +229,14 @@ public class RowMeta implements RowMetaInterface
     public String getString(Object[] dataRow, String valueName, String defaultValue) throws KettleValueException
     {
         int index = indexOfValue(valueName);
-        if (index<1) return defaultValue;
+        if (index<0) return defaultValue;
         return getString(dataRow, index);
     }
 
     public Long getInteger(Object[] dataRow, String valueName, Long defaultValue) throws KettleValueException
     {
         int index = indexOfValue(valueName);
-        if (index<1) return defaultValue;
+        if (index<0) return defaultValue;
         return getInteger(dataRow, index);
     }
 
@@ -571,7 +571,5 @@ public class RowMeta implements RowMetaInterface
         {
             throw new RuntimeException("Error de-serializing row of data from byte array", e);
         }
-    }
-    
-    
+    }   
 }
