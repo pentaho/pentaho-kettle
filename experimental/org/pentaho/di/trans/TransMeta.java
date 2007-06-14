@@ -5153,6 +5153,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                 if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
                 if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, this, "Database type description"));
                 if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
+                if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, "Database server")); 
                 if ( includePasswords )
                 {
                 	if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, "Database password"));
