@@ -1617,4 +1617,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.acceptingStep = acceptingStep;
 	}
+    
+    public void setInfoSteps(StepMeta[] infoSteps)
+    {
+        if (!Const.isEmpty(infoSteps))
+        {
+            acceptingStep = infoSteps[0];
+        }
+    }
+    
 }
