@@ -9,3 +9,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - patch for #5693 in textfileinput, lenient date parsing now works correctly - Sven B - 2007-May-25
 - patch for missing variables in hostname/password of database connections, they wouldn't show up as used
   variables when you executed the transformation - Sven B - 2007-Jun-8
+- fix for bug #5708 (duplicate to 5758 and 5769) clustered mode in job - Jens - 2007-Jun-15
