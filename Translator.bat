@@ -72,4 +72,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% be.ibridge.kettle.i18n.editor.Translator %1 %2 %3 %4 %5 %6 %7 %8 %9
+java %OPT% org.pentaho.di.i18n.editor.Translator %1 %2 %3 %4 %5 %6 %7 %8 %9

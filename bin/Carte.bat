@@ -54,5 +54,5 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-java %OPT% be.ibridge.kettle.www.Carte %1 %2 %3 %4 %5 %6 %7 %8 %9
+java %OPT% org.pentaho.di.www.Carte %1 %2 %3 %4 %5 %6 %7 %8 %9
 

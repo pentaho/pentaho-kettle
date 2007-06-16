@@ -96,7 +96,7 @@
  	<nativelib href="libswt/osx/libs.jar"/>
  </resources>
 
- <application-desc main-class="be.ibridge.kettle.spoon.Spoon"/>
+ <application-desc main-class="org.pentaho.di.spoon.Spoon"/>
 
 </jnlp>
 

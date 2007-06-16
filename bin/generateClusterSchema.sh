@@ -45,5 +45,5 @@ fi
 # ** Run...    **
 # ***************
 
-$JAVA_BIN $OPT be.ibridge.kettle.cluster.GenerateClusterSchema "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+$JAVA_BIN $OPT org.pentaho.di.cluster.GenerateClusterSchema "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
 

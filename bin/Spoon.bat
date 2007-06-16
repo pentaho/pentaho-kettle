@@ -68,4 +68,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-start javaw %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
+start javaw %OPT% org.pentaho.di.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
