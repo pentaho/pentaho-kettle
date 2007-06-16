@@ -23,7 +23,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.value.Value;
+
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 
 /**
@@ -97,7 +99,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 		this.name      = fieldname;
 		this.position       = position;
 		this.length         = length;
-		this.type           = Value.VALUE_TYPE_STRING;
+		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.ignore         = false;
 		this.format         = "";
 		this.trimtype       = TextFileInputMeta.TYPE_TRIM_NONE;
@@ -182,7 +184,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 
 	public String getTypeDesc()
 	{
-		return Value.getTypeDesc(type);
+		return ValueMeta.getTypeDesc(type);
 	}
 	
 	public void setType(int type)
@@ -353,7 +355,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
         daf.setLenient(false);
 		
 		// Start with a string...
-		type = Value.VALUE_TYPE_STRING;
+		type = ValueMetaInterface.TYPE_STRING;
 		
 		// If we have no samples, we assume a String...
 		if (samples==null) return;
@@ -423,7 +425,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 			 	if (datefmt[i]) first=i;
 			 }
 			 
-			 type = Value.VALUE_TYPE_DATE;
+			 type = ValueMetaInterface.TYPE_DATE;
 			 format = date_formats[first];
 			 
 			 return;
@@ -575,7 +577,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 			   if (numfmt[i]) first=i;
 			}
 		 
-			type = Value.VALUE_TYPE_NUMBER;
+			type = ValueMetaInterface.TYPE_NUMBER;
 			format = number_formats[first];
 			precision = maxprecision[first];
 			
@@ -584,7 +586,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
             /*
 			if (length<19 && precision==0 && !containsDot && !containsComma)
 			{
-				type=Value.VALUE_TYPE_INTEGER;
+				type=ValueMetaInterface.TYPE_INTEGER;
 				decimalSymbol="";		
 				groupSymbol="";		
 			}
@@ -596,7 +598,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 		//
 		// Assume it's a string...
 		//
-		type = Value.VALUE_TYPE_STRING;
+		type = ValueMetaInterface.TYPE_STRING;
 		format = "";
 		precision = -1;
 		decimalSymbol="";		

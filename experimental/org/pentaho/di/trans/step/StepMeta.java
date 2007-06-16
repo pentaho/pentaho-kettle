@@ -20,24 +20,23 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.StepLoader;
-import org.pentaho.di.trans.StepPlugin;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.GUIPositionInterface;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.Point;
-import org.pentaho.di.shared.SharedObjectBase;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectBase;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.StepPlugin;
+import org.w3c.dom.Node;
 
 
 

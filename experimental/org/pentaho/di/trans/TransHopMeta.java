@@ -18,15 +18,14 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.step.StepMeta;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepMeta;
+import org.w3c.dom.Node;
 
 
 

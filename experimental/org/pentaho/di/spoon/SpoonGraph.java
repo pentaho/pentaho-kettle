@@ -58,16 +58,24 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.GUIResource;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.SnapAllignDistribute;
 import org.pentaho.di.core.dialog.EnterNumberDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.StepFieldsDialog;
+import org.pentaho.di.core.dnd.DragAndDropContainer;
+import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.Rectangle;
+import org.pentaho.di.core.gui.Redrawable;
+import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -75,15 +83,6 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-
-import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.DragAndDropContainer;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.core.Redrawable;
-import be.ibridge.kettle.core.XMLTransfer;
-import be.ibridge.kettle.i18n.LanguageChoice;
 
 
 

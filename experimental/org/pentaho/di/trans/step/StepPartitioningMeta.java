@@ -2,15 +2,14 @@ package org.pentaho.di.trans.step;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 
 
 public class StepPartitioningMeta implements XMLInterface, Cloneable

@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.value.Value;
+import org.pentaho.di.core.row.ValueMeta;
 
 public class TextFileImportWizardPage2 extends WizardPage
 {
@@ -223,9 +223,9 @@ public class TextFileImportWizardPage2 extends WizardPage
 		wlFieldtype.setLayoutData(fdlFieldtype);
 		wFieldtype=new CCombo(composite, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wFieldtype);
-        for (int i=0;i<Value.getTypes().length;i++)
+        for (int i=0;i<ValueMeta.getTypes().length;i++)
 		{
-			wFieldtype.add(Value.getTypes()[i]);
+			wFieldtype.add(ValueMeta.getTypes()[i]);
 		}		
 		fdFieldtype=new FormData();
 		fdFieldtype.left = new FormAttachment(middle, margin);
@@ -453,7 +453,7 @@ public class TextFileImportWizardPage2 extends WizardPage
 					int idx = wFields.getSelectionIndex();
 					if (idx>=0)
 					{
-						int valtype = Value.getType(wFieldtype.getText());
+						int valtype = ValueMeta.getType(wFieldtype.getText());
 						TextFileInputField field = (TextFileInputField)fields.get(idx);
 						field.setType(valtype);
 					}

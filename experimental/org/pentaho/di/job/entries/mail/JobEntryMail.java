@@ -57,14 +57,13 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Encr;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.value.Value;
 
 
 
@@ -701,8 +700,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
 		    if (includeDate) 
 		    {
-		        Value date = new Value("date", new Date());
-		        messageText.append("Message date: ").append(date.toString()).append(Const.CR).append(Const.CR);
+		        messageText.append("Message date: ").append(XMLHandler.date2string(new Date())).append(Const.CR).append(Const.CR);
 		    }
 		    if (!onlySendComment && result!=null)
 		    {
@@ -1043,7 +1041,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
            if (jer.getLogDate()!=null)
            {
                messageText.append(" (");
-               messageText.append(new Value("time", jer.getLogDate()).getString()); // $NON-NLS-1$
+               messageText.append( XMLHandler.date2string( jer.getLogDate() ) ); // $NON-NLS-1$
                messageText.append(')');
            }
        }

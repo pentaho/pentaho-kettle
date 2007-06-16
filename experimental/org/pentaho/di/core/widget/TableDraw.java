@@ -38,8 +38,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
 
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.gui.GUIResource;
 
 /**
  * Widget to draw the character of a fixed length text-file in a graphical way.

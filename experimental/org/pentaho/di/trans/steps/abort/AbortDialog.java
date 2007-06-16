@@ -24,7 +24,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.i18n.BaseMessages;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 

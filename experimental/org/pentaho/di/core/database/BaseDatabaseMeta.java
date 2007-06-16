@@ -26,7 +26,7 @@ import java.util.Properties;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Encr;
+import org.pentaho.di.core.encryption.Encr;
 
 
 

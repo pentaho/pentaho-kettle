@@ -41,7 +41,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.TextVar;
-import be.ibridge.kettle.i18n.BaseMessages;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 public class BlockingStepDialog extends BaseStepDialog implements StepDialogInterface

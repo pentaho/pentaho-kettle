@@ -6,7 +6,7 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 public class Log4jStringAppender implements Appender
 {

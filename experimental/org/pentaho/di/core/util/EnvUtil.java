@@ -9,12 +9,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
-import org.pentaho.di.core.variables.KettleVariables;
-import org.pentaho.di.core.variables.LocalVariables;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.version.BuildVersion;
+import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.version.BuildVersion;
 
 public class EnvUtil
 {

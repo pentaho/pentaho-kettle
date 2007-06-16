@@ -20,16 +20,14 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.w3c.dom.Node;
 
 
 /**

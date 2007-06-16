@@ -18,6 +18,8 @@ package org.pentaho.di.trans.steps.systemdata;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -27,10 +29,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.version.BuildVersion;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import be.ibridge.kettle.version.BuildVersion;
 
 
 /**

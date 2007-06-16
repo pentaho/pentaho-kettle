@@ -1,10 +1,9 @@
 package org.pentaho.di.core.reflection;
 
+import org.pentaho.di.core.Messages;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import be.ibridge.kettle.core.Messages;
 
 public class StringSearchResult
 {

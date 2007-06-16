@@ -17,7 +17,7 @@
 
 package org.pentaho.di.core.exception;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * This is an exception thrown by file handling (I/O)

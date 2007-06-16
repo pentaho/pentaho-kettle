@@ -24,22 +24,22 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.ChangedFlag;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Encr;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.www.GetStatusServlet;
-import be.ibridge.kettle.www.GetTransStatusServlet;
-import be.ibridge.kettle.www.SlaveServerStatus;
-import be.ibridge.kettle.www.SlaveServerTransStatus;
-import be.ibridge.kettle.www.StartTransServlet;
-import be.ibridge.kettle.www.StopTransServlet;
-import be.ibridge.kettle.www.WebResult;
+import org.pentaho.di.www.GetStatusServlet;
+import org.pentaho.di.www.GetTransStatusServlet;
+import org.pentaho.di.www.SlaveServerStatus;
+import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.StartTransServlet;
+import org.pentaho.di.www.StopTransServlet;
+import org.pentaho.di.www.WebResult;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface
 {

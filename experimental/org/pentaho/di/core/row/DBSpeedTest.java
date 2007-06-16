@@ -4,11 +4,11 @@ import java.sql.ResultSet;
 
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.util.EnvUtil;
 
 import be.ibridge.kettle.core.Row;
+
 
 public class DBSpeedTest
 {

@@ -62,13 +62,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepStatus;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.widget.TableView;
 
 

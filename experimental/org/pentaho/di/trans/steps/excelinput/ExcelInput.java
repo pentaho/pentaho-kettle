@@ -55,7 +55,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**

@@ -6,13 +6,13 @@ package org.pentaho.di.core.dnd;
 import java.io.UnsupportedEncodingException;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.Base64;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 /**
  * This class contains code to help you drag data from one 

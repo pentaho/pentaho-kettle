@@ -55,7 +55,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;

@@ -40,7 +40,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
-import be.ibridge.kettle.i18n.LanguageChoice;
+import org.pentaho.di.i18n.LanguageChoice;
 
 /**
  * 

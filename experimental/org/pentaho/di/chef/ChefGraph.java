@@ -53,10 +53,21 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.SnapAllignDistribute;
 import org.pentaho.di.core.dialog.EnterTextDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dnd.DragAndDropContainer;
+import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.Rectangle;
+import org.pentaho.di.core.gui.Redrawable;
+import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -69,17 +80,6 @@ import org.pentaho.di.spoon.TabMapEntry;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.trans.TransMeta;
 
-import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.DragAndDropContainer;
-import org.pentaho.di.core.GUIResource;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.core.Redrawable;
-import be.ibridge.kettle.core.XMLTransfer;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.vfs.KettleVFS;
 
 
 

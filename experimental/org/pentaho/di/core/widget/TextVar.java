@@ -22,11 +22,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.util.StringUtil;
 
 

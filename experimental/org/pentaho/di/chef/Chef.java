@@ -74,8 +74,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.PrintSpool;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -95,11 +96,15 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -135,15 +140,10 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
+import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.LastUsedFile;
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.PrintSpool;
-import be.ibridge.kettle.core.TransAction;
-import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.version.BuildVersion;
 
 
 

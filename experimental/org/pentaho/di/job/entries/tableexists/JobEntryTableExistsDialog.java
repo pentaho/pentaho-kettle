@@ -50,7 +50,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 
 
 /**

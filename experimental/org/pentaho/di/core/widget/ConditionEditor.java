@@ -56,11 +56,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIResource;
 
 
 /**

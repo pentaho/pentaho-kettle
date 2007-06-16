@@ -45,12 +45,11 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import be.ibridge.kettle.core.value.ValueDate;
 import org.pentaho.di.core.widget.TableView;
 
 
@@ -214,7 +213,7 @@ public class ChefHistory extends Composite implements TabItemInterface
     {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
-			final SimpleDateFormat df = new SimpleDateFormat(ValueDate.DATE_FORMAT);
+			final SimpleDateFormat df = new SimpleDateFormat(ValueMeta.DEFAULT_DATE_FORMAT_MASK);
 
 			public void widgetSelected(SelectionEvent e)
             {

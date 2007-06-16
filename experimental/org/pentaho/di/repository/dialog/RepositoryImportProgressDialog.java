@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;

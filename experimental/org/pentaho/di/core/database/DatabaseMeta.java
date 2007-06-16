@@ -25,22 +25,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Encr;
-import org.pentaho.di.shared.SharedObjectBase;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectBase;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Node;
 
 
 
@@ -1830,7 +1829,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         final String par = "Parameter";
         final String val = "Value";
 
-        Value testValue =  new Value("FIELD", Value.VALUE_TYPE_STRING);
+        Value testValue =  new Value("FIELD", ValueMetaInterface.TYPE_STRING);
         testValue.setLength(30);
 
         if (databaseInterface!=null)

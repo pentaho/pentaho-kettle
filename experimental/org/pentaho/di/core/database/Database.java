@@ -49,7 +49,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Counter;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;

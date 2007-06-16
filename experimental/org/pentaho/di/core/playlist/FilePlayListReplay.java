@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
-
 import org.pentaho.di.core.exception.KettleException;
-import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
+import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public class FilePlayListReplay implements FilePlayList {
 

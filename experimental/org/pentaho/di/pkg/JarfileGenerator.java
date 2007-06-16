@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 
-import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.trans.TransMeta;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.util.EnvUtil;
-import be.ibridge.kettle.core.util.StreamLogger;
+import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.trans.TransMeta;
+
 
 
 public class JarfileGenerator

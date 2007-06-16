@@ -44,11 +44,11 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIResource;
 
 
 

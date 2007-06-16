@@ -74,13 +74,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIResource;
 
 
 

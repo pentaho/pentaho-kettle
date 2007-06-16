@@ -1,7 +1,8 @@
 package org.pentaho.di.spoon;
 
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.TransAction;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.undo.TransAction;
+
 
 
 public interface UndoInterface

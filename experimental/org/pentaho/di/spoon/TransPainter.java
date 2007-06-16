@@ -9,8 +9,12 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -18,10 +22,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Rectangle;
 
 
 

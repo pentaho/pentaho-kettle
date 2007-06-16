@@ -3,7 +3,7 @@ package org.pentaho.di.trans.step;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.trans.Messages;
+import org.pentaho.di.trans.Messages;
 
 public class StepInitThread implements Runnable
 {

@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * This class contains a number of (static final) methods to facilitate 

@@ -4,7 +4,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.ChangedFlag;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.core.xml.XMLHandler;

@@ -14,19 +14,18 @@
  **********************************************************************/
 
 package org.pentaho.di.core;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.GUIPositionInterface;
-import be.ibridge.kettle.core.GUISizeInterface;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.Point;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.GUISizeInterface;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
+
 
 /**
  * Describes a note displayed on a Transformation, Job, Schema, or Report.

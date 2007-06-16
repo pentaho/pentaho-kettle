@@ -17,7 +17,7 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; //$NON-NLS-1$

@@ -1,4 +1,4 @@
-package org.pentaho.di.core;
+package org.pentaho.di.core.gui;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -18,20 +18,16 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.ImageUtil;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.ManagedColor;
-import be.ibridge.kettle.core.ManagedFont;
-import org.pentaho.di.core.exception.KettleStepLoaderException;
-import be.ibridge.kettle.core.util.ImageUtil;
-
-
 
 /**
  * This is a singleton class that contains allocated Fonts, Colors, etc.

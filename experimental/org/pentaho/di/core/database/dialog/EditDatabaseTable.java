@@ -37,11 +37,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.widget.TableView;

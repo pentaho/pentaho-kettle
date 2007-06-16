@@ -48,7 +48,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**

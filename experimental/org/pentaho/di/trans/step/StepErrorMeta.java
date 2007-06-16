@@ -2,19 +2,18 @@ package org.pentaho.di.trans.step;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.changed.ChangedFlag;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import be.ibridge.kettle.core.ChangedFlag;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 
 /**
  * This class contains the metadata to handle proper error handling on a step level.

@@ -1,12 +1,9 @@
-package org.pentaho.di.core;
+package org.pentaho.di.core.gui;
 
 import java.util.List;
 
+import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.spoon.UndoInterface;
-
-import be.ibridge.kettle.core.GUIPositionInterface;
-import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Redrawable;
 
 public class SnapAllignDistribute
 {

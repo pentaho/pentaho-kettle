@@ -420,7 +420,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
         Object[] rowData = new Object[10];
         
         // Put 10 values in the row for the possible 10 arguments.
-        // Set the type to Value.VALUE_TYPE_NONE if it's not used!
+        // Set the type to ValueMetaInterface.TYPE_NONE if it's not used!
         //
         for (int argNr=0;argNr<10;argNr++)
         {

@@ -33,17 +33,17 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.CheckResult;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.dialog.Messages;
+import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 
 
 

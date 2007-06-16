@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
@@ -48,12 +49,9 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.TableItemInsertListener;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import be.ibridge.kettle.core.value.Value;
-
-
 
 public class MappingOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -132,7 +130,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         ColumnInfo[] colinf = new ColumnInfo[] 
         { 
             new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Name"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes()), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false),  //$NON-NLS-1$
             new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Added"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -228,7 +226,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
             {
                 TableItem item = wFields.table.getItem(i);
                 item.setText(1, input.getFieldName()[i]);
-                String type   = Value.getTypeDesc(input.getFieldType()[i]);
+                String type   = ValueMeta.getTypeDesc(input.getFieldType()[i]);
                 int length    = input.getFieldLength()[i];
                 int prec      = input.getFieldPrecision()[i];
                 if (type  !=null) item.setText(2, type  );
@@ -263,7 +261,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         {
             TableItem item = wFields.getNonEmpty(i);
             input.getFieldName()[i]   = item.getText(1);
-            input.getFieldType()[i]   = Value.getType(item.getText(2));
+            input.getFieldType()[i]   = ValueMeta.getType(item.getText(2));
             String slength = item.getText(3);
             String sprec   = item.getText(4);
             

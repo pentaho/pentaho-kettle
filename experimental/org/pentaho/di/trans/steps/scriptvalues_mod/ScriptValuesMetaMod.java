@@ -38,9 +38,15 @@ import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.KettleURLClassLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -52,13 +58,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
-import org.pentaho.di.repository.Repository;
-import be.ibridge.kettle.trans.KettleURLClassLoader;
 
 
 /*

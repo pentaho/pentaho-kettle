@@ -24,10 +24,19 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -35,16 +44,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.EnvUtil;
-import be.ibridge.kettle.core.util.StreamLogger;
-import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.vfs.KettleVFS;
 
 
 /**
@@ -358,10 +357,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
             	data.writer = new OutputStreamWriter(data.cmdProc.getOutputStream());
-            	StreamLogger stdoutLogger = new StreamLogger(
-            			data.cmdProc.getInputStream(), "(stdout)");
-            	StreamLogger stderrLogger = new StreamLogger(
-            			data.cmdProc.getErrorStream(), "(stderr)");
+            	StreamLogger stdoutLogger = new StreamLogger( data.cmdProc.getInputStream(), "(stdout)" );
+            	StreamLogger stderrLogger = new StreamLogger( data.cmdProc.getErrorStream(), "(stderr)" );
             	new Thread(stdoutLogger).start();
             	new Thread(stderrLogger).start();
             	retval = true;

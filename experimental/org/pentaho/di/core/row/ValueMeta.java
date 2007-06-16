@@ -1766,7 +1766,7 @@ public class ValueMeta implements ValueMetaInterface
     /**
      * Convert the String description of a type to an integer type.
      * @param desc The description of the type to convert
-     * @return The integer type of the given String.  (Value.VALUE_TYPE_...)
+     * @return The integer type of the given String.  (ValueMetaInterface.TYPE_...)
      */
     public static final int getType(String desc)
     {

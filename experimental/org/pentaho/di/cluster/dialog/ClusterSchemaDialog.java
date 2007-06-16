@@ -26,12 +26,12 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 

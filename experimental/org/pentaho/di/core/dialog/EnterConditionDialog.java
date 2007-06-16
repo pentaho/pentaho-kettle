@@ -34,13 +34,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.widget.ConditionEditor;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 
 
 

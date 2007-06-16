@@ -15,7 +15,9 @@
  
 
 package org.pentaho.di.trans.steps.excelinput;
-import be.ibridge.kettle.core.value.Value;
+
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Describes a single field in an excel file
@@ -41,7 +43,7 @@ public class ExcelInputField implements Cloneable
 	{
 		this.name      = fieldname;
 		this.length         = length;
-		this.type           = Value.VALUE_TYPE_STRING;
+		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.format         = "";
 		this.trimtype       = ExcelInputMeta.TYPE_TRIM_NONE;
 		this.groupSymbol   = "";
@@ -96,7 +98,7 @@ public class ExcelInputField implements Cloneable
 
 	public String getTypeDesc()
 	{
-		return Value.getTypeDesc(type);
+		return ValueMeta.getTypeDesc(type);
 	}
 	
 	public void setType(int type)

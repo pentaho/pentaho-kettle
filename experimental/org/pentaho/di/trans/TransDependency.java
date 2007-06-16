@@ -15,16 +15,15 @@
 package org.pentaho.di.trans;
 import java.util.ArrayList;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
 
 
 /*

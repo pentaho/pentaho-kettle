@@ -40,14 +40,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.SortedFileOutputStream;
-
-import be.ibridge.kettle.core.LastUsedFile;
-import be.ibridge.kettle.core.ObjectUsageCount;
-import be.ibridge.kettle.core.WindowProperty;
-import org.pentaho.di.core.exception.KettleValueException;
 
 
 /**

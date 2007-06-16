@@ -42,12 +42,12 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIResource;
 
 
 

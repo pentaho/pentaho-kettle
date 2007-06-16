@@ -5,9 +5,9 @@ import java.util.Date;
 
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.version.BuildVersion;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.version.BuildVersion;
 
 public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
 {

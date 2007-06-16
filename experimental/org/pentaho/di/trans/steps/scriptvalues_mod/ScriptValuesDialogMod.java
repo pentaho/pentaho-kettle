@@ -100,7 +100,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
@@ -988,11 +988,11 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 					
 					switch(v.getType())
 					{
-					case Value.VALUE_TYPE_STRING : script+=v.getName()+".getString()"; break; //$NON-NLS-1$
-					case Value.VALUE_TYPE_NUMBER : script+=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-					case Value.VALUE_TYPE_INTEGER: script+=v.getName()+".getInteger()"; break; //$NON-NLS-1$
-					case Value.VALUE_TYPE_DATE   : script+=v.getName()+".getDate()"; break; //$NON-NLS-1$
-					case Value.VALUE_TYPE_BOOLEAN: script+=v.getName()+".getBool()"; break; //$NON-NLS-1$
+					case ValueMetaInterface.TYPE_STRING : script+=v.getName()+".getString()"; break; //$NON-NLS-1$
+					case ValueMetaInterface.TYPE_NUMBER : script+=v.getName()+".getNumber()"; break; //$NON-NLS-1$
+					case ValueMetaInterface.TYPE_INTEGER: script+=v.getName()+".getInteger()"; break; //$NON-NLS-1$
+					case ValueMetaInterface.TYPE_DATE   : script+=v.getName()+".getDate()"; break; //$NON-NLS-1$
+					case ValueMetaInterface.TYPE_BOOLEAN: script+=v.getName()+".getBool()"; break; //$NON-NLS-1$
 					default: script+=v.getName(); break;
 					}
 					script+=";"+Const.CR; //$NON-NLS-1$

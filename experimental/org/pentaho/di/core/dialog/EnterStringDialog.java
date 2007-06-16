@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 /**

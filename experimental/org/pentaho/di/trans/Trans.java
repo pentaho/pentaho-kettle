@@ -55,10 +55,10 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
-import be.ibridge.kettle.www.AddTransServlet;
-import be.ibridge.kettle.www.PrepareExecutionTransServlet;
-import be.ibridge.kettle.www.StartExecutionTransServlet;
-import be.ibridge.kettle.www.WebResult;
+import org.pentaho.di.www.AddTransServlet;
+import org.pentaho.di.www.PrepareExecutionTransServlet;
+import org.pentaho.di.www.StartExecutionTransServlet;
+import org.pentaho.di.www.WebResult;
 
 
 

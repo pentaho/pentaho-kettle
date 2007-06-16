@@ -80,13 +80,13 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
-import be.ibridge.kettle.core.ColumnInfo;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.value.Value;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 
@@ -1873,7 +1873,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         ColumnInfo[] colinf=new ColumnInfo[]
             {
              new ColumnInfo(Messages.getString("TextFileInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo(Messages.getString("TextFileInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  ValueMeta.getTypes(), true ),
              new ColumnInfo(Messages.getString("TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
              new ColumnInfo(Messages.getString("TextFileInputDialog.PositionColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
@@ -2213,7 +2213,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		    
 			TableItem item  = wFields.getNonEmpty(i);
 			field.setName( item.getText(1) );
-			field.setType( Value.getType(item.getText(2)) );
+			field.setType( ValueMeta.getType(item.getText(2)) );
 			field.setFormat( item.getText(3) );
 			field.setPosition( Const.toInt(item.getText(4), -1) );
 			field.setLength( Const.toInt(item.getText(5), -1) );

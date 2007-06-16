@@ -16,23 +16,22 @@
 package org.pentaho.di.job.entry;
 import java.util.ArrayList;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import be.ibridge.kettle.core.ChangedFlagInterface;
-import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.GUIPositionInterface;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.Point;
-import org.pentaho.di.core.xml.XMLHandler;
-import be.ibridge.kettle.core.XMLInterface;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 
 
 

@@ -47,9 +47,9 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.vfs.KettleVFS;
-import be.ibridge.kettle.www.SlaveServerTransStatus;
-import be.ibridge.kettle.www.WebResult;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.WebResult;
 
 
 

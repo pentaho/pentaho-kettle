@@ -52,7 +52,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.WindowProperty;
+import org.pentaho.di.core.gui.WindowProperty;
 
 
 

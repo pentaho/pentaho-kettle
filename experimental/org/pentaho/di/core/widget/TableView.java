@@ -75,21 +75,19 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.dialog.EnterConditionDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import be.ibridge.kettle.core.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import be.ibridge.kettle.core.TransAction;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.undo.TransAction;
 
 
 

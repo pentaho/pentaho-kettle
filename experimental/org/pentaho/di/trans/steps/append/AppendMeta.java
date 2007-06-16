@@ -31,7 +31,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Row;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -232,14 +231,16 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 	    return null;
 	}
     
-    public Row getFields(Row r, String name, Row info) throws KettleStepException
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[]) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just take the info fields.
         //
-        r.addRow(info);
-                
-        return r;
+        if (info!=null)
+        {
+            for (int i=0;i<info.length;i++)
+            r.mergeRowMeta(info[i]);
+        }
     }
 
 	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info)

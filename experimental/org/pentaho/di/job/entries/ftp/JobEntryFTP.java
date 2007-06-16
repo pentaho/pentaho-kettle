@@ -34,14 +34,14 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
-import be.ibridge.kettle.core.Encr;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
-import be.ibridge.kettle.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;

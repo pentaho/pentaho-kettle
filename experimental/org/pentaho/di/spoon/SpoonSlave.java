@@ -40,20 +40,20 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
-import org.pentaho.di.trans.step.BaseStepDialog;
-
-import be.ibridge.kettle.core.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.widget.TreeUtil;
-import be.ibridge.kettle.trans.step.StepStatus;
-import be.ibridge.kettle.www.SlaveServerStatus;
-import be.ibridge.kettle.www.SlaveServerTransStatus;
-import be.ibridge.kettle.www.WebResult;
+import org.pentaho.di.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.StepStatus;
+
+import org.pentaho.di.www.SlaveServerStatus;
+import org.pentaho.di.www.SlaveServerTransStatus;
+import org.pentaho.di.www.WebResult;
 
 /**
  * SpoonLog handles the display of the logging information in the Spoon logging window.

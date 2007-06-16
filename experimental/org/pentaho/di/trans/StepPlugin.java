@@ -22,7 +22,7 @@ package org.pentaho.di.trans;
 import java.util.Hashtable;
 import java.util.Map;
 
-import be.ibridge.kettle.i18n.LanguageChoice;
+import org.pentaho.di.i18n.LanguageChoice;
 
 /**
  * @author Matt

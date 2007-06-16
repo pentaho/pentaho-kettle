@@ -208,7 +208,7 @@ public interface StepMetaInterface
      * 
      * @return A row of argument values. (name and optionally a default value)
      *         Put 10 values in the row for the possible 10 arguments.
-     *         Set the type to Value.VALUE_TYPE_NONE if it's not used!
+     *         Set the type to ValueMetaInterface.TYPE_NONE if it's not used!
      */
     public RowMetaAndData getUsedArguments();
     
