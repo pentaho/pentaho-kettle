@@ -7,9 +7,10 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
-import be.ibridge.kettle.core.value.Value;
+
 
 public interface ValueMetaInterface extends Cloneable
 {

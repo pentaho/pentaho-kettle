@@ -13,10 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
-import be.ibridge.kettle.core.value.Value;
+
 
 public class ValueMeta implements ValueMetaInterface
 {

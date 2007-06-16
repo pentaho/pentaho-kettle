@@ -37,6 +37,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -58,7 +59,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.value.Value;
+
 
 
 /*
