@@ -244,7 +244,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	}
 
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 * @see DatabaseInterface#getReservedWords()
 	 */
 	public String[] getReservedWords()
 	{

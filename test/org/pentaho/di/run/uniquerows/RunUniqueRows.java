@@ -19,7 +19,7 @@ public class RunUniqueRows extends TestCase
     public void test_UNIQUE_ROWS_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStates.ktr", 
+                "test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStates.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunUniqueRows extends TestCase
     public void test_UNIQUE_ROWS_02_Occurances() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStatesNrCustomers.ktr", 
+                "test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStatesNrCustomers.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

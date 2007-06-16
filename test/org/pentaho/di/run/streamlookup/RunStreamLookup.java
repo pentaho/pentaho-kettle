@@ -19,7 +19,7 @@ public class RunStreamLookup extends TestCase
     public void test_STREAM_LOOKUP_01_Strings10kNormal() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kNormal.ktr", 
+                "test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kNormal.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -38,7 +38,7 @@ public class RunStreamLookup extends TestCase
     public void test_STREAM_LOOKUP_02_Strings10kPreserveMemory() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kPreserveMemory.ktr", 
+                "test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kPreserveMemory.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -57,7 +57,7 @@ public class RunStreamLookup extends TestCase
     public void test_STREAM_LOOKUP_03_Strings10kSortedList() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kSortedList.ktr", 
+                "test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kSortedList.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

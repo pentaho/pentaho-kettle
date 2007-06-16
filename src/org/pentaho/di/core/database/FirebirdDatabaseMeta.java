@@ -315,7 +315,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSQLListOfProcedures()
+	 * @see DatabaseInterface#getSQLListOfProcedures()
 	 */
 	public String getSQLListOfProcedures()
 	{

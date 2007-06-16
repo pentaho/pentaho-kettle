@@ -19,7 +19,7 @@ public class RunJoinRows extends TestCase
     public void test_JOIN_ROWS_01_NoCondition() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/joinrows/JoinRowsNoCondition.ktr", 
+                "test/org/pentaho/di/run/joinrows/JoinRowsNoCondition.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunJoinRows extends TestCase
     public void test_JOIN_ROWS_02_WithCondition() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/joinrows/JoinRowsCondition.ktr", 
+                "test/org/pentaho/di/run/joinrows/JoinRowsCondition.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

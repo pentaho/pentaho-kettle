@@ -17,7 +17,7 @@
 
  <resources>
   <j2se version="1.4+" java-vm-args="-Xmx256M"/>
-  <jar href="lib/kettle.jar"/>
+  <jar href="lib/kettle3.jar"/>
 
   <jar href="libext/activation.jar"/>
   <jar href="libext/CacheDB.jar"/>

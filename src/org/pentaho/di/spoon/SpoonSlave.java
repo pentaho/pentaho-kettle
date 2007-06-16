@@ -58,7 +58,7 @@ import org.pentaho.di.www.WebResult;
 /**
  * SpoonLog handles the display of the logging information in the Spoon logging window.
  *  
- * @see be.ibridge.kettle.spoon.Spoon
+ * @see org.pentaho.di.spoon.Spoon
  * @author Matt
  * @since  17 may 2003
  */

@@ -72,7 +72,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	}
 	
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getLimitClause(int)
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getLimitClause(int)
 	 */
 	public String getLimitClause(int nrRows)
 	{

@@ -3,22 +3,24 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.NotePadMeta;
-import be.ibridge.kettle.core.database.Database;
-import be.ibridge.kettle.core.database.DatabaseMeta;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.EnvUtil;
-import be.ibridge.kettle.trans.StepLoader;
-import be.ibridge.kettle.trans.Trans;
-import be.ibridge.kettle.trans.TransHopMeta;
-import be.ibridge.kettle.trans.TransMeta;
-import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
-import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
-import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.trans.StepLoader;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
+
+
 
 /**
  * Class created to demonstrate the creation of transformations on-the-fly.

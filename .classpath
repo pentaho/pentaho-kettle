@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test/java"/>
-	<classpathentry kind="src" path="experimental"/>
-	<classpathentry kind="src" path="experimental_test"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/CacheDB.jar"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
@@ -11,10 +9,7 @@
 	<classpathentry kind="lib" path="libext/mail.jar"/>
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
-	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
-	<classpathentry kind="src" output="testClasses" path="test/useCases/replay"/>
-	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.1.5.jar" sourcepath="/Jackcess-1.1.5"/>
 	<classpathentry kind="lib" path="libswt/jface.jar"/>
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
@@ -73,5 +68,8 @@
 	<classpathentry kind="lib" path="libext/jaxp-ri.jar"/>
 	<classpathentry kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
+	<classpathentry kind="src" path="extra"/>
+	<classpathentry kind="lib" path="OLD_TEST/libext/junit.jar"/>
+	<classpathentry kind="lib" path="test/libext/kettle.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -49,7 +49,7 @@ public class RunInsertUpdate extends TestCase
     public void test__INSERT_UPDATE_01_SimpleTest() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/insertupdate/InsertUpdateSimple.ktr", 
+                "test/org/pentaho/di/run/insertupdate/InsertUpdateSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

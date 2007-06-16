@@ -19,7 +19,7 @@ public class RunSelectValues extends TestCase
     public void test_SELECT_VALUES_01_SelectValues() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/selectvalues/SelectValues.ktr",
+                "test/org/pentaho/di/run/selectvalues/SelectValues.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunSelectValues extends TestCase
     public void test_SELECT_VALUES_01_Delete() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesDelete.ktr",
+                "test/org/pentaho/di/run/selectvalues/SelectValuesDelete.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -55,7 +55,7 @@ public class RunSelectValues extends TestCase
     public void test_SELECT_VALUES_01_Meta() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesMeta.ktr",
+                "test/org/pentaho/di/run/selectvalues/SelectValuesMeta.ktr",
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

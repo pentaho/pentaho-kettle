@@ -21,7 +21,7 @@ public class RunAbort extends TestCase
     public void test_ABORT_01_AbortAboveLimit() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/abort/AbortAboveLimit.ktr", 
+                "test/org/pentaho/di/run/abort/AbortAboveLimit.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -40,7 +40,7 @@ public class RunAbort extends TestCase
     public void test_ABORT_02_AbortBelowLimit() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/abort/AbortBelowLimit.ktr", 
+                "test/org/pentaho/di/run/abort/AbortBelowLimit.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

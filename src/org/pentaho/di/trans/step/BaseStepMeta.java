@@ -160,7 +160,7 @@ public class BaseStepMeta implements Cloneable
 
     /**
      * Each step must be able to report on the impact it has on a database, table field, etc.
-     * @param impact The list of impacts @see be.ibridge.kettle.transMeta.DatabaseImpact
+     * @param impact The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
      * @param transMeta The transformation information
      * @param stepMeta The step information
      * @param prev The fields entering this step

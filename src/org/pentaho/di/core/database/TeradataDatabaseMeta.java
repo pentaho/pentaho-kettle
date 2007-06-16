@@ -50,7 +50,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
 	
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getNotFoundTK(boolean)
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
 	public int getNotFoundTK(boolean use_autoinc)
 	{
@@ -96,7 +96,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
 
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{

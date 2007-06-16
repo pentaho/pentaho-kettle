@@ -19,7 +19,7 @@ public class RunTextFileOutput extends TestCase
     public void test_TEXT_FILE_OUTPUT_01_InputOutputCSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileInputOutputCSV.ktr", 
+                "test/org/pentaho/di/run/textfileoutput/TextFileInputOutputCSV.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -41,7 +41,7 @@ public class RunTextFileOutput extends TestCase
     public void test_TEXT_FILE_OUTPUT_02_CSVFromTable() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromTable.ktr", 
+                "test/org/pentaho/di/run/textfileoutput/TextFileOutputFromTable.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -63,7 +63,7 @@ public class RunTextFileOutput extends TestCase
     public void test_TEXT_FILE_OUTPUT_03_CSVFromGenerator() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/textfileoutput/TextFileOutputFromGenerator.ktr", 
+                "test/org/pentaho/di/run/textfileoutput/TextFileOutputFromGenerator.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

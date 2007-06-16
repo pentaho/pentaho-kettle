@@ -21,10 +21,10 @@ then
   ant zip
 
   #
-  # upload kettle.jar to Kettle.be
+  # upload kettle3.jar to Kettle.be
   #
   cd lib
-  ftp -u ftp://www.kettle.be:*******@www.kettle.be/dloads/ kettle.jar
+  ftp -u ftp://www.kettle.be:*******@www.kettle.be/dloads/ kettle3.jar
 
 else
   echo "Nothing was updated"

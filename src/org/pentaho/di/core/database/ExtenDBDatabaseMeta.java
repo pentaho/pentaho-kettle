@@ -56,7 +56,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     }
 
     /**
-     * @see be.ibridge.kettle.core.database.DatabaseInterface#getAccessTypeList()
+     * @see DatabaseInterface#getAccessTypeList()
      */
     public int[] getAccessTypeList()
     {
@@ -70,7 +70,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     }
 
     /**
-     * @see be.ibridge.kettle.core.database.DatabaseInterface#getDriverClass()
+     * @see DatabaseInterface#getDriverClass()
      */
     public String getDriverClass()
     {
@@ -179,7 +179,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     
     /**
-     * @see be.ibridge.kettle.core.database.DatabaseInterface#getFieldDefinition(be.ibridge.kettle.core.value.Value, java.lang.String, java.lang.String, boolean, boolean, boolean)
+     * @see DatabaseInterface#getFieldDefinition(Value, String, String, boolean, boolean, boolean)
      */
     public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
     {

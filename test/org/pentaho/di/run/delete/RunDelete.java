@@ -29,7 +29,7 @@ public class RunDelete extends TestCase
     public void test__DELETE_01_SimpleTest() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/delete/DeleteRowsSimple.ktr", 
+                "test/org/pentaho/di/run/delete/DeleteRowsSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

@@ -19,7 +19,7 @@ public class RunScriptValuesMod extends TestCase
     public void test_SCRIPT_VALUES_MOD_01_CSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/scriptvalues_mod/ScriptValuesMod1.ktr", 
+                "test/org/pentaho/di/run/scriptvalues_mod/ScriptValuesMod1.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

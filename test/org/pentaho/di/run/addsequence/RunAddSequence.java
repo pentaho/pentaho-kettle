@@ -19,7 +19,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_01_AddToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/AddSequence.ktr", 
+                "test/org/pentaho/di/run/addsequence/AddSequence.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_02_AddTo5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo5.ktr", 
+                "test/org/pentaho/di/run/addsequence/AddSequenceTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -55,7 +55,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_03_AddTo10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo10.ktr", 
+                "test/org/pentaho/di/run/addsequence/AddSequenceTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -73,7 +73,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_04_Add2ToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add2Sequences.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add2Sequences.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -91,7 +91,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_05_Add2To5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo5.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add2SequencesTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -109,7 +109,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_06_Add2To10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo10.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add2SequencesTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -127,7 +127,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_07_Add4ToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add4Sequences.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add4Sequences.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -145,7 +145,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_08_Add4To5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo5.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add4SequencesTo5.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -163,7 +163,7 @@ public class RunAddSequence extends TestCase
     public void test_ADD_SEQUENCE_09_Add4To10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo10.ktr", 
+                "test/org/pentaho/di/run/addsequence/Add4SequencesTo10.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

@@ -303,7 +303,7 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSQLListOfProcedures()
+	 * @see DatabaseInterface#getSQLListOfProcedures()
 	 */
 	public String getSQLListOfProcedures()
 	{

@@ -94,7 +94,7 @@ public interface StepMetaInterface
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
-	 * @param remarks The list to put the remarks in @see be.ibridge.kettle.core.CheckResult
+	 * @param remarks The list to put the remarks in @see org.pentaho.di.core.CheckResult
 	 * @param stepMeta The stepMeta to help checking
 	 * @param prev The fields coming from the previous step
 	 * @param input The input step names
@@ -175,7 +175,7 @@ public interface StepMetaInterface
 
 	/**
 	 * Each step must be able to report on the impact it has on a database, table field, etc.
-	 * @param impact The list of impacts @see be.ibridge.kettle.transMeta.DatabaseImpact
+	 * @param impact The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
 	 * @param transMeta The transformation information
 	 * @param stepMeta The step information
 	 * @param prev The fields entering this step

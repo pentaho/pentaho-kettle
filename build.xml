@@ -88,7 +88,7 @@
 	  	
 		<target name="revision" depends="compile" description="compile the source " >
 	 	  <echo>Bumping revision...</echo>
-	  	  <java classname="be.ibridge.kettle.version.UpdateBuildVersion"
+	  	  <java classname="org.pentaho.di.version.UpdateBuildVersion"
 		  	    classpath="${classes}"
 	  	  	  />
 		 <!-- <concat><filelist dir="." files="build_version.txt"/></concat> -->
@@ -110,7 +110,7 @@
 		    	>
 
 		    	<classpath id="cp-kettle-test">
-		    		<fileset dir="${lib}" 	  		includes="kettle.jar"/>
+		    		<fileset dir="${lib}" 	  		includes="kettle3.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 			  	</classpath>
 		    </javac>
@@ -156,7 +156,7 @@
         	maxmemory="256M"
         	nodeprecatedlist="false" 
         	nodeprecated="false" 
-        	packagenames ="be.ibridge.kettle.*" 
+        	packagenames ="org.pentaho.di.*" 
         	sourcepath="${src}" 
         	doctitle="Kettle API documentation">
             <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
@@ -182,12 +182,12 @@
 	       ==========================
 	  -->
 		
-	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle.jar">
-	  	<echo>Generating the Kettle library kettle.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle.jar" 
+	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle3.jar">
+	  	<echo>Generating the Kettle library kettle3.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle3.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ../build_version.txt"
-	  	     excludes="**/Thumbs.db be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
+	  	     excludes="**/Thumbs.db"
 	  		/>
 	  	
 
@@ -209,7 +209,7 @@
 
 	  		<!-- base lib -->
 	  		<mkdir dir="${distrib}/lib"/>
-	  		<copy todir="${distrib}/lib"  file="${lib}/kettle.jar"/>
+	  		<copy todir="${distrib}/lib"  file="${lib}/kettle3.jar"/>
 
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>

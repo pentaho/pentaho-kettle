@@ -72,7 +72,7 @@ public class RunCombinationLookup extends TestCase
     public void test__COMBINATION_LOOKUP_01_NoHashcode_NoRemove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
+                "test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -90,7 +90,7 @@ public class RunCombinationLookup extends TestCase
     public void test__COMBINATION_LOOKUP_02_NoHashcode_Remove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 
+                "test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -108,7 +108,7 @@ public class RunCombinationLookup extends TestCase
     public void test__COMBINATION_LOOKUP_03_Hashcode_NoRemove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
+                "test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -126,7 +126,7 @@ public class RunCombinationLookup extends TestCase
     public void test__COMBINATION_LOOKUP_04_Hashcode_Remove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 
+                "test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

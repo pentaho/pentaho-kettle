@@ -19,7 +19,7 @@ public class RunConstant extends TestCase
     public void test_CONSTANT_01_SimpleCase() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/constant/Constant.ktr", 
+                "test/org/pentaho/di/run/constant/Constant.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

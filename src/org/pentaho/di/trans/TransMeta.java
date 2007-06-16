@@ -386,7 +386,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#getDatabases()
+     * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabases()
      */
     public ArrayList getDatabases()
     {
@@ -394,7 +394,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
      */
     public void setDatabases(ArrayList databases)
     {
@@ -402,7 +402,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addDatabase(DatabaseMeta databaseMeta)
     {
@@ -410,7 +410,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
     
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
     {
@@ -493,7 +493,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#addDatabase(int, be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(int, be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public void addDatabase(int p, DatabaseMeta ci)
     {
@@ -548,7 +548,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#getDatabase(int)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabase(int)
      */
     public DatabaseMeta getDatabase(int i)
     {
@@ -610,7 +610,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#removeDatabase(int)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#removeDatabase(int)
      */
     public void removeDatabase(int i)
     {
@@ -676,7 +676,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#nrDatabases()
+     * @see org.pentaho.di.trans.HasDatabaseInterface#nrDatabases()
      */
     public int nrDatabases()
     {
@@ -783,7 +783,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#findDatabase(java.lang.String)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#findDatabase(java.lang.String)
      */
     public DatabaseMeta findDatabase(String name)
     {
@@ -1883,7 +1883,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
      */
     public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
@@ -2330,7 +2330,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#indexOfDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#indexOfDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
      */
     public int indexOfDatabase(DatabaseMeta ci)
     {
@@ -3189,7 +3189,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     /* (non-Javadoc)
-     * @see be.ibridge.kettle.trans.HasDatabaseInterface#haveConnectionsChanged()
+     * @see org.pentaho.di.trans.HasDatabaseInterface#haveConnectionsChanged()
      */
     public boolean haveConnectionsChanged()
     {

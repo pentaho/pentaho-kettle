@@ -19,7 +19,7 @@ public class RunTableInput extends TestCase
     public void test_TABLE_INPUT_01_ReadCustomers() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/tableinput/TableInput.ktr", 
+                "test/org/pentaho/di/run/tableinput/TableInput.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

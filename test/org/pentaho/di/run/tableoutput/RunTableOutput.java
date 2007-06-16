@@ -56,7 +56,7 @@ public class RunTableOutput extends TestCase
     public void test__TABLE_OUTPUT_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/tableoutput/TableOutputSimple.ktr", 
+                "test/org/pentaho/di/run/tableoutput/TableOutputSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -74,7 +74,7 @@ public class RunTableOutput extends TestCase
     public void test__TABLE_OUTPUT_02_FromCSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/tableoutput/TableOutputFromCSV.ktr", 
+                "test/org/pentaho/di/run/tableoutput/TableOutputFromCSV.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

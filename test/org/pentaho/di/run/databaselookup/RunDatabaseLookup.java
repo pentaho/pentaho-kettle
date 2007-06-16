@@ -37,7 +37,7 @@ public class RunDatabaseLookup extends TestCase
     public void test__DATABASE_LOOKUP_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookup.ktr", 
+                "test/org/pentaho/di/run/databaselookup/DBLookupIDLookup.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -55,7 +55,7 @@ public class RunDatabaseLookup extends TestCase
     public void test__DATABASE_LOOKUP_02_NoCache() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookupNoCaching.ktr", 
+                "test/org/pentaho/di/run/databaselookup/DBLookupIDLookupNoCaching.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -73,7 +73,7 @@ public class RunDatabaseLookup extends TestCase
     public void test__DATABASE_LOOKUP_03_Cache50k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookupCache50k.ktr", 
+                "test/org/pentaho/di/run/databaselookup/DBLookupIDLookupCache50k.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

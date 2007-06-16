@@ -19,7 +19,7 @@ public class RunFilterRows extends TestCase
     public void test_FILTER_ROWS_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/filterrows/FilterRowsSimple.ktr", 
+                "test/org/pentaho/di/run/filterrows/FilterRowsSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

@@ -73,7 +73,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     }
     
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getNotFoundTK(boolean)
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getNotFoundTK(boolean)
 	 */
 	public int getNotFoundTK(boolean use_autoinc)
 	{
@@ -281,7 +281,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
 	public String[] getReservedWords()
 	{
@@ -311,7 +311,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getStartQuote()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getStartQuote()
 	 */
 	public String getStartQuote()
 	{
@@ -320,7 +320,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	
 	/**
 	 * Simply add an underscore in the case of MySQL!
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getEndQuote()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getEndQuote()
 	 */
 	public String getEndQuote()
 	{

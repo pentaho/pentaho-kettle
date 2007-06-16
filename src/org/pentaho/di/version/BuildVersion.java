@@ -12,7 +12,7 @@ import org.pentaho.di.core.Const;
 
 
 /**
- * Singleton class to allow us to see on which date & time the kettle.jar was built.
+ * Singleton class to allow us to see on which date & time the kettle3.jar was built.
  * 
  * @author Matt
  * @since 2006-aug-12

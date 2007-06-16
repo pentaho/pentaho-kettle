@@ -9,7 +9,7 @@ if [ -z "$KETTLE_HOME" ]; then
   BASEDIR=$(dirname $0)
 fi
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle3.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **

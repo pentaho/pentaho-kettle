@@ -117,7 +117,7 @@ public class Const
 	/**
 	 * The images directory
 	 */
-	public static final String IMAGE_DIRECTORY = "/be/ibridge/kettle/images/"; //+FILE_SEPARATOR;
+	public static final String IMAGE_DIRECTORY = "/org/pentaho/di/images/"; //+FILE_SEPARATOR;
 
 	/**
 	 *  Public directory containing external steps plugins

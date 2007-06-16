@@ -29,7 +29,7 @@ public class RunUpdate extends TestCase
     public void test__UPDATE_01_SimpleTest() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/update/UpdateRowsSimple.ktr", 
+                "test/org/pentaho/di/run/update/UpdateRowsSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -47,7 +47,7 @@ public class RunUpdate extends TestCase
     public void test__UPDATE_02_SimpleTestWithUpdates() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/update/UpdateRowsSimpleWithUpdates.ktr", 
+                "test/org/pentaho/di/run/update/UpdateRowsSimpleWithUpdates.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

@@ -56,7 +56,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
 
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getNotFoundTK(boolean)
+	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
 	public int getNotFoundTK(boolean use_autoinc)
 	{

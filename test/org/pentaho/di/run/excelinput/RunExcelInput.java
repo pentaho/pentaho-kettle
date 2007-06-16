@@ -19,7 +19,7 @@ public class RunExcelInput extends TestCase
     public void test_EXCEL_INPUT_01() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/excelinput/ExcelInput.ktr", 
+                "test/org/pentaho/di/run/excelinput/ExcelInput.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

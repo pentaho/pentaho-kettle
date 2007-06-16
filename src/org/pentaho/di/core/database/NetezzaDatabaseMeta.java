@@ -292,7 +292,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSQLListOfProcedures()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
 	 */
 	public String getSQLListOfProcedures()
 	{
@@ -300,7 +300,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	}
 
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
 	public String[] getReservedWords()
 	{

@@ -19,7 +19,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_01_A_plus_B() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -38,7 +38,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_02_A_plus_B_dummy() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_dummy.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B_dummy.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -56,7 +56,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_03_A_plus_B_D_over_E() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -74,7 +74,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_04_A_plus_B_D_over_E_addDays() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -92,7 +92,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_05_A_plus_B_D_over_E_addDays_Booleans() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays_Booleans.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_addDays_Booleans.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -111,7 +111,7 @@ public class RunCalculator extends TestCase
     public void test_CALCULATOR_06_A_plus_B_D_over_E_Temp() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_Temp.ktr", 
+                "test/org/pentaho/di/run/calculator/Calculate_A_plus_B_D_over_E_Temp.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

@@ -46,7 +46,7 @@ import org.w3c.dom.Node;
  *
  * @author Matt
  * @since Beginning 2003.
- * @see be.ibridge.kettle.core.value.Value
+ * @see Value
  *
  */
 public class Row implements XMLInterface, Comparable, Serializable

@@ -39,7 +39,7 @@ public class KettleDependencies
 
         // First the common libraries
         //
-        libraries.add("lib/kettle.jar");
+        libraries.add("lib/kettle3.jar");
         for (int i=0;i<generalLibs.length;i++)
         {
             libraries.add("libext/"+generalLibs[i]);

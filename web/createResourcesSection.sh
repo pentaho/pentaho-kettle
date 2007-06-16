@@ -4,7 +4,7 @@ cd ..
 echo '
  <resources>
   <j2se version="1.4+" java-vm-args="-Xmx256M"/>
-  <jar href="lib/kettle.jar"/>
+  <jar href="lib/kettle3.jar"/>
 '
 
 

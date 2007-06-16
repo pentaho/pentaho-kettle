@@ -22,7 +22,7 @@ set CLASSPATH=.
 REM ******************
 REM   KETTLE Library
 REM ******************
-set CLASSPATH=%CLASSPATH%;lib\kettle.jar
+set CLASSPATH=%CLASSPATH%;lib\kettle3.jar
 
 REM **********************
 REM   External Libraries

@@ -50,7 +50,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	}
 	
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getNotFoundTK(boolean)
+	 * @see DatabaseInterface#getNotFoundTK(boolean)
 	 */
 	public int getNotFoundTK(boolean use_autoinc)
 	{
@@ -92,7 +92,7 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	}
 
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
+	 * @see DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{

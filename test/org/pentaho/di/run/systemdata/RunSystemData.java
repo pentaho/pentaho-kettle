@@ -19,7 +19,7 @@ public class RunSystemData extends TestCase
     public void test_GET_SYSTEM_INFO_01_Sysdate() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdate.ktr", 
+                "test/org/pentaho/di/run/systemdata/GetSystemInfoSysdate.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunSystemData extends TestCase
     public void test_GET_SYSTEM_INFO_02_SysdateTempfile() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdateOutputToTempfile.ktr", 
+                "test/org/pentaho/di/run/systemdata/GetSystemInfoSysdateOutputToTempfile.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

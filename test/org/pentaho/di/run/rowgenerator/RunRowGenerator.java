@@ -19,7 +19,7 @@ public class RunRowGenerator extends TestCase
     public void test_ROWGENERATOR_01_EmptyRows() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows.ktr", 
+                "test/org/pentaho/di/run/rowgenerator/GenerateRows.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -37,7 +37,7 @@ public class RunRowGenerator extends TestCase
     public void test_ROWGENERATOR_02_4numbers() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows4numbers.ktr", 
+                "test/org/pentaho/di/run/rowgenerator/GenerateRows4numbers.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),

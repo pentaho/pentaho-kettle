@@ -55,7 +55,7 @@ import org.pentaho.di.core.widget.TableView;
  * The idea is that this Composite is only populated when after loading of a transformation, we find a connection and logging table.
  * We then read from this table and populate the grid and log.
  *  
- * @see be.ibridge.kettle.spoon.Spoon
+ * @see org.pentaho.di.spoon.Spoon
  * @author Matt
  * @since  16-mar-2006
  */

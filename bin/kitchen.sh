@@ -6,7 +6,7 @@
 
 BASEDIR=$(dirname $0)
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle3.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **

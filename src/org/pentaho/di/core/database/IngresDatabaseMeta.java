@@ -83,7 +83,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	}
 
 	/**
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
+	 * @see DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{
@@ -237,7 +237,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSQLListOfProcedures()
+	 * @see DatabaseInterface#getSQLListOfProcedures()
 	 */
 	public String getSQLListOfProcedures()
 	{

@@ -188,7 +188,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	}
 
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 * @see DatabaseInterface#getReservedWords()
 	 */
 	public String[] getReservedWords()
 	{

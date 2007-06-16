@@ -248,14 +248,14 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	}
 	
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getSQLListOfProcedures()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getSQLListOfProcedures()
 	 */
 	public String getSQLListOfProcedures()
 	{
 		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid";
 	}
 	/* (non-Javadoc)
-	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
 	 */
 	public String[] getReservedWords()
 	{
