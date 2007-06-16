@@ -56,10 +56,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.GUIResource;
-import be.ibridge.kettle.core.Props;
+import org.pentaho.di.core.GUIResource;
+import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 

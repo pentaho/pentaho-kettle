@@ -32,19 +32,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.GUIResource;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.dialog.Messages;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.widget.TableView;
+
+
+
+
 
 /**
  * Displays an ArrayList of rows in a TableView.
@@ -231,7 +235,7 @@ public class PreviewRowsDialog extends Dialog
                         String show;
                         try
                         {
-                            show = v.getString(row[i]);
+                            show = v.getString(row[c]);
                         }
                         catch (KettleValueException e)
                         {

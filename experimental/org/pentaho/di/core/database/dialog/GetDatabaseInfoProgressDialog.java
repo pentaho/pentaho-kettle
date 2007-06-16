@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 
-import be.ibridge.kettle.core.LocalVariables;
+import org.pentaho.di.core.variables.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.dialog.ErrorDialog;
 
 
 /**

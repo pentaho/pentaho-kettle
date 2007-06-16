@@ -15,12 +15,12 @@
  
 package org.pentaho.di.core;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import junit.framework.TestCase;
 
 /**
  * Test class for the basic functionality of RowSet.

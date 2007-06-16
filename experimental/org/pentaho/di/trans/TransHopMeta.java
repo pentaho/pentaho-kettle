@@ -15,7 +15,10 @@
  
 package org.pentaho.di.trans;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
@@ -24,7 +27,9 @@ import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.repository.Repository;
+
+
+
 
 
 /*
@@ -115,20 +120,17 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 		return null;
 	}
 	
-    /*
-     * TODO: re-enable support for the repository
-     * 
 	public TransHopMeta(Repository rep, long id_trans_hop, ArrayList steps) throws KettleException
 	{
 		try
 		{
 			setID(id_trans_hop);
 			
-			Row r = rep.getTransHop(id_trans_hop);
+			RowMetaAndData r = rep.getTransHop(id_trans_hop);
 			
-			long id_step_from = r.searchValue("ID_STEP_FROM").getInteger(); //$NON-NLS-1$
-			long id_step_to   = r.searchValue("ID_STEP_TO").getInteger(); //$NON-NLS-1$
-			enabled           = r.searchValue("ENABLED").getBoolean(); //$NON-NLS-1$
+			long id_step_from = r.getInteger("ID_STEP_FROM", 0); //$NON-NLS-1$
+			long id_step_to   = r.getInteger("ID_STEP_TO", 0); //$NON-NLS-1$
+			enabled           = r.getBoolean("ENABLED", false); //$NON-NLS-1$
 			
 			from_step = StepMeta.findStep(steps, id_step_from);
             if (from_step==null && id_step_from>0) // Links to a shared objects, try again by looking up the name...
@@ -153,7 +155,6 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 			throw new KettleException(Messages.getString("TransHopMeta.Exception.LoadTransformationHopInfo")+id_trans_hop, dbe); //$NON-NLS-1$
 		}
 	}
-    */
 
 	public void saveRep(Repository rep, long id_transformation)
 		throws KettleException

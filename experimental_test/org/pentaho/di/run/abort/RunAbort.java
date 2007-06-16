@@ -2,11 +2,11 @@ package org.pentaho.di.run.abort;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Result;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunAbort extends TestCase
@@ -30,7 +30,7 @@ public class RunAbort extends TestCase
             );
         timedTransRunner.runOldAndNew();
         
-        Result oldResult = timedTransRunner.getOldResult();
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==1);  // abort step must abort in this case
         
         Result newResult = timedTransRunner.getNewResult();
@@ -49,7 +49,7 @@ public class RunAbort extends TestCase
             );
         timedTransRunner.runOldAndNew();
 
-        Result oldResult = timedTransRunner.getOldResult();
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);  // abort step must abort in this case
         
         Result newResult = timedTransRunner.getNewResult();

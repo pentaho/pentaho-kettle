@@ -24,10 +24,10 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LocalVariables;
+import org.pentaho.di.core.variables.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 

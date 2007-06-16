@@ -17,7 +17,6 @@
 
 package org.pentaho.di.core.dialog;
 import org.eclipse.swt.SWT;
-import be.ibridge.kettle.core.GUIResource;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -35,9 +34,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
+import org.pentaho.di.core.GUIResource;
+import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 /**
  * A dialog that asks for a password.

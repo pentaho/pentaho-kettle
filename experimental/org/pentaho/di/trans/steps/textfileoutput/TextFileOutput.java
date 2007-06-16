@@ -24,6 +24,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -36,14 +37,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.util.EnvUtil;
+import org.pentaho.di.core.util.EnvUtil;
 import be.ibridge.kettle.core.util.StreamLogger;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 

@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.JobEntryLoader;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.repository.Repository;
 
@@ -161,7 +162,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				boolean isparallel = r.searchValue("PARALLEL").getBoolean();
 	
 				// Do we have the jobentry already?
-				entry = Const.findJobEntry(jobentries, id_jobentry);
+				entry = JobMeta.findJobEntry(jobentries, id_jobentry);
 				if (entry==null)
 				{
 					// What type of jobentry do we load now?

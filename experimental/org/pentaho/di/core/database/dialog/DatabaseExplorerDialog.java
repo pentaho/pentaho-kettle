@@ -57,11 +57,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.GUIResource;
+import org.pentaho.di.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
+import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 
 

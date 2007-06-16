@@ -26,6 +26,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
@@ -33,6 +34,7 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,9 +49,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;

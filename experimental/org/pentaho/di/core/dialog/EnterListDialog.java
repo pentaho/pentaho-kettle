@@ -56,9 +56,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
+import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 /**
  * This dialogs allows you to select a number of items from a list of strings.

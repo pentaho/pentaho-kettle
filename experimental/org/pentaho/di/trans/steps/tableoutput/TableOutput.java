@@ -40,7 +40,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 /**
  * Writes rows to a database table.

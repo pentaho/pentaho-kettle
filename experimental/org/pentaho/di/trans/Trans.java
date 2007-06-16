@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
@@ -30,7 +31,12 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -42,21 +48,19 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleTransException;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
-import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 import be.ibridge.kettle.www.AddTransServlet;
 import be.ibridge.kettle.www.PrepareExecutionTransServlet;
 import be.ibridge.kettle.www.StartExecutionTransServlet;
 import be.ibridge.kettle.www.WebResult;
+
+
 
 
 /**
@@ -191,9 +195,6 @@ public class Trans
 		return transMeta.getName();
 	}
 
-    /*
-     * TODO re-enable repository support 
-     *
 	public void open(Repository rep, String name, String dirname, String filename) throws KettleException
 	{
 		try
@@ -220,7 +221,6 @@ public class Trans
 			throw new KettleException(Messages.getString("Trans.Exception.UnableToOpenTransformation",name), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-     */
 
     /**
      * Execute this transformation.
@@ -1604,7 +1604,7 @@ public class Trans
         BaseStep baseStep = getRunThread(stepname, copyNr);
         if (baseStep!=null)
         {
-            return baseStep.getInputRowMeta();
+            return baseStep.getPreviewRowMeta();
         }
         return null;
     }

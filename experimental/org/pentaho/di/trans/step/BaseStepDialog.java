@@ -47,24 +47,26 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.GUIResource;
-import be.ibridge.kettle.core.LocalVariables;
+import org.pentaho.di.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.repository.Repository;
+import org.pentaho.di.core.util.StringUtil;
+
+
 
 public class BaseStepDialog extends Dialog
 {

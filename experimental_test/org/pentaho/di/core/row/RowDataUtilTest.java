@@ -2,7 +2,6 @@ package org.pentaho.di.core.row;
 
 
 import junit.framework.TestCase;
-
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public class RowDataUtilTest extends TestCase

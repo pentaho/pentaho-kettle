@@ -578,7 +578,7 @@ public class ValueMeta implements ValueMetaInterface
     
     private synchronized Long convertStringToInteger(String string) throws KettleValueException
     {
-        if (string==null) return null;
+        if (Const.isEmpty(string)) return null;
 
         try
         {
@@ -632,7 +632,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    private Boolean convertStringToBoolean(String string)
+    public static Boolean convertStringToBoolean(String string)
     {
         return new Boolean( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) );
     }

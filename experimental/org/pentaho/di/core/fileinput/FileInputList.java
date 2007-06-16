@@ -13,7 +13,7 @@ import org.apache.commons.vfs.FileType;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 public class FileInputList

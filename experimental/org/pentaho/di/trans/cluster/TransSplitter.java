@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -18,9 +19,8 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 
-import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave servers in the clusters used.

@@ -2,7 +2,10 @@ package org.pentaho.di.run;
 
 import java.text.DecimalFormat;
 
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -10,11 +13,9 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.EnvUtil;
+
 
 public class TimedTransRunner
 {
@@ -25,7 +26,7 @@ public class TimedTransRunner
     private double newSpeed;
     private double oldRunTime;
     private double oldSpeed;
-    private Result oldResult;
+    private be.ibridge.kettle.core.Result oldResult;
     private Result newResult;
     
     private String       newRowListenerStep;
@@ -267,7 +268,7 @@ public class TimedTransRunner
     /**
      * @return the oldResult
      */
-    public Result getOldResult()
+    public be.ibridge.kettle.core.Result getOldResult()
     {
         return oldResult;
     }
@@ -275,7 +276,7 @@ public class TimedTransRunner
     /**
      * @param oldResult the oldResult to set
      */
-    public void setOldResult(Result oldResult)
+    public void setOldResult(be.ibridge.kettle.core.Result oldResult)
     {
         this.oldResult = oldResult;
     }

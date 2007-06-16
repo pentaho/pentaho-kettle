@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -19,7 +20,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.repository.Repository;
+
 
 public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 		

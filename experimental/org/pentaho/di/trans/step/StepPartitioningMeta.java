@@ -3,13 +3,15 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.core.exception.KettleException;
+
 
 public class StepPartitioningMeta implements XMLInterface, Cloneable
 {
@@ -182,14 +184,14 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      * @param id_step the ID of the step
      * @throws KettleDatabaseException In case anything goes wrong
      */
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_SCHEMA",    partitionSchema!=null?partitionSchema.getName():""); // selected schema
         rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_METHOD",    getMethodCode());          // method of partitioning  
         rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_FIELDNAME", fieldName);               // The fieldname to partition on 
     }
     
-    public StepPartitioningMeta(Repository rep, long id_step) throws KettleDatabaseException
+    public StepPartitioningMeta(Repository rep, long id_step) throws KettleException
     {
         partitionSchemaName = rep.getStepAttributeString(id_step, "PARTITIONING_SCHEMA");
         String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");

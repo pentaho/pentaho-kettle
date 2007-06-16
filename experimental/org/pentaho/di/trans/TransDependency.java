@@ -15,12 +15,15 @@
 package org.pentaho.di.trans;
 import java.util.ArrayList;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 
@@ -118,26 +121,24 @@ public class TransDependency implements XMLInterface
 	{
 		return fieldname;
 	}
-	
-    /*
-     * TODO re-enable repository support
+
 	public TransDependency(Repository rep, long id_dependency, ArrayList databases) throws KettleException
 	{
 		try
 		{
 			setID(id_dependency);
 			
-			Row r = rep.getTransDependency(id_dependency);
+			RowMetaAndData r = rep.getTransDependency(id_dependency);
 			
 			if (r!=null)
 			{
-				long id_connection = r.searchValue("ID_DATABASE").getInteger(); //$NON-NLS-1$
+				long id_connection = r.getInteger("ID_DATABASE", 0); //$NON-NLS-1$
 				db        = DatabaseMeta.findDatabase(databases, id_connection);
-				tablename = r.searchValue("TABLE_NAME").getString(); //$NON-NLS-1$
-				fieldname = r.searchValue("FIELD_NAME").getString(); //$NON-NLS-1$
+				tablename = r.getString("TABLE_NAME", null); //$NON-NLS-1$
+				fieldname = r.getString("FIELD_NAME", null); //$NON-NLS-1$
 			}
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToLoadTransformationDependency")+id_dependency, dbe); //$NON-NLS-1$
 		}
@@ -151,11 +152,9 @@ public class TransDependency implements XMLInterface
 			
 			setID( rep.insertDependency(id_transformation, id_database, tablename, fieldname) );
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToSaveTransformationDepency")+id_transformation, dbe); //$NON-NLS-1$
 		}
 	}
-     */
-
 }

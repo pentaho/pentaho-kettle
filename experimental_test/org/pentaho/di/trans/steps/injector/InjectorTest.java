@@ -28,8 +28,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.RowProducer;
+import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -38,11 +38,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.util.EnvUtil;
+import org.pentaho.di.core.util.EnvUtil;
 
 
 /**

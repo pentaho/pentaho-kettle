@@ -6,15 +6,15 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 
 /**
  * This class contains the metadata to handle proper error handling on a step level.
@@ -146,7 +146,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     }
 
 
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_source_step", sourceStep!=null ? sourceStep.getName() : "");
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_target_step", targetStep!=null ? targetStep.getName() : "");
@@ -160,7 +160,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_min_pct_rows",  minPercentRows);
     }
     
-    public StepErrorMeta(Repository rep, StepMeta stepMeta, List steps) throws KettleDatabaseException
+    public StepErrorMeta(Repository rep, StepMeta stepMeta, List steps) throws KettleException
     {
         sourceStep = stepMeta;
         targetStep = StepMeta.findStep( steps, rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_target_step") );

@@ -11,8 +11,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
-import be.ibridge.kettle.core.LocalVariables;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while 

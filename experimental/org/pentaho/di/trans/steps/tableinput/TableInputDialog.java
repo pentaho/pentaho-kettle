@@ -56,10 +56,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.dialog.EnterNumberDialog;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 public class TableInputDialog extends BaseStepDialog implements StepDialogInterface
 {

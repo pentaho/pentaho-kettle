@@ -7,7 +7,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.util.EnvUtil;
+import org.pentaho.di.core.util.EnvUtil;
 
 public class DBSpeedTest
 {

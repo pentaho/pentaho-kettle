@@ -3,6 +3,8 @@ package org.pentaho.di.cluster;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
@@ -155,17 +157,12 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
     }
 
-    /*
-     * 
-    public void saveRep(Repository rep) throws KettleDatabaseException
+    public void saveRep(Repository rep) throws KettleException
     {
         saveRep(rep, -1L, false);
     }
 
-     *
-     * TODO: re-add repository support
-     *
-    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
     {
         setId(rep.getClusterID(name));
         if (getId()<0)
@@ -197,13 +194,13 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
     }
     
-    public ClusterSchema(Repository rep, long id_cluster_schema, List slaveServers) throws KettleDatabaseException
+    public ClusterSchema(Repository rep, long id_cluster_schema, List slaveServers) throws KettleException
     {
         this();
         
         setId(id_cluster_schema);
         
-        Row row = rep.getClusterSchema(id_cluster_schema);
+        RowMetaAndData row = rep.getClusterSchema(id_cluster_schema);
         
         name = row.getString("NAME", null);
         basePort = row.getString("BASE_PORT", null);
@@ -222,7 +219,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
                 this.slaveServers.add(slaveServer);
         }
     }
-    */
+
     
     /**
      * @return the name

@@ -34,15 +34,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.Row;
+import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.trans.step.BaseStepDialog;
+import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 
 /**
@@ -60,9 +62,9 @@ public class EnterStringsDialog extends Dialog
 	private Button   wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
-	private Shell         shell;
-	private Row           strings;
-	private Props 		  props;
+	private Shell          shell;
+	private RowMetaAndData strings;
+	private Props 		   props;
     
     private boolean       readOnly;
     private String message;
@@ -74,7 +76,7 @@ public class EnterStringsDialog extends Dialog
      * @param style The style in which we want to draw this shell.
      * @param strings The list of rows to change.
      */
-	public EnterStringsDialog(Shell parent, int style, Row strings)
+	public EnterStringsDialog(Shell parent, int style, RowMetaAndData strings)
 	{
 		super(parent, style);
 		this.strings=strings;
@@ -85,7 +87,7 @@ public class EnterStringsDialog extends Dialog
         message = Messages.getString("EnterStringsDialog.Message");
 	}
 
-	public Row open()
+	public RowMetaAndData open()
 	{
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
@@ -113,7 +115,7 @@ public class EnterStringsDialog extends Dialog
 		fdlFields.top  = new FormAttachment(0, margin);
 		wlFields.setLayoutData(fdlFields);
 
-        int FieldsRows=strings.size();
+        int FieldsRows=strings.getRowMeta().size();
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
@@ -181,12 +183,23 @@ public class EnterStringsDialog extends Dialog
 	{
         if (strings!=null)
         {
-            for (int i=0;i<strings.size();i++)
+            for (int i=0;i<strings.getRowMeta().size();i++)
             {
-                Value value = strings.getValue(i);
+                ValueMetaInterface valueMeta = strings.getRowMeta().getValueMeta(i);
+                Object valueData = strings.getData()[i];
+                String string;
+                try
+                {
+                    string = valueMeta.getString(valueData);
+                }
+                catch (KettleValueException e)
+                {
+                    string = "";
+                    // TODO: can this ever be a meaningful exception?  We're editing strings almost by definition
+                }
                 TableItem item = wFields.table.getItem(i);
-                item.setText(1, value.getName());
-                if (value.getString()!=null && !value.isNull()) item.setText(2, value.getString());
+                item.setText(1, valueMeta.getName() );
+                if (!Const.isEmpty(string)) item.setText(2, string);
             }
         }
         wFields.sortTable(1);
@@ -209,13 +222,14 @@ public class EnterStringsDialog extends Dialog
             {
                 TableItem item = wFields.getNonEmpty(i);
                 String name = item.getText(1);
-                for (int j=0;j<strings.size();j++)
+                for (int j=0;j<strings.getRowMeta().size();j++)
                 {
-                    Value value = strings.getValue(j);
-                    if (value.getName().equalsIgnoreCase(name))
+                    ValueMetaInterface valueMeta = strings.getRowMeta().getValueMeta(j);
+                    
+                    if (valueMeta.getName().equalsIgnoreCase(name))
                     {
                         String stringValue = item.getText(2);
-                        value.setValue(stringValue);
+                        strings.getData()[j] = stringValue;
                     }
                 }
             }
@@ -228,7 +242,7 @@ public class EnterStringsDialog extends Dialog
                 TableItem item = wFields.getNonEmpty(i);
                 String name = item.getText(1);
                 String value = item.getText(2);
-                strings.addValue( new Value(name, value) );
+                strings.addValue( new ValueMeta(name, ValueMetaInterface.TYPE_STRING), value);
             }
         }
         dispose();

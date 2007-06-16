@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.repository.Repository;
+import org.pentaho.di.repository.Repository;
 
 
 

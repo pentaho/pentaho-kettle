@@ -1,5 +1,8 @@
 package org.pentaho.di.run;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.run.abort.RunAbort;
@@ -31,10 +34,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.EnvUtil;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.pentaho.di.core.util.EnvUtil;
 
 public class AllRunTests
 {

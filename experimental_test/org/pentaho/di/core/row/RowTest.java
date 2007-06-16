@@ -4,12 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import junit.framework.TestCase;
-
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import be.ibridge.kettle.core.exception.KettleValueException;
 
 public class RowTest extends TestCase

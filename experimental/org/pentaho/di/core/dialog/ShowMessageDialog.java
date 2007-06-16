@@ -35,8 +35,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.trans.step.BaseStepDialog;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a text. (descriptions etc.)

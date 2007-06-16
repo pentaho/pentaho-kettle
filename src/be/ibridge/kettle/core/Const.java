@@ -43,8 +43,6 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.job.entry.JobEntryCopy;
-import be.ibridge.kettle.job.entry.JobEntryInterface;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -1259,46 +1257,6 @@ public class Const
 	public static final ArrayList selectSAPR3Databases(ArrayList databases)
 	{
 		return (ArrayList)selectSAPR3Databases((List)databases);
-	}
-
-	/**
-	 * Find a jobentry with a certain ID in a list of job entries.
-	 * @param jobentries The List of jobentries
-	 * @param id_jobentry The id of the jobentry
-	 * @return The JobEntry object if one was found, null otherwise.
-	 */
-	public static final JobEntryInterface findJobEntry(List jobentries, long id_jobentry)
-	{
-		if (jobentries == null)
-			return null;
-
-		for (int i = 0; i < jobentries.size(); i++)
-		{
-			JobEntryInterface je = (JobEntryInterface) jobentries.get(i);
-			if (je.getID() == id_jobentry)
-				return je;
-		}
-		return null;
-	}
-
-	/**
-	 * Find a jobentrycopy with a certain ID in a list of job entry copies.
-	 * @param jobcopies The List of jobentry copies
-	 * @param id_jobentry_copy The id of the jobentry copy
-	 * @return The JobEntryCopy object if one was found, null otherwise.
-	 */
-	public static final JobEntryCopy findJobEntryCopy(List jobcopies, long id_jobentry_copy)
-	{
-		if (jobcopies == null)
-			return null;
-
-		for (int i = 0; i < jobcopies.size(); i++)
-		{
-			JobEntryCopy jec = (JobEntryCopy) jobcopies.get(i);
-			if (jec.getID() == id_jobentry_copy)
-				return jec;
-		}
-		return null;
 	}
 
 	/**

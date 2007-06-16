@@ -48,9 +48,9 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.widget.TableView;
+import org.pentaho.di.core.widget.TableView;
 
 
 public class HTTPDialog extends BaseStepDialog implements StepDialogInterface

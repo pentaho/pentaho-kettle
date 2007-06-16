@@ -31,10 +31,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import be.ibridge.kettle.core.CheckResult;
+import org.pentaho.di.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 /**
  * Generates a number of (empty or the same) rows

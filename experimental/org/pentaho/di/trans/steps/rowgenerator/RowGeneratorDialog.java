@@ -40,7 +40,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.dialog.EnterNumberDialog;
+import org.pentaho.di.core.dialog.EnterTextDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -51,14 +57,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.dialog.EnterNumberDialog;
-import be.ibridge.kettle.core.dialog.EnterTextDialog;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.core.widget.TextVar;
+import org.pentaho.di.core.util.StringUtil;
+
+
 
 public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -376,7 +378,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
                 }
             }
             
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
             prd.open();
         }
     }

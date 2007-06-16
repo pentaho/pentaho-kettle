@@ -1,7 +1,7 @@
 package org.pentaho.di.trans.step;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LocalVariables;
+import org.pentaho.di.core.variables.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.trans.Messages;
 

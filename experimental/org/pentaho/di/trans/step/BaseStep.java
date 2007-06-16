@@ -29,12 +29,15 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
@@ -71,10 +74,7 @@ import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.trans.steps.update.UpdateMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -132,6 +132,13 @@ public class BaseStep extends Thread
         new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages.getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
 
         /*
+            new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
+            new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
+            new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
+ 
+         
+            new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
+
             new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
             new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
 
@@ -146,10 +153,6 @@ public class BaseStep extends Thread
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
             new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
-            new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
-            new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
-            new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
             new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
@@ -344,6 +347,7 @@ public class BaseStep extends Thread
     
     /** The metadata information of the error output row.  There is only one per step so we cache it */
     private RowMetaInterface errorRowMeta = null;
+    private RowMetaInterface previewRowMeta;
 
 
 
@@ -622,6 +626,7 @@ public class BaseStep extends Thread
         {
             try
             {
+                if (previewRowMeta==null) previewRowMeta=(RowMetaInterface)rowMeta.clone();
                 previewBuffer.add(rowMeta.cloneRow(row));
             }
             catch (KettleValueException e)
@@ -2102,5 +2107,21 @@ public class BaseStep extends Thread
     public void setErrorRowMeta(RowMetaInterface errorRowMeta)
     {
         this.errorRowMeta = errorRowMeta;
+    }
+
+    /**
+     * @return the previewRowMeta
+     */
+    public RowMetaInterface getPreviewRowMeta()
+    {
+        return previewRowMeta;
+    }
+
+    /**
+     * @param previewRowMeta the previewRowMeta to set
+     */
+    public void setPreviewRowMeta(RowMetaInterface previewRowMeta)
+    {
+        this.previewRowMeta = previewRowMeta;
     }    
 }

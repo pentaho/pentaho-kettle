@@ -11,8 +11,8 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 
-import be.ibridge.kettle.core.LocalVariables;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 
 

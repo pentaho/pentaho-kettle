@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.core.util.DatasourceHelper;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.row.RowMeta;
@@ -50,11 +51,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Counter;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -764,10 +764,20 @@ public class Database
 		setValues(rowMeta, data, pstmt);
 	}
 
+    public void setValues(RowMetaAndData row) throws KettleDatabaseException
+    {
+        setValues(row.getRowMeta(), row.getData());
+    }
+    
 	public void setValuesInsert(RowMetaInterface rowMeta, Object[] data) throws KettleDatabaseException
 	{
 		setValues(rowMeta, data, prepStatementInsert);
 	}
+    
+    public void setValuesInsert(RowMetaAndData row) throws KettleDatabaseException
+    {
+        setValues(row.getRowMeta(), row.getData(), prepStatementInsert);
+    }
 
 	public void setValuesUpdate(RowMetaInterface rowMeta, Object[] data) throws KettleDatabaseException
 	{
@@ -988,6 +998,11 @@ public class Database
 			throw new KettleDatabaseException("Error setting value #"+pos+" ["+(v==null?"NULL":v.toString())+"] on prepared statement ("+debug+")"+Const.CR+e.toString(), e);
 		}
 	}
+    
+    public void setValues(RowMetaAndData row, PreparedStatement ps) throws KettleDatabaseException
+    {
+        setValues(row.getRowMeta(), row.getData(), ps);
+    }
     
     public void setValues(RowMetaInterface rowMeta, Object[] data, PreparedStatement ps) throws KettleDatabaseException
     {

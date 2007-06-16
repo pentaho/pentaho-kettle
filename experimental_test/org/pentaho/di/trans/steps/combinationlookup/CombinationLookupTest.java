@@ -36,7 +36,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.EnvUtil;
+import org.pentaho.di.core.util.EnvUtil;
 
 
 /**

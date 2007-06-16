@@ -2,11 +2,11 @@ package org.pentaho.di.run.tableinput;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Result;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunTableInput extends TestCase
@@ -29,7 +29,7 @@ public class RunTableInput extends TestCase
             );
         timedTransRunner.runOldAndNew();
         
-        Result oldResult = timedTransRunner.getOldResult();
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
         
         Result newResult = timedTransRunner.getNewResult();

@@ -20,6 +20,8 @@ import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
@@ -28,7 +30,9 @@ import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.www.GetStatusServlet;
 import be.ibridge.kettle.www.GetTransStatusServlet;
 import be.ibridge.kettle.www.SlaveServerStatus;
@@ -119,14 +123,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return xml.toString();
     }
 
-    /*
-     * TODO re-enable repository support
-    public void saveRep(Repository rep) throws KettleDatabaseException
+    public void saveRep(Repository rep) throws KettleException
     {
         saveRep(rep, -1L, false);
     }
     
-    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
     {
         setId(rep.getSlaveID(name));
         
@@ -143,13 +145,13 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         if (id_transformation>=0 && isUsedByTransformation) rep.insertTransformationSlave(id_transformation, getId());
     }
     
-    public SlaveServer(Repository rep, long id_slave_server) throws KettleDatabaseException
+    public SlaveServer(Repository rep, long id_slave_server) throws KettleException
     {
         this();
         
         setId(id_slave_server);
         
-        Row row = rep.getSlaveServer(id_slave_server);
+        RowMetaAndData row = rep.getSlaveServer(id_slave_server);
         if (row==null)
         {
             throw new KettleDatabaseException("Internal repository error: slave server with id "+id_slave_server+" could not be found!");
@@ -165,7 +167,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         nonProxyHosts = row.getString("NON_PROXY_HOSTS", null);
         master        = row.getBoolean("MASTER", false);
     }
-    */
 
     
     public Object clone()

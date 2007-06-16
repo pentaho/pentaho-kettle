@@ -39,8 +39,8 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.TextVar;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.widget.TextVar;
 import be.ibridge.kettle.i18n.BaseMessages;
 
 

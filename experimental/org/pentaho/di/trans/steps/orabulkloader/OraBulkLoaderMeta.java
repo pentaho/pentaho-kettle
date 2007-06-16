@@ -42,8 +42,8 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.repository.Repository;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.repository.Repository;
 
 
 /*

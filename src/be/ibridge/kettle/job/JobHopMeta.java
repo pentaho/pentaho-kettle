@@ -131,8 +131,8 @@ public class JobHopMeta implements Cloneable, XMLInterface
 				evaluation             =  r.getBoolean("EVALUATION", true);
 				unconditional          =  r.getBoolean("UNCONDITIONAL", !evaluation);
 				
-				from_entry = Const.findJobEntryCopy(jobcopies, id_jobentry_copy_from);
-				to_entry = Const.findJobEntryCopy(jobcopies, id_jobentry_copy_to);
+				from_entry = JobMeta.findJobEntryCopy(jobcopies, id_jobentry_copy_from);
+				to_entry = JobMeta.findJobEntryCopy(jobcopies, id_jobentry_copy_to);
 			}
 		}
 		catch(KettleDatabaseException dbe)

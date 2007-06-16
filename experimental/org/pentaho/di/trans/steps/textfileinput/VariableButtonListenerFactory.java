@@ -8,12 +8,14 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.widget.GetCaretPositionInterface;
+import org.pentaho.di.core.widget.InsertTextInterface;
 
-import be.ibridge.kettle.core.KettleVariables;
-import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.GetCaretPositionInterface;
-import be.ibridge.kettle.core.widget.InsertTextInterface;
+import org.pentaho.di.core.util.StringUtil;
+
+
 
 public class VariableButtonListenerFactory
 {

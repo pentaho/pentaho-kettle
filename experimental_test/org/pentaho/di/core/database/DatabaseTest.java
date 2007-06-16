@@ -7,7 +7,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import be.ibridge.kettle.core.util.EnvUtil;
+
+import org.pentaho.di.core.util.EnvUtil;
 
 
 /**

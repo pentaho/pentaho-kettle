@@ -5,19 +5,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.KettleVariables;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleValueException;
+
 
 public class TransExecutionConfiguration implements Cloneable
 {
@@ -51,8 +52,8 @@ public class TransExecutionConfiguration implements Cloneable
         clusterStarting = true;
         clusterShowingTransformation = false;
         
-        arguments = null;
-        variables = null;
+        arguments = new RowMetaAndData();
+        variables = new RowMetaAndData();
         
         previewSteps = new String[0];
         previewSizes = new int[0];

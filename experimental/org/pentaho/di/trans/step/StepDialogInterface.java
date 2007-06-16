@@ -15,7 +15,8 @@
  
 package org.pentaho.di.trans.step;
 
-import be.ibridge.kettle.repository.Repository;
+import org.pentaho.di.repository.Repository;
+
 
 /**
  * This interface is used to launch Step Dialogs.

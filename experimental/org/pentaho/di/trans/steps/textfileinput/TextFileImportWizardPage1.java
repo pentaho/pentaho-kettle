@@ -32,10 +32,10 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.widget.TableDraw;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.widget.TableDraw;
 
 
 public class TextFileImportWizardPage1 extends WizardPage // implements Listener 

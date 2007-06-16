@@ -33,6 +33,7 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
@@ -53,7 +54,6 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 

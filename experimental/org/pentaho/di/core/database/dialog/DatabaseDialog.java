@@ -46,7 +46,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Messages;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.ConnectionPoolUtil;
@@ -56,23 +58,22 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
+import org.pentaho.di.core.dialog.EnterTextDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.SelectRowDialog;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.dialog.EnterTextDialog;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.core.widget.TextVar;
-import be.ibridge.kettle.spoon.Spoon;
+
 
 /**
  * 

@@ -27,8 +27,9 @@
 
 package org.pentaho.di.trans;
 
-import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.value.Value;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DatabaseImpact
 {
@@ -140,19 +141,19 @@ public class DatabaseImpact
 		return type;
 	}
 	
-	public Row getRow()
+	public RowMetaAndData getRow()
 	{
-		Row r = new Row();
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Type"), 			getTypeDesc()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Transformation"), getTransformationName()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Step"), 			getStepName()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Database"), 		getDatabaseName()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Table"), 			getTable()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Field"), 			getField()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Value"), 			getValue()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.ValueOrigin"), 	getValueOrigin()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.SQL"), 			getSQL()) ); //$NON-NLS-1$
-		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Remarks"), 		getRemark()) ); //$NON-NLS-1$
+        RowMetaAndData r = new RowMetaAndData();
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Type"), ValueMetaInterface.TYPE_STRING), getTypeDesc() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Transformation"), ValueMetaInterface.TYPE_STRING), getTransformationName() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Step"), ValueMetaInterface.TYPE_STRING), getStepName() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Database"), ValueMetaInterface.TYPE_STRING), getDatabaseName() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Table"), ValueMetaInterface.TYPE_STRING), getTable() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Field"), ValueMetaInterface.TYPE_STRING), getField() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Value"), ValueMetaInterface.TYPE_STRING), getValue() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.ValueOrigin"), ValueMetaInterface.TYPE_STRING), getValueOrigin() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.SQL"), ValueMetaInterface.TYPE_STRING), getSQL() ); //$NON-NLS-1$
+		r.addValue( new ValueMeta(Messages.getString("DatabaseImpact.RowDesc.Label.Remarks"), ValueMetaInterface.TYPE_STRING), getRemark() ); //$NON-NLS-1$
 
 		return r;
 	}

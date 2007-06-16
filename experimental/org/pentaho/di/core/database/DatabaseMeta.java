@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -38,8 +40,8 @@ import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.StringUtil;
-import be.ibridge.kettle.repository.Repository;
+import org.pentaho.di.core.util.StringUtil;
+
 
 
 
@@ -360,18 +362,17 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		throw new KettleDatabaseException("database type ["+databaseTypeDesc+"] couldn't be found!");
 	}
 
-	/*
-     *  // TODO: Re-add repository support later
+	/**
      *  
 	 *  Load the Database Info 
-     *  
+     */ 
 	public DatabaseMeta(Repository rep, long id_database) throws KettleException
 	{
         this();
         
 		try
 		{
-			Row r = rep.getDatabase(id_database);
+			RowMetaAndData r = rep.getDatabase(id_database);
 			
 			if (r!=null)
 			{
@@ -406,7 +407,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 				long ids[] = rep.getDatabaseAttributeIDs(id_database);
                 for (int i=0;i<ids.length;i++)
                 {
-                    Row row = rep.getDatabaseAttribute(ids[i]);
+                    RowMetaAndData row = rep.getDatabaseAttribute(ids[i]);
                     String code = row.getString("CODE", "");
                     String attribute = row.getString("VALUE_STR", "");
                     // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
@@ -419,7 +420,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			throw new KettleException("Error loading database connection from repository (id_database="+id_database+")", dbe);
 		}
 	}
-	*/
 
 	/**
 	 * Saves the database information into a given repository.

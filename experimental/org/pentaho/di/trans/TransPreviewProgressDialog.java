@@ -14,9 +14,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.row.RowMetaInterface;
 
-import be.ibridge.kettle.core.LocalVariables;
+import org.pentaho.di.core.variables.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
 
 

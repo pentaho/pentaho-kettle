@@ -71,7 +71,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 

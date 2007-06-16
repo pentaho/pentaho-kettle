@@ -1,11 +1,14 @@
 package org.pentaho.di.partition;
 
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleException;
 
 /**
  * A partition schema allow you to partition a step according into a number of partitions that run independendly.
@@ -134,14 +137,13 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         }
     }
 
-    /*
-     * Re-enable repository support
-    public void saveRep(Repository rep) throws KettleDatabaseException
+    
+    public void saveRep(Repository rep) throws KettleException
     {
         saveRep(rep, -1L, false);
     }
 
-    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation, boolean isUsedByTransformation) throws KettleException
     {
         // see if this partitioning schema is already in the repository...
         setId( rep.getPartitionSchemaID(name) );
@@ -169,16 +171,15 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         {
             rep.insertTransformationPartitionSchema(id_transformation, getId());
         }
-
     }
     
-    public PartitionSchema(Repository rep, long id_partition_schema) throws KettleDatabaseException
+    public PartitionSchema(Repository rep, long id_partition_schema) throws KettleException
     {
         this();
         
         setId(id_partition_schema);
         
-        Row row = rep.getPartitionSchema(id_partition_schema);
+        RowMetaAndData row = rep.getPartitionSchema(id_partition_schema);
         
         name = row.getString("NAME", null);
         
@@ -189,7 +190,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
             partitionIDs[i] = rep.getPartition(pids[i]).getString("PARTITION_ID", null);
         }
     }
-     */
+
 
     /**
      * @return the shared

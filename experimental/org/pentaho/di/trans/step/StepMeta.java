@@ -20,7 +20,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.w3c.dom.Node;
@@ -29,7 +31,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIPositionInterface;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SharedObjectBase;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
@@ -37,7 +38,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.repository.Repository;
+
 
 
 /**
@@ -107,33 +108,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
         stepPartitioningMeta = new StepPartitioningMeta();
         clusterSchema = null; // non selected by default.
 	}
-
-    /**
-     * @deprecated The logging is now a singlton, use the constructor without it.
-     * 
-     * @param log
-     * @param stepid
-     * @param stepname
-     * @param stepMetaInterface
-     */
-    public StepMeta(LogWriter log, String stepid, String stepname, StepMetaInterface stepMetaInterface)
-    {
-        this(stepid, stepname, stepMetaInterface);
-    }
         
 	public StepMeta()
 	{
 		this((String)null, (String)null, (StepMetaInterface)null);
 	}
-    
-    /**
-     * @deprecated The logging is now a singlton, use the constructor without it.
-     * @param log
-     */
-    public StepMeta(LogWriter log)
-    {
-        this();
-    }
 
 	public String getXML()
 	{
@@ -160,20 +139,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 		return retval.toString();
 	}
 
-    /**
-     * @deprecated The logging is now a singlton, use the constructor without it.
-     * 
-     * Read the step data from XML
-     * 
-     * @param stepnode The XML step node.
-     * @param databases A list of databases
-     * @param counters A hashtable with all defined counters.
-     * 
-     */
-    public StepMeta(LogWriter log, Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
-    {
-        this(stepnode, databases, counters);
-    }
     
 	/**
 	 * Read the step data from XML
@@ -514,38 +479,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	{
 		return terminator;
 	}
-	
-    /**
-     * @deprecated The logging is now a singlton, use the constructor without it.
-     * @param log
-     * @param id_step
-     */
-	public StepMeta(LogWriter log, long id_step)
-	{
-		this((String)null, (String)null, (StepMetaInterface)null);
-		setID(id_step);
-	}
-    
+	    
     public StepMeta(long id_step)
     {
         this((String)null, (String)null, (StepMetaInterface)null);
         setID(id_step);
-    }
-
-    /**
-     * @deprecated The logging is now a singlton, use the constructor without it.
-     * 
-     * @param log
-     * @param rep
-     * @param id_step
-     * @param databases
-     * @param counters
-     * @param partitionSchemas
-     * @throws KettleException
-     */
-    public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
-    {
-        this(rep, id_step, databases, counters, partitionSchemas);
     }
 
     /**
@@ -564,27 +502,27 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 
 		try
 		{
-			Row r = rep.getStep(id_step);
+			RowMetaAndData r = rep.getStep(id_step);
 			if (r!=null)
 			{
 				setID(id_step);
 				
-				stepname = r.searchValue("NAME").getString(); //$NON-NLS-1$
+				stepname = r.getString("NAME", null); //$NON-NLS-1$
 				//System.out.println("stepname = "+stepname);
-				description = r.searchValue("DESCRIPTION").getString(); //$NON-NLS-1$
+				description = r.getString("DESCRIPTION", null); //$NON-NLS-1$
 				//System.out.println("description = "+description);
 				
-				long id_step_type = r.searchValue("ID_STEP_TYPE").getInteger(); //$NON-NLS-1$
+				long id_step_type = r.getInteger("ID_STEP_TYPE", -1L); //$NON-NLS-1$
 				//System.out.println("id_step_type = "+id_step_type);
-				Row steptyperow = rep.getStepType(id_step_type);
+				RowMetaAndData steptyperow = rep.getStepType(id_step_type);
 				
-				stepid     = steptyperow.searchValue("CODE").getString(); //$NON-NLS-1$
-				distributes = r.searchValue("DISTRIBUTE").getBoolean(); //$NON-NLS-1$
-				copies     = (int)r.searchValue("COPIES").getInteger(); //$NON-NLS-1$
-				int x = (int)r.searchValue("GUI_LOCATION_X").getInteger(); //$NON-NLS-1$
-				int y = (int)r.searchValue("GUI_LOCATION_Y").getInteger(); //$NON-NLS-1$
+				stepid     = steptyperow.getString("CODE", null); //$NON-NLS-1$
+				distributes = r.getBoolean("DISTRIBUTE", true); //$NON-NLS-1$
+				copies     = (int)r.getInteger("COPIES", 1); //$NON-NLS-1$
+				int x = (int)r.getInteger("GUI_LOCATION_X", 0); //$NON-NLS-1$
+				int y = (int)r.getInteger("GUI_LOCATION_Y", 0); //$NON-NLS-1$
 				location = new Point(x,y);
-				drawstep = r.searchValue("GUI_DRAW").getBoolean(); //$NON-NLS-1$
+				drawstep = r.getBoolean("GUI_DRAW", false); //$NON-NLS-1$
 				
 				// Generate the appropriate class...
 				StepPlugin sp = steploader.findStepPluginWithID(stepid);

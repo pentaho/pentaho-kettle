@@ -24,7 +24,7 @@ import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.widget.TextFileInputFieldInterface;
+import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 
 /**
  * Describes a single field in a text file

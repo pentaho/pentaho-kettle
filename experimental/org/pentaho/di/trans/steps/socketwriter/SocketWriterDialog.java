@@ -43,7 +43,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.widget.TextVar;
+import org.pentaho.di.core.widget.TextVar;
 
 
 public class SocketWriterDialog extends BaseStepDialog implements StepDialogInterface

@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 
 /**

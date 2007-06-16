@@ -34,14 +34,24 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.reflection.StringSearchResult;
+import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.spoon.UndoInterface;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -52,13 +62,9 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlagInterface;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.SharedObjects;
 import be.ibridge.kettle.core.TransAction;
@@ -69,13 +75,9 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleRowException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.reflection.StringSearchResult;
-import be.ibridge.kettle.core.reflection.StringSearcher;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
-import be.ibridge.kettle.repository.Repository;
-import be.ibridge.kettle.repository.RepositoryDirectory;
-import be.ibridge.kettle.spoon.UndoInterface;
+
+
 
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
@@ -1615,7 +1617,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             {
                 if (rep.getTransformationID(getName(), directory.getID()) > 0) return true;
             }
-            catch (KettleDatabaseException dbe)
+            catch (KettleException dbe)
             {
                 log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseError") + dbe.getMessage()); //$NON-NLS-1$
                 return true;
@@ -1624,25 +1626,18 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         return false;
     }
 
-    /*
-     * TODO: re-enable repository support
-     * 
-     * Saves the transformation to a repository.
-     *
-     * @param rep The repository.
-     * @throws KettleException if an error occurrs.
     public void saveRep(Repository rep) throws KettleException
     {
         saveRep(rep, null);
     }
 
-     *  
+    /**  
      *
      * Saves the transformation to a repository.
      *
      * @param rep The repository.
      * @throws KettleException if an error occurrs.
-     
+     */
     public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException
     {
         try
@@ -1834,7 +1829,6 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             rep.unlockRepository();
         }
     }
-    */
 
     public boolean isUsingPartitionSchema(PartitionSchema partitionSchema)
     {
@@ -1928,12 +1922,12 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         */
     }
 
-    /*
-     * TODO: re-enable repository support 
+    /**
      * Read the database partitions in the repository and add them to this transformation if they are not yet present.
      * @param rep The repository to load from.
      * @param overWriteShared if an object with the same name exists, overwrite
      * @throws KettleException 
+     */
     public void readPartitionSchemas(Repository rep, boolean overWriteShared) throws KettleException
     {
         try
@@ -1959,12 +1953,12 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
     }
 
-     **
+     /**
      * Read the slave servers in the repository and add them to this transformation if they are not yet present.
      * @param rep The repository to load from.
      * @param overWriteShared if an object with the same name exists, overwrite
      * @throws KettleException 
-     
+     */
     public void readSlaves(Repository rep, boolean overWriteShared) throws KettleException
     {
         try
@@ -1990,12 +1984,12 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
     }
     
-    
+    /**
      * Read the clusters in the repository and add them to this transformation if they are not yet present.
      * @param rep The repository to load from.
      * @param overWriteShared if an object with the same name exists, overwrite
      * @throws KettleException 
-     *
+     */
     public void readClusters(Repository rep, boolean overWriteShared) throws KettleException
     {
         try
@@ -2021,27 +2015,25 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
     }
         
-     *      
-     * TODO: re-enable repository support
-     * 
+     /**      
      * Load the transformation name & other details from a repository.
      *
      * @param rep The repository to load the details from.
-     *
+     */
     public void loadRepTrans(Repository rep) throws KettleException
     {
         try
         {
-            Row r = rep.getTransformation(getID());
+            RowMetaAndData r = rep.getTransformation(getID());
 
             if (r != null)
             {
-                name = r.searchValue("NAME").getString(); //$NON-NLS-1$
+                name = r.getString("NAME", null); //$NON-NLS-1$
 
 				// Trans description
-				description = r.searchValue("DESCRIPTION").getString();
-				extended_description = r.searchValue("EXTENDED_DESCRIPTION").getString();
-				trans_version = r.searchValue("TRANS_VERSION").getString();
+				description = r.getString("DESCRIPTION", null);
+				extended_description = r.getString("EXTENDED_DESCRIPTION", null);
+				trans_version = r.getString("TRANS_VERSION", null);
 				trans_status=(int) r.getInteger("TRANS_STATUS", -1L);
 
                 readStep = StepMeta.findStep(steps, r.getInteger("ID_STEP_READ", -1L)); //$NON-NLS-1$
@@ -2068,17 +2060,17 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
                 maxDateDifference = r.getNumber("DIFF_MAXDATE", 0.0); //$NON-NLS-1$
 
 				createdUser = r.getString("CREATED_USER", null); //$NON-NLS-1$
-				createdDate = r.searchValue("CREATED_DATE"); //$NON-NLS-1$
+				createdDate = r.getDate("CREATED_DATE", null); //$NON-NLS-1$
 
                 modifiedUser = r.getString("MODIFIED_USER", null); //$NON-NLS-1$
-                modifiedDate = r.searchValue("MODIFIED_DATE"); //$NON-NLS-1$
+                modifiedDate = r.getDate("MODIFIED_DATE", null); //$NON-NLS-1$
 
                 // Optional:
                 sizeRowset = Const.ROWS_IN_ROWSET;
-                Value val_size_rowset = r.searchValue("SIZE_ROWSET"); //$NON-NLS-1$
-                if (val_size_rowset != null && !val_size_rowset.isNull())
+                Long val_size_rowset = r.getInteger("SIZE_ROWSET"); //$NON-NLS-1$
+                if (val_size_rowset != null )
                 {
-                    sizeRowset = (int) val_size_rowset.getInteger();
+                    sizeRowset = val_size_rowset.intValue();
                 }
 
                 long id_directory = r.getInteger("ID_DIRECTORY", -1L); //$NON-NLS-1$
@@ -2106,47 +2098,50 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     }
 
     
-     * Read a transformation with a certain name from a repository
+    /** Read a transformation with a certain name from a repository
      *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
-     *
+     */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir) throws KettleException
     {
         this(rep, transname, repdir, null, true);
     }
 
+    /** 
      * Read a transformation with a certain name from a repository
      *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
-     *
+     */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, boolean setInternalVariables) throws KettleException
     {
         this(rep, transname, repdir, null, setInternalVariables);
     }
 
-     * Read a transformation with a certain name from a repository
+    /** Read a transformation with a certain name from a repository
      *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
      * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
+     */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
     {
         this(rep, transname, repdir, monitor, true);
     }
 
-     * Read a transformation with a certain name from a repository
+    /** Read a transformation with a certain name from a repository
      *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
      * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
      * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor, boolean setInternalVariables) throws KettleException
     {
         this();
@@ -2313,7 +2308,6 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             if (setInternalVariables) setInternalKettleVariables();
         }
     }
-    */
 
     /**
      * Find the location of hop
@@ -2973,10 +2967,11 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
     }
     
-    /*
-
     public void readSharedObjects(Repository rep) throws KettleException
     {
+        /*
+         * TODO: re-enable this code.
+
     	if ( rep != null )
     	{
             sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
@@ -3029,8 +3024,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             readSlaves(rep, true);
             readClusters(rep, true);
         }
-    }
     */
+    }
+
 
     /**
      * Gives you an ArrayList of all the steps that are at least used in one active hop. These steps will be used to

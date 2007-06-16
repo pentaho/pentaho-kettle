@@ -52,9 +52,9 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.widget.TextVar;
+import org.pentaho.di.core.widget.TextVar;
 
 
 

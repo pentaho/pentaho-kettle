@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterListDialog;
 import org.pentaho.di.core.dialog.EnterNumberDialog;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
@@ -69,6 +70,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -83,12 +86,11 @@ import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.util.StringUtil;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
-import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.core.widget.TextVar;
+
+
 
 
 

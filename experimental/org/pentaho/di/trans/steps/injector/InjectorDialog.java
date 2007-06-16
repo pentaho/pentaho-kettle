@@ -47,7 +47,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.widget.TableView;
+import org.pentaho.di.core.widget.TableView;
 
 
 public class InjectorDialog extends BaseStepDialog implements StepDialogInterface
