@@ -39,10 +39,10 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
 

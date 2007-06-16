@@ -6,7 +6,7 @@ import java.util.List;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.TransMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 public class KettleDependencies
 {

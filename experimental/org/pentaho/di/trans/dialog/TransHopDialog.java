@@ -45,7 +45,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;

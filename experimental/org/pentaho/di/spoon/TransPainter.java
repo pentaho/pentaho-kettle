@@ -18,7 +18,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;

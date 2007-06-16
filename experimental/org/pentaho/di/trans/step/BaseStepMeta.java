@@ -25,9 +25,9 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 
 
 /*

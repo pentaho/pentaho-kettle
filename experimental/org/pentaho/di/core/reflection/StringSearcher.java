@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Condition;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 
 public class StringSearcher

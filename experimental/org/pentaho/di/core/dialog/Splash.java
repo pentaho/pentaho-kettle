@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * Displays the Kettle splash screen

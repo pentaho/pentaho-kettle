@@ -9,7 +9,7 @@ import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
  * Contains the schema's, catalogs, tables, views, synonyms, etc we can find in the databases...

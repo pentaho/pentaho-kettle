@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.trans.TransMeta;
 
 import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
 

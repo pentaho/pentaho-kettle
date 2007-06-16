@@ -2,19 +2,15 @@ package org.pentaho.di.run.insertupdate;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
-
 public class RunInsertUpdate extends TestCase
 {
-    private static void createTableAndIndex() throws KettleException
+    private static void createTableAndIndex() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP TABLE IU_CSV;",                
@@ -41,7 +37,7 @@ public class RunInsertUpdate extends TestCase
             );
     }
 
-    public void test__INSERT_UPDATE_00() throws KettleException
+    public void test__INSERT_UPDATE_00() throws Exception
     {
         System.out.println();
         System.out.println("INSERT UPDATE");
@@ -50,7 +46,7 @@ public class RunInsertUpdate extends TestCase
         createTableAndIndex();
     }
     
-    public void test__INSERT_UPDATE_01_SimpleTest() throws KettleXMLException, KettleDatabaseException
+    public void test__INSERT_UPDATE_01_SimpleTest() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/insertupdate/InsertUpdateSimple.ktr", 

@@ -13,11 +13,11 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.repository.Repository;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 

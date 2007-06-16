@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.dialog.Messages;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 
 /**

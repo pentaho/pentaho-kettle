@@ -2,7 +2,7 @@ package org.pentaho.di.core.row;
 
 import java.util.Date;
 
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.util.StringUtil;
 
 public class SpeedTest

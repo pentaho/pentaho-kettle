@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.value.Value;
 import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 

@@ -15,7 +15,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 
 import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
 

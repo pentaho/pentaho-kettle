@@ -6,7 +6,7 @@ import java.util.List;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 /*
  * IDEAS

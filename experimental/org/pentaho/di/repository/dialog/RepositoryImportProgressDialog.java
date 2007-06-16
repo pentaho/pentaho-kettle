@@ -32,13 +32,13 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 /**

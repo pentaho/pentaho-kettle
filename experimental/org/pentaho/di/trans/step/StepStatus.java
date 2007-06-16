@@ -3,8 +3,8 @@ package org.pentaho.di.trans.step;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 public class StepStatus
 {

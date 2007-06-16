@@ -14,8 +14,8 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.trans.step.BaseStep;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 

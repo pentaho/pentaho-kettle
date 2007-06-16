@@ -32,17 +32,17 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.LogWriter;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.database.Database;
-import be.ibridge.kettle.core.database.DatabaseMeta;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 

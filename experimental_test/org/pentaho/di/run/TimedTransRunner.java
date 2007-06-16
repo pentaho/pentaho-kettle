@@ -2,8 +2,10 @@ package org.pentaho.di.run;
 
 import java.text.DecimalFormat;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.trans.StepLoader;
@@ -12,9 +14,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 
 public class TimedTransRunner
@@ -49,7 +49,7 @@ public class TimedTransRunner
         this.records = records;
     }
 
-    public void runOldAndNew() throws KettleXMLException
+    public void runOldAndNew() throws Exception
     {
         init();
         
@@ -62,11 +62,15 @@ public class TimedTransRunner
     public void init()
     {
         EnvUtil.environmentInit();
+        be.ibridge.kettle.core.util.EnvUtil.environmentInit();
+        
         LogWriter.getInstance(logLevel);
+        be.ibridge.kettle.core.LogWriter.getInstance(logLevel);
         
         // Set environment variables ${NR_OF_ROWS}
         //
         KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
+        be.ibridge.kettle.core.KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
     }
     
     public void printOldTransDescription()
@@ -85,12 +89,12 @@ public class TimedTransRunner
         System.out.println("-----------------------------------------------------------------------------------------------------");
     }
     
-    public void runOldEngine() throws KettleXMLException
+    public void runOldEngine() throws Exception
     {
         runOldEngine(true);
     }
     
-    public void runOldEngine(boolean printDescription) throws KettleXMLException
+    public void runOldEngine(boolean printDescription) throws Exception
     {
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
@@ -104,7 +108,7 @@ public class TimedTransRunner
         }
         
         // OK, now run this transFormation.
-        be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(LogWriter.getInstance(), oldTransMeta);
+        be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(be.ibridge.kettle.core.LogWriter.getInstance(), oldTransMeta);
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(oldRowListenerStep))

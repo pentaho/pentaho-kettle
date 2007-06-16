@@ -16,7 +16,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.TransMeta;
 
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 

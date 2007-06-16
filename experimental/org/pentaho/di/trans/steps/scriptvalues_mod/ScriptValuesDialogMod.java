@@ -101,10 +101,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import de.proconis.StyledText.StyledTextComp;
 

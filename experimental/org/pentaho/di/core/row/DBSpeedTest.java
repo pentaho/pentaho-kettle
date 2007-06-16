@@ -5,9 +5,10 @@ import java.sql.ResultSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 
-import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.util.EnvUtil;
+
+import be.ibridge.kettle.core.Row;
 
 public class DBSpeedTest
 {
@@ -46,7 +47,7 @@ public class DBSpeedTest
 
     }
     
-    public void testOldCode() throws KettleDatabaseException
+    public void testOldCode() throws be.ibridge.kettle.core.exception.KettleDatabaseException
     {
         be.ibridge.kettle.core.database.DatabaseMeta dbMeta = new be.ibridge.kettle.core.database.DatabaseMeta("MySQL test", "MYSQL", "JDBC", "localhost", "test", "3306", "matt", "abcd");
         be.ibridge.kettle.core.database.Database database = new be.ibridge.kettle.core.database.Database(dbMeta);
@@ -74,7 +75,7 @@ public class DBSpeedTest
         System.out.println("OLD CODE: time lapsed : "+lapsed+" ms");
     }
     
-    public static void main(String[] args) throws KettleDatabaseException
+    public static void main(String[] args) throws KettleDatabaseException, be.ibridge.kettle.core.exception.KettleDatabaseException 
     {
         EnvUtil.environmentInit();
         

@@ -3,11 +3,9 @@ package org.pentaho.di.run.scriptvalues_mod;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunScriptValuesMod extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunScriptValuesMod extends TestCase
         System.out.println("==================");
     }
     
-    public void test_SCRIPT_VALUES_MOD_01_CSV() throws KettleXMLException
+    public void test_SCRIPT_VALUES_MOD_01_CSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/scriptvalues_mod/ScriptValuesMod1.ktr", 

@@ -11,8 +11,8 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileType;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 

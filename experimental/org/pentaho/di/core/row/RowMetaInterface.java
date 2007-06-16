@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import be.ibridge.kettle.core.exception.KettleFileException;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 public interface RowMetaInterface extends Cloneable
 {

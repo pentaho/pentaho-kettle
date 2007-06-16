@@ -6,8 +6,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
 
 public class RunAbort extends TestCase
 {
@@ -19,7 +18,7 @@ public class RunAbort extends TestCase
     }
     
 
-    public void test_ABORT_01_AbortAboveLimit() throws KettleXMLException
+    public void test_ABORT_01_AbortAboveLimit() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/abort/AbortAboveLimit.ktr", 
@@ -38,7 +37,7 @@ public class RunAbort extends TestCase
 
     }
     
-    public void test_ABORT_02_AbortBelowLimit() throws KettleXMLException
+    public void test_ABORT_02_AbortBelowLimit() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/abort/AbortBelowLimit.ktr", 

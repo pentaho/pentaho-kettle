@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.List;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 
 

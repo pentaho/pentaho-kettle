@@ -3,11 +3,9 @@ package org.pentaho.di.run.filterrows;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunFilterRows extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunFilterRows extends TestCase
         System.out.println("==================");
     }
     
-    public void test_FILTER_ROWS_01_Simple() throws KettleXMLException
+    public void test_FILTER_ROWS_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/filterrows/FilterRowsSimple.ktr", 

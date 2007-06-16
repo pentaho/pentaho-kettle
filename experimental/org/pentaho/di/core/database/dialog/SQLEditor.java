@@ -44,13 +44,13 @@ import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
  * Dialog that allows the user to launch SQL statements towards the database.

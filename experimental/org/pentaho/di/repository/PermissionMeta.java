@@ -17,8 +17,8 @@ package org.pentaho.di.repository;
 
 import org.pentaho.di.core.RowMetaAndData;
 
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 /**

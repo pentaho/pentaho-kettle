@@ -28,8 +28,8 @@ import java.util.Date;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 
 

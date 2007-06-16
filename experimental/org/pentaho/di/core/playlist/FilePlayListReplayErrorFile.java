@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.vfs.FileObject;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public class FilePlayListReplayErrorFile extends FilePlayListReplayFile {

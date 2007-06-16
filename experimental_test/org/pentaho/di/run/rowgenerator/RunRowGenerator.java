@@ -3,11 +3,9 @@ package org.pentaho.di.run.rowgenerator;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunRowGenerator extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunRowGenerator extends TestCase
         System.out.println("==================");
     }
     
-    public void test_ROWGENERATOR_01_EmptyRows() throws KettleXMLException
+    public void test_ROWGENERATOR_01_EmptyRows() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows.ktr", 
@@ -36,7 +34,7 @@ public class RunRowGenerator extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ROWGENERATOR_02_4numbers() throws KettleXMLException
+    public void test_ROWGENERATOR_02_4numbers() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/rowgenerator/GenerateRows4numbers.ktr", 

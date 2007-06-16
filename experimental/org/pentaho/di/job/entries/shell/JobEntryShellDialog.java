@@ -46,8 +46,8 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.WindowProperty;
 
 

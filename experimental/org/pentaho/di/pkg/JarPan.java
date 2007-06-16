@@ -21,7 +21,7 @@
 package org.pentaho.di.pkg;
 import org.pentaho.di.pan.Pan;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 /**

@@ -8,7 +8,7 @@ import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * This singleton class remembers whether or not a TreeItem is expanded.

@@ -30,10 +30,10 @@ import org.pentaho.di.run.textfileoutput.RunTextFileOutput;
 import org.pentaho.di.run.uniquerows.RunUniqueRows;
 import org.pentaho.di.run.update.RunUpdate;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.EnvUtil;
 
 public class AllRunTests
@@ -81,18 +81,18 @@ public class AllRunTests
         return new DatabaseMeta(NEW_TARGET_CONNECTION_XML);
     }
 
-    public static be.ibridge.kettle.core.database.DatabaseMeta getOldTargetDatabase() throws KettleXMLException
+    public static be.ibridge.kettle.core.database.DatabaseMeta getOldTargetDatabase() throws be.ibridge.kettle.core.exception.KettleXMLException
     {
         return new be.ibridge.kettle.core.database.DatabaseMeta(OLD_TARGET_CONNECTION_XML);
     }
 
-    public static void executeStatementsOnOldAndNew(String ignoreErrorStatements, String statements) throws KettleException
+    public static void executeStatementsOnOldAndNew(String ignoreErrorStatements, String statements) throws Exception
     {
         executeStatementsOnOld(ignoreErrorStatements, statements);
         executeStatementsOnNew(ignoreErrorStatements, statements);
     }
 
-    public static void executeStatementsOnOld(String ignoreErrorStatements, String statements) throws KettleException
+    public static void executeStatementsOnOld(String ignoreErrorStatements, String statements) throws Exception
     {
         EnvUtil.environmentInit();
         be.ibridge.kettle.core.database.Database target = new be.ibridge.kettle.core.database.Database(getOldTargetDatabase());
@@ -105,7 +105,7 @@ public class AllRunTests
                 target.execStatements(ignoreErrorStatements);
                 // System.out.println("Table CSV_TABLE dropped");
             }
-            catch(KettleDatabaseException e)
+            catch(be.ibridge.kettle.core.exception.KettleDatabaseException e)
             {
                 // System.out.println("Error running 'ingore error' statements: "+ignoreErrorStatements+":"+e.getMessage());
             }

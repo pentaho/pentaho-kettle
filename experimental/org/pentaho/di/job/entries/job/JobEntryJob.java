@@ -21,9 +21,14 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -34,15 +39,10 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.StepLoader;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.logging.Log4jFileAppender;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 

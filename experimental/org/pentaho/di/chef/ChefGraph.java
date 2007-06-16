@@ -69,10 +69,10 @@ import org.pentaho.di.spoon.TabMapEntry;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.trans.TransMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Redrawable;

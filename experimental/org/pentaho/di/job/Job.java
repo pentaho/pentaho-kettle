@@ -19,9 +19,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.pentaho.di.chef.JobTracker;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
@@ -30,13 +33,10 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleJobException;
-import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 
 /**

@@ -6,11 +6,11 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 public class StepPartitioningMeta implements XMLInterface, Cloneable

@@ -57,12 +57,12 @@ import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.dialog.LogSettingsDialog;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleJobException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.widget.TreeMemory;
 
 

@@ -2,17 +2,15 @@ package org.pentaho.di.run.combinationlookup;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
-
 public class RunCombinationLookup extends TestCase
 {
-    private static void createTables() throws KettleException
+    private static void createTables() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP TABLE COMB_NO_HASH", 
@@ -62,7 +60,7 @@ public class RunCombinationLookup extends TestCase
            );
     }
     
-    public void test__DIMENSION_LOOKUP_00() throws KettleException
+    public void test__DIMENSION_LOOKUP_00() throws Exception
     {
         System.out.println();
         System.out.println("COMBINATION LOOKUP");
@@ -71,7 +69,7 @@ public class RunCombinationLookup extends TestCase
         createTables();
     }
     
-    public void test__COMBINATION_LOOKUP_01_NoHashcode_NoRemove() throws KettleException
+    public void test__COMBINATION_LOOKUP_01_NoHashcode_NoRemove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
@@ -89,7 +87,7 @@ public class RunCombinationLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test__COMBINATION_LOOKUP_02_NoHashcode_Remove() throws KettleException
+    public void test__COMBINATION_LOOKUP_02_NoHashcode_Remove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 
@@ -107,7 +105,7 @@ public class RunCombinationLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__COMBINATION_LOOKUP_03_Hashcode_NoRemove() throws KettleException
+    public void test__COMBINATION_LOOKUP_03_Hashcode_NoRemove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcode.ktr", 
@@ -125,7 +123,7 @@ public class RunCombinationLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test__COMBINATION_LOOKUP_04_Hashcode_Remove() throws KettleException
+    public void test__COMBINATION_LOOKUP_04_Hashcode_Remove() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/combinationlookup/CombinationLookupNoHashcodeRemove.ktr", 

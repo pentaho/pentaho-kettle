@@ -3,11 +3,9 @@ package org.pentaho.di.run.uniquerows;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunUniqueRows extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunUniqueRows extends TestCase
         System.out.println("==================");
     }
     
-    public void test_UNIQUE_ROWS_01_Simple() throws KettleXMLException
+    public void test_UNIQUE_ROWS_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStates.ktr", 
@@ -36,7 +34,7 @@ public class RunUniqueRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_UNIQUE_ROWS_02_Occurances() throws KettleXMLException
+    public void test_UNIQUE_ROWS_02_Occurances() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/uniquerows/UniqueRowsListOfStatesNrCustomers.ktr", 

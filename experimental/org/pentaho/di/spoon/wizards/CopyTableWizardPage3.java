@@ -34,8 +34,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.dialog.SelectDirectoryDialog;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 
 
 

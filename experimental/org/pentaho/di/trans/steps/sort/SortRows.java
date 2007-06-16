@@ -39,10 +39,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleFileException;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 

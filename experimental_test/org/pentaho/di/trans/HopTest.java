@@ -32,8 +32,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.util.EnvUtil;
 
 /**

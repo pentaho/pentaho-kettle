@@ -21,8 +21,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 
-import be.ibridge.kettle.core.exception.KettleEOFException;
-import be.ibridge.kettle.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleFileException;
 
 /**
  * This class represents a single entry in a database cache.

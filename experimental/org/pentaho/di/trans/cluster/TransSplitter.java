@@ -19,7 +19,7 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 
 /**

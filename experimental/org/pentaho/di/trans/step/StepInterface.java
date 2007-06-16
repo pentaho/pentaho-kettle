@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 /*
  * Created on 12-aug-2004

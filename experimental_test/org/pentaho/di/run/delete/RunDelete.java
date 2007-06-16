@@ -3,17 +3,13 @@ package org.pentaho.di.run.delete;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
-
 public class RunDelete extends TestCase
 {
-    private static void createIndex() throws KettleException
+    private static void createIndex() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP INDEX idx_CSV_TABLE_lookup;", 
@@ -21,7 +17,7 @@ public class RunDelete extends TestCase
                 );
     }
 
-    public void test__DELETE_00() throws KettleException
+    public void test__DELETE_00() throws Exception
     {
         System.out.println();
         System.out.println("DELETE");
@@ -30,7 +26,7 @@ public class RunDelete extends TestCase
         createIndex();
     }
     
-    public void test__DELETE_01_SimpleTest() throws KettleXMLException, KettleDatabaseException
+    public void test__DELETE_01_SimpleTest() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/delete/DeleteRowsSimple.ktr", 

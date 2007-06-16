@@ -24,11 +24,11 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.ManagedColor;
 import be.ibridge.kettle.core.ManagedFont;
-import be.ibridge.kettle.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.core.util.ImageUtil;
 
 

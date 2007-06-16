@@ -55,10 +55,10 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.util.StringUtil;
 
 

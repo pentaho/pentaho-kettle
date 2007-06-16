@@ -14,7 +14,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 /**

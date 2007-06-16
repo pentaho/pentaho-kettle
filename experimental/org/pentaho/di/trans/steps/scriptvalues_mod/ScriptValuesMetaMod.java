@@ -52,10 +52,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import org.pentaho.di.repository.Repository;
 import be.ibridge.kettle.trans.KettleURLClassLoader;

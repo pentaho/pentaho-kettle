@@ -11,8 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.vfs.FileObject;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 
 class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
 {

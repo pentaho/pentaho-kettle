@@ -81,10 +81,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import org.pentaho.di.core.widget.TableView;

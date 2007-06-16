@@ -3,7 +3,7 @@ package org.pentaho.di.pan;
 
 import java.util.List;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * 

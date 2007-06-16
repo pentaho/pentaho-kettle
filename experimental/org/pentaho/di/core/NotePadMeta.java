@@ -17,16 +17,16 @@ package org.pentaho.di.core;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.GUIPositionInterface;
 import be.ibridge.kettle.core.GUISizeInterface;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.Point;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 /**
  * Describes a note displayed on a Transformation, Job, Schema, or Report.

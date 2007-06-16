@@ -3,11 +3,9 @@ package org.pentaho.di.run.constant;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunConstant extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunConstant extends TestCase
         System.out.println("==================");
     }
     
-    public void test_CONSTANT_01_SimpleCase() throws KettleXMLException
+    public void test_CONSTANT_01_SimpleCase() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/constant/Constant.ktr", 

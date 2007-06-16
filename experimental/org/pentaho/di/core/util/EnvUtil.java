@@ -12,8 +12,8 @@ import java.util.Properties;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.version.BuildVersion;
 
 public class EnvUtil

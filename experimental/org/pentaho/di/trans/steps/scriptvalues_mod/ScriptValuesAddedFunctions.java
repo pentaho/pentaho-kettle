@@ -70,7 +70,7 @@ import org.mozilla.javascript.WrappedException;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {

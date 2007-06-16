@@ -3,11 +3,9 @@ package org.pentaho.di.run.joinrows;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunJoinRows extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunJoinRows extends TestCase
         System.out.println("==================");
     }
     
-    public void test_JOIN_ROWS_01_NoCondition() throws KettleXMLException
+    public void test_JOIN_ROWS_01_NoCondition() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/joinrows/JoinRowsNoCondition.ktr", 
@@ -36,7 +34,7 @@ public class RunJoinRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_JOIN_ROWS_02_WithCondition() throws KettleXMLException
+    public void test_JOIN_ROWS_02_WithCondition() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/joinrows/JoinRowsCondition.ktr", 

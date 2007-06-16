@@ -61,20 +61,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlagInterface;
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.core.SharedObjectInterface;
-import be.ibridge.kettle.core.SharedObjects;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.shared.SharedObjects;
 import be.ibridge.kettle.core.TransAction;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleRowException;
-import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 

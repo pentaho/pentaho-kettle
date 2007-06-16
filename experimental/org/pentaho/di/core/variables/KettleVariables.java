@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.util.EnvUtil;
 
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 
 

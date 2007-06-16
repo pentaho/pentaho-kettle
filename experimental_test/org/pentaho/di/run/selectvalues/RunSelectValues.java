@@ -3,11 +3,9 @@ package org.pentaho.di.run.selectvalues;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunSelectValues extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunSelectValues extends TestCase
         System.out.println("==================");
     }
     
-    public void test_SELECT_VALUES_01_SelectValues() throws KettleXMLException
+    public void test_SELECT_VALUES_01_SelectValues() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/selectvalues/SelectValues.ktr",
@@ -36,7 +34,7 @@ public class RunSelectValues extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SELECT_VALUES_01_Delete() throws KettleXMLException
+    public void test_SELECT_VALUES_01_Delete() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesDelete.ktr",
@@ -54,7 +52,7 @@ public class RunSelectValues extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SELECT_VALUES_01_Meta() throws KettleXMLException
+    public void test_SELECT_VALUES_01_Meta() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/selectvalues/SelectValuesMeta.ktr",

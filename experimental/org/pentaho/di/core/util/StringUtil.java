@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.variables.KettleVariables;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * A collection of utilities to manipulate strings.

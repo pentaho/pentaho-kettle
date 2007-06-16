@@ -58,12 +58,12 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 
 

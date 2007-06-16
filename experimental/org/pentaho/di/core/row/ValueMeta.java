@@ -13,9 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleFileException;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 
 public class ValueMeta implements ValueMetaInterface

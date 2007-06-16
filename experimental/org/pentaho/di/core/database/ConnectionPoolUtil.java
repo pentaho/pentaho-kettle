@@ -13,8 +13,8 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.util.StringUtil;
 
 public class ConnectionPoolUtil

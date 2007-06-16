@@ -10,7 +10,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * This class can be used to define accelerators (actions) to a tree item that just got created.

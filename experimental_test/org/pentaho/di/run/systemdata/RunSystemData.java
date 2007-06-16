@@ -3,11 +3,9 @@ package org.pentaho.di.run.systemdata;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunSystemData extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunSystemData extends TestCase
         System.out.println("==================");
     }
     
-    public void test_GET_SYSTEM_INFO_01_Sysdate() throws KettleXMLException
+    public void test_GET_SYSTEM_INFO_01_Sysdate() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdate.ktr", 
@@ -36,7 +34,7 @@ public class RunSystemData extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_GET_SYSTEM_INFO_02_SysdateTempfile() throws KettleXMLException
+    public void test_GET_SYSTEM_INFO_02_SysdateTempfile() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/systemdata/GetSystemInfoSysdateOutputToTempfile.ktr", 

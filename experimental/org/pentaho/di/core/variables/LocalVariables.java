@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * This class is a container for "Local" enrvironment variables.

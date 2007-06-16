@@ -3,11 +3,9 @@ package org.pentaho.di.run.excelinput;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunExcelInput extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunExcelInput extends TestCase
         System.out.println("==================");
     }
     
-    public void test_EXCEL_INPUT_01() throws KettleXMLException
+    public void test_EXCEL_INPUT_01() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/excelinput/ExcelInput.ktr", 

@@ -49,8 +49,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.TableItemInsertListener;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 
 

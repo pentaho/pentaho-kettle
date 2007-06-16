@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 public class CompositeFileErrorHandler implements FileErrorHandler
 {

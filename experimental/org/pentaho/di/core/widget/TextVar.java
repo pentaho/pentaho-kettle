@@ -26,7 +26,7 @@ import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 
 

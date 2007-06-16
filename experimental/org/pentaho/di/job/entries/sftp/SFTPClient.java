@@ -2,7 +2,7 @@ package org.pentaho.di.job.entries.sftp;
 
 import java.net.InetAddress;
 
-import be.ibridge.kettle.core.exception.KettleJobException;
+import org.pentaho.di.core.exception.KettleJobException;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;

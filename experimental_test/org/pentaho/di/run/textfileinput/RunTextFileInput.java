@@ -3,11 +3,9 @@ package org.pentaho.di.run.textfileinput;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunTextFileInput extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunTextFileInput extends TestCase
         System.out.println("==================");
     }
     
-    public void test_TEXT_FILE_INPUT_01_CSV() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_01_CSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSV.ktr", 
@@ -36,7 +34,7 @@ public class RunTextFileInput extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_TEXT_FILE_INPUT_02_CSVStrings() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_02_CSVStrings() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSVStrings.ktr", 
@@ -54,7 +52,7 @@ public class RunTextFileInput extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_TEXT_FILE_INPUT_03_CSVCalculator() throws KettleXMLException
+    public void test_TEXT_FILE_INPUT_03_CSVCalculator() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/textfileinput/TextFileInputCSVCalculator.ktr", 

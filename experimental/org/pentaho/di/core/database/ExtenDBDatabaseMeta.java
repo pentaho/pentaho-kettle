@@ -2,7 +2,7 @@ package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * Contains ExtenDB specific information through static final members 

@@ -3,11 +3,9 @@ package org.pentaho.di.run.streamlookup;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunStreamLookup extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunStreamLookup extends TestCase
         System.out.println("==================");
     }
     
-    public void test_STREAM_LOOKUP_01_Strings10kNormal() throws KettleXMLException
+    public void test_STREAM_LOOKUP_01_Strings10kNormal() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kNormal.ktr", 
@@ -37,7 +35,7 @@ public class RunStreamLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_STREAM_LOOKUP_02_Strings10kPreserveMemory() throws KettleXMLException
+    public void test_STREAM_LOOKUP_02_Strings10kPreserveMemory() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kPreserveMemory.ktr", 
@@ -56,7 +54,7 @@ public class RunStreamLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_STREAM_LOOKUP_03_Strings10kSortedList() throws KettleXMLException
+    public void test_STREAM_LOOKUP_03_Strings10kSortedList() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/streamlookup/StreamLookupStrings10kSortedList.ktr", 

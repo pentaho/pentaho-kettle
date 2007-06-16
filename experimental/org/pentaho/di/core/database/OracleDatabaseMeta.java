@@ -3,8 +3,8 @@ package org.pentaho.di.core.database;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
  * Contains Oracle specific information through static final members 

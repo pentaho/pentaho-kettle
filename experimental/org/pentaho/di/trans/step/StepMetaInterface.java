@@ -28,10 +28,10 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 
 /**

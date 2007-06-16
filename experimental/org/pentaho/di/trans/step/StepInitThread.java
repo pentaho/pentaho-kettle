@@ -1,8 +1,8 @@
 package org.pentaho.di.trans.step;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.trans.Messages;
 
 public class StepInitThread implements Runnable

@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Locale;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleValueException;
 
 public class ValueDataUtil
 {

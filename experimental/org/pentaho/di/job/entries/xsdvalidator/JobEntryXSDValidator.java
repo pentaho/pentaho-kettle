@@ -38,11 +38,11 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 

@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 
 /**

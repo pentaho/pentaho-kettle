@@ -30,10 +30,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 
 

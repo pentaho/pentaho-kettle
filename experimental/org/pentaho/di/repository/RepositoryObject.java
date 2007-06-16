@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.TreeItem;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * Contains some common object details, extracted from a repository

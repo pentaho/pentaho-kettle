@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**
  * This interface describes the methods that a database connection needs to have in order to describe it properly.

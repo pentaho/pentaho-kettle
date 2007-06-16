@@ -53,8 +53,8 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 

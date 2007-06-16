@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.database.Database;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * This class contains a map between on the one hand

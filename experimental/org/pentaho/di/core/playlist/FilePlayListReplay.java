@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public class FilePlayListReplay implements FilePlayList {

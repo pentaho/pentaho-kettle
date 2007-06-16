@@ -3,16 +3,13 @@ package org.pentaho.di.run.tableoutput;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
-
 public class RunTableOutput extends TestCase
 {
-    private static void createTables() throws KettleException
+    private static void createTables() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP TABLE CSV_TABLE", 
@@ -47,7 +44,7 @@ public class RunTableOutput extends TestCase
             );
     }
 
-    public void test__TABLE_OUTPUT_00() throws KettleException
+    public void test__TABLE_OUTPUT_00() throws Exception
     {
         System.out.println();
         System.out.println("TABLE OUTPUT");
@@ -56,7 +53,7 @@ public class RunTableOutput extends TestCase
         createTables();
     }
     
-    public void test__TABLE_OUTPUT_01_Simple() throws KettleXMLException
+    public void test__TABLE_OUTPUT_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/tableoutput/TableOutputSimple.ktr", 
@@ -74,7 +71,7 @@ public class RunTableOutput extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__TABLE_OUTPUT_02_FromCSV() throws KettleXMLException
+    public void test__TABLE_OUTPUT_02_FromCSV() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/tableoutput/TableOutputFromCSV.ktr", 

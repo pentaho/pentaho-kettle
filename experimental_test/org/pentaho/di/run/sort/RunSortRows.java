@@ -3,11 +3,9 @@ package org.pentaho.di.run.sort;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunSortRows extends TestCase
 {
@@ -20,7 +18,7 @@ public class RunSortRows extends TestCase
         System.out.println("==================");
     }
     
-    public void test_SORT_01_TableData() throws KettleXMLException
+    public void test_SORT_01_TableData() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableData.ktr",
@@ -38,7 +36,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SORT_02_TableDataNoCompression() throws KettleXMLException
+    public void test_SORT_02_TableDataNoCompression() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompression.ktr",
@@ -56,7 +54,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SORT_03_TableDataNoCompressionBuffer50k() throws KettleXMLException
+    public void test_SORT_03_TableDataNoCompressionBuffer50k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer50k.ktr",
@@ -74,7 +72,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SORT_04_TableDataNoCompressionBuffer100k() throws KettleXMLException
+    public void test_SORT_04_TableDataNoCompressionBuffer100k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortTableDataNoCompressionBuffer100k.ktr",
@@ -92,7 +90,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test_SORT_05_CSVDataNoCompression() throws KettleXMLException
+    public void test_SORT_05_CSVDataNoCompression() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompression.ktr",
@@ -110,7 +108,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_SORT_06_CSVDataNoCompressionBuffer50k() throws KettleXMLException
+    public void test_SORT_06_CSVDataNoCompressionBuffer50k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer50k.ktr",
@@ -128,7 +126,7 @@ public class RunSortRows extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test_SORT_07_CSVDataNoCompressionBuffer100k() throws KettleXMLException
+    public void test_SORT_07_CSVDataNoCompressionBuffer100k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100k.ktr",
@@ -147,7 +145,7 @@ public class RunSortRows extends TestCase
     }
     
 
-    public void test_SORT_08_CSVDataNoCompressionBuffer100kWriteBack() throws KettleXMLException
+    public void test_SORT_08_CSVDataNoCompressionBuffer100kWriteBack() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/sort/SortCSVDataNoCompressionBuffer100kWriteBack.ktr",

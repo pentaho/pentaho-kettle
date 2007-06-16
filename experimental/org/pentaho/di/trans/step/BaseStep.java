@@ -76,13 +76,13 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.trans.steps.update.UpdateMeta;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleRowException;
-import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.exception.KettleStepLoaderException;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleRowException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.exception.KettleValueException;
 
 public class BaseStep extends Thread
 {

@@ -9,8 +9,8 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.job.Job;
 
 import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
 
 /**
  * 

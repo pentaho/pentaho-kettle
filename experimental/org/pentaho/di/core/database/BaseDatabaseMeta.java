@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.Encr;
 
 

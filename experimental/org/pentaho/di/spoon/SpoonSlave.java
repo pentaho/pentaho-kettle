@@ -45,8 +45,8 @@ import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.widget.TreeUtil;

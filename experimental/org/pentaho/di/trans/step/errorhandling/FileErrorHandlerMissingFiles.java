@@ -5,8 +5,8 @@ import java.util.Date;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.trans.step.BaseStep;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 
 public class FileErrorHandlerMissingFiles extends
 		AbstractFileErrorHandler {

@@ -31,7 +31,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
 import be.ibridge.kettle.core.WindowProperty;

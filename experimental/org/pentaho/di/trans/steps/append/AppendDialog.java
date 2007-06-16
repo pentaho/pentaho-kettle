@@ -38,7 +38,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 
 /**
  * Dialog for the append step.

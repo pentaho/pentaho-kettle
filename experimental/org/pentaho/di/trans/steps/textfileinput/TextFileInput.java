@@ -48,11 +48,11 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleFileException;
-import be.ibridge.kettle.core.exception.KettleValueException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import be.ibridge.kettle.core.vfs.KettleVFS;
 
 

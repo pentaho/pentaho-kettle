@@ -3,11 +3,9 @@ package org.pentaho.di.run.addsequence;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class RunAddSequence extends TestCase
 {
@@ -18,7 +16,7 @@ public class RunAddSequence extends TestCase
         System.out.println("==================");
     }
     
-    public void test_ADD_SEQUENCE_01_AddToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_01_AddToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequence.ktr", 
@@ -36,7 +34,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_02_AddTo5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_02_AddTo5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo5.ktr", 
@@ -54,7 +52,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_03_AddTo10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_03_AddTo10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/AddSequenceTo10.ktr", 
@@ -72,7 +70,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
 
-    public void test_ADD_SEQUENCE_04_Add2ToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_04_Add2ToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2Sequences.ktr", 
@@ -90,7 +88,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_05_Add2To5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_05_Add2To5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo5.ktr", 
@@ -108,7 +106,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_06_Add2To10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_06_Add2To10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add2SequencesTo10.ktr", 
@@ -126,7 +124,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_07_Add4ToEmptyRow() throws KettleXMLException
+    public void test_ADD_SEQUENCE_07_Add4ToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4Sequences.ktr", 
@@ -144,7 +142,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_08_Add4To5() throws KettleXMLException
+    public void test_ADD_SEQUENCE_08_Add4To5() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo5.ktr", 
@@ -162,7 +160,7 @@ public class RunAddSequence extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test_ADD_SEQUENCE_09_Add4To10() throws KettleXMLException
+    public void test_ADD_SEQUENCE_09_Add4To10() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/addsequence/Add4SequencesTo10.ktr", 

@@ -5,10 +5,10 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.SharedObjectInterface;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleException;
 
 /**
  * A partition schema allow you to partition a step according into a number of partitions that run independendly.

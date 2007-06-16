@@ -22,11 +22,11 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 
 

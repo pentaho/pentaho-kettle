@@ -38,7 +38,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.widget.ConditionEditor;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
 import be.ibridge.kettle.core.WindowProperty;
 

@@ -55,12 +55,12 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.GUIResource;
 import org.pentaho.di.core.Props;
-import be.ibridge.kettle.core.XMLHandler;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleXMLException;
 
 
 /**

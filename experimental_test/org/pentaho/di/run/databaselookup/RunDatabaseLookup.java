@@ -3,16 +3,13 @@ package org.pentaho.di.run.databaselookup;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
 
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
-
 public class RunDatabaseLookup extends TestCase
 {
-    private static void createIndex() throws KettleException
+    private static void createIndex() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP INDEX IDX_CSV_TABLE_ID;", 
@@ -20,7 +17,7 @@ public class RunDatabaseLookup extends TestCase
             );
     }
 
-    private static void dropIndex() throws KettleException
+    private static void dropIndex() throws Exception
     {
         AllRunTests.executeStatementsOnOldAndNew(
                 "DROP INDEX IDX_CSV_TABLE_ID;", 
@@ -28,7 +25,7 @@ public class RunDatabaseLookup extends TestCase
             );
     }
 
-    public void test__DATABASE_LOOKUP_00() throws KettleException
+    public void test__DATABASE_LOOKUP_00() throws Exception
     {
         System.out.println();
         System.out.println("DATABASE LOOKUP");
@@ -37,7 +34,7 @@ public class RunDatabaseLookup extends TestCase
         createIndex();
     }
     
-    public void test__DATABASE_LOOKUP_01_Simple() throws KettleXMLException
+    public void test__DATABASE_LOOKUP_01_Simple() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookup.ktr", 
@@ -55,7 +52,7 @@ public class RunDatabaseLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DATABASE_LOOKUP_02_NoCache() throws KettleXMLException
+    public void test__DATABASE_LOOKUP_02_NoCache() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookupNoCaching.ktr", 
@@ -73,7 +70,7 @@ public class RunDatabaseLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DATABASE_LOOKUP_03_Cache50k() throws KettleXMLException
+    public void test__DATABASE_LOOKUP_03_Cache50k() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "experimental_test/org/pentaho/di/run/databaselookup/DBLookupIDLookupCache50k.ktr", 
@@ -91,7 +88,7 @@ public class RunDatabaseLookup extends TestCase
         assertTrue(newResult.getNrErrors()==0);
     }
     
-    public void test__DATABASE_LOOKUP_99() throws KettleException
+    public void test__DATABASE_LOOKUP_99() throws Exception
     {
         System.out.println();
         dropIndex();

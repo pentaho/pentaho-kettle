@@ -29,10 +29,10 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleStepLoaderException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleStepLoaderException;
 
 
  

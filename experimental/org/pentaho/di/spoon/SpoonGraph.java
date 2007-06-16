@@ -76,9 +76,9 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
-import be.ibridge.kettle.core.LogWriter;
+import org.pentaho.di.core.logging.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Redrawable;

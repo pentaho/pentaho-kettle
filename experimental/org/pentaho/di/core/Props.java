@@ -40,17 +40,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.SortedFileOutputStream;
 
-import be.ibridge.kettle.core.Const;
-import org.pentaho.di.core.GUIResource;
 import be.ibridge.kettle.core.LastUsedFile;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ObjectUsageCount;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.exception.KettleValueException;
-import be.ibridge.kettle.core.util.SortedFileOutputStream;
-import be.ibridge.kettle.spoon.Messages;
+import org.pentaho.di.core.exception.KettleValueException;
 
 
 /**
@@ -488,7 +485,7 @@ public class Props implements Cloneable
             fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
-            log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveProperties"));
+            log.logDetailed(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{
@@ -499,12 +496,12 @@ public class Props implements Cloneable
             if (spoonRc.isHidden() && filename.indexOf('\\') != -1)
             {
                 // If filename contains a backslash we consider Spoon as running on Windows
-                log.logError(toString(), Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
+                log.logError(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
             }
             else
             {
                 // Another reason why the save failed
-                log.logError(toString(), Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
+                log.logError(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
             }
 		}
 	}

@@ -21,9 +21,9 @@ import java.util.Hashtable;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.exception.KettleFileException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.exception.KettleFileException;
 
 /**
  * This class caches database queries so that the same query doesn't get called twice.

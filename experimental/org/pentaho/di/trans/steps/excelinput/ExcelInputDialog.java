@@ -85,7 +85,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 import be.ibridge.kettle.core.ColumnInfo;
-import be.ibridge.kettle.core.Const;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.util.StringUtil;
 import be.ibridge.kettle.core.vfs.KettleVFS;

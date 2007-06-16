@@ -3,9 +3,9 @@ package org.pentaho.di.trans.steps.calculator;
 import org.pentaho.di.core.row.ValueMeta;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.XMLHandler;
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 
 public class CalculatorMetaFunction implements Cloneable

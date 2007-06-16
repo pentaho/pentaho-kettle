@@ -2,7 +2,7 @@ package org.pentaho.di.core.playlist;
 
 import org.apache.commons.vfs.FileObject;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 public class FilePlayListReplayFile implements FilePlayList {
 	private FileObject processingFile;

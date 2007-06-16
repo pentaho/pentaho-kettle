@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.Repository;
 
-import be.ibridge.kettle.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleException;
 
 
 public interface HasDatabasesInterface

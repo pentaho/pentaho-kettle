@@ -12,13 +12,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-
-import org.pentaho.di.core.variables.LocalVariables;
-import be.ibridge.kettle.core.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.logging.Log4jStringAppender;
-import be.ibridge.kettle.trans.Trans;
-import be.ibridge.kettle.trans.TransMeta;
+import org.pentaho.di.core.logging.Log4jStringAppender;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+
 
 
 /**
