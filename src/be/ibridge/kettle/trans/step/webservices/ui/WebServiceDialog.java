@@ -1243,7 +1243,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
      * Previous fields are read asynchonous because this might take some time
      * and the user is able to do other things, where he will not need the previous fields
      */
-    private boolean bPreviousFieldsLoaded = false;
+    // private boolean bPreviousFieldsLoaded = false;
 
     private void setComboValues() {
         Runnable fieldLoader = new Runnable() {
@@ -1258,7 +1258,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 }
                 String[] prevStepFieldNames = prevFields.getFieldNames();
                 Arrays.sort(prevStepFieldNames);
-                bPreviousFieldsLoaded = true;
+                // bPreviousFieldsLoaded = true;
                 for (int i = 0; i < fieldColumns.size(); i++) {
                     ColumnInfo colInfo = (ColumnInfo) fieldColumns.get(i);
                     colInfo.setComboValues(prevStepFieldNames);
