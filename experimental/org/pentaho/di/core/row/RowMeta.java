@@ -45,7 +45,7 @@ public class RowMeta implements RowMetaInterface
     /**
      * @param valueMetaList the list of valueMeta to set
      */
-    public void setValueMeta(List valueMetaList)
+    public void setValueMetaList(List valueMetaList)
     {
         this.valueMetaList = valueMetaList;
     }
@@ -98,6 +98,17 @@ public class RowMeta implements RowMetaInterface
     {
         return (ValueMetaInterface) valueMetaList.get(index);
     }
+    
+    /**
+     * Replaces a value meta entry in the row metadata with another one 
+     * @param index The index in the row to replace at
+     * @param valueMeta the metadata to replace with
+     */
+    public void setValueMeta(int index, ValueMetaInterface valueMeta)
+    {
+        valueMetaList.set(index, valueMeta);
+    }   
+
     
     /**
      * Get a String value from a row of data.  Convert data if this needed. 
@@ -571,5 +582,6 @@ public class RowMeta implements RowMetaInterface
         {
             throw new RuntimeException("Error de-serializing row of data from byte array", e);
         }
-    }   
+    }
+
 }

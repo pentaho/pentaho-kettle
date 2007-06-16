@@ -46,6 +46,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.steps.mappinginput.MappingInput;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -53,8 +55,6 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleTransException;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
-import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
-import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 import be.ibridge.kettle.www.AddTransServlet;
 import be.ibridge.kettle.www.PrepareExecutionTransServlet;
 import be.ibridge.kettle.www.StartExecutionTransServlet;
