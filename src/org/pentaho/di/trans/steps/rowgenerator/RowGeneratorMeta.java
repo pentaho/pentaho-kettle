@@ -32,11 +32,13 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.repository.Repository;
@@ -330,7 +332,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit="10";
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{
@@ -342,7 +344,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 				v.setLength(fieldLength[i]);
                 v.setPrecision(fieldPrecision[i]);
 				v.setOrigin(name);
-				rowMeta.addValueMeta(v);
+				row.addValueMeta(v);
 			}
 		}
 	}
