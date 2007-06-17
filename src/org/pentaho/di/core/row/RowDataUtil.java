@@ -22,10 +22,7 @@ public class RowDataUtil
     {
         Object[] newObjects = new Object[newSize];
         
-        for (int i=0;i<objects.length;i++)
-        {
-            newObjects[i]=objects[i];
-        }
+        System.arraycopy(objects, 0, newObjects, 0, objects.length);
         
         return newObjects;
     }
@@ -41,14 +38,9 @@ public class RowDataUtil
     public static Object[] removeItem(Object[] objects, int index)
     {
         Object[] newObjects = new Object[objects.length-1];
-        for (int i=0;i<index;i++)
-        {
-            newObjects[i]=objects[i];
-        }
-        for (int i=index+1;i<objects.length;i++)
-        {
-            newObjects[i-1]=objects[i];
-        }
+        System.arraycopy(objects, 0, newObjects, 0, index);
+        System.arraycopy(objects, index+1, newObjects, 
+        		                  index, objects.length - index - 1);
         return newObjects;
     }
     
@@ -62,14 +54,10 @@ public class RowDataUtil
     public static Object[] addRowData(Object[] one, Object[] two)
     {
         Object[] result = new Object[one.length + two.length];
-        for (int i=0;i<one.length;i++)
-        {
-            result[i] = one[i];
-        }
-        for (int i=0;i<two.length;i++)
-        {
-            result[one.length+i] = two[i];
-        }
+
+        System.arraycopy(one, 0, result, 0, one.length);
+        System.arraycopy(two, 0, result, one.length, two.length);
+
         return result;
     }
     
@@ -83,11 +71,10 @@ public class RowDataUtil
     public static Object[] addValueData(Object[] rowData, Object extra)
     {
         Object[] result = new Object[rowData.length + 1];
-        for (int i=0;i<rowData.length;i++)
-        {
-            result[i] = rowData[i];
-        }
+        
+        System.arraycopy(rowData, 0, result, 0, rowData.length);
         result[rowData.length] = extra;
+        
         return result;
     }
 
