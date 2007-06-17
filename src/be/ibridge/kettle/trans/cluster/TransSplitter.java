@@ -733,10 +733,27 @@ public class TransSplitter
                         {
                             /*
                             // originalStep is clustered
-                            // previousStep is clustered
-                            // --> Add original step to the slave transformation(s)
+                            // infoStep is clustered
+                            // --> original step has already been added to the slave transformation(s), but hop is needed
                             //
                              */
+                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                
+                                if (!slaveServer.isMaster())
+                                {
+		                            // SLAVE
+		                            TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
+		                        	// add a link between the original step and the infostep
+		                            StepMeta target = slave.findStep(originalStep.getName());
+		                            StepMeta source = slave.findStep(infoStep.getName());
+		                            // Add a hop too...
+		                            TransHopMeta slaveHop = new TransHopMeta(source, target);
+		                            slave.addTransHop(slaveHop);     
+                                }
+                            }
                         }
                         
                     }
