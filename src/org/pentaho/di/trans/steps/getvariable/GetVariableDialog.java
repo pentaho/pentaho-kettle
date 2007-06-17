@@ -19,7 +19,7 @@
  *
  */
 
-package org.pentaho.di.trans.steps.setvariable;
+package org.pentaho.di.trans.steps.getvariable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -40,20 +40,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.TableItemInsertListener;
 
 
-public class SetVariableDialog extends BaseStepDialog implements StepDialogInterface
+public class GetVariableDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlStepname;
 	private Text         wStepname;
@@ -63,12 +58,12 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
 	
-	private SetVariableMeta input;
+	private GetVariableMeta input;
 
-	public SetVariableDialog(Shell parent, Object in, TransMeta transMeta, String sname)
+	public GetVariableDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
-		input=(SetVariableMeta)in;
+		input=(GetVariableMeta)in;
 	}
 
 	public String open()
@@ -94,14 +89,14 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("SetVariableDialog.DialogTitle")); //$NON-NLS-1$
+		shell.setText(Messages.getString("GetVariableDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("SetVariableDialog.Stepname.Label")); //$NON-NLS-1$
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -109,6 +104,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdlStepname.top  = new FormAttachment(0, margin);
 		wlStepname.setLayoutData(fdlStepname);
 		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wStepname.setText(stepname);
  		props.setLook(wStepname);
 		wStepname.addModifyListener(lsMod);
 		fdStepname=new FormData();
@@ -117,9 +113,8 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("SetVariableDialog.Fields.Label")); //$NON-NLS-1$
+		wlFields.setText(Messages.getString("GetVariableDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -128,13 +123,15 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		final int FieldsRows=input.getFieldName().length;
 		
-		ColumnInfo[] colinf=
-            {
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false), //$NON-NLS-1$
-            };
-
+		ColumnInfo[] colinf=new ColumnInfo[]
+           {
+    		 new ColumnInfo(Messages.getString("GetVariableDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false),
+    	   	 new ColumnInfo(Messages.getString("GetVariableDialog.VariableColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT, false),
+           };
+        
+        colinf[1].setToolTip(Messages.getString("GetVariableDialog.VariableColumn.Tooltip"));
+        colinf[1].setUsingVariables(true);
+        
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
@@ -153,21 +150,17 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-        wGet=new Button(shell, SWT.PUSH);
-        wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 
 		// Add listeners
-		lsCancel = new Listener() { public void handleEvent(Event e) { cancel(); } };
-        lsGet    = new Listener() { public void handleEvent(Event e) { get(); }    };
-		lsOK     = new Listener() { public void handleEvent(Event e) { ok();       } };
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
-        wGet.addListener   (SWT.Selection, lsGet   );
 		wOK.addListener    (SWT.Selection, lsOK    );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -176,6 +169,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+
 
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -198,16 +192,14 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	{
 		wStepname.setText(stepname);
 		
-        for (int i=0;i<input.getFieldName().length;i++)
+		for (int i=0;i<input.getFieldName().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
-			String src = input.getFieldName()[i];
-			String tgt = input.getVariableName()[i];
-			String typ = SetVariableMeta.getVariableTypeDescription(input.getVariableType()[i]);
+			String name = input.getFieldName()[i];
+			String type = input.getVariableString()[i];
 			
-			if (src!=null) item.setText(1, src);
-			if (tgt!=null) item.setText(2, tgt);
-            if (typ!=null) item.setText(3, typ);
+			if (name!=null) item.setText(1, name);
+			if (type!=null) item.setText(2, type);
 		}
 
 		wFields.setRowNums();
@@ -226,6 +218,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
+		//Table table = wFields.table;
 
 		int count = wFields.nrNonEmpty();
 		input.allocate(count);
@@ -233,35 +226,9 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		for (int i=0;i<count;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]    = item.getText(1);
-			input.getVariableName()[i] = item.getText(2);
-            input.getVariableType()[i] = SetVariableMeta.getVariableType(item.getText(3));
+			input.getFieldName()[i]   = item.getText(1);
+			input.getVariableString()[i]   = item.getText(2);
 		}
 		dispose();
 	}
-    
-    private void get()
-    {
-        try
-        {
-            RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-            if (r!=null)
-            {
-                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, new TableItemInsertListener()
-                    {
-                	    public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
-                        {
-                            tableItem.setText(2, v.getName().toUpperCase());
-                            tableItem.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_JVM));
-                            return true;
-                        }
-                    }
-                );
-            }
-        }
-        catch(KettleException ke)
-        {
-            new ErrorDialog(shell, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    }
 }

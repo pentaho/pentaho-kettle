@@ -15,7 +15,6 @@
  
 package org.pentaho.di.trans.steps.setvariable;
 
-import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;

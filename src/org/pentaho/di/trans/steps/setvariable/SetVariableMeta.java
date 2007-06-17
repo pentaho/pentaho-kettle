@@ -25,6 +25,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -229,7 +231,15 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info) throws KettleStepException
 	{
-	
+		for (int i=0;i<fieldName.length;i++)
+		{
+			if (fieldName[i]!=null && fieldName[i].length()!=0)
+			{
+				ValueMetaInterface v=new ValueMeta(fieldName[i],ValueMetaInterface.TYPE_STRING);
+				v.setOrigin(name);
+				rowMeta.addValueMeta(v);
+			}
+		}	
 	}
 
 	public String getXML()
