@@ -472,7 +472,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException 
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException 
 	{
 		// Just add the returning key field...
 		if (returningGeneratedKeys && generatedKeyField!=null && generatedKeyField.length()>0)

@@ -50,7 +50,6 @@ import org.pentaho.di.repository.Repository;
  * Created on 2-jun-2003
  *
  */
- 
 public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private DatabaseMeta databaseMeta;
@@ -210,7 +209,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException
 	{
 		if (databaseMeta==null) return; // TODO: throw an exception here
 
@@ -476,7 +475,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		// Find the lookupfields...
         RowMetaInterface out = new RowMeta(); 
-        getFields(out, stepMeta.getName(), info);
+        // TODO: this builds, but does it work in all cases.
+        getFields(out, stepMeta.getName(), new RowMetaInterface[] { info });
         
 		if (out!=null)
 		{

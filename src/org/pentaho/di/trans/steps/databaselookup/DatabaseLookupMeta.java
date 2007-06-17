@@ -45,6 +45,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.repository.Repository;
 
@@ -475,7 +476,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         eatingRowOnLookupFailure = false;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 		if (Const.isEmpty(info)) // null or length 0
 		{

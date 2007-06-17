@@ -37,6 +37,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.repository.Repository;
@@ -761,7 +762,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 		// No values are added to the row in this type of step
 		// However, in case of Fixed length records, 

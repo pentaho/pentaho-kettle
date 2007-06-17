@@ -37,6 +37,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.repository.Repository;
 
@@ -313,7 +314,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

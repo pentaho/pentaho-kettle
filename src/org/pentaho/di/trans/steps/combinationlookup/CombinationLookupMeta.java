@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.repository.Repository;
 
@@ -426,7 +427,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		useAutoinc  = false;
 	}
 
-	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(technicalKeyField, ValueMetaInterface.TYPE_INTEGER);
 		v.setLength(10);

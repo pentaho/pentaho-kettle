@@ -40,6 +40,7 @@ import org.w3c.dom.Node;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 
 
@@ -252,7 +253,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		maxValue    = 9999999L;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(valuename, ValueMetaInterface.TYPE_INTEGER);
 		v.setLength(9);

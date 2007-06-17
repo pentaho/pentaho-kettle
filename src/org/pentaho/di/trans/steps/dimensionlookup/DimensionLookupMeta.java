@@ -673,7 +673,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
         cacheSize = 5000;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException 
 	{
         LogWriter log = LogWriter.getInstance();
 

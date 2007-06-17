@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -226,7 +227,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info) throws KettleStepException
 	{
 	
 	}
