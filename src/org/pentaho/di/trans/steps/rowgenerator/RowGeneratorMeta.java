@@ -32,7 +32,6 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;
