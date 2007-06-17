@@ -64,6 +64,7 @@ import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
+import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
@@ -136,7 +137,8 @@ public class BaseStep extends Thread
         new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
         new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
         new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
-
+        new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
+        
         /*
  
          
@@ -163,8 +165,7 @@ public class BaseStep extends Thread
             new StepPluginMeta(MergeRowsMeta.class, "MergeRows", Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages.getString("BaseStep.TypeTooltipDesc.MergeRows"), "MRG.png", CATEGORY_JOINS),
             new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
+            new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),            
             new StepPluginMeta(GetVariableMeta.class, "GetVariable", Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.GetVariable"), "GVA.png", CATEGORY_JOB),
             new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), "GFN.png", CATEGORY_INPUT),
             new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
