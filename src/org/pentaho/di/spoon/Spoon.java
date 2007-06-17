@@ -93,10 +93,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.pentaho.di.chef.ChefGraph;
-import org.pentaho.di.chef.ChefHistory;
-import org.pentaho.di.chef.ChefHistoryRefresher;
-import org.pentaho.di.chef.ChefLog;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.dialog.ClusterSchemaDialog;
@@ -190,6 +186,14 @@ import org.pentaho.di.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.spoon.dialog.GetSQLProgressDialog;
 import org.pentaho.di.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.spoon.dialog.TipsDialog;
+import org.pentaho.di.spoon.job.JobGraph;
+import org.pentaho.di.spoon.job.JobHistory;
+import org.pentaho.di.spoon.job.JobHistoryRefresher;
+import org.pentaho.di.spoon.job.JobLog;
+import org.pentaho.di.spoon.trans.TransGraph;
+import org.pentaho.di.spoon.trans.TransHistory;
+import org.pentaho.di.spoon.trans.TransHistoryRefresher;
+import org.pentaho.di.spoon.trans.TransLog;
 import org.pentaho.di.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.spoon.wizards.RipDatabaseWizardPage1;
@@ -220,20 +224,12 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.version.BuildVersion;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
-
-
-
-
-
-
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -440,7 +436,7 @@ public class Spoon implements AddUndoPositionInterface
                     JobMeta jobMeta = getActiveJob();
                     UndoInterface undoInterface = getActiveUndoInterface();
                     
-                    SpoonLog spoonLog = getActiveSpoonLog();
+                    TransLog transLog = getActiveTransLog();
                     
                     boolean ctrl = (( e.stateMask&SWT.CONTROL)!=0);
                     boolean alt  = (( e.stateMask&SWT.ALT)!=0);
@@ -471,7 +467,7 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F7 && !ctrl && !alt)    { showLastTransCheck(); }
                     
                     // F8 --> show last preview
-                    if (e.keyCode == SWT.F8 && !ctrl && !alt)    { if (spoonLog!=null) { spoonLog.showPreview(); } }
+                    if (e.keyCode == SWT.F8 && !ctrl && !alt)    { if (transLog!=null) { transLog.showPreview(); } }
                     
                     // F9 --> run
                     if (e.keyCode == SWT.F9 && !ctrl && !alt)    { executeFile(true, false, false, false, null); }
@@ -1299,7 +1295,7 @@ public class Spoon implements AddUndoPositionInterface
         //
         miLastPreview = new MenuItem(msTrans, SWT.CASCADE); 
         miLastPreview.setText(Messages.getString("Spoon.Menu.Transformation.ShowLastPreviewResults"));//Show last preview results \tF8
-        miLastPreview.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { SpoonLog spoonLog = getActiveSpoonLog(); if (spoonLog!=null) spoonLog.showPreview(); } });
+        miLastPreview.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { TransLog transLog = getActiveTransLog(); if (transLog!=null) transLog.showPreview(); } });
         new MenuItem(msTrans, SWT.SEPARATOR);
         // Copy transformation to clipboard
         //
@@ -1457,12 +1453,12 @@ public class Spoon implements AddUndoPositionInterface
             
             if (lastUsedFile.isTransformation())
             {
-                miFileLast.setImage(GUIResource.getInstance().getImageSpoonGraph());
+                miFileLast.setImage(GUIResource.getInstance().getImageTransGraph());
             }
             else
             if (lastUsedFile.isJob())
             {
-                miFileLast.setImage(GUIResource.getInstance().getImageChefGraph());
+                miFileLast.setImage(GUIResource.getInstance().getImageJobGraph());
             }
 
             char chr = (char) ('1' + i);
@@ -2598,11 +2594,11 @@ public class Spoon implements AddUndoPositionInterface
 
                 // Open log window
                 MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
-                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonLog((TransMeta)selection); }} );
+                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addTransLog((TransMeta)selection); }} );
 
                 // Open history window
                 MenuItem miHistory  = new MenuItem(spoonMenu, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
-                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSpoonHistory((TransMeta)selection, true); }} );
+                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addTransHistory((TransMeta)selection, true); }} );
             }
             if (selection instanceof JobMeta)
             {
@@ -2612,11 +2608,11 @@ public class Spoon implements AddUndoPositionInterface
 
                 // Open log window
                 MenuItem miLog  = new MenuItem(spoonMenu, SWT.PUSH); miLog.setText(Messages.getString("Spoon.Menu.Popup.BASE.LogWindow"));
-                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefLog((JobMeta)selection); }} );
+                miLog.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addJobLog((JobMeta)selection); }} );
                 
                 // Open history windows
                 MenuItem miHistory  = new MenuItem(spoonMenu, SWT.PUSH); miHistory.setText(Messages.getString("Spoon.Menu.Popup.BASE.HistoryWindow"));
-                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addChefHistory((JobMeta)selection, true); }} );
+                miHistory.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addJobHistory((JobMeta)selection, true); }} );
             }
             if (selection instanceof StepPlugin)
             {
@@ -2884,9 +2880,9 @@ public class Spoon implements AddUndoPositionInterface
                             // Another way to implement this may be to keep track of the
                             // state of the core object tree in method addCoreObjectsToTree()
                             //
-                            if (event.doit && entry.getObject() instanceof SpoonGraph)
+                            if (event.doit && entry.getObject() instanceof TransGraph)
                             {
-                               SpoonGraph graph = (SpoonGraph)entry.getObject();
+                               TransGraph graph = (TransGraph)entry.getObject();
                                TransMeta meta = graph.getTransMeta();
                                if ( meta != null )
                                {
@@ -2897,9 +2893,9 @@ public class Spoon implements AddUndoPositionInterface
                                    refreshCoreObjects();
                                }
                             }
-                            if (event.doit && entry.getObject() instanceof ChefGraph)
+                            if (event.doit && entry.getObject() instanceof JobGraph)
                             {
-                               ChefGraph graph = (ChefGraph)entry.getObject();
+                               JobGraph graph = (JobGraph)entry.getObject();
                                JobMeta meta = graph.getJobMeta();
                                if ( meta != null )
                                {
@@ -2972,13 +2968,13 @@ public class Spoon implements AddUndoPositionInterface
                             //                            
                             if (event.doit)
                             {
-                                if (entry.getObject() instanceof SpoonGraph)
+                                if (entry.getObject() instanceof TransGraph)
                                 {
                                     TransMeta transMeta = (TransMeta)entry.getObject().getManagedObject();
                                     closeTransformation(transMeta);
                                     refreshTree();
                                 }
-                                else if (entry.getObject() instanceof ChefGraph)
+                                else if (entry.getObject() instanceof JobGraph)
                                 {
                                     JobMeta jobMeta = (JobMeta)entry.getObject().getManagedObject();
                                     closeJob(jobMeta);
@@ -3831,7 +3827,7 @@ public class Spoon implements AddUndoPositionInterface
                         JobMeta jobMeta = progressDialog.open();
                         jobMeta.clearChanged();
                         jobMeta.setFilename(objname);
-                        addChefGraph(jobMeta);
+                        addJobGraph(jobMeta);
                         refreshTree();
                         refreshGraph();
                     }
@@ -3940,7 +3936,7 @@ public class Spoon implements AddUndoPositionInterface
                         props.addLastFile(LastUsedFile.FILE_TYPE_JOB, name, repdir.getPath(), true, rep.getName());
                         saveSettings();
                         addMenuLast();
-                        addChefGraph(jobMeta);
+                        addJobGraph(jobMeta);
                     }
                     refreshGraph();
                     refreshTree();
@@ -3998,7 +3994,7 @@ public class Spoon implements AddUndoPositionInterface
                 addMenuLast();
                 if (!importfile) jobMeta.clearChanged();
                 jobMeta.setFilename(fname);
-                addChefGraph(jobMeta);
+                addJobGraph(jobMeta);
                 
                 refreshTree();
                 refreshHistory();
@@ -4101,7 +4097,7 @@ public class Spoon implements AddUndoPositionInterface
                 jobMeta.setName( STRING_JOB+" "+nr ); // rename
             }
 
-            addChefGraph(jobMeta);
+            addJobGraph(jobMeta);
             refreshTree();
         }
         catch(Exception e)
@@ -4205,46 +4201,6 @@ public class Spoon implements AddUndoPositionInterface
                         exit = true;
                     }
                 }
-
-                /*
-                if (mapEntry.getObject() instanceof SpoonGraph)
-                {
-                    TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
-                    if (transMeta.hasChanged())
-                    {
-                        // Show the transformation in question
-                        //
-                        tabfolder.setSelection( mapEntry.getTabItem() );
-                        
-                        // Ask if we should save it before closing...
-                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-                        mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message", makeGraphTabName(transMeta)));//"File has changed!  Do you want to save first?"
-                        mb.setText(Messages.getString("Spoon.Dialog.SaveChangedFile.Title"));//"Warning!"
-                        int answer = mb.open();
-                    
-                        switch(answer)
-                        {
-                        case SWT.YES: exit=saveFile(transMeta); break;
-                        case SWT.NO:  exit=true; break;
-                        case SWT.CANCEL: 
-                            exit=false;
-                            break;
-                        }
-                    }
-                }
-                // A running transformation?
-                //
-                if (mapEntry.getObject() instanceof SpoonLog)
-                {
-                    SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
-                    if (spoonLog.isRunning())
-                    {
-                        
-                        if (reply==SWT.NO) exit=false; // No selected: don't exit!
-                    }
-                }
-                */
-                
             }
         }
         
@@ -4258,7 +4214,7 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     // Unsaved transformation?
                     //
-                    if (mapEntry.getObject() instanceof SpoonGraph)
+                    if (mapEntry.getObject() instanceof TransGraph)
                     {
                         TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
                         if (transMeta.hasChanged())
@@ -4268,12 +4224,12 @@ public class Spoon implements AddUndoPositionInterface
                     }
                     // A running transformation?
                     //
-                    if (mapEntry.getObject() instanceof SpoonLog)
+                    if (mapEntry.getObject() instanceof TransLog)
                     {
-                        SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
-                        if (spoonLog.isRunning())
+                        TransLog transLog = (TransLog) mapEntry.getObject();
+                        if (transLog.isRunning())
                         {
-                            spoonLog.stop();
+                            transLog.stop();
                             mapEntry.getTabItem().dispose();
                         }
                     }
@@ -4969,15 +4925,15 @@ public class Spoon implements AddUndoPositionInterface
         if (tabText==null) return;
         
         TabMapEntry tabMapEntry = (TabMapEntry) tabMap.get(tabText);
-        if (tabMapEntry.getObject() instanceof SpoonGraph)
+        if (tabMapEntry.getObject() instanceof TransGraph)
         {
-            SpoonGraph spoonGraph = (SpoonGraph) tabMapEntry.getObject();
+            TransGraph spoonGraph = (TransGraph) tabMapEntry.getObject();
             spoonGraph.redraw();
         }
-        if (tabMapEntry.getObject() instanceof ChefGraph)
+        if (tabMapEntry.getObject() instanceof JobGraph)
         {
-            ChefGraph chefGraph = (ChefGraph) tabMapEntry.getObject();
-            chefGraph.redraw();
+            JobGraph jobGraph = (JobGraph) tabMapEntry.getObject();
+            jobGraph.redraw();
         }
          
         setShellText();
@@ -4985,10 +4941,10 @@ public class Spoon implements AddUndoPositionInterface
     
     public void refreshHistory()
     {
-        final SpoonHistory spoonHistory = getActiveSpoonHistory();
-        if (spoonHistory!=null)
+        final TransHistory transHistory = getActiveTransHistory();
+        if (transHistory!=null)
         {
-            spoonHistory.markRefreshNeeded();
+            transHistory.markRefreshNeeded();
         }
     }
 
@@ -5344,7 +5300,7 @@ public class Spoon implements AddUndoPositionInterface
     
     private void printTransFile(TransMeta transMeta)
     {
-        SpoonGraph spoonGraph = getActiveSpoonGraph();
+        TransGraph spoonGraph = getActiveSpoonGraph();
         if (spoonGraph==null) return;
         
         PrintSpool ps = new PrintSpool();
@@ -5363,8 +5319,8 @@ public class Spoon implements AddUndoPositionInterface
     
     private void printJobFile(JobMeta jobMeta)
     {
-        ChefGraph chefGraph = getActiveChefGraph();
-        if (chefGraph==null) return;
+        JobGraph jobGraph = getActiveJobGraph();
+        if (jobGraph==null) return;
         
         PrintSpool ps = new PrintSpool();
         Printer printer = ps.getPrinter(shell);
@@ -5384,7 +5340,7 @@ public class Spoon implements AddUndoPositionInterface
         img_gc.fillRectangle(0,0,max.x, max.y);
         
         // Draw the transformation...
-        chefGraph.drawJob(img_gc, false);
+        jobGraph.drawJob(img_gc, false);
         
         ps.printImage(shell, img);
         
@@ -5394,107 +5350,107 @@ public class Spoon implements AddUndoPositionInterface
     }
 
     
-    private SpoonGraph getActiveSpoonGraph()
+    private TransGraph getActiveSpoonGraph()
     {
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
-        if (mapEntry.getObject() instanceof SpoonGraph) return (SpoonGraph) mapEntry.getObject();
+        if (mapEntry.getObject() instanceof TransGraph) return (TransGraph) mapEntry.getObject();
         return null;
     }
     
-    private ChefGraph getActiveChefGraph()
+    private JobGraph getActiveJobGraph()
     {
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
-        if (mapEntry.getObject() instanceof ChefGraph) return (ChefGraph) mapEntry.getObject();
+        if (mapEntry.getObject() instanceof JobGraph) return (JobGraph) mapEntry.getObject();
         return null;
     }
 
     /**
      * @return the Log tab associated with the active transformation
      */
-    private SpoonLog getActiveSpoonLog()
+    private TransLog getActiveTransLog()
     {
         TransMeta transMeta = getActiveTransformation();
         if (transMeta==null) return null; // nothing to work with.
 
-        return findSpoonLogOfTransformation(transMeta);
+        return findTransLogOfTransformation(transMeta);
     }
     
     /**
      * @return the Log tab associated with the active job
      */
-    private ChefLog getActiveJobLog()
+    private JobLog getActiveJobLog()
     {
         JobMeta jobMeta = getActiveJob();
         if (jobMeta==null) return null; // nothing to work with.
 
-        return findChefLogOfJob(jobMeta);
+        return findJobLogOfJob(jobMeta);
     }
     
-    public SpoonGraph findSpoonGraphOfTransformation(TransMeta transMeta)
+    public TransGraph findSpoonGraphOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
         Collection collection = tabMap.values();
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof SpoonGraph)
+            if (mapEntry.getObject() instanceof TransGraph)
             {
-                SpoonGraph spoonGraph = (SpoonGraph) mapEntry.getObject();
+                TransGraph spoonGraph = (TransGraph) mapEntry.getObject();
                 if (spoonGraph.getTransMeta().equals(transMeta)) return spoonGraph;
             }
         }
         return null;
     }
     
-    public ChefGraph findChefGraphOfJob(JobMeta jobMeta)
+    public JobGraph findJobGraphOfJob(JobMeta jobMeta)
     {
         // Now loop over the entries in the tab-map
         Collection collection = tabMap.values();
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof ChefGraph)
+            if (mapEntry.getObject() instanceof JobGraph)
             {
-                ChefGraph chefGraph = (ChefGraph) mapEntry.getObject();
-                if (chefGraph.getJobMeta().equals(jobMeta)) return chefGraph;
+                JobGraph jobGraph = (JobGraph) mapEntry.getObject();
+                if (jobGraph.getJobMeta().equals(jobMeta)) return jobGraph;
             }
         }
         return null;
     }
     
-    public SpoonLog findSpoonLogOfTransformation(TransMeta transMeta)
+    public TransLog findTransLogOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
         Collection collection = tabMap.values();
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof SpoonLog)
+            if (mapEntry.getObject() instanceof TransLog)
             {
-                SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
-                if (spoonLog.getTransMeta().equals(transMeta)) return spoonLog;
+                TransLog transLog = (TransLog) mapEntry.getObject();
+                if (transLog.getTransMeta().equals(transMeta)) return transLog;
             }
         }
         return null;
     }
     
-    public ChefLog findChefLogOfJob(JobMeta jobMeta)
+    public JobLog findJobLogOfJob(JobMeta jobMeta)
     {
         // Now loop over the entries in the tab-map
         Collection collection = tabMap.values();
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof ChefLog)
+            if (mapEntry.getObject() instanceof JobLog)
             {
-                ChefLog chefLog = (ChefLog) mapEntry.getObject();
-                if (chefLog.getJobMeta().equals(jobMeta)) return chefLog;
+                JobLog jobLog = (JobLog) mapEntry.getObject();
+                if (jobLog.getJobMeta().equals(jobMeta)) return jobLog;
             }
         }
         return null;
     }
     
-    public SpoonHistory findSpoonHistoryOfTransformation(TransMeta transMeta)
+    public TransHistory findTransHistoryOfTransformation(TransMeta transMeta)
     {
         if (transMeta==null) return null;
         
@@ -5503,16 +5459,16 @@ public class Spoon implements AddUndoPositionInterface
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof SpoonHistory)
+            if (mapEntry.getObject() instanceof TransHistory)
             {
-                SpoonHistory spoonHistory = (SpoonHistory) mapEntry.getObject();
-                if (spoonHistory.getTransMeta()!=null && spoonHistory.getTransMeta().equals(transMeta)) return spoonHistory;
+                TransHistory transHistory = (TransHistory) mapEntry.getObject();
+                if (transHistory.getTransMeta()!=null && transHistory.getTransMeta().equals(transMeta)) return transHistory;
             }
         }
         return null;
     }
     
-    public ChefHistory findChefHistoryOfJob(JobMeta jobMeta)
+    public JobHistory findJobHistoryOfJob(JobMeta jobMeta)
     {
         if (jobMeta==null) return null;
         
@@ -5521,10 +5477,10 @@ public class Spoon implements AddUndoPositionInterface
         for (Iterator iter = collection.iterator(); iter.hasNext();)
         {
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
-            if (mapEntry.getObject() instanceof ChefHistory)
+            if (mapEntry.getObject() instanceof JobHistory)
             {
-                ChefHistory chefHistory = (ChefHistory) mapEntry.getObject();
-                if (chefHistory.getJobMeta()!=null && chefHistory.getJobMeta().equals(jobMeta)) return chefHistory;
+                JobHistory jobHistory = (JobHistory) mapEntry.getObject();
+                if (jobHistory.getJobMeta()!=null && jobHistory.getJobMeta().equals(jobMeta)) return jobHistory;
             }
         }
         return null;
@@ -5533,17 +5489,17 @@ public class Spoon implements AddUndoPositionInterface
     /**
      * @return the history tab associated with the active transformation
      */
-    private SpoonHistory getActiveSpoonHistory()
+    private TransHistory getActiveTransHistory()
     {
         TransMeta transMeta = getActiveTransformation();
         if (transMeta==null) return null; // nothing to work with.
         
-        return findSpoonHistoryOfTransformation(transMeta);
+        return findTransHistoryOfTransformation(transMeta);
     }
     
     
     /**
-     * @return The active TransMeta object by looking at the selected SpoonGraph, SpoonLog, SpoonHist
+     * @return The active TransMeta object by looking at the selected TransGraph, TransLog, TransHist
      *         If nothing valueable is selected, we return null
      */
     public TransMeta getActiveTransformation()
@@ -5553,22 +5509,22 @@ public class Spoon implements AddUndoPositionInterface
         if (tabItem==null) return null;
         
         // What transformation is in the active tab?
-        // SpoonLog, SpoonGraph & SpoonHist contain the same transformation
+        // TransLog, TransGraph & TransHist contain the same transformation
         //
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
         TransMeta transMeta = null;
         if (mapEntry != null)
         {
-            if (mapEntry.getObject() instanceof SpoonGraph) transMeta = ((SpoonGraph) mapEntry.getObject()).getTransMeta();
-            if (mapEntry.getObject() instanceof SpoonLog) transMeta = ((SpoonLog) mapEntry.getObject()).getTransMeta();
-            if (mapEntry.getObject() instanceof SpoonHistory) transMeta = ((SpoonHistory) mapEntry.getObject()).getTransMeta();
+            if (mapEntry.getObject() instanceof TransGraph) transMeta = ((TransGraph) mapEntry.getObject()).getTransMeta();
+            if (mapEntry.getObject() instanceof TransLog) transMeta = ((TransLog) mapEntry.getObject()).getTransMeta();
+            if (mapEntry.getObject() instanceof TransHistory) transMeta = ((TransHistory) mapEntry.getObject()).getTransMeta();
         }
         
         return transMeta;
     }
     
     /**
-     * @return The active JobMeta object by looking at the selected ChefGraph, ChefLog, ChefHist
+     * @return The active JobMeta object by looking at the selected JobGraph, JobLog, JobHist
      *         If nothing valueable is selected, we return null
      */
     public JobMeta getActiveJob()
@@ -5578,15 +5534,15 @@ public class Spoon implements AddUndoPositionInterface
         if (tabItem==null) return null;
         
         // What job is in the active tab?
-        // ChefLog, ChefGraph & ChefHist contain the same job
+        // JobLog, JobGraph & JobHist contain the same job
         //
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
         JobMeta jobMeta = null;
         if (mapEntry != null)
         {
-            if (mapEntry.getObject() instanceof ChefGraph) jobMeta = ((ChefGraph) mapEntry.getObject()).getJobMeta();
-            if (mapEntry.getObject() instanceof ChefLog) jobMeta = ((ChefLog) mapEntry.getObject()).getJobMeta();
-            if (mapEntry.getObject() instanceof ChefHistory) jobMeta = ((ChefHistory) mapEntry.getObject()).getJobMeta();
+            if (mapEntry.getObject() instanceof JobGraph) jobMeta = ((JobGraph) mapEntry.getObject()).getJobMeta();
+            if (mapEntry.getObject() instanceof JobLog) jobMeta = ((JobLog) mapEntry.getObject()).getJobMeta();
+            if (mapEntry.getObject() instanceof JobHistory) jobMeta = ((JobHistory) mapEntry.getObject()).getJobMeta();
         }
         
         return jobMeta;
@@ -5621,7 +5577,7 @@ public class Spoon implements AddUndoPositionInterface
         return (JobMeta[]) list.toArray(new JobMeta[list.size()]);
     }
 
-    protected boolean editTransformationProperties(TransMeta transMeta)
+    public boolean editTransformationProperties(TransMeta transMeta)
     {
         if (transMeta==null) return false;
         
@@ -5700,13 +5656,13 @@ public class Spoon implements AddUndoPositionInterface
         // Put what we undo in focus
         if (undoInterface instanceof TransMeta)
         {
-            SpoonGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
+            TransGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
             spoonGraph.forceFocus();
         }
         if (undoInterface instanceof JobMeta)
         {
-            ChefGraph chefGraph = findChefGraphOfJob((JobMeta)undoInterface);
-            chefGraph.forceFocus();
+            JobGraph jobGraph = findJobGraphOfJob((JobMeta)undoInterface);
+            jobGraph.forceFocus();
         }
     }
 
@@ -6133,13 +6089,13 @@ public class Spoon implements AddUndoPositionInterface
         // Put what we redo in focus
         if (undoInterface instanceof TransMeta)
         {
-            SpoonGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
+            TransGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
             spoonGraph.forceFocus();
         }
         if (undoInterface instanceof JobMeta)
         {
-            ChefGraph chefGraph = findChefGraphOfJob((JobMeta)undoInterface);
-            chefGraph.forceFocus();
+            JobGraph jobGraph = findJobGraphOfJob((JobMeta)undoInterface);
+            jobGraph.forceFocus();
         }
     }
     
@@ -6592,7 +6548,7 @@ public class Spoon implements AddUndoPositionInterface
     public void checkTrans(TransMeta transMeta, boolean only_selected)
     {
         if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
 
         CheckTransProgressDialog ctpd = new CheckTransProgressDialog(shell, transMeta, spoonGraph.getRemarks(), only_selected);
@@ -6608,7 +6564,7 @@ public class Spoon implements AddUndoPositionInterface
     {
         TransMeta transMeta = getActiveTransformation();
         if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
         
         CheckResultDialog crd = new CheckResultDialog(shell, SWT.NONE, spoonGraph.getRemarks());
@@ -6654,7 +6610,7 @@ public class Spoon implements AddUndoPositionInterface
     public void analyseImpact(TransMeta transMeta)
     {
         if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
 
         AnalyseImpactProgressDialog aipd = new AnalyseImpactProgressDialog(shell, transMeta, spoonGraph.getImpact());
@@ -6665,7 +6621,7 @@ public class Spoon implements AddUndoPositionInterface
     public void showLastImpactAnalyses(TransMeta transMeta)
     {
         if (transMeta==null) return;
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
 
         ArrayList rows = new ArrayList();
@@ -6802,7 +6758,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             Document doc = XMLHandler.loadXMLString(xml);
             JobMeta jobMeta = new JobMeta(log, XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep);
-            addChefGraph(jobMeta); // create a new tab
+            addJobGraph(jobMeta); // create a new tab
             refreshGraph();
             refreshTree();
         }
@@ -6827,7 +6783,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void copyTransformationImage(TransMeta transMeta)
     {
-        SpoonGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
+        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
         if (spoonGraph==null) return;
         
         Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
@@ -7274,7 +7230,7 @@ public class Spoon implements AddUndoPositionInterface
                                 					jobMeta.setFilename(optionRepname.toString());
                                 					jobMeta.clearChanged();
                                 					jobMeta.setInternalKettleVariables();
-                                					spoon.addChefGraph(jobMeta);
+                                					spoon.addJobGraph(jobMeta);
                                         		}
                                 			}
                                         }
@@ -7418,7 +7374,7 @@ public class Spoon implements AddUndoPositionInterface
                             JobMeta jobMeta = progressDialog.open();
                             props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
                             jobMeta.clearChanged();
-                            addChefGraph(jobMeta);
+                            addJobGraph(jobMeta);
                         }
                         refreshTree();
                     }
@@ -7442,7 +7398,7 @@ public class Spoon implements AddUndoPositionInterface
                 jobMeta.setFilename(lastUsedFile.getFilename());
                 jobMeta.clearChanged();
                 props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), null, false, null);
-                addChefGraph(jobMeta);
+                addJobGraph(jobMeta);
             }
             refreshTree();
         }                       
@@ -7927,23 +7883,23 @@ public class Spoon implements AddUndoPositionInterface
         executionConfiguration.setLocalPreviewing(preview);
         
         executionConfiguration.setLogLevel(log.getLogLevel());
-        // executionConfiguration.setSafeModeEnabled( spoonLog!=null && spoonLog.isSafeModeChecked() );
+        // executionConfiguration.setSafeModeEnabled( transLog!=null && transLog.isSafeModeChecked() );
         
         TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
         if (dialog.open())
         {
-            addSpoonLog(transMeta, !executionConfiguration.isLocalPreviewing());
-            SpoonLog spoonLog = getActiveSpoonLog();
+            addTransLog(transMeta, !executionConfiguration.isLocalPreviewing());
+            TransLog transLog = getActiveTransLog();
             
             if (executionConfiguration.isExecutingLocally())
             {
                 if (executionConfiguration.isLocalPreviewing())
                 {
-                    spoonLog.preview(executionConfiguration);
+                    transLog.preview(executionConfiguration);
                 }
                 else
                 {
-                    spoonLog.start(executionConfiguration);
+                    transLog.start(executionConfiguration);
                 }
             }
             else if(executionConfiguration.isExecutingRemotely())
@@ -7976,9 +7932,9 @@ public class Spoon implements AddUndoPositionInterface
     
     public void executeJob(JobMeta jobMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
     {
-        addChefLog(jobMeta);
-        ChefLog chefLog = getActiveJobLog();
-        chefLog.startJob(replayDate);
+        addJobLog(jobMeta);
+        JobLog jobLog = getActiveJobLog();
+        jobLog.startJob(replayDate);
     }
     
     public CTabItem findCTabItem(String tabItemText, int objectType)
@@ -8028,11 +7984,11 @@ public class Spoon implements AddUndoPositionInterface
             CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
             if (tabItem==null)
             {
-                SpoonGraph spoonGraph = new SpoonGraph(tabfolder, this, transMeta);
+                TransGraph spoonGraph = new TransGraph(tabfolder, this, transMeta);
                 tabItem = new CTabItem(tabfolder, SWT.CLOSE);
                 tabItem.setText(tabName);
                 tabItem.setToolTipText(Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta)));
-                tabItem.setImage(GUIResource.getInstance().getImageSpoonGraph());
+                tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
                 tabItem.setControl(spoonGraph);
                 
                 tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
@@ -8042,7 +7998,7 @@ public class Spoon implements AddUndoPositionInterface
             // OK, also see if we need to open a new history window.
             if (transMeta.getLogConnection()!=null && !Const.isEmpty(transMeta.getLogTable()))
             {
-                addSpoonHistory(transMeta, false);
+                addTransHistory(transMeta, false);
             }
             // keep the focus on the graph
             tabfolder.setSelection(idx);
@@ -8052,7 +8008,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void addChefGraph(JobMeta jobMeta)
+    public void addJobGraph(JobMeta jobMeta)
     {
         String key = addJob(jobMeta);
         if (key!=null)
@@ -8065,21 +8021,21 @@ public class Spoon implements AddUndoPositionInterface
             CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
             if (tabItem==null)
             {
-                ChefGraph chefGraph = new ChefGraph(tabfolder, this, jobMeta);
+                JobGraph jobGraph = new JobGraph(tabfolder, this, jobMeta);
                 tabItem = new CTabItem(tabfolder, SWT.CLOSE);
                 tabItem.setText(tabName);
                 tabItem.setToolTipText(Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName(jobMeta)));
-                tabItem.setImage(GUIResource.getInstance().getImageChefGraph());
-                tabItem.setControl(chefGraph);
+                tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
+                tabItem.setControl(jobGraph);
                 
-                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefGraph, TabMapEntry.OBJECT_TYPE_JOB_GRAPH));
+                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, jobGraph, TabMapEntry.OBJECT_TYPE_JOB_GRAPH));
             }
             int idx = tabfolder.indexOf(tabItem);
             
             // OK, also see if we need to open a new history window.
             if (jobMeta.getLogConnection()!=null && !Const.isEmpty(jobMeta.getLogTable()))
             {
-                addChefHistory(jobMeta, false);
+                addJobHistory(jobMeta, false);
             }
             // keep the focus on the graph
             tabfolder.setSelection(idx);
@@ -8173,12 +8129,12 @@ public class Spoon implements AddUndoPositionInterface
         return "Slave server: "+slaveServer.getName();
     }
 
-    public void addSpoonLog(TransMeta transMeta)
+    public void addTransLog(TransMeta transMeta)
     {
-        addSpoonLog(transMeta, true);
+        addTransLog(transMeta, true);
     } 
 
-    public void addSpoonLog(TransMeta transMeta, boolean setActive)
+    public void addTransLog(TransMeta transMeta, boolean setActive)
     {
         // See if there already is a tab for this log
         // If no, add it
@@ -8189,26 +8145,26 @@ public class Spoon implements AddUndoPositionInterface
         CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
         if (tabItem==null)
         {
-            SpoonLog spoonLog = new SpoonLog(tabfolder, this, transMeta);
+            TransLog transLog = new TransLog(tabfolder, this, transMeta);
             tabItem = new CTabItem(tabfolder, SWT.CLOSE);
             tabItem.setText(tabName);
             tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip", makeTransGraphTabName(transMeta)));
-            tabItem.setControl(spoonLog);
+            tabItem.setControl(transLog);
 
             // If there is an associated history window, we want to keep that one up-to-date as well.
             //
-            SpoonHistory spoonHistory = findSpoonHistoryOfTransformation(transMeta);
+            TransHistory transHistory = findTransHistoryOfTransformation(transMeta);
             CTabItem historyItem = findCTabItem(makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
             
-            if (spoonHistory!=null && historyItem!=null)
+            if (transHistory!=null && historyItem!=null)
             {
-                SpoonHistoryRefresher spoonHistoryRefresher = new SpoonHistoryRefresher(historyItem, spoonHistory);
-                tabfolder.addSelectionListener(spoonHistoryRefresher);
-                spoonLog.setSpoonHistoryRefresher(spoonHistoryRefresher);
+                TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(historyItem, transHistory);
+                tabfolder.addSelectionListener(transHistoryRefresher);
+                transLog.setTransHistoryRefresher(transHistoryRefresher);
             }
 
             
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonLog, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, transLog, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG));
         }
         if ( setActive )
         {
@@ -8217,7 +8173,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void addChefLog(JobMeta jobMeta)
+    public void addJobLog(JobMeta jobMeta)
     {
         // See if there already is a tab for this log
         // If no, add it
@@ -8227,33 +8183,33 @@ public class Spoon implements AddUndoPositionInterface
         CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_LOG);
         if (tabItem==null)
         {
-            ChefLog chefLog = new ChefLog(tabfolder, this, jobMeta);
+            JobLog jobLog = new JobLog(tabfolder, this, jobMeta);
             tabItem = new CTabItem(tabfolder, SWT.CLOSE);
             tabItem.setText(tabName);
             tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogJobView.Tooltip", makeJobGraphTabName(jobMeta)));
-            tabItem.setControl(chefLog);
+            tabItem.setControl(jobLog);
 
             // If there is an associated history window, we want to keep that one up-to-date as well.
             //
-            ChefHistory chefHistory = findChefHistoryOfJob(jobMeta);
+            JobHistory jobHistory = findJobHistoryOfJob(jobMeta);
             CTabItem historyItem = findCTabItem(makeJobHistoryTabName(jobMeta), TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
             
-            if (chefHistory!=null && historyItem!=null)
+            if (jobHistory!=null && historyItem!=null)
             {
-                ChefHistoryRefresher chefHistoryRefresher = new ChefHistoryRefresher(historyItem, chefHistory);
-                tabfolder.addSelectionListener(chefHistoryRefresher);
-                chefLog.setChefHistoryRefresher(chefHistoryRefresher);
+                JobHistoryRefresher jobHistoryRefresher = new JobHistoryRefresher(historyItem, jobHistory);
+                tabfolder.addSelectionListener(jobHistoryRefresher);
+                jobLog.setJobHistoryRefresher(jobHistoryRefresher);
             }
 
             
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefLog, TabMapEntry.OBJECT_TYPE_JOB_LOG));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, jobLog, TabMapEntry.OBJECT_TYPE_JOB_LOG));
         }
         int idx = tabfolder.indexOf(tabItem);
         tabfolder.setSelection(idx);
     }
 
     
-    public void addSpoonHistory(TransMeta transMeta, boolean select)
+    public void addTransHistory(TransMeta transMeta, boolean select)
     {
         // See if there already is a tab for this history view
         // If no, add it
@@ -8263,23 +8219,23 @@ public class Spoon implements AddUndoPositionInterface
         CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
         if (tabItem==null)
         {
-            SpoonHistory spoonHistory = new SpoonHistory(tabfolder, this, transMeta);
+            TransHistory transHistory = new TransHistory(tabfolder, this, transMeta);
             tabItem = new CTabItem(tabfolder, SWT.CLOSE);
             tabItem.setText(tabName);
             tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryTransView.Tooltip", makeTransGraphTabName(transMeta)));
-            tabItem.setControl(spoonHistory);
+            tabItem.setControl(transHistory);
             
             // If there is an associated log window that's open, find it and add a refresher
-            SpoonLog spoonLog = findSpoonLogOfTransformation(transMeta);
-            if (spoonLog!=null)
+            TransLog transLog = findTransLogOfTransformation(transMeta);
+            if (transLog!=null)
             {
-                SpoonHistoryRefresher spoonHistoryRefresher = new SpoonHistoryRefresher(tabItem, spoonHistory);
-                tabfolder.addSelectionListener(spoonHistoryRefresher);
-                spoonLog.setSpoonHistoryRefresher(spoonHistoryRefresher);
+                TransHistoryRefresher transHistoryRefresher = new TransHistoryRefresher(tabItem, transHistory);
+                tabfolder.addSelectionListener(transHistoryRefresher);
+                transLog.setTransHistoryRefresher(transHistoryRefresher);
             }
-            spoonHistory.markRefreshNeeded(); // will refresh when first selected
+            transHistory.markRefreshNeeded(); // will refresh when first selected
                         
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonHistory, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, transHistory, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY));
         }
         if (select)
         {
@@ -8288,7 +8244,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void addChefHistory(JobMeta jobMeta, boolean select)
+    public void addJobHistory(JobMeta jobMeta, boolean select)
     {
         // See if there already is a tab for this history view
         // If no, add it
@@ -8298,23 +8254,23 @@ public class Spoon implements AddUndoPositionInterface
         CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
         if (tabItem==null)
         {
-            ChefHistory chefHistory = new ChefHistory(tabfolder, this, jobMeta);
+            JobHistory jobHistory = new JobHistory(tabfolder, this, jobMeta);
             tabItem = new CTabItem(tabfolder, SWT.CLOSE);
             tabItem.setText(tabName);
             tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryJobView.Tooltip", makeJobGraphTabName(jobMeta)));
-            tabItem.setControl(chefHistory);
+            tabItem.setControl(jobHistory);
             
             // If there is an associated log window that's open, find it and add a refresher
-            ChefLog chefLog = findChefLogOfJob(jobMeta);
-            if (chefLog!=null)
+            JobLog jobLog = findJobLogOfJob(jobMeta);
+            if (jobLog!=null)
             {
-                ChefHistoryRefresher chefHistoryRefresher = new ChefHistoryRefresher(tabItem, chefHistory);
-                tabfolder.addSelectionListener(chefHistoryRefresher);
-                chefLog.setChefHistoryRefresher(chefHistoryRefresher);
+                JobHistoryRefresher jobHistoryRefresher = new JobHistoryRefresher(tabItem, jobHistory);
+                tabfolder.addSelectionListener(jobHistoryRefresher);
+                jobLog.setJobHistoryRefresher(jobHistoryRefresher);
             }
-            chefHistory.markRefreshNeeded(); // will refresh when first selected
+            jobHistory.markRefreshNeeded(); // will refresh when first selected
                         
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, chefHistory, TabMapEntry.OBJECT_TYPE_JOB_HISTORY));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, jobHistory, TabMapEntry.OBJECT_TYPE_JOB_HISTORY));
         }
         if (select)
         {
@@ -8346,20 +8302,20 @@ public class Spoon implements AddUndoPositionInterface
             Object managedObject = entry.getObject().getManagedObject();
             if (managedObject!=null)
             {
-                if (entry.getObject() instanceof SpoonGraph)
+                if (entry.getObject() instanceof TransGraph)
                 {
                     entry.getTabItem().setText( makeTransGraphTabName((TransMeta) managedObject) );
                     entry.getTabItem().setToolTipText( Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName((TransMeta) managedObject)) );
                 }
-                else if (entry.getObject() instanceof SpoonLog)       entry.getTabItem().setText( makeLogTabName((TransMeta) managedObject) );
-                else if (entry.getObject() instanceof SpoonHistory)   entry.getTabItem().setText( makeHistoryTabName((TransMeta) managedObject) );
-                else if (entry.getObject() instanceof ChefGraph)
+                else if (entry.getObject() instanceof TransLog)       entry.getTabItem().setText( makeLogTabName((TransMeta) managedObject) );
+                else if (entry.getObject() instanceof TransHistory)   entry.getTabItem().setText( makeHistoryTabName((TransMeta) managedObject) );
+                else if (entry.getObject() instanceof JobGraph)
                 {
                     entry.getTabItem().setText( makeJobGraphTabName((JobMeta) managedObject) );
                     entry.getTabItem().setToolTipText( Messages.getString("Spoon.TabJob.Tooltip", makeJobGraphTabName((JobMeta) managedObject)) );
                 }
-                else if (entry.getObject() instanceof ChefLog)        entry.getTabItem().setText( makeJobLogTabName( (JobMeta) managedObject ) );
-                else if (entry.getObject() instanceof ChefHistory)    entry.getTabItem().setText( makeJobHistoryTabName((JobMeta) managedObject) );
+                else if (entry.getObject() instanceof JobLog)        entry.getTabItem().setText( makeJobLogTabName( (JobMeta) managedObject ) );
+                else if (entry.getObject() instanceof JobHistory)    entry.getTabItem().setText( makeJobHistoryTabName((JobMeta) managedObject) );
             }
 
             String after = entry.getTabItem().getText();
@@ -8371,13 +8327,13 @@ public class Spoon implements AddUndoPositionInterface
                 tabMap.put(after, entry);
                 
                 // Also change the transformation map
-                if (entry.getObject() instanceof SpoonGraph)
+                if (entry.getObject() instanceof TransGraph)
                 {
                     transformationMap.remove(before);
                     transformationMap.put(after, entry.getObject().getManagedObject());
                 }
                 // Also change the job map
-                if (entry.getObject() instanceof ChefGraph)
+                if (entry.getObject() instanceof JobGraph)
                 {
                     jobMap.remove(before);
                     jobMap.put(after, entry.getObject().getManagedObject());
@@ -8425,7 +8381,7 @@ public class Spoon implements AddUndoPositionInterface
     public void pasteSteps()
     {
         // Is there an active SpoonGraph?
-        SpoonGraph spoonGraph = getActiveSpoonGraph();
+        TransGraph spoonGraph = getActiveSpoonGraph();
         if (spoonGraph==null) return;
         TransMeta transMeta = spoonGraph.getTransMeta();
         
@@ -8486,7 +8442,7 @@ public class Spoon implements AddUndoPositionInterface
                         // Check if start is already on the canvas...
                         if (jobMeta.findStart()!=null) 
                         {
-                            ChefGraph.showOnlyStartOnceMessage(shell);
+                            JobGraph.showOnlyStartOnceMessage(shell);
                             return null;
                         }
                         ((JobEntrySpecial)jei).setStart(true);
@@ -8539,7 +8495,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Title"), Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title"), Messages.getString("Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
     }
@@ -8926,7 +8882,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         
         // Then delete all the entries with name:
-        JobEntryCopy je[] = jobMeta.getAllChefGraphEntries(name);
+        JobEntryCopy je[] = jobMeta.getAllJobGraphEntries(name);
         int jex[] = new int[je.length];
         for (int i=0;i<je.length;i++) jex[i] = jobMeta.indexOfJobEntry(je[i]);
 
@@ -9102,7 +9058,7 @@ public class Spoon implements AddUndoPositionInterface
                     saveJobFile(jobMeta);
                 }
                 
-                addChefGraph(jobMeta);
+                addJobGraph(jobMeta);
                 return true;
             }
 

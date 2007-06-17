@@ -44,7 +44,6 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.chef.JobTracker;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.job.Job;
@@ -54,6 +53,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.spoon.job.JobTracker;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.Const;

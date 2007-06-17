@@ -14,7 +14,7 @@
  **********************************************************************/
 
  
-package org.pentaho.di.chef;
+package org.pentaho.di.spoon.job;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -92,7 +92,7 @@ import org.pentaho.di.trans.TransMeta;
  *
  */
 
-public class ChefGraph extends Composite implements Redrawable, TabItemInterface
+public class JobGraph extends Composite implements Redrawable, TabItemInterface
 {
 	private static final int HOP_SEL_MARGIN = 9;
 
@@ -137,7 +137,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
     private Menu mPopAD;
 
 
-	public ChefGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
+	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
 		super(par, SWT.NONE);
 		shell = par.getShell();
@@ -182,7 +182,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 		
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				ChefGraph.this.paintControl(e);
+				JobGraph.this.paintControl(e);
 			}
 		});
 
@@ -863,7 +863,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
      */
     public void renameJobEntry(JobEntryCopy jobEntry, String newName)
     {
-        JobEntryCopy[] jobs = jobMeta.getAllChefGraphEntries(newName);
+        JobEntryCopy[] jobs = jobMeta.getAllJobGraphEntries(newName);
         if (jobs != null && jobs.length > 0)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
@@ -1636,7 +1636,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 			{
 				JobMeta newJobMeta = new JobMeta(log, spoon.rep, exactJobname, entry.getDirectory());
 				newJobMeta.clearChanged();
-				spoon.addChefGraph(newJobMeta);
+				spoon.addJobGraph(newJobMeta);
 			}
 			catch(Throwable e)
 			{
@@ -1664,7 +1664,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
                 
 				newJobMeta.setFilename( exactFilename );
                 newJobMeta.clearChanged();
-                spoon.addChefGraph(newJobMeta);
+                spoon.addJobGraph(newJobMeta);
 			}
 			catch(Throwable e)
 			{
@@ -2242,7 +2242,7 @@ public class ChefGraph extends Composite implements Redrawable, TabItemInterface
 	
 	public String toString()
 	{
-		return Chef.APP_NAME;
+		return Spoon.APP_NAME;
 	}
 
     /**

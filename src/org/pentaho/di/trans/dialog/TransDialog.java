@@ -221,7 +221,7 @@ public class TransDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageSpoonGraph());
+		shell.setImage((Image) GUIResource.getInstance().getImageTransGraph());
 	
 		
 		lsMod = new ModifyListener() 

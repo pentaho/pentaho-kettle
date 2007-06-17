@@ -1,4 +1,4 @@
-package org.pentaho.di.chef;
+package org.pentaho.di.spoon.job;
 
 import org.pentaho.di.i18n.BaseMessages;
 

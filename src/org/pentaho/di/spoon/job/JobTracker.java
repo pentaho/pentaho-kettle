@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.pentaho.di.chef;
+package org.pentaho.di.spoon.job;
 
 import java.util.ArrayList;
 import java.util.List;

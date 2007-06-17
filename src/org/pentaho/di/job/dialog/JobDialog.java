@@ -179,7 +179,7 @@ public class JobDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageChefGraph());
+		shell.setImage((Image) GUIResource.getInstance().getImageJobGraph());
 		
 		lsMod = new ModifyListener() 
 		{

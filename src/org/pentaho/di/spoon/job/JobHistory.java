@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
  
-package org.pentaho.di.spoon;
+package org.pentaho.di.spoon.job;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,41 +32,38 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
-
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.spoon.Spoon;
+import org.pentaho.di.spoon.TabItemInterface;
 
 
 /**
- * SpoonHistory handles the display of the historical information regarding earlier runs of this transformation.
- * The idea is that this Composite is only populated when after loading of a transformation, we find a connection and logging table.
+ * ChefHistory handles the display of the historical information regarding earlier runs of this job.
+ * The idea is that this Composite is only populated when after loading of a job, we find a connection and logging table.
  * We then read from this table and populate the grid and log.
  *  
- * @see org.pentaho.di.spoon.Spoon
+ * @see Spoon
  * @author Matt
  * @since  16-mar-2006
  */
-public class SpoonHistory extends Composite implements TabItemInterface
+public class JobHistory extends Composite implements TabItemInterface
 {
-    // private static final LogWriter log = LogWriter.getInstance();
-    
-    private Spoon spoon;
-    private TransMeta transMeta;
-
-    private ColumnInfo[] colinf;	
+	private ColumnInfo[] colinf;	
 	
 	private Text   wText;
 	private Button wRefresh, wReplay;
@@ -74,23 +71,24 @@ public class SpoonHistory extends Composite implements TabItemInterface
     
 	private FormData fdText, fdSash, fdRefresh, fdReplay; 
 	
+	private Spoon spoon;
 
     private ArrayList rowList;
-
-	// private final SpoonLog spoonLog;
 
 	private final Shell shell;
 
 	private boolean refreshNeeded = true;
 	
 	private Object refreshNeededLock = new Object();
+
+    private JobMeta jobMeta;
 	
-	public SpoonHistory(Composite parent, final Spoon spoon, final TransMeta transMeta)
+	public JobHistory(Composite parent, Spoon spoon, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		this.spoon = spoon;
 		this.shell = parent.getShell();
-        this.transMeta = transMeta;
+        this.jobMeta = jobMeta;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -109,21 +107,21 @@ public class SpoonHistory extends Composite implements TabItemInterface
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
-		
+        
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
         
         wFields=new TableView(sash, 
@@ -138,10 +136,9 @@ public class SpoonHistory extends Composite implements TabItemInterface
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
-        wText.setText(Messages.getString("SpoonHistory.PleaseRefresh.Message"));
 		
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(Messages.getString("SpoonHistory.Button.Refresh")); //$NON-NLS-1$
+		wRefresh.setText(Messages.getString("ChefHistory.Button.Refresh")); //$NON-NLS-1$
 
 		fdRefresh    = new FormData(); 
 		fdRefresh.left   = new FormAttachment(15, 0);  
@@ -149,7 +146,7 @@ public class SpoonHistory extends Composite implements TabItemInterface
 		wRefresh.setLayoutData(fdRefresh);
 		
 		wReplay = new Button(this, SWT.PUSH);
-		wReplay.setText(Messages.getString("SpoonHistory.Button.Replay")); //$NON-NLS-1$
+		wReplay.setText(Messages.getString("ChefHistory.Button.Replay")); //$NON-NLS-1$
 
 		fdReplay    = new FormData(); 
 		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
@@ -211,74 +208,74 @@ public class SpoonHistory extends Composite implements TabItemInterface
         );
 	}
 
-	private void setupReplayListener() {
+	private void setupReplayListener() 
+    {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
 			final SimpleDateFormat df = new SimpleDateFormat(ValueMeta.DEFAULT_DATE_FORMAT_MASK);
 
-			public void widgetSelected(SelectionEvent e) {
-				int idx = wFields.getSelectionIndex();
-				if (idx >= 0) {
-					String fields[] = wFields.getItem(idx);
-					String dateString = fields[12];
-					try {
-						Date replayDate;
-                        if (Const.isEmpty(dateString)) replayDate = new Date();
-                        else replayDate = df.parse(dateString);
-						spoon.executeTransformation(transMeta, true, false, false, false, replayDate);
-					} catch (ParseException e1) {
-						new ErrorDialog(shell, 
-								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
-								Messages.getString("SpoonHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
-					}
-				}
-			}
+			public void widgetSelected(SelectionEvent e)
+            {
+                int idx = wFields.getSelectionIndex();
+                if (idx >= 0)
+                {
+                    String fields[] = wFields.getItem(idx);
+                    String dateString = fields[12];
+                    if (dateString == null || dateString.equals(Const.NULL_STRING))
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                        mb.setMessage(Messages.getString("ChefHistory.Error.ReplayingJob") //$NON-NLS-1$
+                                + Const.CR + Messages.getString("ChefHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
+                        mb.setText(Messages.getString("ChefHistory.ERROR")); //$NON-NLS-1$
+                        mb.open();
+                        return;
+                    }
+                    try
+                    {
+                        Date date = df.parse(dateString);
+                        spoon.executeJob(jobMeta, true, false, false, false, date);
+                    }
+                    catch (ParseException e1)
+                    {
+                        new ErrorDialog(shell, Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
+                                Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+                    }
+                }
+            }
 		};
 	
         wReplay.addSelectionListener(lsReplay);
 	}
 	
     /**
-     * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
+     * Refreshes the history window in Spoon: reads entries from the specified log table in the Job Settings dialog.
      */
-	private void refreshHistory()
+	public void refreshHistory()
 	{
-        shell.getDisplay().asyncExec(
-            new Runnable()
-            {
-                public void run()
-                {
-                    getHistoryData();                
-                }
-            }
-        );
-    }
-    
-    public void getHistoryData()
-    {
-        // See if there is a transformation loaded that has a connection table specified.
-        if (transMeta!=null && transMeta.getName()!=null && transMeta.getName().length()>0)
+        // See if there is a job loaded that has a connection table specified.
+        if (jobMeta!=null && !Const.isEmpty(jobMeta.getName()))
         {
-            if (transMeta.getLogConnection()!=null)
+            if (jobMeta.getLogConnection()!=null)
             {
-                if (transMeta.getLogTable()!=null && transMeta.getLogTable().length()>0)
+                if (!Const.isEmpty(jobMeta.getLogTable()))
                 {
                     Database database = null;
                     try
                     {
                         // open a connection
-                        database = new Database(transMeta.getLogConnection());
+                        database = new Database(jobMeta.getLogConnection());
                         database.connect();
                         
                         RowMetaAndData params = new RowMetaAndData();
-                        params.addValue(new ValueMeta("transname", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
+                        params.addValue(new ValueMeta("transname", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
+                        ResultSet resultSet = database.openQuery("SELECT * FROM "+jobMeta.getLogTable()+" WHERE JOBNAME = ? ORDER BY ID_JOB desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
                         
                         rowList = new ArrayList();
                         Object[] rowData = database.getRow(resultSet);
                         while (rowData!=null)
                         {
-                            rowList.add(new RowMetaAndData(database.getReturnRowMeta(), rowData));
+                            RowMetaInterface rowMeta = database.getReturnRowMeta();
+                            rowList.add(new RowMetaAndData(rowMeta, rowData));
                             rowData = database.getRow(resultSet);
                         }
                         database.closeQuery(resultSet);
@@ -292,7 +289,7 @@ public class SpoonHistory extends Composite implements TabItemInterface
                             {
                                 RowMetaAndData row = (RowMetaAndData) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                String batchID = row.getString("ID_BATCH", "");
+                                String batchID = row.getString("ID_JOB", "");
                                 if(batchID != null)
                                 item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 2, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
@@ -322,11 +319,7 @@ public class SpoonHistory extends Composite implements TabItemInterface
                     }
                     catch(KettleException e)
                     {
-                        StringBuffer message = new StringBuffer();
-                        message.append(Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
-                        message.append(e.toString()).append(Const.CR).append(Const.CR);
-                        message.append(Const.getStackTracker(e)).append(Const.CR);
-                        wText.setText(message.toString());
+                        new ErrorDialog(this.getShell(), Messages.getString("ChefHistory.Error.GettingLoggingInfo"), Messages.getString("ChefHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally
@@ -365,13 +358,22 @@ public class SpoonHistory extends Composite implements TabItemInterface
         {
             // OK, grab this one from the buffer...
             RowMetaAndData row = (RowMetaAndData) rowList.get(nr);
+            String logging;
             try
             {
-                wText.setText(row.getString("LOG_FIELD", ""));
+                logging = row.getString("LOG_FIELD", ""); //$NON-NLS-1$ //$NON-NLS-2$
             }
             catch (KettleValueException e)
             {
-                // Should never happen
+                logging = Const.getStackTracker(e);
+            } 
+            if (logging!=null) 
+            {
+                wText.setText(logging);
+            }
+            else
+            {
+                wText.setText(""); //$NON-NLS-1$
             }
         }
     }
@@ -400,43 +402,60 @@ public class SpoonHistory extends Composite implements TabItemInterface
 	}
 
     /**
-     * @return the transMeta
+     * @return the jobMeta
      */
-    public TransMeta getTransMeta()
+    public JobMeta getJobMeta()
     {
-        return transMeta;
+        return jobMeta;
     }
 
     /**
-     * @param transMeta the transMeta to set
+     * @param jobMeta the jobMeta to set
      */
-    public void setTransMeta(TransMeta transMeta)
+    public void setJobMeta(JobMeta jobMeta)
     {
-        this.transMeta = transMeta;
+        this.jobMeta = jobMeta;
+    }
+
+    public boolean applyChanges()
+    {
+        return false;
     }
 
     public boolean canBeClosed()
     {
-        return true; // You can close this one at any time.
-    }
-    
-    public boolean applyChanges()
-    {
         return true;
-    }
-
-    public int showChangedWarning()
-    {
-        return SWT.NONE;
     }
 
     public Object getManagedObject()
     {
-        return transMeta;
+        return null;
     }
-    
+
     public boolean hasContentChanged()
     {
-        return refreshNeeded;
+        return false;
     }
+
+    public int showChangedWarning()
+    {
+        return 0;
+    }
+
+    /**
+     * @return the spoon
+     */
+    public Spoon getSpoon()
+    {
+        return spoon;
+    }
+
+    /**
+     * @param spoon the spoon to set
+     */
+    public void setSpoon(Spoon spoon)
+    {
+        this.spoon = spoon;
+    }
+
 }

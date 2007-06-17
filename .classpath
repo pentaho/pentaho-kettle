@@ -70,6 +70,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/derby.jar"/>
 	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="OLD_TEST/libext/junit.jar"/>
-	<classpathentry kind="lib" path="test/libext/kettle.jar"/>
+	<classpathentry kind="lib" path="test/libext/kettle.jar" sourcepath="KEEP_OUT"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

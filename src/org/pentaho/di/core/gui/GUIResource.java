@@ -99,7 +99,7 @@ public class GUIResource
     private Image     imagePentaho;
     private Image     imageVariable;
     private Image     imageSpoonGraph;
-    private Image     imageChefGraph;
+    private Image     imageJobGraph;
     
     private Image     imageSplash;
 
@@ -239,7 +239,7 @@ public class GUIResource
             imagePentaho     .dispose();
             imageVariable    .dispose();
             imageSpoonGraph  .dispose();
-            imageChefGraph   .dispose();
+            imageJobGraph   .dispose();
             
             disposeImage(imageEditOptionButton);
             disposeImage(imageResetOptionButton);
@@ -388,7 +388,7 @@ public class GUIResource
         // Makes transparent images "on the fly"
         //
         imageSpoonGraph = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png")), new RGB(255,255,255));
-        imageChefGraph  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
+        imageJobGraph  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255,255,255));
         imageLogoSmall  = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")), new RGB(255,255,255));
         imageArrow      = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
         imageBanner     = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
@@ -862,14 +862,14 @@ public class GUIResource
         return imageVariable;
     }
 
-    public Image getImageSpoonGraph()
+    public Image getImageTransGraph()
     {
         return imageSpoonGraph;
     }
     
-    public Image getImageChefGraph()
+    public Image getImageJobGraph()
     {
-        return imageChefGraph;
+        return imageJobGraph;
     }
 
     public Image getEditOptionButton()

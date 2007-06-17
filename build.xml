@@ -187,7 +187,7 @@
 	  	<jar jarfile="${lib}/kettle3.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ../build_version.txt"
-	  	     excludes="**/Thumbs.db"
+	  	     excludes="**/Thumbs.db **/kettle.jar"
 	  		/>
 	  	
 

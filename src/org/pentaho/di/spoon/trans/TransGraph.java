@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
-package org.pentaho.di.spoon;
+package org.pentaho.di.spoon.trans;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -76,6 +76,10 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.spoon.Messages;
+import org.pentaho.di.spoon.Spoon;
+import org.pentaho.di.spoon.TabItemInterface;
+import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
@@ -97,7 +101,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
  * @since 17-mei-2003
  * 
  */
-public class SpoonGraph extends Composite implements Redrawable, TabItemInterface
+public class TransGraph extends Composite implements Redrawable, TabItemInterface
 {
     private static final LogWriter log = LogWriter.getInstance();
     private static final int HOP_SEL_MARGIN = 9;
@@ -167,7 +171,7 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
      */
     private boolean impactFinished;
 
-    public SpoonGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
+    public TransGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
     {
         super(parent, SWT.NONE);
         this.shell = parent.getShell();
@@ -221,7 +225,7 @@ public class SpoonGraph extends Composite implements Redrawable, TabItemInterfac
         {
             public void paintControl(PaintEvent e)
             {
-                if (!spoon.isStopped()) SpoonGraph.this.paintControl(e);
+                if (!spoon.isStopped()) TransGraph.this.paintControl(e);
             }
         });
 

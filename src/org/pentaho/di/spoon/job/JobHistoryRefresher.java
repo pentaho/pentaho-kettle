@@ -1,22 +1,22 @@
-package org.pentaho.di.spoon;
+package org.pentaho.di.spoon.job;
 
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
-public class SpoonHistoryRefresher implements SelectionListener {
+public class JobHistoryRefresher implements SelectionListener {
 
 	private final CTabItem tiTabsHist;
-	private final SpoonHistory spoonhist;
+	private final JobHistory chefHist;
 
-	public SpoonHistoryRefresher(CTabItem tiTabsHist, SpoonHistory spoonhist) {
+	public JobHistoryRefresher(CTabItem tiTabsHist, JobHistory chefHist) {
 		this.tiTabsHist = tiTabsHist;
-		this.spoonhist = spoonhist;
+		this.chefHist = chefHist;
 	}
 
 	public void widgetSelected(SelectionEvent selectionEvent) {
 		if(selectionEvent.item == tiTabsHist)
-			spoonhist.refreshHistoryIfNeeded();
+			chefHist.refreshHistoryIfNeeded();
 	}
 
 	public void widgetDefaultSelected(SelectionEvent selectionEvent) {
@@ -25,7 +25,7 @@ public class SpoonHistoryRefresher implements SelectionListener {
 	
 	public void markRefreshNeeded()
 	{
-		spoonhist.markRefreshNeeded();
+		chefHist.markRefreshNeeded();
 	}
 
 }

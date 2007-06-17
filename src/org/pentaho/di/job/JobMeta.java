@@ -1607,7 +1607,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         return newname;
     }
 
-    public JobEntryCopy[] getAllChefGraphEntries(String name)
+    public JobEntryCopy[] getAllJobGraphEntries(String name)
     {
         int count = 0;
         for (int i = 0; i < nrJobEntries(); i++)

@@ -18,7 +18,6 @@ package org.pentaho.di.job;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.pentaho.di.chef.JobTracker;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
@@ -31,6 +30,7 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.spoon.job.JobTracker;
 import org.pentaho.di.trans.StepLoader;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;

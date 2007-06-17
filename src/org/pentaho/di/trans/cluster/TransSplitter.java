@@ -738,8 +738,37 @@ public class TransSplitter
                             // --> Add original step to the slave transformation(s)
                             //
                              */
+                            // 
+                            // Now we have to explain to the slaveStep that it has to source from previous
+                            //
+                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                if (!slaveServer.isMaster())
+                                {
+                                    TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
+                                    StepMeta slaveStep = slave.findStep(originalStep.getName());
+                                    String infoStepNames[] = slaveStep.getStepMetaInterface().getInfoSteps();
+                                    if (infoStepNames!=null)
+                                    {
+                                        StepMeta is[] = new StepMeta[infoStepNames.length];
+                                        for (int n=0;n<infoStepNames.length;n++)
+                                        {
+                                            is[n] = slave.findStep(infoStepNames[n]); // OK, info steps moved to the slave steps
+                                            
+                                            // Hang on... is there a hop to the previous step?
+                                            if (slave.findTransHop(is[n], slaveStep)==null)
+                                            {
+                                                TransHopMeta infoHop = new TransHopMeta(is[n], slaveStep);
+                                                slave.addTransHop(infoHop);
+                                            }
+                                        }
+                                        slaveStep.getStepMetaInterface().setInfoSteps(infoSteps);
+                                    }
+                                }
+                            }
                         }
-                        
                     }
                 }
             }

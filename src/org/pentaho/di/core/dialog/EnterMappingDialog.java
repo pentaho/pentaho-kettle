@@ -161,7 +161,7 @@ public class EnterMappingDialog extends Dialog
 
         shell.setLayout(formLayout);
         shell.setText(Messages.getString("EnterMappingDialog.Title"));
-		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
 
         int margin = Const.MARGIN;
         int buttonSpace = 90;

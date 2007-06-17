@@ -97,7 +97,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         display = parent.getDisplay();
         shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
-		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
         
         FormLayout formLayout = new FormLayout ();
         formLayout.marginWidth  = Const.FORM_MARGIN;

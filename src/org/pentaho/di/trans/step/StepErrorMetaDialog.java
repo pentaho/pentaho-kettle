@@ -102,7 +102,7 @@ public class StepErrorMetaDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
 		shell.setText(Messages.getString("BaseStepDialog.ErrorHandling.Title.Label"));
-		shell.setImage(GUIResource.getInstance().getImageSpoonGraph());
+		shell.setImage(GUIResource.getInstance().getImageTransGraph());
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...

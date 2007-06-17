@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
-package org.pentaho.di.spoon;
+package org.pentaho.di.spoon.trans;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -52,6 +52,9 @@ import org.pentaho.di.core.dialog.EnterStringsDialog;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.spoon.Messages;
+import org.pentaho.di.spoon.Spoon;
+import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.trans.Trans;
@@ -81,7 +84,7 @@ import org.pentaho.di.core.widget.TableView;
  * @author Matt
  * @since  17 may 2003
  */
-public class SpoonLog extends Composite implements TabItemInterface
+public class TransLog extends Composite implements TabItemInterface
 {
     private static final LogWriter log = LogWriter.getInstance();
     
@@ -134,7 +137,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 
     private FormData fdStop;    
 
-	public SpoonLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
+	public TransLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
 		super(parent, SWT.NONE);
 		shell = parent.getShell();
@@ -704,7 +707,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 
 	private boolean refresh_busy;
 
-	private SpoonHistoryRefresher spoonHistoryRefresher;
+	private TransHistoryRefresher spoonHistoryRefresher;
 
 	private void refreshView()
 	{
@@ -987,7 +990,7 @@ public class SpoonLog extends Composite implements TabItemInterface
 		return running;
 	}
 
-	public void setSpoonHistoryRefresher(SpoonHistoryRefresher spoonHistoryRefresher)
+	public void setTransHistoryRefresher(TransHistoryRefresher spoonHistoryRefresher)
 	{
 		this.spoonHistoryRefresher = spoonHistoryRefresher;
 	}

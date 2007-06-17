@@ -14,7 +14,7 @@
  **********************************************************************/
 
  
-package org.pentaho.di.chef;
+package org.pentaho.di.spoon.job;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -46,9 +46,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
@@ -56,14 +63,6 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.dialog.LogSettingsDialog;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
-import org.pentaho.di.core.widget.TreeMemory;
 
 
 
@@ -74,7 +73,7 @@ import org.pentaho.di.core.widget.TreeMemory;
  * @since 17-05-2003
  *
  */
-public class ChefLog extends Composite implements TabItemInterface
+public class JobLog extends Composite implements TabItemInterface
 {
 	private Color white;
 	private Shell shell;
@@ -103,11 +102,11 @@ public class ChefLog extends Composite implements TabItemInterface
     private int previousNrItems;
     private boolean isRunning;
     private JobTracker jobTracker;
-    private ChefHistoryRefresher chefHistoryRefresher;
+    private JobHistoryRefresher chefHistoryRefresher;
 
     private static final String STRING_CHEF_LOG_TREE_NAME = "Job Log Tree";
     
-	public ChefLog(Composite parent, final Spoon spoon, final JobMeta jobMeta)
+	public JobLog(Composite parent, final Spoon spoon, final JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		
@@ -380,7 +379,7 @@ public class ChefLog extends Composite implements TabItemInterface
 						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath());
                         job.getJobMeta().setArguments(jobMeta.getArguments());
 						
-                        log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
+                        log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
                         // Link to the new jobTracker!
                         jobTracker = job.getJobTracker();
@@ -441,7 +440,7 @@ public class ChefLog extends Composite implements TabItemInterface
                 LocalVariables.getInstance().removeKettleVariables(job.getName());
                 job=null;
                 isRunning=false;
-                log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
             }
         }
         catch(KettleJobException je)
@@ -618,7 +617,7 @@ public class ChefLog extends Composite implements TabItemInterface
             job=null;
             isRunning=false;
             if (chefHistoryRefresher!=null) chefHistoryRefresher.markRefreshNeeded();
-            log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
+            log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		
 		if (!wStart.isDisposed())
@@ -705,7 +704,7 @@ public class ChefLog extends Composite implements TabItemInterface
 	}
     
 
-    public void setChefHistoryRefresher(ChefHistoryRefresher chefHistoryRefresher)
+    public void setJobHistoryRefresher(JobHistoryRefresher chefHistoryRefresher)
     {
         this.chefHistoryRefresher = chefHistoryRefresher;
     }
