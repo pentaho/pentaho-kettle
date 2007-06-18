@@ -53,7 +53,7 @@ public class AllRunTests
         "  <index_tablespace/>"+
         "  <attributes>"+
         "    <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>org.apache.derby.jdbc.EmbeddedDriver</attribute></attribute>"+
-        "    <attribute><code>CUSTOM_URL</code><attribute>jdbc:derby:&#47;experimental_test&#47;derbyOld;create=true</attribute></attribute>"+
+        "    <attribute><code>CUSTOM_URL</code><attribute>jdbc:derby:test&#47;derbyOld;create=true</attribute></attribute>"+
         "  </attributes>"+
         "</connection>";
 
@@ -72,7 +72,7 @@ public class AllRunTests
         "  <index_tablespace/>"+
         "  <attributes>"+
         "    <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>org.apache.derby.jdbc.EmbeddedDriver</attribute></attribute>"+
-        "    <attribute><code>CUSTOM_URL</code><attribute>jdbc:derby:&#47;experimental_test&#47;derbyNew;create=true</attribute></attribute>"+
+        "    <attribute><code>CUSTOM_URL</code><attribute>jdbc:derby:test&#47;derbyNew;create=true</attribute></attribute>"+
         "  </attributes>"+
         "</connection>";
 
@@ -94,7 +94,7 @@ public class AllRunTests
 
     public static void executeStatementsOnOld(String ignoreErrorStatements, String statements) throws Exception
     {
-        EnvUtil.environmentInit();
+        be.ibridge.kettle.core.util.EnvUtil.environmentInit();
         be.ibridge.kettle.core.database.Database target = new be.ibridge.kettle.core.database.Database(getOldTargetDatabase());
         target.connect();
         
