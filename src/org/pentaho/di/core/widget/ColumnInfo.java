@@ -19,6 +19,7 @@ package org.pentaho.di.core.widget;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
@@ -47,7 +48,7 @@ public class ColumnInfo
 	private String   button_text;
 	private boolean  hide_negative;
     
-    private int      valueType;
+    private ValueMetaInterface valueMeta;
 	
 	private SelectionAdapter selButton;
     
@@ -70,7 +71,7 @@ public class ColumnInfo
         allignement=SWT.LEFT;
         readonly=false;
         hide_negative=false;
-        valueType=ValueMetaInterface.TYPE_STRING;
+        valueMeta=new ValueMeta(colname, ValueMetaInterface.TYPE_STRING);
     }
     
     /**
@@ -90,7 +91,7 @@ public class ColumnInfo
 		allignement=SWT.LEFT;
 		readonly=false;
 		hide_negative=false;
-        valueType=ValueMetaInterface.TYPE_STRING;
+        valueMeta=new ValueMeta(colname, ValueMetaInterface.TYPE_STRING);
 	}
 
     /**
@@ -111,11 +112,11 @@ public class ColumnInfo
 		this.hide_negative=false;
         if (numeric)
         {
-            valueType=ValueMetaInterface.TYPE_INTEGER;
+            valueMeta=new ValueMeta(colname, ValueMetaInterface.TYPE_INTEGER);
         }
         else
         {
-            valueType=ValueMetaInterface.TYPE_STRING;
+            valueMeta=new ValueMeta(colname, ValueMetaInterface.TYPE_STRING);
         }
 	}
 
@@ -184,25 +185,10 @@ public class ColumnInfo
         return type;
     }
 
-    /** @deprecated */
-    public String getDefault()
-    {
-        return "";
-    }
-
     public String[] getComboValues()
     {
         String retval[] = combovals; // Copy structure!
         return retval;
-    }
-
-    /**
-     * @deprecated please use isNumeric()
-     * @return true if the column contains a numeric value
-     */
-    public boolean isNumber()
-    {
-        return numeric;
     }
 
     /**
@@ -267,21 +253,19 @@ public class ColumnInfo
 	}
 
     /**
-     * Get the type of value (numeric) in this column: ValueMetaInterface.TYPE_INTEGER is the default.
-     * @return the valueType
+     * @return the valueMeta
      */
-    public int getValueType()
+    public ValueMetaInterface getValueMeta()
     {
-        return valueType;
+        return valueMeta;
     }
 
     /**
-     * Use setValueType() to specify the type of numeric: ValueMetaInterface.TYPE_INTEGER is the default.
-     * @param valueType the valueType to set
+     * @param valueMeta the valueMeta to set
      */
-    public void setValueType(int valueType)
+    public void setValueMeta(ValueMetaInterface valueMeta)
     {
-        this.valueType = valueType;
+        this.valueMeta = valueMeta;
     }
 
     /**

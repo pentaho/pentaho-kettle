@@ -2467,7 +2467,7 @@ public class Spoon implements AddUndoPositionInterface
         if (parent instanceof TransMeta) transMeta = (TransMeta) parent;
         if (transMeta!=null)
         {
-            // Search the corresponding SpoonGraph tab
+            // Search the corresponding TransGraph tab
             CTabItem tabItem = findCTabItem(makeTransGraphTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
             if (tabItem!=null)
             {
@@ -2488,7 +2488,7 @@ public class Spoon implements AddUndoPositionInterface
         if (parent instanceof JobMeta) jobMeta = (JobMeta) parent;
         if (jobMeta!=null)
         {
-            // Search the corresponding SpoonGraph tab
+            // Search the corresponding TransGraph tab
             CTabItem tabItem = findCTabItem(makeJobGraphTabName(jobMeta), TabMapEntry.OBJECT_TYPE_JOB_GRAPH);
             if (tabItem!=null)
             {
@@ -3539,8 +3539,8 @@ public class Spoon implements AddUndoPositionInterface
         if (transMeta.hasLoop(newHop.getFromStep()) || transMeta.hasLoop(newHop.getToStep()))
         {
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-            mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("TransGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("TransGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
             mb.open();
             ok=false;
         }
@@ -3555,7 +3555,7 @@ public class Spoon implements AddUndoPositionInterface
         catch(KettleRowException re)
         {
             // Show warning about mixing rows with conflicting layouts...
-            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Message"), re);
+            new ErrorDialog(shell, Messages.getString("TransGraph.Dialog.HopCausesRowMixing.Title"), Messages.getString("SpoonGraph.Dialog.HopCausesRowMixing.Message"), re);
         }
         
         verifyCopyDistribute(transMeta, newHop.getFromStep());
@@ -3805,7 +3805,7 @@ public class Spoon implements AddUndoPositionInterface
                         TransMeta transMeta = progressDialog.open();
                         transMeta.clearChanged();
                         transMeta.setFilename(objname);
-                        addSpoonGraph(transMeta);
+                        addTransGraph(transMeta);
                         refreshTree();
                         refreshGraph();
                     }
@@ -3919,7 +3919,7 @@ public class Spoon implements AddUndoPositionInterface
                         addMenuLast();
                         transMeta.clearChanged();
                         transMeta.setFilename(name);
-                        addSpoonGraph(transMeta);
+                        addTransGraph(transMeta);
                     }
                     refreshGraph();
                     refreshTree();
@@ -3977,7 +3977,7 @@ public class Spoon implements AddUndoPositionInterface
                 addMenuLast();
                 if (!importfile) transMeta.clearChanged();
                 transMeta.setFilename(fname);
-                addSpoonGraph(transMeta);
+                addTransGraph(transMeta);
 
                 refreshTree();
                 refreshHistory();
@@ -4051,7 +4051,7 @@ public class Spoon implements AddUndoPositionInterface
             nr++;
             transMeta.setName( STRING_TRANSFORMATION+" "+nr ); // rename
         }
-        addSpoonGraph(transMeta);
+        addTransGraph(transMeta);
         refreshTree();
     }
     
@@ -4927,8 +4927,8 @@ public class Spoon implements AddUndoPositionInterface
         TabMapEntry tabMapEntry = (TabMapEntry) tabMap.get(tabText);
         if (tabMapEntry.getObject() instanceof TransGraph)
         {
-            TransGraph spoonGraph = (TransGraph) tabMapEntry.getObject();
-            spoonGraph.redraw();
+            TransGraph transGraph = (TransGraph) tabMapEntry.getObject();
+            transGraph.redraw();
         }
         if (tabMapEntry.getObject() instanceof JobGraph)
         {
@@ -5300,8 +5300,8 @@ public class Spoon implements AddUndoPositionInterface
     
     private void printTransFile(TransMeta transMeta)
     {
-        TransGraph spoonGraph = getActiveSpoonGraph();
-        if (spoonGraph==null) return;
+        TransGraph transGraph = getActiveTransGraph();
+        if (transGraph==null) return;
         
         PrintSpool ps = new PrintSpool();
         Printer printer = ps.getPrinter(shell);
@@ -5309,7 +5309,7 @@ public class Spoon implements AddUndoPositionInterface
         // Create an image of the screen
         Point max = transMeta.getMaximum();
         
-        Image img = spoonGraph.getTransformationImage(printer, max.x, max.y, false);
+        Image img = transGraph.getTransformationImage(printer, max.x, max.y, false);
 
         ps.printImage(shell, img);
         
@@ -5350,7 +5350,7 @@ public class Spoon implements AddUndoPositionInterface
     }
 
     
-    private TransGraph getActiveSpoonGraph()
+    private TransGraph getActiveTransGraph()
     {
         TabMapEntry mapEntry = (TabMapEntry) tabMap.get(tabfolder.getSelection().getText());
         if (mapEntry.getObject() instanceof TransGraph) return (TransGraph) mapEntry.getObject();
@@ -5386,7 +5386,7 @@ public class Spoon implements AddUndoPositionInterface
         return findJobLogOfJob(jobMeta);
     }
     
-    public TransGraph findSpoonGraphOfTransformation(TransMeta transMeta)
+    public TransGraph findTransGraphOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
         Collection collection = tabMap.values();
@@ -5395,8 +5395,8 @@ public class Spoon implements AddUndoPositionInterface
             TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof TransGraph)
             {
-                TransGraph spoonGraph = (TransGraph) mapEntry.getObject();
-                if (spoonGraph.getTransMeta().equals(transMeta)) return spoonGraph;
+                TransGraph transGraph = (TransGraph) mapEntry.getObject();
+                if (transGraph.getTransMeta().equals(transMeta)) return transGraph;
             }
         }
         return null;
@@ -5656,8 +5656,8 @@ public class Spoon implements AddUndoPositionInterface
         // Put what we undo in focus
         if (undoInterface instanceof TransMeta)
         {
-            TransGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
-            spoonGraph.forceFocus();
+            TransGraph transGraph = findTransGraphOfTransformation((TransMeta)undoInterface);
+            transGraph.forceFocus();
         }
         if (undoInterface instanceof JobMeta)
         {
@@ -6089,8 +6089,8 @@ public class Spoon implements AddUndoPositionInterface
         // Put what we redo in focus
         if (undoInterface instanceof TransMeta)
         {
-            TransGraph spoonGraph = findSpoonGraphOfTransformation((TransMeta)undoInterface);
-            spoonGraph.forceFocus();
+            TransGraph transGraph = findTransGraphOfTransformation((TransMeta)undoInterface);
+            transGraph.forceFocus();
         }
         if (undoInterface instanceof JobMeta)
         {
@@ -6548,10 +6548,10 @@ public class Spoon implements AddUndoPositionInterface
     public void checkTrans(TransMeta transMeta, boolean only_selected)
     {
         if (transMeta==null) return;
-        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        if (spoonGraph==null) return;
+        TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+        if (transGraph==null) return;
 
-        CheckTransProgressDialog ctpd = new CheckTransProgressDialog(shell, transMeta, spoonGraph.getRemarks(), only_selected);
+        CheckTransProgressDialog ctpd = new CheckTransProgressDialog(shell, transMeta, transGraph.getRemarks(), only_selected);
         ctpd.open(); // manages the remarks arraylist...
         showLastTransCheck();
     }
@@ -6564,10 +6564,10 @@ public class Spoon implements AddUndoPositionInterface
     {
         TransMeta transMeta = getActiveTransformation();
         if (transMeta==null) return;
-        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        if (spoonGraph==null) return;
+        TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+        if (transGraph==null) return;
         
-        CheckResultDialog crd = new CheckResultDialog(shell, SWT.NONE, spoonGraph.getRemarks());
+        CheckResultDialog crd = new CheckResultDialog(shell, SWT.NONE, transGraph.getRemarks());
         String stepname = crd.open();
         if (stepname!=null)
         {
@@ -6610,25 +6610,25 @@ public class Spoon implements AddUndoPositionInterface
     public void analyseImpact(TransMeta transMeta)
     {
         if (transMeta==null) return;
-        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        if (spoonGraph==null) return;
+        TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+        if (transGraph==null) return;
 
-        AnalyseImpactProgressDialog aipd = new AnalyseImpactProgressDialog(shell, transMeta, spoonGraph.getImpact());
-        spoonGraph.setImpactFinished( aipd.open() );
-        if (spoonGraph.isImpactFinished()) showLastImpactAnalyses(transMeta);
+        AnalyseImpactProgressDialog aipd = new AnalyseImpactProgressDialog(shell, transMeta, transGraph.getImpact());
+        transGraph.setImpactFinished( aipd.open() );
+        if (transGraph.isImpactFinished()) showLastImpactAnalyses(transMeta);
     }
     
     public void showLastImpactAnalyses(TransMeta transMeta)
     {
         if (transMeta==null) return;
-        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        if (spoonGraph==null) return;
+        TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+        if (transGraph==null) return;
 
         ArrayList rows = new ArrayList();
         RowMetaInterface rowMeta = null;
-        for (int i=0;i<spoonGraph.getImpact().size();i++)
+        for (int i=0;i<transGraph.getImpact().size();i++)
         {
-            DatabaseImpact ii = (DatabaseImpact)spoonGraph.getImpact().get(i);
+            DatabaseImpact ii = (DatabaseImpact)transGraph.getImpact().get(i);
             RowMetaAndData row = ii.getRow();
             rowMeta = row.getRowMeta();
             rows.add(row.getData());
@@ -6644,7 +6644,7 @@ public class Spoon implements AddUndoPositionInterface
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-            if (spoonGraph.isImpactFinished())
+            if (transGraph.isImpactFinished())
             {
                 mb.setMessage(Messages.getString("Spoon.Dialog.TransformationNoImpactOnDatabase.Message"));//"As far as I can tell, this transformation has no impact on any database."
             }
@@ -6737,7 +6737,7 @@ public class Spoon implements AddUndoPositionInterface
         {
             Document doc = XMLHandler.loadXMLString(xml);
             TransMeta transMeta = new TransMeta(XMLHandler.getSubNode(doc, TransMeta.XML_TAG));
-            addSpoonGraph(transMeta); // create a new tab
+            addTransGraph(transMeta); // create a new tab
             refreshGraph();
             refreshTree();
         }
@@ -6783,13 +6783,13 @@ public class Spoon implements AddUndoPositionInterface
     
     public void copyTransformationImage(TransMeta transMeta)
     {
-        TransGraph spoonGraph = findSpoonGraphOfTransformation(transMeta);
-        if (spoonGraph==null) return;
+        TransGraph transGraph = findTransGraphOfTransformation(transMeta);
+        if (transGraph==null) return;
         
         Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
         
         Point area = transMeta.getMaximum();
-        Image image = spoonGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false);
+        Image image = transGraph.getTransformationImage(Display.getCurrent(), area.x, area.y, false);
         clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[]{ImageDataTransfer.getInstance()});
     }
     
@@ -7016,7 +7016,7 @@ public class Spoon implements AddUndoPositionInterface
                 transName = name+" "+nr;
             }
             meta.setName(transName);
-            addSpoonGraph(meta);
+            addTransGraph(meta);
             
             refreshGraph();
             refreshTree();
@@ -7221,7 +7221,7 @@ public class Spoon implements AddUndoPositionInterface
                                 					transMeta.setFilename(optionRepname.toString());
                                 					transMeta.clearChanged();
                                 					transMeta.setInternalKettleVariables();
-                                					spoon.addSpoonGraph(transMeta);
+                                					spoon.addTransGraph(transMeta);
                                 				}
                                 				else
                                         		{
@@ -7363,7 +7363,7 @@ public class Spoon implements AddUndoPositionInterface
                                 props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), repdir.getPath(), true, rep.getName());
                                 transMeta.setFilename(lastUsedFile.getFilename());
                                 transMeta.clearChanged();
-                                addSpoonGraph(transMeta);
+                                addTransGraph(transMeta);
                                 refreshTree();
                             }
                         }
@@ -7390,7 +7390,7 @@ public class Spoon implements AddUndoPositionInterface
                 transMeta.setFilename(lastUsedFile.getFilename());
                 transMeta.clearChanged();
                 props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), null, false, null);
-                addSpoonGraph(transMeta);
+                addTransGraph(transMeta);
             }
             if (lastUsedFile.isJob())
             {
@@ -7757,7 +7757,7 @@ public class Spoon implements AddUndoPositionInterface
             if (masterSteps.size()>0) // If there is something that needs to be done on the master...
             {
                 masterServer = transSplitter.getMasterServer();
-                if (show) addSpoonGraph(master);
+                if (show) addTransGraph(master);
                 if (post)
                 {
                     String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
@@ -7775,7 +7775,7 @@ public class Spoon implements AddUndoPositionInterface
             for (int i=0;i<slaves.length;i++)
             {
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                if (show) addSpoonGraph(slaveTrans);
+                if (show) addTransGraph(slaveTrans);
                 if (post)
                 {
                     TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
@@ -7971,7 +7971,7 @@ public class Spoon implements AddUndoPositionInterface
         tabfolder.setSelection(idx);        
     }
     
-    public void addSpoonGraph(TransMeta transMeta)
+    public void addTransGraph(TransMeta transMeta)
     {
         String key = addTransformation(transMeta);
         if (key!=null)
@@ -7984,14 +7984,14 @@ public class Spoon implements AddUndoPositionInterface
             CTabItem tabItem=findCTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
             if (tabItem==null)
             {
-                TransGraph spoonGraph = new TransGraph(tabfolder, this, transMeta);
+                TransGraph transGraph = new TransGraph(tabfolder, this, transMeta);
                 tabItem = new CTabItem(tabfolder, SWT.CLOSE);
                 tabItem.setText(tabName);
                 tabItem.setToolTipText(Messages.getString("Spoon.TabTrans.Tooltip", makeTransGraphTabName(transMeta)));
                 tabItem.setImage(GUIResource.getInstance().getImageTransGraph());
-                tabItem.setControl(spoonGraph);
+                tabItem.setControl(transGraph);
                 
-                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
+                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, transGraph, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH));
             }
             int idx = tabfolder.indexOf(tabItem);
             
@@ -8380,15 +8380,15 @@ public class Spoon implements AddUndoPositionInterface
 
     public void pasteSteps()
     {
-        // Is there an active SpoonGraph?
-        TransGraph spoonGraph = getActiveSpoonGraph();
-        if (spoonGraph==null) return;
-        TransMeta transMeta = spoonGraph.getTransMeta();
+        // Is there an active TransGraph?
+        TransGraph transGraph = getActiveTransGraph();
+        if (transGraph==null) return;
+        TransMeta transMeta = transGraph.getTransMeta();
         
         String clipcontent = fromClipboard();
         if (clipcontent != null)
         {
-            Point lastMove = spoonGraph.getLastMove();
+            Point lastMove = transGraph.getLastMove();
             if (lastMove != null)
             {
                 pasteXML(transMeta, clipcontent, lastMove);

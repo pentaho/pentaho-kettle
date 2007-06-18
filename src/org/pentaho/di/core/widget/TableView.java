@@ -1089,7 +1089,7 @@ public class TableView extends Composite
                 if (j>0) colInfo = columns[j-1];
                 else     colInfo = numberColumn;
                 
-                ValueMetaInterface valueMeta = new ValueMeta(colInfo.getName(), colInfo.getValueType());
+                ValueMetaInterface valueMeta = colInfo.getValueMeta();
                 if (j==sortField) valueMeta.setSortedDescending(sortingDescending);
                 
                 rowMeta.addValueMeta(valueMeta);

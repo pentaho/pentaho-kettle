@@ -48,7 +48,6 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.dialog.EnterMappingDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
@@ -467,10 +466,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             loadTransformation();
             
             // If we're still here, mappingTransMeta is valid.
-            
-            LogWriter log = LogWriter.getInstance();
-            Spoon spoon = new Spoon(log, shell.getDisplay(), mappingTransMeta, repository);
-            spoon.open();
+            Spoon.getInstance().addTransGraph(mappingTransMeta);
         }
         catch(KettleException e)
         {

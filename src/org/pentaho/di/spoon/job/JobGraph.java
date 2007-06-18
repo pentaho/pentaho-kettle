@@ -1583,7 +1583,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				{
                     newTrans = new TransMeta(spoon.rep, exactTransname, entry.getDirectory());
 				}
-                spoon.addSpoonGraph(newTrans);
+                spoon.addTransGraph(newTrans);
 				newTrans.clearChanged();
 				spoon.open();
 			}
@@ -1613,7 +1613,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 
 				launchTransMeta.clearChanged();
                 launchTransMeta.setFilename( exactFilename );
-                spoon.addSpoonGraph( launchTransMeta );
+                spoon.addTransGraph( launchTransMeta );
 				spoon.open();
 			}
 			catch(Throwable e)

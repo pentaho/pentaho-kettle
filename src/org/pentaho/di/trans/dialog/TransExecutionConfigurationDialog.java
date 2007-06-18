@@ -255,7 +255,9 @@ public class TransExecutionConfigurationDialog extends Dialog
               new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
               new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
             };
-        cPreviewSteps[1].setValueType(ValueMetaInterface.TYPE_INTEGER);
+        ValueMetaInterface previewSizeMeta = new ValueMeta("size", ValueMetaInterface.TYPE_INTEGER);
+        previewSizeMeta.setConversionMask("0");
+        cPreviewSteps[1].setValueMeta(previewSizeMeta);
                 
         wPreviewSteps = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), false, null, props);
         FormData fdPreviewSteps = new FormData();
@@ -464,7 +466,7 @@ public class TransExecutionConfigurationDialog extends Dialog
                 {
                     if (prSteps[x].equalsIgnoreCase(name)) 
                     {
-                        item.setText(2, ""+prSizes[x]);
+                        item.setText(2, Integer.toString(prSizes[x]));
                         sizesSet=true;
                     } 
                 }
@@ -486,7 +488,7 @@ public class TransExecutionConfigurationDialog extends Dialog
                 // Is the step selected?
                 if (stepMeta.isSelected())
                 {
-                    item.setText(2, ""+props.getDefaultPreviewSize());
+                    item.setText(2, Integer.toString(props.getDefaultPreviewSize()));
                     sizesSet=true;
                 }
             }

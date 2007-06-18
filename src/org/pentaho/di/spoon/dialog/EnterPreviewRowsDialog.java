@@ -188,8 +188,10 @@ public class EnterPreviewRowsDialog extends Dialog
         RowMetaInterface rowMeta = (RowMetaInterface)rowMetas.get(nr);
 		String    name   = (String)stepNames.get(nr);
 		
-		PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, name, rowMeta, buffer);
-		prd.open();		
-
+        if (rowMeta!=null && buffer!=null && buffer.size()>0)
+        {
+    		PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, name, rowMeta, buffer);
+    		prd.open();
+        }
 	}
 }

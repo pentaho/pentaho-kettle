@@ -159,7 +159,7 @@ public class PreviewRowsDialog extends Dialog
             ValueMetaInterface v = rowMeta.getValueMeta(i);
             colinf[i] = new ColumnInfo(v.getName(), ColumnInfo.COLUMN_TYPE_TEXT, v.isNumeric());
             colinf[i].setToolTip(v.toStringMeta());
-            colinf[i].setValueType(v.getType());
+            colinf[i].setValueMeta(v);
         }
 
         wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
