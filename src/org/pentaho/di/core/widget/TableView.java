@@ -1094,7 +1094,10 @@ public class TableView extends Composite
                 
                 rowMeta.addValueMeta(valueMeta);
             }
-            ValueMetaInterface sourceValueMeta = new ValueMeta("cell", ValueMetaInterface.TYPE_STRING); 
+            
+            RowMetaInterface sourceRowMeta = (RowMetaInterface) rowMeta.clone();
+            // Set it all to string...
+            for (int i=0;i<sourceRowMeta.size();i++) sourceRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
             
             // Now populare a list of data rows...
             //
@@ -1118,6 +1121,7 @@ public class TableView extends Composite
                 {
                     String data = item.getText(j);
                     ValueMetaInterface targetValueMeta = rowMeta.getValueMeta(j+2);
+                    ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(j+2);
                     r[j+2] = targetValueMeta.convertData(sourceValueMeta, data);
                 }
                 v.add(r);
