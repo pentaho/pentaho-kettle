@@ -527,7 +527,7 @@ public class XMLInputPathMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorReadingRepository"), e);
+			throw new KettleException(Messages.getString("XMLInputPathMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -566,13 +566,13 @@ public class XMLInputPathMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode());
+                //rep.saveStepAttribute(id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode());
 			}
             
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
+			throw new KettleException(Messages.getString("XMLInputPathMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -601,12 +601,12 @@ public class XMLInputPathMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoInputExpected"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputPathMeta.CheckResult.NoInputExpected"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.NoInput"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputPathMeta.CheckResult.NoInput"), stepinfo);
 			remarks.add(cr);
 		}
 		
@@ -614,12 +614,12 @@ public class XMLInputPathMeta extends BaseStepMeta implements StepMetaInterface
 		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoFiles"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputPathMeta.CheckResult.NoFiles"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputPathMeta.CheckResult.FilesOk", ""+fileInputList.getFiles().size()), stepinfo);
 			remarks.add(cr);
 		}
 	}

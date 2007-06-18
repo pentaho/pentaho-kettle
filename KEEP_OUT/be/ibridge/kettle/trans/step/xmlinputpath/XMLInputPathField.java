@@ -435,12 +435,12 @@ public class XMLInputPathField implements Cloneable
     {
         String enc="";
         
-        for (int i=0;i<fieldPosition.length;i++)
+       /* for (int i=0;i<fieldPosition.length;i++)
         {
             XMLInputPathFieldPosition pos = fieldPosition[i];
             if (i>0) enc+=POSITION_MARKER;
             enc+=pos.toString();
-        }
+        }*/
         
         return enc;
     }
