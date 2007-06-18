@@ -358,19 +358,7 @@ public class LDIFInputField implements Cloneable
 		repeat = !repeat;		
 	}
     
-    public String getFieldPositionsCode()
-    {
-        String enc="";
-        
-        for (int i=0;i<fieldPosition.length;i++)
-        {
-            LDIFInputFieldPosition pos = fieldPosition[i];
-            if (i>0) enc+=POSITION_MARKER;
-            enc+=pos.toString();
-        }
-        
-        return enc;
-    }
+  
 	
 	public void guess()
 	{
