@@ -49,6 +49,8 @@ public class CheckResult
     private String text;
 
     private StepMeta stepMeta;
+    
+    private String errorCode;
 
     public CheckResult()
     {
@@ -60,6 +62,12 @@ public class CheckResult
         type = t;
         text = s;
         this.stepMeta = stepMeta;
+    }
+    
+    public CheckResult(int t, String errorCode, String s, StepMeta stepMeta)
+    {
+        this(t, s, stepMeta);
+        this.errorCode = errorCode;
     }
 
     public int getType()
@@ -91,5 +99,21 @@ public class CheckResult
             sb.append(" (").append(stepMeta.getName()).append(")");
 
         return sb.toString();
+    }
+
+    /**
+     * @return the errorCode
+     */
+    public String getErrorCode()
+    {
+        return errorCode;
+    }
+
+    /**
+     * @param errorCode the errorCode to set
+     */
+    public void setErrorCode(String errorCode)
+    {
+        this.errorCode = errorCode;
     }
 }
