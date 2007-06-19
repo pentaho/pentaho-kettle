@@ -244,9 +244,6 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
-        /*
-         * TODO: re-enable repository support
-         * 
 		try
 		{
 			directory        =      rep.getStepAttributeString (id_step, "directory"); //$NON-NLS-1$
@@ -269,14 +266,10 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			throw new KettleException(Messages.getString("JoinRowsMeta.Exception.UnexpectedErrorInReadStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
-        */
 	}
 
 	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
-	    /*
-         * TODO: re-enable repository support
-         * 
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "directory",       directory); //$NON-NLS-1$
@@ -296,7 +289,6 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			throw new KettleException(Messages.getString("JoinRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
-    */
 	}
 
 

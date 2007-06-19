@@ -27,6 +27,7 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
@@ -780,14 +781,13 @@ public class Condition implements Cloneable, XMLInterface
 	    }
 	}
 
-	/*
-     * TODO: re-enable repository support
+	/**
      *  
 	 * Read a condition from the repository.
 	 * @param rep The repository to read from
 	 * @param id_condition The condition id
 	 * @throws KettleException if something goes wrong.
-	 *
+	 */
 	public Condition(Repository rep, long id_condition) throws KettleException
 	{
 		this();
@@ -795,7 +795,7 @@ public class Condition implements Cloneable, XMLInterface
 		list = new ArrayList();
 		try
 		{
-			Row r = rep.getCondition(id_condition);
+			RowMetaAndData r = rep.getCondition(id_condition);
             if (r!=null)
             {
     			negate          = r.getBoolean("NEGATED", false);
@@ -813,7 +813,7 @@ public class Condition implements Cloneable, XMLInterface
     				long id_value = r.getInteger("ID_VALUE_RIGHT", -1L);
     				if (id_value>0)
     				{
-    					Value v = new Value(rep, id_value);
+    					ValueMetaAndData v = new ValueMetaAndData(rep, id_value);
     					right_exact = v;
     				}
     			}
@@ -830,7 +830,7 @@ public class Condition implements Cloneable, XMLInterface
                 throw new KettleException("Condition with id_condition="+id_condition+" could not be found in the repository");
             }
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			throw new KettleException("Error loading condition from the repository (id_condition="+id_condition+")", dbe);
 		}
@@ -854,12 +854,11 @@ public class Condition implements Cloneable, XMLInterface
 			
 			return getID();
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			throw new KettleException("Error saving condition to the repository.", dbe);
 		}
 	}
-    */
 	
 	public String[] getUsedFields()
 	{

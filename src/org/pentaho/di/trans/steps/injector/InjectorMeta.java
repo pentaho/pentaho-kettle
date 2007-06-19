@@ -229,7 +229,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
     
-    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info) throws KettleStepException    
+    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[]) throws KettleStepException    
     {
         for (int i=0;i<this.name.length;i++)
         {

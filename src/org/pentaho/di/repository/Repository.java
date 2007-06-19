@@ -1693,8 +1693,7 @@ public class Repository
 			return -1;
 	}
 
-	public synchronized long insertValue(String name, String type, String value_str, boolean isnull, long id_value_prev)
-			throws KettleException
+	public synchronized long insertValue(String name, String type, String value_str, boolean isnull, long id_value_prev) throws KettleException
 	{
 		long id_value = lookupValue(name, type, value_str, isnull);
 		// if it didn't exist yet: insert it!!

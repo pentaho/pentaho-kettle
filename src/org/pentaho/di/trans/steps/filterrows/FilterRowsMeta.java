@@ -272,11 +272,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		allocate();
 	}
 
-	/*
-     * TODO: re-enable repository support
-     * 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
 		try
 		{
@@ -355,7 +351,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException(Messages.getString("FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
-    */
 	
 	public void searchInfoAndTargetSteps(ArrayList steps)
 	{
@@ -484,17 +479,4 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new FilterRowsData();
 	}
-
-    public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

@@ -365,13 +365,13 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException
 	{
-		if (info!=null && info.size()!=0)
+		if (info!=null && info.length==1)
 		{
-			for (int i=0;i<valueName.length;i++)
+            for (int i=0;i<valueName.length;i++)
 			{
-				ValueMetaInterface v = info.searchValueMeta(value[i]);
+				ValueMetaInterface v = info[0].searchValueMeta(value[i]);
 				if (v!=null) // Configuration error/missing resources...
 				{
 					v.setName(valueName[i]);

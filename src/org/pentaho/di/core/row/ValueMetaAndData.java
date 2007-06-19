@@ -3,12 +3,15 @@ package org.pentaho.di.core.row;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
+
 
 public class ValueMetaAndData
 {
@@ -84,6 +87,36 @@ public class ValueMetaAndData
         return vmad;
     }
 
+    public ValueMetaAndData(Repository rep, long id_value) throws KettleException
+    {
+        try
+        {
+            RowMetaAndData r = rep.getValue(id_value);
+            if (r!=null)
+            {
+                String name    = r.getString("NAME", null);
+                int valtype    = ValueMeta.getType( r.getString("VALUE_TYPE", null) );
+                boolean isNull = r.getBoolean("IS_NULL", false);
+                valueMeta = new ValueMeta(name, valtype);
+
+                if (isNull)
+                {
+                    valueData = null;
+                }
+                else
+                {
+                    ValueMetaInterface stringValueMeta = new ValueMeta(name, ValueMetaInterface.TYPE_STRING);
+                    String stringValueData = r.getString("VALUE_STR", null);
+                    valueData = valueMeta.convertData(stringValueMeta, stringValueData);
+                }
+            }
+        }
+        catch(KettleException dbe)
+        {
+            throw new KettleException("Unable to load Value from repository with id_value="+id_value, dbe);
+        }
+    }
+    
     public String toString()
     {
         try
