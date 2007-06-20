@@ -61,6 +61,7 @@ import org.pentaho.di.trans.steps.joinrows.JoinRowsMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
+import org.pentaho.di.trans.steps.nullif.NullIfMeta;
 import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
@@ -140,7 +141,8 @@ public class BaseStep extends Thread
         new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
         new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
         new StepPluginMeta(GetVariableMeta.class, "GetVariable", Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.GetVariable"), "GVA.png", CATEGORY_JOB),
-        
+
+        new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
         /*
  
          
@@ -159,7 +161,7 @@ public class BaseStep extends Thread
             new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
-            new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
+           
             new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
