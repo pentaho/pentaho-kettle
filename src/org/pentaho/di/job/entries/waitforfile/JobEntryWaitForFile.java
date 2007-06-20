@@ -38,9 +38,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 
-
-
-
 /**
  * This defines a 'wait for file' job entry. Its use is to wait for a file to 
  * appear.
@@ -188,7 +185,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     		{ 
     			FileObject fileObject = null;
 
-    			fileObject = KettleVFS.getFileObject(realFilename);
+    			fileObject = KettleVFS.getFileObject(realFilename);    				
 
     			long iMaximumTimeout = Const.toInt(getMaximumTimeout(), 
     					Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
@@ -225,6 +222,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     			boolean continueLoop = true;
     			while ( continueLoop && !parentJob.isStopped() )
     			{
+        			fileObject = KettleVFS.getFileObject(realFilename);    				
+    				
     				if ( fileObject.exists() )
     				{
     					// file exists, we're happy to exit
