@@ -786,97 +786,104 @@ public class ValueMeta implements ValueMetaInterface
 
     public String getString(Object object) throws KettleValueException
     {
-        if (object==null) // NULL 
+        try
         {
-            return null;
-        }
-        String string;
-        
-        switch(type)
-        {
-        case TYPE_STRING:
-            switch(storageType)
+            if (object==null) // NULL 
             {
-            case STORAGE_TYPE_NORMAL:       string = (String)object; break;
-            case STORAGE_TYPE_INDEXED:      string = (String) index[((Integer)object).intValue()];  break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                return null;
             }
-            break;
+            String string;
             
-        case TYPE_DATE:
-            switch(storageType)
+            switch(type)
             {
-            case STORAGE_TYPE_NORMAL:       string = convertDateToString((Date)object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertDateToString((Date)index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+            case TYPE_STRING:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = (String)object; break;
+                case STORAGE_TYPE_INDEXED:      string = (String) index[((Integer)object).intValue()];  break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+                
+            case TYPE_DATE:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertDateToString((Date)object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertDateToString((Date)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_NUMBER:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertNumberToString((Double)object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertNumberToString((Double)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_INTEGER:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertIntegerToString((Long)object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_BIGNUMBER:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertBigNumberToString((BigDecimal)object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_BOOLEAN:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertBooleanToString((Boolean)object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_BINARY:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = convertBinaryToString((byte[])object); break;
+                case STORAGE_TYPE_INDEXED:      string = convertBinaryToString((byte[])index[((Integer)object).intValue()]); break;
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            case TYPE_SERIALIZABLE:
+                switch(storageType)
+                {
+                case STORAGE_TYPE_NORMAL:       string = object.toString();  break; // just go for the default toString()
+                case STORAGE_TYPE_INDEXED:      string = index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
+                default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                }
+                break;
+    
+            default: 
+                throw new KettleValueException("Unknown type "+type+" specified.");
             }
-            break;
-
-        case TYPE_NUMBER:
-            switch(storageType)
+            
+            if (isOutputPaddingEnabled() && getLength()>0)
             {
-            case STORAGE_TYPE_NORMAL:       string = convertNumberToString((Double)object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertNumberToString((Double)index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                return ValueDataUtil.rightPad(string, getLength());
             }
-            break;
-
-        case TYPE_INTEGER:
-            switch(storageType)
+            else
             {
-            case STORAGE_TYPE_NORMAL:       string = convertIntegerToString((Long)object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertIntegerToString((Long)index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
+                return string;
             }
-            break;
-
-        case TYPE_BIGNUMBER:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:       string = convertBigNumberToString((BigDecimal)object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertBigNumberToString((BigDecimal)index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
-            }
-            break;
-
-        case TYPE_BOOLEAN:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:       string = convertBooleanToString((Boolean)object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertBooleanToString((Boolean)index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
-            }
-            break;
-
-        case TYPE_BINARY:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:       string = convertBinaryToString((byte[])object); break;
-            case STORAGE_TYPE_INDEXED:      string = convertBinaryToString((byte[])index[((Integer)object).intValue()]); break;
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
-            }
-            break;
-
-        case TYPE_SERIALIZABLE:
-            switch(storageType)
-            {
-            case STORAGE_TYPE_NORMAL:       string = object.toString();  break; // just go for the default toString()
-            case STORAGE_TYPE_INDEXED:      string = index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
-            default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
-            }
-            break;
-
-        default: 
-            throw new KettleValueException("Unknown type "+type+" specified.");
         }
-        
-        if (isOutputPaddingEnabled() && getLength()>0)
+        catch(ClassCastException e)
         {
-            return ValueDataUtil.rightPad(string, getLength());
-        }
-        else
-        {
-            return string;
+            throw new KettleValueException("There was a data type error: the data type of "+object.getClass().getName()+" object ["+object+"] does not correspond to value meta ["+toStringMeta()+"]");
         }
     }
 
