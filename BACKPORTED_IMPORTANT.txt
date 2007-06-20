@@ -11,3 +11,5 @@ The following bug where fixes backported from the 3.0.0-M1 series:
   variables when you executed the transformation - Sven B - 2007-Jun-8
 - fix for bug #5708 (duplicate to 5758 and 5769) clustered mode in job - Jens - 2007-Jun-15
 - Fix for bug #5771: throw an exception in getRowFrom() when called for unknown hop - Sven B - 2007-Jun-15
+- Fix for WaitForFile bug: the old version would check the file once and afterwards would return
+  the cached result - Sven B - 2007-Jun-20
