@@ -146,7 +146,7 @@ public class TransPreviewProgressDialog
             previousPct = pct;
             
             // Change the percentage...
-            try { Thread.sleep(100); } catch(InterruptedException e) {}
+            try { Thread.sleep(500); } catch(InterruptedException e) {}
             
             if (progressMonitor.isCanceled())
             {
