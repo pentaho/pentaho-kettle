@@ -126,23 +126,23 @@ public class GetFileNames extends BaseStep implements StepInterface
 			{
 
 				ValueMetaAndData filename = new ValueMetaAndData("filename", KettleVFS.getFilename(file));
-				filename.setLength(500, -1);
+				filename.getValueMeta().setLength(500, -1);
 				r[0] = filename;
 
 				ValueMetaAndData short_filename = new ValueMetaAndData("short_filename", file.getName()
 						.getBaseName());
-				short_filename.setLength(500, -1);
+				short_filename.getValueMeta().setLength(500, -1);
 				r[1] = short_filename;
 
 				try
 				{
 					ValueMetaAndData path = new ValueMetaAndData("path", KettleVFS.getFilename(file
 							.getParent()));
-					path.setLength(500, -1);
+					path.getValueMeta().setLength(500, -1);
 					r[2] = path;
 
 					ValueMetaAndData type = new ValueMetaAndData("type", file.getType().toString());
-					type.setLength(500, -1);
+					type.getValueMeta().setLength(500, -1);
 					r[3] = type;
 
 					ValueMetaAndData exists = new ValueMetaAndData("exists", new Boolean(file.exists()));
@@ -178,15 +178,15 @@ public class GetFileNames extends BaseStep implements StepInterface
 				}
 
 				ValueMetaAndData extension = new ValueMetaAndData("extension", file.getName().getExtension());
-				extension.setLength(500, -1);
+				extension.getValueMeta().setLength(500, -1);
 				r[10] = extension;
 
 				ValueMetaAndData uri = new ValueMetaAndData("uri", file.getName().getURI());
-				uri.setLength(500, -1);
+				uri.getValueMeta().setLength(500, -1);
 				r[11] = uri;
 
 				ValueMetaAndData rooturi = new ValueMetaAndData("rooturi", file.getName().getRootURI());
-				uri.setLength(500, -1);
+				uri.getValueMeta().setLength(500, -1);
 				r[12] = rooturi;
 				data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 				meta.getFields(data.outputRowMeta, getStepname(), null);

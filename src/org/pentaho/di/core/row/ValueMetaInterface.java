@@ -75,6 +75,8 @@ public interface ValueMetaInterface extends Cloneable
     public int      getPrecision();
     public void     setPrecision(int precision);
     
+    public void     setLength(int length, int precision);
+    
     public String   getOrigin();
     public void     setOrigin(String origin);
     

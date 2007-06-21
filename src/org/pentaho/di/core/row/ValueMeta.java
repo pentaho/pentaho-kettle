@@ -146,7 +146,16 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.length = length;
     }
-    
+
+    /**
+     * @param length the length to set
+     */
+    public void setLength(int length, int precision)
+    {
+        this.length = length;
+        this.precision = precision;
+    }
+
     /**
      * @return the name
      */
