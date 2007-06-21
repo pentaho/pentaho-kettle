@@ -66,6 +66,7 @@ import org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta;
 import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
+import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.http.HTTPMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta;
@@ -159,9 +160,10 @@ public class BaseStep extends Thread
         new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), "GFN.png", CATEGORY_INPUT),
         new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
         new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
-
+        new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
+        
         /*
-            new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
+            
             new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
             new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
