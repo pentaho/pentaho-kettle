@@ -3,9 +3,8 @@ package org.pentaho.di.trans;
 import java.util.ArrayList;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.repository.Repository;
-
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.Repository;
 
 
 public interface HasDatabasesInterface

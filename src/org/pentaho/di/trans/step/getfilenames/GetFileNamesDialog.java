@@ -57,7 +57,7 @@ import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.trans.TransPreviewProgressDialog;
+import org.pentaho.di.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;

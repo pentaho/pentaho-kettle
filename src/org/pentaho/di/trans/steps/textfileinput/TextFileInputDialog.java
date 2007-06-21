@@ -66,29 +66,28 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterNumberDialog;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.widget.ColumnInfo;
+import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.trans.TransPreviewProgressDialog;
+import org.pentaho.di.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.widget.TableView;
-import org.pentaho.di.core.widget.TextVar;
 
 
 

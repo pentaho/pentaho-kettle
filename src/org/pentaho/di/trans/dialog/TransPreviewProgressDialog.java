@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -29,8 +30,8 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class TransPreviewProgressDialog
 {
-	private Shell shell;
-	private TransMeta transMeta;
+    private Shell shell;
+    private TransMeta transMeta;
     private String[] previewStepNames;
     private int[] previewSize;
     private Trans trans;
@@ -38,14 +39,14 @@ public class TransPreviewProgressDialog
     private boolean cancelled;
     private String loggingText;
     private Thread parentThread;
-	
-	/**
-	 * Creates a new dialog that will handle the wait while previewing a transformation...
-	 */
-	public TransPreviewProgressDialog(Shell shell, TransMeta transMeta, String previewStepNames[], int previewSize[])
-	{
-		this.shell = shell;
-		this.transMeta = transMeta;
+    
+    /**
+     * Creates a new dialog that will handle the wait while previewing a transformation...
+     */
+    public TransPreviewProgressDialog(Shell shell, TransMeta transMeta, String previewStepNames[], int previewSize[])
+    {
+        this.shell = shell;
+        this.transMeta = transMeta;
         this.previewStepNames = previewStepNames;
         this.previewSize = previewSize;
         
@@ -53,22 +54,22 @@ public class TransPreviewProgressDialog
         
         // Get the parent of the new thread that will start on "Open", *before* this thread starts.
         this.parentThread = Thread.currentThread();
-	}
-	
-	public TransMeta open()
+    }
+    
+    public TransMeta open()
     {
-	    IRunnableWithProgress op = new IRunnableWithProgress()
-	    {
-	        public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
-	        {
-	            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-	            doPreview(monitor);
-	        }
-	    };
-		
-		try
-		{
-			final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+        IRunnableWithProgress op = new IRunnableWithProgress()
+        {
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+            {
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+                doPreview(monitor);
+            }
+        };
+        
+        try
+        {
+            final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
             
             // Run something in the background to cancel active database queries, forecably if needed!
             Runnable run = new Runnable()
@@ -91,21 +92,21 @@ public class TransPreviewProgressDialog
             // Start the cancel tracker in the background!
             new Thread(run).start();
             
-			pmd.run(true, true, op);
-		}
-		catch (InvocationTargetException e)
-		{
-			new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-			transMeta = null;
-		}
-		catch (InterruptedException e)
-		{
-			new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-			transMeta = null;
-		}
+            pmd.run(true, true, op);
+        }
+        catch (InvocationTargetException e)
+        {
+            new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            transMeta = null;
+        }
+        catch (InterruptedException e)
+        {
+            new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            transMeta = null;
+        }
 
-		return transMeta;
-	}
+        return transMeta;
+    }
     
     private void doPreview(IProgressMonitor progressMonitor)
     {
@@ -147,7 +148,7 @@ public class TransPreviewProgressDialog
             previousPct = pct;
             
             // Change the percentage...
-            try { Thread.sleep(100); } catch(InterruptedException e) {}
+            try { Thread.sleep(500); } catch(InterruptedException e) {}
             
             if (progressMonitor.isCanceled())
             {
@@ -172,6 +173,15 @@ public class TransPreviewProgressDialog
     public List getPreviewRows(String stepname)
     {
         return trans.getPreviewRows(stepname, 0);
+    }
+    
+    /**
+     * @param stepname the name of the step to get the preview rows for
+     * @return A description of the row (metadata)
+     */
+    public RowMetaInterface getPreviewRowsMeta(String stepname)
+    {
+        return trans.getPreviewRowsMeta(stepname, 0);
     }
 
     /**
