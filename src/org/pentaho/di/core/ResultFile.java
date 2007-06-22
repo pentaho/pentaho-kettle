@@ -55,9 +55,9 @@ public class ResultFile implements Cloneable
 		this.timestamp = new Date();
 	}
 	
-	protected Object clone() throws CloneNotSupportedException
+	protected ResultFile clone() throws CloneNotSupportedException
 	{
-		return super.clone();
+		return (ResultFile) super.clone();
 	}
 
 	/**

@@ -11,11 +11,11 @@ import java.util.Hashtable;
 public class Counters
 {
     private static Counters counters = null; 
-    private Hashtable counterTable = null;
+    private Hashtable<String,Counter> counterTable = null;
     
     private Counters()
     {
-        counterTable = new Hashtable();
+        counterTable = new Hashtable<String,Counter>();
     }
     
     public static final Counters getInstance()
@@ -27,7 +27,7 @@ public class Counters
     
     public Counter getCounter(String name)
     {
-        return (Counter)counterTable.get(name);
+        return counterTable.get(name);
     }
     
     public void setCounter(String name, Counter counter)

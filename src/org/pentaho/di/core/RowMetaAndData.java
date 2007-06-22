@@ -32,7 +32,7 @@ public class RowMetaAndData implements Cloneable
         this.data = data;
     }
     
-    public Object clone()
+    public RowMetaAndData clone()
     {
         RowMetaAndData c = new RowMetaAndData();
         c.rowMeta = (RowMetaInterface) rowMeta.clone();

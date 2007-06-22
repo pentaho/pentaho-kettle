@@ -37,7 +37,7 @@ public class DBCache
 {
 	private static DBCache dbCache;
 	
-	private Hashtable cache;
+	private Hashtable<DBCacheEntry,RowMetaInterface> cache;
 	private boolean   usecache;
 		
 	public void setActive()
@@ -80,7 +80,7 @@ public class DBCache
 	{
 		if (!usecache) return null;
 		
-        RowMetaInterface fields = (RowMetaInterface)cache.get(entry);
+        RowMetaInterface fields = cache.get(entry);
 		if (fields!=null)
 		{
 			fields = (RowMetaInterface) fields.clone(); // Copy it again!
@@ -105,7 +105,7 @@ public class DBCache
 	{
 		if (dbname==null)
 		{
-			cache = new Hashtable();
+			cache = new Hashtable<DBCacheEntry,RowMetaInterface>();
 			setActive();
 		}
 		else

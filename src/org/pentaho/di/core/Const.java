@@ -1231,9 +1231,9 @@ public class Const
 	 * @param databases All the databases
 	 * @return SAP R/3 databases in a List of databases.
 	 */
-	public static final List selectSAPR3Databases(List databases)
+	public static final List<DatabaseMeta> selectSAPR3Databases(List databases)
 	{
-		List sap = new ArrayList();
+		List<DatabaseMeta> sap = new ArrayList<DatabaseMeta>();
 
 		Iterator it = databases.iterator();
 		while (it.hasNext())
@@ -1456,14 +1456,14 @@ public class Const
      */
     public static final int[] indexsOfFoundStrings(String lookup[], String array[])
     {
-        List indexesList = new ArrayList();
+        List<Integer> indexesList = new ArrayList<Integer>();
         for (int i=0;i<lookup.length;i++)
         {
             int idx = indexOfString(lookup[i], array);
             if (idx>=0) indexesList.add(new Integer(idx));
         }
         int[] indexes = new int[indexesList.size()];
-        for (int i=0;i<indexesList.size();i++) indexes[i] = ((Integer)indexesList.get(i)).intValue();
+        for (int i=0;i<indexesList.size();i++) indexes[i] = (indexesList.get(i)).intValue();
         return indexes;
     }
 
@@ -1473,14 +1473,14 @@ public class Const
 	 * @param list The ArrayList of strings to look in
 	 * @return The index of a search string in an array of strings. -1 if not found.
 	 */
-	public static final int indexOfString(String lookup, List list)
+	public static final int indexOfString(String lookup, List<String> list)
 	{
 		if (list == null)
 			return -1;
 
 		for (int i = 0; i < list.size(); i++)
 		{
-			String compare = (String) list.get(i);
+			String compare = list.get(i);
 			if (lookup.equalsIgnoreCase(compare))
 				return i;
 		}
@@ -1517,7 +1517,7 @@ public class Const
 		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 
 		if (string == null || string.length() == 0)
 		{
@@ -1546,7 +1546,7 @@ public class Const
 			list.add(NVL(string.substring(from, string.length()), ""));
 		}
 
-		return (String[]) list.toArray(new String[list.size()]);
+		return list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -1566,7 +1566,7 @@ public class Const
 		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 
 		if (string == null || string.length() == 0)
 		{
@@ -1594,7 +1594,7 @@ public class Const
 			list.add(NVL(string.substring(from, string.length()), ""));
 		}
 
-		return (String[]) list.toArray(new String[list.size()]);
+		return list.toArray(new String[list.size()]);
 	}
 	
 	/**
@@ -1813,7 +1813,7 @@ public class Const
 			return new String[] {};
 
 		String[] sorted = sortStrings(strings);
-		List result = new ArrayList();
+		List<String> result = new ArrayList<String>();
 		String previous = "";
 		for (int i = 0; i < sorted.length; i++)
 		{
@@ -1824,7 +1824,7 @@ public class Const
 			previous = sorted[i];
 		}
 
-		return (String[]) result.toArray(new String[result.size()]);
+		return result.toArray(new String[result.size()]);
 	}
     
     /**
