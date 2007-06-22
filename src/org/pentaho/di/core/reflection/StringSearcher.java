@@ -66,14 +66,12 @@ public class StringSearcher
                         	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, grandParentObject, field.getName()+" (Condition)"));
                         }
                         else
-                        if (obj instanceof Object)
-                        {
-                            findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
-                        }
-                        else
                         if (obj instanceof Object[])
                         {
                             for (int j=0;j<((Object[])obj).length;j++) findMetaData( ((Object[])obj)[j], level+1, stringList, parentObject, grandParentObject);
+                        }
+                        else {
+                            	findMetaData(obj, level+1, stringList, parentObject, grandParentObject);
                         }
                     }
                 }
@@ -129,7 +127,6 @@ public class StringSearcher
                                     for (int j=0;j<((Object[])string).length;j++) findMetaData( ((Object[])string)[j], level+1, stringList, parentObject, grandParentObject);
                                 }
                                 else
-                                if (string instanceof Object) // OK, so it's not a string but an object: go a bit deeper into it!
                                 {
                                     findMetaData(string, level+1, stringList, parentObject, grandParentObject);
                                 }
