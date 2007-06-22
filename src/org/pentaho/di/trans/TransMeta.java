@@ -108,9 +108,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
     private ArrayList           dependencies;
     
-    private ArrayList           slaveServers;
+    private ArrayList<SlaveServer>           slaveServers;
     
-    private ArrayList           clusterSchemas;
+    private ArrayList<ClusterSchema>           clusterSchemas;
 
     private RepositoryDirectory directory;
 
@@ -191,7 +191,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     private ArrayList           resultFiles;            
     
     
-    private List                partitionSchemas;
+    private List<PartitionSchema>                partitionSchemas;
 
     private boolean             usingUniqueConnections;
     
@@ -3568,9 +3568,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return A list containing all the selected & drawn steps.
      */
-    public List getSelectedDrawnStepsList()
+    public List<StepMeta> getSelectedDrawnStepsList()
     {
-        List list = new ArrayList();
+        List<StepMeta> list = new ArrayList<StepMeta>();
         
         for (int i = 0; i < nrSteps(); i++)
         {
@@ -5267,7 +5267,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return the partitionSchemas
      */
-    public List getPartitionSchemas()
+    public List<PartitionSchema> getPartitionSchemas()
     {
         return partitionSchemas;
     }
@@ -5342,7 +5342,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         this.usingUniqueConnections = usingUniqueConnections;
     }
 
-    public ArrayList getClusterSchemas()
+    public ArrayList<ClusterSchema> getClusterSchemas()
     {
         return clusterSchemas;
     }
@@ -5532,7 +5532,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return the slaveServers
      */
-    public ArrayList getSlaveServers()
+    public ArrayList<SlaveServer> getSlaveServers()
     {
         return slaveServers;
     }
