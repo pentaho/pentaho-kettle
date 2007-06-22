@@ -240,7 +240,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     /**
      * @return the slaveServers
      */
-    public List getSlaveServers()
+    public List<SlaveServer> getSlaveServers()
     {
         return slaveServers;
     }
