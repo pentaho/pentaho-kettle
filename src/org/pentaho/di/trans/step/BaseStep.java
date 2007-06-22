@@ -74,6 +74,7 @@ import org.pentaho.di.trans.steps.joinrows.JoinRowsMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
+import org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta;
 import org.pentaho.di.trans.steps.mergerows.MergeRowsMeta;
 import org.pentaho.di.trans.steps.nullif.NullIfMeta;
 import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
@@ -161,11 +162,10 @@ public class BaseStep extends Thread
         new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
         new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
         new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
-        
+        new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),        
         /*
             
             new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
-            new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
             new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
             new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
@@ -1228,6 +1228,22 @@ public class BaseStep extends Thread
             }
         }
     }
+    
+    /**
+     * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
+     * Otherwise it's the same as the other one.
+     * The difference to getRowFrom is we only get the data, not the RowMeta.
+     * We use this now and can optimize later on (now internally the RowMeta is there).
+     */
+    public synchronized Object[] getRowDataFrom(String from) throws KettleRowException
+    {
+    	RowMetaAndData rmd=getRowFrom(from);
+    	if (rmd!=null) {
+    		return rmd.getData();
+    	} else {
+    		return null;
+    	}
+    }
 
     /**
      * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
@@ -1245,7 +1261,7 @@ public class BaseStep extends Thread
 
         return getRowFrom(output_rowset_nr);
     }
-
+    
     public synchronized RowMetaAndData getRowFrom(int input_rowset_nr)
     {
         // Read from one specific rowset
