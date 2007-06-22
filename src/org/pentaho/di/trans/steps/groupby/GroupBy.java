@@ -238,14 +238,14 @@ public class GroupBy extends BaseStep implements StepInterface
 	}
 	
 	// Is the row r of the same group as previous?
-	private boolean sameGroup(Object[] previous, Object[] r)
+	private boolean sameGroup(Object[] previous, Object[] r) throws KettleValueException
 	{
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
 			Object prev = previous[data.groupnrs[i]];
 			Object curr = r[data.groupnrs[i]];
 			
-			if (!prev.equals(curr)) return false;  //TODO JB can we use this "equals"?
+			if (data.previousMeta.getValueMeta(data.groupnrs[i]).compare(prev, curr)!=0) return false;  //TODO JB can we use this "equals"?
 		}
 		
 		return true;
@@ -276,24 +276,16 @@ public class GroupBy extends BaseStep implements StepInterface
 					data.counts[i]++;
 					break;
 				case GroupByMeta.TYPE_GROUP_MIN            :
-					if (subjMeta.compare(subj,valueMeta,value)<0) {
-						data.agg[i]=subjMeta.cloneValueData(subj); 
-					}
+					if (subjMeta.compare(subj,valueMeta,value)<0) data.agg[i]=subj; 
 					break; 
 				case GroupByMeta.TYPE_GROUP_MAX            : 
-					if (subjMeta.compare(subj,valueMeta,value)>0) {
-						data.agg[i]=subjMeta.cloneValueData(subj);
-					}
+					if (subjMeta.compare(subj,valueMeta,value)>0) data.agg[i]=subj; 
 					break; 
                 case GroupByMeta.TYPE_GROUP_FIRST          :
-                    if (!(subj==null) && value==null) {
-                    	data.agg[i]=subjMeta.cloneValueData(subj); 
-                    }
+                    if (!(subj==null) && value==null) data.agg[i]=subj;
                     break; 
                 case GroupByMeta.TYPE_GROUP_LAST           : 
-                    if (!(subj==null)) {
-                    	data.agg[i]=subjMeta.cloneValueData(subj); 
-                    }
+                    if (!(subj==null)) data.agg[i]=subj; 
                     break; 
                 case GroupByMeta.TYPE_GROUP_FIRST_INCL_NULL:
                 	// This is on purpose. The calculation of the 
@@ -302,7 +294,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     // if (linesWritten==0) value.setValue(subj);
                     break; 
                 case GroupByMeta.TYPE_GROUP_LAST_INCL_NULL : 
-                	data.agg[i]=subjMeta.cloneValueData(subj); 
+                	data.agg[i]=subj; 
                     break; 
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     if (!(subj==null)) 
@@ -318,7 +310,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	}
 
 	// Initialize a group..
-	private void newAggregate(Object[] r) throws KettleValueException
+	private void newAggregate(Object[] r)
 	{
 		// Put all the counters at 0
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
@@ -353,7 +345,7 @@ public class GroupBy extends BaseStep implements StepInterface
 				case GroupByMeta.TYPE_GROUP_MIN             : 
 				case GroupByMeta.TYPE_GROUP_MAX             : 
 					vMeta = new ValueMeta(meta.getAggregateField()[i], subjMeta.getType());
-					v = subjMeta.cloneValueData(subj); 
+					v = subj; 
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
@@ -376,8 +368,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		Object[] result = new Object[data.groupnrs.length];
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
-			ValueMetaInterface resultMeta=data.groupMeta.getValueMeta(i);
-			result[i]=resultMeta.cloneValueData(r[data.groupnrs[i]]); 
+			result[i]=r[data.groupnrs[i]]; 
 		}
 		
 		result=RowDataUtil.addRowData(result, getAggregateResult());
