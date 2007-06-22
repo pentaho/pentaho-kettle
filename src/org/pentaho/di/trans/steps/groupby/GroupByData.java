@@ -45,7 +45,7 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 	public int  subjectnrs[];
 	public long counts[];
 
-    public ArrayList bufferList;
+    public ArrayList<Object[]> bufferList;
 
     public File tempFile;
 

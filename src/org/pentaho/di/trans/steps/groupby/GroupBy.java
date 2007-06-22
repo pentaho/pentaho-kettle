@@ -520,7 +520,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-            data.bufferList = new ArrayList();
+            data.bufferList = new ArrayList<Object[]>();
             
             data.rowsOnFile = 0;
             
