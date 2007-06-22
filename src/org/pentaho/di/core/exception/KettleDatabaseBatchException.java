@@ -32,7 +32,7 @@ public class KettleDatabaseBatchException extends KettleDatabaseException
     
     private int updateCounts[];
 
-    private List exceptionsList;
+    private List<Exception> exceptionsList;
 
 	/**
 	 * Constructs a new throwable with null as its detail message.
@@ -86,7 +86,7 @@ public class KettleDatabaseBatchException extends KettleDatabaseException
         this.updateCounts = updateCounts;
     }
 
-    public void setExceptionsList(List exceptionsList)
+    public void setExceptionsList(List<Exception> exceptionsList)
     {
         this.exceptionsList = exceptionsList;
     }
