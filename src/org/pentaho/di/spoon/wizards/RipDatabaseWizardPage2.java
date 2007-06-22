@@ -67,7 +67,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 	 
 	private String    input[];
 	
-	private Hashtable selection;
+	private Hashtable<Integer,String> selection;
 	
 	private Shell     shell;
 	private List      wListSource, wListDest;
@@ -86,7 +86,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		super(arg);
 		this.props=Props.getInstance();
 
-		selection = new Hashtable();
+		selection = new Hashtable<Integer,String>();
 
 		setTitle("Select the tables");
 		setDescription("Select the tables to rip from the source database");
@@ -419,7 +419,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 			for (int i=0;i<input.length;i++)
 			{
 				Integer idx = new Integer(i);
-				String str = (String)selection.get(idx);
+				String str = selection.get(idx);
 				if (str==null) // Not selected: show in source!
 				{
 					wListSource.add(input[i]);
