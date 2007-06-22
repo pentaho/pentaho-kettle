@@ -244,7 +244,7 @@ public class StringUtil
 	 * @param includeSystemVariables
 	 *            also check for system variables.
 	 */
-	private static void getUsedVariables(String aString, String open, String close, List list,
+	private static void getUsedVariables(String aString, String open, String close, List<String> list,
 			boolean includeSystemVariables)
 	{
 		if (aString == null)
@@ -280,7 +280,7 @@ public class StringUtil
 		}
 	}
 
-	public static void getUsedVariables(String aString, List list, boolean includeSystemVariables)
+	public static void getUsedVariables(String aString, List<String> list, boolean includeSystemVariables)
 	{
 		getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list, includeSystemVariables);
 		getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list, includeSystemVariables);

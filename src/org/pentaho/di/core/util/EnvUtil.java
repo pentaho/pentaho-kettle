@@ -105,10 +105,10 @@ public class EnvUtil
 		 Class system = System.class;
 		 if ( env == null )
 		 {
-			 Map returnMap = null;
+			 Map<String,String> returnMap = null;
 			 try  {
 			     Method method = system.getMethod("getenv", (Class[])null);
-			     returnMap = (Map)method.invoke(system, (Object[])null);
+			     returnMap = (Map<String,String>) method.invoke(system, (Object[])null);
 			 }
    	         catch ( Exception ex )  {
    	        	 returnMap = null;
@@ -118,11 +118,11 @@ public class EnvUtil
    	         if ( returnMap != null )
    	         {
    	             // We're on a VM with getenv() defined.
-   	             ArrayList list = new ArrayList(returnMap.keySet());
+   	             ArrayList<String> list = new ArrayList<String>(returnMap.keySet());
    	             for (int i=0;i<list.size();i++)
    	             {
-   	                 String var = (String)list.get(i);
-   	                 String val = (String)returnMap.get(var);
+   	                 String var = list.get(i);
+   	                 String val = returnMap.get(var);
    	        	 
    	        	     env.setProperty(var, val);   	          
    	             }
