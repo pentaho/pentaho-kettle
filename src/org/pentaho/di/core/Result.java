@@ -45,8 +45,8 @@ public class Result implements Cloneable
 	private long entryNr;
 
 	private int exitStatus;
-	private ArrayList<RowMetaAndData> rows;
-	private Map<String,ResultFile> resultFiles;
+	private ArrayList rows;
+	private Map resultFiles;
 	
 	public boolean stopped;
     private int nrLinesRejected;
@@ -62,8 +62,8 @@ public class Result implements Cloneable
 		result=false;
 		
 		exitStatus=0;
-		rows=new ArrayList<RowMetaAndData>();
-		resultFiles = new Hashtable<String,ResultFile>();
+		rows=new ArrayList();
+		resultFiles = new Hashtable();
 		
 		stopped=false;
 		entryNr=0;
@@ -84,17 +84,17 @@ public class Result implements Cloneable
 			// Clone result rows and files as well...
 			if (rows!=null)
 			{
-				ArrayList<RowMetaAndData> clonedRows = new ArrayList<RowMetaAndData>();
+				ArrayList clonedRows = new ArrayList();
 				for (int i=0;i<rows.size();i++)
 				{
-					clonedRows.add( (rows.get(i)).clone() );
+					clonedRows.add( ((RowMetaAndData)rows.get(i)).clone() );
 				}
 				result.setRows(clonedRows);
 			}
 
 			if (resultFiles!=null)
 			{
-				Map<String,ResultFile> clonedFiles = new Hashtable<String,ResultFile>();
+				Map clonedFiles = new Hashtable();
                 Collection files = resultFiles.values();
                 for (Iterator iter = files.iterator(); iter.hasNext();)
                 {
@@ -298,7 +298,7 @@ public class Result implements Cloneable
 	/**
 	 * @return Returns the rows.
 	 */
-	public ArrayList<RowMetaAndData> getRows()
+	public ArrayList getRows()
 	{
 		return rows;
 	}
@@ -306,7 +306,7 @@ public class Result implements Cloneable
 	/**
 	 * @param rows The rows to set.
 	 */
-	public void setRows(ArrayList<RowMetaAndData> rows)
+	public void setRows(ArrayList rows)
 	{
 		this.rows = rows;
 	}
@@ -366,7 +366,7 @@ public class Result implements Cloneable
     /**
      * @return Returns the result files.  This is a Map with String as key and ResultFile as value.
      */
-    public Map<String,ResultFile> getResultFiles()
+    public Map getResultFiles()
     {
         return resultFiles;
     }
@@ -374,14 +374,14 @@ public class Result implements Cloneable
     /**
      * @return Returns the result files.  This is a list of type ResultFile
      */
-    public List<ResultFile> getResultFilesList()
+    public List getResultFilesList()
     {
-        return new ArrayList<ResultFile>(resultFiles.values());
+        return new ArrayList(resultFiles.values());
     }
 	/**
 	 * @param usedFiles The list of result files to set. This is a list of type ResultFile
 	 */
-	public void setResultFiles(Map<String,ResultFile> usedFiles)
+	public void setResultFiles(Map usedFiles)
 	{
 		this.resultFiles = usedFiles;
 	}
