@@ -65,7 +65,7 @@ public class ValueInteger implements ValueInterface, Cloneable
 
 	public double getNumber()
 	{
-		return (double)this.number;
+		return this.number;
 	}
 
 	public Date getDate()
