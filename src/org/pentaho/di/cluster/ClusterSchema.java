@@ -29,7 +29,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     private String name;
     
     /** The list of slave servers we can address */
-    private List slaveServers;
+    private List<SlaveServer> slaveServers;
     
     /** The data socket port where we start numbering.  The upper limit is the number of remote socket connections. */
     private String basePort;
@@ -52,7 +52,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     public ClusterSchema()
     {
         id=-1L;
-        slaveServers = new ArrayList();
+        slaveServers = new ArrayList<SlaveServer>();
         socketsBufferSize = "2000";
         socketsFlushInterval = "5000";
         socketsCompressed = true;
@@ -63,7 +63,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
      * @param name
      * @param slaveServers
      */
-    public ClusterSchema(String name, List slaveServers)
+    public ClusterSchema(String name, List<SlaveServer> slaveServers)
     {
         this.name = name;
         this.slaveServers = slaveServers;
@@ -125,7 +125,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         xml.append("          <slaveservers>"+Const.CR);
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             xml.append("            "+XMLHandler.addTagValue("name", slaveServer.getName()));
         }
         xml.append("          </slaveservers>"+Const.CR);
@@ -178,7 +178,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         // Also save the used slave server references.
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             if (slaveServer.getId()<0) // oops, not yet saved!
             {
                 slaveServer.saveRep(rep, id_transformation, isUsedByTransformation);
@@ -194,7 +194,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
     }
     
-    public ClusterSchema(Repository rep, long id_cluster_schema, List slaveServers) throws KettleException
+    public ClusterSchema(Repository rep, long id_cluster_schema, List<SlaveServer> slaveServers) throws KettleException
     {
         this();
         
@@ -248,7 +248,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     /**
      * @param slaveServers the slaveServers to set
      */
-    public void setSlaveServers(List slaveServers)
+    public void setSlaveServers(List<SlaveServer> slaveServers)
     {
         this.slaveServers = slaveServers;
     }    
@@ -261,7 +261,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         String[] strings = new String[slaveServers.size()];
         for (int i=0;i<strings.length;i++)
         {
-            strings[i] = ((SlaveServer)slaveServers.get(i)).toString();
+            strings[i] = (slaveServers.get(i)).toString();
         }
         return strings;
     }
@@ -302,7 +302,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             if (slaveServer.isMaster()) return slaveServer;
         }
         if (slaveServers.size()>0)
@@ -320,7 +320,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         int nr=0;
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             if (!slaveServer.isMaster()) nr++;
         }
         return nr;
@@ -378,7 +378,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             if (slaveServer.getName().equalsIgnoreCase(slaveServerName)) return slaveServer;
         }
         return null;
