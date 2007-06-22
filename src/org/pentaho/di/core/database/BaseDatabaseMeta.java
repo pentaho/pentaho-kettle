@@ -864,7 +864,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public Map getExtraOptions()
     {
-        Map map = new Hashtable();
+        Map<String,String> map = new Hashtable<String,String>();
         
         for (Enumeration keys = attributes.keys();keys.hasMoreElements();)
         {

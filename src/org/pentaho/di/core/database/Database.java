@@ -1277,7 +1277,7 @@ public class Database
 		    //System.out.println("Batch update exception "+ex.getMessage());
 			KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
 		    kdbe.setUpdateCounts(ex.getUpdateCounts());
-            List exceptions = new ArrayList();
+            List<Exception> exceptions = new ArrayList<Exception>();
             SQLException nextException;
             while ( (nextException = ex.getNextException())!=null)
             {
@@ -1354,7 +1354,7 @@ public class Database
             //System.out.println("Batch update exception "+ex.getMessage());
             KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
             kdbe.setUpdateCounts(ex.getUpdateCounts());
-            List exceptions = new ArrayList();
+            List<Exception> exceptions = new ArrayList<Exception>();
             SQLException nextException = ex.getNextException();
             SQLException oldException = null;
             
@@ -1423,9 +1423,9 @@ public class Database
             {
                 if (count > 0)
                 {
-                    if (sql.toUpperCase().startsWith("INSERT")) result.setNrLinesOutput((long) count);
-                    if (sql.toUpperCase().startsWith("UPDATE")) result.setNrLinesUpdated((long) count);
-                    if (sql.toUpperCase().startsWith("DELETE")) result.setNrLinesDeleted((long) count);
+                    if (sql.toUpperCase().startsWith("INSERT")) result.setNrLinesOutput(count);
+                    if (sql.toUpperCase().startsWith("UPDATE")) result.setNrLinesUpdated(count);
+                    if (sql.toUpperCase().startsWith("DELETE")) result.setNrLinesDeleted(count);
                 }
             }
             
@@ -2123,7 +2123,7 @@ public class Database
 		if (dbcache!=null)
 		{
 			entry = new DBCacheEntry(databaseMeta.getName(), sql);
-			fields = (RowMetaInterface) dbcache.get(entry);
+			fields = dbcache.get(entry);
 			if (fields!=null) 
 			{
 				return fields;
@@ -3570,12 +3570,12 @@ public class Database
     
 
 
-    public synchronized Long getNextValue(Hashtable counters, String tableName, String val_key) throws KettleDatabaseException
+    public synchronized Long getNextValue(Hashtable<String,Counter> counters, String tableName, String val_key) throws KettleDatabaseException
     {
         return getNextValue(counters, null, tableName, val_key);
     }
     
-	public synchronized Long getNextValue(Hashtable counters, String schemaName, String tableName, String val_key) throws KettleDatabaseException
+	public synchronized Long getNextValue(Hashtable<String,Counter> counters, String schemaName, String tableName, String val_key) throws KettleDatabaseException
 	{
         Long nextValue = null;
         
@@ -3584,7 +3584,7 @@ public class Database
 		
 		// Try to find the previous sequence value...
 		Counter counter = null;
-        if (counters!=null) counter=(Counter)counters.get(lookup);
+        if (counters!=null) counter=counters.get(lookup);
         
 		if (counter==null)
 		{
@@ -3664,7 +3664,7 @@ public class Database
 	 * @return An ArrayList of rows.
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public ArrayList getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public ArrayList<Object[]> getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null) monitor.setTaskName("Opening query...");
 		ResultSet rset = openQuery(sql);
@@ -3680,11 +3680,11 @@ public class Database
      * @return An ArrayList of rows.
      * @throws KettleDatabaseException if something goes wrong.
      */
-	public ArrayList getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public ArrayList<Object[]> getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
     {
         try
         {
-            ArrayList result = new ArrayList();
+            ArrayList<Object[]> result = new ArrayList<Object[]>();
             boolean stop=false;
             int i=0;
             
@@ -3752,7 +3752,7 @@ public class Database
 	{
 		try
 		{
-			ArrayList types = new ArrayList();
+			ArrayList<String> types = new ArrayList<String>();
 		
 			ResultSet rstt = getDatabaseMetaData().getTableTypes();
 	        while(rstt.next()) 
@@ -3761,7 +3761,7 @@ public class Database
 	            types.add(ttype);
 	        }
 	        
-	        return (String[])types.toArray(new String[types.size()]);
+	        return types.toArray(new String[types.size()]);
 		}
 		catch(SQLException e)
 		{
@@ -3775,7 +3775,7 @@ public class Database
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname = databaseMeta.getUsername().toUpperCase();
 
-		ArrayList names = new ArrayList();
+		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
@@ -3805,7 +3805,7 @@ public class Database
 
 		log.logDetailed(toString(), "read :"+names.size()+" table names from db meta-data.");
 
-		return (String[])names.toArray(new String[names.size()]);
+		return names.toArray(new String[names.size()]);
 	}
 	
 	public String[] getViews()
@@ -3816,7 +3816,7 @@ public class Database
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname=databaseMeta.getUsername().toUpperCase();
 
-		ArrayList names = new ArrayList();
+		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
@@ -3846,7 +3846,7 @@ public class Database
 
 		log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
 
-		return (String[])names.toArray(new String[names.size()]);
+		return names.toArray(new String[names.size()]);
 	}
 
 	public String[] getSynonyms() throws KettleDatabaseException
@@ -3856,7 +3856,7 @@ public class Database
 		String schemaname = null;
 		if (databaseMeta.useSchemaNameForTableList()) schemaname=databaseMeta.getUsername().toUpperCase();
 	
-		ArrayList names = new ArrayList();
+		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
@@ -3886,7 +3886,7 @@ public class Database
 	
 		log.logDetailed(toString(), "read :"+names.size()+" views from db meta-data.");
 	
-		return (String[])names.toArray(new String[names.size()]);
+		return names.toArray(new String[names.size()]);
 	}
 	
 	public String[] getProcedures() throws KettleDatabaseException

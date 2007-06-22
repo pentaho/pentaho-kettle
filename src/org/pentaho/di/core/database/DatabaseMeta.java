@@ -927,7 +927,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         for (Iterator iter = list.iterator(); iter.hasNext();)
         {
             String code = (String) iter.next();
-            String attribute = (String) getAttributes().getProperty(code);
+            String attribute = getAttributes().getProperty(code);
             if (!Const.isEmpty(attribute))
             {
                 retval.append("      <attribute>"+
@@ -1443,7 +1443,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      */
 	public String[] checkParameters()
 	{
-        ArrayList remarks = new ArrayList();
+        ArrayList<String> remarks = new ArrayList<String>();
         
 		if (getDatabaseType()==TYPE_DATABASE_NONE) 
         {
@@ -1463,7 +1463,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             }
         }
 		
-		return (String[])remarks.toArray(new String[remarks.size()]);
+		return remarks.toArray(new String[remarks.size()]);
 	}
 	
     /**

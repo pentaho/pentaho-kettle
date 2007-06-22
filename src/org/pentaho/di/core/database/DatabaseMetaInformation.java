@@ -154,12 +154,12 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.subTask("Getting catalog information");
 			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
-				ArrayList catalogList = new ArrayList();
+				ArrayList<Catalog> catalogList = new ArrayList<Catalog>();
 				ResultSet catalogs = dbmd.getCatalogs();
 				while (catalogs!=null && catalogs.next())
 				{
 					String catalogName = catalogs.getString(1);
-					ArrayList catalogItems = new ArrayList();
+					ArrayList<String> catalogItems = new ArrayList<String>();
 					ResultSet tables = null;
 					try
 					{
@@ -184,13 +184,13 @@ public class DatabaseMetaInformation
 						if ( tables != null ) tables.close();
 					}
 					
-					Catalog catalog = new Catalog(catalogName, (String[])catalogItems.toArray(new String[catalogItems.size()]));
+					Catalog catalog = new Catalog(catalogName, catalogItems.toArray(new String[catalogItems.size()]));
 					catalogList.add(catalog);
 				}
 				catalogs.close();
 				
 				// Save for later...
-				setCatalogs((Catalog[])catalogList.toArray(new Catalog[catalogList.size()]));
+				setCatalogs(catalogList.toArray(new Catalog[catalogList.size()]));
 			}
 			if (monitor!=null) monitor.worked(1);
 	
@@ -198,14 +198,14 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.subTask("Getting schema information");
 			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
-				ArrayList schemaList = new ArrayList();
+				ArrayList<Schema> schemaList = new ArrayList<Schema>();
 				ResultSet schemas = null;
 				try 
 				{
 					schemas = dbmd.getSchemas();
 					while (schemas!=null && schemas.next())
 					{
-						ArrayList schemaItems = new ArrayList();
+						ArrayList<String> schemaItems = new ArrayList<String>();
 						String schemaName = schemas.getString(1);
 						ResultSet tables = null;
 						try
@@ -230,7 +230,7 @@ public class DatabaseMetaInformation
 						{
 							if ( tables != null ) tables.close();
 						}
-						Schema schema = new Schema(schemaName, (String[])schemaItems.toArray(new String[schemaItems.size()]));
+						Schema schema = new Schema(schemaName, schemaItems.toArray(new String[schemaItems.size()]));
 						schemaList.add(schema);
 					}
 				}
@@ -240,7 +240,7 @@ public class DatabaseMetaInformation
 				}				
 				
 				// Save for later...
-				setSchemas((Schema[])schemaList.toArray(new Schema[schemaList.size()]));
+				setSchemas(schemaList.toArray(new Schema[schemaList.size()]));
 			}
 			if (monitor!=null) monitor.worked(1);
 	

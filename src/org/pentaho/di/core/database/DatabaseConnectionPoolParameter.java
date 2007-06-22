@@ -98,7 +98,7 @@ public class DatabaseConnectionPoolParameter
         return null;
     }
     
-    public static final ArrayList getRowList(DatabaseConnectionPoolParameter[] poolParameters, String titleParameter, String titleDefaultValue, String titleDescription)
+    public static final ArrayList<RowMetaAndData> getRowList(DatabaseConnectionPoolParameter[] poolParameters, String titleParameter, String titleDefaultValue, String titleDescription)
     {
         RowMetaInterface rowMeta = new RowMeta();
         
@@ -106,7 +106,7 @@ public class DatabaseConnectionPoolParameter
         rowMeta.addValueMeta( new ValueMeta(titleDefaultValue, ValueMetaInterface.TYPE_STRING) );
         rowMeta.addValueMeta( new ValueMeta(titleDescription, ValueMetaInterface.TYPE_STRING) );
         
-        ArrayList list = new ArrayList();
+        ArrayList<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
         
         for (int i=0;i<poolParameters.length;i++)
         {
