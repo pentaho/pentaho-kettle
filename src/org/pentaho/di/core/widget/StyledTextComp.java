@@ -46,8 +46,8 @@ public class StyledTextComp extends Composite{
 
 	//Modification for Undo/Redo on Styled Text
 	private static final int MAX_STACK_SIZE = 25;
-	private List		undoStack;
-	private List		redoStack;
+	private List<UndoRedoStack>		undoStack;
+	private List<UndoRedoStack>		redoStack;
 	private boolean		bFullSelection=false;
 	private StyledText	styledText;
 	private Menu 		styledTextPopupmenu; 
@@ -60,8 +60,8 @@ public class StyledTextComp extends Composite{
 	
 	public StyledTextComp(Composite parent, int args, String strTabName) {
 		super(parent, SWT.NONE);
-		undoStack = new LinkedList();
-		redoStack = new LinkedList();
+		undoStack = new LinkedList<UndoRedoStack>();
+		redoStack = new LinkedList<UndoRedoStack>();
 		styledText = new StyledText(this, args);
 		styledTextPopupmenu = new Menu(parent.getShell(), SWT.POP_UP);
 		xParent = parent;
@@ -350,7 +350,7 @@ public class StyledTextComp extends Composite{
 		
 	private void undo() {
 		if (undoStack.size() > 0) {
-			UndoRedoStack urs = (UndoRedoStack) undoStack.remove(0);
+			UndoRedoStack urs = undoStack.remove(0);
 			if(redoStack.size() == MAX_STACK_SIZE) {
 				redoStack.remove(redoStack.size() - 1);
 			}
@@ -372,7 +372,7 @@ public class StyledTextComp extends Composite{
 
 	private void redo() {
 		if (redoStack.size() > 0) {
-			UndoRedoStack urs = (UndoRedoStack)redoStack.remove(0);
+			UndoRedoStack urs = redoStack.remove(0);
 			if(undoStack.size() == MAX_STACK_SIZE) {
 				undoStack.remove(undoStack.size() - 1);
 			}

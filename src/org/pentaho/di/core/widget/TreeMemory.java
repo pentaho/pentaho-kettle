@@ -21,7 +21,7 @@ public class TreeMemory
 {
     private static TreeMemory treeMemory;
     
-    private Map map;
+    private Map<TreeMemoryEntry,Boolean> map;
     
     public static final TreeMemory getInstance()
     {
@@ -34,7 +34,7 @@ public class TreeMemory
     
     private TreeMemory()
     {
-        map = new Hashtable(5000);
+        map = new Hashtable<TreeMemoryEntry,Boolean>(5000);
     }
     
     private class TreeMemoryEntry
@@ -91,7 +91,7 @@ public class TreeMemory
     
     public boolean isExpanded(String treeName, String[] path)
     {
-        Boolean expanded = (Boolean) map.get(new TreeMemoryEntry(treeName, path));
+        Boolean expanded = map.get(new TreeMemoryEntry(treeName, path));
         if (expanded!=null)
         {
             return expanded.booleanValue();

@@ -116,7 +116,7 @@ public class ConditionEditor extends Composite
 	private   int       previous_area;
 	private   int       previous_area_nr;
 	
-	private   ArrayList parents;
+	private   ArrayList<Condition> parents;
 	private   RowMetaInterface fields;
 	
 	private   int       max_field_length;
@@ -125,7 +125,7 @@ public class ConditionEditor extends Composite
 	
 	private int offsetx, offsety;
 	
-	private ArrayList modListeners;
+	private ArrayList<ModifyListener> modListeners;
 	
 	private String messageString;
     private Menu mPop;
@@ -152,7 +152,7 @@ public class ConditionEditor extends Composite
 	        }
 		);
 		
-		modListeners = new ArrayList();
+		modListeners = new ArrayList<ModifyListener>();
 		
 		sbVertical   = getVerticalBar();
 		sbHorizontal = getHorizontalBar();
@@ -167,7 +167,7 @@ public class ConditionEditor extends Composite
 		previous_area    = -1;
 		previous_area_nr = -1;
 		
-		parents = new ArrayList(); // Remember parent in drill-down...
+		parents = new ArrayList<Condition>(); // Remember parent in drill-down...
 		
 		hover_condition = -1;
 		hover_operator  = -1;
@@ -477,7 +477,7 @@ public class ConditionEditor extends Composite
 		if (parents.size()>0)
 		{
 			int last = parents.size()-1;
-			active_condition = (Condition)parents.get(last);
+			active_condition = parents.get(last);
 			parents.remove(last);
 
 			redraw();
@@ -683,7 +683,7 @@ public class ConditionEditor extends Composite
 					    // After that, move it to the parent.
 					    Condition up = active_condition.getCondition(cond_nr);
 					    active_condition.removeCondition(cond_nr);
-					    Condition parent = (Condition) parents.get(getLevel()-1);
+					    Condition parent = parents.get(getLevel()-1);
 					    
 					    parent.addCondition(up);
 					    
@@ -1344,7 +1344,7 @@ public class ConditionEditor extends Composite
 	{
 		for (int i=0;i<modListeners.size();i++)
 		{
-			ModifyListener lsMod = (ModifyListener)modListeners.get(i);
+			ModifyListener lsMod = modListeners.get(i);
 			if (lsMod!=null)
 			{
 				Event e = new Event();

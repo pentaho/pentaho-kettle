@@ -66,7 +66,7 @@ public class TableDraw extends Canvas
 	private Image     cache_image;
 	private int       prev_fromx, prev_tox, prev_fromy, prev_toy;
 	
-	private Vector fields;
+	private Vector<TextFileInputFieldInterface> fields;
 	
 	private ArrayList rows;
 	
@@ -79,7 +79,7 @@ public class TableDraw extends Canvas
 	private WizardPage wPage;
 	private String prevfieldname;
 	
-	public TableDraw(Composite parent, Props props, WizardPage wPage, Vector fields)
+	public TableDraw(Composite parent, Props props, WizardPage wPage, Vector<TextFileInputFieldInterface> fields)
 	{
 		super(parent, SWT.NO_BACKGROUND | SWT.H_SCROLL | SWT.V_SCROLL);
 		this.wPage   = wPage;
@@ -205,7 +205,7 @@ public class TableDraw extends Canvas
 	{
 		for(int i=0;i<fields.size();i++)
 		{
-			TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
+			TextFileInputFieldInterface field = fields.get(i);
 			int pos = field.getPosition();
 			int len = field.getLength();
 			if (pos<=x && pos+len>x) return field;
@@ -221,7 +221,7 @@ public class TableDraw extends Canvas
 		
 		for (int i=0;i<fields.size();i++)
 		{
-			TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
+			TextFileInputFieldInterface field = fields.get(i);
 			
 			int pos = field.getPosition();
 			int len = field.getLength();
@@ -251,7 +251,7 @@ public class TableDraw extends Canvas
 				// OK, let's add a new field, but split the length of the previous field
 				// We want to keep this list sorted, so add at position lowest_larger.
 				// We want to change the previous entry and add another after it.
-                TextFileInputFieldInterface prevfield = (TextFileInputFieldInterface)fields.get(highest_smaller);
+                TextFileInputFieldInterface prevfield = fields.get(highest_smaller);
 				int newlength = prevfield.getLength() - ( x - prevfield.getPosition());
                 TextFileInputFieldInterface field = prevfield.createNewInstance(getNewFieldname(), x, newlength);
 				fields.add(highest_smaller+1, field);
@@ -266,8 +266,8 @@ public class TableDraw extends Canvas
 			{
 				// Now we need to remove the field with the same starting position
 				// The previous field need to receive extra length
-                TextFileInputFieldInterface prevfield = (TextFileInputFieldInterface)fields.get(highest_smaller);
-                TextFileInputFieldInterface field     = (TextFileInputFieldInterface)fields.get(idx);
+                TextFileInputFieldInterface prevfield = fields.get(highest_smaller);
+                TextFileInputFieldInterface field     = fields.get(idx);
 				prevfield.setLength(prevfield.getLength()+field.getLength());
 				// Remove the field
 				fields.remove(idx);
@@ -295,7 +295,7 @@ public class TableDraw extends Canvas
 	{
 		for (int i=0;i<fields.size();i++)
 		{
-            TextFileInputFieldInterface field = (TextFileInputFieldInterface)fields.get(i);
+            TextFileInputFieldInterface field = fields.get(i);
 			
 			if ( name.equalsIgnoreCase(field.getName()) ) return true;
 		}
@@ -430,7 +430,7 @@ public class TableDraw extends Canvas
 		gc.setBackground(red);
 		for (int i=0;i<fields.size();i++)
 		{
-			int x = ((TextFileInputFieldInterface)fields.get(i)).getPosition();
+			int x = (fields.get(i)).getPosition();
 			if (x>=fromx && x<=tox)
 			{
 				drawMarker(gc, x, area.y);
@@ -545,14 +545,14 @@ public class TableDraw extends Canvas
 		return fields;
 	}
 
-	public void setFields(Vector fields)
+	public void setFields(Vector<TextFileInputFieldInterface> fields)
 	{
 		this.fields = fields;
 	}
 
 	public void clearFields()
 	{
-		fields = new Vector();
+		fields = new Vector<TextFileInputFieldInterface>();
 	}
 
 }

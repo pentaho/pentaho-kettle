@@ -148,7 +148,7 @@ public class TableView extends Composite
 	
 	// private int last_carret_position;
 	
-	private ArrayList undo;
+	private ArrayList<TransAction> undo;
 	private int      undo_position;
 	private String[] before_edit;
 	private MenuItem miEditUndo, miEditRedo;
@@ -157,7 +157,7 @@ public class TableView extends Composite
 
 	private Condition condition;
     private Color defaultBackgroundColor;
-    private Map usedColors;
+    private Map<String,Color> usedColors;
     private ColumnInfo numberColumn;
     protected int textWidgetCaretPosition;
 
@@ -184,7 +184,7 @@ public class TableView extends Composite
 		selectionStart = -1;
 		previous_shift = false;
 		
-        usedColors = new Hashtable();
+        usedColors = new Hashtable<String,Color>();
 		
 		condition = null;
 		
@@ -1074,7 +1074,7 @@ public class TableView extends Composite
 
             // First, get all info and put it in a Vector of Rows...
             TableItem[] items = table.getItems();
-            List v = new ArrayList();
+            List<Object[]> v = new ArrayList<Object[]>();
             
             // First create the row metadata for the grid
             // 
@@ -1112,7 +1112,7 @@ public class TableView extends Composite
                 {
                     String colorName = "bg "+bg.toString();
                     r[0] = colorName;
-                    r[0] = new Long( (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+                    r[0] = new Long( (bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue()) );
                     // Save it in the used colors map!
                     usedColors.put(colorName, bg);
                 }
@@ -1130,12 +1130,10 @@ public class TableView extends Composite
             final int[] sortIndex     = new int[] { sortField + 2 };
             
             // Sort the vector!
-            Collections.sort(v, new Comparator()
+            Collections.sort(v, new Comparator<Object[]>()
                 {
-                    public int compare(Object o1, Object o2)
+                    public int compare(Object[] r1, Object[] r2)
                     {
-                        Object[] r1 = (Object[]) o1;
-                        Object[] r2 = (Object[]) o2;
                         
                         try
                         {
@@ -1156,7 +1154,7 @@ public class TableView extends Composite
             // Refill the table
             for (int i=0;i<v.size();i++)
             {
-                Object[] r = (Object[])v.get(i);
+                Object[] r = v.get(i);
                 TableItem item = new TableItem(table, SWT.NONE);
                 
                 String colorName = (String) r[0];
@@ -1165,7 +1163,7 @@ public class TableView extends Composite
                 {
                     // Get it from the map 
                     //
-                    Color bg = (Color) usedColors.get(colorName);
+                    Color bg = usedColors.get(colorName);
                     if (bg!=null)
                     {
                         item.setBackground(bg);
@@ -1580,7 +1578,7 @@ public class TableView extends Composite
 	
 	private String[] convertTextToLines(String text)
 	{
-		ArrayList strings = new ArrayList();
+		ArrayList<String> strings = new ArrayList<String>();
 
 		int linenr=0;
 		int pos =0;
@@ -1601,14 +1599,14 @@ public class TableView extends Composite
 		}
 		
 		String retval[] = new String[strings.size()];
-		for (int i=0;i<retval.length;i++) retval[i] = (String)strings.get(i);	
+		for (int i=0;i<retval.length;i++) retval[i] = strings.get(i);	
 		
 		return retval;
 	}
 	
 	private String[] convertLineToStrings(String line)
 	{
-		ArrayList fields = new ArrayList();
+		ArrayList<String> fields = new ArrayList<String>();
 		
 		int pos2 = 0;
 		int start2 = 0;
@@ -1627,7 +1625,7 @@ public class TableView extends Composite
 		}
 
 		String retval[] = new String[fields.size()];
-		for (int i=0;i<retval.length;i++) retval[i] = (String)fields.get(i);	
+		for (int i=0;i<retval.length;i++) retval[i] = fields.get(i);	
 		
 		return retval;
 	}
@@ -2521,7 +2519,7 @@ public class TableView extends Composite
 	{
 		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
 		
-		TransAction retval = (TransAction)undo.get(undo_position);
+		TransAction retval = undo.get(undo_position);
 
 		undo_position--;
 		
@@ -2533,7 +2531,7 @@ public class TableView extends Composite
 	{
 		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
 		
-		TransAction retval = (TransAction)undo.get(undo_position);
+		TransAction retval = undo.get(undo_position);
 		
 		return retval;
 	}
@@ -2545,7 +2543,7 @@ public class TableView extends Composite
 		
 		undo_position++;
 				
-		TransAction retval = (TransAction)undo.get(undo_position);
+		TransAction retval = undo.get(undo_position);
 	
 		return retval;
 	}
@@ -2555,14 +2553,14 @@ public class TableView extends Composite
 		int size=undo.size();
 		if (size==0 || undo_position>=size-1) return null; // no redo left...
 		
-		TransAction retval = (TransAction)undo.get(undo_position+1);
+		TransAction retval = undo.get(undo_position+1);
 	
 		return retval;
 	}
 	
 	private void clearUndo()
 	{
-		undo = new ArrayList();
+		undo = new ArrayList<TransAction>();
 		undo_position = -1;
 	}
 
@@ -2607,7 +2605,7 @@ public class TableView extends Composite
 		Condition cond = ecd.open(); 
 		if (cond!=null)
 		{
-			ArrayList tokeep = new ArrayList();
+			ArrayList<Integer> tokeep = new ArrayList<Integer>();
 			
 			// Apply the condition to the TableView...
 			int nr = table.getItemCount();
@@ -2622,7 +2620,7 @@ public class TableView extends Composite
 			}
 
 			int sels[] = new int[tokeep.size()];
-			for (int i=0;i<sels.length;i++) sels[i] = ((Integer)tokeep.get(i)).intValue();
+			for (int i=0;i<sels.length;i++) sels[i] = (tokeep.get(i)).intValue();
 			
 			table.setSelection(sels);
 		}

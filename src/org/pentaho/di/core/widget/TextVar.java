@@ -170,7 +170,7 @@ public class TextVar extends Composite
             public void keyPressed(KeyEvent e)
             {
                 // CTRL-<SPACE> --> Insert a variable
-                if ((int)e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
+                if (e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
                 { 
                     Event event = new Event();
                     event.widget = textField;
