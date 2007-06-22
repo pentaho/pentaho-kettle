@@ -19,6 +19,7 @@ import org.pentaho.di.run.getfilenames.RunGetFileNames;
 import org.pentaho.di.run.groupby.RunGroupBy;
 import org.pentaho.di.run.insertupdate.RunInsertUpdate;
 import org.pentaho.di.run.joinrows.RunJoinRows;
+import org.pentaho.di.run.mergejoin.RunMergeJoin;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
 import org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
@@ -179,6 +180,7 @@ public class AllRunTests
         suite.addTestSuite(RunDelete.class);
         suite.addTestSuite(RunGetFileNames.class);
         suite.addTestSuite(RunGroupBy.class);
+        suite.addTestSuite(RunMergeJoin.class);
         
         //$JUnit-END$
         return suite;
