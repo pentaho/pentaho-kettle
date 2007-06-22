@@ -167,19 +167,15 @@ public class KettleVFS
         return fileObject;
     }
     
-    public static Comparator getComparator()
+    public static Comparator<FileObject> getComparator()
     {
-        return new Comparator()
+        return new Comparator<FileObject>()
         {
-            public int compare(Object o1, Object o2)
+            public int compare(FileObject o1, FileObject o2)
             {
-                if (o1 instanceof FileObject && o2 instanceof FileObject )
-                {
-                    String filename1 = getFilename((FileObject) o1);
-                    String filename2 = getFilename((FileObject) o2);
-                    return filename1.compareTo(filename2);
-                }
-                return 0;
+                String filename1 = getFilename( o1);
+                String filename2 = getFilename( o2);
+                return filename1.compareTo(filename2);
             }
         };
     }
