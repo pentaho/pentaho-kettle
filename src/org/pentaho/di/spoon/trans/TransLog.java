@@ -49,6 +49,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.EnterStringsDialog;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
@@ -880,9 +881,9 @@ public class TransLog extends Composite implements TabItemInterface
 		BaseStep rt;
 		int i;
 
-		List buffers = new ArrayList();
-        List rowMetas = new ArrayList();
-		List names = new ArrayList();
+		List<ArrayList> buffers = new ArrayList<ArrayList>();
+        List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
+		List<String> names = new ArrayList<String>();
 		for (i = 0; i < trans.nrSteps(); i++)
 		{
 			rt = trans.getRunThread(i);
@@ -917,7 +918,7 @@ public class TransLog extends Composite implements TabItemInterface
 	public void showErrors()
 	{
 		String all = wText.getText();
-		ArrayList err = new ArrayList();
+		ArrayList<String> err = new ArrayList<String>();
 
 		int i = 0;
 		int startpos = 0;
@@ -958,7 +959,7 @@ public class TransLog extends Composite implements TabItemInterface
 		{
 			String err_lines[] = new String[err.size()];
 			for (i = 0; i < err_lines.length; i++)
-				err_lines[i] = (String) err.get(i);
+				err_lines[i] = err.get(i);
 
 			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
