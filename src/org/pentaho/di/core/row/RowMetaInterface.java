@@ -19,7 +19,7 @@ public interface RowMetaInterface extends Cloneable
     /**
      * @param valueMetaList the list of valueMeta to set
      */
-    public void setValueMetaList(List valueMetaList);
+    public void setValueMetaList(List<ValueMetaInterface> valueMetaList);
 
     /**
      * Check if a value is already present in this row with the same name

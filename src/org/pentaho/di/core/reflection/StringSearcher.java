@@ -12,7 +12,7 @@ import org.pentaho.di.core.Const;
 
 public class StringSearcher
 {
-    public static final void findMetaData(Object object, int level, List stringList, Object parentObject, Object grandParentObject)
+    public static final void findMetaData(Object object, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject)
     {
         // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
         
@@ -89,7 +89,7 @@ public class StringSearcher
                         try
                         {
                             // System.out.println(Const.rightPad(" ", level)+"  Invoking method: "+fullMethod+", on object: "+object.toString());
-                            Object string = method.invoke(object, null);
+                            Object string = method.invoke(object, (Object[])null);
                             if (string!=null)
                             {
                                 if (string instanceof String)
@@ -178,7 +178,7 @@ public class StringSearcher
         Method method =null;
         try
         {
-            method=baseClass.getMethod(getter, null);
+            method=baseClass.getMethod(getter, (Class[])null);
         }
         catch(Exception e)
         {

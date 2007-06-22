@@ -477,9 +477,9 @@ public final class ByteArrayHashIndex {
     /**
      * @return a List of byte[] containing the serialized keys 
      */
-    public List getKeys()
+    public List<byte[]> getKeys()
     {
-        List list = new ArrayList();
+        List<byte[]> list = new ArrayList<byte[]>();
         
         for (int i=0;i<table.length;i++)
         {

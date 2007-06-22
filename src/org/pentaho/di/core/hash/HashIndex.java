@@ -458,7 +458,7 @@ public final class HashIndex {
      * @see #iterator()
      */
     public Iterator safeIterator() {
-        return new HashIterator((Entry[])table.clone());
+        return new HashIterator(table.clone());
     }
 
     private final static class HashIterator implements Iterator {

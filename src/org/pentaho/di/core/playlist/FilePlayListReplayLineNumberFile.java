@@ -16,7 +16,7 @@ import org.pentaho.di.core.exception.KettleException;
 
 class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
 {
-    Set lineNumbers = new HashSet();
+    Set<Long> lineNumbers = new HashSet<Long>();
 
     public FilePlayListReplayLineNumberFile(FileObject lineNumberFile, String encoding, FileObject processingFile, String filePart) throws KettleException
     {
