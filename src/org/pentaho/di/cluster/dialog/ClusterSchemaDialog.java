@@ -9,7 +9,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -34,9 +33,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
-
-
-
 
 /**
  * 
@@ -100,7 +96,7 @@ public class ClusterSchemaDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
  		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
+		shell.setImage( GUIResource.getInstance().getImageConnection());
 
 		lsMod = new ModifyListener() 
 		{
