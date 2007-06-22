@@ -59,9 +59,9 @@ public class ShowMessageDialog extends Dialog
     /** Timeout of dialog in seconds */
     private int timeOut;
 
-    private List buttons;
+    private List<Button> buttons;
 
-    private List adapters;
+    private List<SelectionAdapter> adapters;
 
     /**
      * Dialog to allow someone to show a text with an icon in front
@@ -146,8 +146,8 @@ public class ShowMessageDialog extends Dialog
         wlDesc.setLayoutData(fdlDesc);
         
 
-        buttons = new ArrayList();
-        adapters = new ArrayList();
+        buttons = new ArrayList<Button>();
+        adapters = new ArrayList<SelectionAdapter>();
         
         if ( (flags & SWT.OK) !=0)
         {
@@ -187,7 +187,7 @@ public class ShowMessageDialog extends Dialog
             buttons.add(button);
         }
         
-        BaseStepDialog.positionBottomButtons(shell, (Button[]) buttons.toArray(new Button[buttons.size()]), margin, wlDesc);
+        BaseStepDialog.positionBottomButtons(shell, buttons.toArray(new Button[buttons.size()]), margin, wlDesc);
 
         // Detect [X] or ALT-F4 or something that kills this window...
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -195,8 +195,8 @@ public class ShowMessageDialog extends Dialog
         shell.layout();
         shell.pack(true);
         
-        final Button button = (Button) buttons.get(0);
-        final SelectionAdapter selectionAdapter = (SelectionAdapter) adapters.get(0);
+        final Button button = buttons.get(0);
+        final SelectionAdapter selectionAdapter = adapters.get(0);
         final String ok = button.getText();
         long startTime = new Date().getTime();
 

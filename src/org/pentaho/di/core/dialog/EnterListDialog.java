@@ -74,7 +74,7 @@ public class EnterListDialog extends Dialog
 	private String    input[];
 	private String    retval[];
 	
-	private Hashtable selection;
+	private Hashtable<Integer,String> selection;
 	
 	private Shell     shell;
 	private List      wListSource, wListDest;
@@ -105,7 +105,7 @@ public class EnterListDialog extends Dialog
 		this.input  = input;
 		this.retval = null;
 		
-		selection = new Hashtable();
+		selection = new Hashtable<Integer,String>();
         
         opened = false;
 	}
@@ -460,7 +460,7 @@ public class EnterListDialog extends Dialog
 		for (int i=0;i<input.length;i++)
 		{
 			Integer idx = new Integer(i);
-			String str = (String)selection.get(idx);
+			String str = selection.get(idx);
 			if (str==null) // Not selected: show in source!
 			{
 				wListSource.add(input[i]);

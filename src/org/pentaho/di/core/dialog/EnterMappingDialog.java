@@ -115,7 +115,7 @@ public class EnterMappingDialog extends Dialog
 
     private Props     props;
 
-    private ArrayList mappings;
+    private ArrayList<SourceToTargetMapping> mappings;
 
     /**
      * Create a new dialog allowing the user to enter a mapping
@@ -126,7 +126,7 @@ public class EnterMappingDialog extends Dialog
      */
     public EnterMappingDialog(Shell parent, String source[], String target[])
     {
-        this(parent, source, target, new ArrayList());
+        this(parent, source, target, new ArrayList<SourceToTargetMapping>());
     }
 
     /**
@@ -137,7 +137,7 @@ public class EnterMappingDialog extends Dialog
      * @param target the target values
      * @param mappings the already selected mappings (ArrayList containing <code>SourceToTargetMapping</code>s)
      */
-    public EnterMappingDialog(Shell parent, String source[], String target[], ArrayList mappings)
+    public EnterMappingDialog(Shell parent, String source[], String target[], ArrayList<SourceToTargetMapping> mappings)
     {
         super(parent, SWT.NONE);
         props = Props.getInstance();
@@ -539,7 +539,7 @@ public class EnterMappingDialog extends Dialog
         wResult.removeAll();
         for (int i = 0; i < mappings.size(); i++)
         {
-            SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+            SourceToTargetMapping mapping = mappings.get(i);
             String mappingString = sourceList[mapping.getSourcePosition()] + " --> " + targetList[mapping.getTargetPosition()];
             wResult.add(mappingString);
         }
@@ -553,7 +553,7 @@ public class EnterMappingDialog extends Dialog
             {
                 for (int b=0;b<mappings.size() && !found;b++)
                 {
-                    SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(b);
+                    SourceToTargetMapping mapping = mappings.get(b);
                     if (mapping.getSourcePosition()== Const.indexOfString(sourceList[a], sourceList))
                     {
                         found = true;
@@ -576,7 +576,7 @@ public class EnterMappingDialog extends Dialog
             {
                 for (int b=0;b<mappings.size() && !found;b++)
                 {
-                    SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(b);
+                    SourceToTargetMapping mapping = mappings.get(b);
                     if (mapping.getTargetPosition()== Const.indexOfString(targetList[a], targetList))
                     {
                         found = true;

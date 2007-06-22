@@ -24,7 +24,7 @@ import org.pentaho.di.core.Const;
  */
 public class DatabaseConnectionMap
 {
-    private Map map;
+    private Map<String,Database> map;
     
     private static DatabaseConnectionMap connectionMap;
     
@@ -37,7 +37,7 @@ public class DatabaseConnectionMap
     
     private DatabaseConnectionMap()
     {
-        map = new Hashtable();
+        map = new Hashtable<String,Database>();
     }
     
     public synchronized void storeDatabase(String connectionGroup, String partitionID, Database database)
@@ -56,7 +56,7 @@ public class DatabaseConnectionMap
     public synchronized Database getDatabase(String connectionGroup, String partitionID, Database database)
     {
         String key = createEntryKey(connectionGroup, partitionID, database);
-        return (Database) map.get(key);
+        return map.get(key);
     }
     
     public static final String createEntryKey(String connectionGroup, String partitionID, Database database)
