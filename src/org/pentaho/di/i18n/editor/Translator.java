@@ -59,13 +59,13 @@ public class Translator
     private Color unusedColor;
     
     // All the properties files found...
-    Hashtable files;
+    Hashtable<String,Properties> files;
     private SashForm sashform;
     private List wList;
     private TableView wGrid;
-    private Hashtable directories;
-    private Hashtable locales;
-    private Hashtable javaFiles;
+    private Hashtable<String,Integer> directories;
+    private Hashtable<String,Boolean> locales;
+    private Hashtable<String,String> javaFiles;
 
     private Button wReload;
     private Button wClose;
@@ -87,10 +87,10 @@ public class Translator
     
     private void clear()
     {
-        files = new Hashtable(500);
-        directories = new Hashtable(100);
-        javaFiles = new Hashtable(500);
-        locales = new Hashtable(20);
+        files = new Hashtable<String,Properties>(500);
+        directories = new Hashtable<String,Integer>(100);
+        javaFiles = new Hashtable<String,String>(500);
+        locales = new Hashtable<String,Boolean>(20);
     }
     
     public void readFiles(String directory) throws KettleFileException
@@ -133,8 +133,8 @@ public class Translator
             // get the list of distinct directories:
             // at the same time, keep a list of available locales
             //
-            directories = new Hashtable(files.size());
-            locales = new Hashtable(10);
+            directories = new Hashtable<String,Integer>(files.size());
+            locales = new Hashtable<String,Boolean>(10);
             
             Enumeration fileEntries = files.keys();
             while (fileEntries.hasMoreElements())
@@ -143,7 +143,7 @@ public class Translator
                 String path = getPath(entry);
                 
                 // is it already in there?
-                Integer num = (Integer)directories.get(path);
+                Integer num = directories.get(path);
                 if (num!=null) 
                 { 
                     num = new Integer(num.intValue()+1); 
@@ -273,7 +273,7 @@ public class Translator
             readFiles(ROOT);
             shell.setCursor(null);
 
-            javaFiles = new Hashtable(500);
+            javaFiles = new Hashtable<String,String>(500);
             
             refresh();
         }
@@ -383,7 +383,7 @@ public class Translator
     public void refreshList()
     {
         // OK, now we have a distinct list of directories or packages to work with...
-        ArrayList dirList = new ArrayList(directories.keySet());
+        ArrayList<String> dirList = new ArrayList<String>(directories.keySet());
         Collections.sort(dirList);
         
         // Put it in the listbox:
@@ -391,7 +391,7 @@ public class Translator
         
         for (int i=0;i<dirList.size();i++)
         {
-            wList.add((String)dirList.get(i));
+            wList.add(dirList.get(i));
         }
     }
     
@@ -420,13 +420,13 @@ public class Translator
                         String filename = (String)enumeration.nextElement();
                         if (getPath(filename).equals(dir)) // yep, add this one
                         {
-                            Properties properties = (Properties) files.get(filename);
-                            ArrayList entries = new ArrayList(properties.keySet());
+                            Properties properties = files.get(filename);
+                            ArrayList<String> entries = new ArrayList(properties.keySet());
                             Collections.sort(entries);
                             
                             for (int e=0;e<entries.size();e++)
                             {
-                                String entry = (String) entries.get(e);
+                                String entry = entries.get(e);
                                 String value = properties.getProperty(entry, "");
                                 String locale = getLocale(filename);
                                 String classname = getClassname(entry);
@@ -443,7 +443,7 @@ public class Translator
                                     else
                                     {
                                         String javaFile = dir+"/"+classname+".java";
-                                        fileContent = (String) javaFiles.get(javaFile);
+                                        fileContent = javaFiles.get(javaFile);
                                         if (fileContent==null)
                                         {
                                             fileContent = loadJava(javaFile, filename, entry);
@@ -454,7 +454,7 @@ public class Translator
                                 }
                                 
                                 // Is this a selected locale?
-                                boolean localeSelected = ((Boolean)locales.get(locale)).booleanValue();
+                                boolean localeSelected = (locales.get(locale)).booleanValue();
                                 
                                 if (localeSelected)
                                 {
@@ -539,7 +539,7 @@ public class Translator
             // The properties file:
             String propfile = ROOT + "/" + dir + "/" + MESSAGES_DIR + "/" + MESSAGES_PREFIX + "_" + languages[x] + EXTENSION;
             String add=null;
-            Properties p = (Properties) files.get(propfile);
+            Properties p = files.get(propfile);
             if (p==null)
             {
                 add=languages[x]+" : missing file";
@@ -647,22 +647,22 @@ public class Translator
     
     public String[] getAvailableLocale()
     {
-        Set set = locales.keySet();
-        return (String[])set.toArray(new String[set.size()]);
+        Set<String> set = locales.keySet();
+        return set.toArray(new String[set.size()]);
     }
     
     public String[] getSelectedLocale()
     {
-        ArrayList selection = new ArrayList();
+        ArrayList<String> selection = new ArrayList<String>();
         String locs[] = getAvailableLocale();
         for (int i=0;i<locs.length;i++)
         {
-            if ( ((Boolean)locales.get(locs[i])).booleanValue())
+            if ( (locales.get(locs[i])).booleanValue())
             {
                 selection.add(locs[i]);
             }
         }
-        return (String[])selection.toArray(new String[selection.size()]);
+        return selection.toArray(new String[selection.size()]);
     }
     
     public void selectLocales()

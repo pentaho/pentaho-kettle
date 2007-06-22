@@ -27,15 +27,15 @@ public class XMLHandlerCache
    
    private static XMLHandlerCache cache; 
    
-   private Hashtable hashtable;
-   private ArrayList list;
+   private Hashtable<XMLHandlerCacheEntry,Integer> hashtable;
+   private ArrayList<XMLHandlerCacheEntry> list;
    
    private int cacheHits;
    
    private XMLHandlerCache()
    {
-       hashtable = new Hashtable(MAX_NUMBER_OF_ENTRIES);
-       list      = new ArrayList(MAX_NUMBER_OF_ENTRIES);
+       hashtable = new Hashtable<XMLHandlerCacheEntry,Integer>(MAX_NUMBER_OF_ENTRIES);
+       list      = new ArrayList<XMLHandlerCacheEntry>(MAX_NUMBER_OF_ENTRIES);
        
        cacheHits = 0;
    }
@@ -60,7 +60,7 @@ public class XMLHandlerCache
        if (list.size()>MAX_NUMBER_OF_ENTRIES)
        {
            // Simple: the oldest is the first in the list
-           XMLHandlerCacheEntry cacheEntry = (XMLHandlerCacheEntry) list.get(0);
+           XMLHandlerCacheEntry cacheEntry = list.get(0);
            
            // Remove this one from the cache...
            hashtable.remove(cacheEntry);
@@ -77,7 +77,7 @@ public class XMLHandlerCache
     */
    public int getLastChildNr(XMLHandlerCacheEntry entry)
    {
-       Integer lastChildNr = (Integer) hashtable.get(entry);
+       Integer lastChildNr = hashtable.get(entry);
        if (lastChildNr!=null) 
        {
            cacheHits++;

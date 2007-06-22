@@ -19,7 +19,7 @@ import org.pentaho.di.trans.StepLoader;
 
 public class GlobalMessages
 {
-    private static final ThreadLocal threadLocales         = new ThreadLocal();
+    private static final ThreadLocal<Locale> threadLocales         = new ThreadLocal<Locale>();
 
     private static final LanguageChoice  langChoice        = LanguageChoice.getInstance();
 
@@ -27,7 +27,7 @@ public class GlobalMessages
 
     private static final String      BUNDLE_NAME           = "messages.messages";                                  //$NON-NLS-1$
 
-    private static final Map         locales               = Collections.synchronizedMap(new HashMap());
+    private static final Map<String,ResourceBundle>         locales               = Collections.synchronizedMap(new HashMap<String,ResourceBundle>());
 
     public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR" };
     
@@ -40,7 +40,7 @@ public class GlobalMessages
 
     public static Locale getLocale()
     {
-        Locale rtn = (Locale) threadLocales.get();
+        Locale rtn = threadLocales.get();
         if (rtn != null) { return rtn; }
 
         setLocale(langChoice.getDefaultLocale());
@@ -80,7 +80,7 @@ public class GlobalMessages
     	
     	try
     	{
-    	    ResourceBundle bundle = (ResourceBundle) locales.get(filename);
+    	    ResourceBundle bundle = locales.get(filename);
             if (bundle == null)
             {
                 InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);

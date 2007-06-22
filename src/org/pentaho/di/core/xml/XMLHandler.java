@@ -883,7 +883,7 @@ public class XMLHandler
 
     public static String[] getNodeElements(Node node)
     {
-        ArrayList elements = new ArrayList(); // List of String 
+        ArrayList<String> elements = new ArrayList<String>(); // List of String 
         
         NodeList nodeList = node.getChildNodes();
         if (nodeList==null) return null;
@@ -896,7 +896,7 @@ public class XMLHandler
         
         if (elements.size()==0) return null;
         
-        return (String[])elements.toArray(new String[elements.size()]);
+        return elements.toArray(new String[elements.size()]);
     }
 
     public static Date stringToDate(String dateString)
