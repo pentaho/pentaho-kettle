@@ -97,13 +97,13 @@ public class Condition implements Cloneable, XMLInterface
 	private int left_fieldnr;
 	private int right_fieldnr;
 	
-	private ArrayList list;
+	private ArrayList<Condition> list;
 
     private String right_string;
 	
 	public Condition()
 	{
-		list = new ArrayList();
+		list = new ArrayList<Condition>();
 		this.operator        = OPERATOR_NONE;
 		this.negate          = false;
 		
@@ -487,7 +487,7 @@ public class Condition implements Cloneable, XMLInterface
 			else
 			{
 			    // Composite : get first
-				Condition cb0 = (Condition)list.get(0);
+				Condition cb0 = list.get(0);
 				retval = cb0.evaluate(rowMeta, r);
 				
 				// Loop over the conditions listed below.
@@ -496,7 +496,7 @@ public class Condition implements Cloneable, XMLInterface
 				{
 				    // Composite : evaluate #i
                     //
-					Condition cb = (Condition)list.get(i);
+					Condition cb = list.get(i);
 					boolean cmp = cb.evaluate(rowMeta, r);
 					switch (cb.getOperator()) 
 					{
@@ -574,7 +574,7 @@ public class Condition implements Cloneable, XMLInterface
 	{
 		if (isComposite())
 		{
-			Condition c = (Condition)list.get(nr);
+			Condition c = list.get(nr);
 			list.remove(nr);
 
 		    // Nothing left or only one condition left: move it to the parent: make it atomic.
@@ -600,7 +600,7 @@ public class Condition implements Cloneable, XMLInterface
 	
 	public Condition getCondition(int i)
 	{
-		return (Condition)list.get(i);
+		return list.get(i);
 	}
 	
 	public void setCondition(int i, Condition subCondition)
@@ -677,7 +677,7 @@ public class Condition implements Cloneable, XMLInterface
 			for (int i=0;i<level;i++) retval+="  "; retval+="("+Const.CR;
 			for (int i=0;i<list.size();i++)
 			{
-				Condition cb = (Condition)list.get(i);
+				Condition cb = list.get(i);
 				retval+=cb.toString(level+1, true, i>0);
 			}
 			for (int i=0;i<level;i++) retval+="  "; retval+=")"+Const.CR;
@@ -742,7 +742,7 @@ public class Condition implements Cloneable, XMLInterface
 	{
 		this();
 		
-		list = new ArrayList();
+		list = new ArrayList<Condition>();
 	    try
 	    {
 			String str_negated = XMLHandler.getTagValue(condnode, "negated");
@@ -792,7 +792,7 @@ public class Condition implements Cloneable, XMLInterface
 	{
 		this();
 		
-		list = new ArrayList();
+		list = new ArrayList<Condition>();
 		try
 		{
 			RowMetaAndData r = rep.getCondition(id_condition);
@@ -862,7 +862,7 @@ public class Condition implements Cloneable, XMLInterface
 	
 	public String[] getUsedFields()
 	{
-		Hashtable fields = new Hashtable();
+		Hashtable<String,String> fields = new Hashtable<String,String>();
 		getUsedFields(fields);
 		
 		String retval[] = new String[fields.size()];
@@ -877,7 +877,7 @@ public class Condition implements Cloneable, XMLInterface
 		return retval;
 	}
 	
-	public void getUsedFields(Hashtable fields)
+	public void getUsedFields(Hashtable<String,String> fields)
 	{
 		if (isAtomic())
 		{
