@@ -9,7 +9,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -33,9 +32,6 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.www.AddTransServlet;
-
-
-
 
 /**
  * 
@@ -95,7 +91,7 @@ public class SlaveServerDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 		props.setLook(shell);
-		shell.setImage((Image) GUIResource.getInstance().getImageConnection());
+		shell.setImage( GUIResource.getInstance().getImageConnection());
 		
 		lsMod = new ModifyListener() 
 		{
