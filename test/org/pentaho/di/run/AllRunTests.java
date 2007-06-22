@@ -16,6 +16,7 @@ import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
 import org.pentaho.di.run.excelinput.RunExcelInput;
 import org.pentaho.di.run.filterrows.RunFilterRows;
 import org.pentaho.di.run.getfilenames.RunGetFileNames;
+import org.pentaho.di.run.groupby.RunGroupBy;
 import org.pentaho.di.run.insertupdate.RunInsertUpdate;
 import org.pentaho.di.run.joinrows.RunJoinRows;
 import org.pentaho.di.run.rowgenerator.RunRowGenerator;
@@ -177,6 +178,7 @@ public class AllRunTests
         suite.addTestSuite(RunInsertUpdate.class);
         suite.addTestSuite(RunDelete.class);
         suite.addTestSuite(RunGetFileNames.class);
+        suite.addTestSuite(RunGroupBy.class);
         
         //$JUnit-END$
         return suite;
