@@ -75,11 +75,11 @@ public class GUIResource
     private ManagedFont fontLarge;
 
     /* * * Images * * */
-    private Hashtable imagesSteps;
-    private Hashtable imagesStepsSmall;
+    private Hashtable<String,Image> imagesSteps;
+    private Hashtable<String,Image> imagesStepsSmall;
     
-    private Hashtable imagesJobentries;
-    private Hashtable imagesJobentriesSmall;
+    private Hashtable<String,Image> imagesJobentries;
+    private Hashtable<String,Image> imagesJobentriesSmall;
     
     private Image     imageHop;
     private Image     imageConnection; 
@@ -270,8 +270,8 @@ public class GUIResource
      */
     private void loadStepImages()
     {
-        imagesSteps      = new Hashtable();
-        imagesStepsSmall = new Hashtable();
+        imagesSteps      = new Hashtable<String,Image>();
+        imagesStepsSmall = new Hashtable<String,Image>();
 
         ////
         //// STEP IMAGES TO LOAD
@@ -424,8 +424,8 @@ public class GUIResource
      */
     private void loadJobEntryImages()
     {
-        imagesJobentries = new Hashtable();
-        imagesJobentriesSmall = new Hashtable();
+        imagesJobentries = new Hashtable<String,Image>();
+        imagesJobentriesSmall = new Hashtable<String,Image>();
         
         ////
         //// JOB ENTRY IMAGES TO LOAD
@@ -772,7 +772,7 @@ public class GUIResource
     /**
      * @param imagesJobentries The imagesJobentries to set.
      */
-    public void setImagesJobentries(Hashtable imagesJobentries)
+    public void setImagesJobentries(Hashtable<String,Image> imagesJobentries)
     {
         this.imagesJobentries = imagesJobentries;
     }
@@ -780,7 +780,7 @@ public class GUIResource
     /**
      * @return Returns the imagesJobentriesSmall.
      */
-    public Hashtable getImagesJobentriesSmall()
+    public Hashtable<String,Image> getImagesJobentriesSmall()
     {
         return imagesJobentriesSmall;
     }
@@ -788,7 +788,7 @@ public class GUIResource
     /**
      * @param imagesJobentriesSmall The imagesJobentriesSmall to set.
      */
-    public void setImagesJobentriesSmall(Hashtable imagesJobentriesSmall)
+    public void setImagesJobentriesSmall(Hashtable<String,Image> imagesJobentriesSmall)
     {
         this.imagesJobentriesSmall = imagesJobentriesSmall;
     }

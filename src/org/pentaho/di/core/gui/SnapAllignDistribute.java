@@ -7,13 +7,13 @@ import org.pentaho.di.spoon.UndoInterface;
 
 public class SnapAllignDistribute
 {
-    private List elements;
+    private List<GUIPositionInterface> elements;
     private AddUndoPositionInterface addUndoPositionInterface;
     private int[] indices;
     private Redrawable redrawable;
     private UndoInterface undoInterface;
     
-    public SnapAllignDistribute(UndoInterface undoInterface, List elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
+    public SnapAllignDistribute(UndoInterface undoInterface, List<GUIPositionInterface> elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
     {
         this.undoInterface = undoInterface;
         this.elements = elements;
@@ -35,7 +35,7 @@ public class SnapAllignDistribute
 
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface positionInterface = (GUIPositionInterface)elements.get(i);
+            GUIPositionInterface positionInterface = elements.get(i);
 
             elemArray[i] = positionInterface;
             Point p = positionInterface.getLocation();
@@ -70,7 +70,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() == 0) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -80,7 +80,7 @@ public class SnapAllignDistribute
         // First look for the minimum x coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
             Point p = element.getLocation();
             if (p.x < min) min = p.x;
         }
@@ -88,7 +88,7 @@ public class SnapAllignDistribute
         // Then apply the coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             before[i] = new Point(p.x, p.y);
@@ -104,7 +104,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() == 0) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -114,7 +114,7 @@ public class SnapAllignDistribute
         // First look for the maximum x coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             if (p.x > max) max = p.x;
@@ -122,7 +122,7 @@ public class SnapAllignDistribute
         // Then apply the coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface stepMeta = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface stepMeta = elements.get(i);
 
             Point p = stepMeta.getLocation();
             before[i] = new Point(p.x, p.y);
@@ -138,7 +138,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() == 0) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -148,14 +148,14 @@ public class SnapAllignDistribute
         // First look for the minimum y coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
             Point p = element.getLocation();
             if (p.y < min) min = p.y;
         }
         // Then apply the coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
             
             Point p = element.getLocation();
             before[i] = new Point(p.x, p.y);
@@ -171,7 +171,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() == 0) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -181,7 +181,7 @@ public class SnapAllignDistribute
         // First look for the maximum y coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             if (p.y > max) max = p.y;
@@ -190,7 +190,7 @@ public class SnapAllignDistribute
         // Then apply the coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             before[i] = new Point(p.x, p.y);
@@ -206,7 +206,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() <= 1) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -219,7 +219,7 @@ public class SnapAllignDistribute
         // First look for the minimum & maximum x coordinate...
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             if (p.x < min) min = p.x;
@@ -236,8 +236,8 @@ public class SnapAllignDistribute
         {
             for (int j = 0; j < elements.size() - 1; j++)
             {
-                Point p1 = ((GUIPositionInterface)elements.get(order[j])).getLocation();
-                Point p2 = ((GUIPositionInterface)elements.get(order[j+1])).getLocation();
+                Point p1 = (elements.get(order[j])).getLocation();
+                Point p2 = (elements.get(order[j+1])).getLocation();
                 if (p1.x > p2.x) // swap
                 {
                     int dummy = order[j];
@@ -252,7 +252,7 @@ public class SnapAllignDistribute
 
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface)elements.get(order[i]);
+            GUIPositionInterface element = elements.get(order[i]);
             
             Point p = element.getLocation();
             before[i] = new Point(p.x, p.y);
@@ -269,7 +269,7 @@ public class SnapAllignDistribute
     {
         if (elements.size() <= 1) return;
 
-        GUIPositionInterface elemArray[] = (GUIPositionInterface[])elements.toArray(new GUIPositionInterface[elements.size()]);
+        GUIPositionInterface elemArray[] = elements.toArray(new GUIPositionInterface[elements.size()]);
         
         Point before[] = new Point[elements.size()];
         Point after[] = new Point[elements.size()];
@@ -283,7 +283,7 @@ public class SnapAllignDistribute
         int selnr = 0;
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(i);
+            GUIPositionInterface element = elements.get(i);
 
             Point p = element.getLocation();
             if (p.y < min) min = p.y;
@@ -301,8 +301,8 @@ public class SnapAllignDistribute
         {
             for (int j = 0; j < elements.size() - 1; j++)
             {
-                Point p1 = ((GUIPositionInterface)elements.get(order[j])).getLocation();
-                Point p2 = ((GUIPositionInterface)elements.get(order[j+1])).getLocation();
+                Point p1 = (elements.get(order[j])).getLocation();
+                Point p2 = (elements.get(order[j+1])).getLocation();
                 if (p1.y > p2.y) // swap
                 {
                     int dummy = order[j];
@@ -317,7 +317,7 @@ public class SnapAllignDistribute
 
         for (int i = 0; i < elements.size(); i++)
         {
-            GUIPositionInterface element = (GUIPositionInterface) elements.get(order[i]);
+            GUIPositionInterface element = elements.get(order[i]);
 
             Point p = element.getLocation();
             before[i] = new Point(p.x, p.y);

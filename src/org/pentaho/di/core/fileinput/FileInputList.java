@@ -18,9 +18,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 public class FileInputList
 {
-    private List                files              = new ArrayList();
-    private List                nonExistantFiles   = new ArrayList(1);
-    private List                nonAccessibleFiles = new ArrayList(1);
+    private List<FileObject>    files              = new ArrayList<FileObject>();
+    private List<FileObject>    nonExistantFiles   = new ArrayList<FileObject>(1);
+    private List<FileObject>    nonAccessibleFiles = new ArrayList<FileObject>(1);
     
     private static final String YES                = "Y";
 
@@ -348,7 +348,7 @@ public class FileInputList
         String[] fileStrings = new String[files.size()];
         for (int i=0;i<fileStrings.length;i++)
         {
-            fileStrings[i] = KettleVFS.getFilename((FileObject) files.get(i));
+            fileStrings[i] = KettleVFS.getFilename(files.get(i));
         }
         return fileStrings;
     }
@@ -397,7 +397,7 @@ public class FileInputList
     
     public FileObject getFile(int i)
     {
-        return (FileObject) files.get(i);
+        return files.get(i);
     }
 
     public int nrOfFiles()
