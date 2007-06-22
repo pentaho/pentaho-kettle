@@ -81,19 +81,19 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     public LogWriter            log;
 
-    private long                id;
+    protected long                id;
 
-    private String              name;
+    protected String              name;
 
-	private String              description;
+	protected String              description;
 
-	private String             extended_description;
+	protected String             extended_description;
 
-	private String				job_version;
+	protected String				job_version;
 
-	private int 				job_status;
+	protected int 				job_status;
 
-    private String              filename;
+    protected String              filename;
 
     public ArrayList            jobentries;
 
@@ -105,23 +105,23 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     public ArrayList            databases;
 
-    private RepositoryDirectory directory;
+    protected RepositoryDirectory directory;
 
-    private String              arguments[];
+    protected String              arguments[];
 
-    private boolean             changed, changed_entries, changed_hops, changed_notes, changed_databases;
+    protected boolean             changed, changed_entries, changed_hops, changed_notes, changed_databases;
 
-    private DatabaseMeta        logconnection;
+    protected DatabaseMeta        logconnection;
 
-    private String              logTable;
+    protected String              logTable;
 
     public DBCache              dbcache;
 
-    private ArrayList           undo;
+    protected ArrayList           undo;
 
-    private int                 max_undo;
+    protected int                 max_undo;
 
-    private int                 undo_position;
+    protected int                 undo_position;
 
     public static final int     TYPE_UNDO_CHANGE     = 1;
 
@@ -148,14 +148,14 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     public Date                 created_date, modifiedDate;
 
-    private boolean             useBatchId;
+    protected boolean             useBatchId;
 
-    private boolean             batchIdPassed;
+    protected boolean             batchIdPassed;
 
-    private boolean             logfieldUsed;
+    protected boolean             logfieldUsed;
 
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
-    private String              sharedObjectsFile;
+    protected String              sharedObjectsFile;
 
     public JobMeta(LogWriter l)
     {
@@ -440,7 +440,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         return false;
     }
 
-    private void saveRepJob(Repository rep) throws KettleException
+    protected void saveRepJob(Repository rep) throws KettleException
     {
         try
         {
@@ -2128,9 +2128,9 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
      *
      * @return A list containing all the selected & drawn job entries.
      */
-    public List getSelectedDrawnJobEntryList()
+    public List<JobEntryCopy> getSelectedDrawnJobEntryList()
     {
-        List list = new ArrayList();
+        List<JobEntryCopy> list = new ArrayList<JobEntryCopy>();
 
         for (int i = 0; i < nrJobEntries(); i++)
         {
