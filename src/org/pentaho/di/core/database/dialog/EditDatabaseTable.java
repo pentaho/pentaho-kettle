@@ -69,7 +69,7 @@ public class EditDatabaseTable extends Dialog
 	private int           scroll_size;
 	
 	private Database      db;
-	private ArrayList     buffer;
+	private ArrayList<Object[]>     buffer;
 	private int           position;
 	private int           max_position;
 	private ResultSet     rs;
@@ -251,7 +251,7 @@ public class EditDatabaseTable extends Dialog
 	
 	public void getNext() throws KettleException
 	{
-		buffer = new ArrayList();
+		buffer = new ArrayList<Object[]>();
 
 		// OK, now get a maximum of <scroll_size> rows
 		Object[] row = db.getRow(rs);
@@ -288,7 +288,7 @@ public class EditDatabaseTable extends Dialog
 	{
 		for (int i=0;i<buffer.size();i++)
 		{
-			Object[] row = (Object[])buffer.get(i);
+			Object[] row = buffer.get(i);
 
 			wFields.table.getItem(i).setText(0, ""+(position-scroll_size+i));
 			

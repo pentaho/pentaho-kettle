@@ -102,7 +102,7 @@ public class DatabaseExplorerDialog extends Dialog
 	private boolean justLook;
     private String  selectedSchema;
 	private String  selectedTable;
-	private List    databases;
+	private List<DatabaseMeta>    databases;
     private boolean splitSchemaAndTable;
     private String schemaName;
     private Composite buttonsComposite;
@@ -117,40 +117,40 @@ public class DatabaseExplorerDialog extends Dialog
     private Button bTruncate;
 
     /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
-    {
-        this(par, style, conn, (List)databases);
-    }
-
-    /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases)
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList<DatabaseMeta> databases)
     {
         this(par, style, conn, databases);
     }
 
     /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases, boolean look)
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
+    {
+        this(par, style, conn, databases);
+    }
+
+    /** @deprecated */
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList<DatabaseMeta> databases, boolean look)
     {
         this(par, style, conn, databases, look);
     }
     
     /** @deprecated */
-    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases, boolean look)
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look)
     {
         this(par, style, conn, databases, look);
     }
     
-	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases)
+	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases)
 	{
 		this(par, style, conn, databases, false, false);
 	}
 
-    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look)
+    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look)
     {
         this(par, style, conn, databases, look, false);
     }
     
-    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look, boolean splitSchemaAndTable)
+    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List<DatabaseMeta> databases, boolean look, boolean splitSchemaAndTable)
     {
         super(par, style);
         this.dbMeta=conn;
@@ -734,12 +734,12 @@ public class DatabaseExplorerDialog extends Dialog
     			// Now select the other connection...
                 
                 // Only take non-SAP R/3 connections....
-                List dbs = new ArrayList();
+                List<DatabaseMeta> dbs = new ArrayList<DatabaseMeta>();
                 for (int i=0;i<databases.size();i++) 
-                    if (((DatabaseMeta)databases.get(i)).getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SAPR3) dbs.add(databases.get(i));
+                    if ((databases.get(i)).getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SAPR3) dbs.add(databases.get(i));
                 
                 String conn[] = new String[dbs.size()];
-    			for (int i=0;i<conn.length;i++) conn[i] = ((DatabaseMeta)dbs.get(i)).getName();
+    			for (int i=0;i<conn.length;i++) conn[i] = (dbs.get(i)).getName();
     			
     			EnterSelectionDialog esd = new EnterSelectionDialog(shell, conn, Messages.getString("DatabaseExplorerDialog.TargetDatabase.Title"),
                     Messages.getString("DatabaseExplorerDialog.TargetDatabase.Message"));
