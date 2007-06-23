@@ -89,6 +89,17 @@ public interface VariableSpace
      */
     String environmentSubstitute(String aString);
     
+	/**
+	 * Replaces environment variables in an array of strings.
+	 *
+	 * See also: environmentSubstitute(String string)
+	 * 
+	 * @param string
+	 *            The array of strings that wants its variables to be replaced.
+	 * @return the array with the environment variables replaced.
+	 */
+	public String[] environmentSubstitute(String string[]);    
+    
     /**
      * Inject variables. The behaviour should be that the properties
      * object will be stored and at the time the VariableSpace is

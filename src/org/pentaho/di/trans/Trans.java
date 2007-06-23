@@ -2085,6 +2085,11 @@ public class Trans implements VariableSpace
 	{
 		return variables.environmentSubstitute(aString);
 	}
+	
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
 
 	public VariableSpace getParentVariableSpace() 
 	{

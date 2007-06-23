@@ -368,6 +368,11 @@ public class JobEntryBase implements Cloneable, VariableSpace
 		return variables.environmentSubstitute(aString);
 	}
 
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
 	public VariableSpace getParentVariableSpace() 
 	{
 		return variables.getParentVariableSpace();

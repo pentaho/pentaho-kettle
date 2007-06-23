@@ -2165,7 +2165,12 @@ public class BaseStep extends Thread implements VariableSpace
 	public String environmentSubstitute(String aString) 
 	{
 		return variables.environmentSubstitute(aString);
-	}
+	}	
+
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
 
 	public VariableSpace getParentVariableSpace() 
 	{

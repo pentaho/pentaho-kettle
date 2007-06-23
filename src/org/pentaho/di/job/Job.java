@@ -825,6 +825,11 @@ public class Job extends Thread implements VariableSpace
 		return variables.environmentSubstitute(aString);
 	}
 
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
 	public VariableSpace getParentVariableSpace() 
 	{
 		return variables.getParentVariableSpace();

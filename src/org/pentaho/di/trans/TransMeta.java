@@ -5660,6 +5660,11 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 		return variables.environmentSubstitute(aString);
 	}
 
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}	
+	
 	public VariableSpace getParentVariableSpace() 
 	{
 		return variables.getParentVariableSpace();

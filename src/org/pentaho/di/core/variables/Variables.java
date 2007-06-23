@@ -110,22 +110,26 @@ public class Variables implements VariableSpace
         }
     }
 	
-    /**
-	 * Replaces environment variables in an array of strings.<p>
-	 * See also: environmentSubstitute(String string)
-	 * @param string The array of strings that wants its variables to be replaced.
-	 * @return the array with the environment variables replaced.
-	 */
 	public String environmentSubstitute(String aString)
 	{
         if (aString==null || aString.length()==0) return aString;
         
         return StringUtil.environmentSubstitute(aString, properties);
 	}
+	
+	public String[] environmentSubstitute(String string[])
+	{
+		String retval[] = new String[string.length];
+		for (int i = 0; i < string.length; i++)
+		{
+			retval[i] = environmentSubstitute(string[i]);
+		}
+		return retval;
+	}	
 
 	public void shareVariablesWith(VariableSpace space) {
 	    // not implemented in here... done by pointing to the same VariableSpace
-		space = space;
+		// implementation
 	}
 
 	public void injectVariables(Properties prop) {
