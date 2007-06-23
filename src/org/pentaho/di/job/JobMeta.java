@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -52,6 +53,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -75,25 +78,25 @@ import org.w3c.dom.Node;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface
+public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
     public LogWriter            log;
 
-    protected long                id;
+    protected long              id;
 
-    protected String              name;
+    protected String            name;
 
-	protected String              description;
+	protected String            description;
 
-	protected String             extended_description;
+	protected String            extended_description;
 
-	protected String				job_version;
+	protected String			job_version;
 
 	protected int 				job_status;
 
-    protected String              filename;
+    protected String            filename;
 
     public ArrayList            jobentries;
 
@@ -115,10 +118,12 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     protected String              logTable;
 
-    public DBCache              dbcache;
+    public DBCache                dbcache;
 
     protected ArrayList           undo;
 
+    private VariableSpace         variables = new Variables();
+    
     protected int                 max_undo;
 
     protected int                 undo_position;
@@ -136,7 +141,6 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     public static final String STRING_SPECIAL_DUMMY  = "DUMMY"; //$NON-NLS-1$
     public static final String STRING_SPECIAL_OK     = "OK"; //$NON-NLS-1$
     public static final String STRING_SPECIAL_ERROR  = "ERROR"; //$NON-NLS-1$
-
 
 
     // Remember the size and position of the different windows...
@@ -2147,7 +2151,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     /**
      * This method sets various internal kettle variables that can be used by the transformation.
      */
-    public void setInternalKettleVariables()
+    public void setInternalKettleVariablesOld()
     {
         KettleVariables variables = KettleVariables.getInstance();
 
@@ -2432,4 +2436,109 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         }
         return null;
     }
+
+    /**
+     * Calls setInternalKettleVariables on the default object.
+     */
+    public void setInternalKettleVariables()
+    {
+    	setInternalKettleVariables(variables);
+    }
+    
+    /**
+     * This method sets various internal kettle variables that can be used by the transformation.
+     */
+    public void setInternalKettleVariables(VariableSpace var)
+    {
+    	setInternalKettleVariablesOld();   // TODO to be deleted after migration
+        if (filename!=null) // we have a finename that's defined.
+        {
+            try
+            {
+                FileObject fileObject = KettleVFS.getFileObject(filename);
+                FileName fileName = fileObject.getName();
+            	                
+                // The filename of the transformation
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
+            }
+            catch(IOException e)
+            {
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
+            }
+        }
+        else
+        {
+            var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
+            var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
+        }
+
+        // The name of the job
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
+
+        // The name of the directory in the repository
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
+        
+        // Undefine the transformation specific variables:
+        // transformations can't run jobs, so if you use these they are 99.99% wrong.
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null);
+    }    
+        
+	public void copyVariablesFrom(VariableSpace space) {
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}    
 }

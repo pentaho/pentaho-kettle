@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -45,6 +46,8 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
@@ -97,8 +100,10 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.trans.steps.update.UpdateMeta;
 
-public class BaseStep extends Thread
+public class BaseStep extends Thread implements VariableSpace
 {
+	private VariableSpace variables = new Variables();
+	
     public static final String CATEGORY_INPUT          = Messages.getString("BaseStep.Category.Input");
     public static final String CATEGORY_OUTPUT         = Messages.getString("BaseStep.Category.Output");
     public static final String CATEGORY_TRANSFORM      = Messages.getString("BaseStep.Category.Transform");
@@ -2151,4 +2156,54 @@ public class BaseStep extends Thread
     {
         this.previewRowMeta = previewRowMeta;
     }    
+    
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}        
 }

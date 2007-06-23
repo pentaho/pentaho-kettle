@@ -15,9 +15,13 @@
  
 package org.pentaho.di.job;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
@@ -26,6 +30,9 @@ import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -46,12 +53,13 @@ import org.pentaho.di.core.exception.KettleValueException;
  * @since  07-apr-2003
  * 
  */
-public class Job extends Thread
+public class Job extends Thread implements VariableSpace
 {
 	private LogWriter log;
 	private JobMeta jobMeta;
 	private Repository rep;
 	private int errors = 0;
+	private VariableSpace variables = new Variables();
 	
     /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
@@ -198,6 +206,10 @@ public class Job extends Thread
             //
             LocalVariables.getInstance().createKettleVariables(getName(), parentThread.getName(), false);
             initialized = true;
+    
+            // initialize from parentjob or null
+            variables.initializeVariablesFrom(parentJob);
+            setInternalKettleVariables(variables);                        
             
             Result result = execute(); // Run the job
 			endProcessing(Messages.getString("Job.Status.End"), result);
@@ -300,7 +312,10 @@ public class Job extends Thread
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(jei.getClass().getClassLoader());
         // Execute this entry...
-        Result result = ((JobEntryInterface)jei.clone()).execute(prevResult, nr, rep, this);
+        JobEntryInterface cloneJei = (JobEntryInterface)jei.clone();
+        ((VariableSpace)cloneJei).copyVariablesFrom(this);        
+        Result result = cloneJei.execute(prevResult, nr, rep, this);
+
         Thread.currentThread().setContextClassLoader(cl);
 		addErrors((int)result.getNrErrors());
 		
@@ -756,4 +771,97 @@ public class Job extends Thread
     {
         this.passedBatchId = jobBatchId;
     }
+    
+    private void setInternalKettleVariables(VariableSpace var)
+    {
+        if (jobMeta != null && jobMeta.getFilename() !=null) // we have a finename that's defined.
+        {
+            try
+            {
+                FileObject fileObject = KettleVFS.getFileObject(jobMeta.getFilename());
+                FileName fileName = fileObject.getName();
+                
+                // The filename of the transformation
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
+            }
+            catch(IOException e)
+            {
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
+                var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
+            }
+        }
+        else
+        {
+            var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
+            var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
+        }
+
+        // The name of the job
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(jobMeta.getName(), "")); //$NON-NLS-1$
+
+        // The name of the directory in the repository
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, jobMeta.getDirectory() != null ? jobMeta.getDirectory().getPath() : ""); //$NON-NLS-1$
+        
+        // Undefine the transformation specific variables
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null);
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null);
+    }    
+    
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}	    
 }

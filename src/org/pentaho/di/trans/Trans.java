@@ -16,11 +16,15 @@
 
 package org.pentaho.di.trans;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.vfs.FileName;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -38,6 +42,9 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.partition.PartitionSchema;
@@ -60,8 +67,6 @@ import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 
 
-
-
 /**
  * This class is responsible for the execution of Transformations.
  * It loads, instantiates, initializes, runs, monitors the execution of the transformation contained in the TransInfo object you feed it.
@@ -70,7 +75,7 @@ import org.pentaho.di.www.WebResult;
  * @since 07-04-2003
  *
  */
-public class Trans
+public class Trans implements VariableSpace
 {
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
 
@@ -97,6 +102,8 @@ public class Trans
     
     /** This is the batch ID that is passed from job to job to transformation, if nothing is passed, it's the transformation's batch id */
     private long      passedBatchId;
+    
+    private VariableSpace variables = new Variables();
 
 	/**
 	 * An arraylist of all the rowsets
@@ -157,6 +164,7 @@ public class Trans
         // The trans runs in the same thread as the parent.
         // So we can save that name for reference purposes
         threadName = Thread.currentThread().getName();
+        initializeVariablesFrom(null);
 	}
 
 	/*
@@ -171,6 +179,7 @@ public class Trans
 		preview_sizes=prev_sizes;
 		log.logBasic(toString(), Messages.getString("Trans.Log.TransformationIsInPreviewMode")); //$NON-NLS-1$
 		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToPreview",String.valueOf(transMeta.nrSteps()),String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
+		initializeVariablesFrom(null);
 	}
 
 	/*
@@ -185,6 +194,7 @@ public class Trans
 		preview_sizes=null;
 		log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
+		initializeVariablesFrom(null);
 	}
 
 	public String getName()
@@ -282,6 +292,8 @@ public class Trans
 			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 
+		setInternalKettleVariables(this);
+		
 		steps	 = new ArrayList();
 		rowsets	 = new ArrayList();
 
@@ -403,6 +415,10 @@ public class Trans
 					// Allocate the step
 					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
                     
+					// Copy the variables of the transformation to the step...
+					// don't share. Each copy of the step has its own variables.
+					((BaseStep)step).initializeVariablesFrom(this);
+					
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())
                     {
@@ -2019,4 +2035,94 @@ public class Trans
     {
         return readyToStart;
     }
+    
+    public void setInternalKettleVariables(VariableSpace var)
+    {        
+        if (transMeta != null && !Const.isEmpty(transMeta.getFilename())) // we have a finename that's defined.
+        {
+            try
+            {
+                FileObject fileObject = KettleVFS.getFileObject(transMeta.getFilename());
+                FileName fileName = fileObject.getName();
+                
+                // The filename of the transformation
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
+            }
+            catch(IOException e)
+            {
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+            }
+        }
+        else
+        {
+            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+        }
+        
+        // The name of the transformation
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(transMeta.getName(), ""));
+
+        // TODO PUT THIS INSIDE OF THE "IF"
+        // The name of the directory in the repository
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, transMeta.getDirectory()!=null?transMeta.getDirectory().getPath():"");
+        
+        // Here we don't undefine the job specific parameters, as it may come in handy.
+        // A transformation can be called from a job and may inherit the job internal variables
+        // but the other around can't.
+    }    
+    
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}	        
 }

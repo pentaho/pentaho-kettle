@@ -163,7 +163,7 @@ public class StringUtil
 	 *            the system properties to use
 	 * @return the string with the substitution applied.
 	 */
-	private static final String environmentSubstitute(String aString, Properties systemProperties)
+	public static final String environmentSubstitute(String aString, Properties systemProperties)
 	{
 		aString = substituteWindows(aString, systemProperties);
 		aString = substituteUnix(aString, systemProperties);

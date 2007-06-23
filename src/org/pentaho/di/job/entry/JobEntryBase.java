@@ -15,18 +15,19 @@
  
 package org.pentaho.di.job.entry;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-
-
 
 
 /**
@@ -34,18 +35,18 @@ import org.pentaho.di.core.exception.KettleXMLException;
  * 
  * @author Matt
  * Created on 18-jun-04
- *
  * 
  */
-
-public class JobEntryBase implements Cloneable
+public class JobEntryBase implements Cloneable, VariableSpace
 {
 	private String  name;
 	private String  description;
     private String  pluginID = null;
 	private boolean changed;
 	private int     type;
-	private long id;
+	private long    id;
+	
+	private VariableSpace variables = new Variables();
 	
 	public JobEntryBase()
 	{
@@ -356,4 +357,54 @@ public class JobEntryBase implements Cloneable
     {
         return new DatabaseMeta[] {};
     }
+    
+    public void copyVariablesFrom(VariableSpace space) 
+    {
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}	        
+	
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}
 }

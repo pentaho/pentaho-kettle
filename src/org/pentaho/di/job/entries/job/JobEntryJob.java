@@ -46,8 +46,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 
-
-
 /**
  * Recursive definition of a Job.  This step means that an entire Job has to be executed.
  * It can be the same Job, but just make sure that you don't get an endless loop.
@@ -57,7 +55,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
  * @since 01-10-2003, Rewritten on 18-06-2004
  * 
  */
-
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
     private static final LogWriter log = LogWriter.getInstance();
@@ -397,6 +394,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             {
                 args1 = parentJob.getJobMeta().getArguments();
             }
+            
+            copyVariablesFrom(parentJob);
 
             //
             // For the moment only do variable translation at the start of a job, not
@@ -431,9 +430,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 // Create a new job 
                 Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
                 
-                // Don't forget the logging...
-                job.beginProcessing();
+                job.shareVariablesWith(this);
                 
+                // Don't forget the logging...
+                job.beginProcessing();                
                 
                 // Link the job with the sub-job
                 parentJob.getJobTracker().addJobTracker(job.getJobTracker()); 

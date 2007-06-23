@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -59,6 +60,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -82,18 +85,11 @@ import org.w3c.dom.Node;
  *
  * @since 20-jun-2003
  * @author Matt
- *
  */
-public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface
+public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace
 {
     public static final String XML_TAG = "transformation";
-    
-    // private static final String CREATED_DATE_FIELDNAME = "created_date";
-    // private static final String MODIFIED_DATE_FIELDNAME = "modified_date";
-    
-    // private static final String STRING_CREATED_DATE = "created_date";
-    // private static final String STRING_MODIFIED_DATE = "modified_date";
-    
+        
     private static LogWriter    log                = LogWriter.getInstance();
 
     private List                inputFiles;
@@ -189,9 +185,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 	private Result              previousResult;
     private ArrayList           resultRows;
     private ArrayList           resultFiles;            
-    
-    
-    private List<PartitionSchema>                partitionSchemas;
+        
+    private List<PartitionSchema> partitionSchemas;
 
     private boolean             usingUniqueConnections;
     
@@ -203,6 +198,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
     private String              sharedObjectsFile;
+    
+    private VariableSpace       variables = new Variables();
     
     // //////////////////////////////////////////////////////////////////////////
 
@@ -233,6 +230,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     public TransMeta()
     {
         clear();
+        initializeVariablesFrom(null);
     }
 
     /**
@@ -248,6 +246,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         this.filename = filename;
         this.name = name;
         this.arguments = arguments;
+        initializeVariablesFrom(null);
     }
 
     /**
@@ -2091,6 +2090,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
         finally
         {
+        	initializeVariablesFrom(null);
             setInternalKettleVariables();
         }
     }
@@ -2303,7 +2303,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
         finally
         {
-            if (setInternalVariables) setInternalKettleVariables();
+        	initializeVariablesFrom(null);
+        	if (setInternalVariables) setInternalKettleVariables();
         }
     }
 
@@ -2960,6 +2961,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         }
         finally
         {
+        	initializeVariablesFrom(null);
             if (setInternalVariables) setInternalKettleVariables();
         }
 
@@ -5220,49 +5222,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 	public void setResultFiles(ArrayList resultFiles)
 	{
 		this.resultFiles = resultFiles;
-	}
-    
-    /**
-     * This method sets various internal kettle variables that can be used by the transformation.
-     */
-    public void setInternalKettleVariables()
-    {
-        KettleVariables variables = KettleVariables.getInstance();
-        
-        if (!Const.isEmpty(filename)) // we have a finename that's defined.
-        {
-            try
-            {
-                FileObject fileObject = KettleVFS.getFileObject(filename);
-                FileName fileName = fileObject.getName();
-                
-                // The filename of the transformation
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
-
-                // The directory of the transformation
-                FileName fileDir = fileName.getParent();
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
-            }
-            catch(IOException e)
-            {
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-            }
-        }
-        else
-        {
-            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-        }
-        
-        // The name of the transformation
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
-
-        // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
-        
-        // Here we don't undefine the job specific parameters, as it may come in handy.
-    }
+	}   
 
     /**
      * @return the partitionSchemas
@@ -5602,4 +5562,141 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
            }
        }
     }
+
+    // TO BE DELETED TODO SB
+    public void setInternalKettleVariablesOld()
+    {
+        KettleVariables variables = KettleVariables.getInstance();
+        
+        if (!Const.isEmpty(filename)) // we have a finename that's defined.
+        {
+            try
+            {
+                FileObject fileObject = KettleVFS.getFileObject(filename);
+                FileName fileName = fileObject.getName();
+                
+                // The filename of the transformation
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
+            }
+            catch(IOException e)
+            {
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+            }
+        }
+        else
+        {
+            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+        }
+        
+        // The name of the transformation
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
+
+        // The name of the directory in the repository
+        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
+        
+        // Here we don't undefine the job specific parameters, as it may come in handy.
+    }
+    
+    
+    public void setInternalKettleVariables()
+    {        
+    	setInternalKettleVariables(variables);
+    }
+    
+    public void setInternalKettleVariables(VariableSpace var)
+    {        
+    	setInternalKettleVariablesOld();
+        if (!Const.isEmpty(filename)) // we have a finename that's defined.
+        {
+            try
+            {
+                FileObject fileObject = KettleVFS.getFileObject(filename);
+                FileName fileName = fileObject.getName();
+                
+                // The filename of the transformation
+                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
+
+                // The directory of the transformation
+                FileName fileDir = fileName.getParent();
+                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
+            }
+            catch(IOException e)
+            {
+                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+                var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+            }
+        }
+        else
+        {
+            var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
+            var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
+        }
+        
+        // The name of the transformation
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
+
+        // The name of the directory in the repository
+        var.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
+        
+        // Here we don't undefine the job specific parameters, as it may come in handy.
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "Parent Job File Directory");
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "Parent Job Filename");
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, "Parent Job Name"); //$NON-NLS-1$
+        var.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory"); //$NON-NLS-1$        
+    }    
+    
+	public void copyVariablesFrom(VariableSpace space) {
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}        
 }

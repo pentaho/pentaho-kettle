@@ -52,8 +52,6 @@ import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.WebResult;
 
 
-
-
 /**
  * This is the job entry that defines a transformation to be run.
  * 
@@ -413,6 +411,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             args1 = parentJob.getJobMeta().getArguments();
         }
+        initializeVariablesFrom(parentJob);
 
         //
         // For the moment only do variable translation at the start of a job, not
@@ -640,7 +639,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     
                     // set the parent job on the transformation, variables are taken from here...
                     trans.setParentJob(parentJob);
-                    
+                    trans.shareVariablesWith(this);
                     
         			// Execute!
         			if (!trans.execute(args))
