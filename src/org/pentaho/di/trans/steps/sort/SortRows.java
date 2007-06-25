@@ -122,7 +122,7 @@ public class SortRows extends BaseStep implements StepInterface
                             if (result==0)
                             {
                                 data.buffer.remove(index); // remove this duplicate element as requested
-                                logBasic("Duplicate row removed: "+data.outputRowMeta.getString(row));
+                                if (log.isRowLevel()) logRowlevel("Duplicate row removed: "+data.outputRowMeta.getString(row));
                             }
                             else
                             {
@@ -144,6 +144,9 @@ public class SortRows extends BaseStep implements StepInterface
 				{
                     rowMeta.writeData(dos, data.buffer.get(p));
 				}
+                
+                // Clear the list
+                data.buffer.clear();
                 
 				// Close temp-file
 				dos.close();  // close data stream
@@ -298,6 +301,7 @@ public class SortRows extends BaseStep implements StepInterface
 					data.files.remove(smallest);
 					data.dis.remove(smallest);
 					data.fis.remove(smallest);
+
 					if (gzfi != null) data.gzis.remove(smallest);
 				}
 			}
@@ -344,11 +348,35 @@ public class SortRows extends BaseStep implements StepInterface
 		{
 			// Now we can start the output!
 			r=getBuffer();
+			Object[] previousRow = null;
 			while (r!=null  && !isStopped())
 			{
 				if (log.isRowLevel()) logRowlevel("Read row: "+r.toString());
 				
-				putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+				// Do another verification pass for unique rows...
+				//
+				if (meta.isOnlyPassingUniqueRows())
+				{
+					if (previousRow!=null)
+					{
+						// See if this row is the same as the previous one as far as the keys are concerned.
+						// If so, we don't put forward this row.
+                        int result = data.outputRowMeta.compare(r, previousRow, data.fieldnrs);
+                        if (result!=0)
+                        {
+    						putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+                        }
+					}
+					else
+					{
+						putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+					}
+					previousRow = r;
+				}
+				else
+				{
+					putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+				}
 
 				r=getBuffer();
 			}
