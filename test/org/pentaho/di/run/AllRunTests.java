@@ -24,6 +24,7 @@ import org.pentaho.di.run.rowgenerator.RunRowGenerator;
 import org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod;
 import org.pentaho.di.run.selectvalues.RunSelectValues;
 import org.pentaho.di.run.sort.RunSortRows;
+import org.pentaho.di.run.sortedmerge.RunSortedMerge;
 import org.pentaho.di.run.streamlookup.RunStreamLookup;
 import org.pentaho.di.run.systemdata.RunSystemData;
 import org.pentaho.di.run.tableinput.RunTableInput;
@@ -153,7 +154,7 @@ public class AllRunTests
     {
         TestSuite suite = new TestSuite("Run performance tests");
         //$JUnit-BEGIN$
-
+        
         suite.addTestSuite(RunTableOutput.class);
         suite.addTestSuite(RunAbort.class);
         suite.addTestSuite(RunAddSequence.class);
@@ -181,6 +182,8 @@ public class AllRunTests
         suite.addTestSuite(RunGetFileNames.class);
         suite.addTestSuite(RunGroupBy.class);
         suite.addTestSuite(RunMergeJoin.class);
+        suite.addTestSuite(RunSortedMerge.class);
+       
         
         //$JUnit-END$
         return suite;
