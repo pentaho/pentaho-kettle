@@ -17,6 +17,7 @@ package org.pentaho.di.trans;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
@@ -3950,7 +3951,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         try
         {
-            Const.quickSort(steps);
+            Collections.sort(steps);
         }
         catch (Exception e)
         {
@@ -3961,7 +3962,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
     public void sortHops()
     {
-        Const.quickSort(hops);
+        Collections.sort(hops);
     }
 
     /**

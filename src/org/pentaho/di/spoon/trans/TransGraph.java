@@ -1822,6 +1822,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private void setToolTip(int x, int y)
     {
+    	if (Const.isLinux()) return; // TODO fix the need for this exit point by getting updated libs when SWT 3.3 goes GA
+    	
         String newTip=null;
         
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);

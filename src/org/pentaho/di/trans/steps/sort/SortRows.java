@@ -122,6 +122,7 @@ public class SortRows extends BaseStep implements StepInterface
                             if (result==0)
                             {
                                 data.buffer.remove(index); // remove this duplicate element as requested
+                                logBasic("Duplicate row removed: "+data.outputRowMeta.getString(row));
                             }
                             else
                             {

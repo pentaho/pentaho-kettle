@@ -369,6 +369,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
 		wSortSize.setText(""+input.getSortSize());
 		wCompress.setSelection(input.getCompress());
+		wUniqueRows.setSelection(input.isOnlyPassingUniqueRows());
         
 		Table table = wFields.table;
 		if (input.getFieldName().length>0) table.removeAll();
@@ -402,6 +403,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         input.setSortSize( Const.toInt( wSortSize.getText(), Const.SORT_SIZE ) );
         log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
         input.setCompress(wCompress.getSelection());
+        input.setOnlyPassingUniqueRows(wUniqueRows.getSelection());
 
 		//Table table = wFields.table;
 		int nrfields = wFields.nrNonEmpty();
