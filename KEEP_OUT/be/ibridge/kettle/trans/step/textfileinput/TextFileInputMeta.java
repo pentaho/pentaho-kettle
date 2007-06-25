@@ -548,7 +548,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.fileCompression = fileCompression;
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode);
 	}

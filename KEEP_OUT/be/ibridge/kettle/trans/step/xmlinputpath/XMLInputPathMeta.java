@@ -285,7 +285,7 @@ public class XMLInputPathMeta extends BaseStepMeta implements StepMetaInterface
         this.encoding = encoding;
     }
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

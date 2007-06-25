@@ -79,7 +79,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         this.targetField = targetField;
     }
     
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode);
     }

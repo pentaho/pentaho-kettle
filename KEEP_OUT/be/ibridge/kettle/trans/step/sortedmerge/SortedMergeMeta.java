@@ -55,7 +55,7 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode);
 	}

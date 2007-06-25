@@ -144,7 +144,7 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
         this.fieldNorm = fieldNorm;
     }
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

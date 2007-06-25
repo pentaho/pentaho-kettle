@@ -225,7 +225,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
         this.value = value;
     }
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

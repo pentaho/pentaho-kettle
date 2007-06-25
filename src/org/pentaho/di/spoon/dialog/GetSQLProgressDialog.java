@@ -6,18 +6,18 @@
 package org.pentaho.di.spoon.dialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.trans.TransMeta;
 
 
 
@@ -32,7 +32,7 @@ public class GetSQLProgressDialog
 {
 	private Shell shell;
 	private TransMeta transMeta;
-	private ArrayList stats;
+	private List<SQLStatement> stats;
 
     /**
      * Creates a new dialog that will handle the wait while getting the SQL for a transformation...
@@ -52,7 +52,7 @@ public class GetSQLProgressDialog
 		this.transMeta = transMeta;
 	}
 	
-	public ArrayList open()
+	public List<SQLStatement> open()
 	{
 		IRunnableWithProgress op = new IRunnableWithProgress()
 		{

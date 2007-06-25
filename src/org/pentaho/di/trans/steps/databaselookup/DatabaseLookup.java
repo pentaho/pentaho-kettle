@@ -21,9 +21,12 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -35,10 +38,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 
 
 /**

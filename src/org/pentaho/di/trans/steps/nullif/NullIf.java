@@ -16,10 +16,10 @@
 package org.pentaho.di.trans.steps.nullif;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;

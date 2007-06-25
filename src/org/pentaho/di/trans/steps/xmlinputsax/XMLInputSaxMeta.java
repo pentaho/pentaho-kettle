@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -80,14 +81,14 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     /** The position in the XML documents to start (elements)*/
     private XMLInputSaxFieldPosition inputPosition[];
     
-    private ArrayList definitionElement;
-    private ArrayList definitionAttribute;
+    private List<String> definitionElement;
+    private List<String> definitionAttribute;
 	
 	public XMLInputSaxMeta()
 	{
 		super(); // allocate BaseStepMeta
-		definitionElement = new ArrayList();
-		definitionAttribute = new ArrayList();
+		definitionElement = new ArrayList<String>();
+		definitionAttribute = new ArrayList<String>();
 	}
 	
 	
@@ -220,7 +221,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     
     
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -377,8 +378,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		inputFields = new XMLInputSaxField [nrfields];
         
         inputPosition = new XMLInputSaxFieldPosition[nrPositions];
-        definitionElement = new ArrayList();
-        definitionAttribute = new ArrayList();
+        definitionElement = new ArrayList<String>();
+        definitionAttribute = new ArrayList<String>();
 	}
 	
 	public void setDefault()
@@ -447,7 +448,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 		try
@@ -575,7 +576,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		final String realfile[] = StringUtil.environmentSubstitute(fileName);
 		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
 		
-		ArrayList filelist = new ArrayList();
+		List<String> filelist = new ArrayList<String>();
 		
 		for (int i=0;i<realfile.length;i++)
 		{

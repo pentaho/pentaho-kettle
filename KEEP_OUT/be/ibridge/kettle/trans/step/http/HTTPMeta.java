@@ -126,7 +126,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         this.fieldName = resultName;
     }
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode, databases);
     }

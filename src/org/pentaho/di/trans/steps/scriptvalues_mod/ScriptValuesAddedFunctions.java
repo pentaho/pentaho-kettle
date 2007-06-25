@@ -67,10 +67,9 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.StringUtil;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {

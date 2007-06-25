@@ -64,7 +64,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
         condition=new Condition();
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

@@ -15,13 +15,13 @@
 
 package org.pentaho.di.trans.steps.injector;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -126,7 +126,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -187,7 +187,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0);
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
         try

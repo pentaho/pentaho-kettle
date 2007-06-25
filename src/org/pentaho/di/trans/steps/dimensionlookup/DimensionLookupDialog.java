@@ -48,14 +48,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.core.database.dialog.SQLEditor;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -63,11 +67,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.TableItemInsertListener;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
 
 
 

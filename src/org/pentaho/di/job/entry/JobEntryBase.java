@@ -15,19 +15,20 @@
  
 package org.pentaho.di.job.entry;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
+import org.w3c.dom.Node;
 
 
 /**
@@ -234,7 +235,7 @@ public class JobEntryBase implements Cloneable, VariableSpace
 		return retval.toString();
 	}	
 
-	public void loadXML(Node entrynode, ArrayList databases)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases)
 		throws KettleXMLException
 	{
 		try
@@ -267,7 +268,7 @@ public class JobEntryBase implements Cloneable, VariableSpace
 		}
 	}
 	
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try
@@ -333,9 +334,9 @@ public class JobEntryBase implements Cloneable, VariableSpace
 		return true;
 	}
     
-    public ArrayList getSQLStatements(Repository repository) throws KettleException
+    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
     {
-        return new ArrayList();
+        return new ArrayList<SQLStatement>();
     }
     
     public String getFilename()

@@ -78,7 +78,7 @@ import org.w3c.dom.Node;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace
+public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
@@ -98,15 +98,15 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     protected String            filename;
 
-    public ArrayList            jobentries;
+    public List<JobEntryInterface>            jobentries;
 
-    public ArrayList            jobcopies;
+    public List<JobEntryCopy>            jobcopies;
 
-    public ArrayList            jobhops;
+    public List<JobHopMeta>            jobhops;
 
-    public ArrayList            notes;
+    public List<NotePadMeta>            notes;
 
-    public ArrayList            databases;
+    public List<DatabaseMeta>            databases;
 
     protected RepositoryDirectory directory;
 
@@ -120,7 +120,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     public DBCache                dbcache;
 
-    protected ArrayList           undo;
+    protected List<TransAction>           undo;
 
     private VariableSpace         variables = new Variables();
     
@@ -180,11 +180,11 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     public void clear()
     {
         name = null;
-        jobcopies = new ArrayList();
-        jobentries = new ArrayList();
-        jobhops = new ArrayList();
-        notes = new ArrayList();
-        databases = new ArrayList();
+        jobcopies = new ArrayList<JobEntryCopy>();
+        jobentries = new ArrayList<JobEntryInterface>();
+        jobhops = new ArrayList<JobHopMeta>();
+        notes = new ArrayList<NotePadMeta>();
+        databases = new ArrayList<DatabaseMeta>();
         logconnection = null;
         logTable = null;
         arguments = null;
@@ -193,7 +193,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
         dbcache = DBCache.getInstance();
 
-        undo = new ArrayList();
+        undo = new ArrayList<TransAction>();
         undo_position = -1;
 
         addDefaults();
@@ -276,11 +276,8 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     /**
      * Compares two transformation on name, filename
      */
-    public int compare(Object o1, Object o2)
+    public int compare(JobMeta t1, JobMeta t2)
     {
-        JobMeta t1 = (JobMeta) o1;
-        JobMeta t2 = (JobMeta) o2;
-
         if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
         if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return 1;
         if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
@@ -293,14 +290,17 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         return t1.getName().compareTo(t2.getName());
     }
     
-    public int compareTo(Object o)
+    public int compareTo(JobMeta o)
     {
         return compare(this, o);
     }
 
     public boolean equals(Object obj)
     {
-        return compare(this, obj) == 0;
+    	if (!(obj instanceof JobMeta))
+    		return false;
+    	
+        return compare(this,(JobMeta) obj) == 0;
     }
 
     public Object clone()
@@ -379,7 +379,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     /**
      * @return Returns the databases.
      */
-    public ArrayList getDatabases()
+    public List<DatabaseMeta> getDatabases()
     {
         return databases;
     }
@@ -387,7 +387,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     /**
      * @param databases The databases to set.
      */
-    public void setDatabases(ArrayList databases)
+    public void setDatabases(List<DatabaseMeta> databases)
     {
         this.databases = databases;
     }
@@ -892,7 +892,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
             SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there
-            List shared = new ArrayList();
+            List<Object> shared = new ArrayList<Object>();
             shared.addAll(databases);
             
             // The databases connections...
@@ -1636,7 +1636,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
 
     public JobHopMeta[] getAllJobHopsUsing(String name)
     {
-        List hops = new ArrayList();
+        List<JobHopMeta> hops = new ArrayList<JobHopMeta>();
 
         for (int i = 0; i < nrJobHops(); i++)
         {
@@ -1649,7 +1649,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
                 }
             }
         }
-        return (JobHopMeta[]) hops.toArray(new JobHopMeta[hops.size()]);
+        return hops.toArray(new JobHopMeta[hops.size()]);
     }
 
     public NotePadMeta getNote(int x, int y)
@@ -1718,7 +1718,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
     
     public void clearUndo()
     {
-        undo = new ArrayList();
+        undo = new ArrayList<TransAction>();
         undo_position = -1;
     }
 
@@ -1979,16 +1979,16 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
      * 
      * @return An ArrayList of SQLStatement objects.
      */
-    public ArrayList getSQLStatements(Repository repository, IProgressMonitor monitor) throws KettleException
+    public List<SQLStatement> getSQLStatements(Repository repository, IProgressMonitor monitor) throws KettleException
     {
         if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.GettingSQLNeededForThisJob"), nrJobEntries() + 1); //$NON-NLS-1$
-        ArrayList stats = new ArrayList();
+        List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
         for (int i = 0; i < nrJobEntries(); i++)
         {
             JobEntryCopy copy = getJobEntry(i);
             if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-            ArrayList list = copy.getEntry().getSQLStatements(repository);
+            List<SQLStatement> list = copy.getEntry().getSQLStatements(repository);
             stats.addAll(list);
             if (monitor != null) monitor.worked(1);
         }
@@ -2063,9 +2063,9 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
      *
      * @return A list of StringSearchResult with strings used in the job
      */
-    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
+    public List<StringSearchResult> getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
     {
-        ArrayList stringList = new ArrayList();
+        List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
         if (searchSteps)
         {
@@ -2115,7 +2115,7 @@ public class JobMeta implements Cloneable, Comparable, XMLInterface, UndoInterfa
         // Get the list of Strings.
         List stringList = getStringList(true, true, false);
 
-        List varList = new ArrayList();
+        List<String> varList = new ArrayList<String>();
 
         // Look around in the strings, see what we find...
         for (int i = 0; i < stringList.size(); i++)

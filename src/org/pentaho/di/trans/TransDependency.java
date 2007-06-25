@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 package org.pentaho.di.trans;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -66,7 +66,7 @@ public class TransDependency implements XMLInterface
         return xml.toString();
     }
     
-	public TransDependency(Node depnode, ArrayList databases) throws KettleXMLException
+	public TransDependency(Node depnode, List<DatabaseMeta> databases) throws KettleXMLException
 	{
 		try
 		{
@@ -121,7 +121,7 @@ public class TransDependency implements XMLInterface
 		return fieldname;
 	}
 
-	public TransDependency(Repository rep, long id_dependency, ArrayList databases) throws KettleException
+	public TransDependency(Repository rep, long id_dependency, List<DatabaseMeta> databases) throws KettleException
 	{
 		try
 		{

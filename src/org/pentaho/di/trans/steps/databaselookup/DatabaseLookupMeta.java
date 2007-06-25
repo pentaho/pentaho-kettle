@@ -19,17 +19,24 @@
  */
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -40,15 +47,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.repository.Repository;
 
 
 
@@ -332,7 +330,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         this.failingOnMultipleResults = failOnMultipleResults;
     }
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		streamKeyField1=null;
@@ -381,7 +379,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return retval;
 	}
 	
-	private void readData(Node stepnode, ArrayList databases)
+	private void readData(Node stepnode, List<DatabaseMeta> databases)
 		throws KettleXMLException
 	{
 		try
@@ -543,7 +541,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 		try
@@ -828,7 +826,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return new DatabaseLookupData();
 	}
 
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// The keys are read-only...
 		for (int i=0;i<streamKeyField1.length;i++)

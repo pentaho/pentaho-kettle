@@ -15,19 +15,19 @@
  
 
 package org.pentaho.di.trans.step;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.TransMeta;
-
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.DatabaseImpact;
+import org.pentaho.di.trans.TransMeta;
 
 
 /*
@@ -91,7 +91,7 @@ public class BaseStepMeta implements Cloneable
 		return null;
 	}
 	
-	public void searchInfoAndTargetSteps(ArrayList steps)
+	public void searchInfoAndTargetSteps(List<StepMeta> steps)
 	{
 	}
 
@@ -168,7 +168,7 @@ public class BaseStepMeta implements Cloneable
      * @param output The output step names
      * @param info The fields used as information by this step
      */
-    public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
+    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
     {
         
     }

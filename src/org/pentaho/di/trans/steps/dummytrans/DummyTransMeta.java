@@ -15,13 +15,16 @@
  
 package org.pentaho.di.trans.steps.dummytrans;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -31,10 +34,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.repository.Repository;
 
 
 
@@ -50,7 +49,7 @@ public class DummyTransMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -70,7 +69,7 @@ public class DummyTransMeta extends BaseStepMeta implements StepMetaInterface
 	{
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 	}

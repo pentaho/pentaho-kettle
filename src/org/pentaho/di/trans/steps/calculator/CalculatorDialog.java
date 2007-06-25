@@ -44,20 +44,19 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.widget.ColumnInfo;
+import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.widget.TableView;
 
 
 public class CalculatorDialog extends BaseStepDialog implements StepDialogInterface

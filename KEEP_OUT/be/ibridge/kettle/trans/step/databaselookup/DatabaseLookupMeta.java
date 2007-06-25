@@ -328,7 +328,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         this.failingOnMultipleResults = failOnMultipleResults;
     }
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		streamKeyField1=null;

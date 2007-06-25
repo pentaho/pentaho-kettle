@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
@@ -35,10 +35,12 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
@@ -80,13 +82,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 
+
+
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
  *
  * @since 20-jun-2003
  * @author Matt
  */
-public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace
+public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace
 {
     public static final String XML_TAG = "transformation";
         
@@ -94,19 +98,19 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
     private List                inputFiles;
 
-    private ArrayList           databases;
+    private List<DatabaseMeta>           databases;
 
-    private ArrayList           steps;
+    private List<StepMeta>           steps;
 
-    private ArrayList           hops;
+    private List<TransHopMeta>           hops;
 
-    private ArrayList           notes;
+    private List<NotePadMeta>           notes;
 
-    private ArrayList           dependencies;
+    private List<TransDependency>           dependencies;
     
-    private ArrayList<SlaveServer>           slaveServers;
+    private List<SlaveServer>           slaveServers;
     
-    private ArrayList<ClusterSchema>           clusterSchemas;
+    private List<ClusterSchema>           clusterSchemas;
 
     private RepositoryDirectory directory;
 
@@ -154,13 +158,13 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
     private String              arguments[];
 
-    private Hashtable           counters;
+    private Hashtable<String,Counter>           counters;
 
     private ArrayList           sourceRows;
 
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
-    private ArrayList           undo;
+    private List<TransAction>           undo;
 
     private int                 max_undo;
 
@@ -183,8 +187,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     private int                 sleepTimeFull;
 
 	private Result              previousResult;
-    private ArrayList           resultRows;
-    private ArrayList           resultFiles;            
+    private List<RowMetaAndData>           resultRows;
+    private List<ResultFile>           resultFiles;            
         
     private List<PartitionSchema> partitionSchemas;
 
@@ -252,10 +256,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * Compares two transformation on name, filename
      */
-    public int compare(Object o1, Object o2) 
+    public int compare(TransMeta t1, TransMeta t2) 
     {
-        TransMeta t1 = (TransMeta) o1;
-        TransMeta t2 = (TransMeta) o2;
         
         if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
         if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
@@ -272,14 +274,17 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         return t1.getName().compareTo(t2.getName()); 
     } 
     
-    public int compareTo(Object o)
+    public int compareTo(TransMeta o)
     {
         return compare(this, o);
     }
     
     public boolean equals(Object obj)
     {
-        return compare(this, obj)==0;
+    	if (!(obj instanceof TransMeta))
+    		return false;
+    	
+        return compare(this, (TransMeta)obj)==0;
     }
 
     /**
@@ -308,14 +313,14 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     public void clear()
     {
         setID(-1L);
-        databases = new ArrayList();
-        steps = new ArrayList();
-        hops = new ArrayList();
-        notes = new ArrayList();
-        dependencies = new ArrayList();
-        partitionSchemas = new ArrayList();
-        slaveServers = new ArrayList();
-        clusterSchemas = new ArrayList();
+        databases = new ArrayList<DatabaseMeta>();
+        steps = new ArrayList<StepMeta>();
+        hops = new ArrayList<TransHopMeta>();
+        notes = new ArrayList<NotePadMeta>();
+        dependencies = new ArrayList<TransDependency>();
+        partitionSchemas = new ArrayList<PartitionSchema>();
+        slaveServers = new ArrayList<SlaveServer>();
+        clusterSchemas = new ArrayList<ClusterSchema>();
         
         name = null;
 		description=null;
@@ -342,11 +347,11 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
         maxDateDifference = 0.0;
 
-        undo = new ArrayList();
+        undo = new ArrayList<TransAction>();
         max_undo = Const.MAX_UNDO;
         undo_position = -1;
 
-        counters = new Hashtable();
+        counters = new Hashtable<String,Counter>();
         resultRows = null;
 
         clearUndo();
@@ -369,8 +374,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         // Default directory: root
         directory = directoryTree;
         
-        resultRows = new ArrayList();
-        resultFiles = new ArrayList();
+        resultRows = new ArrayList<RowMetaAndData>();
+        resultFiles = new ArrayList<ResultFile>();
         
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
@@ -380,14 +385,14 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 
     public void clearUndo()
     {
-        undo = new ArrayList();
+        undo = new ArrayList<TransAction>();
         undo_position = -1;
     }
 
     /* (non-Javadoc)
      * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabases()
      */
-    public ArrayList getDatabases()
+    public List<DatabaseMeta> getDatabases()
     {
         return databases;
     }
@@ -395,7 +400,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /* (non-Javadoc)
      * @see org.pentaho.di.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
      */
-    public void setDatabases(ArrayList databases)
+    public void setDatabases(List<DatabaseMeta> databases)
     {
         this.databases = databases;
     }
@@ -559,7 +564,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return an ArrayList of defined steps.
      */
-    public ArrayList getSteps()
+    public List<StepMeta> getSteps()
     {
         return steps;
     }
@@ -3035,9 +3040,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      * @param all Set to true if you want to get ALL the steps from the transformation.
      * @return A ArrayList of steps
      */
-    public ArrayList getTransHopSteps(boolean all)
+    public List<StepMeta> getTransHopSteps(boolean all)
     {
-        ArrayList st = new ArrayList();
+        List<StepMeta> st = new ArrayList<StepMeta>();
         int idx;
 
         for (int x = 0; x < nrTransHops(); x++)
@@ -3514,7 +3519,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      */
     public Point[] getSelectedStepLocations()
     {
-        ArrayList points = new ArrayList();
+        List<Point> points = new ArrayList<Point>();
 
         for (int i = 0; i < nrSelectedSteps(); i++)
         {
@@ -3523,7 +3528,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             points.add(new Point(p.x, p.y)); // explicit copy of location
         }
 
-        return (Point[]) points.toArray(new Point[points.size()]);
+        return points.toArray(new Point[points.size()]);
     }
 
     /**
@@ -3533,7 +3538,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      */
     public Point[] getSelectedNoteLocations()
     {
-        ArrayList points = new ArrayList();
+        List<Point> points = new ArrayList<Point>();
 
         for (int i = 0; i < nrSelectedNotes(); i++)
         {
@@ -3542,7 +3547,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             points.add(new Point(p.x, p.y)); // explicit copy of location
         }
 
-        return (Point[]) points.toArray(new Point[points.size()]);
+        return points.toArray(new Point[points.size()]);
     }
 
     /**
@@ -4079,7 +4084,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return An ArrayList of SQLStatement objects.
      */
-    public ArrayList getSQLStatements() throws KettleStepException
+    public List<SQLStatement> getSQLStatements() throws KettleStepException
     {
         return getSQLStatements(null);
     }
@@ -4089,10 +4094,10 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return An ArrayList of SQLStatement objects.
      */
-    public ArrayList getSQLStatements(IProgressMonitor monitor) throws KettleStepException
+    public List<SQLStatement> getSQLStatements(IProgressMonitor monitor) throws KettleStepException
     {
         if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.GettingTheSQLForTransformationTask.Title"), nrSteps() + 1); //$NON-NLS-1$
-        ArrayList stats = new ArrayList();
+        List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
         for (int i = 0; i < nrSteps(); i++)
         {
@@ -4148,7 +4153,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     public String getSQLStatementsString() throws KettleStepException
     {
         String sql = ""; //$NON-NLS-1$
-        ArrayList stats = getSQLStatements();
+        List<SQLStatement> stats = getSQLStatements();
         for (int i = 0; i < stats.size(); i++)
         {
             SQLStatement stat = (SQLStatement) stats.get(i);
@@ -4168,13 +4173,13 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      * @param only_selected Check only the selected steps.
      * @param monitor The progress monitor to use, null if not used
      */
-    public void checkSteps(ArrayList remarks, boolean only_selected, IProgressMonitor monitor)
+    public void checkSteps(List<CheckResult> remarks, boolean only_selected, IProgressMonitor monitor)
     {
         try
         {
             remarks.clear(); // Start with a clean slate...
 
-            Hashtable values = new Hashtable();
+            Map<ValueMetaInterface,String> values = new Hashtable<ValueMetaInterface,String>();
             String stepnames[];
             StepMeta steps[];
             if (!only_selected || nrSelectedSteps() == 0)
@@ -4390,10 +4395,8 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title")); //$NON-NLS-1$
             if (values.size() > 0)
             {
-                Enumeration keys = values.keys();
-                while (keys.hasMoreElements())
+                for(ValueMetaInterface v:values.keySet())
                 {
-                    ValueMetaInterface v = (ValueMetaInterface) keys.nextElement();
                     String message = (String) values.get(v);
                     CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description",v.getName() , message ,v.getOrigin() ), findStep(v.getOrigin())); //$NON-NLS-1$
                     remarks.add(cr);
@@ -4417,7 +4420,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return Returns the resultRows.
      */
-    public ArrayList getResultRows()
+    public List<RowMetaAndData> getResultRows()
     {
         return resultRows;
     }
@@ -4425,7 +4428,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @param resultRows The resultRows to set.
      */
-    public void setResultRows(ArrayList resultRows)
+    public void setResultRows(List<RowMetaAndData> resultRows)
     {
         this.resultRows = resultRows;
     }
@@ -4513,7 +4516,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return Returns the counters.
      */
-    public Hashtable getCounters()
+    public Hashtable<String,Counter> getCounters()
     {
         return counters;
     }
@@ -4521,7 +4524,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @param counters The counters to set.
      */
-    public void setCounters(Hashtable counters)
+    public void setCounters(Hashtable<String,Counter> counters)
     {
         this.counters = counters;
     }
@@ -4529,7 +4532,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return Returns the dependencies.
      */
-    public ArrayList getDependencies()
+    public List<TransDependency> getDependencies()
     {
         return dependencies;
     }
@@ -4537,7 +4540,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @param dependencies The dependencies to set.
      */
-    public void setDependencies(ArrayList dependencies)
+    public void setDependencies(List<TransDependency> dependencies)
     {
         this.dependencies = dependencies;
     }
@@ -5120,9 +5123,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
      *
      * @return A list of StringSearchResult with strings used in the 
      */
-    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes, boolean includePasswords)
+    public List<StringSearchResult> getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes, boolean includePasswords)
     {
-        ArrayList stringList = new ArrayList();
+        List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
         if (searchSteps)
         {
@@ -5178,9 +5181,9 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     public List getUsedVariables()
     {
         // Get the list of Strings.
-        List stringList = getStringList(true, true, false, true);
+        List<StringSearchResult> stringList = getStringList(true, true, false, true);
 
-        List varList = new ArrayList();
+        List<String> varList = new ArrayList<String>();
 
         // Look around in the strings, see what we find...
         for (int i=0;i<stringList.size();i++)
@@ -5211,7 +5214,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 	/**
 	 * @return Returns the resultFiles.
 	 */
-	public synchronized ArrayList getResultFiles()
+	public List<ResultFile> getResultFiles()
 	{
 		return resultFiles;
 	}
@@ -5219,7 +5222,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
 	/**
 	 * @param resultFiles The resultFiles to set.
 	 */
-	public void setResultFiles(ArrayList resultFiles)
+	public void setResultFiles(List<ResultFile> resultFiles)
 	{
 		this.resultFiles = resultFiles;
 	}   
@@ -5235,7 +5238,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @param partitionSchemas the partitionSchemas to set
      */
-    public void setPartitionSchemas(List partitionSchemas)
+    public void setPartitionSchemas(List<PartitionSchema> partitionSchemas)
     {
         this.partitionSchemas = partitionSchemas;
     }
@@ -5302,12 +5305,12 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
         this.usingUniqueConnections = usingUniqueConnections;
     }
 
-    public ArrayList<ClusterSchema> getClusterSchemas()
+    public List<ClusterSchema> getClusterSchemas()
     {
         return clusterSchemas;
     }
 
-    public void setClusterSchemas(ArrayList clusterSchemas)
+    public void setClusterSchemas(List<ClusterSchema> clusterSchemas)
     {
         this.clusterSchemas = clusterSchemas;
     }
@@ -5437,7 +5440,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
             SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there
-            List shared = new ArrayList();
+            List<Object> shared = new ArrayList<Object>();
             shared.addAll(databases);
             shared.addAll(steps);
             shared.addAll(partitionSchemas);
@@ -5492,7 +5495,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @return the slaveServers
      */
-    public ArrayList<SlaveServer> getSlaveServers()
+    public List<SlaveServer> getSlaveServers()
     {
         return slaveServers;
     }
@@ -5500,7 +5503,7 @@ public class TransMeta implements XMLInterface, Comparator, Comparable, ChangedF
     /**
      * @param slaveServers the slaveServers to set
      */
-    public void setSlaveServers(ArrayList slaveServers)
+    public void setSlaveServers(List<SlaveServer> slaveServers)
     {
         this.slaveServers = slaveServers;
     }

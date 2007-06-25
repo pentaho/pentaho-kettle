@@ -15,7 +15,7 @@
 
 package org.pentaho.di.core.database.wizard;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -44,7 +44,7 @@ public class CreateDatabaseWizard {
      * @param databases
      * @return DatabaseMeta when finished or null when canceled
      */
-    public DatabaseMeta createAndRunDatabaseWizard(Shell shell, Props props, ArrayList databases)
+    public DatabaseMeta createAndRunDatabaseWizard(Shell shell, Props props, List<DatabaseMeta> databases)
     {
 
         DatabaseMeta newDBInfo = new DatabaseMeta();

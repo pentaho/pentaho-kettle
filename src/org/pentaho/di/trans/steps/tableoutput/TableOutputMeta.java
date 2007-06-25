@@ -223,7 +223,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		commitSize=100;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -332,7 +332,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     
-	private void readData(Node stepnode, ArrayList databases) throws KettleXMLException
+	private void readData(Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException
 	{
 		try
 		{
@@ -407,7 +407,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
 	{
 		try
 		{
@@ -637,8 +637,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new TableOutputData();
 	}
-
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		if (truncateTable)
 		{

@@ -902,6 +902,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(250);
@@ -921,6 +922,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		retval.append("    ").append(XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
         
         retval.append("    <attributes>").append(Const.CR);
+       
         List list = new ArrayList( getAttributes().keySet() );
         Collections.sort(list);  // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.  
         
@@ -2049,7 +2051,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * @param oldname the old name of the database
      * @return the new name of the database connection
      */
-    public String verifyAndModifyDatabaseName(ArrayList databases, String oldname)
+    public String verifyAndModifyDatabaseName(List<DatabaseMeta> databases, String oldname)
     {
         String name = getName();
         if (name.equalsIgnoreCase(oldname)) return name; // nothing to see here: move along!
@@ -2206,7 +2208,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * @param dbname The name of the database connection
      * @return The database object if one was found, null otherwise.
      */
-    public static final DatabaseMeta findDatabase(List databases, String dbname)
+    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, String dbname)
     {
         if (databases == null)
             return null;

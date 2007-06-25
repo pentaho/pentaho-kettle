@@ -26,7 +26,6 @@
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -41,6 +40,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -199,7 +199,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     }
     
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -356,7 +356,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
     {
 		try
 		{

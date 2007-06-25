@@ -25,11 +25,10 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 
 

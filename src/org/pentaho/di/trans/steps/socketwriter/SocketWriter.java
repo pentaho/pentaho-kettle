@@ -23,6 +23,9 @@ import java.net.ServerSocket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -30,10 +33,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**

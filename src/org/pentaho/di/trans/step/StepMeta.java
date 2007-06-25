@@ -15,7 +15,6 @@
  
 package org.pentaho.di.trans.step;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -23,6 +22,7 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
@@ -148,7 +148,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	 * @param counters A hashtable with all defined counters.
 	 * 
 	 */
-	public StepMeta(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
         this();
         LogWriter log = LogWriter.getInstance();
@@ -495,7 +495,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
      * @param partitionSchemas
      * @throws KettleException
      */
-	public StepMeta(Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
+	public StepMeta(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters, List partitionSchemas) throws KettleException
 	{
         this();
         StepLoader steploader = StepLoader.getInstance();

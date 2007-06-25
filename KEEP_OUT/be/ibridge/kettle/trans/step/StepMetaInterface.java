@@ -70,7 +70,7 @@ public interface StepMetaInterface
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
 	 */
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException;
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException;
 
 	/**
 	 * Save the steps data into a Kettle repository

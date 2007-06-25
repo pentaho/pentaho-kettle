@@ -221,7 +221,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		commitSize=100;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);

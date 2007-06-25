@@ -15,7 +15,6 @@
 
 package org.pentaho.di.trans.steps.update;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -276,7 +275,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -316,7 +315,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 	
-	private void readData(Node stepnode, ArrayList databases)
+	private void readData(Node stepnode, List<DatabaseMeta> databases)
 		throws KettleXMLException
 	{
 		try
@@ -429,7 +428,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 		try
@@ -808,7 +807,8 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 	
-    public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) throws KettleStepException
+	@Override
+    public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) throws KettleStepException
     {
         if (prev != null)
         {

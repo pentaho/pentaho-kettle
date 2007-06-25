@@ -19,7 +19,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Collections;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -33,11 +37,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 
 
 

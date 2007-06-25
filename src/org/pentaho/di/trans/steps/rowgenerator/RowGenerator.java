@@ -19,11 +19,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -31,11 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.CheckResult;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 
 /**
  * Generates a number of (empty or the same) rows

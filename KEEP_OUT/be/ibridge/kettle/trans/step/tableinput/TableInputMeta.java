@@ -153,7 +153,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.lookupFromStep = lookupFromStep;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);

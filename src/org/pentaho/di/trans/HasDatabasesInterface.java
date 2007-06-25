@@ -1,6 +1,6 @@
 package org.pentaho.di.trans;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -15,12 +15,12 @@ public interface HasDatabasesInterface
      *
      * @return an ArrayList of defined DatabaseInfo objects.
      */
-    public ArrayList getDatabases();
+    public List<DatabaseMeta> getDatabases();
 
     /**
      * @param databases The databases to set.
      */
-    public void setDatabases(ArrayList databases);
+    public void setDatabases(List<DatabaseMeta> databases);
 
     /**
      * Add a database connection to the transformation.

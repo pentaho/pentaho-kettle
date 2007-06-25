@@ -106,6 +106,7 @@ import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.PrintSpool;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.clipboard.ImageDataTransfer;
@@ -273,18 +274,18 @@ public class Spoon implements AddUndoPositionInterface
      * This contains a map between the name of a transformation and the TransMeta object.
      * If the transformation has no name it will be mapped under a number [1], [2] etc. 
      */
-    private Map transformationMap;
+    private Map<String,TransMeta> transformationMap;
 
     /** 
      * This contains a map between the name of a transformation and the TransMeta object.
      * If the transformation has no name it will be mapped under a number [1], [2] etc. 
      */
-    private Map jobMap;
+    private Map<String,JobMeta> jobMap;
 
     /**
      * This contains a map between the name of the tab name and the object name and type 
      */
-    private Map tabMap;
+    private Map<String,TabMapEntry> tabMap;
     
     /**
      * This contains a map with all the unnamed transformation (just a filename)
@@ -391,9 +392,9 @@ public class Spoon implements AddUndoPositionInterface
         layout.marginHeight = 0;
         shell.setLayout (layout);
         
-        transformationMap = new Hashtable();
-        jobMap = new Hashtable();
-        tabMap = new Hashtable();
+        transformationMap = new Hashtable<String,TransMeta>();
+        jobMap = new Hashtable<String,JobMeta>();
+        tabMap = new Hashtable<String,TabMapEntry>();
         
         // INIT Data structure
         if (ti!=null)
@@ -796,7 +797,7 @@ public class Spoon implements AddUndoPositionInterface
             return;
         }
 
-        ArrayList rows = new ArrayList();
+        List<Object[]> rows = new ArrayList<Object[]>();
 
         for (int t=0;t<transMetas.length;t++)
         {
@@ -816,7 +817,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 if (filter!=null && result.getGrandParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 
-                if (add) rows.add(result.toRow());
+                if (add) rows.add(result.toRow().getData());
             }
         }
 
@@ -1424,7 +1425,7 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             File file = new File(FILE_WELCOME_PAGE);
-            addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString()); // ./docs/English/tips/index.htm
+            addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString()); // ./docs/English/tips/index.htm
         }
         catch (MalformedURLException e1)
         {
@@ -2200,7 +2201,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     public TreeSelection[] getTreeObjects(final Tree tree)
     {
-        List objects = new ArrayList();
+        List<TreeSelection> objects = new ArrayList<TreeSelection>();
         
         if (tree.equals(selectionTree))
         {
@@ -2864,7 +2865,7 @@ public class Spoon implements AddUndoPositionInterface
         tabfolder.addSelectionListener(new SelectionAdapter() 
             {
 				public void widgetSelected(SelectionEvent event) {
-                    ArrayList collection = new ArrayList();
+                    ArrayList<TabMapEntry> collection = new ArrayList<TabMapEntry>();
                     collection.addAll(tabMap.values());
 					
                     // See which core objects to show
@@ -2929,7 +2930,7 @@ public class Spoon implements AddUndoPositionInterface
                 public void close(CTabFolderEvent event) 
                 {
                     // Try to find the tab-item that's being closed.
-                    ArrayList collection = new ArrayList();
+                    List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
                     collection.addAll(tabMap.values());
                     
                     for (Iterator iter = collection.iterator(); iter.hasNext();)
@@ -3194,7 +3195,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 stepErrorMeta = new StepErrorMeta(stepMeta);
             }
-            List targetSteps = new ArrayList();
+            List<StepMeta> targetSteps = new ArrayList<StepMeta>();
             int nrNext = transMeta.findNrNextSteps(stepMeta);
             for (int i=0;i<nrNext;i++) targetSteps.add( transMeta.findNextStep(stepMeta, i) );
             
@@ -3279,7 +3280,7 @@ public class Spoon implements AddUndoPositionInterface
             log.logDebug(toString(), Messages.getString("Spoon.Log.FoundHops",""+nr));//"I found "+nr+" hops to paste."
             TransHopMeta hops[] = new TransHopMeta[nr];
             
-            ArrayList alSteps = new ArrayList();
+            ArrayList<StepMeta> alSteps = new ArrayList<StepMeta>();
             for (int i=0;i<steps.length;i++) alSteps.add(steps[i]);
             
             for (int i=0;i<nr;i++)
@@ -3713,16 +3714,16 @@ public class Spoon implements AddUndoPositionInterface
                 transMeta.setID(-1L);
 
                 // Keep track of the old databases for now.
-                ArrayList oldDatabases = transMeta.getDatabases();
+                List<DatabaseMeta> oldDatabases = transMeta.getDatabases();
             
                 // In order to re-match the databases on name (not content), we need to load the databases from the new repository.
                 // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION sycles.
                 
                 // first clear the list of databases, partition schemas, slave servers, clusters
-                transMeta.setDatabases(new ArrayList());
-                transMeta.setPartitionSchemas(new ArrayList());
-                transMeta.setSlaveServers(new ArrayList());
-                transMeta.setClusterSchemas(new ArrayList());
+                transMeta.setDatabases(new ArrayList<DatabaseMeta>());
+                transMeta.setPartitionSchemas(new ArrayList<PartitionSchema>());
+                transMeta.setSlaveServers(new ArrayList<SlaveServer>());
+                transMeta.setClusterSchemas(new ArrayList<ClusterSchema>());
     
                 // Read them from the new repository.
                 try
@@ -4170,7 +4171,7 @@ public class Spoon implements AddUndoPositionInterface
         
         
         // Check all tabs to see if we can close them...
-        List list = new ArrayList();
+        List<TabMapEntry> list = new ArrayList<TabMapEntry>();
         list.addAll(tabMap.values());
         
         for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
@@ -4651,14 +4652,14 @@ public class Spoon implements AddUndoPositionInterface
         boolean showAll = activeTransMeta==null && activeJobMeta==null;
         
         // get a list of transformations from the transformation map
-        List transformations = new ArrayList(transformationMap.values());
+        List<TransMeta> transformations = new ArrayList<TransMeta>(transformationMap.values());
         Collections.sort(transformations);
         TransMeta[] transMetas = (TransMeta[]) transformations.toArray(new TransMeta[transformations.size()]);
         
         // get a list of jobs from the job map
-        List jobs = new ArrayList(jobMap.values());
+        List<JobMeta> jobs = new ArrayList<JobMeta>(jobMap.values());
         Collections.sort(jobs);
-        JobMeta[] jobMetas = (JobMeta[]) jobs.toArray(new JobMeta[jobs.size()]);
+        JobMeta[] jobMetas = jobs.toArray(new JobMeta[jobs.size()]);
 
         // Refresh the content of the tree for those transformations
         //
@@ -5567,14 +5568,14 @@ public class Spoon implements AddUndoPositionInterface
     
     public TransMeta[] getLoadedTransformations()
     {
-        List list = new ArrayList(transformationMap.values());
-        return (TransMeta[]) list.toArray(new TransMeta[list.size()]);
+        List<TransMeta> list = new ArrayList<TransMeta>(transformationMap.values());
+        return list.toArray(new TransMeta[list.size()]);
     }
     
     public JobMeta[] getLoadedJobs()
     {
-        List list = new ArrayList(jobMap.values());
-        return (JobMeta[]) list.toArray(new JobMeta[list.size()]);
+        List<JobMeta> list = new ArrayList<JobMeta>(jobMap.values());
+        return list.toArray(new JobMeta[list.size()]);
     }
 
     public boolean editTransformationProperties(TransMeta transMeta)
@@ -6599,7 +6600,7 @@ public class Spoon implements AddUndoPositionInterface
 
     public void exploreDB(DatabaseMeta databaseMeta)
     {
-        List databases = null;
+        List<DatabaseMeta> databases = null;
         HasDatabasesInterface activeHasDatabasesInterface = getActiveHasDatabasesInterface();
         if (activeHasDatabasesInterface!=null) databases = activeHasDatabasesInterface.getDatabases();
         
@@ -6624,7 +6625,7 @@ public class Spoon implements AddUndoPositionInterface
         TransGraph transGraph = findTransGraphOfTransformation(transMeta);
         if (transGraph==null) return;
 
-        ArrayList rows = new ArrayList();
+        List<Object[]> rows = new ArrayList<Object[]>();
         RowMetaInterface rowMeta = null;
         for (int i=0;i<transGraph.getImpact().size();i++)
         {
@@ -6672,7 +6673,7 @@ public class Spoon implements AddUndoPositionInterface
     public void getTransSQL(TransMeta transMeta)
     {
         GetSQLProgressDialog pspd = new GetSQLProgressDialog(shell, transMeta);
-        ArrayList stats = pspd.open();
+        List<SQLStatement> stats = pspd.open();
         if (stats!=null) // null means error, but we already displayed the error
         {
             if (stats.size()>0)
@@ -6697,7 +6698,7 @@ public class Spoon implements AddUndoPositionInterface
     public void getJobSQL(JobMeta jobMeta)
     {
         GetJobSQLProgressDialog pspd = new GetJobSQLProgressDialog(shell, jobMeta, rep);
-        ArrayList stats = pspd.open();
+        List<SQLStatement> stats = pspd.open();
         if (stats!=null) // null means error, but we already displayed the error
         {
             if (stats.size()>0)
@@ -6821,9 +6822,9 @@ public class Spoon implements AddUndoPositionInterface
     	}
     }
     
-    public ArrayList getActiveDatabases()
+    public List<DatabaseMeta> getActiveDatabases()
     {
-        Map map = new Hashtable();
+        Map<String,DatabaseMeta> map = new Hashtable<String,DatabaseMeta>();
         
         HasDatabasesInterface hasDatabasesInterface = getActiveHasDatabasesInterface();
         if (hasDatabasesInterface!=null)
@@ -6851,7 +6852,7 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
         
-        ArrayList databases = new ArrayList();
+        List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
         databases.addAll( map.values() );
         
         return databases;
@@ -6869,7 +6870,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     private void copyTableWizard()
     {
-        ArrayList databases = getActiveDatabases();
+        List<DatabaseMeta> databases = getActiveDatabases();
         if (databases.size()==0) return; // Nothing to do here
         
         final CopyTableWizardPage1 page1 = new CopyTableWizardPage1("1", databases);
@@ -7042,7 +7043,7 @@ public class Spoon implements AddUndoPositionInterface
     public static void main (String [] a) throws KettleException
     {
     	EnvUtil.environmentInit();
-        ArrayList args = new ArrayList();
+        ArrayList<String> args = new ArrayList<String>();
         for (int i=0;i<a.length;i++) args.add(a[i]);
         
         Display display = new Display();
@@ -8284,13 +8285,12 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void renameTabs()
     {
-        Collection collection = tabMap.values();
-        List list = new ArrayList();
+        Collection<TabMapEntry> collection = tabMap.values();
+        List<TabMapEntry> list = new ArrayList<TabMapEntry>();
         list.addAll(collection);
         
-        for (Iterator iter = list.iterator(); iter.hasNext();)
+        for (TabMapEntry entry:list)
         {
-            TabMapEntry entry = (TabMapEntry) iter.next();
             if (entry.getTabItem().isDisposed())
             {
                 // this should not be in the map, get rid of it.
@@ -8330,13 +8330,13 @@ public class Spoon implements AddUndoPositionInterface
                 if (entry.getObject() instanceof TransGraph)
                 {
                     transformationMap.remove(before);
-                    transformationMap.put(after, entry.getObject().getManagedObject());
+                    transformationMap.put(after, (TransMeta)entry.getObject().getManagedObject());
                 }
                 // Also change the job map
                 if (entry.getObject() instanceof JobGraph)
                 {
                     jobMap.remove(before);
-                    jobMap.put(after, entry.getObject().getManagedObject());
+                    jobMap.put(after, (JobMeta)entry.getObject().getManagedObject());
                 }            
             }
         }
@@ -8357,7 +8357,7 @@ public class Spoon implements AddUndoPositionInterface
     /**
      * @param transformationMap the transformation map to set
      */
-    public void setTransformationMap(Map transformationMap)
+    public void setTransformationMap(Map<String,TransMeta> transformationMap)
     {
         this.transformationMap = transformationMap;
     }
@@ -8373,7 +8373,7 @@ public class Spoon implements AddUndoPositionInterface
     /**
      * @param tabMap the tabMap to set
      */
-    public void setTabMap(Map tabMap)
+    public void setTabMap(Map<String,TabMapEntry> tabMap)
     {
         this.tabMap = tabMap;
     }
@@ -9024,7 +9024,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     private void ripDBWizard()
     {
-        final ArrayList databases = getActiveDatabases();
+        final List<DatabaseMeta> databases = getActiveDatabases();
         if (databases.size() == 0) return; // Nothing to do here
 
         final RipDatabaseWizardPage1 page1 = new RipDatabaseWizardPage1("1", databases); //$NON-NLS-1$
@@ -9081,7 +9081,7 @@ public class Spoon implements AddUndoPositionInterface
     }
 
     public JobMeta ripDB(
-                final ArrayList databases, 
+                final List<DatabaseMeta> databases, 
                 final String jobname, 
                 final RepositoryDirectory repdir, 
                 final String directory,

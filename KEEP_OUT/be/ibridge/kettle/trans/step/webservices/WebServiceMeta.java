@@ -194,7 +194,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface
         return retval.toString();
     }
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         //Chargement de l'Url
         setUrl(XMLHandler.getTagValue(stepnode, "wsURL"));

@@ -26,15 +26,21 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,13 +53,6 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**

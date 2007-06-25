@@ -15,7 +15,6 @@
  
 package org.pentaho.di.trans.step;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -24,16 +23,16 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.repository.Repository;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.DatabaseImpact;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.w3c.dom.Node;
 
 
 /**
@@ -73,7 +72,7 @@ public interface StepMetaInterface
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
 	 */
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException;
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException;
 
 	/**
 	 * Save the steps data into a Kettle repository
@@ -92,7 +91,7 @@ public interface StepMetaInterface
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException;
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException;
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.
@@ -139,7 +138,7 @@ public interface StepMetaInterface
 	/**
 	 * @param steps optionally search the info step in a list of steps
 	 */
-	public void searchInfoAndTargetSteps(ArrayList steps);
+	public void searchInfoAndTargetSteps(List<StepMeta> steps);
     
     /**
      * This method is added to exclude certain steps from layout checking.  
@@ -185,7 +184,7 @@ public interface StepMetaInterface
 	 * @param output The output step names
 	 * @param info The fields used as information by this step
 	 */
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException;
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException;
 
 	/**
 	 * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work correctly.

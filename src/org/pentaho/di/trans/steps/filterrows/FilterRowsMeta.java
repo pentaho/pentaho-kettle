@@ -22,9 +22,15 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -34,12 +40,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.repository.Repository;
 
 
 /*
@@ -67,7 +67,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
         condition=new Condition();
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -273,7 +273,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		allocate();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
 	{
 		try
 		{

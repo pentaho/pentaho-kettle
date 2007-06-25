@@ -23,7 +23,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
-
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.TextFileInputFieldInterface;

@@ -100,6 +100,9 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 import org.pentaho.di.trans.steps.update.UpdateMeta;
+import org.pentaho.di.trans.steps.xmlinput.XMLInputMeta;
+import org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta;
+import org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta;
 
 public class BaseStep extends Thread implements VariableSpace
 {
@@ -170,6 +173,9 @@ public class BaseStep extends Thread implements VariableSpace
         new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
         new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
+        new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
+        new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
+        new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
         /*
             
             new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
@@ -232,7 +238,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     private Trans                        trans;
 
-    public ArrayList                     previewBuffer;
+    public List<Object[]>                     previewBuffer;
 
     public int                           previewSize;
 
@@ -270,10 +276,10 @@ public class BaseStep extends Thread implements VariableSpace
     public ArrayList                     thr;
 
     /** The rowsets on the input, size() == nr of source steps */
-    public List inputRowSets;
+    public List<RowSet> inputRowSets;
 
     /** the rowsets on the output, size() == nr of target steps */
-    public List outputRowSets;
+    public List<RowSet> outputRowSets;
 
     /** the rowset for the error rows */
     public RowSet errorRowSet;
@@ -295,20 +301,20 @@ public class BaseStep extends Thread implements VariableSpace
 
     public boolean                       terminator;
 
-    public ArrayList                     terminator_rows;
+    public List<Object[]>                     terminator_rows;
 
     private StepMetaInterface            stepMetaInterface;
 
     private StepDataInterface            stepDataInterface;
 
     /** The list of RowListener interfaces */
-    private List                         rowListeners;
+    private List<RowListener>                         rowListeners;
 
     /**
      * Map of files that are generated or used by this step. After execution, these can be added to result.
      * The entry to the map is the filename
      */
-    private Map                          resultFiles;
+    private Map<String,ResultFile>                          resultFiles;
 
     /**
      * Set this to true if you want to have extra checking enabled on the rows that are entering this step. All too
@@ -350,7 +356,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * The partitionID to rowset mapping
      */
-    private Map                          partitionTargets;
+    private Map<String,RowSet>                         partitionTargets;
     private RowMetaInterface inputRowMeta;
 
     /**
@@ -421,7 +427,7 @@ public class BaseStep extends Thread implements VariableSpace
         terminator = stepMeta.hasTerminator();
         if (terminator)
         {
-            terminator_rows = new ArrayList();
+            terminator_rows = new ArrayList<Object[]>();
         }
         else
         {
@@ -441,12 +447,12 @@ public class BaseStep extends Thread implements VariableSpace
         else
             if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
 
-        rowListeners = new ArrayList();
-        resultFiles = new Hashtable();
+        rowListeners = new ArrayList<RowListener>();
+        resultFiles = new Hashtable<String,ResultFile>();
 
         repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
         partitionColumnIndex = -1;
-        partitionTargets = new Hashtable();
+        partitionTargets = new Hashtable<String,RowSet>();
 
         dispatch();
     }
@@ -1387,8 +1393,8 @@ public class BaseStep extends Thread implements VariableSpace
         int nrInput = transMeta.findNrPrevSteps(stepMeta, true);
         int nrOutput = transMeta.findNrNextSteps(stepMeta);
 
-        inputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nrinput];
-        outputRowSets = Collections.synchronizedList( new ArrayList() ); // new RowSet[nroutput+out_copies];
+        inputRowSets = Collections.synchronizedList( new ArrayList<RowSet>() ); // new RowSet[nrinput];
+        outputRowSets = Collections.synchronizedList( new ArrayList<RowSet>() ); // new RowSet[nroutput+out_copies];
         errorRowSet = null;
         prevSteps = new StepMeta[nrInput];
         nextSteps = new StepMeta[nrOutput];
@@ -1860,7 +1866,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @return Returns the inputRowSets.
      */
-    public List getInputRowSets()
+    public List<RowSet> getInputRowSets()
     {
         return inputRowSets;
     }
@@ -1868,7 +1874,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param inputRowSets The inputRowSets to set.
      */
-    public void setInputRowSets(ArrayList inputRowSets)
+    public void setInputRowSets(List<RowSet> inputRowSets)
     {
         this.inputRowSets = inputRowSets;
     }
@@ -1876,7 +1882,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @return Returns the outputRowSets.
      */
-    public List getOutputRowSets()
+    public List<RowSet> getOutputRowSets()
     {
         return outputRowSets;
     }
@@ -1884,7 +1890,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param outputRowSets The outputRowSets to set.
      */
-    public void setOutputRowSets(ArrayList outputRowSets)
+    public void setOutputRowSets(List<RowSet> outputRowSets)
     {
         this.outputRowSets = outputRowSets;
     }
@@ -1915,7 +1921,7 @@ public class BaseStep extends Thread implements VariableSpace
         rowListeners.remove(rowListener);
     }
 
-    public List getRowListeners()
+    public List<RowListener> getRowListeners()
     {
         return rowListeners;
     }
@@ -1925,7 +1931,7 @@ public class BaseStep extends Thread implements VariableSpace
         resultFiles.put(resultFile.getFile().toString(), resultFile);
     }
 
-    public Map getResultFiles()
+    public Map<String,ResultFile> getResultFiles()
     {
         return resultFiles;
     }
@@ -2020,7 +2026,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param partitionTargets the partitionTargets to set
      */
-    public void setPartitionTargets(Map partitionTargets)
+    public void setPartitionTargets(Map<String,RowSet> partitionTargets)
     {
         this.partitionTargets = partitionTargets;
     }

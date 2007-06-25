@@ -33,6 +33,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -56,7 +57,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
 		super(); // allocate BaseStepMeta
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -188,7 +189,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 		try

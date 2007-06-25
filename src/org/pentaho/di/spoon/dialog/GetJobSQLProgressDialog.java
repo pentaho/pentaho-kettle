@@ -6,17 +6,17 @@
 package org.pentaho.di.spoon.dialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.repository.Repository;
-
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.Repository;
 
 
 
@@ -31,7 +31,7 @@ public class GetJobSQLProgressDialog
 {
 	private Shell shell;
 	private JobMeta jobMeta;
-	private ArrayList stats;
+	private List<SQLStatement> stats;
     private Repository repository;
 
 	
@@ -46,7 +46,7 @@ public class GetJobSQLProgressDialog
 
 	}
 	
-	public ArrayList open()
+	public List<SQLStatement> open()
 	{
 		IRunnableWithProgress op = new IRunnableWithProgress()
 		{

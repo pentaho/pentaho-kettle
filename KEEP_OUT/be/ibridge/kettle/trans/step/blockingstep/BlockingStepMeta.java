@@ -115,7 +115,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
         return new BlockingStepData();
     }
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException {
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException {
         readData(stepnode);        
     }
 

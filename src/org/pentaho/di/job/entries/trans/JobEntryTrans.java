@@ -26,9 +26,17 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -40,16 +48,9 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.WebResult;
+import org.w3c.dom.Node;
 
 
 /**
@@ -211,7 +212,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 
-    public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
+    public void loadXML(Node entrynode, List<DatabaseMeta>  databases, Repository rep) throws KettleXMLException
 	{
 		try 
 		{
@@ -253,7 +254,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
     	
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException
 	{
 		try
 		{
@@ -453,7 +454,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
                 if (clearResultRows)
                 {
-                    transMeta.getPreviousResult().setRows(new ArrayList());
+                    transMeta.getPreviousResult().setRows(new ArrayList<RowMetaAndData>());
                 }
 
                 if (clearResultFiles)
@@ -481,7 +482,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     else
                     {
                         // Just pass a single row
-                        ArrayList newList = new ArrayList();
+                        List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
                         newList.add(resultRow);
                         
                         // This previous result rows list can be either empty or not.
@@ -770,7 +771,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return true;
 	}
     
-    public ArrayList getSQLStatements(Repository repository) throws KettleException
+    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
     {
         TransMeta transMeta = getTransMeta(repository);
         

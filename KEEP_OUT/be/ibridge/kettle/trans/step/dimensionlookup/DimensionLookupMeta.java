@@ -475,7 +475,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     
     
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode, databases);
 	}

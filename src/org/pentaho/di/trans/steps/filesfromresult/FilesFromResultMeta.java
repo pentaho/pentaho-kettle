@@ -17,7 +17,6 @@
 package org.pentaho.di.trans.steps.filesfromresult;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -54,7 +54,7 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
 		super(); // allocate BaseStepMeta
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -74,7 +74,7 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 	}
 	
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
 	{
 	}
 

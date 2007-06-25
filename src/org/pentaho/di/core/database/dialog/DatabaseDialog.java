@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
@@ -58,19 +59,17 @@ import org.pentaho.di.core.database.SAPR3DatabaseMeta;
 import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.SelectRowDialog;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.gui.GUIResource;
 
 
 /**
@@ -164,7 +163,7 @@ public class DatabaseDialog extends Dialog
 
     private String         previousDatabaseType;
 
-    private ArrayList<DatabaseMeta>      databases;
+    private java.util.List<DatabaseMeta>      databases;
 
     private Map            extraOptions;
 
@@ -382,7 +381,7 @@ public class DatabaseDialog extends Dialog
     public static final void checkPasswordVisible(Text wPassword)
     {
         String password = wPassword.getText();
-        java.util.List list = new ArrayList();
+        java.util.List<String> list = new ArrayList<String>();
         StringUtil.getUsedVariables(password, list, true);
         // ONLY show the variable in clear text if there is ONE variable used
         // Also, it has to be the only string in the field.
@@ -1294,7 +1293,7 @@ public class DatabaseDialog extends Dialog
         shell.dispose();
     }
 
-    public void setDatabases(ArrayList<DatabaseMeta> databases)
+    public void setDatabases(java.util.List<DatabaseMeta> databases)
     {
         this.databases = databases;
     }

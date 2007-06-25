@@ -15,7 +15,6 @@
  
 package org.pentaho.di.trans.steps.addsequence;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -200,7 +199,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		this.valuename = valuename;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -212,7 +211,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 	
-	private void readData(Node stepnode, ArrayList databases)
+	private void readData(Node stepnode, List<DatabaseMeta> databases)
 		throws KettleXMLException
 	{
 		try
@@ -281,7 +280,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 	
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleException
 	{
 		try

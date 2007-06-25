@@ -16,8 +16,6 @@
 
 package org.pentaho.di.spoon.wizards;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -28,10 +26,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
-
-import org.pentaho.di.core.Const;
 
 
 
@@ -48,15 +45,15 @@ public class RipDatabaseWizardPage1 extends WizardPage
 	private FormData fdSourceDB, fdTargetDB;
 
 	private Props props;
-	private ArrayList databases;
+	private java.util.List<DatabaseMeta> databases;
 	
     /** @deprecated */
-    public RipDatabaseWizardPage1(String arg, Props props, ArrayList databases)
+    public RipDatabaseWizardPage1(String arg, Props props, java.util.List<DatabaseMeta> databases)
     {
         this(arg, databases);
     }
 
-	public RipDatabaseWizardPage1(String arg, ArrayList databases)
+	public RipDatabaseWizardPage1(String arg, java.util.List<DatabaseMeta> databases)
 	{
 		super(arg);
 		this.props=Props.getInstance();

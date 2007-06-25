@@ -881,7 +881,7 @@ public class TransLog extends Composite implements TabItemInterface
 		BaseStep rt;
 		int i;
 
-		List<ArrayList> buffers = new ArrayList<ArrayList>();
+		List<List<Object[]>> buffers = new ArrayList<List<Object[]>>();
         List<RowMetaInterface> rowMetas = new ArrayList<RowMetaInterface>();
 		List<String> names = new ArrayList<String>();
 		for (i = 0; i < trans.nrSteps(); i++)

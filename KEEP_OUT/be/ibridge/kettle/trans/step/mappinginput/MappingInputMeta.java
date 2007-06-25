@@ -123,7 +123,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         this.fieldType = fieldType;
     }
     
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode);
     }

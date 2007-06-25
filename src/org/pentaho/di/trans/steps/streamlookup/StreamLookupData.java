@@ -22,14 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.hash.LongHashIndex;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleValueException;
 
 
 

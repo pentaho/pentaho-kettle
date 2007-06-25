@@ -15,7 +15,6 @@
 
 package org.pentaho.di.trans.steps.combinationlookup;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -322,7 +321,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		this.useHash = useHash;
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -352,7 +351,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		return retval;
 	}
 
-	private void readData(Node stepnode, ArrayList databases)
+	private void readData(Node stepnode, List<DatabaseMeta> databases)
 		throws KettleXMLException
 	{
 		try
@@ -484,7 +483,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
 	{
 		try
 		{
@@ -996,7 +995,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		return new CombinationLookupData();
 	}
 
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// The keys are read-only...
 		for (int i=0;i<keyField.length;i++)

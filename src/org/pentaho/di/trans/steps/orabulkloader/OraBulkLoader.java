@@ -38,9 +38,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -48,11 +52,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**

@@ -71,7 +71,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         calculation = new CalculatorMetaFunction[nrCalcs];
     }
     
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
         int nrCalcs   = XMLHandler.countNodes(stepnode,   CalculatorMetaFunction.XML_TAG);

@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -33,9 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 
 /**
  * Generates a number of (empty or the same) rows

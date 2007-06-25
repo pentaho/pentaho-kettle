@@ -18,6 +18,9 @@ package org.pentaho.di.trans.steps.mapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -27,10 +30,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleException;
 
 
 

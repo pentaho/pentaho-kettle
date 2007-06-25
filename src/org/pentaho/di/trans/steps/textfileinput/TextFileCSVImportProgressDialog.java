@@ -19,17 +19,16 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out what tables, views etc we can

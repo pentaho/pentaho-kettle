@@ -14,11 +14,12 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entry;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -97,7 +98,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return retval.toString();
 	}
 	
-	public JobEntryCopy(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
+	public JobEntryCopy(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{
@@ -144,7 +145,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	 * @param jobentries A list with all jobentries
 	 * @param databases A list with all defined databases
 	 */
-	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, ArrayList jobentries, ArrayList databases) throws KettleException
+	public JobEntryCopy(LogWriter log, Repository rep, long id_job, long id_jobentry_copy, List<JobEntryInterface> jobentries, List<DatabaseMeta> databases) throws KettleException
 	{
 		try
 		{

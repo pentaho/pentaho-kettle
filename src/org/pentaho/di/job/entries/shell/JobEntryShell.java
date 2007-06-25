@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -113,7 +114,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 				
-	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{
@@ -143,7 +144,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 	
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try
@@ -339,7 +340,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 else
                 {
                     // Just pass a single row
-                    ArrayList newList = new ArrayList();
+                    List<RowMetaAndData> newList = new ArrayList<RowMetaAndData>();
                     newList.add(resultRow);
                     cmdRows = newList;
                 }
@@ -424,7 +425,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             // Construct the arguments...
             if (argFromPrevious && cmdRows!=null)
             {
-                ArrayList cmds = new ArrayList();
+                List<String> cmds = new ArrayList<String>();
                 
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);
@@ -468,7 +469,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             }
             else if (args!=null)
             {            	
-                ArrayList cmds = new ArrayList();
+                List<String> cmds = new ArrayList<String>();
     
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);

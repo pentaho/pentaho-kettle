@@ -115,7 +115,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
         caseInsensitive = new boolean[nrfields];
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

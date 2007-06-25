@@ -11,6 +11,8 @@ import java.util.Set;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -18,9 +20,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
-
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave servers in the clusters used.
@@ -35,22 +34,22 @@ public class TransSplitter
     
     private TransMeta  originalTransformation;
     private Map        serverTransMetaMap;
-    private Map        clusterPortMap;
-    private Map        clusterStepPortMap;
-    private Map        slaveTransMap;
+    private Map<ClusterSchema,Integer>        clusterPortMap;
+    private Map<String,Integer>        clusterStepPortMap;
+    private Map<SlaveServer,TransMeta>        slaveTransMap;
     private TransMeta  master;
     private StepMeta[] originalSteps;
-    private Map        slaveServerPartitionsMap;
-    private Map        slaveStepPartitionFlag;
+    private Map<SlaveServer,Map<PartitionSchema,List<String>>>        slaveServerPartitionsMap;
+    private Map<TransMeta,Map<StepMeta,String>>        slaveStepPartitionFlag;
 
     public TransSplitter()
     {
         serverTransMetaMap = new Hashtable();
-        clusterPortMap = new Hashtable();
-        clusterStepPortMap = new Hashtable();
+        clusterPortMap = new Hashtable<ClusterSchema,Integer>();
+        clusterStepPortMap = new Hashtable<String,Integer>();
         
-        slaveTransMap = new Hashtable();
-        slaveStepPartitionFlag = new Hashtable();
+        slaveTransMap = new Hashtable<SlaveServer,TransMeta>();
+        slaveStepPartitionFlag = new Hashtable<TransMeta,Map<StepMeta,String>>();
     }
     
     /**
@@ -96,7 +95,7 @@ public class TransSplitter
     
     private void checkClusterConfiguration() throws KettleException
     {
-        Map map = new Hashtable();
+        Map<String,ClusterSchema> map = new Hashtable<String,ClusterSchema>();
         StepMeta[] steps = originalTransformation.getStepsArray();
         for (int i=0;i<steps.length;i++)
         {
@@ -246,10 +245,10 @@ public class TransSplitter
     
     private void verifySlavePartitioningConfiguration(TransMeta slave, StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
-        Map stepPartitionFlag = (Map) slaveStepPartitionFlag.get(slave); 
+        Map<StepMeta,String> stepPartitionFlag = slaveStepPartitionFlag.get(slave); 
         if (stepPartitionFlag==null)
         {
-            stepPartitionFlag = new Hashtable();
+            stepPartitionFlag = new Hashtable<StepMeta,String>();
             slaveStepPartitionFlag.put(slave, stepPartitionFlag);
         }
         if (stepPartitionFlag.get(stepMeta)!=null) return; // already done;
@@ -258,15 +257,15 @@ public class TransSplitter
         if (partitioningMeta!=null && partitioningMeta.getMethod()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && partitioningMeta.getPartitionSchema()!=null)
         {
             // Find the schemaPartitions map to use
-            Map schemaPartitionsMap = (Map) slaveServerPartitionsMap.get(slaveServer);
+            Map<PartitionSchema,List<String>> schemaPartitionsMap = slaveServerPartitionsMap.get(slaveServer);
             if (schemaPartitionsMap!=null)
             {
                 PartitionSchema partitionSchema = partitioningMeta.getPartitionSchema();
-                List partitionsList = (List) schemaPartitionsMap.get(partitionSchema);
+                List<String> partitionsList = schemaPartitionsMap.get(partitionSchema);
                 if (partitionsList!=null) 
                 {
                     // We found a list of partitions, now let's create a new partition schema with this data.
-                    String partIds[] =  (String[]) partitionsList.toArray(new String[partitionsList.size()]);
+                    String partIds[] =  partitionsList.toArray(new String[partitionsList.size()]);
                     String targetSchemaName = partitionSchema.getName()+" (slave)";
                     PartitionSchema targetSchema = slave.findPartitionSchema(targetSchemaName);
                     if (targetSchema==null)
@@ -301,14 +300,14 @@ public class TransSplitter
     
     public TransMeta[] getSlaves()
     {
-        Collection collection = slaveTransMap.values();
-        return (TransMeta[]) collection.toArray(new TransMeta[collection.size()]);
+        Collection<TransMeta> collection = slaveTransMap.values();
+        return collection.toArray(new TransMeta[collection.size()]);
     }
     
     public SlaveServer[] getSlaveTargets()
     {
-        Set set = slaveTransMap.keySet();
-        return (SlaveServer[]) set.toArray(new SlaveServer[set.size()]);
+        Set<SlaveServer> set = slaveTransMap.keySet();
+        return set.toArray(new SlaveServer[set.size()]);
         /*
         SlaveServer slaves[] = new SlaveServer[set.size()];
         int i=0;
@@ -807,8 +806,8 @@ public class TransSplitter
 
     private void findUsedOriginalSteps()
     {
-        ArrayList transHopSteps = originalTransformation.getTransHopSteps(false);
-        originalSteps = (StepMeta[]) transHopSteps.toArray(new StepMeta[transHopSteps.size()]);
+        List<StepMeta> transHopSteps = originalTransformation.getTransHopSteps(false);
+        originalSteps = transHopSteps.toArray(new StepMeta[transHopSteps.size()]);
     }
     
     /**
@@ -820,7 +819,7 @@ public class TransSplitter
      */
     private void generateSlaveDatabasePartitions() throws KettleException
     {
-        slaveServerPartitionsMap = new Hashtable();
+        slaveServerPartitionsMap = new Hashtable<SlaveServer,Map<PartitionSchema,List<String>>>();
         
         for (int i=0;i<originalSteps.length;i++)
         {
@@ -849,7 +848,7 @@ public class TransSplitter
             {
                 String partitionId = partitionSchema.getPartitionIDs()[p];
                 
-                SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
+                SlaveServer slaveServer = clusterSchema.getSlaveServers().get(s);
                 if (slaveServer.isMaster())
                 {
                     s++;
@@ -859,20 +858,20 @@ public class TransSplitter
 
                 // System.out.println("Step ["+stepMeta.getName()+"] : selected slave server ["+slaveServer+"]");
 
-                Map schemaPartitionsMap = (Map) slaveServerPartitionsMap.get(slaveServer);
+                Map<PartitionSchema,List<String>> schemaPartitionsMap =  slaveServerPartitionsMap.get(slaveServer);
                 if (schemaPartitionsMap==null)
                 {
                     // Add this map
-                    schemaPartitionsMap = new HashMap();
+                    schemaPartitionsMap = new HashMap<PartitionSchema,List<String>>();
                     slaveServerPartitionsMap.put(slaveServer, schemaPartitionsMap);
                     // System.out.println("Added new schemaPartitions map for slave server ["+slaveServer+"]");
                 }
                 
                 // See if we find a list of partitions
-                List partitions = (List) schemaPartitionsMap.get(partitionSchema);
+                List<String> partitions = schemaPartitionsMap.get(partitionSchema);
                 if (partitions==null)
                 {
-                    partitions = new ArrayList();
+                    partitions = new ArrayList<String>();
                     schemaPartitionsMap.put(partitionSchema, partitions);
                 }
                 

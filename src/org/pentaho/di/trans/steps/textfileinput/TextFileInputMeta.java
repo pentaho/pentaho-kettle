@@ -29,6 +29,7 @@ import java.util.Locale;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -557,7 +558,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.fileCompression = fileCompression;
 	}
 
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode);
 	}
@@ -999,7 +1000,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		return super.getInfoSteps();
 	}
 	
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
 	{
 		try
 		{

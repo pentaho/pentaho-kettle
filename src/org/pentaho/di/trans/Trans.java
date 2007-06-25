@@ -108,12 +108,12 @@ public class Trans implements VariableSpace
 	/**
 	 * An arraylist of all the rowsets
 	 */
-	private ArrayList rowsets;
+	private List<RowSet> rowsets;
 
 	/**
 	 * A list of all the steps
 	 */
-	private List steps;
+	private List<StepMetaDataCombi> steps;
 
 	public  int class_nr;
 
@@ -294,8 +294,8 @@ public class Trans implements VariableSpace
 
 		setInternalKettleVariables(this);
 		
-		steps	 = new ArrayList();
-		rowsets	 = new ArrayList();
+		steps	 = new ArrayList<StepMetaDataCombi>();
+		rowsets	 = new ArrayList<RowSet>();
 
 		//
 		// Sort the steps & hops for visual pleasure...
@@ -306,7 +306,7 @@ public class Trans implements VariableSpace
 			transMeta.sortHopsNatural();
 		}
 
-		ArrayList hopsteps=transMeta.getTransHopSteps(false);
+		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);
 
 		log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
 		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
@@ -501,7 +501,7 @@ public class Trans implements VariableSpace
 					if (preview_steps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
 					{
 						rt.previewSize=preview_sizes[x];
-						rt.previewBuffer=new ArrayList();
+						rt.previewBuffer=new ArrayList<Object[]>();
 					}
 				}
 			}
@@ -1598,7 +1598,7 @@ public class Trans implements VariableSpace
      * @param copyNr the step copy number
      * @return an ArrayList of rows
      */
-    public ArrayList getPreviewRows(String stepname, int copyNr)
+    public List<Object[]> getPreviewRows(String stepname, int copyNr)
     {
         BaseStep baseStep = getRunThread(stepname, copyNr);
         if (baseStep!=null)

@@ -14,7 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -114,7 +114,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 		return retval.toString();
 	}
 
-	public JobHopMeta(Repository rep, long id_job_hop, JobMeta job, ArrayList jobcopies) throws KettleException
+	public JobHopMeta(Repository rep, long id_job_hop, JobMeta job, List<JobEntryCopy> jobcopies) throws KettleException
 	{
 		try
 		{

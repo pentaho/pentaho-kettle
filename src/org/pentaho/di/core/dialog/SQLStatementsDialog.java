@@ -15,7 +15,7 @@
 
  
 package org.pentaho.di.core.dialog;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
@@ -41,10 +41,9 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.widget.ColumnInfo;
 
 
 /**
@@ -57,7 +56,7 @@ import org.pentaho.di.core.widget.ColumnInfo;
 
 public class SQLStatementsDialog extends Dialog
 {
-	private ArrayList    stats;
+	private List<SQLStatement>    stats;
 		
 	private TableView    wFields;
 	private FormData     fdFields;
@@ -76,13 +75,13 @@ public class SQLStatementsDialog extends Dialog
     /**
      * @deprecated Use CT without <i>props</i> parameter
      */
-    public SQLStatementsDialog(Shell parent, int style, LogWriter log, Props props, ArrayList stats)
+    public SQLStatementsDialog(Shell parent, int style, LogWriter log, Props props, List<SQLStatement> stats)
     {
         this(parent, style, stats);
         this.props = props;
     }
     
-    public SQLStatementsDialog(Shell parent, int style, ArrayList stats)
+    public SQLStatementsDialog(Shell parent, int style, List<SQLStatement> stats)
     {
             super(parent, style);
             this.stats=stats;

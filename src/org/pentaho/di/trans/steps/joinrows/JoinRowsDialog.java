@@ -41,20 +41,19 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Condition;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ConditionEditor;
+import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.widget.TextVar;
 
 
 public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterface

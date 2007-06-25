@@ -15,7 +15,6 @@
 
 package org.pentaho.di.trans.steps.sql;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -211,8 +210,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.updateField = updateField;
 	}
-	//public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException;
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	//public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException;
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode, databases);
 	}
@@ -228,7 +227,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		arguments = new String[nrargs];
 	}
 
-	private void readData(Node stepnode, ArrayList databases) throws KettleXMLException
+	private void readData(Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException
 	{
 		try
 		{
@@ -301,7 +300,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
 			throws KettleException
 	{
 		try
@@ -453,7 +452,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		return new ExecSQLData();
 	}
 
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, RowMeta prev,
+	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMeta prev,
 			String input[], String output[], RowMeta info) throws KettleStepException
 	{
 		DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(),

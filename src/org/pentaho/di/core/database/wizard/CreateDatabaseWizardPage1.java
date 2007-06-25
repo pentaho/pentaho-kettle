@@ -16,8 +16,6 @@
 
 package org.pentaho.di.core.database.wizard;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -33,10 +31,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
-
-import org.pentaho.di.core.Const;
 
 
 
@@ -63,9 +60,9 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 
 	private Props props;
 	private DatabaseMeta info;
-	private ArrayList databases;
+	private java.util.List<DatabaseMeta> databases;
 	
-	public CreateDatabaseWizardPage1(String arg, Props props, DatabaseMeta info, ArrayList databases)
+	public CreateDatabaseWizardPage1(String arg, Props props, DatabaseMeta info, java.util.List<DatabaseMeta> databases)
 	{
 		super(arg);
 		this.props=props;

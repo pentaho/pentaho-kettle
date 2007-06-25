@@ -20,8 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -32,7 +32,16 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -40,15 +49,6 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**
@@ -107,7 +107,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, ArrayList databases, Repository rep)
+	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
 		throws KettleXMLException
 	{
 		try
@@ -125,7 +125,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 	}
 
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
+	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
 		throws KettleException
 	{
 		try

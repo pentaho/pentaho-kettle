@@ -14,11 +14,14 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entry;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.abort.JobEntryAbort;
@@ -52,9 +55,6 @@ import org.pentaho.di.job.entries.xslt.JobEntryXSLT;
 import org.pentaho.di.job.entries.zipfile.JobEntryZipFile;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 
 
 
@@ -283,9 +283,9 @@ public interface JobEntryInterface
 	public void    setChanged(boolean ch);
 	public boolean hasChanged();
 
-	public void    loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException;
+	public void    loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException;
 	public String  getXML();
-	public void    loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException;
+	public void    loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException;
 	public void    saveRep(Repository rep, long id_job) throws KettleException;
 	
 	public int     getType();
@@ -308,7 +308,7 @@ public interface JobEntryInterface
 	public boolean isMail();
 	public boolean isSpecial();
     
-    public ArrayList getSQLStatements(Repository repository) throws KettleException;
+    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException;
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep);
     

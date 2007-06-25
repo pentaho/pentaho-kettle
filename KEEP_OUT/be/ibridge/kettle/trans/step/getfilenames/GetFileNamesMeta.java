@@ -137,7 +137,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		return filterfiletype;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
 	{
 		readData(stepnode);
 	}

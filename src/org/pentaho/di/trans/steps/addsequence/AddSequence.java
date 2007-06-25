@@ -17,7 +17,12 @@ package org.pentaho.di.trans.steps.addsequence;
 
 import java.util.Hashtable;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -27,11 +32,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 
 
 
@@ -69,13 +69,13 @@ public class AddSequence extends BaseStep implements StepInterface
 		else
 		if (meta.isCounterUsed())
 		{
-			Long prev = (Long)getTransMeta().getCounters().get(data.getLookup());
+			Long prev = (Long)getTransMeta().getCounters().get(data.getLookup()).getCounter();
 			
 			//System.out.println("Found prev value: "+prev.longValue()+", increment_by = "+info.increment_by+", max_value = "+info.max_value);
 			long nval = prev.longValue() + meta.getIncrementBy();
 			if (meta.getIncrementBy()>0 && meta.getMaxValue()>meta.getStartAt() && nval>meta.getMaxValue()) nval=meta.getStartAt();
 			if (meta.getIncrementBy()<0 && meta.getMaxValue()<meta.getStartAt() && nval<meta.getMaxValue()) nval=meta.getStartAt();
-			getTransMeta().getCounters().put(data.getLookup(), new Long(nval)); 
+			getTransMeta().getCounters().put(data.getLookup(), new Counter(nval)); 
 
 			next = prev;
 		}
@@ -171,8 +171,8 @@ public class AddSequence extends BaseStep implements StepInterface
 
 				if (getTransMeta().getCounters()!=null)
 				{
-					Hashtable counters = getTransMeta().getCounters();
-					counters.put(data.getLookup(), new Long(meta.getStartAt()));
+					Hashtable<String,Counter> counters = getTransMeta().getCounters();
+					counters.put(data.getLookup(), new Counter(meta.getStartAt()));
 					return true;
 				}
 				else

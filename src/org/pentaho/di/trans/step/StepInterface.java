@@ -17,9 +17,9 @@ package org.pentaho.di.trans.step;
 
 import java.util.List;
 
-import org.pentaho.di.core.row.RowMetaInterface;
-
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 
 /*
  * Created on 12-aug-2004
@@ -180,12 +180,12 @@ public interface StepInterface
     /**
      * @return a list of the installed RowListeners
      */
-    public List getRowListeners();
+    public List<RowListener> getRowListeners();
     
     /**
      * @return The list of active input rowsets for the step
      */
-    public List getInputRowSets();
+    public List<RowSet> getInputRowSets();
 
     /**
      * @return The list of active output rowsets for the step

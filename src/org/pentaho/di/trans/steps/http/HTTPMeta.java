@@ -15,13 +15,13 @@
 
 package org.pentaho.di.trans.steps.http;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -128,7 +128,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         this.fieldName = resultName;
     }
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode, databases);
     }
@@ -206,7 +206,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         return retval.toString();
     }
 
-    private void readData(Node stepnode, ArrayList databases) throws KettleXMLException
+    private void readData(Node stepnode, List<DatabaseMeta> databases) throws KettleXMLException
     {
         try
         {
@@ -235,7 +235,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException
     {
         try
         {

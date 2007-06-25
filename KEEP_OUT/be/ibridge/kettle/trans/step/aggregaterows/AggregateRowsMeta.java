@@ -129,7 +129,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		this.fieldNewName = fieldNewName;
 	}
 	
-	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);

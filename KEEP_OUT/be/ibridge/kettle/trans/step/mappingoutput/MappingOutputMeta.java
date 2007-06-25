@@ -135,7 +135,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         this.fieldAdded = fieldAdded;
     }
 
-    public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode);
     }

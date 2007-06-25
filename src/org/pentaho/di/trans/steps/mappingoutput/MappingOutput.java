@@ -15,6 +15,8 @@
  
 package org.pentaho.di.trans.steps.mappingoutput;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -24,9 +26,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mapping.Mapping;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 
 
 
