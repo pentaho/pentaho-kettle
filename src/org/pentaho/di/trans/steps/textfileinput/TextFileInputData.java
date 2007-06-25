@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -37,7 +38,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 public class TextFileInputData extends BaseStepData implements
 		StepDataInterface {
 	
-	public ArrayList lineBuffer;
+	public List<TextFileLine> lineBuffer;
 
 	public Object[] previous_row;
 
@@ -97,7 +98,7 @@ public class TextFileInputData extends BaseStepData implements
 	public TextFileInputData() {
 		super();
 
-		lineBuffer = new ArrayList();
+		lineBuffer = new ArrayList<TextFileLine>();
 
 		nr_repeats = 0;
 		previous_row = null;

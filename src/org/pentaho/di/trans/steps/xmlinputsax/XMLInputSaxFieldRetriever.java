@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.xmlinputsax;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -22,15 +23,15 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLInputSaxFieldRetriever extends DefaultHandler{
     
-    ArrayList fields;
+    List<XMLInputSaxField> fields;
     
     int [] position={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     
     //list of elements to the root element
-    private ArrayList pathToRootElement=new ArrayList();
+    private List<XMLInputSaxFieldPosition> pathToRootElement=new ArrayList<XMLInputSaxFieldPosition>();
     
     //list of elements to the root element
-    private ArrayList _pathToRootElement=new ArrayList(); 
+    private List<XMLInputSaxFieldPosition> _pathToRootElement=new ArrayList<XMLInputSaxFieldPosition>(); 
     
     //count the deep to the current element in pathToStartElement
     private int counter=0;
@@ -57,10 +58,10 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler{
     	}
     	this.meta=meta;
         this.sourceFile=sourceFile;
-        fields = new ArrayList();
+        fields = new ArrayList<XMLInputSaxField>();
     }
     
-    public ArrayList getFields() 
+    public List<XMLInputSaxField> getFields() 
     {
         parseDocument();
         return this.fields;

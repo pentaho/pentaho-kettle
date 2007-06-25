@@ -55,7 +55,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Text file input</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Join Rows (cartesian product)</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Text file input</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Join Rows (cartesian product)</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Generate Rows</name>
     <type>RowGenerator</type>
@@ -137,7 +137,7 @@
       </fields>
      <cluster_schema/>
     <GUI>
-      <xloc>510</xloc>
+      <xloc>511</xloc>
       <yloc>228</yloc>
       <draw>Y</draw>
       </GUI>
@@ -357,6 +357,25 @@
     <GUI>
       <xloc>97</xloc>
       <yloc>226</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>739</xloc>
+      <yloc>231</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

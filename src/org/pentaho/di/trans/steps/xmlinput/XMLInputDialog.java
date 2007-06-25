@@ -21,6 +21,7 @@
 package org.pentaho.di.trans.steps.xmlinput;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1060,8 +1061,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			RowMetaInterface row = new RowMeta(); // no fields found...
 
 			// Keep the list of positions
-			ArrayList path = new ArrayList(); // ArrayList of
-												// XMLInputFieldPosition
+			List<XMLInputFieldPosition> path = new ArrayList<XMLInputFieldPosition>(); // ArrayList of XMLInputFieldPosition
 
 			FileInputList inputList = meta.getFiles();
 
@@ -1145,7 +1145,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	 * @param row
 	 *            The
 	 */
-	private void getValues(Node node, RowMetaInterface row, ArrayList path, int level) throws KettleException
+	private void getValues(Node node, RowMetaInterface row, List<XMLInputFieldPosition> path, int level) throws KettleException
 	{
 		String baseName = "";
 		for (int p = 0; p < path.size(); p++)
@@ -1163,8 +1163,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 			if (XMLHandler.getNodeValue(node) != null)
 			{
-				XMLInputFieldPosition attrPos = new XMLInputFieldPosition(node.getNodeName(),
-						XMLInputFieldPosition.XML_ROOT);
+				XMLInputFieldPosition attrPos = new XMLInputFieldPosition(node.getNodeName(), XMLInputFieldPosition.XML_ROOT);
 				path.add(attrPos);
 
 				String root =StringUtil.initCap( new ValueMetaAndData("a", node.getNodeName()).toString());

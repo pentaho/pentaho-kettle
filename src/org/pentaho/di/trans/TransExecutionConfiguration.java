@@ -259,7 +259,7 @@ public class TransExecutionConfiguration implements Cloneable
         if (vars!=null && vars.size()>0)
         {
             RowMetaInterface rowMeta = new RowMeta();
-            List data = new ArrayList();
+            List<String> data = new ArrayList<String>();
             
             for (int i=0;i<vars.size();i++) 
             {

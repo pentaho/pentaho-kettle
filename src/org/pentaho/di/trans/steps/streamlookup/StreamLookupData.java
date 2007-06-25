@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.hash.ByteArrayHashIndex;
 import org.pentaho.di.core.hash.LongHashIndex;
@@ -40,9 +41,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class StreamLookupData extends BaseStepData implements StepDataInterface
 {
     /** used to store values in used to look up things */
-	public Map look;
+	public Map<RowMetaAndData, Object[]> look;
     
-    public List list;
+    public List<KeyValue> list;
 	
 	/** nrs of keys-values in row. */
 	public int    keynrs[];
@@ -66,7 +67,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 
     public RowMetaInterface valueMeta;
 
-    public Comparator comparator;
+    public Comparator<KeyValue> comparator;
 
     public ByteArrayHashIndex hashIndex;
     public LongHashIndex longIndex;
@@ -78,17 +79,15 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 	public StreamLookupData()
 	{
         super();
-        look = new HashMap();
+        look = new HashMap<RowMetaAndData, Object[]>();
         hashIndex = null;
         longIndex = new LongHashIndex();
-        list = new ArrayList();
-        comparator = new Comparator()
+        list = new ArrayList<KeyValue>();
+        
+        comparator = new Comparator<KeyValue>()
         {
-            public int compare(Object o1, Object o2)
+            public int compare(KeyValue k1, KeyValue k2)
             {
-                KeyValue k1 = (KeyValue) o1;
-                KeyValue k2 = (KeyValue) o2;
-                
                 try
                 {
                     return keyMeta.compare(k1.getKey(), k2.getKey());

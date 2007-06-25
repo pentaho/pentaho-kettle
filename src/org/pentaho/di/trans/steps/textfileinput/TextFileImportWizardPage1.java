@@ -21,7 +21,7 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.widget.TableDraw;
+import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 
 
 public class TextFileImportWizardPage1 extends WizardPage // implements Listener 
@@ -43,10 +44,10 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 	private FormData fdTable;
 
 	private Props props;
-	private ArrayList rows;
-	private Vector fields;
+	private List<String> rows;
+	private Vector<TextFileInputFieldInterface> fields;
 	
-	public TextFileImportWizardPage1(String arg, Props props, ArrayList rows, Vector fields)
+	public TextFileImportWizardPage1(String arg, Props props, List<String> rows, Vector<TextFileInputFieldInterface> fields)
 	{
 		super(arg);
 		this.props=props;
@@ -94,7 +95,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		setControl(composite);
 	}
 	
-	public void setFields(Vector fields)
+	public void setFields(Vector<TextFileInputFieldInterface> fields)
 	{
 		wTable.setFields(fields);
 	}

@@ -7430,7 +7430,7 @@ public class Spoon implements AddUndoPositionInterface
                 String[] target = targetFields.getFieldNames();
                 
                 EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
-                ArrayList mappings = dialog.open();
+                List<SourceToTargetMapping> mappings = dialog.open();
                 if (mappings!=null)
                 {
                     // OK, so we now know which field maps where.

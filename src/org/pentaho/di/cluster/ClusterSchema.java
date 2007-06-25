@@ -133,7 +133,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         return xml.toString();
     }
     
-    public ClusterSchema(Node clusterSchemaNode, List referenceSlaveServers)
+    public ClusterSchema(Node clusterSchemaNode, List<SlaveServer> referenceSlaveServers)
     {
         this();
         

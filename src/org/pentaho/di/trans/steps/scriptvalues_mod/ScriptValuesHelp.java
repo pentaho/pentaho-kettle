@@ -37,7 +37,7 @@ import org.w3c.dom.NodeList;
 public class ScriptValuesHelp {
 
 	private static Document dom;
-	private static Hashtable hatFunctionsList;
+	private static Hashtable<String, String> hatFunctionsList;
 	
 	
 	public ScriptValuesHelp(String strFileName) throws KettleXMLException {
@@ -46,12 +46,12 @@ public class ScriptValuesHelp {
 		buildFunctionList();
 		
 	}
-	public Hashtable getFunctionList(){
+	public Hashtable<String, String> getFunctionList(){
 		return hatFunctionsList;
 	}
 	
 	private static void buildFunctionList(){
-		hatFunctionsList = new Hashtable();
+		hatFunctionsList = new Hashtable<String, String>();
 		NodeList nlFunctions = dom.getElementsByTagName("jsFunction");
 		for(int i=0;i<nlFunctions.getLength();i++){
 			String strFunctionName = nlFunctions.item(i).getAttributes().getNamedItem("name").getNodeValue();

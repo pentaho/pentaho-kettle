@@ -18,14 +18,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.pentaho.di.core.vfs.KettleVFS;
 
 
 /**
@@ -68,14 +67,14 @@ public class SharedObjects
     
     private String filename;
 
-    private Map objectsMap;
+    private Map<SharedEntry, SharedObjectInterface> objectsMap;
 
     public SharedObjects(String sharedObjectsFile) throws KettleXMLException
     {
         try
         {
             this.filename = createFilename(sharedObjectsFile);
-            this.objectsMap = new Hashtable();
+            this.objectsMap = new Hashtable<SharedEntry, SharedObjectInterface>();
     
             // Extra information
             FileObject file = KettleVFS.getFileObject(filename);
@@ -88,8 +87,8 @@ public class SharedObjects
                 Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
                 if (sharedObjectsNode!=null)
                 {
-                    List privateSlaveServers = new ArrayList();
-                    ArrayList privateDatabases = new ArrayList();
+                    List<SlaveServer> privateSlaveServers = new ArrayList<SlaveServer>();
+                    List<DatabaseMeta> privateDatabases = new ArrayList<DatabaseMeta>();
                     
                     NodeList childNodes = sharedObjectsNode.getChildNodes();
                     // First load databases & slaves
@@ -103,13 +102,15 @@ public class SharedObjects
         
                         if (nodeName.equals(DatabaseMeta.XML_TAG))
                         {    
-                            isShared = new DatabaseMeta(node);
-                            privateDatabases.add(isShared);
+                            DatabaseMeta sharedDatabaseMeta = new DatabaseMeta(node);
+                            isShared = sharedDatabaseMeta;
+                            privateDatabases.add(sharedDatabaseMeta);
                         }
                         else if (nodeName.equals(SlaveServer.XML_TAG)) 
                         {
-                            isShared = new SlaveServer(node);
-                            privateSlaveServers.add(isShared);
+                            SlaveServer sharedSlaveServer = new SlaveServer(node);
+                            isShared = sharedSlaveServer;
+                            privateSlaveServers.add(sharedSlaveServer);
                         }
     
                         if (isShared!=null)
@@ -190,7 +191,7 @@ public class SharedObjects
         return objectsMap;
     }
 
-    public void setObjectsMap(Map objects)
+    public void setObjectsMap(Map<SharedEntry, SharedObjectInterface> objects)
     {
         this.objectsMap = objects;
     }

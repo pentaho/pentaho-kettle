@@ -67,6 +67,7 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.StepFieldsDialog;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Rectangle;
@@ -2146,7 +2147,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List elements = transMeta.getSelectedDrawnStepsList();
+        List<GUIPositionInterface> elements = transMeta.getSelectedDrawnStepsList();
         int[] indices = transMeta.getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
 
         return new SnapAllignDistribute(transMeta, elements, indices, spoon, this);

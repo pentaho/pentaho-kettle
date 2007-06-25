@@ -21,6 +21,7 @@
 package org.pentaho.di.trans.steps.xmlinputsax;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1045,7 +1046,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 			// OK, let's try to walk through the complete tree
 
-			ArrayList fields = new ArrayList();
+			List<XMLInputSaxField> fields = new ArrayList<XMLInputSaxField>();
 
 			// Keep the list of positions
 

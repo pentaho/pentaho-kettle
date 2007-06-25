@@ -17,12 +17,12 @@ public class SlaveServerStatus
 
     private String             statusDescription;
     private String             errorDescription;
-    private List               transStatusList;
+    private List<SlaveServerTransStatus> transStatusList;
     
 
     public SlaveServerStatus()
     {
-        transStatusList = new ArrayList();
+        transStatusList = new ArrayList<SlaveServerTransStatus>();
     }
     
     public SlaveServerStatus(String statusDescription)
@@ -36,7 +36,7 @@ public class SlaveServerStatus
      * @param statusDescription
      * @param transStatus
      */
-    public SlaveServerStatus(String statusDescription, List transStatusList)
+    public SlaveServerStatus(String statusDescription, List<SlaveServerTransStatus> transStatusList)
     {
         this.statusDescription = statusDescription;
         this.transStatusList = transStatusList;
@@ -51,7 +51,7 @@ public class SlaveServerStatus
         xml.append("  <transstatuslist>").append(Const.CR);
         for (int i = 0; i < transStatusList.size(); i++)
         {
-            SlaveServerTransStatus transStatus = (SlaveServerTransStatus) transStatusList.get(i);
+            SlaveServerTransStatus transStatus = transStatusList.get(i);
             xml.append("    ").append(transStatus.getXML()).append(Const.CR);
         }
         xml.append("  </transstatuslist>").append(Const.CR);
@@ -69,7 +69,7 @@ public class SlaveServerStatus
         for (int i = 0; i < nr; i++)
         {
             Node transStatusNode = XMLHandler.getSubNodeByNr(listNode, SlaveServerTransStatus.XML_TAG, i);
-            transStatusList.add(new SlaveServerTransStatus(transStatusNode));
+            transStatusList.add( new SlaveServerTransStatus(transStatusNode) );
         }
     }
     
@@ -99,7 +99,7 @@ public class SlaveServerStatus
     /**
      * @return the transStatusList
      */
-    public List getTransStatusList()
+    public List<SlaveServerTransStatus> getTransStatusList()
     {
         return transStatusList;
     }
@@ -107,7 +107,7 @@ public class SlaveServerStatus
     /**
      * @param transStatusList the transStatusList to set
      */
-    public void setTransStatusList(List transStatusList)
+    public void setTransStatusList(List<SlaveServerTransStatus> transStatusList)
     {
         this.transStatusList = transStatusList;
     }

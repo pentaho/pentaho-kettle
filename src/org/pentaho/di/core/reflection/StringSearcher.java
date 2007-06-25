@@ -173,12 +173,12 @@ public class StringSearcher
 
     }
 
-    private static Method searchGetter(String getter, Class baseClass, Method[] methods)
+    private static Method searchGetter(String getter, Class<?> baseClass, Method[] methods)
     {
         Method method =null;
         try
         {
-            method=baseClass.getMethod(getter, (Class[])null);
+            method=baseClass.getMethod(getter);
         }
         catch(Exception e)
         {

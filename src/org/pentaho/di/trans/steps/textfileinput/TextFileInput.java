@@ -745,7 +745,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		
 		return value;
 	}
-¨   */
+ï¿½   */
     
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
@@ -1359,7 +1359,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	private void initErrorHandling()
 	{
-		List dataErrorLineHandlers = new ArrayList(2);
+		List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
 			dataErrorLineHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), meta
 					.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta.getEncoding(), this));

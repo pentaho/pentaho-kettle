@@ -125,6 +125,11 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 		
 		return position - field.getPosition();
 	}
+	
+	public int compareTo(TextFileInputFieldInterface field) 
+	{
+		return position - field.getPosition();
+	}
 
 	public boolean equal(Object obj)
 	{
@@ -680,5 +685,4 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     {
         return new TextFileInputField(newFieldname, x, newlength);
     }
-
 }

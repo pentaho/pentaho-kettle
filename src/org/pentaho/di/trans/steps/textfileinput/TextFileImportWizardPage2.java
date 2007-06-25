@@ -21,7 +21,6 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -44,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 
 public class TextFileImportWizardPage2 extends WizardPage
 {
@@ -113,12 +113,12 @@ public class TextFileImportWizardPage2 extends WizardPage
 	private FormData fdPrev, fdNext;
 	
 	private Props props;
-	private ArrayList rows;
-	private Vector fields;
+	private java.util.List<String> rows;
+	private Vector<TextFileInputFieldInterface> fields;
 	
 	private Shell   shell  ;
 	 
-	public TextFileImportWizardPage2(String arg, Props props, ArrayList rows, Vector fields)
+	public TextFileImportWizardPage2(String arg, Props props, java.util.List<String> rows, Vector<TextFileInputFieldInterface> fields)
 	{
 		super(arg);
 		this.props=props;

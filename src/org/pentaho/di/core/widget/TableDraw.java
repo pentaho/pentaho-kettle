@@ -14,7 +14,7 @@
  **********************************************************************/
 
 package org.pentaho.di.core.widget;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
-
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIResource;
 
@@ -68,7 +67,7 @@ public class TableDraw extends Canvas
 	
 	private Vector<TextFileInputFieldInterface> fields;
 	
-	private ArrayList rows;
+	private List<String> rows;
 	
 	private static final int LEFT   = 50;
 	private static final int TOP    = 30;
@@ -302,7 +301,7 @@ public class TableDraw extends Canvas
 		return false;
 	}
 	
-	public void setRows(ArrayList rows)
+	public void setRows(List<String> rows)
 	{
 		this.rows = rows;
 		maxlen = getMaxLength();

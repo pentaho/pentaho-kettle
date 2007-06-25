@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.xmloutput;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -708,7 +709,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
             gotEncodings = true;
             
             wEncoding.removeAll();
-            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
                 Charset charSet = (Charset)values.get(i);

@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
@@ -79,6 +81,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextFileInputFieldInterface;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -328,7 +331,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private TextFileInputMeta input;
 
 	// Wizard info...
-	private Vector fields;
+	private Vector<TextFileInputFieldInterface> fields;
     
     private String[] dateLocale;
     
@@ -2129,7 +2132,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             gotEncodings = true;
             
             wEncoding.removeAll();
-            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
                 Charset charSet = (Charset)values.get(i);
@@ -2559,7 +2562,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     			int nrLines = end.open();
     			if (nrLines>=0)
     			{
-                    ArrayList linesList = getFirst(nrLines, skipHeaders);
+                    List<String> linesList = getFirst(nrLines, skipHeaders);
                     if (linesList!=null && linesList.size()>0)
                     {
                         String firstlines="";
@@ -2596,7 +2599,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	
 
 	// Get the first x lines
-	private ArrayList getFirst(int nrlines, boolean skipHeaders) throws KettleException
+	private List<String> getFirst(int nrlines, boolean skipHeaders) throws KettleException
 	{
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
@@ -2609,7 +2612,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         StringBuffer    lineStringBuffer = new StringBuffer(256);
         int             fileFormatType = meta.getFileFormatTypeNr();
 		
-		ArrayList retval = new ArrayList();
+		List<String> retval = new ArrayList<String>();
 		
 		if (textFileList.nrOfFiles()>0)
 		{
@@ -2724,7 +2727,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         try
         {
-    		ArrayList rows = getFirst(50, false);
+    		List<String> rows = getFirst(50, false);
     		fields = getFields(info, rows);
     		
     		final TextFileImportWizardPage1 page1 = new TextFileImportWizardPage1("1", props, rows, fields);
@@ -2789,9 +2792,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
 	}
 	
-	private Vector getFields(TextFileInputMeta info, ArrayList rows)
+	private Vector<TextFileInputFieldInterface> getFields(TextFileInputMeta info, List<String> rows)
 	{
-		Vector fields = new Vector();
+		Vector<TextFileInputFieldInterface> fields = new Vector<TextFileInputFieldInterface>();
 
 		int maxsize=0;
 		for (int i=0;i<rows.size();i++) 
@@ -2855,137 +2858,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 		}
 		
-		quickSort(fields);
+		Collections.sort(fields);
 		
 		return fields;
 	}
-
-    
-	/** Sort the entire vector, if it is not empty
-	 */
-	public synchronized void quickSort(Vector elements)
-	{
-		if (! elements.isEmpty())
-		{ 
-			this.quickSort(elements, 0, elements.size()-1);
-		}
-	}
-
-
-	/**
-	 * QuickSort.java by Henk Jan Nootenboom, 9 Sep 2002
-	 * Copyright 2002-2003 SUMit. All Rights Reserved.
-	 *
-	 * Algorithm designed by prof C. A. R. Hoare, 1962
-	 * See http://www.sum-it.nl/en200236.html
-	 * for algorithm improvement by Henk Jan Nootenboom, 2002.
-	 *
-	 * Recursive Quicksort, sorts (part of) a Vector by
-	 *  1.  Choose a pivot, an element used for comparison
-	 *  2.  dividing into two parts:
-	 *      - less than-equal pivot
-	 *      - and greater than-equal to pivot.
-	 *      A element that is equal to the pivot may end up in any part.
-	 *      See www.sum-it.nl/en200236.html for the theory behind this.
-	 *  3. Sort the parts recursively until there is only one element left.
-	 *
-	 * www.sum-it.nl/QuickSort.java this source code
-	 * www.sum-it.nl/quicksort.php3 demo of this quicksort in a java applet
-	 *
-	 * Permission to use, copy, modify, and distribute this java source code
-	 * and its documentation for NON-COMMERCIAL or COMMERCIAL purposes and
-	 * without fee is hereby granted.
-	 * See http://www.sum-it.nl/security/index.html for copyright laws.
-	 */
-	  private synchronized void quickSort(Vector elements, int lowIndex, int highIndex)
-	  { 
-		int lowToHighIndex;
-		int highToLowIndex;
-		int pivotIndex;
-		TextFileInputField pivotValue;  // values are Strings in this demo, change to suit your application
-		TextFileInputField lowToHighValue;
-		TextFileInputField highToLowValue;
-		TextFileInputField parking;
-		int newLowIndex;
-		int newHighIndex;
-		int compareResult;
-
-		lowToHighIndex = lowIndex;
-		highToLowIndex = highIndex;
-		/** Choose a pivot, remember it's value
-		 *  No special action for the pivot element itself.
-		 *  It will be treated just like any other element.
-		 */
-		pivotIndex = (lowToHighIndex + highToLowIndex) / 2;
-		pivotValue = (TextFileInputField)elements.elementAt(pivotIndex);
-
-		/** Split the Vector in two parts.
-		 *
-		 *  The lower part will be lowIndex - newHighIndex,
-		 *  containing elements <= pivot Value
-		 *
-		 *  The higher part will be newLowIndex - highIndex,
-		 *  containting elements >= pivot Value
-		 * 
-		 */
-		newLowIndex = highIndex + 1;
-		newHighIndex = lowIndex - 1;
-		// loop until low meets high
-		while ((newHighIndex + 1) < newLowIndex) // loop until partition complete
-		{ // loop from low to high to find a candidate for swapping
-		  lowToHighValue = (TextFileInputField)elements.elementAt(lowToHighIndex);
-		  while (lowToHighIndex < newLowIndex
-			& lowToHighValue.compare(pivotValue)<0 )
-		  { 
-			newHighIndex = lowToHighIndex; // add element to lower part
-			lowToHighIndex ++;
-			lowToHighValue = (TextFileInputField)elements.elementAt(lowToHighIndex);
-		  }
-
-		  // loop from high to low find other candidate for swapping
-		  highToLowValue = (TextFileInputField)elements.elementAt(highToLowIndex);
-		  while (newHighIndex <= highToLowIndex
-			& (highToLowValue.compare(pivotValue)>0)
-			)
-		  { 
-			newLowIndex = highToLowIndex; // add element to higher part
-			highToLowIndex --;
-			highToLowValue = (TextFileInputField)elements.elementAt(highToLowIndex);
-		  }
-
-		  // swap if needed
-		  if (lowToHighIndex == highToLowIndex) // one last element, may go in either part
-		  { 
-			newHighIndex = lowToHighIndex; // move element arbitrary to lower part
-		  }
-		  else if (lowToHighIndex < highToLowIndex) // not last element yet
-		  { 
-			compareResult = lowToHighValue.compare(highToLowValue);
-			if (compareResult >= 0) // low >= high, swap, even if equal
-			{ 
-			  parking = lowToHighValue;
-			  elements.setElementAt(highToLowValue, lowToHighIndex);
-			  elements.setElementAt(parking, highToLowIndex);
-
-			  newLowIndex = highToLowIndex;
-			  newHighIndex = lowToHighIndex;
-
-			  lowToHighIndex ++;
-			  highToLowIndex --;
-			}
-		  }
-		}
-
-		// Continue recursion for parts that have more than one element
-		if (lowIndex < newHighIndex)
-		{ 
-			this.quickSort(elements, lowIndex, newHighIndex); // sort lower subpart
-		}
-		if (newLowIndex < highIndex)
-		{ 
-			this.quickSort(elements, newLowIndex, highIndex); // sort higher subpart
-		}
-	  }
 
 	
 	public String toString()

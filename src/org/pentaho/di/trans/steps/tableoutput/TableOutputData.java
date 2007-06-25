@@ -16,6 +16,7 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -43,7 +44,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
      * Mapping between the SQL and the actual prepared statement.
      * Normally this is only one, but in case we have more then one, it's convenient to have this.
      */
-    public  Map      preparedStatements;
+    public  Map<String, PreparedStatement>      preparedStatements;
     
     public  int      indexOfPartitioningField;
     
@@ -54,7 +55,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
     public boolean batchMode;
     public int indexOfTableNameField;
     
-    public List batchBuffer;
+    public List<Object[]> batchBuffer;
     public boolean sendToErrorRow;
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface insertRowMeta;
@@ -67,12 +68,12 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 		warnings=0;
 		tableName=null;
         
-        preparedStatements = new Hashtable(); 
+        preparedStatements = new Hashtable<String, PreparedStatement>(); 
         
         indexOfPartitioningField = -1;
         indexOfTableNameField = -1;
         
-        batchBuffer = new ArrayList();
+        batchBuffer = new ArrayList<Object[]>();
 	}
 
 }

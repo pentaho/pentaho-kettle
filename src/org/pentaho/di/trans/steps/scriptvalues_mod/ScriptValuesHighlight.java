@@ -43,7 +43,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
 	int[] tokenColors;
 	Color[] colors;
-	Vector blockComments = new Vector();
+	Vector<int[]> blockComments = new Vector<int[]>();
 
 	public static final int EOF= -1;
 	public static final int EOL= 10;
@@ -124,7 +124,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 	 * LineStyleEvent.background 	line background color (output)
 	 */
 	public void lineGetStyle(LineStyleEvent event) {
-		Vector styles = new Vector();
+		Vector<StyleRange> styles = new Vector<StyleRange>();
 		int token;
 		StyleRange lastStyle;
 		
@@ -177,7 +177,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 	}
 
 	public void parseBlockComments(String text) {
-		blockComments = new Vector();
+		blockComments = new Vector<int[]>();
 		StringReader buffer = new StringReader(text);
 		int ch;
 		boolean blkComment = false;
@@ -238,9 +238,9 @@ class ScriptValuesHighlight implements LineStyleListener {
 	 */
 	public class JavaScanner {
 
-		protected Hashtable fgKeys= null;
+		protected Hashtable<String, Integer> fgKeys= null;
 		protected Hashtable fgFunctions= null;
-		protected Hashtable kfKeys= null;
+		protected Hashtable<String, Integer> kfKeys= null;
 		protected Hashtable kfFunctions= null;
 		protected StringBuffer fBuffer= new StringBuffer();
 		protected String fDoc;
@@ -287,7 +287,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 		 * Initialize the lookup table.
 		 */
 		void initialize() {
-			fgKeys= new Hashtable();
+			fgKeys= new Hashtable<String, Integer>();
 			Integer k= new Integer(KEY);
 			for (int i= 0; i < fgKeywords.length; i++)
 				fgKeys.put(fgKeywords[i], k);
@@ -298,7 +298,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 		}
 		
 		void initializeETLFunctions(){
-			kfKeys = new Hashtable();
+			kfKeys = new Hashtable<String, Integer>();
 			Integer k = new Integer(FUNCTIONS);
 			for (int i= 0; i < kfKeywords.length; i++)
 				kfKeys.put(kfKeywords[i], k);

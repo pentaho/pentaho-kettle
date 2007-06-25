@@ -616,11 +616,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return WebResult.fromXMLString(xml);
     }
 
-    public static SlaveServer findSlaveServer(List slaveServers, String name)
+    public static SlaveServer findSlaveServer(List<SlaveServer> slaveServers, String name)
     {
-        for (int i=0;i<slaveServers.size();i++)
+        for (SlaveServer slaveServer : slaveServers)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
             if (slaveServer.getName()!=null && slaveServer.getName().equalsIgnoreCase(name)) return slaveServer;
         }
         return null;

@@ -90,6 +90,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -208,7 +209,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			return 0;
 		}
 
-		public List getInputRowSets() {
+		public List<RowSet> getInputRowSets() {
 			return null;
 		}
 
@@ -232,7 +233,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			return 0;
 		}
 
-		public List getOutputRowSets() {
+		public List<RowSet> getOutputRowSets() {
 			return null;
 		}
 
@@ -244,7 +245,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			return null;
 		}
 
-		public List getRowListeners() {
+		public List<RowListener> getRowListeners() {
 			return null;
 		}
 
@@ -1261,8 +1262,8 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		
 		
 		
-		Hashtable hatFunctions =scVHelp.getFunctionList(); 
-	    Vector v = new Vector(hatFunctions.keySet());
+		Hashtable<String, String> hatFunctions =scVHelp.getFunctionList(); 
+	    Vector<String> v = new Vector<String>(hatFunctions.keySet());
 	    Collections.sort(v);
 	    Iterator it = v.iterator();
 	    while (it.hasNext()) {

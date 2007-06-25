@@ -17,9 +17,9 @@ import org.pentaho.di.trans.TransConfiguration;
  */
 public class TransformationMap
 {
-    private Map transformationMap;
-    private Map configurationMap;
-    private Map loggingMap;
+    private Map<String, Trans> transformationMap;
+    private Map<String, TransConfiguration> configurationMap;
+    private Map<String, Appender> loggingMap;
     
     private String parentThreadName;
     
@@ -27,9 +27,9 @@ public class TransformationMap
     {
         this.parentThreadName = parentThreadName;
         
-        transformationMap = new Hashtable();
-        configurationMap  = new Hashtable();
-        loggingMap        = new Hashtable();
+        transformationMap = new Hashtable<String, Trans>();
+        configurationMap  = new Hashtable<String, TransConfiguration>();
+        loggingMap        = new Hashtable<String, Appender>();
     }
     
     public synchronized void addTransformation(String transformationName, Trans trans, TransConfiguration transConfiguration)
@@ -40,12 +40,12 @@ public class TransformationMap
     
     public synchronized Trans getTransformation(String transformationName)
     {
-        return (Trans)transformationMap.get(transformationName);
+        return transformationMap.get(transformationName);
     }
     
     public synchronized TransConfiguration getConfiguration(String transformationName)
     {
-        return (TransConfiguration)configurationMap.get(transformationName);
+        return configurationMap.get(transformationName);
     }
 
     public synchronized void removeTransformation(String transformationName)
@@ -56,7 +56,7 @@ public class TransformationMap
     
     public synchronized Appender getAppender(String transformationName)
     {
-        return (Appender)loggingMap.get(transformationName);
+        return loggingMap.get(transformationName);
     }
     
     public synchronized void addAppender(String transformationName, Appender appender)
@@ -71,8 +71,8 @@ public class TransformationMap
     
     public String[] getTransformationNames()
     {
-        Set keySet = transformationMap.keySet();
-        return (String[]) keySet.toArray(new String[keySet.size()]);
+        Set<String> keySet = transformationMap.keySet();
+        return keySet.toArray(new String[keySet.size()]);
     }
 
     /**
@@ -94,7 +94,7 @@ public class TransformationMap
     /**
      * @param configurationMap the configurationMap to set
      */
-    public void setConfigurationMap(Map configurationMap)
+    public void setConfigurationMap(Map<String, TransConfiguration> configurationMap)
     {
         this.configurationMap = configurationMap;
     }

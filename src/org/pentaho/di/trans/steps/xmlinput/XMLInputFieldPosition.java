@@ -1,6 +1,6 @@
 package org.pentaho.di.trans.steps.xmlinput;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -185,7 +185,7 @@ public class XMLInputFieldPosition implements Cloneable
      * @param path An ArrayList of XMLInputFieldPosition
      * @return the path encoded
      */
-    public static final String encodePath(ArrayList path)
+    public static final String encodePath(List<XMLInputFieldPosition> path)
     {
         String encoded = "";
         for (int p=0;p<path.size();p++) 

@@ -74,7 +74,7 @@ public class SortRowsTest extends TestCase
 	public List createIntegerData()
 	{
 		// Create 
-		List list = new ArrayList();
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
 		String old_key1 = null;
 		
 		RowMetaInterface rm = createRowMetaInterface();		

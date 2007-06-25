@@ -49,16 +49,16 @@ import org.w3c.dom.Node;
  */
 public class StepLoader
 {
-    private static StepLoader stepLoader = null;
-    private String            pluginDirectory[];
-    private ArrayList         pluginList;
-    private Map               classLoaders;
+    private static StepLoader             stepLoader = null;
+    private String                        pluginDirectory[];
+    private List<StepPlugin>              pluginList;
+    private Map<String[], URLClassLoader> classLoaders;
 
     private StepLoader(String pluginDirectory[])
     {
         this.pluginDirectory = pluginDirectory;
-        pluginList           = new ArrayList();
-        classLoaders         = new Hashtable();
+        pluginList           = new ArrayList<StepPlugin>();
+        classLoaders         = new Hashtable<String[], URLClassLoader>();
     }
 
     public static final StepLoader getInstance(String pluginDirectory[])
@@ -196,7 +196,7 @@ public class StepLoader
                                     //
                                     Node locCatsNode = XMLHandler.getSubNode(plugin, "localized_category");
                                     int nrLocCats = XMLHandler.countNodes(locCatsNode, "category");
-                                    Map localizedCategories = new Hashtable();              
+                                    Map<String, String> localizedCategories = new Hashtable<String, String>();              
                                     for (int j=0 ; j < nrLocCats ; j++)
                                     {
                                         Node locCatNode = XMLHandler.getSubNodeByNr(locCatsNode, "category", j);
@@ -213,7 +213,7 @@ public class StepLoader
                                     //
                                     Node locDescsNode = XMLHandler.getSubNode(plugin, "localized_description");
                                     int nrLocDescs = XMLHandler.countNodes(locDescsNode, "description");
-                                    Map localizedDescriptions = new Hashtable();              
+                                    Map<String, String> localizedDescriptions = new Hashtable<String, String>();              
                                     for (int j=0 ; j < nrLocDescs; j++)
                                     {
                                         Node locDescNode = XMLHandler.getSubNodeByNr(locDescsNode, "description", j);
@@ -230,7 +230,7 @@ public class StepLoader
                                     //
                                     Node locTipsNode = XMLHandler.getSubNode(plugin, "localized_tooltip");
                                     int nrLocTips = XMLHandler.countNodes(locTipsNode, "tooltip");
-                                    Map localizedTooltips = new Hashtable();              
+                                    Map<String, String> localizedTooltips = new Hashtable<String, String>();              
                                     for (int j=0 ; j < nrLocTips; j++)
                                     {
                                         Node locTipNode = XMLHandler.getSubNodeByNr(locTipsNode, "tooltip", j);
@@ -325,7 +325,7 @@ public class StepLoader
                     for (int i = 0; i < jarfiles.length; i++)
                     {
                         File jarfile = new File(jarfiles[i]);
-                        urls[i] = jarfile.toURL();
+                        urls[i] = jarfile.toURI().toURL();
                     }
 
                     // Load the class!!
@@ -489,7 +489,7 @@ public class StepLoader
      */
     public String[] getCategories(int type, String locale)
     {
-        Hashtable cat = new Hashtable();
+        Hashtable<String, String> cat = new Hashtable<String, String>();
         for (int i = 0; i < nrStepsWithType(type); i++)
         {
             StepPlugin sp = getStepWithType(type, i);
@@ -653,7 +653,7 @@ public class StepLoader
     /**
      * @return the pluginList
      */
-    public List getPluginList()
+    public List<StepPlugin> getPluginList()
     {
         return pluginList;
     }

@@ -52,6 +52,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
@@ -99,19 +100,19 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
     private List                inputFiles;
 
-    private List<DatabaseMeta>           databases;
+    private List<DatabaseMeta>       databases;
 
     private List<StepMeta>           steps;
 
-    private List<TransHopMeta>           hops;
+    private List<TransHopMeta>       hops;
 
-    private List<NotePadMeta>           notes;
+    private List<NotePadMeta>        notes;
 
-    private List<TransDependency>           dependencies;
+    private List<TransDependency>    dependencies;
     
-    private List<SlaveServer>           slaveServers;
+    private List<SlaveServer>        slaveServers;
     
-    private List<ClusterSchema>           clusterSchemas;
+    private List<ClusterSchema>      clusterSchemas;
 
     private RepositoryDirectory directory;
 
@@ -159,13 +160,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
     private String              arguments[];
 
-    private Hashtable<String,Counter>           counters;
-
-    private ArrayList           sourceRows;
+    private Hashtable<String,Counter> counters;
 
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
-    private List<TransAction>           undo;
+    private List<TransAction>   undo;
 
     private int                 max_undo;
 
@@ -188,8 +187,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     private int                 sleepTimeFull;
 
 	private Result              previousResult;
-    private List<RowMetaAndData>           resultRows;
-    private List<ResultFile>           resultFiles;            
+    private List<RowMetaAndData> resultRows;
+    private List<ResultFile>     resultFiles;            
         
     private List<PartitionSchema> partitionSchemas;
 
@@ -226,8 +225,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     private static final String XML_TAG_SLAVESERVERS        = "slaveservers";
     private static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
     private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
-
-
 
     /**
      * Builds a new empty transformation.
@@ -3576,9 +3573,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      *
      * @return A list containing all the selected & drawn steps.
      */
-    public List<StepMeta> getSelectedDrawnStepsList()
+    public List<GUIPositionInterface> getSelectedDrawnStepsList()
     {
-        List<StepMeta> list = new ArrayList<StepMeta>();
+        List<GUIPositionInterface> list = new ArrayList<GUIPositionInterface>();
         
         for (int i = 0; i < nrSteps(); i++)
         {
@@ -4022,7 +4019,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      * @param impact An ArrayList of DatabaseImpact objects.
      *
      */
-    public void analyseImpact(ArrayList impact, IProgressMonitor monitor) throws KettleStepException
+    public void analyseImpact(List<DatabaseImpact> impact, IProgressMonitor monitor) throws KettleStepException
     {
         if (monitor != null)
         {
@@ -4432,24 +4429,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     public void setResultRows(List<RowMetaAndData> resultRows)
     {
         this.resultRows = resultRows;
-    }
-
-    /**
-     * @return Returns the sourceRows.
-     * @deprecated : use getPreviousResult().getRows()
-     */
-    public ArrayList getSourceRows()
-    {
-        return sourceRows;
-    }
-
-    /**
-     * @param sourceRows The sourceRows to set.
-     * @deprecated : use getPreviousResult().getRows().addAll(sourceRows)
-     */
-    public void setSourceRows(ArrayList sourceRows)
-    {
-        this.sourceRows = sourceRows;
     }
 
     /**

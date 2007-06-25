@@ -354,7 +354,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    			ResultSetMetaData resultSetMetaData = rs.getMetaData();
 					int columnCount = resultSetMetaData.getColumnCount();
 					if(rs!=null){
-						List list = new ArrayList(); 
+						List<Object[]> list = new ArrayList<Object[]>(); 
 						while(rs.next()){
 							Object[] objRow = new Object[columnCount];
 							for(int i=0;i<columnCount;i++){

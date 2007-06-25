@@ -90,10 +90,10 @@ public class Variables implements VariableSpace
 	public String[] listVariables() {
 		Enumeration en = properties.propertyNames();
 		
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		while ( en.hasMoreElements() )
 		{
-			list.add(en.nextElement());
+			list.add((String)en.nextElement());
 		}
 		return (String[])list.toArray(new String[0]);
 	}

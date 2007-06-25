@@ -98,7 +98,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 
 	private SelectValuesMeta input;
 	
-	private List fieldColumns = new ArrayList();
+	private List<ColumnInfo> fieldColumns = new ArrayList<ColumnInfo>();
 	
 	/**
 	 * Fields from previous step
@@ -683,7 +683,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			selectRename[i] = wFields.getItem(i, 2);
 		}
 		
-		ArrayList mappings = new ArrayList();
+		List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
 		StringBuffer missingFields = new StringBuffer();
 		for (int i = 0; i < selectName.length; i++) {
 			String valueName = selectName[i];

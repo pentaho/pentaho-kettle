@@ -149,7 +149,7 @@ public class TransDialog extends Dialog
     // Partitions tab
     private List wSchemaList;
     private TableView wPartitions;
-    private java.util.List schemas;
+    private java.util.List<PartitionSchema> schemas;
     private Text wSchemaName;
 
 	private Button wOK, wGet, wSQL, wCancel;
@@ -205,10 +205,10 @@ public class TransDialog extends Dialog
         
         this.newDirectory = null;
         
-        schemas = new ArrayList();
+        schemas = new ArrayList<PartitionSchema>();
         for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
         {
-            schemas.add( ((PartitionSchema)transMeta.getPartitionSchemas().get(i)).clone() );
+            schemas.add( (PartitionSchema) transMeta.getPartitionSchemas().get(i).clone() );
         }
         previousSchemaIndex = -1;
     }
@@ -1293,7 +1293,7 @@ public class TransDialog extends Dialog
 
     protected void getPartitions()
     {
-        ArrayList partitionedDatabaseNames = new ArrayList();
+        java.util.List<String> partitionedDatabaseNames = new ArrayList<String>();
         
         for (int i=0;i<transMeta.getDatabases().size();i++)
         {

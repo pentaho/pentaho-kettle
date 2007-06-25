@@ -50,7 +50,6 @@ import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.widget.TreeUtil;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepStatus;
-
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.WebResult;
@@ -414,7 +413,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 LogWriter.getInstance().logBasic(toString(), "Getting transformation status for ["+transStatus.getTransName()+"] on server ["+slaveServer+"]");
                 SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
                 LogWriter.getInstance().logBasic(toString(), "Finished receiving transformation status for ["+transStatus.getTransName()+"] fropm server ["+slaveServer+"]");
-                List stepStatusList = ts.getStepStatusList();
+                List<StepStatus> stepStatusList = ts.getStepStatusList();
                 transStatus.setStepStatusList(stepStatusList);
                 transStatus.setLoggingString(ts.getLoggingString());
                 
@@ -441,7 +440,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 	public void showErrors()
 	{
 		String all = wText.getText();
-		ArrayList err = new ArrayList();
+		List<String> err = new ArrayList<String>();
 
 		int i = 0;
 		int startpos = 0;

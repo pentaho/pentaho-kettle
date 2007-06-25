@@ -2,7 +2,7 @@ package org.pentaho.di.trans.steps.xmlinputsax;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -34,12 +34,12 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	int[] position = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
 	// list of elements to the root element
-	private ArrayList pathToRootElement = new ArrayList();
+	private List<XMLInputSaxFieldPosition> pathToRootElement = new ArrayList<XMLInputSaxFieldPosition>();
 
 	// list of elements to the root element
-	private ArrayList _pathToRootElement = new ArrayList();
+	private List<XMLInputSaxFieldPosition> _pathToRootElement = new ArrayList<XMLInputSaxFieldPosition>();
 
-	private ArrayList fields = new ArrayList();
+	private List<XMLInputSaxField> fields = new ArrayList<XMLInputSaxField>();
 
 	private int fieldToFill = -1;
 
@@ -50,7 +50,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	private Object[] row;
 
 	/** List of datarows retreived from the xml */
-	private ArrayList rowSet = new ArrayList();
+	private List<Object[]> rowSet = new ArrayList<Object[]>();
 
 	// count the deep to the current element in pathToStartElement
 	private int counter = 0;
@@ -226,7 +226,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 			counter--;
 			_counter--;
 			rootFound = false;
-			rowSet.add(Arrays.asList(row));
+			rowSet.add( row );
 			// System.out.println(row.toString());
 			this.row = null;
 			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);

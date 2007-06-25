@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
  * @author Matt
  *
  */
-public class StepMeta extends SharedObjectBase implements Cloneable, Comparable, GUIPositionInterface, SharedObjectInterface
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface
 {
 	public static final String XML_TAG = "step";
     
@@ -321,9 +321,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 		return stepname.hashCode();
 	}
 	
-	public int compareTo(Object o)
+	public int compareTo(StepMeta o)
 	{
-		return toString().compareTo(((StepMeta)o).toString());
+		return toString().compareTo(o.toString());
 	}
 	
 	public boolean hasChanged()

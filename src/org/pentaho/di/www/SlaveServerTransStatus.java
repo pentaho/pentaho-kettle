@@ -25,11 +25,11 @@ public class SlaveServerTransStatus
     private String statusDescription;
     private String errorDescription;
     private String loggingString;
-    private List   stepStatusList;
+    private List<StepStatus>   stepStatusList;
     
     public SlaveServerTransStatus()
     {
-        stepStatusList = new ArrayList();
+        stepStatusList = new ArrayList<StepStatus>();
     }
     
     /**
@@ -165,7 +165,7 @@ public class SlaveServerTransStatus
     /**
      * @return the stepStatusList
      */
-    public List getStepStatusList()
+    public List<StepStatus> getStepStatusList()
     {
         return stepStatusList;
     }
@@ -173,7 +173,7 @@ public class SlaveServerTransStatus
     /**
      * @param stepStatusList the stepStatusList to set
      */
-    public void setStepStatusList(List stepStatusList)
+    public void setStepStatusList(List<StepStatus> stepStatusList)
     {
         this.stepStatusList = stepStatusList;
     }

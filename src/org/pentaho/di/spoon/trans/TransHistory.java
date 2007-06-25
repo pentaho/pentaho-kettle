@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -78,7 +79,7 @@ public class TransHistory extends Composite implements TabItemInterface
 	private FormData fdText, fdSash, fdRefresh, fdReplay; 
 	
 
-    private ArrayList rowList;
+    private List<RowMetaAndData> rowList;
 
 	// private final SpoonLog spoonLog;
 
@@ -277,7 +278,7 @@ public class TransHistory extends Composite implements TabItemInterface
                         params.addValue(new ValueMeta("transname", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
                         ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ? ORDER BY ID_BATCH desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
                         
-                        rowList = new ArrayList();
+                        rowList = new ArrayList<RowMetaAndData>();
                         Object[] rowData = database.getRow(resultSet);
                         while (rowData!=null)
                         {

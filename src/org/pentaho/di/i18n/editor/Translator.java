@@ -421,7 +421,7 @@ public class Translator
                         if (getPath(filename).equals(dir)) // yep, add this one
                         {
                             Properties properties = files.get(filename);
-                            ArrayList<String> entries = new ArrayList(properties.keySet());
+                            ArrayList<String> entries = new ArrayList(properties.keySet()); // TODO how can we fix this warning?
                             Collections.sort(entries);
                             
                             for (int e=0;e<entries.size();e++)

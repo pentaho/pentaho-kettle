@@ -1,6 +1,6 @@
 package org.pentaho.di.core.widget;
 
-public interface TextFileInputFieldInterface
+public interface TextFileInputFieldInterface extends Comparable<TextFileInputFieldInterface>
 {
     public int getPosition();
     public int getLength();

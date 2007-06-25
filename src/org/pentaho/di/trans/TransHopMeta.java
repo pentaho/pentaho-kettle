@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -87,7 +88,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 			{
 				// Simply load this, we only want the name, we don't care about
 				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList(), new Hashtable(),
+				StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList<DatabaseMeta>(), new Hashtable(),
 						new ArrayList());
 				from_step = StepMeta.findStep(steps, stepMeta.getName());
 			}
@@ -100,7 +101,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 			{
 				// Simply load this, we only want the name, we don't care about
 				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList(), new Hashtable(),
+				StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList<DatabaseMeta>(), new Hashtable(),
 						new ArrayList());
 				to_step = StepMeta.findStep(steps, stepMeta.getName());
 			}

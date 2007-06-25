@@ -15,7 +15,6 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 

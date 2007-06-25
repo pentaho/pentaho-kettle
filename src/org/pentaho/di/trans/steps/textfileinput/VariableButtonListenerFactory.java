@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,7 +38,7 @@ public class VariableButtonListenerFactory
                 sp.putAll( kettleVariables.getProperties() );
                 sp.putAll( System.getProperties() );
                 
-                ArrayList keys = new ArrayList( sp.keySet() );
+                List<String> keys = new ArrayList( sp.keySet() ); // TODO how can we fix this warning?
                 Collections.sort(keys);
                 
                 int size = keys.size();
