@@ -79,6 +79,10 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     private Button       wCompress;
     private FormData     fdlCompress, fdCompress;
 
+    private Label        wlUniqueRows;
+    private Button       wUniqueRows;
+    private FormData     fdlUniqueRows, fdUniqueRows;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -253,6 +257,25 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			}
         );
 
+        // Using compression for temporary files?
+        wlUniqueRows=new Label(shell, SWT.RIGHT);
+        wlUniqueRows.setText(Messages.getString("SortRowsDialog.UniqueRows.Label"));
+        props.setLook(wlUniqueRows);
+        fdlUniqueRows=new FormData();
+        fdlUniqueRows.left = new FormAttachment(0, 0);
+        fdlUniqueRows.right= new FormAttachment(middle, -margin);
+        fdlUniqueRows.top  = new FormAttachment(wCompress, margin);
+        wlUniqueRows.setLayoutData(fdlUniqueRows);
+        wUniqueRows=new Button(shell, SWT.CHECK);
+        wUniqueRows.setToolTipText(Messages.getString("SortRowsDialog.UniqueRows.Tooltip"));
+        props.setLook(wUniqueRows);
+        fdUniqueRows=new FormData();
+        fdUniqueRows.left  = new FormAttachment(middle, 0);
+        fdUniqueRows.top   = new FormAttachment(wCompress, margin);
+        fdUniqueRows.right = new FormAttachment(100, 0);
+        wUniqueRows.setLayoutData(fdUniqueRows);
+
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
@@ -268,7 +291,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wCompress, margin);
+		fdlFields.top  = new FormAttachment(wUniqueRows, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=2;

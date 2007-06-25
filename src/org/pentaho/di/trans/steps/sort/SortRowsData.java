@@ -16,7 +16,11 @@
 
 package org.pentaho.di.trans.steps.sort;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -31,13 +35,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class SortRowsData extends BaseStepData implements StepDataInterface
 {
-	public ArrayList files;
-	public Object[]  buffer;
-    public int       bufferSize;
-    public int       getBufferIndex;
+	public List<FileObject> files;
+	public List<Object[]>   buffer;
+    public int              getBufferIndex;
 
-	public ArrayList fis, gzis, dis;
-	public ArrayList rowbuffer;
+	public List<InputStream> fis;
+    public List<GZIPInputStream> gzis;
+    public List<DataInputStream> dis;
+	public List<Object[]> rowbuffer;
+    public List<Integer> bufferSizes;
 
 	public int     fieldnrs[];      // the corresponding field numbers;
     public FileObject fil;
@@ -50,10 +56,11 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	{
 		super();
 		
-		files=new ArrayList();
-		fis  =new ArrayList();
-		dis  =new ArrayList();
-		gzis = new ArrayList();
+		files= new ArrayList<FileObject>();
+		fis  = new ArrayList<InputStream>();
+        gzis  = new ArrayList<GZIPInputStream>();
+        dis = new ArrayList<DataInputStream>();
+        bufferSizes = new ArrayList<Integer>();
 	}
 
 }
