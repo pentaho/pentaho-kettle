@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.rowsfromresult;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -57,8 +58,10 @@ public class RowsFromResult extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
+        RowMetaAndData row = previousResult.getRows().get((int) linesRead);
 
-		Object[] r = (Object[]) previousResult.getRows().get((int) linesRead);
+		Object[] r = row.getData();
+        
 		linesRead++;
 		data = (RowsFromResultData) sdi;
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();

@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.sort;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -63,6 +64,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The sort size: number of rows sorted and kept in memory */
     private int     sortSize;
+
+    /** The sort size: number of rows sorted and kept in memory */
+    private boolean onlyPassingUniqueRows;
 
     /**
      * Compress files: if set to true, temporary files are compressed, thus reducing I/O at the cost of slightly higher
@@ -175,6 +179,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             prefix = XMLHandler.getTagValue(stepnode, "prefix");
             sortSize = Const.toInt(XMLHandler.getTagValue(stepnode, "sort_size"), Const.SORT_SIZE);
             compressFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compress"));
+            onlyPassingUniqueRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "unique_rows") );
 
             Node fields = XMLHandler.getSubNode(stepnode, "fields");
             int nrfields = XMLHandler.countNodes(fields, "field");
@@ -205,6 +210,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         prefix = "out";
         sortSize = Const.SORT_SIZE;
         compressFiles = false;
+        onlyPassingUniqueRows = false;
 
         int nrfields = 0;
 
@@ -224,6 +230,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      " + XMLHandler.addTagValue("prefix", prefix));
         retval.append("      " + XMLHandler.addTagValue("sort_size", sortSize));
         retval.append("      " + XMLHandler.addTagValue("compress", compressFiles));
+        retval.append("      " + XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
 
         retval.append("    <fields>" + Const.CR);
         for (int i = 0; i < fieldName.length; i++)
@@ -247,6 +254,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             sortSize = (int) rep.getStepAttributeInteger(id_step, "sort_size");
             compressFiles = rep.getStepAttributeBoolean(id_step, "compress");
             if (sortSize == 0) sortSize = Const.SORT_SIZE;
+            onlyPassingUniqueRows = rep.getStepAttributeBoolean(id_step, "unique_rows");
 
             int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -272,6 +280,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "prefix", prefix);
             rep.saveStepAttribute(id_transformation, id_step, "sort_size", sortSize);
             rep.saveStepAttribute(id_transformation, id_step, "compress", compressFiles);
+            rep.saveStepAttribute(id_transformation, id_step, "unique_rows", onlyPassingUniqueRows);
 
             for (int i = 0; i < fieldName.length; i++)
             {
@@ -302,7 +311,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         
     }
 
-    public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
 
@@ -437,5 +446,21 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     public void setCompress(boolean compressFiles)
     {
         this.compressFiles = compressFiles;
+    }
+
+    /**
+     * @return the onlyPassingUniqueRows
+     */
+    public boolean isOnlyPassingUniqueRows()
+    {
+        return onlyPassingUniqueRows;
+    }
+
+    /**
+     * @param onlyPassingUniqueRows the onlyPassingUniqueRows to set
+     */
+    public void setOnlyPassingUniqueRows(boolean onlyPassingUniqueRows)
+    {
+        this.onlyPassingUniqueRows = onlyPassingUniqueRows;
     }
 }

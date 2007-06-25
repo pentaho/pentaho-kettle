@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -618,7 +619,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 		return location;
 	}
 
-	public void check(ArrayList remarks, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		stepMetaInterface.check(remarks, this, prev, input, output, info);
 	}

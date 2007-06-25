@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.setvariable;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -303,7 +304,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 
-    public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev==null || prev.size()==0)

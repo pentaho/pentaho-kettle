@@ -21,6 +21,7 @@ package org.pentaho.di.trans.steps.databaselookup;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -627,7 +628,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	}
 
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$

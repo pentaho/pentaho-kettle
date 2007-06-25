@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.delete;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -371,7 +372,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
     
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$

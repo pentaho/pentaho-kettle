@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.constant;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.RowMetaAndData;
@@ -55,7 +56,7 @@ public class Constant extends BaseStep implements StepInterface
 		data=(ConstantData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(ConstantMeta meta, ConstantData data, ArrayList remarks)
+    public static final RowMetaAndData buildRow(ConstantMeta meta, ConstantData data, List<CheckResult> remarks)
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = new Object[meta.getFieldName().length];

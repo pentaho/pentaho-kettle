@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.swt.widgets.Shell;
@@ -418,7 +419,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     }
 
 	//private boolean test(boolean getvars, boolean popup)
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		boolean error_found=false;
 		String error_message = ""; //$NON-NLS-1$

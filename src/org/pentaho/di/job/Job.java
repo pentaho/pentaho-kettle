@@ -16,16 +16,21 @@
 package org.pentaho.di.job;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.KettleVariables;
@@ -39,11 +44,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.spoon.job.JobTracker;
 import org.pentaho.di.trans.StepLoader;
-
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleJobException;
-import org.pentaho.di.core.exception.KettleValueException;
 
 
 /**
@@ -82,7 +82,7 @@ public class Job extends Thread implements VariableSpace
      * The rows that were passed onto this job by a previous transformation.  
      * These rows are passed onto the first job entry in this job (on the result object)
      */
-    private ArrayList sourceRows;
+    private List<RowMetaAndData> sourceRows;
     
     
     private Thread parentThread;
@@ -690,12 +690,12 @@ public class Job extends Thread implements VariableSpace
         this.jobTracker = jobTracker;
     }
 
-    public void setSourceRows(ArrayList sourceRows)
+    public void setSourceRows(List<RowMetaAndData> sourceRows)
     {
         this.sourceRows = sourceRows;
     }
 	
-    public ArrayList getSourceRows()
+    public List<RowMetaAndData> getSourceRows()
     {
         return sourceRows;
     }

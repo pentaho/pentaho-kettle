@@ -17,8 +17,10 @@ package org.pentaho.di.trans.step;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -101,7 +103,7 @@ public interface StepMetaInterface
 	 * @param output The output step names
 	 * @param info The fields that are used as information by the step
 	 */
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
 
 	/**
 	 * Make an exact copy of this step, make sure to explicitly copy Collections etc.

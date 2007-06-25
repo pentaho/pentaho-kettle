@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.getvariable;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -239,7 +240,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();

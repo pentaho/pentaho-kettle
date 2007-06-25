@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.widgets.Shell;
@@ -1252,7 +1253,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
     
 
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 

@@ -18,12 +18,20 @@ package org.pentaho.di.trans.steps.rowgenerator;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -33,14 +41,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.repository.Repository;
 
 /*
  * Created on 4-apr-2003
@@ -445,7 +445,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)

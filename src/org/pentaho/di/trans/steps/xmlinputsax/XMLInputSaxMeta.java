@@ -26,6 +26,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
@@ -637,7 +638,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		return files;
 	}
 	
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 

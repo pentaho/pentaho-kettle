@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.getfilenames;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -361,7 +362,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		return FileInputList.createFileList(fileName, fileMask, fileRequired);
 	}
 
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 

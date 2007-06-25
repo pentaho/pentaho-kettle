@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.sql;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -357,7 +358,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 					Messages.getString("ExecSQLMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
 		}
 	}
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[],
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[],
 			RowMetaInterface info)
 	{
 		CheckResult cr;

@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.blockingstep;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -67,7 +68,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
 	 */
 	public static final int CACHE_SIZE = 5000;	
 		   
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
         

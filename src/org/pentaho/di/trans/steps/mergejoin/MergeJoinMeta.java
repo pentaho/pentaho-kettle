@@ -350,7 +350,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
         return (String[])list.toArray(new String[list.size()]);
     }
 
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
         /*
          * @todo Need to check for the following:

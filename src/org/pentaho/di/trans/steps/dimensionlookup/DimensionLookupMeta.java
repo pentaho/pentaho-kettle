@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -925,7 +926,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return mincal.getTime();
 	}
 
-	public void check(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		if (update)
 			checkUpdate(remarks, stepinfo, prev);
@@ -960,7 +961,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	private void checkUpdate(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev)
+	private void checkUpdate(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev)
 	{
 		LogWriter log = LogWriter.getInstance();
 		
@@ -1180,7 +1181,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 
-	private void checkLookup(ArrayList remarks, StepMeta stepinfo, RowMetaInterface prev)
+	private void checkLookup(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev)
 	{
 		int i;
 		boolean error_found = false;

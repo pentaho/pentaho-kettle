@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.rowsfromresult;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -234,7 +235,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         }
     }
 
-	public void check(ArrayList remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// See if we have input streams leading to this step!
 		if (input.length>0)

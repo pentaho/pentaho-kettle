@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.rowgenerator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
@@ -55,7 +56,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		data=(RowGeneratorData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, RowGeneratorData data, ArrayList remarks)
+    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, RowGeneratorData data, List<CheckResult> remarks)
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = new Object[meta.getFieldName().length];
