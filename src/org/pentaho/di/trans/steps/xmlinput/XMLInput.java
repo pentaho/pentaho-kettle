@@ -301,8 +301,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			{
 				if (v.getValueMeta().isNull(v.getValueData()) && data.previousRow != null)
 				{
-					ValueMetaInterface previous = data.previousRow.getValueMeta(i);
-					v.setValueMeta(previous);
+					v.setValueData(data.previousRow[i]);
 				}
 			}
 
@@ -324,7 +323,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			row = RowDataUtil.addValueData(row,fn.getValueMeta());
 		}
 
-		data.previousRow = (RowMetaInterface) row.clone(); // copy it to make
+		data.previousRow = getInputRowMeta().cloneRow(row); // copy it to make
 		// sure the next
 		// step doesn't
 		// change it in

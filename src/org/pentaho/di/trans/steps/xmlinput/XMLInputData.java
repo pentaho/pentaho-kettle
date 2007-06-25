@@ -40,7 +40,7 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
 {
 	public String thisline, nextline, lastline;
 
-	public RowMetaInterface previousRow;
+	public Object[] previousRow;
 
 	public int nr_repeats;
 
