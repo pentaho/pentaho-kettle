@@ -67,6 +67,7 @@ public class SharedObjects
     
     private String filename;
 
+
     private Map<SharedEntry, SharedObjectInterface> objectsMap;
 
     public SharedObjects(String sharedObjectsFile) throws KettleXMLException
@@ -87,8 +88,9 @@ public class SharedObjects
                 Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
                 if (sharedObjectsNode!=null)
                 {
-                    List<SlaveServer> privateSlaveServers = new ArrayList<SlaveServer>();
-                    List<DatabaseMeta> privateDatabases = new ArrayList<DatabaseMeta>();
+                    List<SharedObjectInterface> privateSlaveServers = new ArrayList<SharedObjectInterface>();
+                    List<SharedObjectInterface> privateDatabases = new ArrayList<SharedObjectInterface>();
+
                     
                     NodeList childNodes = sharedObjectsNode.getChildNodes();
                     // First load databases & slaves
