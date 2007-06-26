@@ -23,6 +23,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ImageUtil;
+import org.eclipse.swt.snippets.Snippet139;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -394,7 +395,7 @@ public class GUIResource
         imageBanner     = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
         
         // Rotate logo once left.
-        imageLogoLeft = new Image(display, ImageUtil.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
+        imageLogoLeft = new Image(display, Snippet139.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
     }
 
     /**
