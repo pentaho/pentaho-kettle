@@ -213,7 +213,7 @@ public class CommandLineOption
 	 * @param args The list of arguments to parse
 	 * @param options The command line options to use
 	 */
-	public static void parseArguments(List args, CommandLineOption[] options)
+	public static void parseArguments(List<String> args, CommandLineOption[] options)
 	{
 		for (int i=0;i<options.length;i++)
 		{
