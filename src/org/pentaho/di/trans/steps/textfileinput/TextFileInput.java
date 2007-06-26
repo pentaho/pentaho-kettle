@@ -164,6 +164,223 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		return null;
 	}
+	
+	public static final String[] guessStringsFromLine(String line, TextFileInputMeta inf) throws KettleException
+	{
+		List<String> strings = new ArrayList<String>();
+        int fieldnr;
+        
+		String pol; // piece of line
+
+		try
+		{
+			if (line == null) return null;
+
+			if (inf.getFileType().equalsIgnoreCase("CSV"))
+			{
+				// Split string in pieces, only for CSV!
+
+				fieldnr = 0;
+				int pos = 0;
+				int length = line.length();
+				boolean dencl = false;
+
+                int len_encl = (inf.getEnclosure() == null ? 0 : inf.getEnclosure().length());
+                int len_esc = (inf.getEscapeCharacter() == null ? 0 : inf.getEscapeCharacter().length());
+
+				while (pos < length)
+				{
+					int from = pos;
+					int next;
+
+					boolean encl_found;
+					boolean contains_escaped_enclosures = false;
+					boolean contains_escaped_separators = false;
+
+					// Is the field beginning with an enclosure?
+					// "aa;aa";123;"aaa-aaa";000;...
+					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
+					{
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
+						encl_found = true;
+						int p = from + len_encl;
+
+						boolean is_enclosure = len_encl > 0 && p + len_encl < length
+								&& line.substring(p, p + len_encl).equalsIgnoreCase(inf.getEnclosure());
+						boolean is_escape = len_esc > 0 && p + len_esc < length
+								&& line.substring(p, p + len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
+
+						boolean enclosure_after = false;
+						
+						// Is it really an enclosure? See if it's not repeated twice or escaped!
+						if ((is_enclosure || is_escape) && p < length - 1) 
+						{
+							String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+							if (strnext.equalsIgnoreCase(inf.getEnclosure()))
+							{
+								p++;
+								enclosure_after = true;
+								dencl = true;
+
+								// Remember to replace them later on!
+								if (is_escape) contains_escaped_enclosures = true; 
+							}
+						}
+
+						// Look for a closing enclosure!
+						while ((!is_enclosure || enclosure_after) && p < line.length())
+						{
+							p++;
+							enclosure_after = false;
+							is_enclosure = len_encl > 0 && p + len_encl < length && line.substring(p, p + len_encl).equals(inf.getEnclosure());
+							is_escape = len_esc > 0 && p + len_esc < length && line.substring(p, p + len_esc).equals(inf.getEscapeCharacter());
+
+							// Is it really an enclosure? See if it's not repeated twice or escaped!
+							if ((is_enclosure || is_escape) && p < length - 1) // Is
+							{
+								String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+								if (strnext.equals(inf.getEnclosure()))
+								{
+									p++;
+									enclosure_after = true;
+									dencl = true;
+
+									// Remember to replace them later on!
+									if (is_escape) contains_escaped_enclosures = true; // remember
+								}
+							}
+						}
+
+						if (p >= length) next = p;
+						else next = p + len_encl;
+
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
+					}
+					else
+					{
+						encl_found = false;
+						boolean found = false;
+						int startpoint = from;
+						int tries = 1;
+						do
+						{
+							next = line.indexOf(inf.getSeparator(), startpoint);
+
+							// See if this position is preceded by an escape character.
+							if (len_esc > 0 && next - len_esc > 0)
+							{
+								String before = line.substring(next - len_esc, next);
+
+								if (inf.getEscapeCharacter().equals(before))
+								{
+									// take the next separator, this one is escaped...
+									startpoint = next + 1; 
+									tries++;
+									contains_escaped_separators = true;
+								}
+								else
+								{
+									found = true;
+								}
+							}
+							else
+							{
+								found = true;
+							}
+						}
+						while (!found && next >= 0);
+					}
+					if (next == -1) next = length;
+
+					if (encl_found)
+					{
+						pol = line.substring(from + len_encl, next - len_encl);
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
+					}
+					else
+					{
+						pol = line.substring(from, next);
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
+					}
+
+					if (dencl)
+					{
+						StringBuffer sbpol = new StringBuffer(pol);
+						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
+						while (idx >= 0)
+						{
+							sbpol.delete(idx, idx + inf.getEnclosure().length());
+							idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
+						}
+						pol = sbpol.toString();
+					}
+
+					//	replace the escaped enclosures with enclosures... 
+					if (contains_escaped_enclosures) 
+					{
+						String replace = inf.getEscapeCharacter() + inf.getEnclosure();
+						String replaceWith = inf.getEnclosure();
+
+						pol = Const.replace(pol, replace, replaceWith);
+					}
+
+					//replace the escaped separators with separators... 
+					if (contains_escaped_separators) 
+					{
+						String replace = inf.getEscapeCharacter() + inf.getSeparator();
+						String replaceWith = inf.getSeparator();
+
+						pol = Const.replace(pol, replace, replaceWith);
+					}
+
+					// Now add pol to the strings found!
+					strings.add(pol);
+
+					pos = next + 1;
+					fieldnr++;
+				}
+				if ( pos == length )
+				{
+					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
+					strings.add("");
+                    fieldnr++;
+				}
+			}
+			else
+			{
+				// Fixed file format: Simply get the strings at the required positions...
+				for (int i = 0; i < inf.getInputFields().length; i++)
+				{
+					TextFileInputField field = inf.getInputFields()[i];
+
+					int length = line.length();
+
+					if (field.getPosition() + field.getLength() <= length)
+					{
+						strings.add( line.substring(field.getPosition(), field.getPosition() + field.getLength()) );
+					}
+					else
+					{
+						if (field.getPosition() < length)
+						{
+							strings.add( line.substring(field.getPosition()) );
+						}
+						else
+						{
+							strings.add( "" );
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw new KettleException("Error converting line : " + e.toString(), e);
+		}
+
+		return strings.toArray(new String[strings.size()]);
+	}
+    
 
 	public static final String[] convertLineToStrings(String line, TextFileInputMeta inf) throws KettleException
 	{

@@ -2351,8 +2351,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     {
                         line = TextFileInput.getLine(log, reader, fileFormatType, lineStringBuffer);
                         if (line != null)
-                        {
-                            String[] fields = TextFileInput.convertLineToStrings(line, meta);
+                        { 
+                        	// Estimate the number of input fields...
+                        	// Chop up the line using the delimiter
+                        	String[] fields = TextFileInput.guessStringsFromLine(line, meta);
 
                             for (int i = 0; i < fields.length; i++)
                             {
