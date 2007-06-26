@@ -173,20 +173,15 @@ public class StringSearcher
 
     }
 
-<<<<<<< .mine
+
+  
     private static Method searchGetter(String getter, Class<?> baseClass, Method[] methods)
-=======
-    private static Method searchGetter(String getter, Class<?> baseClass, Method[] methods)
->>>>>>> .r3758
     {
         Method method =null;
         try
         {
-<<<<<<< .mine
-            method=baseClass.getMethod(getter, (Class)null);
-=======
             method=baseClass.getMethod(getter);
->>>>>>> .r3758
+
         }
         catch(Exception e)
         {
