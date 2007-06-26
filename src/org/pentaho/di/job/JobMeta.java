@@ -46,7 +46,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
+import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -1228,22 +1228,22 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     public JobHopMeta getJobHop(int i)
     {
-        return (JobHopMeta) jobhops.get(i);
+        return jobhops.get(i);
     }
 
     public JobEntryCopy getJobEntry(int i)
     {
-        return (JobEntryCopy) jobcopies.get(i);
+        return jobcopies.get(i);
     }
 
     public NotePadMeta getNote(int i)
     {
-        return (NotePadMeta) notes.get(i);
+        return notes.get(i);
     }
 
     public DatabaseMeta getDatabase(int i)
     {
-        return (DatabaseMeta) databases.get(i);
+        return databases.get(i);
     }
 
     public void addJobEntry(JobEntryCopy je)
@@ -1659,7 +1659,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         s = notes.size();
         for (i = s - 1; i >= 0; i--) // Back to front because drawing goes from start to end
         {
-            NotePadMeta ni = (NotePadMeta) notes.get(i);
+            NotePadMeta ni = notes.get(i);
             Point loc = ni.getLocation();
             Point p = new Point(loc.x, loc.y);
             if (x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN) { return ni; }
@@ -1770,7 +1770,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         undo_position--;
 
@@ -1786,7 +1786,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         return retval;
     }
@@ -1796,7 +1796,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         return retval;
     }
@@ -1808,7 +1808,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
         undo_position++;
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         return retval;
     }
@@ -1818,7 +1818,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         int size = undo.size();
         if (size == 0 || undo_position >= size - 1) return null; // no redo left...
 
-        TransAction retval = (TransAction) undo.get(undo_position + 1);
+        TransAction retval = undo.get(undo_position + 1);
 
         return retval;
     }
@@ -2111,7 +2111,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return stringList;
     }
 
-    public List getUsedVariables()
+    public List<String> getUsedVariables()
     {
         // Get the list of Strings.
         List stringList = getStringList(true, true, false);
@@ -2142,7 +2142,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             JobEntryCopy jobEntryCopy = getJobEntry(i);
             if (jobEntryCopy.isDrawn() && jobEntryCopy.isSelected())
             {
-                list.add(jobEntryCopy);
+                list.add( jobEntryCopy);
             }
 
         }
