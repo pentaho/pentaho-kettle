@@ -257,5 +257,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return new String[] { "iijdbc.jar" };
     }
 
-
+    public boolean supportsGetBlob() {
+    	return false;
+    }
 }
