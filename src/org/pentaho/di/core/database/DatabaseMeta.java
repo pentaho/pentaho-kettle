@@ -2208,7 +2208,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * @param dbname The name of the database connection
      * @return The database object if one was found, null otherwise.
      */
-    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, String dbname)
+    public static final DatabaseMeta findDatabase(List<? extends SharedObjectInterface> databases, String dbname)
     {
         if (databases == null)
             return null;
