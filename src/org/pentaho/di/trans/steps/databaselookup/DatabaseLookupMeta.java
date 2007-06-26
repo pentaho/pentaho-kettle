@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -330,7 +331,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         this.failingOnMultipleResults = failOnMultipleResults;
     }
 	
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		streamKeyField1=null;
@@ -379,7 +380,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return retval;
 	}
 	
-	private void readData(Node stepnode, List<DatabaseMeta> databases)
+	private void readData(Node stepnode, List<? extends SharedObjectInterface> databases)
 		throws KettleXMLException
 	{
 		try
@@ -541,7 +542,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters)
 		throws KettleException
 	{
 		try
