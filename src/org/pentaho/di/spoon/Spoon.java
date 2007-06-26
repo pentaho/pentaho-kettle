@@ -333,6 +333,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     public static final int STATE_CORE_OBJECTS_NONE     = 1;   // No core objects
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
     public static final int STATE_CORE_OBJECTS_SPOON    = 3;   // Spoon state: steps
+
+	private static final String XUL_FILE = "ui/menubar.xul";
             
     public  KeyAdapter defKeys;
     public  KeyAdapter modKeys;
@@ -999,15 +1001,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         
 		try {
     		// first get the XML document
-    		File xulFile = new File( "ui/menubar.xul" ); //$NON-NLS-1$
+    		File xulFile = new File( XUL_FILE ); //$NON-NLS-1$
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
     			menuBar = MenuObject.createMenuBarFromXul( doc, shell, xulMessages );
     	        shell.setMenuBar(menuBar.getSwtMenu());
     		}
+    		else
+    		{
+    			throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE));
+    		}
 		} catch (Throwable t ) {
-			// TODO log this
-			t.printStackTrace();
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE), new Exception(t));
 		}
 		
 		try {
@@ -1187,7 +1193,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
     private void addMenuLast()
     {
-    	
+    	/*
     		MenuItemSeparator sep = menuBar.getSeparatorById( "file-last-separator" ); //$NON-NLS-1$
     		Menu msFile = null;
     		if( sep != null ) {
@@ -1199,6 +1205,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     		}
     		int idx = msFile.indexOf( sep );
     		int max = msFile.getItemCount();
+    		
         // Remove everything until end... 
         for (int i=max-1;i>idx;i--)
         {
@@ -1239,7 +1246,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
             menuBar.addMenuListener( id, this, "lastFileSelect" ); //$NON-NLS-1$
         }
-
+		*/
     }
     
     public void lastFileSelect( String id ) {
