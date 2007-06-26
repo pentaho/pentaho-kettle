@@ -17,6 +17,7 @@ package org.pentaho.di.job.entry;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -323,4 +324,12 @@ public interface JobEntryInterface
     public DatabaseMeta[] getUsedDatabaseConnections();
 
     public void setPluginID(String id);
+    
+    /**
+     * Allows JobEntry objects to check themselves for consistency
+     * @param remarks List of CheckResult objects indicating check status
+     * @param jobMeta JobMeta
+     */
+    public void check(List<CheckResult> remarks, JobMeta jobMeta);
+    
 }

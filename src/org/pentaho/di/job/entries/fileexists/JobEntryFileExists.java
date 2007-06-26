@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -53,7 +54,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	
 	public JobEntryFileExists(String n)
 	{
-		super(n, "");
+		super(n, ""); //$NON-NLS-1$
 		filename=null;
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS);
@@ -61,7 +62,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 
 	public JobEntryFileExists()
 	{
-		this("");
+		this(""); //$NON-NLS-1$
 	}
 
 	public JobEntryFileExists(JobEntryBase jeb)
@@ -80,7 +81,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         StringBuffer retval = new StringBuffer();
 		
 		retval.append(super.getXML());		
-		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename));
+		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return retval.toString();
 	}
@@ -91,11 +92,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.loadXML(entrynode, databases);
-			filename      = XMLHandler.getTagValue(entrynode, "filename");
+			filename      = XMLHandler.getTagValue(entrynode, "filename"); //$NON-NLS-1$
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'file exists' from XML node", xe);
+			throw new KettleXMLException(Messages.getString("JobEntryFileExists.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node"), xe); //$NON-NLS-1$
 		}
 	}
 
@@ -105,11 +106,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			filename = rep.getJobEntryAttributeString(id_jobentry, "filename");
+			filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
 		}
 		catch(KettleException dbe)
 		{
-			throw new KettleException("Unable to load job entry of type 'file exists' exists from the repository for id_jobentry="+id_jobentry, dbe);
+			throw new KettleException(Messages.getString("JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
 		}
 	}
 	
@@ -120,11 +121,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		{
 			super.saveRep(rep, id_job);
 			
-			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
+			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename); //$NON-NLS-1$
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save job entry of type 'file exists' to the repository for id_job="+id_job, dbe);
+			throw new KettleException(Messages.getString("JobEntryFileExists.ERROR_0003_Cannot_Save_Job_Entry", Long.toString(id_job)), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -157,24 +158,24 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
                 FileObject file = KettleVFS.getFileObject(realFilename);
                 if (file.exists() && file.isReadable())
                 {
-                    log.logDetailed(toString(), "File ["+realFilename+"] exists.");
+                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
                     result.setResult( true );
                 }
                 else
                 {
-                    log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
+                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
                 }
             }
             catch (IOException e)
             {
                 result.setNrErrors(1);
-                log.logError(toString(), "Unexpected error checking filename existance: "+e.toString());
+                log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
             }
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "No filename is defined.");
+			log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
 		}
 		
 		return result;
@@ -188,4 +189,28 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryFileExistsDialog(shell,this,jobMeta);
     }
+    
+    public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+      if (filename != null) {
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
+        String realFilename = getRealFilename();
+        try {
+          FileObject file = KettleVFS.getFileObject(realFilename);
+          if (file.exists() && file.isReadable()) {
+            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.File_Exists", realFilename), this)); //$NON-NLS-1$
+          } else {
+            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("JobEntryFileExists.CheckResult.File_Does_Not_Exist", realFilename), this)); //$NON-NLS-1$
+          }
+          try {
+            file.close(); // Paranoia
+          } catch (IOException ignored) {}
+        } catch (IOException ex) {
+          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Received_IO_Error", filename), this)); //$NON-NLS-1$
+        }
+      } else {
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Name_Not_Defined"), this)); //$NON-NLS-1$
+      }
+    }
+      
+    
 }

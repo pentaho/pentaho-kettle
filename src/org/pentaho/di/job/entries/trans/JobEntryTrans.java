@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -813,4 +814,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     {
         this.clustering = clustering;
     }
-}
+    
+    public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+      String transformation = null;
+      if (!Const.isEmpty(getFilename())) {
+        transformation = StringUtil.environmentSubstitute(getFilename());
+      } else if (!Const.isEmpty(getTransname()) && getDirectory() != null) {  // Load from the repository
+        transformation = StringUtil.environmentSubstitute(getTransname());
+      }
+      
+      if (transformation != null) {
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryTrans.CheckResult.TransformationDefined", transformation), this)); //$NON-NLS-1$
+      } else {
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryTrans.CheckResult.TransformationNotDefined"), this)); //$NON-NLS-1$
+      }
+      
+     }
+ }

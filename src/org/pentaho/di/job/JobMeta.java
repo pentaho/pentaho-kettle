@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.NotePadMeta;
@@ -68,6 +69,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.spoon.UndoInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -2546,5 +2548,41 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 	public void injectVariables(Properties prop) 
 	{
 		variables.injectVariables(prop);		
-	}    
+	}
+
+	/**
+   * Check all job entries within the job. Each Job Entry has the opportunity to
+   * check their own settings.
+   * @param remarks List of CheckResult remarks inserted into by each JobEntry
+   * @param only_selected true if you only want to check the selected jobs
+   * @param monitor Progress monitor (not presently in use)
+	 */
+  public void checkJobEntries(List<CheckResult> remarks, boolean only_selected, IProgressMonitor monitor) {
+    remarks.clear(); // Empty remarks
+    if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
+    boolean stop_checking = false;
+    for (int i=0; i<jobcopies.size() && !stop_checking; i++) {
+      JobEntryCopy copy = jobcopies.get(i); // get the job entry copy
+      if ( (!only_selected) || (only_selected && copy.isSelected()) ) {
+        JobEntryInterface entry = copy.getEntry();
+        if (entry != null) {
+          if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.VerifyingJobEntry.Title",entry.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+          entry.check(remarks, this);
+          if (monitor != null) {
+            monitor.worked(1); // progress bar...
+            if (monitor.isCanceled()) { 
+              stop_checking = true;
+            }
+          }
+        }
+      }
+      if (monitor != null) {
+        monitor.worked(1);
+      }
+    }
+    if (monitor != null) {
+      monitor.done();
+    }
+  }
+  
 }

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -27,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
@@ -38,7 +41,7 @@ import org.w3c.dom.Node;
  * Created on 18-jun-04
  * 
  */
-public class JobEntryBase implements Cloneable, VariableSpace
+public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface
 {
 	private String  name;
 	private String  description;
@@ -97,7 +100,14 @@ public class JobEntryBase implements Cloneable, VariableSpace
         return this.pluginID;
     }    
 	
-	public int getType()
+  /**
+   * Support for CheckResultSourceInterface
+   */
+  public String getTypeId() {
+    return getTypeCode();
+  }
+    
+  public int getType()
 	{
 		return type;
 	}
@@ -413,4 +423,14 @@ public class JobEntryBase implements Cloneable, VariableSpace
 	{
 		variables.injectVariables(prop);		
 	}
+  
+  /**
+   * Support for overrides not having to put in a check method
+   * @param remarks CheckResults from checking the job entry
+   * @param jobMeta JobMeta information letting threading back to the JobMeta possible
+   */
+	public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    
+  }
+  
 }

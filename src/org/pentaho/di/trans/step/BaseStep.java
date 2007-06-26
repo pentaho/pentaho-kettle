@@ -2217,5 +2217,13 @@ public class BaseStep extends Thread implements VariableSpace
 	public void injectVariables(Properties prop) 
 	{
 		variables.injectVariables(prop);		
-	}        
+	}
+  
+  /**
+   * Support for CheckResultSourceInterface
+   */
+  public String getTypeId() {
+    return this.getStepID();
+  }
+  
 }

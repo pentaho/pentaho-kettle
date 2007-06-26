@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -48,7 +49,7 @@ import org.w3c.dom.Node;
  * @author Matt
  *
  */
-public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, CheckResultSourceInterface
 {
 	public static final String XML_TAG = "step";
     
@@ -762,4 +763,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         return (isDoingErrorHandling() && stepErrorMeta.getTargetStep().equals(targetStep));
     }
 
+  /**
+   * Support for CheckResultSourceInterface
+   */
+    public String getTypeId() {
+      return this.getStepID();
+    }
 }

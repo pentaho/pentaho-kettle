@@ -48,7 +48,9 @@ public class CheckResult
 
     private String text;
 
-    private StepMeta stepMeta;
+    // MB - Support both JobEntry and Step Checking
+    // 6/26/07
+    private CheckResultSourceInterface sourceMeta;
     
     private String errorCode;
 
@@ -57,16 +59,16 @@ public class CheckResult
         this(TYPE_RESULT_NONE, "", null);
     }
 
-    public CheckResult(int t, String s, StepMeta stepMeta)
+    public CheckResult(int t, String s, CheckResultSourceInterface sourceMeta)
     {
         type = t;
         text = s;
-        this.stepMeta = stepMeta;
+        this.sourceMeta = sourceMeta;
     }
 
-    public CheckResult(int t, String errorCode, String s, StepMeta stepMeta)
+    public CheckResult(int t, String errorCode, String s, CheckResultSourceInterface sourceMeta)
     {
-        this(t, s, stepMeta);
+        this(t, s, sourceMeta);
         this.errorCode = errorCode;
     }
 
@@ -86,9 +88,9 @@ public class CheckResult
         return text;
     }
 
-    public StepMeta getStepInfo()
+    public CheckResultSourceInterface getSourceInfo()
     {
-        return stepMeta;
+        return sourceMeta;
     }
 
     public String toString()
@@ -96,8 +98,8 @@ public class CheckResult
         StringBuffer sb = new StringBuffer();
         sb.append(typeDesc[type]).append(": ").append(text);
 
-        if (stepMeta != null)
-            sb.append(" (").append(stepMeta.getName()).append(")");
+        if (sourceMeta != null)
+            sb.append(" (").append(sourceMeta.getName()).append(")");
 
         return sb.toString();
     }

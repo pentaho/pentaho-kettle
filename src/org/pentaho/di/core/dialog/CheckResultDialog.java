@@ -41,7 +41,7 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.core.CheckResultSourceInterface;
 
 
 
@@ -217,9 +217,10 @@ public class CheckResultDialog extends Dialog
 			if (show_successful_results || cr.getType()!=CheckResult.TYPE_RESULT_OK)
 			{
 				TableItem ti = new TableItem(wFields.table, SWT.NONE); 
-	
-				StepMeta stepMeta = cr.getStepInfo();
-				if (stepMeta!=null) ti.setText(1, stepMeta.getName());
+				// MB - Support both JobEntry and Step Checking
+    		// 6/25/07
+        CheckResultSourceInterface sourceMeta = cr.getSourceInfo();
+				if (sourceMeta!=null) ti.setText(1, sourceMeta.getName());
 				else          ti.setText(1, "<global>");
 				ti.setText(2, cr.getType()+" - "+cr.getTypeDesc());
 				ti.setText(3, cr.getText());
