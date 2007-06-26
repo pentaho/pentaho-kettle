@@ -32,12 +32,11 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterListDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.gui.WindowProperty;
 
 
 
@@ -394,8 +393,7 @@ public class Translator
             wList.add(dirList.get(i));
         }
     }
-    
-    @SuppressWarnings("unchecked")
+
     public void refreshGrid()
     {
         try
@@ -422,6 +420,7 @@ public class Translator
                         if (getPath(filename).equals(dir)) // yep, add this one
                         {
                             Properties properties = files.get(filename);
+                            @SuppressWarnings("unchecked")
                             ArrayList<String> entries = new ArrayList(properties.keySet()); // TODO how can we fix this warning?
                             Collections.sort(entries);
                             
