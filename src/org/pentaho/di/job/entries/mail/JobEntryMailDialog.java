@@ -40,8 +40,10 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.LabelText;
 import org.pentaho.di.core.widget.LabelTextVar;
 import org.pentaho.di.core.widget.TextVar;
@@ -50,9 +52,6 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.gui.WindowProperty;
 
 
 
@@ -835,9 +834,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             
             wEncoding.removeAll();
             java.util.List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
-            for (int i=0;i<values.size();i++)
+            for (Charset charSet:values)
             {
-                Charset charSet = (Charset)values.get(i);
                 wEncoding.add( charSet.displayName() );
             }
             
