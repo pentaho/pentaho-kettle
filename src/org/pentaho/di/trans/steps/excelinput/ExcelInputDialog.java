@@ -1831,6 +1831,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             gotEncodings = true;
             
             wEncoding.removeAll();
+
             List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {

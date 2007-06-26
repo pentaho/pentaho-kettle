@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
@@ -607,7 +608,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 	private void initErrorHandling()
 	{
-		List<FileErrorHandler> errorHandlers = new ArrayList<FileErrorHandler>(2);
+		List<AbstractFileErrorHandler>errorHandlers = new ArrayList<AbstractFileErrorHandler>(2);
+
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
 			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), "Latin1", this));
 		if (meta.getErrorFilesDestinationDirectory() != null)
