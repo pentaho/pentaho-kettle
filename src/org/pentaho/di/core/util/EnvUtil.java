@@ -154,7 +154,7 @@ public class EnvUtil
         List<String> list = new ArrayList(sysprops.keySet());
         for (int i=0;i<list.size();i++)
         {
-            String var = (String)list.get(i);
+            String var = list.get(i);
             String val = sysprops.getProperty(var);
             
             envp[i] = var+"="+val;
