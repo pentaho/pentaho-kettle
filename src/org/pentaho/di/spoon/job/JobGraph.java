@@ -2147,7 +2147,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List<GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
+        List<? extends GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
         int[] indices = jobMeta.getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
 
         return new SnapAllignDistribute(jobMeta, elements, indices, spoon, this);
