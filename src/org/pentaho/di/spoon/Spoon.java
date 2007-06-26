@@ -225,9 +225,7 @@ import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.menu.MenuBar;
-import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.swt.menu.MenuItem;
-import org.pentaho.xul.swt.menu.MenuItemSeparator;
 import org.pentaho.xul.swt.menu.MenuObject;
 import org.pentaho.xul.swt.menu.PopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -334,7 +332,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
     public static final int STATE_CORE_OBJECTS_SPOON    = 3;   // Spoon state: steps
 
-	private static final String XUL_FILE = "ui/menubar.xul";
+	private static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
+
+	private static final String XUL_FILE_MENUS = "ui/menus.xul";
+
+	private static final String XUL_FILE_MENU_PROPERTIES = "ui/menubar.properties";
             
     public  KeyAdapter defKeys;
     public  KeyAdapter modKeys;
@@ -1001,7 +1003,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         
 		try {
     		// first get the XML document
-    		File xulFile = new File( XUL_FILE ); //$NON-NLS-1$
+    		File xulFile = new File( XUL_FILE_MENUBAR ); //$NON-NLS-1$
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
     			menuBar = MenuObject.createMenuBarFromXul( doc, shell, xulMessages );
@@ -1009,16 +1011,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     		}
     		else
     		{
-    			throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE));
+    			throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE_MENUBAR));
     		}
 		} catch (Throwable t ) {
 			log.logError(toString(), Const.getStackTracker(t));
-			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE), new Exception(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUBAR), new Exception(t));
 		}
 		
 		try {
     		// first get the XML document
-    		File xulFile = new File( "ui/menus.xul" ); //$NON-NLS-1$
+    		File xulFile = new File( XUL_FILE_MENUS ); //$NON-NLS-1$
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
     			List<String> ids = new ArrayList<String>();
@@ -1043,16 +1045,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     			
     			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
     		}
+    		else
+    		{
+    			throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE_MENUS));
+    		}
 		} catch (Throwable t ) {
 			// TODO log this
 			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), new Exception(t));
 		}
     }
     
     public void addMenuListeners() {
 		try {
 			// first get the XML document
-    			File propertiesFile = new File( "ui/menubar.properties" ); //$NON-NLS-1$
+    			File propertiesFile = new File( XUL_FILE_MENU_PROPERTIES ); //$NON-NLS-1$
     			if( propertiesFile.exists() ) {
     				Properties props = new Properties();
     				props.load( new FileInputStream( propertiesFile ) );
@@ -1081,6 +1088,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     				}
 
     			}
+    			else
+    			{
+    				throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE_MENU_PROPERTIES));
+    			}
     			
     			// now apply any overrides
     			for( int i=0; i<menuListeners.size(); i++ ) {
@@ -1090,6 +1101,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 		} catch (Throwable t ) {
 			// TODO log this
 			t.printStackTrace();
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENU_PROPERTIES), new Exception(t));
 		}
     }
     
