@@ -148,7 +148,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	 * @param counters A hashtable with all defined counters.
 	 * 
 	 */
-	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException
+	public StepMeta(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleXMLException
 	{
         this();
         LogWriter log = LogWriter.getInstance();

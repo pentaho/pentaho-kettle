@@ -73,7 +73,7 @@ public class InjectorTest extends TestCase
 		return rm;
 	}
 	
-	public List createData()
+	public List<RowMetaAndData> createData()
 	{
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		

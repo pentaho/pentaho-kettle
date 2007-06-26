@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -72,7 +73,7 @@ public interface StepMetaInterface
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
 	 */
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters) throws KettleXMLException;
+	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleXMLException;
 
 	/**
 	 * Save the steps data into a Kettle repository
@@ -91,7 +92,7 @@ public interface StepMetaInterface
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters) throws KettleException;
+	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException;
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.

@@ -71,7 +71,7 @@ public class SortRowsTest extends TestCase
 		return rm;
 	}
 	
-	public List createIntegerData()
+	public List<RowMetaAndData> createIntegerData()
 	{
 		// Create 
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
