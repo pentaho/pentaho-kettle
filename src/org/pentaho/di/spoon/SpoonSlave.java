@@ -403,7 +403,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         
         for (int i = 0; i < slaveServerStatus.getTransStatusList().size(); i++)
 		{
-            SlaveServerTransStatus transStatus = (SlaveServerTransStatus) slaveServerStatus.getTransStatusList().get(i);
+            SlaveServerTransStatus transStatus =  slaveServerStatus.getTransStatusList().get(i);
             TreeItem transItem = new TreeItem(wTree, SWT.NONE);
             transItem.setText(0, transStatus.getTransName());
             transItem.setText(9, transStatus.getStatusDescription());
@@ -419,7 +419,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
                 
                 for (int s=0;s<stepStatusList.size();s++)
                 {
-                    StepStatus stepStatus = (StepStatus) stepStatusList.get(s);
+                    StepStatus stepStatus = stepStatusList.get(s);
                     TreeItem stepItem = new TreeItem(transItem, SWT.NONE);
                     stepItem.setText(stepStatus.getSpoonSlaveLogFields());
                 }
