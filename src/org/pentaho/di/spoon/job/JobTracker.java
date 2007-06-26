@@ -59,7 +59,7 @@ public class JobTracker
     
     public JobTracker getJobTracker(int i)
     {
-        return (JobTracker)jobTrackers.get(i);
+        return jobTrackers.get(i);
     }
 
     public int nrJobTrackers()

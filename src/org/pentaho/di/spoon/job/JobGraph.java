@@ -15,12 +15,15 @@
 
  
 package org.pentaho.di.spoon.job;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -47,8 +50,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
@@ -69,6 +70,7 @@ import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -80,6 +82,12 @@ import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TabMapEntry;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.xul.swt.menu.MenuChoice;
+import org.pentaho.xul.swt.menu.MenuObject;
+import org.pentaho.xul.swt.menu.PopupMenu;
+import org.pentaho.xul.swt.menu.Menu;
+import org.pentaho.xul.swt.tab.TabItem;
+import org.w3c.dom.Document;
 
 
 
@@ -97,47 +105,49 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 {
 	private static final int HOP_SEL_MARGIN = 9;
 
-	private Shell shell;
-	private Canvas canvas;
-	private LogWriter log;
-    private JobMeta jobMeta;
-    // private Props props;
+	protected Shell shell;
+	protected Canvas canvas;
+	protected LogWriter log;
+    protected JobMeta jobMeta;
+    // protected Props props;
     
-	private int iconsize;
-	private int linewidth;
-	private Point lastclick;
+	protected int iconsize;
+	protected int linewidth;
+	protected Point lastclick;
 
-	private JobEntryCopy selected_entries[];
-	private JobEntryCopy selected_icon;
-	private Point          prev_locations[];
-	private NotePadMeta    selected_note;
-	private Point previous_note_location;
-    private Point          lastMove;
+	protected JobEntryCopy selected_entries[];
+	protected JobEntryCopy selected_icon;
+	protected Point          prev_locations[];
+	protected NotePadMeta    selected_note;
+	protected Point previous_note_location;
+    protected Point          lastMove;
 
-	private JobHopMeta     hop_candidate;
-	private Point drop_candidate;
-	private Spoon spoon;
+	protected JobHopMeta     hop_candidate;
+	protected Point drop_candidate;
+	protected Spoon spoon;
 
-	private Point offset, iconoffset, noteoffset;
-	private ScrollBar hori;
-	private ScrollBar vert;
+	protected Point offset, iconoffset, noteoffset;
+	protected ScrollBar hori;
+	protected ScrollBar vert;
 
 	// public boolean shift, control;
-	private boolean split_hop;
-	private int last_button;
-	private JobHopMeta last_hop_split;
-	private Rectangle selrect;
+	protected boolean split_hop;
+	protected int last_button;
+	protected JobHopMeta last_hop_split;
+	protected Rectangle selrect;
 
-	private static final double theta = Math.toRadians(10); // arrowhead sharpness
-	private static final int    size  = 30; // arrowhead length
+	protected static final double theta = Math.toRadians(10); // arrowhead sharpness
+	protected static final int    size  = 30; // arrowhead length
 	
-	private int shadowsize;
+	protected int shadowsize;
 
-    private Menu mPop;
-
-    private Menu mPopAD;
-
-
+    protected static Map menuMap = new HashMap();
+	protected int currentMouseX = 0;
+	protected int currentMouseY = 0;
+	protected JobEntryCopy jobEntry;
+	protected NotePadMeta ni = null;
+	protected JobHopMeta currentHop;
+    
 	public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) 
 	{
 		super(par, SWT.NONE);
@@ -147,6 +157,25 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		this.jobMeta = jobMeta;
         // this.props = Props.getInstance();
         
+		try {
+    		// first get the XML document
+    		File xulFile = new File( "ui/menus.xul" ); //$NON-NLS-1$
+    		if( xulFile.exists() ) {
+    	        XulMessages xulMessages = new XulMessages();
+    			Document doc = XMLHandler.loadXMLFile( xulFile );
+    			List<String> ids = new ArrayList<String>();
+    			ids.add( "job-graph-hop" );
+    			ids.add( "job-graph-note" );
+    			ids.add( "job-graph-background" );
+    			ids.add( "job-graph-entry" );
+    			
+    			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
+    		}
+		} catch (Throwable t ) {
+			// TODO log this
+			t.printStackTrace();
+		}
+
         setLayout(new FillLayout());
         
         canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
@@ -970,7 +999,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	// See if location (x,y) is on a line between two steps: the hop!
 	// return the HopInfo if so, otherwise: null	
-	private JobHopMeta findJobHop(int x, int y) 
+	protected JobHopMeta findJobHop(int x, int y) 
 	{
 		int i;
 		JobHopMeta online = null;
@@ -985,7 +1014,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return online;
 	}
 
-	private int[] getLine(JobEntryCopy fs, JobEntryCopy ts) 
+	protected int[] getLine(JobEntryCopy fs, JobEntryCopy ts) 
 	{
 		if (fs==null || ts==null) return null;
 		
@@ -1002,491 +1031,394 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return new int[] { x1, y1, x2, y2 };
 	}
 
-	private void setMenu(int x, int y) 
-	{
-        final int mousex = x;
-        final int mousey = y;        
+	public void setJobEntry( JobEntryCopy jobEntry ) {
+		this.jobEntry = jobEntry;
+	}
+	
+	public JobEntryCopy getJobEntry(  ) {
+		return jobEntry;
+	}
 
-        // Re-use the popup menu if it was allocated beforehand...
-        if (mPop!=null && !mPop.isDisposed())
-        {
-            MenuItem[] items = mPop.getItems();
-            for (int i = 0; i < items.length; i++)
-            {
-                items[i].dispose();
-            }
-        }
-        else
-        {
-            mPop = new Menu(this);
-        }
-        
+	public void openTransformation() 
+	{
+		final JobEntryInterface entry = getJobEntry().getEntry();
+		openTransformation((JobEntryTrans) entry );
+	}
+	
+	public void launchChef() {
+		final JobEntryInterface entry = getJobEntry().getEntry();
+		launchChef( (JobEntryJob) entry );
+	}
+	
+	public void newHopClick() 
+	{
+		selected_entries = null;
+		newHop();
+	}
+
+	public void editEntryClick() 
+	{
+		selected_entries = null;
+		editEntry(getJobEntry());
+	}
+
+	public void editEntryDescription() 
+	{
+		String title = Messages.getString("ChefGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
+		String message = Messages.getString("ChefGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
+		EnterTextDialog dd = new EnterTextDialog(shell, title, message, getJobEntry().getDescription());
+		String des = dd.open();
+		if (des != null) jobEntry.setDescription(des);
+	}
+
+	public void duplicateEntry() 
+	{
+		spoon.dupeJobEntry(jobMeta, getJobEntry());
+	}
+
+	public void copyEntry() 
+	{
+	    spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
+	}
+
+	public void detatchEntry()
+	{
+		detach(getJobEntry());
+		jobMeta.unselectAll();
+	}
+	
+	public void hideEntry() 
+	{
+		getJobEntry().setDrawn(false);
+		// nr > 1: delete
+		if (jobEntry.getNr() > 0) 
+		{
+			int ind = jobMeta.indexOfJobEntry(jobEntry);
+			jobMeta.removeJobEntry(ind);
+			spoon.addUndoDelete(jobMeta, new JobEntryCopy[] {getJobEntry()}, new int[] {ind});
+		}
+		redraw();
+	}
+
+	public void deleteEntry() 
+	{
+		spoon.deleteJobEntryCopies(jobMeta, getJobEntry());
+		redraw();
+	}
+
+	protected void setMenu(int x, int y) 
+	{
+
+        currentMouseX = x;
+        currentMouseY = y;
+
 		final JobEntryCopy jobEntry = jobMeta.getChefGraphEntry(x, y, iconsize);
+		setJobEntry( jobEntry );
 		if (jobEntry != null) // We clicked on a Job Entry!
 		{
-			MenuItem miNewHop = null;
-
-			int sels = jobMeta.nrSelected();
-			if (sels == 2) 
-			{
-				miNewHop = new MenuItem(mPop, SWT.CASCADE);
-				miNewHop.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.NewHop"));
-			}
-
-			final JobEntryInterface entry = jobEntry.getEntry();
-
-			switch(jobEntry.getType())
-			{
-			case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
-				{
-					MenuItem miLaunch = new MenuItem(mPop, SWT.CASCADE);
-					miLaunch.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchSpoon"));
-							
-					miLaunch.addSelectionListener(new SelectionAdapter() 
-						{
-							public void widgetSelected(SelectionEvent e) 
-							{
-								openTransformation((JobEntryTrans)entry);
-							}
-						}
-					);
-				}
-				break;
-			case JobEntryInterface.TYPE_JOBENTRY_JOB:
-				{
-					MenuItem miLaunch = new MenuItem(mPop, SWT.CASCADE);
-					miLaunch.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchChef"));
+			
+			PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-entry" ); //$NON-NLS-1$
+			if( menu != null ) {
+				int sels = jobMeta.nrSelected();
 				
-					miLaunch.addSelectionListener(new SelectionAdapter() 
-						{
-							public void widgetSelected(SelectionEvent e) 
-							{
-								launchChef((JobEntryJob)entry);
-							}
-						}
-					);
+				MenuChoice item  = menu.getMenuItemById( "job-graph-entry-newhop" ); //$NON-NLS-1$
+				menu.addMenuListener( "job-graph-entry-newhop", this, JobGraph.class, "newHopClick" ); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setEnabled( sels == 2 );
+
+				item = menu.getMenuItemById( "job-graph-entry-launch" ); //$NON-NLS-1$
+				switch(jobEntry.getType())
+				{
+				case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
+					{
+						item.setEnabled(true);
+						item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchSpoon"));
+						menu.addMenuListener( "job-graph-entry-launch", this, "openTransformation" ); //$NON-NLS-1$ //$NON-NLS-2$
+						break;
+					}
+				case JobEntryInterface.TYPE_JOBENTRY_JOB:
+					{
+						item.setEnabled(true);
+						item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchChef"));
+						menu.addMenuListener( "job-graph-entry-launch", this, "launchChef" ); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					break;
+				default: 
+				{
+					item.setEnabled(false);
 				}
 				break;
-			default: break;
-			}
-			MenuItem miEditStep = new MenuItem(mPop, SWT.CASCADE);
-			miEditStep.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Edit"));
-			
-			MenuItem miEditDesc = new MenuItem(mPop, SWT.CASCADE);
-			miEditDesc.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.EditDescription"));
-			
-			new MenuItem(mPop, SWT.SEPARATOR);
-			//----------------------------------------------------------
-			
-			MenuItem miDupeStep = new MenuItem(mPop, SWT.CASCADE);
-			miDupeStep.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Duplicate"));
+				}				
+				
+				item = menu.getMenuItemById( "job-graph-entry-align-snap" ); //$NON-NLS-1$
+	            	item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
 
-			MenuItem miCopy = new MenuItem(mPop, SWT.CASCADE);
-			miCopy.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.CopyToClipboard"));
-			
-			
-            // Allign & Distribute options...
-            new MenuItem(mPop, SWT.SEPARATOR);
-            MenuItem miPopAD = new MenuItem(mPop, SWT.CASCADE);
-            miPopAD.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute"));
-
-            Menu mPopAD = new Menu(miPopAD);
-            MenuItem miPopALeft = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopALeft.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Left"));
-            MenuItem miPopARight = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopARight.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Right"));
-            MenuItem miPopATop = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopATop.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Top"));
-            MenuItem miPopABottom = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopABottom.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Bottom"));
-            new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopDHoriz = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopDHoriz.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally"));
-            MenuItem miPopDVertic = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopDVertic.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Vertically"));
-            new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopSSnap = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopSSnap.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
-            miPopAD.setMenu(mPopAD);
-
-            miPopALeft.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignleft();
-                }
-            });
-            miPopARight.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignright();
-                }
-            });
-            miPopATop.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    alligntop();
-                }
-            });
-            miPopABottom.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignbottom();
-                }
-            });
-            miPopDHoriz.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    distributehorizontal();
-                }
-            });
-            miPopDVertic.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    distributevertical();
-                }
-            });
-            miPopSSnap.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    snaptogrid(Const.GRID_SIZE);
-                }
-            });
-
-            if (sels <= 1)
-            {
-                miPopAD.setEnabled(false);
-            }
-
-			
-			if (sels == 2) 
-			{
-				miNewHop.addSelectionListener(new SelectionAdapter() 
-				{
-					public void widgetSelected(SelectionEvent e) 
-					{
-						selected_entries = null;
-						newHop();
-					}
-				});
-			}
-
-			miEditStep.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					selected_entries = null;
-					editEntry(jobEntry);
+				Menu aMenu = menu.getMenuById( "job-graph-entry-align" ); //$NON-NLS-1$
+				if( aMenu != null ) {
+					aMenu.setEnabled( sels > 1 );
 				}
-			});
-			miEditDesc.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					String title = Messages.getString("ChefGraph.Dialog.EditDescription.Title");
-					String message = Messages.getString("ChefGraph.Dialog.EditDescription.Message");
-					EnterTextDialog dd = new EnterTextDialog(shell, title, message, jobEntry.getDescription());
-					String des = dd.open();
-					if (des != null) jobEntry.setDescription(des);
-				}
-			});
-			miDupeStep.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					spoon.dupeJobEntry(jobMeta, jobEntry);
-				}
-			});
-			miCopy.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-				    spoon.copyJobEntries(jobMeta, jobMeta.getSelectedEntries());
-				}
-			});
 
-			if (jobMeta.isEntryUsedInHops(jobEntry))
-			{
-				new MenuItem(mPop, SWT.SEPARATOR);
-				MenuItem miDetach = new MenuItem(mPop, SWT.CASCADE);
-				miDetach.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Detach"));
-				miDetach.addSelectionListener(new SelectionAdapter()
-				{
-					public void widgetSelected(SelectionEvent e)
-					{
-						detach(jobEntry);
-						jobMeta.unselectAll();
-					}
-				});
+				item = menu.getMenuItemById( "job-graph-entry-detach" ); //$NON-NLS-1$
+				if( item != null ) {
+					item.setEnabled( jobMeta.isEntryUsedInHops(jobEntry) );
+				}
+
+				item = menu.getMenuItemById( "job-graph-entry-hide" ); //$NON-NLS-1$
+				if( item != null ) {
+					item.setEnabled( jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry) );
+				}
+
+				item = menu.getMenuItemById( "job-graph-entry-delete" ); //$NON-NLS-1$
+				if( item != null ) {
+					item.setEnabled( jobEntry.isDrawn() );
+				}
+
+				menu.addMenuListener( "job-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-top", this, "alligntop" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-bottom", this, "allignbottom" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-horz", this, "distributehorizontal" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-vert", this, "distributevertical" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "job-graph-entry-align-snap", this, "snaptogrid" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+				menu.addMenuListener( "job-graph-entry-edit", this, "editEntryClick" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-edit-description", this, "editEntryDescription" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-duplicate", this, "duplicateEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-copy", this, "copyEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-detach", this, "detatchEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-hide", this, "hideEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				menu.addMenuListener( "job-graph-entry-delete", this, "deleteEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
+				
+				canvas.setMenu(menu.getSwtMenu());
 			}
-			if (jobEntry.isDrawn() && !jobMeta.isEntryUsedInHops(jobEntry)) 
-			{
-				new MenuItem(mPop, SWT.SEPARATOR);
-				MenuItem miHide = new MenuItem(mPop, SWT.CASCADE);
-				miHide.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Hide"));
-				miHide.addSelectionListener(new SelectionAdapter() 
-				{
-					public void widgetSelected(SelectionEvent e) 
-					{
-						jobEntry.setDrawn(false);
-						// nr > 1: delete
-						if (jobEntry.getNr() > 0) 
-						{
-							int ind = jobMeta.indexOfJobEntry(jobEntry);
-							jobMeta.removeJobEntry(ind);
-							spoon.addUndoDelete(jobMeta, new JobEntryCopy[] {jobEntry}, new int[] {ind});
-						}
-						redraw();
-					}
-				});
-			}
-			if (jobEntry.isDrawn()) 
-			{
-				MenuItem miDelete = new MenuItem(mPop, SWT.CASCADE);
-				miDelete.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Delete"));
-				miDelete.addSelectionListener(new SelectionAdapter() 
-				{
-					public void widgetSelected(SelectionEvent e) 
-					{
-						spoon.deleteJobEntryCopies(jobMeta, jobEntry);
-						redraw();
-					}
-				});
-			}
-            canvas.setMenu(mPop);
+			
 		}
 		else // Clear the menu
 		{
 			final JobHopMeta hi = findJobHop(x, y);
+			setCurrentHop( hi );
+			
 			if (hi != null) // We clicked on a HOP!
 			{
-				// Evaluation...
-				MenuItem miPopEval = new MenuItem(mPop, SWT.CASCADE);
-				miPopEval.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation"));
-
-                if (mPopAD!=null && !mPopAD.isDisposed())
-                {
-                    mPopAD.dispose();
-                }
-				mPopAD = new Menu(miPopEval);
-				MenuItem miPopEvalUncond = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalUncond.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.Unconditional"));
-				miPopEvalUncond.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setUnconditional(); spoon.refreshGraph();}} );
 				
-				MenuItem miPopEvalTrue = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalTrue.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenOK"));
-				miPopEvalTrue.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(true); spoon.refreshGraph(); }} );
-				
-				MenuItem miPopEvalFalse = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalFalse.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed"));
-				miPopEvalFalse.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(false); spoon.refreshGraph(); }} );
-
-				if (hi.isUnconditional())
-				{
-					miPopEvalUncond.setSelection(true);
-					miPopEvalTrue.setSelection(false);
-					miPopEvalFalse.setSelection(false);
-				}
-				else
-				{
-					if (hi.getEvaluation())
+				PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-hop" ); //$NON-NLS-1$
+				if( menu != null ) {
+					MenuChoice miPopEvalUncond  = menu.getMenuItemById( "job-graph-hop-evaluation-uncond" ); //$NON-NLS-1$
+					MenuChoice miPopEvalTrue  = menu.getMenuItemById( "job-graph-hop-evaluation-true" ); //$NON-NLS-1$
+					MenuChoice miPopEvalFalse  = menu.getMenuItemById( "job-graph-hop-evaluation-false" ); //$NON-NLS-1$
+					MenuChoice miDisHop  = menu.getMenuItemById( "job-graph-hop-enabled" ); //$NON-NLS-1$
+					
+					menu.addMenuListener( "job-graph-hop-evaluation-uncond", this, "setHopConditional" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "job-graph-hop-evaluation-true", this, "setHopConditional" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "job-graph-hop-evaluation-false", this, "setHopConditional" ); //$NON-NLS-1$ //$NON-NLS-2$
+					
+					menu.addMenuListener( "job-graph-hop-flip", this, "flipHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "job-graph-hop-enabled", this, "disableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "job-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+					
+					if (hi.isUnconditional())
 					{
-						miPopEvalUncond.setSelection(false);
-						miPopEvalTrue.setSelection(true);
-						miPopEvalFalse.setSelection(false);						
+						if(miPopEvalUncond != null) miPopEvalUncond.setChecked(true);
+						if(miPopEvalTrue != null) miPopEvalTrue.setChecked(false);
+						if(miPopEvalFalse != null) miPopEvalFalse.setChecked(false);
 					}
 					else
 					{
-						miPopEvalUncond.setSelection(false);
-						miPopEvalTrue.setSelection(false);
-						miPopEvalFalse.setSelection(true);
-					}
-				}
-
-				if (!hi.from_entry.evaluates())
-				{
-					miPopEvalTrue.setEnabled(false);
-					miPopEvalFalse.setEnabled(false);
-				}
-				if (!hi.from_entry.isUnconditional())
-				{
-					miPopEvalUncond.setEnabled(false);
-				}
-
-				miPopEval.setMenu(mPopAD);
-
-
-				MenuItem miFlipHop = new MenuItem(mPop, SWT.CASCADE);
-				miFlipHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.FlipDirection"));
-				MenuItem miDisHop = new MenuItem(mPop, SWT.CASCADE);
-				if (hi.isEnabled()) miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Disable"));
-				else                miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Enable"));
-				MenuItem miDelHop = new MenuItem(mPop, SWT.CASCADE);
-				miDelHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Delete"));
-
-				
-				miFlipHop.addSelectionListener(new SelectionAdapter() 
-					{
-						public void widgetSelected(SelectionEvent e) 
+						if (hi.getEvaluation())
 						{
-							selrect = null;
-							JobEntryCopy dummy = hi.from_entry;
-							hi.from_entry = hi.to_entry;
-							hi.to_entry = dummy;
-	
-							if (jobMeta.hasLoop(hi.from_entry)) 
-							{
-								spoon.refreshGraph();
-								MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-								mb.setMessage(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Message"));
-								mb.setText(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Title"));
-								mb.open();
-	
-								dummy = hi.from_entry;
-								hi.from_entry = hi.to_entry;
-								hi.to_entry = dummy;
-								spoon.refreshGraph();
-							} 
-							else 
-							{
-								hi.setChanged();
-								spoon.refreshGraph();
-								spoon.refreshTree();
-								spoon.setShellText();
-							}
+							if(miPopEvalUncond != null) miPopEvalUncond.setChecked(false);
+							if(miPopEvalTrue != null) miPopEvalTrue.setChecked(true);
+							if(miPopEvalFalse != null) miPopEvalFalse.setChecked(false);						
+						}
+						else
+						{
+							if(miPopEvalUncond != null) miPopEvalUncond.setChecked(false);
+							if(miPopEvalTrue != null) miPopEvalTrue.setChecked(false);
+							if(miPopEvalFalse != null) miPopEvalFalse.setChecked(true);
 						}
 					}
-				);
-				miDisHop.addSelectionListener(new SelectionAdapter() 
+					if (!hi.from_entry.evaluates())
 					{
-						public void widgetSelected(SelectionEvent e) 
-						{
-							selrect = null;
-							hi.setEnabled(!hi.isEnabled());
-							spoon.refreshGraph();
-							spoon.refreshTree();
-						}
+						if(miPopEvalTrue != null) miPopEvalTrue.setEnabled(false);
+						if(miPopEvalFalse != null) miPopEvalFalse.setEnabled(false);
 					}
-				);
-				miDelHop.addSelectionListener(new SelectionAdapter() 
+					if (!hi.from_entry.isUnconditional())
 					{
-						public void widgetSelected(SelectionEvent e) 
-						{
-							selrect = null;
-							int idx = jobMeta.indexOfJobHop(hi);
-							jobMeta.removeJobHop(idx);
-							spoon.refreshTree();
-							spoon.refreshGraph();
-						}
+						if(miPopEvalUncond != null) miPopEvalUncond.setEnabled(false);
 					}
-				);
-                canvas.setMenu(mPop);
+
+					if( miDisHop != null ) {
+						if (hi.isEnabled()) miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+						else                miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
+					}
+	                canvas.setMenu(menu.getSwtMenu());
+				}
+
 			}
 			else 
 			{
 				// Clicked on the background: maybe we hit a note?
 				final NotePadMeta ni = jobMeta.getNote(x, y);
+				setCurrentNote( ni );
 				if (ni!=null)
 				{
-					// Delete note
-					// Edit note
-					MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE); miNoteEdit.setText(Messages.getString("ChefGraph.PopupMenu.Note.Edit"));
-					MenuItem miNoteDel  = new MenuItem(mPop, SWT.CASCADE); miNoteDel .setText(Messages.getString("ChefGraph.PopupMenu.Note.Delete"));
 
-					miNoteEdit.addSelectionListener(
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
-							{ 
-								selrect=null;
-								editNote(ni);
-							} 
-						} 
-					);
-					miNoteDel.addSelectionListener(
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
-							{ 
-								selrect=null; 
-								int idx = jobMeta.indexOfNote(ni);
-								if (idx>=0) 
-								{
-									jobMeta.removeNote(idx);
-									spoon.addUndoDelete(jobMeta, new NotePadMeta[] {ni}, new int[] {idx} );
-								} 
-								redraw();
-							} 
-						} 
-					);
+					PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-note" ); //$NON-NLS-1$
+					if( menu != null ) {
 					
-                    canvas.setMenu(mPop);
+						menu.addMenuListener( "job-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "job-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+		                canvas.setMenu(menu.getSwtMenu());
+
+					}
 				}
 				else
 				{
-					// New note
-					MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE); miNoteNew.setText(Messages.getString("ChefGraph.PopupMenu.Note.New"));
-					miNoteNew.addSelectionListener(
-						new SelectionAdapter() 
-						{ 
-							public void widgetSelected(SelectionEvent e) 
-							{ 
-								selrect=null;
-								String title = Messages.getString("ChefGraph.Dialog.EditNote.Title");
-								String message = Messages.getString("ChefGraph.Dialog.EditNote.Message");
-								EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
-								String n = dd.open();
-								if (n!=null) 
-								{
-									NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
-									jobMeta.addNote(npi);
-									spoon.addUndoNew(jobMeta, new NotePadMeta[] {npi}, new int[] { jobMeta.indexOfNote(npi)} );
-									redraw();
-								} 
-							} 
-						} 
-					);
+					PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-background" ); //$NON-NLS-1$
+					if( menu != null ) {
+					
+						menu.addMenuListener( "job-graph-note-new", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "job-graph-note-paste", this, "pasteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "job-graph-background-settings", this, "editJobProperties" ); //$NON-NLS-1$ //$NON-NLS-2$
+						
+						
+	                    final String clipcontent = spoon.fromClipboard();
+	                    MenuChoice item  = menu.getMenuItemById( "job-graph-note-paste" ); //$NON-NLS-1$
+	                    if( item != null ) {
+	                    		item.setEnabled( clipcontent != null );
+	                    }
 
-                    MenuItem miPasteStep = new MenuItem(mPop, SWT.CASCADE);
-                    miPasteStep.setText(Messages.getString("ChefGraph.PopupMenu.PasteStepFromClipboard"));
+		                canvas.setMenu(menu.getSwtMenu());
 
-                    final String clipcontent = spoon.fromClipboard();
-                    if (clipcontent == null) miPasteStep.setEnabled(false);
-                    // Past steps on the clipboard to the transformation...
-                    miPasteStep.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            Point loc = new Point(mousex, mousey);
-                            spoon.pasteXML(jobMeta, clipcontent, loc);
-                        }
-                    });
-
-                    // Transformation settings
-                    new MenuItem(mPop, SWT.SEPARATOR);
-                    MenuItem miSettings = new MenuItem(mPop, SWT.NONE);
-                    miSettings.setText(Messages.getString("ChefGraph.PopupMenu.Settings"));
-                    miSettings.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            spoon.editJobProperties(jobMeta);
-                        }
-                    });
-
-                    canvas.setMenu(mPop);
+					}
 				}
 			}
 		}
 	}
 
-	private void setToolTip(int x, int y) 
+	public void editJobProperties() {
+        spoon.editJobProperties(jobMeta);
+	}
+	
+	public void pasteNote() {
+	    final String clipcontent = spoon.fromClipboard();
+        Point loc = new Point(currentMouseX, currentMouseY);
+        spoon.pasteXML(jobMeta, clipcontent, loc);
+	}
+	
+	public void newNote() 
+	{ 
+		selrect=null;
+		String title = Messages.getString("ChefGraph.Dialog.EditNote.Title");
+		String message = Messages.getString("ChefGraph.Dialog.EditNote.Message");
+		EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
+		String n = dd.open();
+		if (n!=null) 
+		{
+			NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
+			jobMeta.addNote(npi);
+			spoon.addUndoNew(jobMeta, new NotePadMeta[] {npi}, new int[] { jobMeta.indexOfNote(npi)} );
+			redraw();
+		} 
+	} 
+	
+	public void setCurrentNote( NotePadMeta ni ) {
+		this.ni = ni;
+	}
+
+	public NotePadMeta getCurrentNote() {
+		return ni;
+	}
+
+	public void editNote() { 
+		selrect=null;
+		editNote( getCurrentNote() );
+	} 
+
+	public void deleteNote() {
+		selrect=null; 
+		int idx = jobMeta.indexOfNote(getCurrentNote());
+		if (idx>=0) 
+		{
+			jobMeta.removeNote(idx);
+			spoon.addUndoDelete(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+		} 
+		redraw();
+	}
+
+	public void flipHop() 
+	{
+		selrect = null;
+		JobEntryCopy dummy = currentHop.from_entry;
+		currentHop.from_entry = currentHop.to_entry;
+		currentHop.to_entry = dummy;
+
+		if (jobMeta.hasLoop(currentHop.from_entry)) 
+		{
+			spoon.refreshGraph();
+			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
+			mb.setMessage(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Message"));
+			mb.setText(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Title"));
+			mb.open();
+
+			dummy = currentHop.from_entry;
+			currentHop.from_entry = currentHop.to_entry;
+			currentHop.to_entry = dummy;
+			spoon.refreshGraph();
+		} 
+		else 
+		{
+			currentHop.setChanged();
+			spoon.refreshGraph();
+			spoon.refreshTree();
+			spoon.setShellText();
+		}
+	}
+
+	public void disableHop() 
+	{
+		selrect = null;
+		currentHop.setEnabled(!currentHop.isEnabled());
+		spoon.refreshGraph();
+		spoon.refreshTree();
+	}
+
+	public void deleteHop() 
+	{
+		selrect = null;
+		int idx = jobMeta.indexOfJobHop(currentHop);
+		jobMeta.removeJobHop(idx);
+		spoon.refreshTree();
+		spoon.refreshGraph();
+	}
+
+	public void setHopConditional( String id ) {
+		
+		if( "job-graph-hop-evaluation-uncond".equals( id ) ) { //$NON-NLS-1$
+			currentHop.setUnconditional(); 
+			spoon.refreshGraph();
+		}
+		else if( "job-graph-hop-evaluation-true".equals( id ) ) { //$NON-NLS-1$
+			currentHop.setConditional(); 
+			currentHop.setEvaluation(true); 
+			spoon.refreshGraph();
+		}
+		else if( "job-graph-hop-evaluation-false".equals( id ) ) { //$NON-NLS-1$
+			currentHop.setConditional(); 
+			currentHop.setEvaluation(false); 
+			spoon.refreshGraph(); 
+		}
+		
+	}
+		
+	protected void setCurrentHop( JobHopMeta hop ) {
+		currentHop = hop;
+	}
+	
+	protected JobHopMeta getCurrentHop( ) {
+		return currentHop;
+	}
+	
+	protected void setToolTip(int x, int y) 
 	{
         String newTip=null;
         
@@ -1550,20 +1482,20 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		}
 	}
 	
-	private void openTransformation(JobEntryTrans entry)
+	protected void openTransformation(JobEntryTrans entry)
 	{
         String exactFilename = StringUtil.environmentSubstitute(entry.getFilename() );
         String exactTransname = StringUtil.environmentSubstitute(entry.getTransname() );
         
         // check, whether a tab of this name is already opened
-        CTabItem tab = spoon.findCTabItem(exactFilename, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+        TabItem tab = spoon.findTabItem(exactFilename, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
         if (tab == null)
         {
-            tab = spoon.findCTabItem(Const.filenameOnly(exactFilename), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+            tab = spoon.findTabItem(Const.filenameOnly(exactFilename), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
         }
         if (tab != null)
         {
-            spoon.tabfolder.setSelection(tab);
+            spoon.tabfolder.setSelected(tab);
             return;
         }
         
@@ -1765,7 +1697,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		drawRect(gc, selrect);
 	}
 
-	private void drawJobHop(GC gc, JobHopMeta hi, boolean candidate) 
+	protected void drawJobHop(GC gc, JobHopMeta hi, boolean candidate) 
 	{
 		if (hi==null || hi.from_entry==null || hi.to_entry==null) return;
 		if (!hi.from_entry.isDrawn() || !hi.to_entry.isDrawn())	return;
@@ -1791,7 +1723,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return im;
 	}
 
-	private void drawChefGraphEntry(GC gc, JobEntryCopy je) 
+	protected void drawChefGraphEntry(GC gc, JobEntryCopy je) 
 	{
 		if (!je.isDrawn()) return;
 
@@ -1842,7 +1774,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	}
 
-	private void drawChefGraphEntryShadow(GC gc, JobEntryCopy je) 
+	protected void drawChefGraphEntryShadow(GC gc, JobEntryCopy je) 
 	{
 		if (je==null) return;
 		if (!je.isDrawn()) return;
@@ -1861,7 +1793,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.fillRectangle(screen.x + s, screen.y + s, iconsize, iconsize);
 	}
 
-	private void drawNote(GC gc, NotePadMeta ni)
+	protected void drawNote(GC gc, NotePadMeta ni)
 	{
 		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
@@ -1915,7 +1847,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		ni.height = height;
 	}
 
-	private void drawLine(GC gc, JobHopMeta hi, boolean is_candidate) 
+	protected void drawLine(GC gc, JobHopMeta hi, boolean is_candidate) 
 	{
 		int line[] = getLine(hi.from_entry, hi.to_entry);
 
@@ -1960,7 +1892,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 	}
 
-	private void drawLineShadow(GC gc, JobHopMeta hi)
+	protected void drawLineShadow(GC gc, JobHopMeta hi)
 	{
 		int line[] = getLine(hi.from_entry, hi.to_entry);
 		int s = shadowsize;
@@ -1973,7 +1905,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		drawArrow(gc, line);
 	}
 
-	private Point getArea() 
+	protected Point getArea() 
 	{
         org.eclipse.swt.graphics.Rectangle rect = canvas.getClientArea();
 		Point area = new Point(rect.width, rect.height);
@@ -1981,7 +1913,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return area;
 	}
 
-	private Point getThumb(Point area, Point max)
+	protected Point getThumb(Point area, Point max)
 	{
 		Point thumb = new Point(0, 0);
 		if (max.x <= area.x) thumb.x = 100;
@@ -1993,7 +1925,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return thumb;
 	}
 
-	private Point getOffset() 
+	protected Point getOffset() 
 	{
 		Point area = getArea();
 		Point max = jobMeta.getMaximum();
@@ -2003,7 +1935,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	}
 	
-	private Point getOffset(Point thumb, Point area) 
+	protected Point getOffset(Point thumb, Point area) 
 	{
 		Point p = new Point(0, 0);
 		Point sel = new Point(hori.getSelection(), vert.getSelection());
@@ -2021,19 +1953,19 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return n < 0 ? -1 : (n > 0 ? 1 : 1);
 	}
 
-	private void newHop() 
+	protected void newHop() 
 	{
 		JobEntryCopy fr = jobMeta.getSelected(0);
 		JobEntryCopy to = jobMeta.getSelected(1);
 		spoon.newJobHop(jobMeta, fr, to);
 	}
 
-	private void editEntry(JobEntryCopy je) 
+	protected void editEntry(JobEntryCopy je) 
 	{
 		spoon.editJobEntry(jobMeta, je);
 	}
 	
-	private void editNote(NotePadMeta ni)
+	protected void editNote(NotePadMeta ni)
 	{	
 		NotePadMeta before = (NotePadMeta)ni.clone();
 		String title = Messages.getString("ChefGraph.Dialog.EditNote.Title");
@@ -2051,7 +1983,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		} 
 	}
 
-	private void drawArrow(GC gc, int line[]) 
+	protected void drawArrow(GC gc, int line[]) 
 	{
 		int mx, my;
 		int x1 = line[0] + offset.x;
@@ -2104,7 +2036,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.setBackground(back);
 	}
 
-	private boolean pointOnLine(int x, int y, int line[]) 
+	protected boolean pointOnLine(int x, int y, int line[]) 
 	{
 		int dx, dy;
 		int pm = HOP_SEL_MARGIN / 2;
@@ -2121,7 +2053,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return retval;
 	}
 
-	private boolean pointOnThinLine(int x, int y, int line[]) 
+	protected boolean pointOnThinLine(int x, int y, int line[]) 
 	{
 		int x1 = line[0];
 		int y1 = line[1];
@@ -2145,40 +2077,45 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return false;
 	}
 
-    private SnapAllignDistribute createSnapAllignDistribute()
+    protected SnapAllignDistribute createSnapAllignDistribute()
     {
-        List<? extends GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
-        int[] indices = jobMeta.getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
+        List<GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
+        int[] indices = jobMeta.getEntryIndexes(elements.toArray(new JobEntryCopy[elements.size()]));
 
         return new SnapAllignDistribute(jobMeta, elements, indices, spoon, this);
     }
 
-    private void snaptogrid(int size)
+    public void snaptogrid()
+    {
+    		snaptogrid( Const.GRID_SIZE );
+    	}
+
+    protected void snaptogrid(int size)
     {
         createSnapAllignDistribute().snaptogrid(size);
     }
 
-    private void allignleft()
+    public void allignleft()
     {
         createSnapAllignDistribute().allignleft();
     }
 
-    private void allignright()
+    public void allignright()
     {
         createSnapAllignDistribute().allignright();
     }
 
-    private void alligntop()
+    public void alligntop()
     {
         createSnapAllignDistribute().alligntop();
     }
 
-    private void allignbottom()
+    public void allignbottom()
     {
         createSnapAllignDistribute().allignbottom();
     }
 
-    private void distributehorizontal()
+    public void distributehorizontal()
     {
         createSnapAllignDistribute().distributehorizontal();
     }
@@ -2188,7 +2125,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         createSnapAllignDistribute().distributevertical();
     }
 
-	private void drawRect(GC gc, Rectangle rect) 
+	protected void drawRect(GC gc, Rectangle rect) 
 	{
 		if (rect == null) return;
 		
@@ -2199,7 +2136,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.setLineStyle(SWT.LINE_SOLID);
 	}
 
-	private void detach(JobEntryCopy je)
+	protected void detach(JobEntryCopy je)
 	{
 		JobHopMeta hfrom = jobMeta.findJobHopTo(je);
 		JobHopMeta hto   = jobMeta.findJobHopFrom(je);

@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -74,7 +73,7 @@ public class JobHistory extends Composite implements TabItemInterface
 	
 	private Spoon spoon;
 
-    private List<RowMetaAndData> rowList;
+    private ArrayList<RowMetaAndData> rowList;
 
 	private final Shell shell;
 
@@ -288,7 +287,7 @@ public class JobHistory extends Composite implements TabItemInterface
                             // OK, now that we have a series of rows, we can add them to the table view...
                             for (int i=0;i<rowList.size();i++)
                             {
-                                RowMetaAndData row = (RowMetaAndData) rowList.get(i);
+                                RowMetaAndData row = rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_JOB", "");
                                 if(batchID != null)
@@ -358,7 +357,7 @@ public class JobHistory extends Composite implements TabItemInterface
         if (nr>=0 && rowList!=null && nr<rowList.size())
         {
             // OK, grab this one from the buffer...
-            RowMetaAndData row = (RowMetaAndData) rowList.get(nr);
+            RowMetaAndData row = rowList.get(nr);
             String logging;
             try
             {

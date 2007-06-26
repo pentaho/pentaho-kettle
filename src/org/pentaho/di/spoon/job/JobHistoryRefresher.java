@@ -1,28 +1,30 @@
 package org.pentaho.di.spoon.job;
 
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabListener;
 
-public class JobHistoryRefresher implements SelectionListener {
+public class JobHistoryRefresher implements TabListener {
 
-	private final CTabItem tiTabsHist;
+	private final TabItem tiTabsHist;
 	private final JobHistory chefHist;
 
-	public JobHistoryRefresher(CTabItem tiTabsHist, JobHistory chefHist) {
+	public JobHistoryRefresher(TabItem tiTabsHist, JobHistory chefHist) {
 		this.tiTabsHist = tiTabsHist;
 		this.chefHist = chefHist;
 	}
 
-	public void widgetSelected(SelectionEvent selectionEvent) {
-		if(selectionEvent.item == tiTabsHist)
+	public void tabSelected(TabItem item) {
+		if(item == tiTabsHist)
 			chefHist.refreshHistoryIfNeeded();
 	}
 
-	public void widgetDefaultSelected(SelectionEvent selectionEvent) {
-		widgetSelected(selectionEvent);
+	public void tabDeselected(TabItem item) {
 	}
-	
+
+	public boolean tabClose(TabItem item) {
+		return true;
+	}
+
 	public void markRefreshNeeded()
 	{
 		chefHist.markRefreshNeeded();

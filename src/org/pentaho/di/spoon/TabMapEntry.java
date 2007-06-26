@@ -1,6 +1,6 @@
 package org.pentaho.di.spoon;
 
-import org.eclipse.swt.custom.CTabItem;
+import org.pentaho.xul.swt.tab.TabItem;
 
 public class TabMapEntry
 {
@@ -13,7 +13,7 @@ public class TabMapEntry
     public static final int OBJECT_TYPE_SLAVE_SERVER              = 7;
     public static final int OBJECT_TYPE_BROWSER                = 8;
     
-    private CTabItem tabItem;
+    private TabItem tabItem;
     
     private String objectName;
 
@@ -27,7 +27,7 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(CTabItem tabItem, String objectName, TabItemInterface object, int objectType)
+    public TabMapEntry(TabItem tabItem, String objectName, TabItemInterface object, int objectType)
     {
         this.tabItem = tabItem;
         this.objectName = objectName;
@@ -70,7 +70,7 @@ public class TabMapEntry
     /**
      * @return the tabItem
      */
-    public CTabItem getTabItem()
+    public TabItem getTabItem()
     {
         return tabItem;
     }
@@ -78,7 +78,7 @@ public class TabMapEntry
     /**
      * @param tabItem the tabItem to set
      */
-    public void setTabItem(CTabItem tabItem)
+    public void setTabItem(TabItem tabItem)
     {
         this.tabItem = tabItem;
     }

@@ -5158,7 +5158,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     	return getStringList(searchSteps, searchDatabases, searchNotes, false);
     }    
     
-    public List getUsedVariables()
+    public List<String> getUsedVariables()
     {
         // Get the list of Strings.
         List<StringSearchResult> stringList = getStringList(true, true, false, true);

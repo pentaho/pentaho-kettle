@@ -1,26 +1,28 @@
 package org.pentaho.di.spoon.trans;
 
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabListener;
 
-public class TransHistoryRefresher implements SelectionListener {
+public class TransHistoryRefresher implements TabListener {
 
-	private final CTabItem tiTabsHist;
+	private final TabItem tiTabsHist;
 	private final TransHistory spoonhist;
 
-	public TransHistoryRefresher(CTabItem tiTabsHist, TransHistory spoonhist) {
+	public TransHistoryRefresher(TabItem tiTabsHist, TransHistory spoonhist) {
 		this.tiTabsHist = tiTabsHist;
 		this.spoonhist = spoonhist;
 	}
 
-	public void widgetSelected(SelectionEvent selectionEvent) {
-		if(selectionEvent.item == tiTabsHist)
+	public void tabSelected(TabItem item) {
+		if(item == tiTabsHist)
 			spoonhist.refreshHistoryIfNeeded();
 	}
 
-	public void widgetDefaultSelected(SelectionEvent selectionEvent) {
-		widgetSelected(selectionEvent);
+	public void tabDeselected(TabItem item) {
+	}
+
+	public boolean tabClose(TabItem item) {
+		return true;
 	}
 	
 	public void markRefreshNeeded()

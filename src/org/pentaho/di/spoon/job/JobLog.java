@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -651,9 +650,8 @@ public class JobLog extends Composite implements TabItemInterface
 	public void showErrors()
 	{
 		String all = wText.getText();
-
-		List<String> err = new ArrayList<String>();
-
+		ArrayList<String> err = new ArrayList<String>();
+		
 		int i = 0;
 		int startpos = 0;
 		int crlen = Const.CR.length();
@@ -686,7 +684,7 @@ public class JobLog extends Composite implements TabItemInterface
 		if (err.size()>0)
 		{
 			String err_lines[] = new String[err.size()];
-			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
+			for (i=0;i<err_lines.length;i++) err_lines[i] = err.get(i);
 			
 			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("ChefLog.Dialog.ErrorLines.Title"), Messages.getString("ChefLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();

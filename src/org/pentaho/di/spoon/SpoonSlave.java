@@ -145,7 +145,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		wTree = new Tree(sash, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
         TreeMemory.addTreeListener(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
-        Rectangle bounds = spoon.tabfolder.getBounds();
+        Rectangle bounds = spoon.tabfolder.getSwtTabset().getBounds();
         for (int i=0;i<colinf.length;i++)
         {
             ColumnInfo columnInfo = colinf[i];
@@ -266,7 +266,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         //
         timerTask.cancel();
         timer.cancel();
-        spoon.tabfolder.setSelection(0);
+        spoon.tabfolder.setSelected(0);
         return true; 
     }
 
@@ -481,7 +481,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		{
 			String err_lines[] = new String[err.size()];
 			for (i = 0; i < err_lines.length; i++)
-				err_lines[i] = (String) err.get(i);
+				err_lines[i] = err.get(i);
 
 			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();

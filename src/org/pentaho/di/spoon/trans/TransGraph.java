@@ -15,9 +15,12 @@
 
 package org.pentaho.di.spoon.trans;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,13 +55,12 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
+//import org.eclipse.swt.widgets.Menu;
+//import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -77,21 +79,25 @@ import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.spoon.Messages;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
-import org.pentaho.di.trans.DatabaseImpact;
+import org.pentaho.di.spoon.XulMessages;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-
-
+import org.pentaho.xul.swt.menu.MenuChoice;
+import org.pentaho.xul.swt.menu.MenuObject;
+import org.pentaho.xul.swt.menu.PopupMenu;
+import org.pentaho.xul.swt.menu.Menu;
+import org.w3c.dom.Document;
 
 
 
@@ -157,24 +163,53 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private Rectangle        selrect;
 
-	private Menu mPop;
-    
     /**
      * A list of remarks on the current Transformation...
      */
-    private List<CheckResult> remarks;
+    private ArrayList remarks;
     
     /**
      * A list of impacts of the current transformation on the used databases.
      */
-    private List<DatabaseImpact> impact;
+    private ArrayList impact;
 
     /**
      * Indicates whether or not an impact analyses has already run.
      */
     private boolean impactFinished;
 
-    public TransGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
+    protected static Map menuMap = new HashMap();
+	protected int currentMouseX = 0;
+	protected int currentMouseY = 0;
+	protected NotePadMeta ni = null;
+	protected TransHopMeta currentHop;
+	protected StepMeta currentStep;
+
+	public void setCurrentNote( NotePadMeta ni ) {
+		this.ni = ni;
+	}
+
+	public NotePadMeta getCurrentNote() {
+		return ni;
+	}
+
+    public TransHopMeta getCurrentHop() {
+		return currentHop;
+	}
+
+	public void setCurrentHop(TransHopMeta currentHop) {
+		this.currentHop = currentHop;
+	}
+
+	public StepMeta getCurrentStep() {
+		return currentStep;
+	}
+
+	public void setCurrentStep(StepMeta currentStep) {
+		this.currentStep = currentStep;
+	}
+
+	public TransGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
     {
         super(parent, SWT.NONE);
         this.shell = parent.getShell();
@@ -182,6 +217,24 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         this.transMeta = transMeta;
         
         // this.props = Props.getInstance();
+		try {
+    		// first get the XML document
+    		File xulFile = new File( "ui/menus.xul" ); //$NON-NLS-1$
+    		if( xulFile.exists() ) {
+    	        XulMessages xulMessages = new XulMessages();
+    			Document doc = XMLHandler.loadXMLFile( xulFile );
+    			List<String> ids = new ArrayList<String>();
+    			ids.add( "trans-graph-hop" );
+    			ids.add( "trans-graph-entry" );
+    			ids.add( "trans-graph-background" );
+    			ids.add( "trans-graph-note" );
+    			
+    			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
+    		}
+		} catch (Throwable t ) {
+			// TODO log this
+			t.printStackTrace();
+		}
         
         setLayout(new FillLayout());
         
@@ -192,8 +245,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         clearSettings();
         
         
-        remarks = new ArrayList<CheckResult>();
-        impact  = new ArrayList<DatabaseImpact>();
+        remarks = new ArrayList();
+        impact  = new ArrayList();
         impactFinished = false;
 
         hori = canvas.getHorizontalBar();
@@ -1168,6 +1221,282 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return new int[] { x1, y1, x2, y2 };
     }
 
+    public void hideStep()
+    {
+        for (int i = 0; i < transMeta.nrSteps(); i++)
+        {
+            StepMeta sti = transMeta.getStep(i);
+            if (sti.isDrawn() && sti.isSelected())
+            {
+                sti.hideStep();
+                spoon.refreshTree();
+            }
+        }
+        getCurrentStep().hideStep();
+        spoon.refreshTree();
+        redraw();
+    }
+    
+    public void checkSelectedSteps()
+    {
+        spoon.checkTrans(transMeta, true);
+    }
+
+    public void detachStep()
+    {
+        detach(getCurrentStep());
+        selected_steps = null;
+    }
+
+    public void generateMappingToThisStep()
+    {
+        spoon.generateMapping(transMeta, getCurrentStep());
+    }
+
+    public void partitioning()
+    {
+        spoon.editPartitioning(transMeta, getCurrentStep());
+    }
+
+    public void clustering()
+    {
+        spoon.editClustering(transMeta, getCurrentStep());
+    }
+
+    public void errorHandling()
+    {
+        spoon.editStepErrorHandling(transMeta, getCurrentStep());
+    }
+
+    public void newHopChoice()
+    {
+        selected_steps = null;
+        newHop();
+    }
+
+    public void editStep()
+    {
+        selected_steps = null;
+        editStep(getCurrentStep());
+    }
+
+    public void editDescription()
+    {
+        editDescription(getCurrentStep());
+    }
+
+    public void setDistributes()
+    {
+    		getCurrentStep().setDistributes(true);
+        spoon.refreshGraph();
+        spoon.refreshTree();
+    }
+    
+    public void setCopies()
+    {
+    		getCurrentStep().setDistributes(false);
+        spoon.refreshGraph();
+        spoon.refreshTree();
+    }
+
+    public void copies()
+    {
+        final boolean multipleOK = checkNumberOfCopies(transMeta, getCurrentStep());
+        selected_steps = null;
+        String tt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
+        String mt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
+        EnterNumberDialog nd = new EnterNumberDialog(shell, getCurrentStep().getCopies(), tt, mt);
+        int cop = nd.open();
+        if (cop >= 0)
+        {
+            if (cop == 0) cop = 1;
+            
+            if (!multipleOK)
+            {
+                cop = 1;
+                
+                MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
+                mb.setMessage(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Title")); //$NON-NLS-1$
+                mb.open();
+                
+            }
+            
+            if (getCurrentStep().getCopies() != cop)
+            {
+            		getCurrentStep().setCopies(cop);
+                spoon.refreshGraph();
+            }
+        }
+    }
+
+    public void dupeStep()
+    {
+        try
+        {
+            if (transMeta.nrSelectedSteps() <= 1)
+            {
+                spoon.dupeStep(transMeta, getCurrentStep());
+            }
+            else
+            {
+                for (int i = 0; i < transMeta.nrSteps(); i++)
+                {
+                    StepMeta stepMeta = transMeta.getStep(i);
+                    if (stepMeta.isSelected())
+                    {
+                        spoon.dupeStep(transMeta, stepMeta);
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+    
+    public void copyStep()
+    {
+        spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
+    }
+    
+    public void delSelected()
+    {
+        delSelected(getCurrentStep());
+    }
+
+    public void fieldsBefore()
+    {
+        selected_steps = null;
+        inputOutputFields(getCurrentStep(), true);
+    }
+    public void fieldsAfter()
+    {
+        selected_steps = null;
+        inputOutputFields(getCurrentStep(), false);
+    }
+
+    public void editHop()
+    {
+        selrect = null;
+        editHop(getCurrentHop());
+    }
+
+    public void flipHopDirection()
+    {
+        selrect = null;
+        TransHopMeta hi = getCurrentHop();
+
+        hi.flip();
+
+        if (transMeta.hasLoop(hi.getFromStep()))
+        {
+            spoon.refreshGraph();
+            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
+            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Title")); //$NON-NLS-1$
+            mb.open();
+
+            hi.flip();
+            spoon.refreshGraph();
+        }
+        else
+        {
+            hi.setChanged();
+            spoon.refreshGraph();
+            spoon.refreshTree();
+            spoon.setShellText();
+        }
+    }
+
+    public void enableHop()
+    {
+        selrect = null;
+        TransHopMeta hi = getCurrentHop();
+        TransHopMeta before = (TransHopMeta) hi.clone();
+        hi.setEnabled(!hi.isEnabled());
+        if (transMeta.hasLoop(hi.getToStep()))
+        {
+            hi.setEnabled(!hi.isEnabled());
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Title")); //$NON-NLS-1$
+            mb.open();
+        }
+        else
+        {
+            TransHopMeta after = (TransHopMeta) hi.clone();
+            spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hi) });
+            spoon.refreshGraph();
+            spoon.refreshTree();
+        }
+    }
+
+    public void deleteHop()
+    {
+        selrect = null;
+        TransHopMeta hi = getCurrentHop();
+        int idx = transMeta.indexOfTransHop(hi);
+        spoon.addUndoDelete(transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
+        transMeta.removeTransHop(idx);
+        spoon.refreshTree();
+        spoon.refreshGraph();
+    }
+
+	public void editNote() { 
+		selrect=null;
+		editNote( getCurrentNote() );
+	} 
+
+	public void deleteNote() {
+        selrect = null;
+        int idx = transMeta.indexOfNote(ni);
+        if (idx >= 0)
+        {
+            transMeta.removeNote(idx);
+            spoon.addUndoDelete(transMeta, new NotePadMeta[] { (NotePadMeta) ni.clone() }, new int[] { idx });
+            redraw();
+        }
+	}
+
+
+    public void newNote()
+    {
+        selrect = null;
+        String title = Messages.getString("SpoonGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
+        String message = Messages.getString("SpoonGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
+        EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
+        String n = dd.open();
+        if (n != null)
+        {
+            NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
+            transMeta.addNote(npi);
+            spoon.addUndoNew(transMeta, new NotePadMeta[] { npi }, new int[] { transMeta.indexOfNote(npi) });
+            redraw();
+        }
+    }
+
+    public void paste()
+    {
+	    final String clipcontent = spoon.fromClipboard();
+        Point loc = new Point(currentMouseX, currentMouseY);
+        spoon.pasteXML(transMeta, clipcontent, loc);
+    }
+
+    public void settings()
+    {
+        spoon.editTransformationProperties(transMeta);
+    }
+
+    public void newStep( String description )
+    {
+        StepMeta stepMeta = spoon.newStep(transMeta, description, description, false, true);
+        stepMeta.setLocation(currentMouseX, currentMouseY);
+        stepMeta.setDraw(true);
+        redraw();
+    }
+
     /**
      * This sets the popup-menu on the background of the canvas based on the xy coordinate of the mouse. This method is
      * called after a mouse-click.
@@ -1177,626 +1506,160 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
      */
     private void setMenu(int x, int y)
     {
-        final int mousex = x;
-        final int mousey = y;
-        
-        // Re-use the popup menu if it was allocated beforehand...
-        if (mPop!=null && !mPop.isDisposed())
-        {
-            MenuItem[] items = mPop.getItems();
-            for (int i = 0; i < items.length; i++)
-            {
-                items[i].dispose();
-            }
-        }
-        else
-        {
-            mPop = new Menu(this);
-        }
+    	
+        currentMouseX = x;
+        currentMouseY = y;
 
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
-            MenuItem miNewHop = null;
-            MenuItem miHideStep = null;
+        		setCurrentStep( stepMeta );
+        		
+    			PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
+    			if( menu != null ) {
+    	            int sels = transMeta.nrSelectedSteps();
+    	            
+    				MenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
+    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHopClick" ); //$NON-NLS-1$ //$NON-NLS-2$
+    				item.setEnabled( sels == 2 );
+    				
+    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
+	            	item.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
 
-            int sels = transMeta.nrSelectedSteps();
-            if (sels == 2)
-            {
-                miNewHop = new MenuItem(mPop, SWT.NONE);
-                miNewHop.setText(Messages.getString("SpoonGraph.PopupMenu.NewHop")); //$NON-NLS-1$
-            }
-            MenuItem miEditStep = new MenuItem(mPop, SWT.NONE);
-            miEditStep.setText(Messages.getString("SpoonGraph.PopupMenu.EditStep")); //$NON-NLS-1$
-            MenuItem miEditDesc = new MenuItem(mPop, SWT.NONE);
-            miEditDesc.setText(Messages.getString("SpoonGraph.PopupMenu.EditStepDescription")); //$NON-NLS-1$
+				Menu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
+				if( aMenu != null ) {
+					aMenu.setEnabled( sels > 1 );
+				}
 
-            new MenuItem(mPop, SWT.SEPARATOR);
-            // ---------------------------------------
+				menu.addMenuListener( "trans-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-top", this, "alligntop" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-bottom", this, "allignbottom" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-horz", this, "distributehorizontal" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-vert", this, "distributevertical" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-align-snap", this, "snaptogrid" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-            MenuItem miPopDC = new MenuItem(mPop, SWT.CASCADE);
-            miPopDC.setText(Messages.getString("SpoonGraph.PopupMenu.DataMovement")); //$NON-NLS-1$
+				item = menu.getMenuItemById( "trans-graph-entry-data-movement-distribute" ); //$NON-NLS-1$
+				item.setChecked( stepMeta.isDistributes() );
+				item = menu.getMenuItemById( "trans-graph-entry-data-movement-copy" ); //$NON-NLS-1$
+				item.setChecked( !stepMeta.isDistributes() );
 
-            Menu mPopDC = new Menu(miPopDC);
-            MenuItem miStepDist = new MenuItem(mPopDC, SWT.NONE | SWT.CHECK);
-            miStepDist.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeData")); //$NON-NLS-1$
-            MenuItem miStepCopy = new MenuItem(mPopDC, SWT.NONE | SWT.CHECK);
-            miStepCopy.setText(Messages.getString("SpoonGraph.PopupMenu.CopyData")); //$NON-NLS-1$
-            miPopDC.setMenu(mPopDC);
+				item = menu.getMenuItemById( "trans-graph-entry-hide" ); //$NON-NLS-1$
+				item.setEnabled( stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta) );
+				
+				item = menu.getMenuItemById( "trans-graph-entry-detach" ); //$NON-NLS-1$
+				item.setEnabled( transMeta.isStepUsedInTransHops(stepMeta) );
+				
+				item = menu.getMenuItemById( "trans-graph-entry-errors" ); //$NON-NLS-1$
+				item.setEnabled( stepMeta.supportsErrorHandling() );
+				
+				menu.addMenuListener( "trans-graph-entry-newhop", this, "newHopChoice" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-edit", this, "editStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-edit-description", this, "editDescription" ); //$NON-NLS-1$ //$NON-NLS-2$
+				
+				menu.addMenuListener( "trans-graph-entry-data-movement-distribute", this, "setDistributes" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-data-movement-copy", this, "setCopies" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-copies", this, "copies" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-copy", this, "copyStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-duplicate", this, "dupeStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-delete", this, "delSelected" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-hide", this, "hideStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-detach", this, "detachStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-inputs", this, "fieldsBefore" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-outputs", this, "fieldsAfter" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-verify", this, "checkSelectedSteps" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-mapping", this, "generateMappingToThisStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-partitioning", this, "partitioning" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-clustering", this, "clustering" ); //$NON-NLS-1$ //$NON-NLS-2$
+				menu.addMenuListener( "trans-graph-entry-errors", this, "errorHandling" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-            if (stepMeta.isDistributes())
-                miStepDist.setSelection(true);
-            else
-                miStepCopy.setSelection(true);
-
-            MenuItem miCopies = new MenuItem(mPop, SWT.NONE);
-            miCopies.setText(Messages.getString("SpoonGraph.PopupMenu.NumberOfCopies")); //$NON-NLS-1$
-
-            new MenuItem(mPop, SWT.SEPARATOR);
-            // ---------------------------------------
-
-            // Clipboard operations...
-            MenuItem miCopyStep = new MenuItem(mPop, SWT.NONE);
-            miCopyStep.setText(Messages.getString("SpoonGraph.PopupMenu.CopyToClipboard")); //$NON-NLS-1$
-
-            MenuItem miDupeStep = new MenuItem(mPop, SWT.NONE);
-            miDupeStep.setText(Messages.getString("SpoonGraph.PopupMenu.DuplicateStep")); //$NON-NLS-1$
-
-            MenuItem miDelStep = new MenuItem(mPop, SWT.NONE);
-            miDelStep.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteStep")); //$NON-NLS-1$
-
-            if (stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta))
-            {
-                miHideStep = new MenuItem(mPop, SWT.NONE);
-                miHideStep.setText(Messages.getString("SpoonGraph.PopupMenu.HideStep")); //$NON-NLS-1$
-                miHideStep.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        for (int i = 0; i < transMeta.nrSteps(); i++)
-                        {
-                            StepMeta sti = transMeta.getStep(i);
-                            if (sti.isDrawn() && sti.isSelected())
-                            {
-                                sti.hideStep();
-                                spoon.refreshTree();
-                            }
-                        }
-                        stepMeta.hideStep();
-                        spoon.refreshTree();
-                        redraw();
-                    }
-                });
-            }
-
-            if (transMeta.isStepUsedInTransHops(stepMeta))
-            {
-                MenuItem miDetach = new MenuItem(mPop, SWT.NONE);
-                miDetach.setText(Messages.getString("SpoonGraph.PopupMenu.DetachStep")); //$NON-NLS-1$
-                miDetach.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        detach(stepMeta);
-                        selected_steps = null;
-                    }
-                });
-            }
-
-            new MenuItem(mPop, SWT.SEPARATOR);
-            // ---------------------------------------
-
-            MenuItem miPopFieldsBef = new MenuItem(mPop, SWT.NONE);
-            miPopFieldsBef.setText(Messages.getString("SpoonGraph.PopupMenu.ShowInputFields")); //$NON-NLS-1$
-            MenuItem miPopFieldsAft = new MenuItem(mPop, SWT.NONE);
-            miPopFieldsAft.setText(Messages.getString("SpoonGraph.PopupMenu.ShowOutputFields")); //$NON-NLS-1$
-
-            // Allign & Distribute options...
-            new MenuItem(mPop, SWT.SEPARATOR);
-            MenuItem miPopAD = new MenuItem(mPop, SWT.CASCADE);
-            miPopAD.setText(Messages.getString("SpoonGraph.PopupMenu.AllignDistribute")); //$NON-NLS-1$
-
-            Menu mPopAD = new Menu(miPopAD);
-            MenuItem miPopALeft = new MenuItem(mPopAD, SWT.NONE);
-            miPopALeft.setText(Messages.getString("SpoonGraph.PopupMenu.AllignLeft")); //$NON-NLS-1$
-            MenuItem miPopARight = new MenuItem(mPopAD, SWT.NONE);
-            miPopARight.setText(Messages.getString("SpoonGraph.PopupMenu.AllignRight")); //$NON-NLS-1$
-            MenuItem miPopATop = new MenuItem(mPopAD, SWT.NONE);
-            miPopATop.setText(Messages.getString("SpoonGraph.PopupMenu.AllignTop")); //$NON-NLS-1$
-            MenuItem miPopABottom = new MenuItem(mPopAD, SWT.NONE);
-            miPopABottom.setText(Messages.getString("SpoonGraph.PopupMenu.AllignBottom")); //$NON-NLS-1$
-            new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopDHoriz = new MenuItem(mPopAD, SWT.NONE);
-            miPopDHoriz.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeHorizontally")); //$NON-NLS-1$
-            MenuItem miPopDVertic = new MenuItem(mPopAD, SWT.NONE);
-            miPopDVertic.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeVertically")); //$NON-NLS-1$
-            new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopSSnap = new MenuItem(mPopAD, SWT.NONE);
-            miPopSSnap.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
-            miPopAD.setMenu(mPopAD);
-
-            miPopALeft.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignleft();
-                }
-            });
-            miPopARight.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignright();
-                }
-            });
-            miPopATop.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    alligntop();
-                }
-            });
-            miPopABottom.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    allignbottom();
-                }
-            });
-            miPopDHoriz.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    distributehorizontal();
-                }
-            });
-            miPopDVertic.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    distributevertical();
-                }
-            });
-            miPopSSnap.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    snaptogrid(Const.GRID_SIZE);
-                }
-            });
-
-            if (sels <= 1)
-            {
-                miPopAD.setEnabled(false);
-            }
-
-            /*
-             * 
-             * Check...
-             */
-            new MenuItem(mPop, SWT.SEPARATOR);
-            MenuItem miPreview = new MenuItem(mPop, SWT.NONE);
-            miPreview.setText(Messages.getString("SpoonGraph.PopupMenu.CheckSelectedSteps")); //$NON-NLS-1$
-            miPreview.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    spoon.checkTrans(transMeta, true);
-                }
-            });
-
-            
-            /*
-             * Mappings...
-             */
-            MenuItem miMapping = new MenuItem(mPop, SWT.NONE);
-            miMapping.setText(Messages.getString("SpoonGraph.PopupMenu.GenerateMappingToThisStep")); //$NON-NLS-1$
-            miMapping.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    spoon.generateMapping(transMeta, stepMeta);
-                }
-            });
-
-            /*
-             * Partitioning...
-             */
-            MenuItem miPartition = new MenuItem(mPop, SWT.NONE);
-            miPartition.setText(Messages.getString("SpoonGraph.PopupMenu.Partitioning")); //$NON-NLS-1$
-            miPartition.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    spoon.editPartitioning(transMeta, stepMeta);
-                }
-            });
-            
-            /*
-             * Clustering
-             */
-            MenuItem miCluster = new MenuItem(mPop, SWT.NONE);
-            miCluster.setText(Messages.getString("SpoonGraph.PopupMenu.Clustering")); //$NON-NLS-1$
-            miCluster.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    spoon.editClustering(transMeta, stepMeta);
-                }
-            });
-
-            /*
-             * Define Error handling...
-             */
-            if (stepMeta.supportsErrorHandling())
-            {
-                MenuItem miError = new MenuItem(mPop, SWT.NONE);
-                miError.setText(Messages.getString("SpoonGraph.PopupMenu.Error")); //$NON-NLS-1$
-                miError.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        spoon.editStepErrorHandling(transMeta, stepMeta);
-                    }
-                });
-            }
-
-            if (sels == 2)
-            {
-                miNewHop.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        selected_steps = null;
-                        newHop();
-                    }
-                });
-            }
-
-            miEditStep.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    selected_steps = null;
-                    editStep(stepMeta);
-                }
-            });
-            miEditDesc.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    editDescription(stepMeta);
-                }
-            });
-            miStepDist.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    stepMeta.setDistributes(true);
-                    spoon.refreshGraph();
-                    spoon.refreshTree();
-                }
-            });
-            miStepCopy.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    stepMeta.setDistributes(false);
-                    spoon.refreshGraph();
-                    spoon.refreshTree();
-                }
-            });
-            // See if we can change the number of copies.
-            // If a previous step is directing output towards this one, we can't
-            final boolean multipleOK = checkNumberOfCopies(transMeta, stepMeta);
-
-            miCopies.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    selected_steps = null;
-                    String tt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
-                    String mt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
-                    EnterNumberDialog nd = new EnterNumberDialog(shell, stepMeta.getCopies(), tt, mt);
-                    int cop = nd.open();
-                    if (cop >= 0)
-                    {
-                        if (cop == 0) cop = 1;
-                        
-                        if (!multipleOK)
-                        {
-                            cop = 1;
-                            
-                            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.MultipleCopiesAreNotAllowedHere.Title")); //$NON-NLS-1$
-                            mb.open();
-                            
-                        }
-                        
-                        if (stepMeta.getCopies() != cop)
-                        {
-                            stepMeta.setCopies(cop);
-                            spoon.refreshGraph();
-                        }
-                    }
-                }
-            });
-            
-            miDupeStep.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    try
-                    {
-                        if (transMeta.nrSelectedSteps() <= 1)
-                        {
-                            spoon.dupeStep(transMeta, stepMeta);
-                        }
-                        else
-                        {
-                            for (int i = 0; i < transMeta.nrSteps(); i++)
-                            {
-                                StepMeta stepMeta = transMeta.getStep(i);
-                                if (stepMeta.isSelected())
-                                {
-                                    spoon.dupeStep(transMeta, stepMeta);
-                                }
-                            }
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                }
-            });
-
-            // Copy the selected steps to the clipboard.
-            miCopyStep.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
-                }
-            });
-
-            miDelStep.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    delSelected(stepMeta);
-                }
-            });
-
-            miPopFieldsBef.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    selected_steps = null;
-                    inputOutputFields(stepMeta, true);
-                }
-            });
-            miPopFieldsAft.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    selected_steps = null;
-                    inputOutputFields(stepMeta, false);
-                }
-            });
-            canvas.setMenu(mPop);
+				canvas.setMenu(menu.getSwtMenu());
+    			}
+    			
         }
         else
         {
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
             {
-                MenuItem miEditHop = new MenuItem(mPop, SWT.NONE);
-                miEditHop.setText(Messages.getString("SpoonGraph.PopupMenu.EditHop")); //$NON-NLS-1$
-                MenuItem miFlipHop = new MenuItem(mPop, SWT.NONE);
-                miFlipHop.setText(Messages.getString("SpoonGraph.PopupMenu.FlipDirection")); //$NON-NLS-1$
-                MenuItem miDisHop = new MenuItem(mPop, SWT.NONE);
-                if (hi.isEnabled())
-                    miDisHop.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
-                else
-                    miDisHop.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
-                MenuItem miDelHop = new MenuItem(mPop, SWT.NONE);
-                miDelHop.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteHop")); //$NON-NLS-1$
+            	
+    				PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
+    				if( menu != null ) {
+    					setCurrentHop( hi );
+    				
+    					MenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
+    					if( item != null ) {
+    						if (hi.isEnabled()) {
+    							item.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
+    						} else {
+    							item.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
+    						}
+    					}
 
-                miEditHop.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        selrect = null;
-                        editHop(hi);
-                    }
-                });
-                miFlipHop.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        selrect = null;
+    					menu.addMenuListener( "trans-graph-hop-edit", this, "editHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-flip", this, "flipHopDirection" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+    					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-                        hi.flip();
+    					canvas.setMenu(menu.getSwtMenu());
 
-                        if (transMeta.hasLoop(hi.getFromStep()))
-                        {
-                            spoon.refreshGraph();
-                            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Message")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Title")); //$NON-NLS-1$
-                            mb.open();
+    				}
 
-                            hi.flip();
-                            spoon.refreshGraph();
-                        }
-                        else
-                        {
-                            hi.setChanged();
-                            spoon.refreshGraph();
-                            spoon.refreshTree();
-                            spoon.setShellText();
-                        }
-                    }
-                });
-                miDisHop.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        selrect = null;
-                        TransHopMeta before = (TransHopMeta) hi.clone();
-                        hi.setEnabled(!hi.isEnabled());
-                        if (transMeta.hasLoop(hi.getToStep()))
-                        {
-                            hi.setEnabled(!hi.isEnabled());
-                            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Message")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Title")); //$NON-NLS-1$
-                            mb.open();
-                        }
-                        else
-                        {
-                            TransHopMeta after = (TransHopMeta) hi.clone();
-                            spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hi) });
-                            spoon.refreshGraph();
-                            spoon.refreshTree();
-                        }
-                    }
-                });
-                miDelHop.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        selrect = null;
-                        int idx = transMeta.indexOfTransHop(hi);
-                        spoon.addUndoDelete(transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
-                        transMeta.removeTransHop(idx);
-                        spoon.refreshTree();
-                        spoon.refreshGraph();
-                    }
-                });
-                canvas.setMenu(mPop);
             }
             else
             {
-                // Clicked on the background: maybe we hit a note?
-                final NotePadMeta ni = transMeta.getNote(x, y);
-                if (ni != null) // A note
-                {
-                    // Delete note
-                    // Edit note
-                    MenuItem miNoteEdit = new MenuItem(mPop, SWT.NONE);
-                    miNoteEdit.setText(Messages.getString("SpoonGraph.PopupMenu.EditNote")); //$NON-NLS-1$
-                    MenuItem miNoteDel = new MenuItem(mPop, SWT.NONE);
-                    miNoteDel.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteNote")); //$NON-NLS-1$
+            	
+				// Clicked on the background: maybe we hit a note?
+				final NotePadMeta ni = transMeta.getNote(x, y);
+				setCurrentNote( ni );
+				if (ni!=null)
+				{
 
-                    miNoteEdit.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            selrect = null;
-                            editNote(ni);
-                        }
-                    });
-                    miNoteDel.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            selrect = null;
-                            int idx = transMeta.indexOfNote(ni);
-                            if (idx >= 0)
-                            {
-                                transMeta.removeNote(idx);
-                                spoon.addUndoDelete(transMeta, new NotePadMeta[] { (NotePadMeta) ni.clone() }, new int[] { idx });
-                                redraw();
-                            }
-                        }
-                    });
+					PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-note" ); //$NON-NLS-1$
+					if( menu != null ) {
+					
+						menu.addMenuListener( "trans-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+		                canvas.setMenu(menu.getSwtMenu());
 
-                    canvas.setMenu(mPop);
-                }
+					}
+				}
                 else
                 {
-                	// No step, hop or note: clicked on the background....
-                    MenuItem miNoteNew = new MenuItem(mPop, SWT.NONE);
-                    miNoteNew.setText(Messages.getString("SpoonGraph.PopupMenu.NewNote")); //$NON-NLS-1$
-                    miNoteNew.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            selrect = null;
-                            String title = Messages.getString("SpoonGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
-                            String message = Messages.getString("SpoonGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
-                            EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
-                            String n = dd.open();
-                            if (n != null)
-                            {
-                                NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
-                                transMeta.addNote(npi);
-                                spoon.addUndoNew(transMeta, new NotePadMeta[] { npi }, new int[] { transMeta.indexOfNote(npi) });
-                                redraw();
-                            }
-                        }
-                    });
 
-                    MenuItem miStepNew = new MenuItem(mPop, SWT.CASCADE);
-                    miStepNew.setText(Messages.getString("SpoonGraph.PopupMenu.NewStep")); //$NON-NLS-1$
-                    Menu mStep = new Menu(miStepNew);
+					PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-background" ); //$NON-NLS-1$
+					if( menu != null ) {
+					
+						menu.addMenuListener( "trans-graph-background-new-note", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-background-new-step", this, "pasteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-background-paste", this, "paste" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-background-settings", this, "settings" ); //$NON-NLS-1$ //$NON-NLS-2$
+						
+						
+	                    final String clipcontent = spoon.fromClipboard();
+	                    MenuChoice item  = menu.getMenuItemById( "trans-graph-background-paste" ); //$NON-NLS-1$
+	                    if( item != null ) {
+	                    		item.setEnabled( clipcontent != null );
+	                    }
 
-                    StepLoader steploader = StepLoader.getInstance();
-                    final StepPlugin sp[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-                    for (int i = 0; i < sp.length; i++)
-                    {
-                        // System.out.println("Add step type :
-                        // "+sp[i].getDescription());
+	                    Menu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
+	                    if( subMenu.getItemCount() == 0 ) {
+	                        StepLoader steploader = StepLoader.getInstance();
+	                        final StepPlugin sp[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+	                        for (int i = 0; i < sp.length; i++)
+	                        {
+	                	        		XulMessages xulMessages = new XulMessages();
+	                	        		final String name = sp[i].getDescription();
+	                        		new MenuChoice( subMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
+	                        		menu.addMenuListener( name, this, "newStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+	                        		
+	                        }	                    	
+	                    }
+	                    
+		                canvas.setMenu(menu.getSwtMenu());
 
-                        MenuItem miStepX = new MenuItem(mStep, SWT.NONE);
-                        miStepX.setText(sp[i].getDescription());
+					}
 
-                        final String description = sp[i].getDescription();
-                        miStepX.addSelectionListener(new SelectionAdapter()
-                        {
-                            public void widgetSelected(SelectionEvent e)
-                            {
-                                StepMeta stepMeta = spoon.newStep(transMeta, description, description, false, true);
-                                stepMeta.setLocation(mousex, mousey);
-                                stepMeta.setDraw(true);
-                                redraw();
-                            }
-                        });
-                    }
-
-                    MenuItem miPasteStep = new MenuItem(mPop, SWT.NONE);
-                    miPasteStep.setText(Messages.getString("SpoonGraph.PopupMenu.PasteStepFromClipboard")); //$NON-NLS-1$
-
-                    final String clipcontent = spoon.fromClipboard();
-                    if (clipcontent == null) miPasteStep.setEnabled(false);
-                    // Past steps on the clipboard to the transformation...
-                    miPasteStep.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            Point loc = new Point(mousex, mousey);
-                            spoon.pasteXML(transMeta, clipcontent, loc);
-                        }
-                    });
-
-                    miStepNew.setMenu(mStep);
-
-                    // Transformation settings
-                    new MenuItem(mPop, SWT.SEPARATOR);
-                    MenuItem miSettings = new MenuItem(mPop, SWT.NONE);
-                    miSettings.setText(Messages.getString("SpoonGraph.PopupMenu.Settings"));
-                    miSettings.addSelectionListener(new SelectionAdapter()
-                    {
-                        public void widgetSelected(SelectionEvent e)
-                        {
-                            spoon.editTransformationProperties(transMeta);
-                        }
-                    });
-
-                    canvas.setMenu(mPop);
                 }
             }
         }
@@ -1825,8 +1688,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private void setToolTip(int x, int y)
     {
-    	if (Const.isLinux()) return; // TODO fix the need for this exit point by getting updated libs when SWT 3.3 goes GA
-    	
         String newTip=null;
         
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
@@ -2149,38 +2010,43 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List<? extends GUIPositionInterface> elements = transMeta.getSelectedDrawnStepsList();
+        List<GUIPositionInterface> elements = transMeta.getSelectedDrawnStepsList();
         int[] indices = transMeta.getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
 
         return new SnapAllignDistribute(transMeta, elements, indices, spoon, this);
     }
     
+    public void snaptogrid()
+    {
+    		snaptogrid( Const.GRID_SIZE );
+    	}
+
     private void snaptogrid(int size)
     {
         createSnapAllignDistribute().snaptogrid(size);
     }
 
-    private void allignleft()
+    public void allignleft()
     {
         createSnapAllignDistribute().allignleft();
     }
 
-    private void allignright()
+    public void allignright()
     {
         createSnapAllignDistribute().allignright();
     }
 
-    private void alligntop()
+    public void alligntop()
     {
         createSnapAllignDistribute().alligntop();
     }
 
-    private void allignbottom()
+    public void allignbottom()
     {
         createSnapAllignDistribute().allignbottom();
     }
 
-    private void distributehorizontal()
+    public void distributehorizontal()
     {
         createSnapAllignDistribute().distributehorizontal();
     }
@@ -2333,22 +2199,22 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return transMeta.hasChanged();
     }
 
-    public List<CheckResult> getRemarks()
+    public ArrayList getRemarks()
     {
         return remarks;
     }
 
-    public void setRemarks(List<CheckResult> remarks)
+    public void setRemarks(ArrayList remarks)
     {
         this.remarks = remarks;
     }
 
-    public List<DatabaseImpact> getImpact()
+    public ArrayList getImpact()
     {
         return impact;
     }
 
-    public void setImpact(List<DatabaseImpact> impact)
+    public void setImpact(ArrayList impact)
     {
         this.impact = impact;
     }
