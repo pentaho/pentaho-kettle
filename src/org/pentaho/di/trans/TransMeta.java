@@ -554,7 +554,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public DatabaseMeta getDatabase(int i)
     {
-        return (DatabaseMeta) databases.get(i);
+        return databases.get(i);
     }
 
     /**
@@ -575,7 +575,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public StepMeta getStep(int i)
     {
-        return (StepMeta) steps.get(i);
+        return steps.get(i);
     }
 
     /**
@@ -586,7 +586,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public TransHopMeta getTransHop(int i)
     {
-        return (TransHopMeta) hops.get(i);
+        return hops.get(i);
     }
 
     /**
@@ -597,7 +597,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public NotePadMeta getNote(int i)
     {
-        return (NotePadMeta) notes.get(i);
+        return notes.get(i);
     }
 
     /**
@@ -608,7 +608,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public TransDependency getDependency(int i)
     {
-        return (TransDependency) dependencies.get(i);
+        return dependencies.get(i);
     }
 
     /* (non-Javadoc)
@@ -1304,7 +1304,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         s = steps.size();
         for (i = s - 1; i >= 0; i--) // Back to front because drawing goes from start to end
         {
-            StepMeta stepMeta = (StepMeta) steps.get(i);
+            StepMeta stepMeta = steps.get(i);
             if (partOfTransHop(stepMeta) || stepMeta.isDrawn()) // Only consider steps from active or inactive hops!
             {
                 Point p = stepMeta.getLocation();
@@ -1330,7 +1330,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         s = notes.size();
         for (i = s - 1; i >= 0; i--) // Back to front because drawing goes from start to end
         {
-            NotePadMeta ni = (NotePadMeta) notes.get(i);
+            NotePadMeta ni = notes.get(i);
             Point loc = ni.getLocation();
             Point p = new Point(loc.x, loc.y);
             if (x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN) { return ni; }
@@ -1752,7 +1752,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
-                PartitionSchema partitionSchema = (PartitionSchema) partitionSchemas.get(i);
+                PartitionSchema partitionSchema = partitionSchemas.get(i);
                 // See if this transformation really is a consumer of this object
                 // It might be simply loaded as a shared object from the repository
                 //
@@ -1765,7 +1765,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
-                SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+                SlaveServer slaveServer = slaveServers.get(i);
                 boolean isUsedByTransformation = isUsingSlaveServer(slaveServer);
                 slaveServer.saveRep(rep, getID(), isUsedByTransformation);
             }
@@ -1775,7 +1775,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
-                ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+                ClusterSchema clusterSchema = clusterSchemas.get(i);
                 boolean isUsedByTransformation = isUsingClusterSchema(clusterSchema);
                 clusterSchema.saveRep(rep, getID(), isUsedByTransformation);
             }
@@ -2417,7 +2417,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < partitionSchemas.size(); i++)
         {
-            PartitionSchema partitionSchema = (PartitionSchema) partitionSchemas.get(i);
+            PartitionSchema partitionSchema = partitionSchemas.get(i);
             retval.append(partitionSchema.getXML());
         }
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
@@ -2427,7 +2427,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < slaveServers.size(); i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
         }
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_SLAVESERVERS)).append(Const.CR); //$NON-NLS-1$
@@ -2437,7 +2437,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < clusterSchemas.size(); i++)
         {
-            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+            ClusterSchema clusterSchema = clusterSchemas.get(i);
             retval.append(clusterSchema.getXML());
         }
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_CLUSTERSCHEMAS)).append(Const.CR); //$NON-NLS-1$
@@ -3185,11 +3185,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         for (int i = 0; i < partitionSchemas.size(); i++)
         {
-            ((PartitionSchema)partitionSchemas.get(i)).setChanged(false);
+            partitionSchemas.get(i).setChanged(false);
         }
         for (int i = 0; i < clusterSchemas.size(); i++)
         {
-            ((ClusterSchema)clusterSchemas.get(i)).setChanged(false);
+            clusterSchemas.get(i).setChanged(false);
         }
     }
 
@@ -3269,7 +3269,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         for (int i = 0; i < partitionSchemas.size(); i++)
         {
-            PartitionSchema ps = (PartitionSchema) partitionSchemas.get(i);
+            PartitionSchema ps = partitionSchemas.get(i);
             if (ps.hasChanged()) return true;
         }
 
@@ -3285,7 +3285,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         for (int i = 0; i < clusterSchemas.size(); i++)
         {
-            ClusterSchema cs = (ClusterSchema) clusterSchemas.get(i);
+            ClusterSchema cs = clusterSchemas.get(i);
             if (cs.hasChanged()) return true;
         }
 
@@ -3744,7 +3744,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         undo_position--;
 
@@ -3760,7 +3760,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         if (undo.size() == 0 || undo_position < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         return retval;
     }
@@ -3774,7 +3774,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         if (undo.size() == 0 || undo_position - 1 < 0) return null; // No undo left!
 
-        TransAction retval = (TransAction) undo.get(undo_position - 1);
+        TransAction retval = undo.get(undo_position - 1);
 
         return retval;
     }
@@ -3791,7 +3791,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
         undo_position++;
 
-        TransAction retval = (TransAction) undo.get(undo_position);
+        TransAction retval = undo.get(undo_position);
 
         return retval;
     }
@@ -3806,7 +3806,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         int size = undo.size();
         if (size == 0 || undo_position >= size - 1) return null; // no redo left...
 
-        TransAction retval = (TransAction) undo.get(undo_position + 1);
+        TransAction retval = undo.get(undo_position + 1);
 
         return retval;
     }
@@ -4154,7 +4154,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         List<SQLStatement> stats = getSQLStatements();
         for (int i = 0; i < stats.size(); i++)
         {
-            SQLStatement stat = (SQLStatement) stats.get(i);
+            SQLStatement stat = stats.get(i);
             if (!stat.hasError() && stat.hasSQL())
             {
                 sql += stat.getSQL();
@@ -4395,7 +4395,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             {
                 for(ValueMetaInterface v:values.keySet())
                 {
-                    String message = (String) values.get(v);
+                    String message = values.get(v);
                     CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description",v.getName() , message ,v.getOrigin() ), findStep(v.getOrigin())); //$NON-NLS-1$
                     remarks.add(cr);
                 }
@@ -5168,7 +5168,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         // Look around in the strings, see what we find...
         for (int i=0;i<stringList.size();i++)
         {
-            StringSearchResult result = (StringSearchResult) stringList.get(i);
+            StringSearchResult result = stringList.get(i);
             StringUtil.getUsedVariables(result.getString(), varList, false);
         }
 
@@ -5232,7 +5232,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         String names[] = new String[partitionSchemas.size()];
         for (int i=0;i<names.length;i++)
         {
-            names[i] = ((PartitionSchema)partitionSchemas.get(i)).getName();
+            names[i] = partitionSchemas.get(i).getName();
         }
         return names;
     }
@@ -5303,7 +5303,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         String[] names = new String[clusterSchemas.size()];
         for (int i=0;i<names.length;i++)
         {
-            names[i] = ((ClusterSchema)clusterSchemas.get(i)).getName();
+            names[i] = clusterSchemas.get(i).getName();
         }
         return names;
     }
@@ -5317,7 +5317,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         for (int i=0;i<partitionSchemas.size();i++)
         {
-            PartitionSchema schema = (PartitionSchema)partitionSchemas.get(i);
+            PartitionSchema schema = partitionSchemas.get(i);
             if (schema.getName().equalsIgnoreCase(name)) return schema;
         }
         return null;
@@ -5332,7 +5332,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     {
         for (int i=0;i<clusterSchemas.size();i++)
         {
-            ClusterSchema schema = (ClusterSchema)clusterSchemas.get(i);
+            ClusterSchema schema = clusterSchemas.get(i);
             if (schema.getName().equalsIgnoreCase(name)) return schema;
         }
         return null;
@@ -5353,7 +5353,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         else
         {
-            PartitionSchema previous = (PartitionSchema) partitionSchemas.get(index);
+            PartitionSchema previous = partitionSchemas.get(index);
             previous.replaceMeta(partitionSchema);
         }
         setChanged();
@@ -5374,7 +5374,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         else
         {
-            SlaveServer previous = (SlaveServer) slaveServers.get(index);
+            SlaveServer previous = slaveServers.get(index);
             previous.replaceMeta(slaveServer);
         }
         setChanged();
@@ -5395,7 +5395,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         else 
         {
-            ClusterSchema previous = (ClusterSchema) clusterSchemas.get(index);
+            ClusterSchema previous = clusterSchemas.get(index);
             previous.replaceMeta(clusterSchema);
         }
         setChanged();

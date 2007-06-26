@@ -342,7 +342,7 @@ public class StepLoader
                     else
                     {
                          // Construct a new URLClassLoader based on this one...
-                        ucl = (URLClassLoader) classLoaders.get(sp.getID()); 
+                        ucl = classLoaders.get(sp.getID()); 
                         if (ucl==null)
                         {
                             ucl = new KettleURLClassLoader(urls, classLoader, sp.getDescription());
@@ -403,7 +403,7 @@ public class StepLoader
         int nr = 0;
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.getType() == type || type == StepPlugin.TYPE_ALL) nr++;
         }
         return nr;
@@ -414,7 +414,7 @@ public class StepLoader
         int nr = 0;
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.getType() == type || type == StepPlugin.TYPE_ALL)
             {
                 if (nr == position) return sp;
@@ -446,7 +446,7 @@ public class StepLoader
     {
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.handles(stepid)) return sp;
         }
         return null;
@@ -461,7 +461,7 @@ public class StepLoader
     {
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.getDescription(locale).equalsIgnoreCase(description)) 
             {
                 return sp;
@@ -534,7 +534,7 @@ public class StepLoader
         int nr = 0;
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.getCategory().equalsIgnoreCase(category)) nr++;
         }
         return nr;
@@ -545,7 +545,7 @@ public class StepLoader
         int nr = 0;
         for (int i = 0; i < pluginList.size(); i++)
         {
-            StepPlugin sp = (StepPlugin) pluginList.get(i);
+            StepPlugin sp = pluginList.get(i);
             if (sp.getCategory().equalsIgnoreCase(category))
             {
                 if (nr == position) return sp;

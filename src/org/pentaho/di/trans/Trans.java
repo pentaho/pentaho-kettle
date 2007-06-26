@@ -314,7 +314,7 @@ public class Trans implements VariableSpace
 		// First allocate all the rowsets required!
 		for (int i=0;i<hopsteps.size();i++)
 		{
-			StepMeta thisStep=(StepMeta)hopsteps.get(i);
+			StepMeta thisStep=hopsteps.get(i);
 			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
 			int nrTargets = transMeta.findNrNextSteps(thisStep);
@@ -383,7 +383,7 @@ public class Trans implements VariableSpace
 		// Allocate the steps & the data...
 		for (int i=0;i<hopsteps.size();i++)
 		{
-			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
+			StepMeta stepMeta=hopsteps.get(i);
 			String stepid = stepMeta.getStepID();
 
 			log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -454,7 +454,7 @@ public class Trans implements VariableSpace
         //
         for (int s=0;s<steps.size();s++)
         {
-            StepMetaDataCombi combi = (StepMetaDataCombi) steps.get(s);
+            StepMetaDataCombi combi = steps.get(s);
             if (combi.stepMeta.isDoingErrorHandling())
             {
                 StepErrorMeta stepErrorMeta = combi.stepMeta.getStepErrorMeta();
@@ -462,7 +462,7 @@ public class Trans implements VariableSpace
                 boolean stop=false;
                 for (int rowsetNr=0;rowsetNr<baseStep.outputRowSets.size() && !stop;rowsetNr++)
                 {
-                    RowSet outputRowSet = (RowSet) baseStep.outputRowSets.get(rowsetNr);
+                    RowSet outputRowSet = baseStep.outputRowSets.get(rowsetNr);
                     if (outputRowSet.getDestinationStepName().equalsIgnoreCase(stepErrorMeta.getTargetStep().getName()))
                     {
                         // This is the rowset to move!
@@ -493,7 +493,7 @@ public class Trans implements VariableSpace
 		{
 			for (int i=0;i<steps.size();i++)
 			{
-				StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+				StepMetaDataCombi sid = steps.get(i);
 
 				BaseStep rt=(BaseStep)sid.step;
 				for (int x=0;x<preview_steps.length;x++)
@@ -511,7 +511,7 @@ public class Trans implements VariableSpace
         //
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            StepMetaDataCombi sid = steps.get(i);
 
             StepMeta stepMeta = sid.stepMeta;
             BaseStep baseStep = (BaseStep)sid.step;
@@ -617,7 +617,7 @@ public class Trans implements VariableSpace
         // Initialize all the threads...
 		for (int i=0;i<steps.size();i++)
 		{
-			final StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
+			final StepMetaDataCombi sid=steps.get(i);
             
             // Do the init code in the background!
             // Init all steps at once, but ALL steps need to finish before we can continue properly!
@@ -699,7 +699,7 @@ public class Trans implements VariableSpace
         // Now start all the threads...
         for (int i=0;i<steps.size();i++)
         {
-            final StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            final StepMetaDataCombi sid = steps.get(i);
             sid.step.markStart();
             sid.step.start();
         }
@@ -756,7 +756,7 @@ public class Trans implements VariableSpace
 
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			if (sid.step.getErrors()!=0L) errors++;
 		}
 		if (errors>0) log.logError(toString(), Messages.getString("Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
@@ -772,7 +772,7 @@ public class Trans implements VariableSpace
 
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			
             BaseStep thr=(BaseStep)sid.step;
             StepDataInterface data = sid.data;
@@ -806,7 +806,7 @@ public class Trans implements VariableSpace
 		
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			BaseStep thr = (BaseStep)sid.step;
 
 			log.logBasic(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
@@ -837,7 +837,7 @@ public class Trans implements VariableSpace
 
 		for (i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			thr=(BaseStep)sid.step;
 			proc=thr.getProcessed();
 			if (seconds!=0)
@@ -875,7 +875,7 @@ public class Trans implements VariableSpace
 
 		if (i<=0) return 0L;
 
-		StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+		StepMetaDataCombi sid = steps.get(i);
 		thr=(BaseStep)sid.step;
 
 		return thr.getProcessed();
@@ -890,7 +890,7 @@ public class Trans implements VariableSpace
 		for (int i=0;i<rowsets.size();i++)
 		{
 			//log.logDetailed("DIS: looking for RowSet ["+rowsetname+"] in nr "+i+" of "+threads.size()+" threads...");
-			RowSet rs=(RowSet)rowsets.get(i);
+			RowSet rs=rowsets.get(i);
 			if (rs.getName().equalsIgnoreCase(rowsetname)) return rs;
 		}
 
@@ -905,7 +905,7 @@ public class Trans implements VariableSpace
 		// Start with the transformation.
 		for (int i=0;i<rowsets.size();i++)
 		{
-			RowSet rs=(RowSet)rowsets.get(i);
+			RowSet rs=rowsets.get(i);
 			if (rs.getOriginStepName().equalsIgnoreCase(from) &&
 			    rs.getDestinationStepName().equalsIgnoreCase(to) &&
 			    rs.getOriginStepCopy() == fromcopy &&
@@ -926,7 +926,7 @@ public class Trans implements VariableSpace
 		//log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			boolean started=(sid.stepname!=null && sid.stepname.equalsIgnoreCase(sname)) && sid.copy==copy;
 			if (started) return true;
 		}
@@ -944,7 +944,7 @@ public class Trans implements VariableSpace
 		//log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt=(BaseStep)sid.step;
 			rt.stopped=true;
 
@@ -975,7 +975,7 @@ public class Trans implements VariableSpace
 		int nr = 0;
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			if ( sid.step.isAlive() ) nr++;
 		}
 		return nr;
@@ -984,7 +984,7 @@ public class Trans implements VariableSpace
 	public BaseStep getRunThread(int i)
 	{
 		if (steps==null) return null;
-		StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+		StepMetaDataCombi sid = steps.get(i);
 		return (BaseStep)sid.step;
 	}
 
@@ -996,7 +996,7 @@ public class Trans implements VariableSpace
 
 		for( i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt = (BaseStep)sid.step;
 			if (rt.getStepname().equalsIgnoreCase(name) && rt.getCopy()==copy)
 			{
@@ -1012,7 +1012,7 @@ public class Trans implements VariableSpace
 		int i;
 		for (i=0;i<rowsets.size();i++)
 		{
-			RowSet rs = (RowSet)rowsets.get(i);
+			RowSet rs = rowsets.get(i);
 			BaseStep from = getRunThread(rs.getOriginStepName(), rs.getOriginStepCopy());
 			BaseStep to   = getRunThread(rs.getDestinationStepName()  , rs.getDestinationStepCopy()  );
 			rs.setThreadFromTo(from, to);
@@ -1281,7 +1281,7 @@ public class Trans implements VariableSpace
 
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt = (BaseStep)sid.step;
 
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
@@ -1383,7 +1383,7 @@ public class Trans implements VariableSpace
 
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt = (BaseStep)sid.step;
 			if (rt.getStepname().equalsIgnoreCase(name)) return rt;
 		}
@@ -1396,7 +1396,7 @@ public class Trans implements VariableSpace
 
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            StepMetaDataCombi sid = steps.get(i);
             BaseStep rt = (BaseStep)sid.step;
             if (rt.getStepname().equalsIgnoreCase(name)) return sid.data;
         }
@@ -1569,7 +1569,7 @@ public class Trans implements VariableSpace
         // Look in threads and find the MappingInput step thread...
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
+            StepMetaDataCombi smdc = steps.get(i);
             StepInterface step = smdc.step;
             if (step.getStepID().equalsIgnoreCase("MappingInput")) //$NON-NLS-1$
                 return (MappingInput)step;
@@ -1584,7 +1584,7 @@ public class Trans implements VariableSpace
         // Look in threads and find the MappingInput step thread...
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
+            StepMetaDataCombi smdc = steps.get(i);
             StepInterface step = smdc.step;
             if (step.getStepID().equalsIgnoreCase("MappingOutput")) //$NON-NLS-1$
                 return (MappingOutput)step;
@@ -1637,7 +1637,7 @@ public class Trans implements VariableSpace
         // Now start all the threads...
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            StepMetaDataCombi sid = steps.get(i);
             if (sid.stepname.equalsIgnoreCase(stepname) && sid.copy==copy)
             {
                 return sid.step;
@@ -1731,7 +1731,7 @@ public class Trans implements VariableSpace
 		
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            StepMetaDataCombi sid = steps.get(i);
             if (sid.stepname.equals(stepname) && sid.copy==stepcopy) return sid.data;
         }
         return null;
@@ -1748,7 +1748,7 @@ public class Trans implements VariableSpace
 		
         for (int i=0;i<steps.size();i++)
         {
-            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            StepMetaDataCombi sid = steps.get(i);
             if (sid.data.getStatus()==StepDataInterface.STATUS_HALTED) return true;
         }
         return false;
