@@ -26,13 +26,12 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 
@@ -48,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 public class RepositoriesMeta 
 {
 	private LogWriter log;
+
 	private List<DatabaseMeta>   databases;    // Repository connections
 	private List<RepositoryMeta> repositories;   // List of repositories
 
