@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -650,8 +651,9 @@ public class JobLog extends Composite implements TabItemInterface
 	public void showErrors()
 	{
 		String all = wText.getText();
-		ArrayList<String> err = new ArrayList<String>();
-		
+
+		List<String> err = new ArrayList<String>();
+
 		int i = 0;
 		int startpos = 0;
 		int crlen = Const.CR.length();
