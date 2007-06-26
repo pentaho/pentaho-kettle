@@ -2011,7 +2011,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     private SnapAllignDistribute createSnapAllignDistribute()
     {
         List<GUIPositionInterface> elements = transMeta.getSelectedDrawnStepsList();
-        int[] indices = transMeta.getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
+        int[] indices = transMeta.getStepIndexes(elements.toArray(new StepMeta[elements.size()]));
 
         return new SnapAllignDistribute(transMeta, elements, indices, spoon, this);
     }

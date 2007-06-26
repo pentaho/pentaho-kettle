@@ -293,7 +293,7 @@ public class TransHistory extends Composite implements TabItemInterface
                             // OK, now that we have a series of rows, we can add them to the table view...
                             for (int i=0;i<rowList.size();i++)
                             {
-                                RowMetaAndData row = (RowMetaAndData) rowList.get(i);
+                                RowMetaAndData row = rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_BATCH", "");
                                 if(batchID != null)
@@ -367,7 +367,7 @@ public class TransHistory extends Composite implements TabItemInterface
         if (nr>=0 && rowList!=null && nr<rowList.size())
         {
             // OK, grab this one from the buffer...
-            RowMetaAndData row = (RowMetaAndData) rowList.get(nr);
+            RowMetaAndData row = rowList.get(nr);
             try
             {
                 wText.setText(row.getString("LOG_FIELD", ""));
