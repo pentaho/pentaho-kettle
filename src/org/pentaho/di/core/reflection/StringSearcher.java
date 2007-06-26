@@ -18,7 +18,7 @@ public class StringSearcher
         
         if (level>5) return;
         
-        Class baseClass = object.getClass();
+        Class<? extends Object> baseClass = object.getClass();
         Field[] fields = baseClass.getDeclaredFields();
         for (int i=0;i<fields.length;i++)
         {
@@ -142,7 +142,7 @@ public class StringSearcher
         }        
     }
 
-    private static Method findMethod(Class baseClass, String name)
+    private static Method findMethod(Class<? extends Object> baseClass, String name)
     {
         // baseClass.getMethod(methodName[m], null);
         Method[] methods = baseClass.getDeclaredMethods();
@@ -173,12 +173,20 @@ public class StringSearcher
 
     }
 
+<<<<<<< .mine
     private static Method searchGetter(String getter, Class<?> baseClass, Method[] methods)
+=======
+    private static Method searchGetter(String getter, Class<?> baseClass, Method[] methods)
+>>>>>>> .r3758
     {
         Method method =null;
         try
         {
+<<<<<<< .mine
+            method=baseClass.getMethod(getter, (Class)null);
+=======
             method=baseClass.getMethod(getter);
+>>>>>>> .r3758
         }
         catch(Exception e)
         {
