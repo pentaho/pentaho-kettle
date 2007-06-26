@@ -54,7 +54,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
+import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -3498,7 +3498,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         {
             StepMeta stepMeta = getStep(i);
             Point a = stepMeta.getLocation();
-            if (rect.contains(a)) stepMeta.setSelected(true);
+            if (rect.contains(a.x, a.y)) stepMeta.setSelected(true);
         }
 
         for (int i = 0; i < nrNotes(); i++)
@@ -3506,7 +3506,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             NotePadMeta ni = getNote(i);
             Point a = ni.getLocation();
             Point b = new Point(a.x + ni.width, a.y + ni.height);
-            if (rect.contains(a) && rect.contains(b)) ni.setSelected(true);
+            if (rect.contains(a.x, a.y) && rect.contains(b.x, b.y)) ni.setSelected(true);
         }
     }
 

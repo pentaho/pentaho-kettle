@@ -64,7 +64,7 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
+import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;

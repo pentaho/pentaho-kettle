@@ -88,19 +88,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.pentaho.xul.swt.menu.Menu;
-import org.pentaho.xul.swt.menu.MenuBar;
-import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.MenuItem;
-import org.pentaho.xul.swt.menu.MenuItemSeparator;
-import org.pentaho.xul.swt.menu.MenuObject;
-import org.pentaho.xul.swt.menu.PopupMenu;
-import org.pentaho.xul.swt.tab.TabItem;
-import org.pentaho.xul.swt.tab.TabListener;
-import org.pentaho.xul.swt.tab.TabSet;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.dialog.ClusterSchemaDialog;
@@ -237,6 +224,18 @@ import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
+import org.pentaho.xul.swt.menu.Menu;
+import org.pentaho.xul.swt.menu.MenuBar;
+import org.pentaho.xul.swt.menu.MenuChoice;
+import org.pentaho.xul.swt.menu.MenuItem;
+import org.pentaho.xul.swt.menu.MenuItemSeparator;
+import org.pentaho.xul.swt.menu.MenuObject;
+import org.pentaho.xul.swt.menu.PopupMenu;
+import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabListener;
+import org.pentaho.xul.swt.tab.TabSet;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -880,12 +879,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
         RowMetaAndData allVars = new RowMetaAndData();
         
-        Enumeration keys = kettleVariables.getProperties().keys();
-        while (keys.hasMoreElements())
+        for (String key : kettleVariables.getProperties().keySet())
         {
-            String key = (String) keys.nextElement();
             String value = kettleVariables.getVariable(key);
-                       
             allVars.addValue(new ValueMeta(key, ValueMetaInterface.TYPE_STRING), value);
         }
         
@@ -1182,7 +1178,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         try
         {
             File file = new File(FILE_WELCOME_PAGE);
-            addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURL().toString()); // ./docs/English/tips/index.htm
+            addSpoonBrowser(STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString()); // ./docs/English/tips/index.htm
         }
         catch (MalformedURLException e1)
         {
