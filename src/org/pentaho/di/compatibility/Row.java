@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  * @see Value
  *
  */
-public class Row implements XMLInterface, Comparable, Serializable
+public class Row implements XMLInterface, Comparable<Row>, Serializable
 {
     public static final String XML_TAG = "row";
     
@@ -126,6 +126,43 @@ public class Row implements XMLInterface, Comparable, Serializable
     public void addValue(int idx, Value v)
     {
         list.add(idx, v);
+    }
+
+    /**
+     * Add an object to the row.
+     *
+     * @param obj the object to add
+     *
+     * @deprecated
+     */
+    public void add(Object obj)
+    {
+        list.add((Value)obj);
+    }
+
+    /**
+     * Get an object from the row.
+     *
+     * @param idx the index to get the object from
+     * @return the object
+     *
+     * @deprecated
+     */
+    public Object get(int idx)
+    {
+        return list.get(idx);
+    }
+
+    /**
+     * Remove an object in the row on index idx.
+     *
+     * @param idx The object to remove
+     *
+     * @deprecated
+     */
+    public void remove(int idx)
+    {
+        list.remove(idx);
     }
 
 	/**
@@ -644,9 +681,9 @@ public class Row implements XMLInterface, Comparable, Serializable
 		return 0;
 	}
 
-    public int compareTo(Object obj)
+    public int compareTo(Row obj)
     {
-        return compare((Row)obj);
+        return compare(obj);
     }
 
 	public boolean equals(Object r)
