@@ -21,7 +21,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -47,7 +47,7 @@ public class JoinRowsData extends BaseStepData implements StepDataInterface
 	public int             position[];
 	public boolean         restart[];
 	public RowSet          rs[];
-	public ArrayList       cache[];
+	public List<Object[]>  cache[];
 	
 	public boolean         caching;
 

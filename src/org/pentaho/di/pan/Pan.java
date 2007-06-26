@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -52,7 +53,7 @@ public class Pan
 	{
 		EnvUtil.environmentInit();
 		
-	    ArrayList args = new ArrayList();
+	    List<String> args = new ArrayList<String>();
 	    for (int i=0;i<a.length;i++) 
 	    {
 	        if (a[i].length()>0) 

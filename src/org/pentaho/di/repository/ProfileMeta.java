@@ -15,13 +15,13 @@
  
 package org.pentaho.di.repository;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 
 /*
@@ -36,20 +36,20 @@ public class ProfileMeta
 	private String name;        // Long name
 	private String description; // Description
 	
-	private ArrayList permissions; // List of permissions in this profile...
+	private List<PermissionMeta> permissions; // List of permissions in this profile...
 
 	public ProfileMeta(String name, String description)
 	{
 		this.name = name;
 		this.description = description;
-		this.permissions = new ArrayList();
+		this.permissions = new ArrayList<PermissionMeta>();
 	}
 
 	public ProfileMeta()
 	{
 		this.name = null;
 		this.description = null;
-		this.permissions = new ArrayList();
+		this.permissions = new ArrayList<PermissionMeta>();
 	}
 	
 	public ProfileMeta(Repository rep, long id_profile)
@@ -68,7 +68,7 @@ public class ProfileMeta
 				
 				// System.out.println("Profile "+name+" has "+pid.length+" permissions.");
 				
-				permissions = new ArrayList();
+				permissions = new ArrayList<PermissionMeta>();
 			
 				for (int i=0;i<pid.length;i++)
 				{

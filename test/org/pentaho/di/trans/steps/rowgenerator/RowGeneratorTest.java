@@ -69,9 +69,9 @@ public class RowGeneratorTest extends TestCase
 		return rm;
 	}
 	
-	public List createData()
+	public List<RowMetaAndData> createData()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		

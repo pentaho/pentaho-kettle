@@ -16,7 +16,7 @@
 
 package org.pentaho.di.trans.steps.mapping;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -38,8 +38,8 @@ public class MappingData extends BaseStepData implements StepDataInterface
     public Trans trans;
     public MappingInput  mappingInput;
     public MappingOutput mappingOutput;
-	public ArrayList renameFieldIndexes;
-	public ArrayList renameFieldNames;
+	public List<Integer> renameFieldIndexes;
+	public List<String>  renameFieldNames;
     public boolean wasStarted;
     public TransMeta mappingTransMeta;
     public RowMetaInterface outputRowMeta;

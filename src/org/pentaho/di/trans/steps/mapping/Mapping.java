@@ -131,8 +131,8 @@ public class Mapping extends BaseStep implements StepInterface
             data.wasStarted = true;
             
             // Now we continue with out regular program... 
-			data.renameFieldIndexes = new ArrayList();
-			data.renameFieldNames   = new ArrayList();
+			data.renameFieldIndexes = new ArrayList<Integer>();
+			data.renameFieldNames   = new ArrayList<String>();
 			
             // See if the same field get's mapped to a different target multiple times
             // To do this, we simply check if the inputFields contains doubles.

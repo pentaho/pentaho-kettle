@@ -395,6 +395,7 @@ public class Translator
         }
     }
     
+    @SuppressWarnings("unchecked")
     public void refreshGrid()
     {
         try

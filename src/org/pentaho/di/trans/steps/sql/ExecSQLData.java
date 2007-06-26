@@ -20,7 +20,7 @@ public class ExecSQLData extends BaseStepData implements StepDataInterface
 	public Database db;
     public Result   result;
     public int[]    argumentIndexes;
-    public List     markerPositions;
+    public List<Integer>     markerPositions;
     public RowMetaInterface outputRowMeta;
 	
 	public ExecSQLData()

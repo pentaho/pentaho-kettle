@@ -1070,9 +1070,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
             // What is the smallest?
             // Take the second, not the fist in the list, otherwise we would be removing a single entry = not good.
             if (samples.size()>1) {
-            	data.smallestCacheKey = ((Long) samples.get(1)).longValue();
+            	data.smallestCacheKey = samples.get(1);
             } else { // except when there is only one sample
-            	data.smallestCacheKey = ((Long) samples.get(0)).longValue();
+            	data.smallestCacheKey = samples.get(0);
             }
             
             // Remove anything in the cache <= smallest.

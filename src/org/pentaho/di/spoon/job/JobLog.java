@@ -650,7 +650,7 @@ public class JobLog extends Composite implements TabItemInterface
 	public void showErrors()
 	{
 		String all = wText.getText();
-		ArrayList err = new ArrayList();
+		ArrayList<String> err = new ArrayList<String>();
 		
 		int i = 0;
 		int startpos = 0;

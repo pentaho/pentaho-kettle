@@ -17,7 +17,9 @@
 package org.pentaho.di.trans.steps.rowstoresult;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -30,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class RowsToResultData extends BaseStepData implements StepDataInterface 
 {
-	public ArrayList rows;
+	public List<RowMetaAndData> rows;
 	public RowMetaInterface outputRowMeta;
 	/**
 	 * 
@@ -39,7 +41,7 @@ public class RowsToResultData extends BaseStepData implements StepDataInterface
 	{
 		super();
 		
-		rows = new ArrayList();
+		rows = new ArrayList<RowMetaAndData>();
 	}
 
 }

@@ -94,7 +94,7 @@ public class SFTPClient {
 		
 		try {
 			java.util.Vector v=c.ls(".");
-			java.util.Vector o = new java.util.Vector();
+			java.util.Vector<String> o = new java.util.Vector<String>();
 			if(v!=null){
 			  for(int i=0; i<v.size(); i++){
 		    	  Object obj=v.elementAt(i);

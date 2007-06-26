@@ -74,9 +74,9 @@ public class PartitionSchemaDialog extends Dialog
     private PartitionSchema originalSchema;
     private boolean ok;
 
-    private List databases;
+    private List<DatabaseMeta> databases;
     
-	public PartitionSchemaDialog(Shell par, PartitionSchema partitionSchema, List databases)
+	public PartitionSchemaDialog(Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases)
 	{
 		super(par, SWT.NONE);
 		this.partitionSchema=(PartitionSchema) partitionSchema.clone();
@@ -263,7 +263,7 @@ public class PartitionSchemaDialog extends Dialog
     
     protected void importPartitions()
     {
-        ArrayList partitionedDatabaseNames = new ArrayList();
+        List<String> partitionedDatabaseNames = new ArrayList<String>();
         
         for (int i=0;i<databases.size();i++)
         {

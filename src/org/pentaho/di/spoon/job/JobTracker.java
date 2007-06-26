@@ -23,7 +23,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 public class JobTracker
 {
     /** The trackers for each individual job entry */
-    private List jobTrackers;
+    private List<JobTracker> jobTrackers;
     
     /** If the jobTrackers list is empty, then this is the result */
     private JobEntryResult result;
@@ -40,7 +40,7 @@ public class JobTracker
         this.jobName = jobMeta.getName();
         this.jobFilename = jobMeta.getFilename();
         
-        jobTrackers = new ArrayList();
+        jobTrackers = new ArrayList<JobTracker>();
     }
     /**
      * Creates a jobtracker with a single result
@@ -78,7 +78,7 @@ public class JobTracker
     /**
      * @param jobTrackers The jobTrackers to set.
      */
-    public void setJobTrackers(List jobTrackers)
+    public void setJobTrackers(List<JobTracker> jobTrackers)
     {
         this.jobTrackers = jobTrackers;
     }

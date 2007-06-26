@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -64,6 +65,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	 * Allocate input streams and create the temporary files...
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(JoinRowsMeta)smi;
@@ -95,18 +97,18 @@ public class JoinRows extends BaseStep implements StepInterface
 				}
 				
 				//** INPUT SIDE **
-				data.file             = new File            [inputRowSets.size()];
-				data.fileInputStream  = new FileInputStream [inputRowSets.size()];
-				data.dataInputStream  = new DataInputStream [inputRowSets.size()];
-				data.size             = new int             [inputRowSets.size()];
-				data.fileRowMeta      = new RowMetaInterface[inputRowSets.size()];
-				data.joinrow          = new Object          [inputRowSets.size()][];
-				data.rs               = new RowSet          [inputRowSets.size()];
-				data.cache            = new ArrayList       [inputRowSets.size()];
-				data.position         = new int             [inputRowSets.size()];
-				data.fileOutputStream = new FileOutputStream[inputRowSets.size()];
-				data.dataOutputStream = new DataOutputStream[inputRowSets.size()];
-				data.restart          = new boolean         [inputRowSets.size()];
+				data.file             = new File               [inputRowSets.size()];
+				data.fileInputStream  = new FileInputStream    [inputRowSets.size()];
+				data.dataInputStream  = new DataInputStream    [inputRowSets.size()];
+				data.size             = new int                [inputRowSets.size()];
+				data.fileRowMeta      = new RowMetaInterface   [inputRowSets.size()];
+				data.joinrow          = new Object             [inputRowSets.size()][];
+				data.rs               = new RowSet             [inputRowSets.size()];
+				data.cache            = new List               [inputRowSets.size()];
+				data.position         = new int                [inputRowSets.size()];
+				data.fileOutputStream = new FileOutputStream   [inputRowSets.size()];
+				data.dataOutputStream = new DataOutputStream   [inputRowSets.size()];
+				data.restart          = new boolean            [inputRowSets.size()];
 				
 				for (int i=1;i<inputRowSets.size();i++)
 				{
@@ -326,7 +328,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	    		//
 	    		if (data.size[data.filenr]<=meta.getCacheSize())
 	    		{
-	    			if (data.cache[data.filenr]==null) data.cache[data.filenr]=new ArrayList();
+	    			if (data.cache[data.filenr]==null) data.cache[data.filenr]=new ArrayList<Object[]>();
 	    			
 	    			// Add this row to the cache!
 	    			data.cache[data.filenr].add(r.getData());

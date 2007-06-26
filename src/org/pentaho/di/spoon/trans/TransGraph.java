@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -82,6 +83,7 @@ import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
+import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
@@ -160,12 +162,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     /**
      * A list of remarks on the current Transformation...
      */
-    private ArrayList remarks;
+    private List<CheckResult> remarks;
     
     /**
      * A list of impacts of the current transformation on the used databases.
      */
-    private ArrayList impact;
+    private List<DatabaseImpact> impact;
 
     /**
      * Indicates whether or not an impact analyses has already run.
@@ -190,8 +192,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         clearSettings();
         
         
-        remarks = new ArrayList();
-        impact  = new ArrayList();
+        remarks = new ArrayList<CheckResult>();
+        impact  = new ArrayList<DatabaseImpact>();
         impactFinished = false;
 
         hori = canvas.getHorizontalBar();
@@ -2331,22 +2333,22 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return transMeta.hasChanged();
     }
 
-    public ArrayList getRemarks()
+    public List<CheckResult> getRemarks()
     {
         return remarks;
     }
 
-    public void setRemarks(ArrayList remarks)
+    public void setRemarks(List<CheckResult> remarks)
     {
         this.remarks = remarks;
     }
 
-    public ArrayList getImpact()
+    public List<DatabaseImpact> getImpact()
     {
         return impact;
     }
 
-    public void setImpact(ArrayList impact)
+    public void setImpact(List<DatabaseImpact> impact)
     {
         this.impact = impact;
     }

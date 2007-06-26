@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.excelinput;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -1632,7 +1633,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	 */
 	public void getSheets()
 	{
-		ArrayList sheetnames = new ArrayList();
+		List<String> sheetnames = new ArrayList<String>();
 
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
@@ -1830,7 +1831,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             gotEncodings = true;
             
             wEncoding.removeAll();
-            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
                 Charset charSet = (Charset)values.get(i);

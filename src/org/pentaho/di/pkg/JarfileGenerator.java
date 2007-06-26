@@ -87,7 +87,7 @@ public class JarfileGenerator
     {
         for (int i=0;i<libs.length;i++)
         {
-            List commands = new ArrayList();
+            List<String> commands = new ArrayList<String>();
             commands.add("jar");
             commands.add("xf");
             commands.add("../"+libs[i]);
@@ -96,7 +96,7 @@ public class JarfileGenerator
             executeCommand(cmd, karDirectory);
         }
         
-        List commands = new ArrayList();
+        List<String> commands = new ArrayList<String>();
         commands.add("jar");
         commands.add("cf");
         commands.add(karFile.getPath());
@@ -157,13 +157,13 @@ public class JarfileGenerator
     
     private static String[] getSubdirectories(File dir)
     {
-        List directories = new ArrayList();
+        List<String> directories = new ArrayList<String>();
         File[] files = dir.listFiles();
         for (int i=0;i<files.length;i++)
         {
             if (files[i].isDirectory()) directories.add(files[i].getName());
         }
         
-        return (String[]) directories.toArray(new String[directories.size()]);
+        return directories.toArray(new String[directories.size()]);
     }
 }

@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,21 +46,21 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
  */
 public class JobEntryLoader
 {
-	private static JobEntryLoader jobEntryLoader = null;
+	private static JobEntryLoader             jobEntryLoader = null;
 	
-	private String                pluginDirectory[];
+	private String                            pluginDirectory[];
     
-	private ArrayList             pluginList;
+	private List<JobPlugin>                   pluginList;
 
-    private Hashtable             classLoaders;
+    private Hashtable<String, URLClassLoader> classLoaders;
 
-    private boolean               initialized;
+    private boolean                           initialized;
 
 	private JobEntryLoader(String plugin_directory[])
 	{
 		this.pluginDirectory = plugin_directory;
-		pluginList   = new ArrayList();
-        classLoaders = new Hashtable();
+		pluginList   = new ArrayList<JobPlugin>();
+        classLoaders = new Hashtable<String, URLClassLoader>();
         initialized  = false;
 	}
 	

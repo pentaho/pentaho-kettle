@@ -2,7 +2,7 @@
 package org.pentaho.di.core.database.dialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -10,11 +10,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.LocalVariables;
 
 
 /**
@@ -30,7 +29,7 @@ public class GetPreviewTableProgressDialog
 	private DatabaseMeta dbMeta;
 	private String tableName;
 	private int limit;
-	private ArrayList rows;
+	private List<Object[]> rows;
     private RowMetaInterface rowMeta;
 	
 	private Database db;
@@ -49,7 +48,7 @@ public class GetPreviewTableProgressDialog
         this.parentThread = Thread.currentThread();
 	}
 	
-	public ArrayList open()
+	public List<Object[]> open()
 	{
 		IRunnableWithProgress op = new IRunnableWithProgress()
 		{

@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.steps.rowstoresult;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -59,7 +60,7 @@ public class RowsToResult extends BaseStep implements StepInterface
 		}
 
 		// Add all rows to rows buffer...
-		data.rows.add(r);
+		data.rows.add( new RowMetaAndData(getInputRowMeta(), r) );
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 		meta.getFields(data.outputRowMeta, getStepname(), null);
 		putRow(data.outputRowMeta, r); // copy row to possible alternate

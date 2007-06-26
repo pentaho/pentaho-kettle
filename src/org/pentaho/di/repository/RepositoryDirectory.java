@@ -45,7 +45,7 @@ public class RepositoryDirectory
     public static final String DIRECTORY_SEPARATOR = "/";
 
 	private RepositoryDirectory parent;
-	private ArrayList           children;
+	private ArrayList<RepositoryDirectory>           children;
 	
 	private String directoryname;
 	
@@ -60,7 +60,7 @@ public class RepositoryDirectory
 	{
 		this.parent        = parent;
 		this.directoryname = directoryname;
-		this.children      = new ArrayList(); // default: no subdirectories...
+		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
 		this.id            = 0L;              // The root directory!
 	}
 	
@@ -78,7 +78,7 @@ public class RepositoryDirectory
 	{
 		this.parent        = null;
 		this.directoryname = null;
-		this.children      = new ArrayList(); // default: no subdirectories...
+		this.children      = new ArrayList<RepositoryDirectory>(); // default: no subdirectories...
 		this.id            = 0L;              // The root directory!
 	}
 	
@@ -571,12 +571,12 @@ public class RepositoryDirectory
 		
 		try
 		{
-            List repositoryObjects = new ArrayList();
+            List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
             
 			// Then show the transformations & jobs in that directory...
             if (getTransformations)
             {
-                List repositoryTransformations = rep.getTransformationObjects(getID());
+                List<RepositoryObject> repositoryTransformations = rep.getTransformationObjects(getID());
                 if (repositoryTransformations!=null)
                 {
                     repositoryObjects.addAll(repositoryTransformations);
@@ -584,7 +584,7 @@ public class RepositoryDirectory
             }
             if (getJobs)
             {
-                List repositoryJobs = rep.getJobObjects(getID());
+                List<RepositoryObject> repositoryJobs = rep.getJobObjects(getID());
                 if (repositoryJobs!=null)
                 {
                     repositoryObjects.addAll(repositoryJobs);
@@ -636,7 +636,7 @@ public class RepositoryDirectory
 	 */
 	public long[] getDirectoryIDs()
 	{
-		ArrayList ids = new ArrayList();
+		List<Long> ids = new ArrayList<Long>();
 		getDirectoryIDs(ids);
 		long retval[] = new long[ids.size()];
 		for (int i=0;i<retval.length;i++) retval[i] = ((Long)ids.get(i)).longValue();
@@ -649,7 +649,7 @@ public class RepositoryDirectory
 	 *  
 	 * @param ids The arraylist that will contain the directory IDs.
 	 */
-	private void getDirectoryIDs(ArrayList ids)
+	private void getDirectoryIDs(List<Long> ids)
 	{
 		Long lid = new Long(getID());
 		ids.add(lid);

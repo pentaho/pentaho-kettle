@@ -53,7 +53,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 {
     public static final String XML_TAG = "row";
     
-    private final List list = new ArrayList();
+    private final List<Value> list = new ArrayList<Value>();
     public static final long serialVersionUID = 0x8D8EA0264F7A1C30L;
 
     /** Ignore this row? */
@@ -93,7 +93,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public Value getValue(int index)
 	{
-		return (Value)list.get(index);
+		return list.get(index);
 	}
 
 	/**
@@ -126,43 +126,6 @@ public class Row implements XMLInterface, Comparable, Serializable
     public void addValue(int idx, Value v)
     {
         list.add(idx, v);
-    }
-
-    /**
-     * Add an object to the row.
-     *
-     * @param obj the object to add
-     *
-     * @deprecated
-     */
-    public void add(Object obj)
-    {
-        list.add(obj);
-    }
-
-    /**
-     * Get an object from the row.
-     *
-     * @param idx the index to get the object from
-     * @return the object
-     *
-     * @deprecated
-     */
-    public Object get(int idx)
-    {
-        return list.get(idx);
-    }
-
-    /**
-     * Remove an object in the row on index idx.
-     *
-     * @param idx The object to remove
-     *
-     * @deprecated
-     */
-    public void remove(int idx)
-    {
-        list.remove(idx);
     }
 
 	/**
@@ -917,18 +880,15 @@ public class Row implements XMLInterface, Comparable, Serializable
         }
     }
 
-    public static final void sortRows(List rows, int fieldNrs[], boolean ascDesc[])
+    public static final void sortRows(List<Row> rows, int fieldNrs[], boolean ascDesc[])
     {
         final int fieldNumbers[] = fieldNrs;
         final boolean ascending[] = ascDesc;
 
-        Comparator comparator = new Comparator()
+        Comparator<Row> comparator = new Comparator<Row>()
         {
-            public int compare(Object o1, Object o2)
+            public int compare(Row one, Row two)
             {
-                Row one = (Row)o1;
-                Row two = (Row)o2;
-
                 return one.compare(two, fieldNumbers, ascending);
             }
         };

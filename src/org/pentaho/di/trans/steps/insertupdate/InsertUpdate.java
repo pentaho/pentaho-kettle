@@ -250,7 +250,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             
             if (!meta.isUpdateBypassed())
             {
-                List updateColumns = new ArrayList();
+                List<String> updateColumns = new ArrayList<String>();
                 for(int i=0;i<meta.getUpdate().length;i++) {
                     if(meta.getUpdate()[i].booleanValue()) {
                         updateColumns.add(meta.getUpdateLookup()[i]);

@@ -121,15 +121,12 @@ public class RepositoryObject
         return one.compareTo(two);
     }
     
-    public static final void sortRepositoryObjects(List objects, final int sortPosition, final boolean ascending)
+    public static final void sortRepositoryObjects(List<RepositoryObject> objects, final int sortPosition, final boolean ascending)
     {
-        Collections.sort(objects, new Comparator()
+        Collections.sort(objects, new Comparator<RepositoryObject>()
             {
-                public int compare(Object o1, Object o2)
+                public int compare(RepositoryObject r1, RepositoryObject r2)
                 {
-                    RepositoryObject r1 = (RepositoryObject) o1;
-                    RepositoryObject r2 = (RepositoryObject) o2;
-                    
                     int result=0;
                     
                     switch(sortPosition)

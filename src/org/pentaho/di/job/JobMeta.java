@@ -44,6 +44,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
@@ -2132,9 +2133,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      *
      * @return A list containing all the selected & drawn job entries.
      */
-    public List<JobEntryCopy> getSelectedDrawnJobEntryList()
+    public List<GUIPositionInterface> getSelectedDrawnJobEntryList()
     {
-        List<JobEntryCopy> list = new ArrayList<JobEntryCopy>();
+        List<GUIPositionInterface> list = new ArrayList<GUIPositionInterface>();
 
         for (int i = 0; i < nrJobEntries(); i++)
         {

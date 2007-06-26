@@ -834,7 +834,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
             gotEncodings = true;
             
             wEncoding.removeAll();
-            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            java.util.List<Charset> values = new ArrayList<Charset>(Charset.availableCharsets().values());
             for (int i=0;i<values.size();i++)
             {
                 Charset charSet = (Charset)values.get(i);

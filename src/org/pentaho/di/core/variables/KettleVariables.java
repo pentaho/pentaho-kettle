@@ -1,12 +1,11 @@
 package org.pentaho.di.core.variables;
 
+import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.util.EnvUtil;
-
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.util.EnvUtil;
 
 
 
@@ -20,14 +19,14 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class KettleVariables
 {
-    private Properties properties;
+    private Map<String, String> properties;
     
     private String localThread;
     private String parentThread;
     
     public KettleVariables(String localThread, String parentThread)
     {
-        properties = new Properties();
+        properties = new Hashtable<String, String>();
         this.localThread = localThread;
         this.parentThread = parentThread;
     }
@@ -85,7 +84,7 @@ public class KettleVariables
      * @param map The values to add to an empty set of Kettle Variables.
      * If properties is null, nothing gets added.
      */
-    public void putAll(Map map)
+    public void putAll(Map<String, String> map)
     {
         if (properties!=null && map!=null) 
         {
@@ -103,7 +102,7 @@ public class KettleVariables
     {
         if (variableValue!=null)
         {
-            properties.setProperty(variableName, variableValue);
+            properties.put(variableName, variableValue);
         }
         else
         {
@@ -119,7 +118,7 @@ public class KettleVariables
      */
     public String getVariable(String variableName, String defaultValue)
     {
-        String var = properties.getProperty(variableName, defaultValue);
+        String var = properties.put(variableName, defaultValue);
         return var;
     }
     
@@ -130,13 +129,13 @@ public class KettleVariables
      */
     public String getVariable(String variableName)
     {
-        return properties.getProperty(variableName);
+        return properties.get(variableName);
     }
 
     /**
      * @return Returns the properties.
      */
-    public Properties getProperties()
+    public Map<String, String> getProperties()
     {
         return properties;
     }
@@ -146,7 +145,7 @@ public class KettleVariables
      * 
      * @param properties
      */
-    public void setProperties(Properties properties)
+    public void setProperties(Map<String, String> properties)
     {
         this.properties = properties;
     }

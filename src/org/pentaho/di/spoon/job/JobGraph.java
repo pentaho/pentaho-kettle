@@ -60,6 +60,7 @@ import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Rectangle;
@@ -2146,7 +2147,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List elements = jobMeta.getSelectedDrawnJobEntryList();
+        List<GUIPositionInterface> elements = jobMeta.getSelectedDrawnJobEntryList();
         int[] indices = jobMeta.getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
 
         return new SnapAllignDistribute(jobMeta, elements, indices, spoon, this);

@@ -75,7 +75,7 @@ public class InjectorTest extends TestCase
 	
 	public List createData()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		

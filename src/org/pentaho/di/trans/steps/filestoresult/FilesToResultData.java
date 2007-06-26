@@ -16,7 +16,9 @@
 package org.pentaho.di.trans.steps.filestoresult;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -27,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class FilesToResultData extends BaseStepData implements StepDataInterface
 {
-	public ArrayList filenames;
+	public List<ResultFile> filenames;
 
 	public int filenameIndex;
 
@@ -40,7 +42,7 @@ public class FilesToResultData extends BaseStepData implements StepDataInterface
 	{
 		super();
 
-		filenames = new ArrayList();
+		filenames = new ArrayList<ResultFile>();
 	}
 
 }

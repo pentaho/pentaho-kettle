@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -73,7 +74,7 @@ public class JobHistory extends Composite implements TabItemInterface
 	
 	private Spoon spoon;
 
-    private ArrayList rowList;
+    private List<RowMetaAndData> rowList;
 
 	private final Shell shell;
 
@@ -270,7 +271,7 @@ public class JobHistory extends Composite implements TabItemInterface
                         params.addValue(new ValueMeta("transname", ValueMetaInterface.TYPE_STRING), jobMeta.getName()); //$NON-NLS-1$
                         ResultSet resultSet = database.openQuery("SELECT * FROM "+jobMeta.getLogTable()+" WHERE JOBNAME = ? ORDER BY ID_JOB desc", params.getRowMeta(), params.getData()); //$NON-NLS-1$ //$NON-NLS-2$
                         
-                        rowList = new ArrayList();
+                        rowList = new ArrayList<RowMetaAndData>();
                         Object[] rowData = database.getRow(resultSet);
                         while (rowData!=null)
                         {

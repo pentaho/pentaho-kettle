@@ -12,12 +12,11 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.trans.step.BaseStep;
-
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHmmss"; //$NON-NLS-1$
@@ -34,7 +33,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 
 	private String processingFilename;
 
-	private Map writers;
+	private Map<Object, Writer> writers;
 
 	private String dateString;
 
@@ -46,7 +45,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		this.fileExtension = fileExtension;
 		this.encoding = encoding;
 		this.baseStep = baseStep;
-		this.writers = new HashMap();
+		this.writers = new HashMap<Object, Writer>();
 		initDateFormatter(date);
 	}
 
@@ -123,7 +122,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		for (Iterator iter = writers.values().iterator(); iter.hasNext();) {
 			close((Writer) iter.next());
 		}
-		writers = new HashMap();
+		writers = new HashMap<Object, Writer>();
 	}
 
 	private void close(Writer outputStreamWriter) throws KettleException {

@@ -84,7 +84,7 @@ public class Result implements Cloneable
 			// Clone result rows and files as well...
 			if (rows!=null)
 			{
-				List<RowMetaAndData> clonedRows = new ArrayList();
+				List<RowMetaAndData> clonedRows = new ArrayList<RowMetaAndData>();
 				for (int i=0;i<rows.size();i++)
 				{
 					clonedRows.add( ((RowMetaAndData)rows.get(i)).clone() );

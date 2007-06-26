@@ -129,7 +129,7 @@ public class Encr
     public static final String encryptPasswordIfNotUsingVariables(String password)
     {
         String encrPassword = "";
-        List varList = new ArrayList();
+        List<String> varList = new ArrayList<String>();
         StringUtil.getUsedVariables(password, varList, true);
         if (varList.size()==0)
         {

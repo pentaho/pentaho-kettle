@@ -61,9 +61,9 @@ public class HopTest extends TestCase
 		return rm;
 	}
 	
-	public List createData()
+	public List<RowMetaAndData> createData()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
@@ -90,7 +90,7 @@ public class HopTest extends TestCase
 	 *  Check the 2 lists comparing the rows in order.
 	 *  If they are not the same fail the test. 
 	 */
-    public void checkRows(List rows1, List rows2)
+    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
     {
     	int idx = 1;
         if ( rows1.size() != rows2.size() )
@@ -98,13 +98,13 @@ public class HopTest extends TestCase
         	fail("Number of rows is not the same: " + 
           		 rows1.size() + " and " + rows2.size());
         }
-        Iterator it1 = rows1.iterator();
-        Iterator it2 = rows2.iterator();
+        Iterator<RowMetaAndData> it1 = rows1.iterator();
+        Iterator<RowMetaAndData> it2 = rows2.iterator();
         
         while ( it1.hasNext() && it2.hasNext() )
         {
-        	RowMetaAndData rm1 = (RowMetaAndData)it1.next();
-        	RowMetaAndData rm2 = (RowMetaAndData)it2.next();
+        	RowMetaAndData rm1 = it1.next();
+        	RowMetaAndData rm2 = it2.next();
         	
         	Object[] r1 = rm1.getData();
         	Object[] r2 = rm2.getData();
@@ -224,7 +224,7 @@ public class HopTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createData();
+        List<RowMetaAndData> inputList = createData();
         Iterator it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -234,7 +234,7 @@ public class HopTest extends TestCase
         rp.finished();
         trans.waitUntilFinished();   
         
-        List resultRows = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows = rc1.getRowsRead();
         checkRows(resultRows, inputList);
     }
     
@@ -331,11 +331,11 @@ public class HopTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List compareList1 = new ArrayList();
-        List compareList2 = new ArrayList();
+        List<RowMetaAndData> compareList1 = new ArrayList<RowMetaAndData>();
+        List<RowMetaAndData> compareList2 = new ArrayList<RowMetaAndData>();
         int counter = 1;
         
-        List inputList = createData();
+        List<RowMetaAndData> inputList = createData();
         Iterator it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -358,10 +358,10 @@ public class HopTest extends TestCase
         // Dummy1 should get 4 rows: 1 3 5 7
         // Dummy2 should get 3 rows: 2 4 6          
         
-        List resultRows1 = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = rc1.getRowsRead();
         checkRows(resultRows1, compareList1);
         
-        List resultRows2 = rc2.getRowsRead();
+        List<RowMetaAndData> resultRows2 = rc2.getRowsRead();
         checkRows(resultRows2, compareList2);        
     }
     
@@ -459,11 +459,11 @@ public class HopTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List compareList1 = new ArrayList();
-        List compareList2 = new ArrayList();
+        List<RowMetaAndData> compareList1 = new ArrayList<RowMetaAndData>();
+        List<RowMetaAndData> compareList2 = new ArrayList<RowMetaAndData>();
         int counter = 1;
         
-        List inputList = createData();
+        List<RowMetaAndData> inputList = createData();
         Iterator it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -486,10 +486,10 @@ public class HopTest extends TestCase
         // Dummy1 should get 4 rows: 1 3 5 7
         // Dummy2 should get 3 rows: 2 4 6          
         
-        List resultRows1 = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = rc1.getRowsRead();
         checkRows(resultRows1, compareList1);
         
-        List resultRows2 = rc2.getRowsRead();
+        List<RowMetaAndData> resultRows2 = rc2.getRowsRead();
         checkRows(resultRows2, compareList2);        
     }        
 }

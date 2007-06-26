@@ -3651,7 +3651,7 @@ public class Database
 	 * @return An ArrayList of rows.
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public ArrayList getRows(String sql, int limit) throws KettleDatabaseException
+	public List<Object[]> getRows(String sql, int limit) throws KettleDatabaseException
 	{
 	    return getRows(sql, limit, null);
 	}
@@ -3664,7 +3664,7 @@ public class Database
 	 * @return An ArrayList of rows.
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public ArrayList<Object[]> getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
 		if (monitor!=null) monitor.setTaskName("Opening query...");
 		ResultSet rset = openQuery(sql);
@@ -3680,11 +3680,11 @@ public class Database
      * @return An ArrayList of rows.
      * @throws KettleDatabaseException if something goes wrong.
      */
-	public ArrayList<Object[]> getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
     {
         try
         {
-            ArrayList<Object[]> result = new ArrayList<Object[]>();
+            List<Object[]> result = new ArrayList<Object[]>();
             boolean stop=false;
             int i=0;
             
@@ -3717,7 +3717,7 @@ public class Database
         }
     }
 
-    public ArrayList getFirstRows(String table_name, int limit) throws KettleDatabaseException
+    public List<Object[]> getFirstRows(String table_name, int limit) throws KettleDatabaseException
 	{
 	    return getFirstRows(table_name, limit, null);
 	}
@@ -3731,7 +3731,7 @@ public class Database
      * @return An ArrayList of rows.
      * @throws KettleDatabaseException in case something goes wrong
      */
-	public ArrayList getFirstRows(String table_name, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+	public List<Object[]> getFirstRows(String table_name, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
 		String sql = "SELECT * FROM "+table_name;
 		
@@ -3895,7 +3895,7 @@ public class Database
 		if (sql!=null)
 		{
 			//System.out.println("SQL= "+sql);
-			ArrayList procs = getRows(sql, 1000);
+			List<Object[]> procs = getRows(sql, 1000);
 			//System.out.println("Found "+procs.size()+" rows");
 			String[] str = new String[procs.size()];
 			for (int i=0;i<procs.size();i++)
@@ -3911,7 +3911,7 @@ public class Database
             {
                 DatabaseMetaData dbmd = getDatabaseMetaData();
                 rs = dbmd.getProcedures(null, null, null);
-                ArrayList rows = getRows(rs, 0, null);
+                List<Object[]> rows = getRows(rs, 0, null);
                 String result[] = new String[rows.size()];
                 for (int i=0;i<rows.size();i++)
                 {

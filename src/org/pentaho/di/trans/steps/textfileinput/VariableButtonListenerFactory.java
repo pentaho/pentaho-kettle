@@ -28,6 +28,7 @@ public class VariableButtonListenerFactory
     }
 
     // Listen to the Variable... button
+    @SuppressWarnings("unchecked")
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface)
     {
         return new SelectionAdapter()
@@ -38,7 +39,7 @@ public class VariableButtonListenerFactory
                 sp.putAll( kettleVariables.getProperties() );
                 sp.putAll( System.getProperties() );
                 
-                List<String> keys = new ArrayList( sp.keySet() ); // TODO how can we fix this warning?
+                List<String> keys = new ArrayList( sp.keySet() );
                 Collections.sort(keys);
                 
                 int size = keys.size();

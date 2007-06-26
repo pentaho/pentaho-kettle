@@ -61,7 +61,8 @@ public class EnvUtil
 	/**
 	 * Adds the kettle properties the the global system properties.
 	 */
-	public static void environmentInit()
+	@SuppressWarnings({"unchecked"})
+    public static void environmentInit()
 	{
 		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
         System.getProperties().putAll(kettleProperties);
@@ -100,8 +101,10 @@ public class EnvUtil
 	 * 
 	 * @return Properties containing the environment. You're not meant
 	 *         to change any value in the returned Properties!
+	 * 
 	 */
-	private static final Properties getEnv()
+    @SuppressWarnings({"unchecked"})
+    private static final Properties getEnv()
 	{		
 		 Class<?> system = System.class;
 		 if ( env == null )
@@ -109,6 +112,7 @@ public class EnvUtil
 			 Map<String,String> returnMap = null;
 			 try  {
 			     Method method = system.getMethod("getenv");
+			     
 			     returnMap = (Map<String,String>) method.invoke(system);
 			 }
    	         catch ( Exception ex )  {
@@ -136,6 +140,7 @@ public class EnvUtil
      * @return an array of strings, made up of all the environment variables available in the VM, format var=value.
      * To be used for Runtime.exec(cmd, envp)
      */
+    @SuppressWarnings({"unchecked"})
     public static final String[] getEnvironmentVariablesForRuntimeExec()
     {
         KettleVariables vars = KettleVariables.getInstance();

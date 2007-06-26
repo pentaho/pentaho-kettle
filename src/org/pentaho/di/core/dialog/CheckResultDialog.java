@@ -15,7 +15,7 @@
 
  
 package org.pentaho.di.core.dialog;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
@@ -33,17 +33,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.dialog.Messages;
 import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.StepMeta;
-
-import org.pentaho.di.core.widget.ColumnInfo;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.gui.WindowProperty;
 
 
 
@@ -64,7 +62,7 @@ public class CheckResultDialog extends Dialog
 	private static final String STRING_HIDE_REMARKS = Messages.getString("CheckResultDialog.Remarks.Label");
 	private static final String STRING_SHOW_REMARKS = Messages.getString("CheckResultDialog.WarningsErrors.Label");
 
-	private ArrayList    remarks;
+	private List<CheckResult> remarks;
 		
 	private Label        wlFields;
 	private TableView    wFields;
@@ -82,16 +80,8 @@ public class CheckResultDialog extends Dialog
 	
 	private String stepname;
 	
-    /**
-     * @deprecated Use the CT without the <i>log</i> and <i>props</i> parameter (at 3rd and 4th position)
-     */
-    public CheckResultDialog(Shell parent, int style, LogWriter log, Props props, ArrayList rem)
-    {
-        this(parent, style, rem);
-        this.props = props;
-    }
 
-	public CheckResultDialog(Shell parent, int style, ArrayList rem)
+	public CheckResultDialog(Shell parent, int style, List<CheckResult> rem)
 	{
 			super(parent, style);
 			remarks=rem;

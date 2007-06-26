@@ -500,7 +500,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 	public void checkPasswordVisible()
 	{
 		String password = wPassword.getText();
-		java.util.List list = new ArrayList();
+		java.util.List<String> list = new ArrayList<String>();
 		StringUtil.getUsedVariables(password, list, true);
 		if (list.size() == 0)
 		{

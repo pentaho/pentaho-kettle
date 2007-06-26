@@ -16,7 +16,7 @@
  
 
 package org.pentaho.di.core.database.dialog;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -35,22 +35,21 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.dialog.EnterTextDialog;
-import org.pentaho.di.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.step.BaseStepDialog;
 
 /**
  * Dialog that allows the user to launch SQL statements towards the database.
@@ -292,7 +291,7 @@ public class SQLEditor extends Dialog
     							nrstats++;
     							try
     							{
-    								ArrayList rows = db.getRows(sql, 1000);
+    								List<Object[]> rows = db.getRows(sql, 1000);
                                     RowMetaInterface rowMeta = db.getReturnRowMeta();
     								if (rows.size()>0)
     								{

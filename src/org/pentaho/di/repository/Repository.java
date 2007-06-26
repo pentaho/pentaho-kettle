@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -96,7 +97,8 @@ public class Repository
     private PreparedStatement   psTransAttributesLookup;
     private PreparedStatement   psTransAttributesInsert;
 	
-	private ArrayList           stepAttributesBuffer;
+	private List<Object[]>           stepAttributesBuffer;
+	private RowMetaInterface         stepAttributesRowMeta;
 	
 	private PreparedStatement	pstmt_entry_attributes;
 
@@ -385,7 +387,7 @@ public class Repository
 	/**
      * @return Returns the stepAttributesBuffer.
      */
-    public ArrayList getStepAttributesBuffer()
+    public List<Object[]> getStepAttributesBuffer()
     {
         return stepAttributesBuffer;
     }
@@ -393,7 +395,7 @@ public class Repository
     /**
      * @param stepAttributesBuffer The stepAttributesBuffer to set.
      */
-    public void setStepAttributesBuffer(ArrayList stepAttributesBuffer)
+    public void setStepAttributesBuffer(List<Object[]> stepAttributesBuffer)
     {
         this.stepAttributesBuffer = stepAttributesBuffer;
     }
@@ -407,8 +409,9 @@ public class Repository
 	                 ;
 	    
 	    stepAttributesBuffer = database.getRows(sql, -1);
+	    stepAttributesRowMeta = database.getReturnRowMeta();
         
-        Collections.sort(stepAttributesBuffer);  // just to make sure...
+        // Collections.sort(stepAttributesBuffer);  // just to make sure...
 	}
 	
 	private synchronized RowMetaAndData searchStepAttributeInBuffer(long id_step, String code, long nr) throws KettleValueException
@@ -417,27 +420,40 @@ public class Repository
 	    if (idx<0) return null;
 	    
 	    // Get the row and remote it from the list...
-        RowMetaAndData r = (RowMetaAndData)stepAttributesBuffer.get(idx);
-	    // stepAttributesBuffer.remove(idx);
+        Object[] r = stepAttributesBuffer.get(idx);
+        // stepAttributesBuffer.remove(idx);
 	    
-	    return r;
+	    return new RowMetaAndData(stepAttributesRowMeta, r);
 	}
 	
 	
 	private synchronized int searchStepAttributeIndexInBuffer(long id_step, String code, long nr) throws KettleValueException
 	{
-        RowMetaAndData compare = new RowMetaAndData();
-	    compare.addValue(new ValueMeta("ID_STEP", ValueMetaInterface.TYPE_INTEGER), new Long(id_step));
-	    compare.addValue(new ValueMeta("CODE", ValueMetaInterface.TYPE_STRING), code);
-	    compare.addValue(new ValueMeta("NR", ValueMetaInterface.TYPE_INTEGER), new Long(nr));
+        Object[] key = new Object[] {
+        		new Long(id_step), // ID_STEP
+        		code, // CODE
+        		new Long(nr), // NR
+        };
 
-        int index = Collections.binarySearch(stepAttributesBuffer, compare);
+        int index = Collections.binarySearch(stepAttributesBuffer, key, 
+        		new Comparator<Object[]>() 
+        		{
+					public int compare(Object[] r1, Object[] r2) 
+					{
+						try {
+							return stepAttributesRowMeta.compare(r1, r2);
+						} catch (KettleValueException e) {
+							return 0; // conversion errors
+						}
+					}
+				}
+        	);
         if (index>=stepAttributesBuffer.size() || index<0) return -1;
         // 
         // Check this...  If it is not, we didn't find it!
-        RowMetaAndData look = (RowMetaAndData)stepAttributesBuffer.get(index);
+        Object[] look = stepAttributesBuffer.get(index);
         
-        if (look.compare(compare, new int[] {0,1,2}, new boolean[] { true, true, true })==0)
+        if (stepAttributesRowMeta.compare(look, key)==0)
         {
             return index;
         }
@@ -458,20 +474,22 @@ public class Repository
         {
             return 1; // Only 1, the last of the attributes buffer.
         }
-        RowMetaAndData look = (RowMetaAndData)stepAttributesBuffer.get(idx+offset);
-	    long lookID = look.getInteger(0, -1);
-	    String lookCode = look.getString(1, null);
+        Object[] look = (Object[])stepAttributesBuffer.get(idx+offset);
+        RowMetaInterface rowMeta = stepAttributesRowMeta;
+        
+	    long lookID = rowMeta.getInteger(look, 0);
+	    String lookCode = rowMeta.getString(look, 1);
 	    
 	    while (lookID==id_step && code.equalsIgnoreCase( lookCode ) )
 	    {
-	        nr = (int)look.getInteger(2, 0) + 1; // Find the maximum
+	        nr = rowMeta.getInteger(look, 2).intValue() + 1; // Find the maximum
 	        offset++;
             if (idx+offset<stepAttributesBuffer.size())
             {
-                look = (RowMetaAndData)stepAttributesBuffer.get(idx+offset);
+                look = (Object[])stepAttributesBuffer.get(idx+offset);
                 
-                lookID = look.getInteger(0, -1);
-                lookCode = look.getString(1, null);
+                lookID = rowMeta.getInteger(look, 0);
+                lookCode = rowMeta.getString(look, 1);
             }
             else
             {
@@ -2173,12 +2191,12 @@ public class Repository
 		return getStrings("SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
 	}
     
-    public List getJobObjects(long id_directory) throws KettleException
+    public List<RepositoryObject> getJobObjects(long id_directory) throws KettleException
     {
         return getRepositoryObjects("R_JOB", RepositoryObject.STRING_OBJECT_TYPE_JOB, id_directory);
     }
 
-    public List getTransformationObjects(long id_directory) throws KettleException
+    public List<RepositoryObject> getTransformationObjects(long id_directory) throws KettleException
     {
         return getRepositoryObjects("R_TRANSFORMATION", RepositoryObject.STRING_OBJECT_TYPE_TRANSFORMATION, id_directory);
     }
@@ -2189,7 +2207,7 @@ public class Repository
      * 
      * @throws KettleException
      */
-    private synchronized List getRepositoryObjects(String tableName, String objectType, long id_directory) throws KettleException
+    private synchronized List<RepositoryObject> getRepositoryObjects(String tableName, String objectType, long id_directory) throws KettleException
     {
         String nameField = databaseMeta.quoteField("NAME");
         
@@ -2198,7 +2216,7 @@ public class Repository
                 "WHERE ID_DIRECTORY = " + id_directory + " "
                 ;
 
-        List repositoryObjects = new ArrayList();
+        List<RepositoryObject> repositoryObjects = new ArrayList<RepositoryObject>();
         
         ResultSet rs = database.openQuery(sql);
         if (rs != null)
@@ -2319,7 +2337,7 @@ public class Repository
     
     private long[] getIDs(String sql) throws KettleException
     {
-        List ids = new ArrayList();
+        List<Long> ids = new ArrayList<Long>();
         
         ResultSet rs = database.openQuery(sql);
         try 
@@ -2347,7 +2365,7 @@ public class Repository
     
     private String[] getStrings(String sql) throws KettleException
     {
-        List ids = new ArrayList();
+        List<String> ids = new ArrayList<String>();
         
         ResultSet rs = database.openQuery(sql);
         try 
@@ -2412,19 +2430,20 @@ public class Repository
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleException
 	{
 		String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_STEP_DATABASE WHERE ID_DATABASE = " + id_database;
-        return getTransformationsWithIDList( database.getRows(sql, 100) );
+        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
 	}
     
     public synchronized String[] getClustersUsingSlave(long id_slave) throws KettleException
     {
         String sql = "SELECT DISTINCT ID_CLUSTER FROM R_CLUSTER_SLAVE WHERE ID_SLAVE = " + id_slave;
 
-        ArrayList list = database.getRows(sql, 100);
-        ArrayList clusterList = new ArrayList();
+        List<Object[]> list = database.getRows(sql, 100);
+        RowMetaInterface rowMeta = database.getReturnRowMeta();
+        List<String> clusterList = new ArrayList<String>();
 
         for (int i=0;i<list.size();i++)
         {
-            long id_cluster_schema = ((RowMetaAndData)list.get(i)).getInteger("ID_CLUSTER", -1L); 
+            long id_cluster_schema = rowMeta.getInteger(list.get(i), "ID_CLUSTER", -1L); 
             if (id_cluster_schema > 0)
             {
                 RowMetaAndData transRow =  getClusterSchema(id_cluster_schema);
@@ -2434,7 +2453,6 @@ public class Repository
                     if (clusterName!=null) clusterList.add(clusterName);
                 }
             }
-            
         }
 
         return (String[]) clusterList.toArray(new String[clusterList.size()]);
@@ -2443,27 +2461,27 @@ public class Repository
     public synchronized String[] getTransformationsUsingSlave(long id_slave) throws KettleException
     {
         String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_SLAVE WHERE ID_SLAVE = " + id_slave;
-        return getTransformationsWithIDList( database.getRows(sql, 100) );
+        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingPartitionSchema(long id_partition_schema) throws KettleException
     {
         String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_PARTITION_SCHEMA WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
-        return getTransformationsWithIDList( database.getRows(sql, 100) );
+        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
     
     public synchronized String[] getTransformationsUsingCluster(long id_cluster) throws KettleException
     {
         String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_TRANS_CLUSTER WHERE ID_CLUSTER = " + id_cluster;
-        return getTransformationsWithIDList( database.getRows(sql, 100) );
+        return getTransformationsWithIDList( database.getRows(sql, 100), database.getReturnRowMeta() );
     }
 
-	private String[] getTransformationsWithIDList(ArrayList list) throws KettleException
+	private String[] getTransformationsWithIDList(List<Object[]> list, RowMetaInterface rowMeta) throws KettleException
     {
         String[] transList = new String[list.size()];
         for (int i=0;i<list.size();i++)
         {
-            long id_transformation = ((RowMetaAndData)list.get(i)).getInteger("ID_TRANSFORMATION", -1L); 
+            long id_transformation = rowMeta.getInteger( list.get(i), "ID_TRANSFORMATION", -1L); 
             if (id_transformation > 0)
             {
                 RowMetaAndData transRow =  getTransformation(id_transformation);
@@ -4890,7 +4908,7 @@ public class Repository
 		// R_PROFILE
 		//
 		// Create table...
-        Map profiles = new Hashtable();
+        Map<String, Long> profiles = new Hashtable<String, Long>();
         
 		boolean ok_profile = true;
 		tablename = "R_PROFILE";
@@ -4960,7 +4978,7 @@ public class Repository
 		// R_USER
 		//
 		// Create table...
-        Map users = new Hashtable();
+        Map<String, Long> users = new Hashtable<String, Long>();
 		boolean ok_user = true;
 		table = new RowMeta();
 		tablename = "R_USER";
@@ -5044,7 +5062,7 @@ public class Repository
 		// R_PERMISSION
 		//
 		// Create table...
-        Map permissions = new Hashtable();
+        Map<String, Long> permissions = new Hashtable<String, Long>();
 		boolean ok_permission = true;
 		table = new RowMeta();
 		tablename = "R_PERMISSION";
@@ -5546,9 +5564,9 @@ public class Repository
      * @return a list of all the databases in the repository.
      * @throws KettleException
      */
-    public List getDatabases() throws KettleException
+    public List<DatabaseMeta> getDatabases() throws KettleException
     {
-        List list = new ArrayList();
+        List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
         long[] databaseIDs = getDatabaseIDs();
         for (int i=0;i<databaseIDs.length;i++)
         {
@@ -5563,9 +5581,9 @@ public class Repository
      * @return a list of all the slave servers in the repository.
      * @throws KettleException
      */
-    public List getSlaveServers() throws KettleException
+    public List<SlaveServer> getSlaveServers() throws KettleException
     {
-        List list = new ArrayList();
+        List<SlaveServer> list = new ArrayList<SlaveServer>();
         long[] slaveIDs = getSlaveIDs();
         for (int i=0;i<slaveIDs.length;i++)
         {
@@ -5575,4 +5593,18 @@ public class Repository
             
         return list;
     }
+
+	/**
+	 * @return the stepAttributesRowMeta
+	 */
+	public RowMetaInterface getStepAttributesRowMeta() {
+		return stepAttributesRowMeta;
+	}
+
+	/**
+	 * @param stepAttributesRowMeta the stepAttributesRowMeta to set
+	 */
+	public void setStepAttributesRowMeta(RowMetaInterface stepAttributesRowMeta) {
+		this.stepAttributesRowMeta = stepAttributesRowMeta;
+	}
 }

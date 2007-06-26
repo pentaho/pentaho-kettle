@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -947,12 +946,9 @@ public class Spoon implements AddUndoPositionInterface
 
         RowMetaAndData allVars = new RowMetaAndData();
         
-        Enumeration keys = kettleVariables.getProperties().keys();
-        while (keys.hasMoreElements())
+        for (String key : kettleVariables.getProperties().keySet())
         {
-            String key = (String) keys.nextElement();
             String value = kettleVariables.getVariable(key);
-            
             allVars.addValue(new ValueMeta(key, ValueMetaInterface.TYPE_STRING), value);
         }
         

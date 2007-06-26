@@ -35,7 +35,7 @@ public class KettleDependencies
 
     private void extractLibraries(TransMeta transMeta)
     {
-        List libraries = new ArrayList();
+        List<String> libraries = new ArrayList<String>();
 
         // First the common libraries
         //
