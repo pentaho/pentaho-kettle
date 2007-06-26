@@ -23,7 +23,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ImageUtil;
-import org.eclipse.swt.snippets.Snippet139;
+
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -108,8 +108,6 @@ public class GUIResource
     private Image     imageResetOptionButton;
 
     private ManagedFont fontBold;
-
-    private Image imageLogoLeft;
 
     /**
      * GUIResource also contains the clipboard as it has to be allocated only once!
@@ -224,7 +222,6 @@ public class GUIResource
             imageConnection  .dispose();
             imageLogoSmall   .dispose();
             imageKettleLogo  .dispose();
-            imageLogoLeft    .dispose();
             imageBanner      .dispose();
             imageBol         .dispose();
             imageArrow       .dispose();
@@ -394,8 +391,6 @@ public class GUIResource
         imageArrow      = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255,255,255));
         imageBanner     = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255,255,255));
         
-        // Rotate logo once left.
-        imageLogoLeft = new Image(display, Snippet139.rotate(imageKettleLogo.getImageData(), SWT.RIGHT));
     }
 
     /**
@@ -985,22 +980,6 @@ public class GUIResource
     public void setImageLogoSmall(Image imageLogoSmall)
     {
         this.imageLogoSmall = imageLogoSmall;
-    }
-
-    /**
-     * @return the imageLogoLeft
-     */
-    public Image getImageLogoLeft()
-    {
-        return imageLogoLeft;
-    }
-
-    /**
-     * @param imageLogoLeft the imageLogoLeft to set
-     */
-    public void setImageLogoLeft(Image imageLogoLeft)
-    {
-        this.imageLogoLeft = imageLogoLeft;
     }
 
     /**
