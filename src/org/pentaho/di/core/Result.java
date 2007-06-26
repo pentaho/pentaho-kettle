@@ -87,7 +87,7 @@ public class Result implements Cloneable
 				List<RowMetaAndData> clonedRows = new ArrayList<RowMetaAndData>();
 				for (int i=0;i<rows.size();i++)
 				{
-					clonedRows.add( ((RowMetaAndData)rows.get(i)).clone() );
+					clonedRows.add( (rows.get(i)).clone() );
 				}
 				result.setRows(clonedRows);
 			}
