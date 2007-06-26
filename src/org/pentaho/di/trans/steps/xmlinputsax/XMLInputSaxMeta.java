@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -42,6 +41,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -221,7 +221,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     
     
     
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -448,7 +448,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters)
 		throws KettleException
 	{
 		try
