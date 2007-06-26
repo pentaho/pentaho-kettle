@@ -88,7 +88,7 @@ public class SharedObjects
                 Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
                 if (sharedObjectsNode!=null)
                 {
-                    List<SharedObjectInterface> privateSlaveServers = new ArrayList<SharedObjectInterface>();
+                    List<SlaveServer> privateSlaveServers = new ArrayList<SlaveServer>();
                     List<SharedObjectInterface> privateDatabases = new ArrayList<SharedObjectInterface>();
 
                     
