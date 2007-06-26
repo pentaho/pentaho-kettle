@@ -33,7 +33,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 
 	private String processingFilename;
 
-	private Map<Object, Writer> writers;
+	private Map<Object,Writer> writers;
 
 	private String dateString;
 
@@ -45,7 +45,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		this.fileExtension = fileExtension;
 		this.encoding = encoding;
 		this.baseStep = baseStep;
-		this.writers = new HashMap<Object, Writer>();
+		this.writers = new HashMap<Object,Writer>();
 		initDateFormatter(date);
 	}
 
@@ -122,7 +122,8 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		for (Iterator iter = writers.values().iterator(); iter.hasNext();) {
 			close((Writer) iter.next());
 		}
-		writers = new HashMap<Object, Writer>();
+		writers = new HashMap<Object,Writer>();
+
 	}
 
 	private void close(Writer outputStreamWriter) throws KettleException {
