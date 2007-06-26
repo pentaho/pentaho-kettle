@@ -7,13 +7,13 @@ import org.pentaho.di.spoon.UndoInterface;
 
 public class SnapAllignDistribute
 {
-    private List<GUIPositionInterface> elements;
+    private List<? extends GUIPositionInterface> elements;
     private AddUndoPositionInterface addUndoPositionInterface;
     private int[] indices;
     private Redrawable redrawable;
     private UndoInterface undoInterface;
     
-    public SnapAllignDistribute(UndoInterface undoInterface, List<GUIPositionInterface> elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
+    public SnapAllignDistribute(UndoInterface undoInterface, List<? extends GUIPositionInterface> elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
     {
         this.undoInterface = undoInterface;
         this.elements = elements;
