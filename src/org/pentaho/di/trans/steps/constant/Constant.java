@@ -225,7 +225,7 @@ public class Constant extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
             // Create a row (constants) with all the values in it...
-            ArrayList remarks = new ArrayList(); // stores the errors...
+            List<CheckResult> remarks = new ArrayList<CheckResult>(); // stores the errors...
             data.constants = buildRow(meta, data, remarks);           
 		    if (remarks.size()==0) 
             { 
@@ -235,7 +235,7 @@ public class Constant extends BaseStep implements StepInterface
             {
                 for (int i=0;i<remarks.size();i++)
                 {
-                    CheckResult cr = (CheckResult) remarks.get(i);
+                    CheckResult cr = remarks.get(i);
                     log.logError(getStepname(), cr.getText());
                 }
             }

@@ -111,37 +111,6 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		Long tk = (Long) data.cache.get(new RowMetaAndData(rowMeta, row));
 		return tk;
 	}
-
-    /*
-	private void storeInCache(Object[] row, Long tk)
-	{
-		if (meta.getCacheSize() > 0)
-		{
-			// Do cache management if cache size is specified.
-			// See if we have to limit the cache_size.
-			if ( data.cache.size() > meta.getCacheSize() )
-			{
-				 long last_date=-1L;
-				 Set set = data.cache.keySet();
-				 Iterator it = set.iterator();
-				 TimedRow smallest=null;
-				 while (it.hasNext())
-				 {
-				 	TimedRow r=(TimedRow)it.next();
-				 	long time = r.getLogtime();
-				 	if (last_date<0 || time<last_date)
-				 	{
-				 		last_date=time;
-				 		smallest=r;
-				 	}
-				 }
-				 if (smallest!=null) data.cache.remove(smallest);
-			}
-		}
-
-		data.cache.put(new TimedRow(row), tk);
-	}
-    */
     
     /**
      * Adds a row to the cache
@@ -182,9 +151,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
             //
             // Perhaps we should get 20% random values and delete everything below the lowest but one TK.
             //
-            List keys = new ArrayList(data.cache.keySet());
+            List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>(data.cache.keySet());
             int sizeBefore = keys.size();
-            List samples = new ArrayList();
+            List<Long> samples = new ArrayList<Long>();
             
             // Take 10 sample technical keys....
             int stepsize=keys.size()/5;
@@ -700,11 +669,11 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		{
 			if (meta.getCacheSize()>0)
 			{
-				data.cache=new HashMap((int)(meta.getCacheSize()*1.5));
+				data.cache=new HashMap<RowMetaAndData, Long>((int)(meta.getCacheSize()*1.5));
 			}
 			else
 			{
-				data.cache=new HashMap();
+				data.cache=new HashMap<RowMetaAndData, Long>();
 			}
 
 			data.db=new Database(meta.getDatabaseMeta());

@@ -24,10 +24,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.StepLoader;
@@ -39,10 +42,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
-
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.EnvUtil;
 
 
 /**
@@ -77,9 +76,9 @@ public class AppendTest extends TestCase
 	/**
 	 * Create data for the first hop.
 	 */
-	public List createData1()
+	public List<RowMetaAndData> createData1()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
@@ -106,9 +105,9 @@ public class AppendTest extends TestCase
 	/**
 	 * Create data for the second hop.
 	 */	
-	public List createData2()
+	public List<RowMetaAndData> createData2()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
@@ -273,7 +272,7 @@ public class AppendTest extends TestCase
         trans.startThreads();        
 
         // add rows to tail step
-        List inputList2 = createData2();
+        List<RowMetaAndData> inputList2 = createData2();
         Iterator it2 = inputList2.iterator();
         while ( it2.hasNext() )
         {
@@ -283,7 +282,7 @@ public class AppendTest extends TestCase
         rp2.finished();        
         
         // add rows to head step
-        List inputList1 = createData1();
+        List<RowMetaAndData> inputList1 = createData1();
         Iterator it1 = inputList1.iterator();
         while ( it1.hasNext() )
         {
@@ -296,7 +295,7 @@ public class AppendTest extends TestCase
         
         // The result should be that first all rows from injector 1 and
         // then all rows from injector step 2        
-        ArrayList expectedList = new ArrayList();
+        List<RowMetaAndData> expectedList = new ArrayList<RowMetaAndData>();
         expectedList.addAll(inputList1);
         expectedList.addAll(inputList2);
         

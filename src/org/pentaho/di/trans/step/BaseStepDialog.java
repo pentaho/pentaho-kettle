@@ -526,7 +526,7 @@ public class BaseStepDialog extends Dialog
         
         // get a list of all the non-empty keys (names)
         //
-        List keys = new ArrayList();
+        List<String> keys = new ArrayList<String>();
         for (int i=0;i<table.getItemCount();i++)
         {
             TableItem tableItem = table.getItem(i);

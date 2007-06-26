@@ -19,7 +19,7 @@ public class LocalVariables
     ThreadLocal local;
     private static LocalVariables localVariables;
     
-    private Map map;
+    private Map<String, KettleVariables> map;
     
     
     /** This is the root of all variables */
@@ -88,7 +88,7 @@ public class LocalVariables
 
     public LocalVariables()
     {
-        map = new Hashtable();
+        map = new Hashtable<String, KettleVariables>();
     }
 
     public static final LocalVariables getInstance()
@@ -101,7 +101,7 @@ public class LocalVariables
         return localVariables;
     }
     
-    public Map getMap()
+    public Map<String, KettleVariables> getMap()
     {
         return map;
     }
@@ -125,7 +125,7 @@ public class LocalVariables
      */
     private KettleVariables getVariables(String localThread)
     {
-        KettleVariables kettleVariables = (KettleVariables) map.get(localThread); 
+        KettleVariables kettleVariables = map.get(localThread); 
         return kettleVariables;
     }
 
@@ -166,12 +166,12 @@ public class LocalVariables
         }
     }
     
-    private List getKettleVariablesWithParent(String parentThread)
+    private List<String> getKettleVariablesWithParent(String parentThread)
     {
-        List children = new ArrayList();
-        List values;
+        List<String> children = new ArrayList<String>();
+        List<KettleVariables> values;
         synchronized (map) {
-            values = new ArrayList(map.values());
+            values = new ArrayList<KettleVariables>(map.values());
         }
         
         for (int i=0;i<values.size();i++)

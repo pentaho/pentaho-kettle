@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -102,13 +103,13 @@ public class EnvUtil
 	 */
 	private static final Properties getEnv()
 	{		
-		 Class system = System.class;
+		 Class<?> system = System.class;
 		 if ( env == null )
 		 {
 			 Map<String,String> returnMap = null;
 			 try  {
-			     Method method = system.getMethod("getenv", (Class[])null);
-			     returnMap = (Map<String,String>) method.invoke(system, (Object[])null);
+			     Method method = system.getMethod("getenv");
+			     returnMap = (Map<String,String>) method.invoke(system);
 			 }
    	         catch ( Exception ex )  {
    	        	 returnMap = null;
@@ -145,7 +146,7 @@ public class EnvUtil
         sysprops.putAll( vars.getProperties() );
         
         String[] envp = new String[sysprops.size()];
-        ArrayList list = new ArrayList(sysprops.keySet());
+        List<String> list = new ArrayList(sysprops.keySet());
         for (int i=0;i<list.size();i++)
         {
             String var = (String)list.get(i);

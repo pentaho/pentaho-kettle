@@ -193,8 +193,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             // 
             if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
             {
-                List keys = new ArrayList(data.look.keySet());
-                List samples = new ArrayList();
+                List<RowMetaAndData> keys = new ArrayList<RowMetaAndData>(data.look.keySet());
+                List<Date> samples = new ArrayList<Date>();
                 int incr = keys.size()/10;
                 if (incr==0) incr=1;
                 for (int k=0;k<keys.size();k+=incr)
@@ -257,11 +257,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             {
                 if (meta.getCacheSize()>0)
                 {
-                    data.look=new Hashtable((int)(meta.getCacheSize()*1.5));
+                    data.look=new Hashtable<RowMetaAndData, TimedRow>((int)(meta.getCacheSize()*1.5));
                 }
                 else
                 {
-                    data.look=new Hashtable();
+                    data.look=new Hashtable<RowMetaAndData, TimedRow>();
                 }
             }
 

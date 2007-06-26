@@ -15,13 +15,12 @@
  
 package org.pentaho.di.repository;
 
-import java.util.ArrayList;
-
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.w3c.dom.Node;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Node;
 
 
 /*
@@ -31,7 +30,7 @@ public class RepositoryMeta
 {
 	private String       name;
 	private String       description;
-	private DatabaseMeta connection;
+	private DatabaseMeta databaseMeta;
 	
 	private boolean      lock;
 
@@ -39,7 +38,7 @@ public class RepositoryMeta
 	{
 		this.name = name;
 		this.description = description;
-		this.connection = connection;
+		this.databaseMeta = connection;
 		
 		lock = false;
 	}
@@ -48,17 +47,17 @@ public class RepositoryMeta
 	{
 		this.name        = "";
 		this.description = "";
-		this.connection  = null;
+		this.databaseMeta  = null;
 	}
 
-	public boolean loadXML(Node repnode, ArrayList databases)
+	public boolean loadXML(Node repnode, List<DatabaseMeta> databases)
 	{
 		try
 		{
 			name        = XMLHandler.getTagValue(repnode, "name") ;
 			description = XMLHandler.getTagValue(repnode, "description") ;
 			String conn = XMLHandler.getTagValue(repnode, "connection") ;
-			connection  = DatabaseMeta.findDatabase(databases, conn);
+			databaseMeta  = DatabaseMeta.findDatabase(databases, conn);
 			return true;
 		}
 		catch(Exception e)
@@ -89,12 +88,12 @@ public class RepositoryMeta
 	
 	public void setConnection(DatabaseMeta connection)
 	{
-		this.connection = connection;
+		this.databaseMeta = connection;
 	}
 	
 	public DatabaseMeta getConnection()
 	{
-		return connection;
+		return databaseMeta;
 	}
 	
 	public boolean isLocked()
@@ -114,7 +113,7 @@ public class RepositoryMeta
 		retval.append("  <repository>").append(Const.CR);
 		retval.append("    ").append(XMLHandler.addTagValue("name",        name));
 		retval.append("    ").append(XMLHandler.addTagValue("description", description));
-		retval.append("    ").append(XMLHandler.addTagValue("connection",  connection!=null?connection.getName():null));
+		retval.append("    ").append(XMLHandler.addTagValue("connection",  databaseMeta!=null?databaseMeta.getName():null));
 		retval.append("  </repository>").append(Const.CR);
         
 		return retval.toString();

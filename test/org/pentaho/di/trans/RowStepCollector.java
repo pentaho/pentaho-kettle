@@ -31,15 +31,15 @@ import org.pentaho.di.trans.step.RowListener;
  */
 public class RowStepCollector implements RowListener
 {
-	private List rowsRead;
-	private List rowsWritten;
-    private List rowsError;
+	private List<RowMetaAndData> rowsRead;
+	private List<RowMetaAndData> rowsWritten;
+    private List<RowMetaAndData> rowsError;
 
 	public RowStepCollector()
 	{
-		rowsRead = new ArrayList();
-		rowsWritten = new ArrayList();
-        rowsError = new ArrayList();
+		rowsRead = new ArrayList<RowMetaAndData>();
+		rowsWritten = new ArrayList<RowMetaAndData>();
+        rowsError = new ArrayList<RowMetaAndData>();
 	}
 
     public void rowReadEvent(RowMetaInterface rowMeta, Object[] row)
@@ -67,17 +67,17 @@ public class RowStepCollector implements RowListener
         rowsError.clear();
 	}
 
-	public List getRowsRead()
+	public List<RowMetaAndData> getRowsRead()
 	{
 		return rowsRead;
 	}
 
-	public List getRowsWritten()
+	public List<RowMetaAndData> getRowsWritten()
 	{
 		return rowsWritten;
 	}
 
-    public List getRowsError()
+    public List<RowMetaAndData> getRowsError()
     {
         return rowsError;
     }

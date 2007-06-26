@@ -74,9 +74,9 @@ public class BlockingStepTest extends TestCase
 		return rm;
 	}
 	
-	public List createData()
+	public List<RowMetaAndData> createData()
 	{
-		List list = new ArrayList();	
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
 		RowMetaInterface rm = createRowMetaInterface();
 		
@@ -105,7 +105,7 @@ public class BlockingStepTest extends TestCase
 	 *  Check the 2 lists comparing the rows in order.
 	 *  If they are not the same fail the test. 
 	 */
-    public void checkRows(List rows1, List rows2)
+    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
     {
     	int idx = 1;
         if ( rows1.size() != rows2.size() )
@@ -113,13 +113,13 @@ public class BlockingStepTest extends TestCase
         	fail("Number of rows is not the same: " + 
           		 rows1.size() + " and " + rows2.size());
         }
-        Iterator it1 = rows1.iterator();
-        Iterator it2 = rows2.iterator();
+        Iterator<RowMetaAndData> it1 = rows1.iterator();
+        Iterator<RowMetaAndData> it2 = rows2.iterator();
         
         while ( it1.hasNext() && it2.hasNext() )
         {
-        	RowMetaAndData rm1 = (RowMetaAndData)it1.next();
-        	RowMetaAndData rm2 = (RowMetaAndData)it2.next();
+        	RowMetaAndData rm1 = it1.next();
+        	RowMetaAndData rm2 = it2.next();
         	
         	Object[] r1 = rm1.getData();
         	Object[] r2 = rm2.getData();
@@ -236,7 +236,7 @@ public class BlockingStepTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createData();
+        List<RowMetaAndData> inputList = createData();
         Iterator it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -251,14 +251,14 @@ public class BlockingStepTest extends TestCase
         // blocking step should receive all rows (but only send the 
         // last one through). dummy2 should only get the last row.
         
-        List resultRows1 = dummyRc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsRead();
         checkRows(resultRows1, inputList);
         
-        List resultRows2 = blockingRc.getRowsRead();
+        List<RowMetaAndData> resultRows2 = blockingRc.getRowsRead();
         checkRows(resultRows2, inputList);
                 
-        List resultRows3 = dummyRc2.getRowsRead();
-        List lastList = new ArrayList();
+        List<RowMetaAndData> resultRows3 = dummyRc2.getRowsRead();
+        List<RowMetaAndData> lastList = new ArrayList<RowMetaAndData>();
         lastList.add(inputList.get(inputList.size() - 1));
         checkRows(resultRows3, lastList);
     }
@@ -352,7 +352,7 @@ public class BlockingStepTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createData();
+        List<RowMetaAndData> inputList = createData();
         Iterator it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -367,13 +367,13 @@ public class BlockingStepTest extends TestCase
         // blocking step should receive all rows (but only send the 
         // last one through). dummy2 should only get the last row.
         
-        List resultRows1 = dummyRc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsRead();
         checkRows(resultRows1, inputList);
         
-        List resultRows2 = blockingRc.getRowsRead();
+        List<RowMetaAndData> resultRows2 = blockingRc.getRowsRead();
         checkRows(resultRows2, inputList);
                 
-        List resultRows3 = dummyRc2.getRowsRead();
+        List<RowMetaAndData> resultRows3 = dummyRc2.getRowsRead();
         checkRows(resultRows3, inputList);
     }    
 }

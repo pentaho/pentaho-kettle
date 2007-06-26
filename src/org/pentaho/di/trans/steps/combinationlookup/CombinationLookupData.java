@@ -19,6 +19,7 @@ package org.pentaho.di.trans.steps.combinationlookup;
 import java.sql.PreparedStatement;
 import java.util.Map;
 
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -35,7 +36,7 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	public Database db;
 	public int keynrs[];      // nrs in row of the keys
 
-	public Map cache;
+	public Map<RowMetaAndData, Long> cache;
     
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface lookupRowMeta;

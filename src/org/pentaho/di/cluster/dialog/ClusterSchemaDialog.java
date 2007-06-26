@@ -78,9 +78,9 @@ public class ClusterSchemaDialog extends Dialog
 
     private Button wCompressed;
 
-    private List slaveServers;
+    private List<SlaveServer> slaveServers;
     
-	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema, List slaveServers)
+	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema, List<SlaveServer> slaveServers)
 	{
 		super(par, SWT.NONE);
 		this.clusterSchema=(ClusterSchema) clusterSchema.clone();

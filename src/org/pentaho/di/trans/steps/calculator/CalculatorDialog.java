@@ -23,6 +23,7 @@ package org.pentaho.di.trans.steps.calculator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +73,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	private CalculatorMeta currentMeta;
 	private CalculatorMeta originalMeta;
     
-    private Map      inputFields;
+    private Map<String, Integer> inputFields;
     private ColumnInfo[] colinf;
 
 	public CalculatorDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -82,7 +83,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		// The order here is important... currentMeta is looked at for changes
 		currentMeta=(CalculatorMeta)in;
 		originalMeta=(CalculatorMeta)currentMeta.clone();
-        inputFields =new HashMap();
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -282,7 +283,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     {
         // Something was changed in the row.
         //
-        final Map fields = new HashMap();
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
         
         // Add the currentMeta fields...
         fields.putAll(inputFields);
@@ -302,8 +303,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             }
         );
         
-        Set keySet = fields.keySet();
-        ArrayList entries = new ArrayList(keySet);
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
         
         String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
 

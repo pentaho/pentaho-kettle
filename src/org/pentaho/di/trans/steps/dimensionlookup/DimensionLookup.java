@@ -1048,7 +1048,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             //
             List keys = data.cache.getKeys();
             int sizeBefore = keys.size();
-            List samples = new ArrayList();
+            List<Long> samples = new ArrayList<Long>();
             
             // Take 10 sample technical keys....
             int stepsize=keys.size()/5;

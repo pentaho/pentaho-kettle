@@ -117,12 +117,12 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	/**
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
-	private List tableFieldColumns = new ArrayList();
+	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
 	
 	/**
 	 * List of ColumnInfo that should have the previous fields combo box
 	 */
-	private List fieldColumns = new ArrayList();
+	private List<ColumnInfo> fieldColumns = new ArrayList<ColumnInfo>();
 	
 	/**
 	 * all fields from the previous steps

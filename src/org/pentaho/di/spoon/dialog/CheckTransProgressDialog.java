@@ -6,18 +6,16 @@
 package org.pentaho.di.spoon.dialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.Props;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.trans.TransMeta;
 
 
 
@@ -31,23 +29,14 @@ public class CheckTransProgressDialog
 {
 	private Shell shell;
 	private TransMeta transMeta;
-	private ArrayList remarks;
+	private List<CheckResult> remarks;
 	private boolean onlySelected;
     private Thread parentThread;
-
-    /**
-     * Creates a new dialog that will handle the wait while checking a transformation...
-     * @deprecated please use the variation that doesn't use log nor props
-     */
-    public CheckTransProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
-    {
-        this(shell, transMeta, remarks, onlySelected);
-    }
 
 	/**
 	 * Creates a new dialog that will handle the wait while checking a transformation...
 	 */
-	public CheckTransProgressDialog(Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
+	public CheckTransProgressDialog(Shell shell, TransMeta transMeta, List<CheckResult> remarks, boolean onlySelected)
 	{
 		this.shell = shell;
 		this.transMeta = transMeta;

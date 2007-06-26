@@ -3474,7 +3474,7 @@ public class Database
     			pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
     			
     			RowMetaInterface rowMeta = new RowMeta();
-                List data = new ArrayList();
+                List<Object> data = new ArrayList<Object>();
     			if (job)
     			{
     				if (use_id)

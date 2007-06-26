@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,8 +48,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 public class RepositoriesMeta 
 {
 	private LogWriter log;
-	private ArrayList databases;    // Repository connections
-	private ArrayList repositories;   // List of repositories
+	private List<DatabaseMeta>   databases;    // Repository connections
+	private List<RepositoryMeta> repositories;   // List of repositories
 
 	public RepositoriesMeta(LogWriter log)
 	{
@@ -59,8 +60,8 @@ public class RepositoriesMeta
 	
 	public void clear()
 	{
-		databases = new ArrayList();
-		repositories = new ArrayList();
+		databases = new ArrayList<DatabaseMeta>();
+		repositories = new ArrayList<RepositoryMeta>();
 	}		
 	
 	public void addDatabase(DatabaseMeta ci)

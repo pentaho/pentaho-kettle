@@ -82,7 +82,7 @@ public class Calculator extends BaseStep implements StepInterface
             data.calcRowMeta = meta.getAllFields(getInputRowMeta()); 
             
             data.fieldIndexes = new FieldIndexes[meta.getCalculation().length];
-            List tempIndexes = new ArrayList();
+            List<Integer> tempIndexes = new ArrayList<Integer>();
 
             // Calculate the indexes of the values and arguments in the target data or temporary data
             // We do this in advance to save time later on.
