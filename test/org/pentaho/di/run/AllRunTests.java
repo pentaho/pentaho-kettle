@@ -14,6 +14,7 @@ import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.delete.RunDelete;
 import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
 import org.pentaho.di.run.excelinput.RunExcelInput;
+import org.pentaho.di.run.exceloutput.RunExcelOutput;
 import org.pentaho.di.run.filterrows.RunFilterRows;
 import org.pentaho.di.run.getfilenames.RunGetFileNames;
 import org.pentaho.di.run.groupby.RunGroupBy;
@@ -183,6 +184,7 @@ public class AllRunTests
         suite.addTestSuite(RunGroupBy.class);
         suite.addTestSuite(RunMergeJoin.class);
         suite.addTestSuite(RunSortedMerge.class);
+        suite.addTestSuite(RunExcelOutput.class);
        
         
         //$JUnit-END$
