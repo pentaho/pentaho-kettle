@@ -2209,7 +2209,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         return !jobMeta.hasChanged();
     }
 
-    public Object getManagedObject()
+    public JobMeta getManagedObject()
     {
         return jobMeta;
     }

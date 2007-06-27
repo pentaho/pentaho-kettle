@@ -2189,7 +2189,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return !transMeta.hasChanged();
     }
     
-    public Object getManagedObject()
+    public TransMeta getManagedObject()
     {
         return transMeta;
     }
