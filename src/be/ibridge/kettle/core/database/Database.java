@@ -3895,10 +3895,10 @@ public class Database
 		Value count = r.getValue(0);
 		if (count.getNumber() == 0)
 		{
+		  String isql = null;
 			try
 			{
 				Statement st = connection.createStatement();
-				String isql;
 				if (!databaseMeta.supportsAutoinc() || !use_autoinc)
 				{
 					isql = "insert into "+schemaTable+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
@@ -3927,7 +3927,7 @@ public class Database
 			}
 			catch(SQLException e)
 			{
-				throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+schemaTable+"] : "+sql, e);
+				throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+schemaTable+"] : "+isql, e);
 			}
 		}
 	}
