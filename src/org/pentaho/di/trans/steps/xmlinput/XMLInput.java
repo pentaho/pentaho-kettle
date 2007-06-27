@@ -59,6 +59,15 @@ public class XMLInput extends BaseStep implements StepInterface
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+
+		if (first) // we just got started
+		{
+			first = false;
+			RowMetaInterface irow = getInputRowMeta();
+			data.outputRowMeta = irow != null ? (RowMetaInterface)irow.clone() : new RowMeta();
+			meta.getFields(data.outputRowMeta, getStepname(), null);
+		}
+
 		Object[] row = getRowFromXML();
 		if (row == null)
 		{
@@ -70,14 +79,9 @@ public class XMLInput extends BaseStep implements StepInterface
 			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
 
 		linesInput++;
-		if (first) // we just got started
-		{
-			first = false;
-			RowMetaInterface irow = getInputRowMeta();
-			data.outputRowMeta = irow != null ? (RowMetaInterface)irow.clone() : new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null);
-			putRow(data.outputRowMeta, row);
-		}
+
+		putRow(data.outputRowMeta, row);
+
 		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) // limit
 		// has
 		// been
@@ -202,7 +206,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			}
 
 			// OK, we have the string...
-			ValueMetaAndData v = new ValueMetaAndData(((ValueMeta) row[i]).getName(), value);
+			ValueMetaAndData v = new ValueMetaAndData(data.outputRowMeta.getValueMeta(i).getName(), value);
 
 			// DO Trimming!
 			switch (xmlInputField.getTrimType())
