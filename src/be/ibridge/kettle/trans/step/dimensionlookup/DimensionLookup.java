@@ -138,6 +138,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
 				{
 					data.fieldnrs[i]=row.searchValueIndex(meta.getFieldStream()[i]);
+          if ((data.fieldnrs[i] < 0)) 
+          {
+            throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          }
 				}
 			}
 
@@ -366,7 +370,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                             punch=true;
                       }
 					  
-					  logRowlevel(Messages.getString("DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					  if (log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.ComparingValues",""+v1,""+v2,String.valueOf(cmp),String.valueOf(identical),String.valueOf(insert),String.valueOf(punch))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}
 				
 				if (!insert)  // Just an update of row at key = valueKey
