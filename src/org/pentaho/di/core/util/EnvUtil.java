@@ -41,7 +41,7 @@ public class EnvUtil
 		}
 		catch (IOException ioe)
 		{
-			log.logDetailed("Kettle Environment", "Unable to read \"<home>/.kettle/kettle.properties\" file: " + ioe.getMessage());
+			log.logDetailed("Kettle Environment", "Unable to read \"{0}\" file: {1}", kettlePropsFilename, ioe.getMessage());
 		}
 		finally
 		{
