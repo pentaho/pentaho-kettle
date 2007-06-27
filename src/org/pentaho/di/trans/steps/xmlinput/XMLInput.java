@@ -21,10 +21,10 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -70,10 +70,14 @@ public class XMLInput extends BaseStep implements StepInterface
 			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
 
 		linesInput++;
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null);
-		putRow(data.outputRowMeta, row);
-
+		if (first) // we just got started
+		{
+			first = false;
+			RowMetaInterface irow = getInputRowMeta();
+			data.outputRowMeta = irow != null ? (RowMetaInterface)irow.clone() : new RowMeta();
+			meta.getFields(data.outputRowMeta, getStepname(), null);
+			putRow(data.outputRowMeta, row);
+		}
 		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) // limit
 		// has
 		// been
@@ -198,7 +202,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			}
 
 			// OK, we have the string...
-			ValueMetaAndData v = new ValueMetaAndData(((ValueMeta)row[i]).getName(), value);
+			ValueMetaAndData v = new ValueMetaAndData(((ValueMeta) row[i]).getName(), value);
 
 			// DO Trimming!
 			switch (xmlInputField.getTrimType())
@@ -312,7 +316,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		{
 			ValueMetaAndData fn = new ValueMetaAndData(meta.getFilenameField(), KettleVFS
 					.getFilename(data.file));
-			row = RowDataUtil.addValueData(row,fn.getValueMeta());
+			row = RowDataUtil.addValueData(row, fn.getValueMeta());
 		}
 
 		// See if we need to add the row number to the row...
@@ -320,10 +324,12 @@ public class XMLInput extends BaseStep implements StepInterface
 				&& meta.getRowNumberField().length() > 0)
 		{
 			ValueMetaAndData fn = new ValueMetaAndData(meta.getRowNumberField(), new Long(data.rownr));
-			row = RowDataUtil.addValueData(row,fn.getValueMeta());
+			row = RowDataUtil.addValueData(row, fn.getValueMeta());
 		}
 
-		data.previousRow = getInputRowMeta().cloneRow(row); // copy it to make
+		RowMetaInterface irow = getInputRowMeta();
+		
+		data.previousRow = irow==null?row:(Object[])irow.cloneRow(row); // copy it to make
 		// sure the next
 		// step doesn't
 		// change it in
@@ -345,20 +351,7 @@ public class XMLInput extends BaseStep implements StepInterface
 	 */
 	private Object[] buildEmptyRow()
 	{
-
-		XMLInputField fields[] = meta.getInputFields();
-		Object[] row = new Object[fields.length];
-		for (int i = 0; i < fields.length; i++)
-		{
-			XMLInputField field = fields[i];
-
-			ValueMetaInterface value = new ValueMeta(field.getName(), field.getType());
-			value.setLength(field.getLength(), field.getPrecision());
-
-			row[i] = (value);
-		}
-
-		return row;
+		return new Object[meta.getInputFields().length];
 	}
 
 	private boolean openNextFile()
