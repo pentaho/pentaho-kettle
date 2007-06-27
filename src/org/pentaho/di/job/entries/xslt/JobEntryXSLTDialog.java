@@ -39,7 +39,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -91,6 +90,8 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 	private Props       	props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -99,6 +100,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null)
 			this.jobEntry.setName(Messages.getString("JobEntryXSLT.Name.Default"));
@@ -180,7 +182,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wxmlFilename.setToolTipText(StringUtil.environmentSubstitute( wxmlFilename.getText() ) );
+					wxmlFilename.setToolTipText(jobMeta.environmentSubstitute( wxmlFilename.getText() ) );
 				}
 			}
 		);
@@ -195,7 +197,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 					dialog.setFilterExtensions(new String[] {"*.xml;*.XML", "*"});
 					if (wxmlFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wxmlFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wxmlFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES_XML);
 					if (dialog.open()!=null)
@@ -236,7 +238,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wxslFilename.setToolTipText(StringUtil.environmentSubstitute( wxslFilename.getText() ) );
+					wxslFilename.setToolTipText(jobMeta.environmentSubstitute( wxslFilename.getText() ) );
 				}
 			}
 		);
@@ -251,7 +253,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 					dialog.setFilterExtensions(new String[] {"*.xsl;*.XSL", "*.xslt;*.XSLT", "*"});
 					if (wxslFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wxslFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wxslFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES_XSL);
 					if (dialog.open()!=null)
@@ -261,10 +263,6 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 				}
 			}
 		);
-
-
-
-	
 	
 		// OutputFilename
 		wlOutputFilename = new Label(shell, SWT.RIGHT);
@@ -291,7 +289,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 		{
 			public void modifyText(ModifyEvent e)
 			{
-				wOutputFilename.setToolTipText(StringUtil.environmentSubstitute( wOutputFilename.getText() ) );
+				wOutputFilename.setToolTipText(jobMeta.environmentSubstitute( wOutputFilename.getText() ) );
 			}
 		}
 			);

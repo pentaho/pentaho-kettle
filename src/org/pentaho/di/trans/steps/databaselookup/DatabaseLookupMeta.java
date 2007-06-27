@@ -627,7 +627,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -635,6 +635,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // Keep track of this one for cancelQuery
 
 			try

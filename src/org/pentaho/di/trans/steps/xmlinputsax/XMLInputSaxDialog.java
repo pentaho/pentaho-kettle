@@ -55,7 +55,6 @@ import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
@@ -707,7 +706,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 				{
 					XMLInputSaxMeta tfii = new XMLInputSaxMeta();
 					getInfo(tfii);
-					String files[] = tfii.getFiles();
+					String files[] = tfii.getFiles(transMeta);
 					if (files != null && files.length > 0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(
@@ -757,8 +756,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		{
 			public void modifyText(ModifyEvent e)
 			{
-
-				wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
+				wFilename.setToolTipText(transMeta.environmentSubstitute(wFilename.getText()));
 			}
 		});
 
@@ -775,7 +773,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 					DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 					if (wFilename.getText() != null)
 					{
-						String fpath = StringUtil.environmentSubstitute(wFilename.getText());
+						String fpath = transMeta.environmentSubstitute(wFilename.getText());
 						dialog.setFilterPath(fpath);
 					}
 
@@ -790,7 +788,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 					dialog.setFilterExtensions(new String[] { "*.xml;*.XML", "*" }); //$NON-NLS-1$ //$NON-NLS-2$
 					if (wFilename.getText() != null)
 					{
-						String fname = StringUtil.environmentSubstitute(wFilename.getText());
+						String fname = transMeta.environmentSubstitute(wFilename.getText());
 						dialog.setFileName(fname);
 					}
 
@@ -1050,10 +1048,9 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 			// Keep the list of positions
 
-			for (int f = 0; f < meta.getFiles().length; f++)
+			for (int f = 0; f < meta.getFiles(transMeta).length; f++)
 			{
-
-				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(meta.getFiles()[f],
+				XMLInputSaxFieldRetriever fieldRetreiver = new XMLInputSaxFieldRetriever(meta.getFiles(transMeta)[f],
 						meta);
 
 				fields = fieldRetreiver.getFields();

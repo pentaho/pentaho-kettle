@@ -28,7 +28,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -293,8 +292,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
@@ -304,7 +302,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 			
 			// Check the sort directory
-            String realDirectory = StringUtil.environmentSubstitute(directory); 
+            String realDirectory = transMeta.environmentSubstitute(directory); 
 			File f = new File( realDirectory );
 			if (f.exists())
 			{

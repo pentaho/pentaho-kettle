@@ -445,7 +445,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
@@ -458,7 +458,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
 			remarks.add(cr);
 			
-            String strLimit = StringUtil.environmentSubstitute(rowLimit);
+            String strLimit = transMeta.environmentSubstitute(rowLimit);
 			if (Const.toLong(strLimit, -1L)<=0)
 			{
 				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);

@@ -192,29 +192,29 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         return rowMeta;
     }
     
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CalculatorMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}

@@ -6780,6 +6780,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             // Use metadata logic in SelectValues, use SelectValueInfo...
             //
             Database sourceDB = new Database(sourceDBInfo);
+            sourceDB.shareVariablesWith(meta);
             sourceDB.connect();
             
             // Get the fields for the input table...

@@ -677,6 +677,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			}
 
 			data.db=new Database(meta.getDatabaseMeta());
+			data.db.shareVariablesWith(this);
 			try
 			{
 				data.db.connect(getPartitionID());

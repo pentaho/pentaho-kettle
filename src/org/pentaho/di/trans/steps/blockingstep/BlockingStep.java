@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 
@@ -76,7 +75,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 			
 			try
 			{
-				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", StringUtil.environmentSubstitute(meta.getDirectory()));
+				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()));
 				
 				data.files.add(fileObject); // Remember the files!
 				OutputStream outputStream = fileObject.getContent().getOutputStream();

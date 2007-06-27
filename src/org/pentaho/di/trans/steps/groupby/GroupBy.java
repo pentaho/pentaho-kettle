@@ -34,7 +34,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -427,7 +426,7 @@ public class GroupBy extends BaseStep implements StepInterface
             {
                 try
                 {
-                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory()))); //$NON-NLS-1$
+                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(environmentSubstitute(meta.getDirectory()))); //$NON-NLS-1$
                     data.fos=new FileOutputStream(data.tempFile);
                     data.dos=new DataOutputStream(data.fos);
                     data.firstRead = true;

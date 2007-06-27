@@ -38,6 +38,7 @@ import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
+import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Node;
 
 
@@ -620,9 +621,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		return location;
 	}
 
-	public void check(List<CheckResult> remarks, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
-		stepMetaInterface.check(remarks, this, prev, input, output, info);
+		stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info);
 	}
 	
 	public String toString()

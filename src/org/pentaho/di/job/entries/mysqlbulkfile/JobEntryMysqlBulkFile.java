@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.mysqlbulkfile;
+
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -338,13 +338,14 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 				{
 					// User has specified a connection, We can continue ...
 					Database db = new Database(connection);
+					db.shareVariablesWith(this);
 					try
 					{
 						db.connect();
 						// Get schemaname
-						String realSchemaname = StringUtil.environmentSubstitute(schemaname);
+						String realSchemaname = environmentSubstitute(schemaname);
 						// Get tablename
-						String realTablename = StringUtil.environmentSubstitute(tablename);
+						String realTablename = environmentSubstitute(tablename);
 
 						if (db.checkTableExists(realTablename))
 						{
@@ -533,9 +534,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	}
     
 	public String getRealFilename()
-	{
- 
-		String RealFile= StringUtil.environmentSubstitute(getFilename());
+	{ 
+		String RealFile= environmentSubstitute(getFilename());
 		return RealFile.replace('\\','/');
 	}
 	public void setSeparator(String separator)
@@ -556,9 +556,10 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	{
 		return lineterminated;
 	}
+	
 	public String getRealLineterminated()
 	{
-		return StringUtil.environmentSubstitute(getLineterminated());
+		return environmentSubstitute(getLineterminated());
 	}
 
 	public String getSeparator()
@@ -572,17 +573,19 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealSeparator()
 	{
-		return StringUtil.environmentSubstitute(getSeparator());
+		return environmentSubstitute(getSeparator());
 	}
 
 	public String getRealEnclosed()
 	{
-		return StringUtil.environmentSubstitute(getEnclosed());
+		return environmentSubstitute(getEnclosed());
 	}
+	
 	public void setLimitlines(String limitlines)
 	{
 		this.limitlines = limitlines;
 	}
+	
 	public String getLimitlines()
 	{
 		return limitlines;
@@ -590,10 +593,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealLimitlines()
 	{
-		return StringUtil.environmentSubstitute(getLimitlines());
+		return environmentSubstitute(getLimitlines());
 	}
-
-
 
 	public void setListColumn(String listcolumn)
 	{
@@ -606,7 +607,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealListColumn()
 	{
-		return StringUtil.environmentSubstitute(getListColumn());
+		return environmentSubstitute(getListColumn());
 	}
 
 	private String MysqlString(String listcolumns)

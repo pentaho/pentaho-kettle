@@ -145,7 +145,9 @@ public class AddSequence extends BaseStep implements StepInterface
 		{
 			if (meta.isDatabaseUsed())
 			{
-				data.setDb( new Database(meta.getDatabase()) );
+				Database db = new Database(meta.getDatabase());
+				db.shareVariablesWith(this);
+				data.setDb( db );			
 				try
 				{
 					data.getDb().connect(getPartitionID());

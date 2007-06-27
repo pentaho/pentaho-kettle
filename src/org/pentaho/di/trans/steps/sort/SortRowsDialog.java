@@ -88,6 +88,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private SortRowsMeta input;
 	
+	
 	public SortRowsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -188,7 +189,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wSortDir.setToolTipText(StringUtil.environmentSubstitute( wSortDir.getText() ) );
+					wSortDir.setToolTipText(transMeta.environmentSubstitute( wSortDir.getText() ) );
 				}
 			}
 		);

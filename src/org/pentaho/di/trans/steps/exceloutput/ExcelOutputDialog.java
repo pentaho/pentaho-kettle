@@ -63,7 +63,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.TransMeta;
@@ -364,7 +363,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				ExcelOutputMeta tfoi = new ExcelOutputMeta();
 				getInfo(tfoi);
-				String files[] = tfoi.getFiles();
+				String files[] = tfoi.getFiles(transMeta);
 				if (files!=null && files.length>0)
 				{
 					EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
@@ -816,7 +815,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+					wFilename.setToolTipText(transMeta.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -824,7 +823,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wTemplateFilename.setToolTipText(StringUtil.environmentSubstitute( wTemplateFilename.getText() ) );
+					wTemplateFilename.setToolTipText(transMeta.environmentSubstitute( wTemplateFilename.getText() ) );
 				}
 			}
 		);
@@ -840,7 +839,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					dialog.setFilterExtensions(new String[] {"*.xls", "*.*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
+						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
 					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ExcelFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)
@@ -861,7 +860,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					dialog.setFilterExtensions(new String[] {"*.xls", "*.*"});
 					if (wTemplateFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wTemplateFilename.getText()));
+						dialog.setFileName(transMeta.environmentSubstitute(wTemplateFilename.getText()));
 					}
 					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ExcelFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)
@@ -948,9 +947,9 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wTemplate.setSelection(input.isTemplateEnabled());
 		wTemplateAppend.setSelection(input.isTemplateAppend());
-		if (input.getSheetname() != null) 
+		if (input.getSheetname(transMeta) != null) 
 		{
-			wSheetname.setText(input.getSheetname());
+			wSheetname.setText(input.getSheetname(transMeta));
 		}
 		else
 		{
@@ -961,7 +960,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		EnablePassword();
 		EnableTemplate();
 
-		if (input.getPassword() != null) wPassword.setText(input.getPassword());
+		if (input.getPassword(transMeta) != null) wPassword.setText(input.getPassword(transMeta));
 		log.logDebug(toString(), "getting fields info...");
 		
 		for (int i=0;i<input.getOutputFields().length;i++)

@@ -975,7 +975,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+					wFilename.setToolTipText(transMeta.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -992,7 +992,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
+							String fpath = transMeta.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -1008,7 +1008,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						dialog.setFilterExtensions(new String[] {"*.xls;*.XLS", "*"});
 						if (wFilename.getText()!=null)
 						{
-							String fname = StringUtil.environmentSubstitute(wFilename.getText());
+							String fname = transMeta.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						

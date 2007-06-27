@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -221,7 +220,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		// First try without connecting to the database... (can be  S L O W)
         String sNewSQL = sql; 
-        if (isVariableReplacementActive()) sNewSQL = StringUtil.environmentSubstitute(sql); 
+        if (isVariableReplacementActive()) sNewSQL = db.environmentSubstitute(sql); // TODO SB 
 
 		RowMetaInterface add=null;
 		try
@@ -326,7 +325,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
@@ -336,6 +335,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
             databases = new Database[] { db }; // keep track of it for cancelling purposes...
 
 			try

@@ -362,7 +362,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		return FileInputList.createFileList(fileName, fileMask, fileRequired);
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 

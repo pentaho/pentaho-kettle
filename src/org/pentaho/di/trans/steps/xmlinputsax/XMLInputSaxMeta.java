@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -568,13 +569,13 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 
-	public String[] getFiles()
+	public String[] getFiles(VariableSpace space)
 	{
 		String files[]=null;
 		
 		// Replace possible environment variables...
-		final String realfile[] = StringUtil.environmentSubstitute(fileName);
-		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
+		final String realfile[] = space.environmentSubstitute(fileName);
+		final String realmask[] = space.environmentSubstitute(fileMask);
 		
 		List<String> filelist = new ArrayList<String>();
 		
@@ -639,7 +640,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		return files;
 	}
 	
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
@@ -655,7 +656,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		String files[] = getFiles();
+		String files[] = getFiles(transMeta);
 		if (files==null || files.length==0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);

@@ -30,7 +30,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -304,13 +303,13 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		SFTPClient sftpclient = null;
         
         // String substitution..
-        String realServerName      = StringUtil.environmentSubstitute(serverName);
-        String realServerPort      = StringUtil.environmentSubstitute(serverPort);
-        String realUsername        = StringUtil.environmentSubstitute(userName);
-        String realPassword        = StringUtil.environmentSubstitute(password);
-        String realSftpDirString   = StringUtil.environmentSubstitute(sftpDirectory);
-        String realWildcard        = StringUtil.environmentSubstitute(wildcard);
-        String realLocalDirectory  = StringUtil.environmentSubstitute(localDirectory);
+        String realServerName      = environmentSubstitute(serverName);
+        String realServerPort      = environmentSubstitute(serverPort);
+        String realUsername        = environmentSubstitute(userName);
+        String realPassword        = environmentSubstitute(password);
+        String realSftpDirString   = environmentSubstitute(sftpDirectory);
+        String realWildcard        = environmentSubstitute(wildcard);
+        String realLocalDirectory  = environmentSubstitute(localDirectory);
         
 		try
 		{

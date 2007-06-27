@@ -323,7 +323,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         
         // Performs checks...
-        long longLimit = Const.toLong(StringUtil.environmentSubstitute( wLimit.getText()), -1L );
+        long longLimit = Const.toLong(transMeta.environmentSubstitute( wLimit.getText()), -1L );
         if (longLimit<0)
         {
             throw new KettleException( Messages.getString("RowGeneratorDialog.Wrong.RowLimit.Number") );

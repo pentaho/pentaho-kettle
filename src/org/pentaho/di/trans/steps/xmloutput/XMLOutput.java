@@ -393,7 +393,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 	public String buildFilename(boolean ziparchive)
 	{
-		return meta.buildFilename(getCopy(), data.splitnr, ziparchive);
+		return meta.buildFilename(this, getCopy(), data.splitnr, ziparchive);
 	}
 
 	public boolean openNewFile()

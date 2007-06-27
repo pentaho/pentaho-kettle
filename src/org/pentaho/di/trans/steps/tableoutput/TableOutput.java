@@ -385,6 +385,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
                 
 				data.db=new Database(meta.getDatabaseMeta());
+				data.db.shareVariablesWith(this);
 				
                 if (getTransMeta().isUsingUniqueConnections())
                 {

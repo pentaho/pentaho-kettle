@@ -363,7 +363,7 @@ public class Update extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.db=new Database(meta.getDatabaseMeta());
-			data.db=new Database(meta.getDatabaseMeta());
+			data.db.shareVariablesWith(this);
 			try 
 			{
                 if (getTransMeta().isUsingUniqueConnections())
@@ -371,12 +371,10 @@ public class Update extends BaseStep implements StepInterface
                     synchronized (getTrans()) 
                     { 
                         data.db.connect(getTrans().getThreadName(), getPartitionID());
-                        data.db.connect(getTrans().getThreadName(), getPartitionID());
                     }
                 }
                 else
                 {
-                    data.db.connect(getPartitionID());
                     data.db.connect(getPartitionID());
                 }
                 

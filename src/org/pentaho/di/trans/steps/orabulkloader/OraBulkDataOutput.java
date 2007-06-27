@@ -30,6 +30,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 
 
 /**
@@ -54,7 +55,7 @@ public class OraBulkDataOutput
 		this.meta = meta;
 	}
 	
-	public void open(Process sqlldrProcess) throws KettleException
+	public void open(VariableSpace space, Process sqlldrProcess) throws KettleException
 	{
 		// String loadMethod = meta.getLoadMethod();
 		try 
@@ -72,7 +73,7 @@ public class OraBulkDataOutput
 		//	{
 				// Else open the data file filled in.
 				String dataFile = meta.getDataFile();
-				dataFile = StringUtil.environmentSubstitute(dataFile);
+				dataFile = space.environmentSubstitute(dataFile);
 				
                 os = new FileOutputStream(dataFile, false);
 		//	}	

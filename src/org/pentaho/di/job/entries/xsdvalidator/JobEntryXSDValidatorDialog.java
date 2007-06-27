@@ -38,8 +38,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
 
 
 /**
@@ -83,6 +81,8 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 	private Props       	props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -172,7 +172,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wxmlFilename.setToolTipText(StringUtil.environmentSubstitute( wxmlFilename.getText() ) );
+					wxmlFilename.setToolTipText(jobMeta.environmentSubstitute( wxmlFilename.getText() ) );
 				}
 			}
 		);
@@ -187,7 +187,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 					dialog.setFilterExtensions(new String[] {"*.xml;*.XML", "*"});
 					if (wxmlFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wxmlFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wxmlFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES_XML);
 					if (dialog.open()!=null)
@@ -228,7 +228,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wxsdFilename.setToolTipText(StringUtil.environmentSubstitute( wxsdFilename.getText() ) );
+					wxsdFilename.setToolTipText(jobMeta.environmentSubstitute( wxsdFilename.getText() ) );
 				}
 			}
 		);
@@ -243,7 +243,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 					dialog.setFilterExtensions(new String[] {"*.xsd;*.XSD","*"});
 					if (wxsdFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wxsdFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wxsdFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES_XSD);
 					if (dialog.open()!=null)

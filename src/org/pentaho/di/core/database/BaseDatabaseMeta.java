@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -38,8 +40,10 @@ import org.pentaho.di.core.encryption.Encr;
  * @author Matt
  * @since  11-mrt-2005
  */
-public abstract class BaseDatabaseMeta implements Cloneable
+public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 {
+    private VariableSpace variables = new Variables();
+    
     /**
      * The port number of the database as string: allows for parameterisation.
      */
@@ -1151,4 +1155,58 @@ public abstract class BaseDatabaseMeta implements Cloneable
         attributes.setProperty(ATTRIBUTE_USE_RESULT_STREAMING, useStreaming?"Y":"N");
     }
 
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}	
+
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}    
 }

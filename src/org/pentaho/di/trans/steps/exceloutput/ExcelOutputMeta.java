@@ -27,7 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -167,21 +167,17 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/**
 	 * @return Returns the password.
 	 */
-	public String getPassword()
+	public String getPassword(VariableSpace space)
 	{
-		return StringUtil.environmentSubstitute(password);
-	
-
+		return space.environmentSubstitute(password);
 	}
 
 	/**
 	 * @return Returns the sheet name.
 	 */
-	public String getSheetname()
+	public String getSheetname(VariableSpace space)
 	{
-		return StringUtil.environmentSubstitute(sheetname);
-	
-
+		return space.environmentSubstitute(sheetname);
 	}
 
 	/**
@@ -550,7 +546,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		}
 	}
 	
-	public String[] getFiles()
+	public String[] getFiles(VariableSpace space)
 	{
 		int copies=1;
 		int splits=1;
@@ -575,7 +571,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		{
 			for (int split=0;split<splits;split++)
 			{
-				retval[i]=buildFilename(copy, split);
+				retval[i]=buildFilename(space, copy, split);
 				i++;
 			}
 		}
@@ -587,12 +583,12 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		return retval;
 	}
 	
-	public String buildFilename(int stepnr, int splitnr)
+	public String buildFilename(VariableSpace space, int stepnr, int splitnr)
 	{
 		SimpleDateFormat daf     = new SimpleDateFormat();
 
 		// Replace possible environment variables...
-		String retval=StringUtil.environmentSubstitute( fileName );
+		String retval=space.environmentSubstitute( fileName );
 		
 		Date now = new Date();
 		
@@ -755,14 +751,14 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -781,12 +777,12 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			if (error_found) 
 			{
 				error_message= Messages.getString("ExcelOutputMeta.CheckResult.FieldsNotFound", error_message);
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -794,16 +790,16 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("ExcelOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("ExcelOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
 		remarks.add(cr);
 	}
 

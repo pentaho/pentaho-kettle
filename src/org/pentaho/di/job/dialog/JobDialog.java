@@ -813,6 +813,7 @@ public class JobDialog extends Dialog
 				if (tablename!=null && tablename.length()>0)
 				{
 					Database db = new Database(ci);
+					db.shareVariablesWith(jobMeta);
 					try
 					{
                         db.connect();

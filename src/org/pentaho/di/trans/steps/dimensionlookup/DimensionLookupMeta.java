@@ -925,7 +925,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		return mincal.getTime();
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		if (update)
 			checkUpdate(remarks, stepinfo, prev);
@@ -970,6 +970,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (databaseMeta != null)
 		{
 			Database db = new Database(databaseMeta);
+			// TODO SB: Share VariableSpace
 			try
 			{
 				db.connect();
@@ -1191,6 +1192,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (databaseMeta != null)
 		{
 			Database db = new Database(databaseMeta);
+			// TODO SB: share variable space
 			try
 			{
 				db.connect();
@@ -1435,6 +1437,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					if (!Const.isEmpty(schemaTable))
 					{                       
 						Database db = new Database(databaseMeta);
+						db.shareVariablesWith(transMeta);
 						try
 						{
 							db.connect();

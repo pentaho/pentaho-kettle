@@ -177,7 +177,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles();
+			data.files = meta.getFiles(this);
 			if (data.files == null || data.files.length == 0)
 			{
 				logError("No file(s) specified! Stop processing.");

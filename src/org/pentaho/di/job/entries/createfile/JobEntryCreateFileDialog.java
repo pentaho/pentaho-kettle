@@ -38,8 +38,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
 
 
 /**
@@ -76,12 +74,15 @@ public class JobEntryCreateFileDialog extends Dialog implements JobEntryDialogIn
 	private SelectionAdapter lsDef;
 
 	private boolean changed;
+	
+	private JobMeta jobMeta;
 
 	public JobEntryCreateFileDialog(Shell parent, JobEntryCreateFile jobEntry, JobMeta jobMeta)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null) 
 			this.jobEntry.setName(Messages.getString("JobCreateFile.Name.Default"));
@@ -165,7 +166,7 @@ public class JobEntryCreateFileDialog extends Dialog implements JobEntryDialogIn
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+					wFilename.setToolTipText(jobMeta.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -180,7 +181,7 @@ public class JobEntryCreateFileDialog extends Dialog implements JobEntryDialogIn
 					dialog.setFilterExtensions(new String[] {"*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES);
 					if (dialog.open()!=null)

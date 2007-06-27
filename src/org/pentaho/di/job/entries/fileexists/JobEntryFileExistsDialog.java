@@ -49,7 +49,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -94,6 +93,8 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
     private Props props;
 
     private SelectionAdapter lsDef;
+    
+    private JobMeta jobMeta;
 
     private boolean changed;
 
@@ -102,6 +103,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta = jobMeta;
 
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("JobFileExists.Name.Default"));
@@ -186,7 +188,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
         {
             public void modifyText(ModifyEvent e)
             {
-                wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
+                wFilename.setToolTipText(jobMeta.environmentSubstitute(wFilename.getText()));
             }
         });
 
@@ -198,7 +200,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
                 dialog.setFilterExtensions(new String[] { "*.txt", "*.csv", "*" });
                 if (wFilename.getText() != null)
                 {
-                    dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
+                    dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()));
                 }
                 dialog.setFilterNames(FILETYPES);
                 if (dialog.open() != null)

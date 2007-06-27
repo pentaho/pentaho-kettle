@@ -310,7 +310,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         
     }
 
-    public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
 
@@ -355,7 +355,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             // Check the sort directory
-            String realDirectory = StringUtil.environmentSubstitute(directory);
+            String realDirectory = transMeta.environmentSubstitute(directory);
 
             File f = new File(realDirectory);
             if (f.exists())

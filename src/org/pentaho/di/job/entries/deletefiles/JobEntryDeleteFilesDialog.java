@@ -42,13 +42,10 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
-
 
 
 /**
- * This dialog allows you to edit the Delete File job entry settings.
+ * This dialog allows you to edit the Delete Files job entry settings.
  *
  * @author Samatar Hassan
  * @since  06-05-2007
@@ -87,6 +84,8 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 	private Props       	    props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -115,6 +114,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null) 
 			this.jobEntry.setName(Messages.getString("JobDeleteFiles.Name.Default"));
@@ -342,7 +342,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		{
 			public void modifyText(ModifyEvent e)
 			{
-				wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+				wFilename.setToolTipText(jobMeta.environmentSubstitute( wFilename.getText() ) );
 			}
 		}
 		);
@@ -357,7 +357,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 					dialog.setFilterExtensions(new String[] {"*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES);
 					if (dialog.open()!=null)

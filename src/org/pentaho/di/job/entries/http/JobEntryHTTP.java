@@ -44,7 +44,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -363,7 +362,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         {
             resultRows = new ArrayList<RowMetaAndData>();
             RowMetaAndData row = new RowMetaAndData();
-            row.addValue( new ValueMeta(urlFieldnameToUse, ValueMetaInterface.TYPE_STRING), StringUtil.environmentSubstitute(url) );
+            row.addValue( new ValueMeta(urlFieldnameToUse, ValueMetaInterface.TYPE_STRING), environmentSubstitute(url) );
             resultRows.add(row);
             System.out.println("Added one row to rows: "+row);
         }
@@ -386,15 +385,15 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
             
             try
             {
-                String urlToUse = StringUtil.environmentSubstitute( row.getString(urlFieldnameToUse, "") );
+                String urlToUse = environmentSubstitute( row.getString(urlFieldnameToUse, "") );
                 
                 log.logBasic(toString(), "Connecting to URL: "+urlToUse);
 
                 if (!Const.isEmpty( proxyHostname )) 
                 {
-                    System.setProperty("http.proxyHost", StringUtil.environmentSubstitute( proxyHostname ));
-                    System.setProperty("http.proxyPort", StringUtil.environmentSubstitute( proxyPort ));
-                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", StringUtil.environmentSubstitute( nonProxyHosts ));
+                    System.setProperty("http.proxyHost", environmentSubstitute( proxyHostname ));
+                    System.setProperty("http.proxyPort", environmentSubstitute( proxyPort ));
+                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", environmentSubstitute( nonProxyHosts ));
                 }
                 
                 if (!Const.isEmpty(username) )
@@ -403,14 +402,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                         {
                             protected PasswordAuthentication getPasswordAuthentication()
                             {
-                                String realPassword = StringUtil.environmentSubstitute( password );
-                                return new PasswordAuthentication(StringUtil.environmentSubstitute(username), realPassword!=null ? realPassword.toCharArray() : new char[] {} );
+                                String realPassword = environmentSubstitute( password );
+                                return new PasswordAuthentication(environmentSubstitute(username), realPassword!=null ? realPassword.toCharArray() : new char[] {} );
                             }
                         }
                     );
                 }
                 
-                String realTargetFile = StringUtil.environmentSubstitute( targetFilename );
+                String realTargetFile = environmentSubstitute( targetFilename );
                 if (dateTimeAdded)
                 {
                     SimpleDateFormat daf = new SimpleDateFormat();
@@ -423,7 +422,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                     
                     if (!Const.isEmpty(targetFilenameExtention) )
                     {
-                        realTargetFile+="."+StringUtil.environmentSubstitute(targetFilenameExtention);
+                        realTargetFile+="."+environmentSubstitute(targetFilenameExtention);
                     }
                 }
                 
@@ -435,7 +434,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
                 URLConnection connection = server.openConnection();
                 
                 // See if we need to send a file over?
-                String realUploadFilename = StringUtil.environmentSubstitute( uploadFilename );
+                String realUploadFilename = environmentSubstitute( uploadFilename );
                 if (!Const.isEmpty(realUploadFilename))
                 {
                     log.logDetailed(toString(), "Start sending content of file ["+realUploadFilename+"] to server.");

@@ -271,6 +271,7 @@ public class TransHistory extends Composite implements TabItemInterface
                     {
                         // open a connection
                         database = new Database(transMeta.getLogConnection());
+                        database.shareVariablesWith(transMeta);
                         database.connect();
                         
                         RowMetaAndData params = new RowMetaAndData();

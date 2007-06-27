@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.shell;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -248,7 +248,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
     public String getRealFilename()
     {
-        return StringUtil.environmentSubstitute(getFilename());
+        return environmentSubstitute(getFilename());
     }
     
 	public String getLogFilename()
@@ -286,7 +286,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         {
             try
             {
-                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
+                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true);
             }
             catch(KettleException e)
             {
@@ -405,7 +405,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             
 			FileObject fileObject = null;
 
-			String realFilename = StringUtil.environmentSubstitute(getFilename());
+			String realFilename = environmentSubstitute(getFilename());
 			fileObject = KettleVFS.getFileObject(realFilename);			
 			
             if( Const.getOS().equals( "Windows 95" ) )
@@ -541,23 +541,23 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             result.setExitStatus( proc.exitValue() );
             if (result.getExitStatus()!=0) 
             {
-                log.logDetailed(toString(), "Exit status of shell ["+StringUtil.environmentSubstitute(getFileName())+"] was "+result.getExitStatus());
+                log.logDetailed(toString(), "Exit status of shell ["+environmentSubstitute(getFileName())+"] was "+result.getExitStatus());
                 result.setNrErrors(1);
             } 
         }
         catch(IOException ioe)
         {
-            log.logError(toString(), "Error running shell ["+StringUtil.environmentSubstitute(getFileName())+"] : "+ioe.toString());
+            log.logError(toString(), "Error running shell ["+environmentSubstitute(getFileName())+"] : "+ioe.toString());
             result.setNrErrors(1);
         }
         catch(InterruptedException ie)
         {
-            log.logError(toString(), "Shell ["+StringUtil.environmentSubstitute(getFileName())+"] was interupted : "+ie.toString());
+            log.logError(toString(), "Shell ["+environmentSubstitute(getFileName())+"] was interupted : "+ie.toString());
             result.setNrErrors(1);
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Unexpected error running shell ["+StringUtil.environmentSubstitute(getFileName())+"] : "+e.toString());
+            log.logError(toString(), "Unexpected error running shell ["+environmentSubstitute(getFileName())+"] : "+e.toString());
             result.setNrErrors(1);
         }
     

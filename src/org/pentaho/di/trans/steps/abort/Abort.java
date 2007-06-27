@@ -10,7 +10,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -39,7 +38,7 @@ public class Abort extends BaseStep implements StepInterface {
 		{
 		    // Add init code here.
 			nrInputRows = 0;
-			String threshold = StringUtil.environmentSubstitute(meta.getRowThreshold());
+			String threshold = environmentSubstitute(meta.getRowThreshold());
 			nrThresholdRows = Const.toInt(threshold, -1);
 			if ( nrThresholdRows < 0 )
 			{
@@ -72,7 +71,7 @@ public class Abort extends BaseStep implements StepInterface {
         	   //
         	   logMinimal(Messages.getString("Abort.Log.Wrote.AbortRow", Long.toString(nrInputRows), r.toString()) );
         		
-        	   String message = StringUtil.environmentSubstitute(meta.getMessage());
+        	   String message = environmentSubstitute(meta.getMessage());
         	   if ( message == null || message.length() == 0 )
         	   {
         		   logMinimal(Messages.getString("Abort.Log.DefaultAbortMessage", "" + nrInputRows));

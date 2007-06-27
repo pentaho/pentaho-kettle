@@ -125,6 +125,8 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
     private Props props;
 
     private SelectionAdapter lsDef;
+    
+    private JobMeta jobMeta;
 
     private boolean changed;
 
@@ -345,7 +347,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
         {
             public void modifyText(ModifyEvent e)
             {
-                wFilenamePattern.setToolTipText(StringUtil.environmentSubstitute(wFilenamePattern.getText()));
+                wFilenamePattern.setToolTipText(jobMeta.environmentSubstitute(wFilenamePattern.getText()));
             }
         });
 

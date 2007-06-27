@@ -59,7 +59,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -117,7 +116,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 
 	private Props props;
 
-	private SelectionAdapter lsDef;
+	private SelectionAdapter lsDef;	
 
 	private boolean changed;
 
@@ -376,7 +375,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		{
 			public void modifyText(ModifyEvent e)
 			{
-				wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
+				wFilename.setToolTipText(jobMeta.environmentSubstitute(wFilename.getText()));
 			}
 		});
 
@@ -388,7 +387,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 				dialog.setFilterExtensions(new String[] { "*.txt", "*.csv", "*" });
 				if (wFilename.getText() != null)
 				{
-					dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
+					dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()));
 				}
 				dialog.setFilterNames(FILETYPES);
 				if (dialog.open() != null)
@@ -872,6 +871,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
             if (databaseMeta!=null)
             {
                 Database database = new Database(databaseMeta);
+                database.shareVariablesWith(jobMeta);
                 try
                 {
                     database.connect();

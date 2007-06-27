@@ -54,7 +54,8 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
 
 /**
@@ -65,7 +66,7 @@ import org.pentaho.di.core.util.StringUtil;
  * @since 05-04-2003
  *
  */
-public class Database
+public class Database implements VariableSpace
 {
 	private DatabaseMeta databaseMeta;
 	
@@ -111,6 +112,8 @@ public class Database
     private boolean performRollbackAtLastDisconnect;
     private String partitionId;
     
+    private VariableSpace variables = new Variables();
+    
     
 	/**
 	 * Construnct a new Database Connection
@@ -120,6 +123,7 @@ public class Database
 	{
 		log=LogWriter.getInstance();
 		databaseMeta = inf;
+		inf.shareVariablesWith(this);
 		
 		pstmt = null;
 		rowMeta = null;
@@ -274,7 +278,7 @@ public class Database
     			log.logDetailed(toString(), "Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
-                String sql = StringUtil.environmentSubstitute( databaseMeta.getConnectSQL() ); 
+                String sql = environmentSubstitute( databaseMeta.getConnectSQL() ); 
                 
                 // only execute if the SQL is not empty, null and is not just a bunch of spaces, tabs, CR etc.
                 if (!Const.isEmpty(sql) && !Const.onlySpaces(sql))
@@ -346,11 +350,11 @@ public class Database
             
             if (databaseMeta.isPartitioned() && !Const.isEmpty(partitionId))
             {
-                url = StringUtil.environmentSubstitute(databaseMeta.getURL(partitionId));
+                url = environmentSubstitute(databaseMeta.getURL(partitionId));
             }
             else
             {
-                url = StringUtil.environmentSubstitute(databaseMeta.getURL()); 
+                url = environmentSubstitute(databaseMeta.getURL()); 
             }
             
             String clusterUsername=null;
@@ -375,8 +379,8 @@ public class Database
             }
             else
             {
-                username = StringUtil.environmentSubstitute(databaseMeta.getUsername());
-                password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
+                username = environmentSubstitute(databaseMeta.getUsername());
+                password = environmentSubstitute(databaseMeta.getPassword());
             }
 
             if (databaseMeta.supportsOptionsInURL())
@@ -4045,4 +4049,61 @@ public class Database
     {
         this.copy = copy;
     }
+    
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}	
+
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+		// Also share the variables with the meta data object
+		databaseMeta.shareVariablesWith(space);
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}    
 }

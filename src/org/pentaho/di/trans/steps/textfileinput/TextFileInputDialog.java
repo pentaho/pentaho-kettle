@@ -78,7 +78,6 @@ import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextFileInputFieldInterface;
@@ -91,7 +90,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-
 
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -560,7 +558,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
+							String fpath = transMeta.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -583,7 +581,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						}
 						if (wFilename.getText()!=null)
 						{
-							String fname = StringUtil.environmentSubstitute(wFilename.getText());
+							String fname = transMeta.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						

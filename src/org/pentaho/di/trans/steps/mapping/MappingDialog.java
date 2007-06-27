@@ -49,7 +49,6 @@ import org.pentaho.di.core.dialog.EnterMappingDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
@@ -63,8 +62,6 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
-
-
 
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
@@ -422,7 +419,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     {
         // Read the transformation...
         //
-        mappingTransMeta = new TransMeta(repository, StringUtil.environmentSubstitute(transName), repdir);
+        mappingTransMeta = new TransMeta(repository, transMeta.environmentSubstitute(transName), repdir);
         mappingTransMeta.clearChanged();
     }
 
@@ -452,7 +449,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     private void loadFileTrans(String fname) throws KettleException
     {
-        mappingTransMeta = new TransMeta(StringUtil.environmentSubstitute(fname));
+        mappingTransMeta = new TransMeta(transMeta.environmentSubstitute(fname));
         mappingTransMeta.clearChanged();
     }
 

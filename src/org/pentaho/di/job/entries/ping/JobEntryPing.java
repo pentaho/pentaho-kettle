@@ -28,7 +28,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -171,7 +170,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     
     public String getRealHostname()
     {
-        return StringUtil.environmentSubstitute(getHostname());
+        return environmentSubstitute(getHostname());
     }
 	
 	public String getNbrPackets()
@@ -181,7 +180,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 
 	public String getRealNbrPackets()
 	{
-		return  StringUtil.environmentSubstitute(getNbrPackets());
+		return environmentSubstitute(getNbrPackets());
 	}
 	
 	public void setNbrPackets(String nbrPackets)

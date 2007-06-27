@@ -358,8 +358,8 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 					Messages.getString("ExecSQLMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
 		}
 	}
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[],
-			RowMetaInterface info)
+	
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
@@ -370,6 +370,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			databases = new Database[] { db }; // keep track of it for
 												// cancelling purposes...
 

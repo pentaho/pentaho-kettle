@@ -1160,6 +1160,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();

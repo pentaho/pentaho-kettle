@@ -39,7 +39,7 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	 */
 	private boolean alwaysLogRows;
 	
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
         // See if we have input streams leading to this step!
         if (input.length == 0) {

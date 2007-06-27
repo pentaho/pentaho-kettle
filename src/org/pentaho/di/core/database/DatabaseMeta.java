@@ -33,15 +33,14 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
-
-
 
 
 /**
@@ -52,12 +51,14 @@ import org.w3c.dom.Node;
  * @since 18-05-2003
  *
  */
-public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface
+public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface, VariableSpace
 {
     public static final String XML_TAG = "connection";
     
 	private DatabaseInterface databaseInterface;
 	private static DatabaseInterface[] allDatabaseInterfaces;
+	
+    private VariableSpace variables = new Variables();
 
 	/**
 	 * Indicates that the connections doesn't point to a type of database yet.
@@ -1051,7 +1052,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
                     if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
                     {
                         if (value!=null && value.equals(EMPTY_OPTIONS_STRING)) value="";
-                        properties.put(parameter, StringUtil.environmentSubstitute(Const.NVL(value, "")));
+                        properties.put(parameter, environmentSubstitute(Const.NVL(value, "")));
                     }
                 }
             }
@@ -2262,4 +2263,59 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
         return null;
     }
+    
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
+
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}	
+
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}    
 }

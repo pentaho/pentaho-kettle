@@ -25,7 +25,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -64,7 +63,7 @@ public class SocketWriter extends BaseStep implements StepInterface
         {
             if (first)
             {
-                int bufferSize = Const.toInt( StringUtil.environmentSubstitute(meta.getBufferSize()), 1000);
+                int bufferSize = Const.toInt( environmentSubstitute(meta.getBufferSize()), 1000);
                 
                 data.clientSocket = data.serverSocket.accept(); 
                 
@@ -79,7 +78,7 @@ public class SocketWriter extends BaseStep implements StepInterface
                     data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), bufferSize));
                 }
                 
-                data.flushInterval = Const.toInt( StringUtil.environmentSubstitute(meta.getFlushInterval()), 4000);
+                data.flushInterval = Const.toInt( environmentSubstitute(meta.getFlushInterval()), 4000);
             }
         }
         catch (Exception e)
@@ -142,7 +141,7 @@ public class SocketWriter extends BaseStep implements StepInterface
 		{
             try
             {
-                int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
+                int port = Integer.parseInt( environmentSubstitute(meta.getPort()) );
                 data.serverSocket = new ServerSocket(port);
                 
                 return true;

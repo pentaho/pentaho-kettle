@@ -81,10 +81,10 @@ public class SocketReader extends BaseStep implements StepInterface
                 {
                     try
                     {
-                        int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
-                        int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
+                        int port = Integer.parseInt( environmentSubstitute(meta.getPort()) );
+                        int bufferSize = Integer.parseInt( environmentSubstitute(meta.getBufferSize()));
                         
-                        data.socket = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
+                        data.socket = new Socket(environmentSubstitute(meta.getHostname()), port);
                         connected=true;
 
                         if (meta.isCompressed())
@@ -101,7 +101,7 @@ public class SocketReader extends BaseStep implements StepInterface
                     }
                     catch(Exception e)
                     {
-                        lastException=new KettleException("Unable to open socket to server "+StringUtil.environmentSubstitute(meta.getHostname())+" port "+StringUtil.environmentSubstitute(meta.getPort()), e);
+                        lastException=new KettleException("Unable to open socket to server "+environmentSubstitute(meta.getHostname())+" port "+environmentSubstitute(meta.getPort()), e);
                     }
                     
                     if (lastException!=null) // Sleep for a second

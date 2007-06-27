@@ -187,7 +187,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
             {
                 public void modifyText(ModifyEvent e)
                 {
-                    wSortDir.setToolTipText(StringUtil.environmentSubstitute( wSortDir.getText() ) );
+                    wSortDir.setToolTipText(transMeta.environmentSubstitute( wSortDir.getText() ) );
                 }
             }
         );

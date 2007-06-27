@@ -4,7 +4,6 @@ package org.pentaho.di.core.database;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.StringUtil;
 
 /**
  * Contains Generic Database Connection information through static final members 
@@ -70,7 +69,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
             String driverClass = getAttributes().getProperty(ATRRIBUTE_CUSTOM_DRIVER_CLASS, "");
-            return StringUtil.environmentSubstitute(driverClass);            
+            return environmentSubstitute(driverClass);            
         }
         else
         {
@@ -84,7 +83,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
             String url = getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
-            return StringUtil.environmentSubstitute(url);
+            return environmentSubstitute(url);
         }
         else
         {

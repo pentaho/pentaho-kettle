@@ -224,7 +224,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
             {
                 public void modifyText(ModifyEvent e)
                 {
-                    wSortDir.setToolTipText(StringUtil.environmentSubstitute( wSortDir.getText() ) );
+                    wSortDir.setToolTipText(transMeta.environmentSubstitute( wSortDir.getText() ) );
                 }
             }
         );

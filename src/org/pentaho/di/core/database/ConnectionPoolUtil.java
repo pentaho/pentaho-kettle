@@ -15,7 +15,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.util.StringUtil;
 
 public class ConnectionPoolUtil
 {
@@ -92,9 +91,9 @@ public class ConnectionPoolUtil
         
         try
         {
-            url= StringUtil.environmentSubstitute(databaseMeta.getURL(partitionId));       
-            userName= StringUtil.environmentSubstitute(databaseMeta.getUsername());     
-            password= StringUtil.environmentSubstitute(databaseMeta.getPassword());
+            url= databaseMeta.environmentSubstitute(databaseMeta.getURL(partitionId));       
+            userName= databaseMeta.environmentSubstitute(databaseMeta.getUsername());     
+            password= databaseMeta.environmentSubstitute(databaseMeta.getPassword());
         } 
         catch (RuntimeException e)
         {
@@ -116,7 +115,7 @@ public class ConnectionPoolUtil
         {
             String key = (String) iterator.next();
             String value = originalProperties.getProperty(key);
-            properties.put(key, StringUtil.environmentSubstitute(value));
+            properties.put(key, databaseMeta.environmentSubstitute(value));
         }
         
         // Create factory using these properties.

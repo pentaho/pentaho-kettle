@@ -264,6 +264,7 @@ public class JobHistory extends Composite implements TabItemInterface
                     {
                         // open a connection
                         database = new Database(jobMeta.getLogConnection());
+                        database.shareVariablesWith(jobMeta);
                         database.connect();
                         
                         RowMetaAndData params = new RowMetaAndData();

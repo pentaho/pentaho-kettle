@@ -101,7 +101,7 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
         }
 	}
 	
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)	
 	{
 		// See if we have input streams leading to this step!
 		if (input.length>0)

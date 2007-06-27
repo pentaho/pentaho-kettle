@@ -1695,6 +1695,7 @@ public class TransDialog extends Dialog
 				if (tablename!=null && tablename.length()>0)
 				{
 					Database db = new Database(ci);
+					db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();

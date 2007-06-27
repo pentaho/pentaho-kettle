@@ -52,7 +52,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
@@ -63,8 +62,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.spoon.job.JobTracker;
 import org.w3c.dom.Node;
-
-
 
 
 /**
@@ -600,8 +597,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
             protocol="smtps";
         }
         
-		props.put("mail."+protocol+".host", StringUtil.environmentSubstitute(server));
-        if (!Const.isEmpty(port)) props.put("mail."+protocol+".port", StringUtil.environmentSubstitute(port));
+		props.put("mail."+protocol+".host", environmentSubstitute(server));
+        if (!Const.isEmpty(port)) props.put("mail."+protocol+".port", environmentSubstitute(port));
         boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
 		
 		if (debug) props.put("mail.debug", "true");
@@ -634,7 +631,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		    
 	
 		    
-		    String email_address = StringUtil.environmentSubstitute(replyAddress);
+		    String email_address = environmentSubstitute(replyAddress);
 		    if ( !Const.isEmpty(email_address) )
 		    {
 		        msg.setFrom(new InternetAddress(email_address));
@@ -645,7 +642,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		    }
             
             // Split the mail-address: space separated
-            String destinations[] = StringUtil.environmentSubstitute(destination).split(" ");
+            String destinations[] = environmentSubstitute(destination).split(" ");
 		    InternetAddress[] address = new InternetAddress[destinations.length];
             for (int i=0;i<destinations.length;i++) address[i] = new InternetAddress(destinations[i]);
             
@@ -654,7 +651,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			if (!Const.isEmpty(destinationCc))
 			{
 				// Split the mail-address Cc: space separated
-				String destinationsCc[] = StringUtil.environmentSubstitute(destinationCc).split(" ");
+				String destinationsCc[] = environmentSubstitute(destinationCc).split(" ");
 				InternetAddress[] addressCc = new InternetAddress[destinationsCc.length];
 				for (int i=0;i<destinationsCc.length;i++) addressCc[i] = new InternetAddress(destinationsCc[i]);
 	            
@@ -664,16 +661,16 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			if (!Const.isEmpty(destinationBCc))
 			{
 				// Split the mail-address BCc: space separated
-				String destinationsBCc[] = StringUtil.environmentSubstitute(destinationBCc).split(" ");
+				String destinationsBCc[] = environmentSubstitute(destinationBCc).split(" ");
 				InternetAddress[] addressBCc = new InternetAddress[destinationsBCc.length];
 				for (int i=0;i<destinationsBCc.length;i++) addressBCc[i] = new InternetAddress(destinationsBCc[i]);
 	            
 				msg.setRecipients(Message.RecipientType.BCC, addressBCc);
 			}
 
-			if (!Const.isEmpty(StringUtil.environmentSubstitute(subject)))
+			if (!Const.isEmpty(environmentSubstitute(subject)))
 			{
-				msg.setSubject(StringUtil.environmentSubstitute(subject));
+				msg.setSubject(environmentSubstitute(subject));
 			}
 					
 			msg.setSentDate(new Date());
@@ -684,7 +681,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 
 		    if (comment!=null)
 		    {
-		        messageText.append(StringUtil.environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
+		        messageText.append(environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
 		    }
 
             if (!onlySendComment)
@@ -717,12 +714,12 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			    messageText.append(Const.CR);
 		    }
 
-		    if (!onlySendComment && ( !Const.isEmpty(StringUtil.environmentSubstitute(contactPerson)) || !Const.isEmpty(StringUtil.environmentSubstitute(contactPhone)) ))
+		    if (!onlySendComment && ( !Const.isEmpty(environmentSubstitute(contactPerson)) || !Const.isEmpty(environmentSubstitute(contactPhone)) ))
 		    {
 		        messageText.append("Contact information :").append(Const.CR);
 		        messageText.append("---------------------").append(Const.CR);
-		        messageText.append("Person to contact : ").append(StringUtil.environmentSubstitute(contactPerson)).append(Const.CR);
-		        messageText.append("Telephone number  : ").append(StringUtil.environmentSubstitute(contactPhone)).append(Const.CR);
+		        messageText.append("Person to contact : ").append(environmentSubstitute(contactPerson)).append(Const.CR);
+		        messageText.append("Telephone number  : ").append(environmentSubstitute(contactPhone)).append(Const.CR);
 			    messageText.append(Const.CR);
 		    }
 
@@ -806,7 +803,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 					else
 					{
 						// create a single ZIP archive of all files
-						masterZipfile = new File(System.getProperty("java.io.tmpdir")+Const.FILE_SEPARATOR+StringUtil.environmentSubstitute(zipFilename));
+						masterZipfile = new File(System.getProperty("java.io.tmpdir")+Const.FILE_SEPARATOR+environmentSubstitute(zipFilename));
 						ZipOutputStream zipOutputStream = null;
 						try
 						{
@@ -893,18 +890,18 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                     if (!Const.isEmpty(port))
                     {
                         transport.connect(
-                                StringUtil.environmentSubstitute(Const.NVL(server, "")), 
-                                Integer.parseInt( StringUtil.environmentSubstitute(Const.NVL(port, "")) ), 
-                                StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")), 
-                                StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) 
+                                environmentSubstitute(Const.NVL(server, "")), 
+                                Integer.parseInt( environmentSubstitute(Const.NVL(port, "")) ), 
+                                environmentSubstitute(Const.NVL(authenticationUser, "")), 
+                                environmentSubstitute(Const.NVL(authenticationPassword, "")) 
                                 );
                     }
                     else
                     {
                         transport.connect(
-                            StringUtil.environmentSubstitute(Const.NVL(server, "")), 
-                            StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")), 
-                            StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, "")) 
+                            environmentSubstitute(Const.NVL(server, "")), 
+                            environmentSubstitute(Const.NVL(authenticationUser, "")), 
+                            environmentSubstitute(Const.NVL(authenticationPassword, "")) 
                             );
                     }
                 }

@@ -48,7 +48,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**
@@ -82,6 +81,8 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
     private Props props;
 
     private SelectionAdapter lsDef;
+    
+    private JobMeta jobMeta;
 
     private boolean changed;
 
@@ -90,6 +91,7 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta = jobMeta;
 
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("JobPing.Name.Default"));
@@ -165,7 +167,7 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
         {
             public void modifyText(ModifyEvent e)
             {
-                wHostname.setToolTipText(StringUtil.environmentSubstitute(wHostname.getText()));
+                wHostname.setToolTipText(jobMeta.environmentSubstitute(wHostname.getText()));
             }
         });
 

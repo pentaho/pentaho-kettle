@@ -19,7 +19,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -84,9 +83,9 @@ public class GetVariable extends BaseStep implements StepInterface
 		Object extraData[] = new Object[meta.getFieldName().length];
         for (int i=0;i<meta.getFieldName().length;i++)
         {
-            String newValue = StringUtil.environmentSubstitute(meta.getVariableString()[i]);
+            String newValue = environmentSubstitute(meta.getVariableString()[i]);
             if ( log.isDetailed() )
-                logDetailed("set field ["+meta.getFieldName()[i]+"] to value ["+newValue+"]");
+                logDetailed("field ["+meta.getFieldName()[i]+"] has value ["+newValue+"]");
             extraData[i] = newValue;
         }
         

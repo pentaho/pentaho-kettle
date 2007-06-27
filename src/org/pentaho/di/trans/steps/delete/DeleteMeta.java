@@ -371,7 +371,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
     
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -379,6 +379,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();
@@ -539,6 +540,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 				if (!Const.isEmpty(tableName))
 				{
                     Database db = new Database(databaseMeta);
+                    db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();

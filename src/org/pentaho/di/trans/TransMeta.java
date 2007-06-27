@@ -4115,6 +4115,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         if (logConnection != null && logTable != null && logTable.length() > 0)
         {
             Database db = new Database(logConnection);
+            db.shareVariablesWith(this);
             try
             {
                 db.connect();
@@ -4248,7 +4249,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     String output[] = getPrevStepNames(stepMeta);
 
                     // Check step specific info...
-                    stepMeta.check(remarks, prev, input, output, info);
+                    stepMeta.check(remarks, this, prev, input, output, info);
 
                     // See if illegal characters etc. were used in field-names...
                     if (prev != null)
@@ -4336,6 +4337,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 if (getLogConnection() != null)
                 {
                     Database logdb = new Database(getLogConnection());
+                    logdb.shareVariablesWith(this);
                     try
                     {
                         logdb.connect();
@@ -5416,7 +5418,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         try
         {
             // First load all the shared objects...
-            String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+            String soFile = environmentSubstitute(sharedObjectsFile);
             SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there

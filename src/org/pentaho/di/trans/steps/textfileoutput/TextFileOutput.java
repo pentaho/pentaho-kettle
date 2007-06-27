@@ -35,7 +35,6 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -323,7 +322,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 	public String buildFilename(boolean ziparchive)
 	{
-		return meta.buildFilename(getCopy(), getPartitionID(), data.splitnr, ziparchive);
+		return meta.buildFilename(this, getCopy(), getPartitionID(), data.splitnr, ziparchive);
 	}
 	
 	public boolean openNewFile()
@@ -341,7 +340,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             		logError("Previous command not correctly terminated");
             		setErrors(1);
             	}
-            	String cmdstr = StringUtil.environmentSubstitute(meta.getFileName());
+            	String cmdstr = environmentSubstitute(meta.getFileName());
             	if (Const.getOS().equals("Windows 95"))
                 {
             		cmdstr = "command.com /C " + cmdstr;

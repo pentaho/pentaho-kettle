@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.delay;
+
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
@@ -24,7 +25,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -239,7 +239,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public String getMaximumTimeout() 
 	{
-		return StringUtil.environmentSubstitute(maximumTimeout);
+		return environmentSubstitute(maximumTimeout);
 	}
 
 	public void setMaximumTimeout(String s)

@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -94,7 +93,7 @@ public class SortRows extends BaseStep implements StepInterface
 			
 			try
 			{
-				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", StringUtil.environmentSubstitute(meta.getDirectory()));
+				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()));
 				
 				data.files.add(fileObject); // Remember the files!
 				OutputStream outputStream = fileObject.getContent().getOutputStream();

@@ -39,7 +39,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -162,18 +161,18 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
     public String getRealxmlfilename()
     {
-        return StringUtil.environmentSubstitute(getxmlFilename());
+        return environmentSubstitute(getxmlFilename());
     }
 
 	public String getRealoutputfilename()
 	{
-		return StringUtil.environmentSubstitute(getoutputFilename());
+		return environmentSubstitute(getoutputFilename());
 	}
 
 
     public String getRealxslfilename()
     {
-        return StringUtil.environmentSubstitute(getxslFilename());
+        return environmentSubstitute(getxslFilename());
     }
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)

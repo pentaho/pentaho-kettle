@@ -948,7 +948,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         return super.getInfoSteps();
     }
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
@@ -957,18 +957,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{		
 			if ( !isAcceptingFilenames() )
 			{
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepinfo);
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepMeta);
 	  		    remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.AcceptFilenamesOk"), stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.AcceptFilenamesOk"), stepMeta);
 			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.NoInputOk"), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -977,13 +977,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if ( ! isAcceptingFilenames() )
 			{
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
+			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepMeta);
    			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepMeta);
 			remarks.add(cr);
 		}
 	}

@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.trans;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     
     public String getRealFilename()
     {
-        return StringUtil.environmentSubstitute(getFilename());
+        return environmentSubstitute(getFilename());
     }
 
 	public void setTransname(String transname)
@@ -376,7 +377,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             try
             {
-                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
+                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true);
             }
             catch(KettleException e)
             {
@@ -393,15 +394,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Open the transformation...
 		// Default directory for now...
 		
-        log.logBasic(toString(), "Opening filename : ["+StringUtil.environmentSubstitute(getFilename())+"]");
+        log.logBasic(toString(), "Opening filename : ["+environmentSubstitute(getFilename())+"]");
         
         if (!Const.isEmpty(getFilename()))
         {
-            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getFilename())+"]");
+            log.logBasic(toString(), "Opening transformation: ["+environmentSubstitute(getFilename())+"]");
         }
         else
         {
-            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+directory.getPath()+"]");
+            log.logBasic(toString(), "Opening transformation: ["+environmentSubstitute(getTransname())+"] in directory ["+directory.getPath()+"]");
         }
 		
         // Load the transformation only once for the complete loop!
@@ -426,7 +427,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             args = new String[args1.length];
             for ( int idx = 0; idx < args1.length; idx++ )
             {
-            	args[idx] = StringUtil.environmentSubstitute(args1[idx]);
+            	args[idx] = environmentSubstitute(args1[idx]);
             }
         }        
         
@@ -731,20 +732,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         TransMeta transMeta = null;
         if (!Const.isEmpty(getFilename())) // Load from an XML file
         {
-            log.logBasic(toString(), "Loading transformation from XML file ["+StringUtil.environmentSubstitute(getFilename())+"]");
-            transMeta = new TransMeta(StringUtil.environmentSubstitute(getFilename()));
+            log.logBasic(toString(), "Loading transformation from XML file ["+environmentSubstitute(getFilename())+"]");
+            transMeta = new TransMeta(environmentSubstitute(getFilename()));
         }
         else
         if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
         {
-            log.logBasic(toString(), "Loading transformation from repository ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+getDirectory()+"]");
+            log.logBasic(toString(), "Loading transformation from repository ["+environmentSubstitute(getTransname())+"] in directory ["+getDirectory()+"]");
             
             if ( rep != null )
             {
             	//
             	// It only makes sense to try to load from the repository when the repository is also filled in.
             	//
-                transMeta = new TransMeta(rep, StringUtil.environmentSubstitute(getTransname()), getDirectory());
+                transMeta = new TransMeta(rep, environmentSubstitute(getTransname()), getDirectory());
             }
             else
             {

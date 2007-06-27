@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.tableexists;
+
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
@@ -24,7 +25,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -185,10 +185,11 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		if (connection!=null)
 		{
 			Database db = new Database(connection);
+			db.shareVariablesWith(this);
 			try
 			{
 				db.connect();
-                String realTablename = StringUtil.environmentSubstitute(tablename);
+                String realTablename = environmentSubstitute(tablename);
 				if (db.checkTableExists(realTablename))
 				{
 					log.logDetailed(toString(), "Table ["+realTablename+"] exists.");

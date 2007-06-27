@@ -34,7 +34,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -150,14 +149,14 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
     public String getRealxmlfilename()
     {
-        return StringUtil.environmentSubstitute(getxmlFilename());
+        return environmentSubstitute(getxmlFilename());
     }
 
 	
 
     public String getRealxsdfilename()
     {
-        return StringUtil.environmentSubstitute(getxsdFilename());
+        return environmentSubstitute(getxsdFilename());
     }
 
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)

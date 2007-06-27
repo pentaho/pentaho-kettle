@@ -334,12 +334,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (useDatabase)
 		{
 			Database db = new Database(database);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();
@@ -385,6 +386,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			if (database!=null)
 			{
 				Database db = new Database(database);
+				db.shareVariablesWith(transMeta);
 				try
 				{
 					db.connect();

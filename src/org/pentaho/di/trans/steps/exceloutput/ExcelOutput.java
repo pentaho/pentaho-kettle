@@ -37,7 +37,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -388,7 +387,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
 	public String buildFilename()
 	{
-		return meta.buildFilename(getCopy(), data.splitnr);
+		return meta.buildFilename(this, getCopy(), data.splitnr);
 	}
 	
 	public boolean openNewFile()
@@ -428,7 +427,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 								
 				// create the workbook from the template
 				Workbook tmpWorkbook=Workbook.getWorkbook(
-						new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
+						new File(environmentSubstitute(meta.getTemplateFileName())));
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
 				
             	tmpWorkbook.close();
@@ -439,16 +438,16 @@ public class ExcelOutput extends BaseStep implements StepInterface
             }
 			
             // Renamme Sheet
-			if (!Const.isEmpty(meta.getSheetname())) 
+			if (!Const.isEmpty(meta.getSheetname(this))) 
 			{
-				data.sheet.setName(meta.getSheetname()); 
+				data.sheet.setName(meta.getSheetname(this)); 
 			}
 
 			if (meta.isSheetProtected())
 			{
 				// Protect Sheet by setting password
 				data.sheet.getSettings().setProtected(true); 
-				data.sheet.getSettings().setPassword(meta.getPassword());
+				data.sheet.getSettings().setPassword(meta.getPassword(this));
 			}
             
 

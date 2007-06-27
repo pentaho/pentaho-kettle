@@ -513,6 +513,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(ci);
+						db.shareVariablesWith(transMeta);
 						try {
 							db.connect();
 
@@ -733,6 +734,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		if (ci!=null)
 		{
 			Database db = new Database(ci);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();

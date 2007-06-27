@@ -39,8 +39,6 @@ import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
 
-
-
 /**
  * This defines a 'delete file' job entry. Its main use would be to delete 
  * trigger files, but it will delete any file.
@@ -148,7 +146,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     
     public String getRealFilename()
     {
-        return StringUtil.environmentSubstitute(getFilename());
+        return environmentSubstitute(getFilename());
     }
 	
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)

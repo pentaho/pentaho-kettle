@@ -39,8 +39,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
 
 
 /**
@@ -101,6 +99,8 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 	private FormData fdlAfterZip, fdAfterZip;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -109,6 +109,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null) 
 			this.jobEntry.setName(Messages.getString("JobZipFiles.Name.Default"));
@@ -247,7 +248,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wZipFilename.setToolTipText(StringUtil.environmentSubstitute( wZipFilename.getText() ) );
+					wZipFilename.setToolTipText(jobMeta.environmentSubstitute( wZipFilename.getText() ) );
 				}
 			}
 		);
@@ -263,7 +264,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 					dialog.setFilterExtensions(new String[] {"*.zip;*.ZIP", "*"});
 					if (wZipFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wZipFilename.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wZipFilename.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES);
 					if (dialog.open()!=null)

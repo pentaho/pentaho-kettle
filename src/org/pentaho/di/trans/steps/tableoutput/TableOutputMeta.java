@@ -483,7 +483,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		if (databaseMeta!=null)
 		{
@@ -491,6 +491,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();
@@ -689,6 +690,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 				if (!Const.isEmpty(tablename))
 				{
 					Database db = new Database(databaseMeta);
+					db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();

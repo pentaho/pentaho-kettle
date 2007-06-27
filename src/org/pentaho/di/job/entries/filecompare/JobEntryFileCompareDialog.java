@@ -38,8 +38,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
 
 
 /**
@@ -75,6 +73,8 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 	private Props       	props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -83,6 +83,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null)
 			this.jobEntry.setName(Messages.getString("JobFileCompare.Name.Default"));
@@ -164,7 +165,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename1.setToolTipText(StringUtil.environmentSubstitute( wFilename1.getText() ) );
+					wFilename1.setToolTipText(jobMeta.environmentSubstitute( wFilename1.getText() ) );
 				}
 			}
 		);
@@ -179,7 +180,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 					dialog.setFilterExtensions(new String[] {"*"});
 					if (wFilename1.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename1.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wFilename1.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES);
 					if (dialog.open()!=null)
@@ -220,7 +221,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename2.setToolTipText(StringUtil.environmentSubstitute( wFilename2.getText() ) );
+					wFilename2.setToolTipText(jobMeta.environmentSubstitute( wFilename2.getText() ) );
 				}
 			}
 		);
@@ -235,7 +236,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 					dialog.setFilterExtensions(new String[] {"*"});
 					if (wFilename2.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename2.getText()) );
+						dialog.setFileName(jobMeta.environmentSubstitute(wFilename2.getText()) );
 					}
 					dialog.setFilterNames(FILETYPES);
 					if (dialog.open()!=null)

@@ -1184,6 +1184,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.max_date = meta.getMaxDate(); //$NON-NLS-1$
 
 			data.db=new Database(meta.getDatabaseMeta());
+			data.db.shareVariablesWith(this);
 			try
 			{
                 if (getTransMeta().isUsingUniqueConnections())

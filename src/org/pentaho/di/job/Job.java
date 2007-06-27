@@ -462,6 +462,7 @@ public class Job extends Thread implements VariableSpace
 		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
 		{
 			Database ldb = new Database(logcon);
+			ldb.shareVariablesWith(this);
 			try
 			{
 				ldb.connect();
@@ -558,6 +559,7 @@ public class Job extends Thread implements VariableSpace
 		if (logcon!=null)
 		{
 			Database ldb = new Database(logcon);
+			ldb.shareVariablesWith(this);
 			try
 			{
 				ldb.connect();

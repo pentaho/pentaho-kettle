@@ -482,7 +482,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -490,6 +490,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		if (databaseMeta!=null)
 		{
 			Database db = new Database(databaseMeta);
+			db.shareVariablesWith(transMeta);
 			try
 			{
 				db.connect();
@@ -505,8 +506,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					
 					// Check fields in table
                     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
-                    		                   StringUtil.environmentSubstitute(schemaName), 
-                    		                   StringUtil.environmentSubstitute(tableName));
+                    		                   transMeta.environmentSubstitute(schemaName), 
+                    		                   transMeta.environmentSubstitute(tableName));
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
@@ -654,12 +655,13 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 				if (!Const.isEmpty(tableName))
 				{
                     Database db = new Database(databaseMeta);
+                    db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();
 
-                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(StringUtil.environmentSubstitute(schemaName), 
-                        		                                                          StringUtil.environmentSubstitute(tableName));                        
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(schemaName), 
+                        		                                                          transMeta.environmentSubstitute(tableName));                        
 						String cr_table = db.getDDL(schemaTable,
 													tableFields,
 													null,
@@ -673,8 +675,8 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 						// Key lookup dimensions...
 						if (idx_fields!=null && idx_fields.length>0 &&  
-								!db.checkIndexExists(StringUtil.environmentSubstitute(schemaName), 
-										             StringUtil.environmentSubstitute(tableName), idx_fields)
+								!db.checkIndexExists(transMeta.environmentSubstitute(schemaName), 
+										             transMeta.environmentSubstitute(tableName), idx_fields)
 						   )
 						{
 							String indexname = "idx_"+tableName+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -718,7 +720,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
                 ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
 
                 DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                        .getDatabaseName(), StringUtil.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        .getDatabaseName(), transMeta.environmentSubstitute(tableName), fieldTable[i], fieldStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 impact.add(ii);
             }
         }

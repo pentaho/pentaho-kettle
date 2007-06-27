@@ -39,7 +39,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -196,7 +195,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wSpoolDir.setToolTipText(StringUtil.environmentSubstitute( wSpoolDir.getText() ) );
+					wSpoolDir.setToolTipText(transMeta.environmentSubstitute( wSpoolDir.getText() ) );
 				}
 			}
 		);

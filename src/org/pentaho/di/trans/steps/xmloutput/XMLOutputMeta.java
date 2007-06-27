@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -379,7 +380,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		}
 	}
 	
-	public String[] getFiles()
+	public String[] getFiles(VariableSpace space)
 	{
 		int copies=1;
 		int splits=1;
@@ -404,7 +405,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		{
 			for (int split=0;split<splits;split++)
 			{
-				retval[i]=buildFilename(copy, split, false);
+				retval[i]=buildFilename(space, copy, split, false);
 				i++;
 			}
 		}
@@ -416,13 +417,13 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		return retval;
 	}
 	
-	public String buildFilename(int stepnr, int splitnr, boolean ziparchive)
+	public String buildFilename(VariableSpace space, int stepnr, int splitnr, boolean ziparchive)
 	{
 		SimpleDateFormat daf     = new SimpleDateFormat();
 		DecimalFormat df = new DecimalFormat("00000"); 
         
 		// Replace possible environment variables...
-		String retval=StringUtil.environmentSubstitute( fileName );
+		String retval=space.environmentSubstitute( fileName );
 		
 		Date now = new Date();
 		
@@ -617,7 +618,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		

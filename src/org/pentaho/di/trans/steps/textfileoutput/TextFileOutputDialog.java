@@ -60,7 +60,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
@@ -428,7 +427,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				{
 					TextFileOutputMeta tfoi = new TextFileOutputMeta();
 					getInfo(tfoi);
-					String files[] = tfoi.getFiles();
+					String files[] = tfoi.getFiles(transMeta);
 					if (files!=null && files.length>0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("TextFileOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("TextFileOutputDialog.SelectOutputFiles.DialogMessage"));
@@ -909,7 +908,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+					wFilename.setToolTipText(transMeta.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -924,7 +923,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
+						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
 					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)

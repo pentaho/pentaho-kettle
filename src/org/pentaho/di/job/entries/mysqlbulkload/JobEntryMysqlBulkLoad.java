@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.mysqlbulkload;
+
 import java.io.File;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -283,13 +283,14 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 				{
 					// User has specified a connection, We can continue ...
 					Database db = new Database(connection);
+					db.shareVariablesWith(this);
 					try
 					{
 						db.connect();
 						// Get schemaname
-						String realSchemaname = StringUtil.environmentSubstitute(schemaname);
+						String realSchemaname = environmentSubstitute(schemaname);
 						// Get tablename
-						String realTablename = StringUtil.environmentSubstitute(tablename);
+						String realTablename = environmentSubstitute(tablename);
 
 						if (db.checkTableExists(realTablename))
 						{
@@ -483,7 +484,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealFilename()
 	{ 
-		String RealFile= StringUtil.environmentSubstitute(getFilename());
+		String RealFile= environmentSubstitute(getFilename());
 		return RealFile.replace('\\','/');
 	}
 	
@@ -508,7 +509,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	}
 	public String getRealEnclosed()
 	{
-		return StringUtil.environmentSubstitute(getEnclosed());
+		return environmentSubstitute(getEnclosed());
 	}
 	
 	public void setEnclosed(String enclosed)
@@ -523,7 +524,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 	public String getRealEscaped()
 	{
-		return StringUtil.environmentSubstitute(getEscaped());
+		return environmentSubstitute(getEscaped());
 	}
 
 	public void setEscaped(String escaped)
@@ -548,17 +549,17 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	
 	public String getRealLinestarted()
 	{
-		return StringUtil.environmentSubstitute(getLinestarted());
+		return environmentSubstitute(getLinestarted());
 	}
 
 	public String getRealLineterminated()
 	{
-		return StringUtil.environmentSubstitute(getLineterminated());
+		return environmentSubstitute(getLineterminated());
 	}
     
 	public String getRealSeparator()
 	{
-		return StringUtil.environmentSubstitute(getSeparator());
+		return environmentSubstitute(getSeparator());
 	}
 
 	public void setIgnorelines(String ignorelines)
@@ -573,7 +574,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealIgnorelines()
 	{
-		return StringUtil.environmentSubstitute(getIgnorelines());
+		return environmentSubstitute(getIgnorelines());
 	}
 
 	public void setListattribut(String listattribut)
@@ -588,7 +589,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     
 	public String getRealListattribut()
 	{
-		return StringUtil.environmentSubstitute(getListattribut());
+		return environmentSubstitute(getListattribut());
 	}
 
 	private String MysqlString(String listcolumns)

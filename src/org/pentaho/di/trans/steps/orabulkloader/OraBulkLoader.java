@@ -134,7 +134,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	public String getControlFileContents(OraBulkLoaderMeta meta, RowMetaInterface rm, Object[] r) throws KettleException
 	{
 		DatabaseMeta dm = meta.getDatabaseMeta();
-		String inputName = "'" + StringUtil.environmentSubstitute(meta.getDataFile()) + "'";
+		String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
 		
 		//if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 		//{
@@ -171,8 +171,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		 	    
 		contents.append("LOAD DATA").append(Const.CR).append(
 		                "INFILE ").append(inputName).append(Const.CR).append(
-		                "INTO TABLE ").append(dm.getQuotedSchemaTableCombination(StringUtil.environmentSubstitute(meta.getSchemaName()),
-		            		                                                     StringUtil.environmentSubstitute(meta.getTableName()))).append(
+		                "INTO TABLE ").append(dm.getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()),
+		            		                                                     environmentSubstitute(meta.getTableName()))).append(
 		                Const.CR).append(loadAction).append(Const.CR).append(		                    
                         "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'").append(Const.CR).append(
                         "(");
@@ -295,7 +295,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getSqlldr()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getSqlldr()));   
   	      	   String sqlldr = KettleVFS.getFilename(fileObject);
 		       sb.append(sqlldr);
   	       }
@@ -313,7 +313,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getControlFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));   
 		   
 	           sb.append(" control=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));
@@ -333,7 +333,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try 
 		   {
-		       FileObject fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getLogFile()));   
+		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()));   
 	   
 		       sb.append(" log=\'");
 		       sb.append(KettleVFS.getFilename(fileObject));
@@ -349,7 +349,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getBadFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getBadFile()));   
 		   
 	           sb.append(" bad=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
@@ -365,7 +365,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
 		   try
 		   {
-	           FileObject fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getDiscardFile()));   
+	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDiscardFile()));   
 		   
 	           sb.append(" discard=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));		  		   
@@ -387,8 +387,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface
         	   pass = "******";
            }
            String dns  = Const.NVL(dm.getDatabaseName(), "");
-           sb.append(" userid=").append(StringUtil.environmentSubstitute(user)).append("/").append(StringUtil.environmentSubstitute(pass)).append("@");
-           sb.append(StringUtil.environmentSubstitute(dns));           
+           sb.append(" userid=").append(environmentSubstitute(user)).append("/").append(environmentSubstitute(pass)).append("@");
+           sb.append(environmentSubstitute(dns));           
        }
 	   else
 	   {
@@ -504,14 +504,14 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 				if (first)
 				{
 					first=false;
-					createControlFile(StringUtil.environmentSubstitute(meta.getControlFile()), r, meta);
+					createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
 					output = new OraBulkDataOutput(meta);			
 
 				//	if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 				//	{
 				//		execute(meta, false);
 				//	}
-					output.open(sqlldrProcess);
+					output.open(this, sqlldrProcess);
 				}
 				output.writeLine(getInputRowMeta(), r);
 			}
@@ -568,7 +568,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getControlFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()));			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }
@@ -586,7 +586,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		       {
 			       try
 			       {
-		               fileObject = KettleVFS.getFileObject(StringUtil.environmentSubstitute(meta.getDataFile()));			   
+		               fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getDataFile()));			   
 		               fileObject.delete();
 		               fileObject.close();
 	  	           }

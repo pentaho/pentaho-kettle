@@ -1048,6 +1048,7 @@ public class Trans implements VariableSpace
     				}
     				
     			    ldb = new Database(logcon);
+    			    ldb.shareVariablesWith(this);
 				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 
@@ -1059,7 +1060,6 @@ public class Trans implements VariableSpace
 					{
                         startDate = (Date) lastr[0]; 
 						log.logDetailed(toString(), Messages.getString("Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
-
 					}
 
 					//
@@ -1076,6 +1076,7 @@ public class Trans implements VariableSpace
 						if (maxcon!=null)
 						{
 							Database maxdb = new Database(maxcon);
+							maxdb.shareVariablesWith(this);
 							try
 							{
 							    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
@@ -1323,6 +1324,7 @@ public class Trans implements VariableSpace
 		if (logcon!=null)
 		{
 			Database ldb = new Database(logcon);
+			ldb.shareVariablesWith(this);
 			try
 			{
 				ldb.connect();

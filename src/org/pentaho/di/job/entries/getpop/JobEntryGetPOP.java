@@ -50,7 +50,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -220,7 +219,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 	public String getRealSSLPort()
 	{
-		return StringUtil.environmentSubstitute(getSSLPort());
+		return environmentSubstitute(getSSLPort());
 	}
 	public void setSSLPort(String sslport) 
 	{
@@ -237,7 +236,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	}
 	public String getRealFirstMails()
 	{
-		return StringUtil.environmentSubstitute(getFirstMails());
+		return environmentSubstitute(getFirstMails());
 	}
 	public void setServerName(String servername)
 	{
@@ -276,19 +275,19 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	}
 	public String getRealOutputDirectory()
 	{
-		return StringUtil.environmentSubstitute(getOutputDirectory());
+		return environmentSubstitute(getOutputDirectory());
 	}
 	public String getRealFilenamePattern()
 	{
-		return StringUtil.environmentSubstitute(getFilenamePattern());
+		return environmentSubstitute(getFilenamePattern());
 	}
 	public String getRealUsername()
 	{
-		return StringUtil.environmentSubstitute(getUserName());
+		return environmentSubstitute(getUserName());
 	}
     public String getRealServername()
     {
-        return StringUtil.environmentSubstitute(getServerName());
+        return environmentSubstitute(getServerName());
     }
 
 	/**
@@ -301,7 +300,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	
 	public String getRealPassword()
 	{
-		return StringUtil.environmentSubstitute(getPassword());
+		return environmentSubstitute(getPassword());
 	}
 	/**
 	 * @param delete The delete to set.

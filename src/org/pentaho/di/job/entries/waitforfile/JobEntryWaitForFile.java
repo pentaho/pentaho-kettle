@@ -27,7 +27,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -166,7 +165,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     
     public String getRealFilename()
     {
-        return StringUtil.environmentSubstitute(getFilename());
+        return environmentSubstitute(getFilename());
     }
 	
     public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)

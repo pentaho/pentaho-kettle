@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.abort;
+
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
@@ -23,7 +24,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -32,7 +32,6 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
 
 
 /**
@@ -127,7 +126,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		LogWriter log = LogWriter.getInstance();
 		String Returnmessage=null;
-		String RealMessageabort=StringUtil.environmentSubstitute(getMessageabort());	
+		String RealMessageabort=environmentSubstitute(getMessageabort());	
 
 		try
 		{

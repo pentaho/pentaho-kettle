@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -43,13 +44,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
-
-
 /*
  * Created on 4-apr-2003
  *
  */
-
 public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
     public static final int FILE_COMPRESSION_TYPE_NONE = 0;
@@ -650,7 +648,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		fileAppended=false;
 	}
 	
-	public String[] getFiles()
+	public String[] getFiles(VariableSpace space)
 	{
 		int copies=1;
 		int splits=1;
@@ -683,7 +681,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				for (int split=0;split<splits;split++)
 				{
-					retval[i]=buildFilename(copy, "P" + part, split, false);
+					retval[i]=buildFilename(space, copy, "P" + part, split, false);
 					i++;
 				}
 			}
@@ -696,12 +694,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		return retval;
 	}
 	
-	public String buildFilename(int stepnr, String partnr, int splitnr, boolean ziparchive)
+	public String buildFilename(VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive)
 	{
 		SimpleDateFormat daf     = new SimpleDateFormat();
 
 		// Replace possible environment variables...
-		String retval=StringUtil.environmentSubstitute( fileName );
+		String retval=space.environmentSubstitute( fileName );
 		
 		if (fileAsCommand)
 			return retval;
@@ -952,7 +950,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
@@ -1018,5 +1016,4 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		return new TextFileOutputData();
 	}
-
 }

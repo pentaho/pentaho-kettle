@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.ftp;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
@@ -32,7 +33,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -417,7 +417,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			// Create ftp client to host:port ...
 			ftpclient = new FTPClient();
-            String realServername = StringUtil.environmentSubstitute(serverName);
+            String realServername = environmentSubstitute(serverName);
             ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
             
 			log.logDetailed(toString(), "Opened FTP connection to server ["+realServername+"]");
@@ -443,8 +443,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
 			// login to ftp host ...
             ftpclient.connect();
-            String realUsername = StringUtil.environmentSubstitute(userName);
-            String realPassword = StringUtil.environmentSubstitute(password);
+            String realUsername = environmentSubstitute(userName);
+            String realPassword = environmentSubstitute(password);
 			ftpclient.login(realUsername, realPassword);
 			//  Remove password from logging, you don't know where it ends up.
 			log.logDetailed(toString(), "logged in with user "+realUsername);
@@ -452,7 +452,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// move to spool dir ...
 			if (!Const.isEmpty(ftpDirectory))
 			{
-                String realFtpDirectory = StringUtil.environmentSubstitute(ftpDirectory);
+                String realFtpDirectory = environmentSubstitute(ftpDirectory);
 				ftpclient.chdir(realFtpDirectory);
 				log.logDetailed(toString(), "Changed to directory ["+realFtpDirectory+"]");
 			}
@@ -478,7 +478,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			// CHECK THIS !!!
 			if (filelist.length == 1)
 			{
-                String translatedWildcard = StringUtil.environmentSubstitute(wildcard);
+                String translatedWildcard = environmentSubstitute(wildcard);
                 if (filelist[0].startsWith(translatedWildcard))
 				{
 					throw new FTPException(filelist[0]);
@@ -488,7 +488,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 			Pattern pattern = null;
 			if (!Const.isEmpty(wildcard)) 
 			{
-                String realWildcard = StringUtil.environmentSubstitute(wildcard);
+                String realWildcard = environmentSubstitute(wildcard);
                 pattern = Pattern.compile(realWildcard);
 			}
 
@@ -506,7 +506,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
 				if (getIt)
 				{
-                    log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+StringUtil.environmentSubstitute(targetDirectory)+"]");
+                    log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+environmentSubstitute(targetDirectory)+"]");
 					String targetFilename = getTargetFilename(filelist[i]);
                     FileObject targetFile = KettleVFS.getFileObject(targetFilename);
 
@@ -567,7 +567,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
      */
 	protected String getTargetFilename(String string)
     {
-        return StringUtil.environmentSubstitute(targetDirectory)+Const.FILE_SEPARATOR+string;
+        return environmentSubstitute(targetDirectory)+Const.FILE_SEPARATOR+string;
     }
 
     public boolean evaluates()

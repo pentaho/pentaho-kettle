@@ -392,7 +392,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     }
 	
 
-	public void check(List<CheckResult> remarks, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev==null || prev.size()==0)

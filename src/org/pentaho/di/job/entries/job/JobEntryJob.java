@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -120,7 +119,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     
     public String getRealFilename()
     {
-        return StringUtil.environmentSubstitute(getFilename());
+        return environmentSubstitute(getFilename());
     }
     
 	public void setJobName(String jobname)
@@ -331,7 +330,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             try
             {
-                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
+                appender = LogWriter.createFileAppender(environmentSubstitute(getLogFilename()), true);
             }
             catch(KettleException e)
             {
@@ -344,7 +343,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             log.addAppender(appender);
             log.setLogLevel(loglevel);
             
-            logwriter = LogWriter.getInstance(StringUtil.environmentSubstitute(getLogFilename()), true, loglevel);
+            logwriter = LogWriter.getInstance(environmentSubstitute(getLogFilename()), true, loglevel);
         }
 
         try
@@ -363,14 +362,14 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             boolean fromXMLFile = !Const.isEmpty(filename); 
             if (fromRepository) // load from the repository...
             {
-                log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+StringUtil.environmentSubstitute(jobname)+"]");
-                jobMeta = new JobMeta(logwriter, rep, StringUtil.environmentSubstitute(jobname), directory);
+                log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
+                jobMeta = new JobMeta(logwriter, rep, environmentSubstitute(jobname), directory);
             }
             else // Get it from the XML file
             if (fromXMLFile)
             {
-                log.logDetailed(toString(), "Loading job from XML file : ["+StringUtil.environmentSubstitute(filename)+"]");
-                jobMeta = new JobMeta(logwriter, StringUtil.environmentSubstitute(filename), rep);
+                log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
+                jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep);
             }
             
             if (jobMeta==null)
@@ -381,12 +380,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             // Tell logging what job entry we are launching...
             if (fromRepository)
             {
-                log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+StringUtil.environmentSubstitute(jobname)+"]");
+                log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+environmentSubstitute(jobname)+"]");
             }
             else
             if (fromXMLFile)
             {
-                log.logDetailed(toString(), "Starting job, loaded from XML file : ["+StringUtil.environmentSubstitute(filename)+"]");
+                log.logDetailed(toString(), "Starting job, loaded from XML file : ["+environmentSubstitute(filename)+"]");
             }
 
             int iteration = 0;
@@ -408,7 +407,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 args = new String[args1.length];
                 for ( int idx = 0; idx < args1.length; idx++ )
                 {
-                	args[idx] = StringUtil.environmentSubstitute(args1[idx]);
+                	args[idx] = environmentSubstitute(args1[idx]);
                 }
             }
             

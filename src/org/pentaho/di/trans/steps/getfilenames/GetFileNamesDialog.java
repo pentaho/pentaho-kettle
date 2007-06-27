@@ -50,7 +50,6 @@ import org.pentaho.di.core.dialog.EnterNumberDialog;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
@@ -498,7 +497,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 					DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 					if (wFilename.getText() != null)
 					{
-						String fpath = StringUtil.environmentSubstitute(wFilename.getText());
+						String fpath = transMeta.environmentSubstitute(wFilename.getText());
 						dialog.setFilterPath(fpath);
 					}
 
@@ -513,7 +512,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 					dialog.setFilterExtensions(new String[] { "*.txt;*.csv", "*.csv", "*.txt", "*" });
 					if (wFilename.getText() != null)
 					{
-						String fname = StringUtil.environmentSubstitute(wFilename.getText());
+						String fname = transMeta.environmentSubstitute(wFilename.getText());
 						dialog.setFileName(fname);
 					}
 

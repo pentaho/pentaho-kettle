@@ -50,7 +50,6 @@ import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -315,7 +314,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     {
        if (wVariables.getSelection())
        {
-           wSQL.setToolTipText(StringUtil.environmentSubstitute(wSQL.getText()));
+           wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
        }
     }
 
@@ -402,6 +401,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 				case SWT.NO:     wSQL.setText(sql); break;
 				case SWT.YES:
 					Database db = new Database(inf);
+					db.shareVariablesWith(transMeta);
 					try
 					{
 						db.connect();

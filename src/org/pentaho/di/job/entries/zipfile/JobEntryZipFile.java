@@ -39,7 +39,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -197,11 +196,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		result.setResult( false );
 		boolean Fileexists=false;
 
-		String realZipfilename       = StringUtil.environmentSubstitute(zipFilename);
-		String realWildcard          = StringUtil.environmentSubstitute(wildcard);
-		String realWildcardExclude   = StringUtil.environmentSubstitute(wildcardexclude);
-		String realTargetdirectory   = StringUtil.environmentSubstitute(sourcedirectory);
-		String realMovetodirectory   = StringUtil.environmentSubstitute(movetodirectory);
+		String realZipfilename       = environmentSubstitute(zipFilename);
+		String realWildcard          = environmentSubstitute(wildcard);
+		String realWildcardExclude   = environmentSubstitute(wildcardexclude);
+		String realTargetdirectory   = environmentSubstitute(sourcedirectory);
+		String realMovetodirectory   = environmentSubstitute(movetodirectory);
 	
 		if (realZipfilename!=null)
 		{

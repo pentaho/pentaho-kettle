@@ -25,7 +25,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -181,7 +180,7 @@ public class TableInput extends BaseStep implements StepInterface
 
         // Open the query with the optional parameters received from the source steps.
         String sql = null;
-        if (meta.isVariableReplacementActive()) sql = StringUtil.environmentSubstitute(meta.getSQL());
+        if (meta.isVariableReplacementActive()) sql = environmentSubstitute(meta.getSQL());
         else sql = meta.getSQL();
         
         data.rs = data.db.openQuery(sql, parameters.getRowMeta(), parameters.getData());
@@ -247,6 +246,8 @@ public class TableInput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.db=new Database(meta.getDatabaseMeta());
+			data.db.shareVariablesWith(this);
+			
 			data.db.setQueryLimit(meta.getRowLimit());
 
 			try

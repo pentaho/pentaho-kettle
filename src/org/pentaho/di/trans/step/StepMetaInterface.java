@@ -103,7 +103,7 @@ public interface StepMetaInterface
 	 * @param output The output step names
 	 * @param info The fields that are used as information by the step
 	 */
-	public void check(List<CheckResult> remarks, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
+	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info);
 
 	/**
 	 * Make an exact copy of this step, make sure to explicitly copy Collections etc.

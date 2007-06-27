@@ -37,8 +37,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
-
 
 
 /**
@@ -68,6 +66,8 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 	private Props         props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 
@@ -76,6 +76,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		super(parent, SWT.NONE);
 		props=Props.getInstance();
 		this.jobEntry=jobEntry;
+		this.jobMeta=jobMeta;
 
 		if (this.jobEntry.getName() == null)
 			this.jobEntry.setName(Messages.getString("JobEval.Title"));
@@ -143,7 +144,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		    {
 			    public void modifyText(ModifyEvent e)
 			    {
-				    wMaximumTimeout.setToolTipText(StringUtil.environmentSubstitute( wMaximumTimeout.getText() ) );
+				    wMaximumTimeout.setToolTipText(jobMeta.environmentSubstitute( wMaximumTimeout.getText() ) );
 			    }
 		    }
 		);

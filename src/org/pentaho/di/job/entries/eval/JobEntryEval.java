@@ -44,7 +44,6 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 5-11-2003
  */
-
 public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String script;
