@@ -48,6 +48,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -55,12 +56,11 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-//import org.eclipse.swt.widgets.Menu;
-//import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
@@ -73,7 +73,6 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
@@ -85,18 +84,19 @@ import org.pentaho.di.spoon.Messages;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TransPainter;
-import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.spoon.XulMessages;
+import org.pentaho.di.spoon.dialog.SearchFieldsProgressDialog;
+import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.swt.menu.MenuObject;
 import org.pentaho.xul.swt.menu.PopupMenu;
-import org.pentaho.xul.swt.menu.Menu;
 import org.w3c.dom.Document;
 
 
@@ -166,12 +166,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     /**
      * A list of remarks on the current Transformation...
      */
-    private ArrayList remarks;
+    private List<CheckResult> remarks;
     
     /**
      * A list of impacts of the current transformation on the used databases.
      */
-    private ArrayList impact;
+    private List<DatabaseImpact> impact;
 
     /**
      * Indicates whether or not an impact analyses has already run.
@@ -245,8 +245,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         clearSettings();
         
         
-        remarks = new ArrayList();
-        impact  = new ArrayList();
+        remarks = new ArrayList<CheckResult>();
+        impact  = new ArrayList<DatabaseImpact>();
         impactFinished = false;
 
         hori = canvas.getHorizontalBar();
@@ -2199,22 +2199,22 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return transMeta.hasChanged();
     }
 
-    public ArrayList getRemarks()
+    public List<CheckResult> getRemarks()
     {
         return remarks;
     }
 
-    public void setRemarks(ArrayList remarks)
+    public void setRemarks(List<CheckResult> remarks)
     {
         this.remarks = remarks;
     }
 
-    public ArrayList getImpact()
+    public List<DatabaseImpact> getImpact()
     {
         return impact;
     }
 
-    public void setImpact(ArrayList impact)
+    public void setImpact(List<DatabaseImpact> impact)
     {
         this.impact = impact;
     }
