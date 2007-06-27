@@ -57,7 +57,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 		    return false;     // This is the end of this step.
 		}
 		
-		logRowlevel("Read row: "+row.toString());
+		if (log.isRowLevel()) logRowlevel("Read row: "+row.toString());
         
         putRow(row);
         
