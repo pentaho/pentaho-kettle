@@ -106,6 +106,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("filename",        filename));
 		retval.append("      ").append(XMLHandler.addTagValue("separator",       separator));
 		retval.append("      ").append(XMLHandler.addTagValue("enclosed",        enclosed));
+		retval.append("      ").append(XMLHandler.addTagValue("escaped",        escaped));
 		retval.append("      ").append(XMLHandler.addTagValue("linestarted",     linestarted));
 		retval.append("      ").append(XMLHandler.addTagValue("lineterminated",  lineterminated));
 		
@@ -132,6 +133,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			filename    = XMLHandler.getTagValue(entrynode, "filename");
 			separator   = XMLHandler.getTagValue(entrynode, "separator");
 			enclosed    = XMLHandler.getTagValue(entrynode, "enclosed");
+			escaped    = XMLHandler.getTagValue(entrynode, "escaped");
 			
 			linestarted     = XMLHandler.getTagValue(entrynode, "linestarted");
 			lineterminated  = XMLHandler.getTagValue(entrynode, "lineterminated");
@@ -159,7 +161,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			tablename       =      rep.getJobEntryAttributeString(id_jobentry,  "tablename");
 			filename        =      rep.getJobEntryAttributeString(id_jobentry,  "filename");
 			separator       =      rep.getJobEntryAttributeString(id_jobentry,  "separator");
-			enclosed        =      rep.getJobEntryAttributeString(id_jobentry,  "enclosed");			
+			enclosed        =      rep.getJobEntryAttributeString(id_jobentry,  "enclosed");
+			escaped        =      rep.getJobEntryAttributeString(id_jobentry,  "escaped");
 			linestarted     =      rep.getJobEntryAttributeString(id_jobentry,  "linestarted");
 			lineterminated  =      rep.getJobEntryAttributeString(id_jobentry,  "lineterminated");
 			replacedata     =      rep.getJobEntryAttributeBoolean(id_jobentry, "replacedata");
@@ -196,7 +199,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename",      tablename);
 			rep.saveJobEntryAttribute(id_job, getID(), "filename",       filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "separator",      separator);
-			rep.saveJobEntryAttribute(id_job, getID(), "enclosed",       enclosed);			
+			rep.saveJobEntryAttribute(id_job, getID(), "enclosed",       enclosed);	
+			rep.saveJobEntryAttribute(id_job, getID(), "escaped",       escaped);
 			rep.saveJobEntryAttribute(id_job, getID(), "linestarted",    linestarted);
 			rep.saveJobEntryAttribute(id_job, getID(), "lineterminated", lineterminated);
 			rep.saveJobEntryAttribute(id_job, getID(), "replacedata",    replacedata);
