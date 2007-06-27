@@ -1135,9 +1135,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
         Long count = r.getRowMeta().getInteger(r.getData(), 0);
         if (count.longValue() == 0)
         {
+            String isql = null;
             try
             {
-                String isql;
                 if (!databaseMeta.supportsAutoinc() || !isAutoIncrement())
                 {
                     isql = "insert into "+data.schemaTable+"("+databaseMeta.quoteField(meta.getKeyField())+", "+databaseMeta.quoteField(meta.getVersionField())+") values (0, 1)";
@@ -1166,7 +1166,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             }
             catch(KettleException e)
             {
-                throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+data.schemaTable+"] : "+sql, e);
+                throw new KettleDatabaseException("Error inserting 'unknown' row in dimension ["+data.schemaTable+"] : "+isql, e);
             }
         }
     }
