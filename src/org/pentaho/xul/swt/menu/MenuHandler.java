@@ -22,7 +22,7 @@ public class MenuHandler {
 			Object object = objectMap.get( id );
 			if( method != null && object != null ) {
 				if( method.getParameterTypes() == null || method.getParameterTypes().length == 0 ) {
-					method.invoke( object, (Object[]) null );
+					method.invoke( object);
 				} else {
 					method.invoke( object, new Object[] { id }  );
 				}
@@ -87,7 +87,7 @@ public class MenuHandler {
 		addMenuListener(id, listener, listenerClass, methodName);
 	}	
 	
-	public void addMenuListener( String id, Object listener, Class listenerClass, String methodName ) {
+	public void addMenuListener( String id, Object listener, Class<?> listenerClass, String methodName ) {
 		Method method = null;
 		try {
 			method = listenerClass.getDeclaredMethod( methodName, new Class[0] );
