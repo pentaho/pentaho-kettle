@@ -74,7 +74,7 @@ public class BuildVersion
             
             // read the file into a String
             int c=inputStream.read();
-            while ( c!=0 && c!='\n' && c!='\r' )
+            while ( c>0 && c!='\n' && c!='\r' )
             {
                 if (c!=' ' && c!='\t') buffer.append((char)c);  // no spaces or tabs please ;-)
                 c=inputStream.read();
