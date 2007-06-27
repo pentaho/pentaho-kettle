@@ -312,7 +312,7 @@ public class XMLInput extends BaseStep implements StepInterface
 					v.setValueData(data.previousRow[i]);
 				}
 			}
-
+			row[i]=v.getValueData();
 		} // End of loop over fields...
 
 		// See if we need to add the filename to the row...
