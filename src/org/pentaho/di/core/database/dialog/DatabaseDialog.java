@@ -1547,6 +1547,11 @@ public class DatabaseDialog extends Dialog
 
     public void getInfo(DatabaseMeta databaseMeta) throws KettleException
     {
+    	if ( this.databaseMeta != null &&
+    	     this.databaseMeta != databaseMeta )   // objects the same, not equal
+    	{
+    		databaseMeta.initializeVariablesFrom(this.databaseMeta);
+    	}
         // Before we put all attributes back in, clear the old list to make sure...
         // Warning: the port is an attribute too now.
         // 

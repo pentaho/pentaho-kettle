@@ -123,7 +123,7 @@ public class Database implements VariableSpace
 	{
 		log=LogWriter.getInstance();
 		databaseMeta = inf;
-		inf.shareVariablesWith(this);
+		shareVariablesWith(inf);
 		
 		pstmt = null;
 		rowMeta = null;
@@ -4098,8 +4098,7 @@ public class Database implements VariableSpace
 	public void shareVariablesWith(VariableSpace space) 
 	{
 		variables = space;		
-		// Also share the variables with the meta data object
-		databaseMeta.shareVariablesWith(space);
+		// Also share the variables with the meta data object		
 	}
 
 	public void injectVariables(Properties prop) 

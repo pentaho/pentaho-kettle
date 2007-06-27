@@ -299,6 +299,7 @@ public class BaseStepDialog extends Dialog
 			public void widgetSelected(SelectionEvent e) 
 			{
 				DatabaseMeta databaseMeta = new DatabaseMeta();
+				databaseMeta.shareVariablesWith(transMeta);
 				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 				if (cid.open()!=null)
 				{
@@ -326,6 +327,7 @@ public class BaseStepDialog extends Dialog
 				DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
 				if (databaseMeta!=null)
 				{
+					databaseMeta.shareVariablesWith(transMeta);
 					DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
 					if (cid.open()!=null)
 					{
