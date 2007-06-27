@@ -225,7 +225,9 @@ import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.menu.MenuBar;
+import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.swt.menu.MenuItem;
+import org.pentaho.xul.swt.menu.MenuItemSeparator;
 import org.pentaho.xul.swt.menu.MenuObject;
 import org.pentaho.xul.swt.menu.PopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -1003,7 +1005,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         
 		try {
     		// first get the XML document
-    		File xulFile = new File( XUL_FILE_MENUBAR ); //$NON-NLS-1$
+    		File xulFile = new File( XUL_FILE_MENUBAR );
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
     			menuBar = MenuObject.createMenuBarFromXul( doc, shell, xulMessages );
@@ -1205,7 +1207,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
     private void addMenuLast()
     {
-    	/*
+    	
     		MenuItemSeparator sep = menuBar.getSeparatorById( "file-last-separator" ); //$NON-NLS-1$
     		Menu msFile = null;
     		if( sep != null ) {
@@ -1217,7 +1219,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     		}
     		int idx = msFile.indexOf( sep );
     		int max = msFile.getItemCount();
-    		
         // Remove everything until end... 
         for (int i=max-1;i>idx;i--)
         {
@@ -1258,7 +1259,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
             menuBar.addMenuListener( id, this, "lastFileSelect" ); //$NON-NLS-1$
         }
-		*/
+
     }
     
     public void lastFileSelect( String id ) {
