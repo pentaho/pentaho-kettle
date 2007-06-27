@@ -257,7 +257,7 @@ class ScriptValuesHighlight implements LineStyleListener {
 				"array",
 				"break",
 				"case","catch", "const","continue",
-				"Date", "delete", "do",
+				"Date", "default", "delete", "do",
 				"else","eval","escape",
 				"false", "finally", "float", "for", "function", 
 				"if","in","instanceof", "isFinite","isNaN",
