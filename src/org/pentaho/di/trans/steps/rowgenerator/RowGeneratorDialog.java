@@ -47,7 +47,6 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;

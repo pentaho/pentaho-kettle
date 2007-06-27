@@ -46,7 +46,6 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ConditionEditor;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.TransMeta;
