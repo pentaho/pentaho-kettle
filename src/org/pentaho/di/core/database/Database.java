@@ -4104,5 +4104,75 @@ public class Database implements VariableSpace
 	public void injectVariables(Properties prop) 
 	{
 		variables.injectVariables(prop);		
-	}    
+	}  
+	
+	public RowMetaAndData callProcedure(String arg[], String argdir[], int argtype[],
+			String resultname, int resulttype) throws KettleDatabaseException {
+		RowMetaAndData ret;
+		try {
+			cstmt.execute();
+
+			ret = new RowMetaAndData();
+			int pos = 1;
+			if (resultname != null && resultname.length() != 0) {
+				ValueMeta vMeta = new ValueMeta(resultname, resulttype);
+				Object v =null;
+				switch (resulttype) {
+				case ValueMetaInterface.TYPE_BOOLEAN:
+					v=new Boolean(cstmt.getBoolean(pos));
+					break;
+				case ValueMetaInterface.TYPE_NUMBER:
+					v=new Double(cstmt.getDouble(pos));
+					break;
+				case ValueMetaInterface.TYPE_BIGNUMBER:
+					v=cstmt.getBigDecimal(pos);
+					break;
+				case ValueMetaInterface.TYPE_INTEGER:
+					v=new Long(cstmt.getLong(pos));
+					break;
+				case ValueMetaInterface.TYPE_STRING:
+					v=cstmt.getString(pos);
+					break;
+				case ValueMetaInterface.TYPE_DATE:
+					v=cstmt.getDate(pos); 
+					break;
+				}
+				ret.addValue(vMeta, v);
+				pos++;
+			}
+			for (int i = 0; i < arg.length; i++) {
+				if (argdir[i].equalsIgnoreCase("OUT")
+						|| argdir[i].equalsIgnoreCase("INOUT")) {
+					ValueMeta vMeta = new ValueMeta(arg[i], argtype[i]);
+					Object v=null;
+					switch (argtype[i]) {
+					case ValueMetaInterface.TYPE_BOOLEAN:
+						v=new Boolean(cstmt.getBoolean(pos + i));
+						break;
+					case ValueMetaInterface.TYPE_NUMBER:
+						v=new Double(cstmt.getDouble(pos + i));
+						break;
+					case ValueMetaInterface.TYPE_BIGNUMBER:
+						v=cstmt.getBigDecimal(pos + i);
+						break;
+					case ValueMetaInterface.TYPE_INTEGER:
+						v=new Long(cstmt.getLong(pos + i));
+						break;
+					case ValueMetaInterface.TYPE_STRING:
+						v=cstmt.getString(pos + i);
+						break;
+					case ValueMetaInterface.TYPE_DATE:
+						v=cstmt.getTimestamp(pos + i);
+						break;
+					}
+					ret.addValue(vMeta, v);
+				}
+			}
+
+			return ret;
+		} catch (SQLException ex) {
+			throw new KettleDatabaseException("Unable to call procedure", ex);
+		}
+	}
+
 }
