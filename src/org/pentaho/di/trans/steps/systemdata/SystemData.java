@@ -288,7 +288,10 @@ public class SystemData extends BaseStep implements StepInterface
             }
 		}
 		
-		row = getSystemData(getInputRowMeta(), row);
+		RowMetaInterface imeta = getInputRowMeta();
+		if (imeta==null)this.setInputRowMeta(imeta=new RowMeta());
+	
+		row = getSystemData(imeta, row);
 		
 		if (log.isRowLevel()) logRowlevel("System info returned: "+row);
 		
