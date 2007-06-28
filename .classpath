@@ -2,8 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libext/CacheDB.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>	
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/jxl.jar"/>
 	<classpathentry kind="lib" path="libext/mail.jar"/>
@@ -30,6 +29,7 @@
 	<classpathentry kind="lib" path="libext/web/servlet-api-2.5-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/asjava.zip"/>
+	<classpathentry kind="lib" path="libext/JDBC/CacheDB.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/db2jcc.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/h2.jar"/>
