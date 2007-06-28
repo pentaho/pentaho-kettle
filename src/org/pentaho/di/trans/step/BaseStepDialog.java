@@ -53,6 +53,8 @@ import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
@@ -64,13 +66,13 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIResource;
-import org.pentaho.di.core.util.StringUtil;
 
 
 
 public class BaseStepDialog extends Dialog
 {
-    protected static LocalVariables localVariables = LocalVariables.getInstance();
+    protected static LocalVariables localVariables = LocalVariables.getInstance(); // TODO Remove for Variable replacement
+    protected static VariableSpace variables = new Variables();
     
 	protected LogWriter    log;
 	protected String       stepname;
@@ -91,7 +93,7 @@ public class BaseStepDialog extends Dialog
 	protected boolean changed, backupChanged;
 	protected BaseStepMeta baseInput;
 	protected Props props;
-    protected Repository repository;
+    protected Repository repository;   
 	
 	public BaseStepDialog(Shell parent, BaseStepMeta in, TransMeta transMeta, String sname)
 	{
@@ -242,7 +244,8 @@ public class BaseStepDialog extends Dialog
         {
             public void modifyText(ModifyEvent e)
             {
-                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
+            	// maybe replace this with extra arguments
+                textField.setToolTipText(variables.environmentSubstitute( textField.getText() ) );
             }
         };
     }

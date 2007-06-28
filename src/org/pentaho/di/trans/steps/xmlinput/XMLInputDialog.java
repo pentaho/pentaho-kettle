@@ -707,7 +707,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 				{
 					XMLInputMeta tfii = new XMLInputMeta();
 					getInfo(tfii);
-					FileInputList fileInputList = tfii.getFiles();
+					FileInputList fileInputList = tfii.getFiles(transMeta);
 					String files[] = fileInputList.getFileStrings();
 					if (files != null && files.length > 0)
 					{
@@ -1063,7 +1063,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			// Keep the list of positions
 			List<XMLInputFieldPosition> path = new ArrayList<XMLInputFieldPosition>(); // ArrayList of XMLInputFieldPosition
 
-			FileInputList inputList = meta.getFiles();
+			FileInputList inputList = meta.getFiles(transMeta);
 
 			for (int f = 0; f < inputList.getFiles().size() && !finished; f++)
 			{

@@ -1637,7 +1637,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
-		FileInputList fileList = info.getFileList();
+		FileInputList fileList = info.getFileList(transMeta);
 		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
 			FileObject fileObject = (FileObject) iter.next();
 			try
@@ -1689,7 +1689,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
-		FileInputList fileList = info.getFileList();
+		FileInputList fileList = info.getFileList(transMeta);
 		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
 			FileObject file = (FileObject) iter.next();
 			try
@@ -1806,7 +1806,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     {
         ExcelInputMeta eii = new ExcelInputMeta();
         getInfo(eii);
-        String[] files = eii.getFilePaths();
+        String[] files = eii.getFilePaths(transMeta);
         if (files.length > 0)
         {
             EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelInputDialog.FilesRead.DialogTitle"), Messages.getString("ExcelInputDialog.FilesRead.DialogMessage"));

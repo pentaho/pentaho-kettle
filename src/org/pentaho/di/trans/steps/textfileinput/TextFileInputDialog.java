@@ -626,7 +626,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     {
         TextFileInputMeta tfii = new TextFileInputMeta();
         getInfo(tfii);
-        String files[] = tfii.getFilePaths();
+        String files[] = tfii.getFilePaths(transMeta);
         if (files!=null && files.length>0)
         {
             EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, "Files read", "Files read:");
@@ -2283,7 +2283,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
 						
-		FileInputList    textFileList = meta.getTextFileList();
+		FileInputList    textFileList = meta.getTextFileList(transMeta);
 		InputStream      fileInputStream = null;
 		ZipInputStream   zipInputStream = null ;
 		GZIPInputStream  gzipInputStream = null ;
@@ -2388,7 +2388,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     {
                         getInfo(meta);
 
-    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, reader, samples, clearFields);
+    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, clearFields);
                         String message = pd.open();
                         if (message!=null)
                         {
@@ -2554,7 +2554,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         try
         {
-    		if (info.getTextFileList().nrOfFiles()>0)
+    		if (info.getTextFileList(transMeta).nrOfFiles()>0)
     		{
     			String shellText = Messages.getString("TextFileInputDialog.LinesToView.DialogTitle");
     			String lineText = Messages.getString("TextFileInputDialog.LinesToView.DialogMessage");
@@ -2603,7 +2603,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
-		FileInputList textFileList = meta.getTextFileList();
+		FileInputList textFileList = meta.getTextFileList(transMeta);
 		
         InputStream     fi = null;
 		ZipInputStream  zi = null ;

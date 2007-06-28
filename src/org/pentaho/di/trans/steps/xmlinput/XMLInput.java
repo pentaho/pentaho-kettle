@@ -424,7 +424,7 @@ public class XMLInput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles().getFiles();
+			data.files = meta.getFiles(this).getFiles();
 			if (data.files == null || data.files.size() == 0)
 			{
 				logError(Messages.getString("XMLInput.Log.NoFiles"));

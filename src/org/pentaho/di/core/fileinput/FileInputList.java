@@ -13,7 +13,7 @@ import org.apache.commons.vfs.FileType;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 public class FileInputList
@@ -44,16 +44,16 @@ public class FileInputList
         return includeSubdirs;
     }
     
-    public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired)
+    public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired)
     {
         boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
-        return createFilePathList(fileName, fileMask, fileRequired, includeSubdirs);
+        return createFilePathList(space, fileName, fileMask, fileRequired, includeSubdirs);
     }
     
-    public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired,
+    public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired,
         boolean[] includeSubdirs)
     {
-        List fileList = createFileList(fileName, fileMask, fileRequired, includeSubdirs).getFiles();
+        List fileList = createFileList(space, fileName, fileMask, fileRequired, includeSubdirs).getFiles();
         String[] filePaths = new String[fileList.size()];
         for (int i = 0; i < filePaths.length; i++)
         {
@@ -63,19 +63,19 @@ public class FileInputList
         return filePaths;
     }
 
-    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired)
+    public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired)
     {
         boolean[] includeSubdirs = includeSubdirsFalse(fileName.length);
-        return createFileList(fileName, fileMask, fileRequired, includeSubdirs);
+        return createFileList(space, fileName, fileMask, fileRequired, includeSubdirs);
     }
     
-    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
+    public static FileInputList createFileList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
     {
         FileInputList fileInputList = new FileInputList();
 
         // Replace possible environment variables...
-        final String realfile[] = StringUtil.environmentSubstitute(fileName);
-        final String realmask[] = StringUtil.environmentSubstitute(fileMask);
+        final String realfile[] = space.environmentSubstitute(fileName);
+        final String realmask[] = space.environmentSubstitute(fileMask);
 
         for (int i = 0; i < realfile.length; i++)
         {

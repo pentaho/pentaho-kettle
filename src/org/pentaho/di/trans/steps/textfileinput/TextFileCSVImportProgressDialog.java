@@ -29,6 +29,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.trans.TransMeta;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out what tables, views etc we can
@@ -55,36 +56,22 @@ public class TextFileCSVImportProgressDialog
 
     private InputStreamReader reader;
     
+    private TransMeta         transMeta;
+    
     private Thread parentThread;  
-
-    /**
-     * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
-     * database.
-     * @deprecated please use the constructor version without log or props
-     */
-    public TextFileCSVImportProgressDialog( LogWriter log, 
-                                            Props props, 
-                                            Shell shell, 
-                                            TextFileInputMeta meta, 
-                                            InputStreamReader reader, 
-                                            int samples, 
-                                            int clearFields
-                                          )
-    {
-        this(shell, meta, reader, samples, clearFields);
-    }
     
     /**
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
      * database.
      */
-    public TextFileCSVImportProgressDialog( Shell shell, TextFileInputMeta meta, InputStreamReader reader, int samples, int clearFields )
+    public TextFileCSVImportProgressDialog(Shell shell, TextFileInputMeta meta, TransMeta transMeta, InputStreamReader reader, int samples, int clearFields )
     {
-        this.shell = shell;
-        this.meta = meta;
-        this.reader = reader;
-        this.samples       = samples;
-        this.clearFields   = clearFields;
+        this.shell       = shell;
+        this.meta        = meta;
+        this.reader      = reader;
+        this.samples     = samples;
+        this.clearFields = clearFields;
+        this.transMeta   = transMeta;
 
         message = null;
         debug = "init";
@@ -263,7 +250,7 @@ public class TextFileCSVImportProgressDialog
             RowMetaInterface rowMeta = new RowMeta();
             meta.getFields(rowMeta, "stepname", null);
             
-            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths()[0], rownumber, null);
+            Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 
             rownumber++;
             for (int i = 0; i < nrfields && i < r.length; i++)

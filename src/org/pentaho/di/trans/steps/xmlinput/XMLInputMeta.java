@@ -33,6 +33,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -538,7 +539,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 
-	public FileInputList getFiles()
+	public FileInputList getFiles(VariableSpace space)
 	{
         String required[] = new String[fileName.length];
         boolean subdirs[] = new boolean[fileName.length];
@@ -547,7 +548,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
             required[i]="Y";
             subdirs[i]=false;
         }
-        return FileInputList.createFileList(fileName, fileMask, required, subdirs);
+        return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);
 
         /*
 		// Replace possible environment variables...
@@ -639,7 +640,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-        FileInputList fileInputList = getFiles();
+        FileInputList fileInputList = getFiles(transMeta);
 		// String files[] = getFiles();
 		if (fileInputList==null || fileInputList.getFiles().size()==0)
 		{

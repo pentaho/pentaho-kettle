@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -914,14 +915,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		return type_trim_desc[i];	
 	}
 	
-	public String[] getFilePaths()
+	public String[] getFilePaths(VariableSpace space)
     {
-    	return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
+    	return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
     }
     
-    public FileInputList getFileList()
+    public FileInputList getFileList(VariableSpace space)
     {
-    	return FileInputList.createFileList(fileName, fileMask, fileRequired);
+    	return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
     }
 	
     public String getLookupStepname()
@@ -972,7 +973,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		FileInputList fileList = getFileList();
+		FileInputList fileList = getFileList(transMeta);
 		if (fileList.nrOfFiles() == 0)
 		{
 			if ( ! isAcceptingFilenames() )

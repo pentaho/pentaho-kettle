@@ -172,7 +172,7 @@ public class GetFileNames extends BaseStep implements StepInterface
         {
             try
             {
-                data.files = meta.getTextFileList();
+                data.files = meta.getTextFileList(this);
                 handleMissingFiles();
 
                 return true;

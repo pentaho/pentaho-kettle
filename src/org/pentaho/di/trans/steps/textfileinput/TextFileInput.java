@@ -1527,7 +1527,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			initErrorHandling();
 			initReplayFactory();
 				
-			data.files = meta.getTextFileList();
+			data.files = meta.getTextFileList(this);
 			data.filterProcessor = new TextFileFilterProcessor(meta.getFilter());
             
             // If there are missing files, fail if we don't ignore errors

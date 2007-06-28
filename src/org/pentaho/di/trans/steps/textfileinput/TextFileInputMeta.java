@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Base64;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -1243,14 +1244,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		return trimTypeDesc[i];
 	}
 
-	public String[] getFilePaths()
+	public String[] getFilePaths(VariableSpace space)
 	{
-		return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
+		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
 	}
 
-	public FileInputList getTextFileList()
+	public FileInputList getTextFileList(VariableSpace space)
 	{
-		return FileInputList.createFileList(fileName, fileMask, fileRequired);
+		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
 	}
     
 
@@ -1278,7 +1279,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 
-		FileInputList textFileList = getTextFileList();
+		FileInputList textFileList = getTextFileList(transMeta);
 		if (textFileList.nrOfFiles() == 0)
 		{
 			if ( ! isAcceptingFilenames() )

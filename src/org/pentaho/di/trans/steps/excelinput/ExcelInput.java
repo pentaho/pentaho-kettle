@@ -635,7 +635,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		{
 			initErrorHandling();
 			initReplayFactory();
-			data.files = meta.getFileList();
+			data.files = meta.getFileList(this);
 			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0 && !meta.isAcceptingFilenames())
 			{
 				logError("No file(s) specified! Stop processing.");

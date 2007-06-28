@@ -34,6 +34,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -352,14 +353,14 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public String[] getFilePaths()
+	public String[] getFilePaths(VariableSpace space)
 	{
-		return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
+		return FileInputList.createFilePathList(space, fileName, fileMask, fileRequired);
 	}
     
-	public FileInputList getTextFileList()
+	public FileInputList getTextFileList(VariableSpace space)
 	{
-		return FileInputList.createFileList(fileName, fileMask, fileRequired);
+		return FileInputList.createFileList(space, fileName, fileMask, fileRequired);
 	}
 
 	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
@@ -378,7 +379,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 
-		FileInputList textFileList = getTextFileList();
+		FileInputList textFileList = getTextFileList(transMeta);
 		if (textFileList.nrOfFiles() == 0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetFileNamesMeta.CheckResult.ExpectedFilesError"), stepinfo);

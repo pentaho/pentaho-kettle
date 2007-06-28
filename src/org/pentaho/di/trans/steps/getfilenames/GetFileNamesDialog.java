@@ -467,7 +467,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 			{
 				GetFileNamesMeta tfii = new GetFileNamesMeta();
 				getInfo(tfii);
-				String files[] = tfii.getFilePaths();
+				String files[] = tfii.getFilePaths(transMeta);
 				if (files != null && files.length > 0)
 				{
 					EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, "Files read",
