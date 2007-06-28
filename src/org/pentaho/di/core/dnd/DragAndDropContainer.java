@@ -37,6 +37,8 @@ public class DragAndDropContainer implements XMLInterface
     public static final int TYPE_BUSINESS_TABLE      = 11;
     public static final int TYPE_BUSINESS_COLUMN     = 12;
     public static final int TYPE_RELATIONSHIP        = 13;
+    public static final int TYPE_BUSINESS_MODEL      = 14;
+    
     
 	private static final String typeCodes[] = { 
         "", 
@@ -52,7 +54,8 @@ public class DragAndDropContainer implements XMLInterface
         "BusinessView", 
         "BusinessTable", 
         "BusinessColumn", 
-        "Relationship" 
+        "Relationship",
+        "Business Model"
     };
 	
 	private int type;
