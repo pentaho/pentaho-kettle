@@ -289,7 +289,11 @@ public class SystemData extends BaseStep implements StepInterface
 		}
 		
 		RowMetaInterface imeta = getInputRowMeta();
-		if (imeta==null)this.setInputRowMeta(imeta=new RowMeta());
+		if (imeta==null)
+		{
+			imeta=new RowMeta();
+			this.setInputRowMeta(imeta);
+		}
 	
 		row = getSystemData(imeta, row);
 		
