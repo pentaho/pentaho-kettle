@@ -312,7 +312,11 @@ public class XMLInput extends BaseStep implements StepInterface
 					v.setValueData(data.previousRow[i]);
 				}
 			}
-			row[i]=v.getValueData();
+			
+			//problem was here... Can we please add some type safety to kettle?
+			row[i]=v; //v.getValueData();
+			
+			
 		} // End of loop over fields...
 
 		// See if we need to add the filename to the row...
