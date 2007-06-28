@@ -329,8 +329,10 @@ public class Kitchen
             {
                 job.getJobMeta().setArguments((String[]) args.toArray(new String[args.size()]));
             }
+            job.initializeVariablesFrom(null);
+            job.getJobMeta().setInternalKettleVariables(job);
             
-			result = job.execute(); // Execute the selected job.
+			result = job.execute(); // Execute the selected job.		
 			job.endProcessing("end", result);  // The bookkeeping...
 		}
 		catch(KettleJobException je)
