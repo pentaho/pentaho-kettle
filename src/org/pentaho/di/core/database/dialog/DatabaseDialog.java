@@ -1737,7 +1737,7 @@ public class DatabaseDialog extends Dialog
 
     private static final StringBuffer appendMessage(StringBuffer report, String messageName, String value)
 	{
-		return report.append(Messages.getString(messageName)).append(StringUtil.environmentSubstitute(value)).append(Const.CR);
+		return report.append(Messages.getString(messageName)).append(value).append(Const.CR);
 	}
 
 	private static final StringBuffer appendConnectionInfo(StringBuffer report, 
@@ -1783,7 +1783,9 @@ public class DatabaseDialog extends Dialog
                     {
                         db.disconnect();
                     }
-                    appendConnectionInfo(report, partitioningInformation[i].getHostname(), partitioningInformation[i].getPort(), partitioningInformation[i].getDatabaseName());
+                    appendConnectionInfo(report, db.environmentSubstitute(partitioningInformation[i].getHostname()), 
+                    		                     db.environmentSubstitute(partitioningInformation[i].getPort()), 
+                    		                     db.environmentSubstitute(partitioningInformation[i].getDatabaseName()));
                     report.append(Const.CR);
                 }
             }
@@ -1803,7 +1805,9 @@ public class DatabaseDialog extends Dialog
                 {
                     db.disconnect();
                 }
-                appendConnectionInfo(report, dbinfo.getHostname(), dbinfo.getDatabasePortNumberString(), dbinfo.getDatabaseName());
+                appendConnectionInfo(report, db.environmentSubstitute(dbinfo.getHostname()), 
+                		                     db.environmentSubstitute(dbinfo.getDatabasePortNumberString()), 
+                		                     db.environmentSubstitute(dbinfo.getDatabaseName()));
                 report.append(Const.CR);
             }
 
