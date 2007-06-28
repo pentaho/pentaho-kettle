@@ -171,7 +171,12 @@ public class XMLOutput extends BaseStep implements StepInterface
 						data.writer.write(' '); // a space between
 					// elements
 
-					v = (ValueMetaAndData) r[data.fieldnrs[i]];
+					Object obj = r[data.fieldnrs[i]];
+
+					if (obj instanceof ValueMetaAndData)
+						v = (ValueMetaAndData) r[data.fieldnrs[i]];
+					else
+						v = new ValueMetaAndData(outputField.getElementName(),obj);
 
 					v.getValueMeta().setLength(outputField.getLength(), outputField.getPrecision());
 
@@ -186,7 +191,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					writeField(v, i, element);
 				}
 			}
-
+			
 			data.writer.write((" </" + meta.getRepeatElement() + ">").toCharArray());
 			data.writer.write(Const.CR.toCharArray());
 		} catch (Exception e)
@@ -355,7 +360,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					// mandatory.
 					retval = Const.NULL_BINARY;
 				}
-				
+
 			}
 		} else
 		// Boolean
