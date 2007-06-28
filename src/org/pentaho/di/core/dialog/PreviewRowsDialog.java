@@ -242,6 +242,11 @@ public class PreviewRowsDialog extends Dialog
                             LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                             show=null;
                         }
+                        catch (ArrayIndexOutOfBoundsException e)
+                        {
+                            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+                            show=null;
+                        }
 
                         if (show != null)
                         {
