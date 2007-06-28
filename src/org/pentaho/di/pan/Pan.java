@@ -19,6 +19,7 @@
  */
 
 package org.pentaho.di.pan;
+
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,9 +43,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
 import org.w3c.dom.Document;
-
-
-
 
 
 public class Pan
@@ -381,6 +379,9 @@ public class Pan
 		
 		try
 		{
+			trans.initializeVariablesFrom(null);
+			trans.getTransMeta().setInternalKettleVariables(trans);
+			
 			// See if we want to run in safe mode:
 			if ("Y".equalsIgnoreCase(optionSafemode.toString()))
 			{
