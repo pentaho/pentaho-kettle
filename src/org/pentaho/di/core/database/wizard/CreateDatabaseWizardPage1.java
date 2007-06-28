@@ -16,6 +16,8 @@
 
 package org.pentaho.di.core.database.wizard;
 
+import java.util.TreeMap;
+
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -122,10 +124,21 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		wlDBType.setLayoutData(fdlDBType);
 		wDBType = new List(composite, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
  		props.setLook(wDBType);
-		for (int i=0;i<DatabaseMeta.getDBTypeDescLongList().length;i++)
+    
+    // PMD-101: Sort the connection types, as a convenience (this could be pushed lower) 
+    Object[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
+    TreeMap sortTypes = new TreeMap();
+    for (int i = 0; i < dbtypes.length; i++)
+    {
+        sortTypes.put(dbtypes[i], dbtypes[i]);
+    }
+    dbtypes = sortTypes.keySet().toArray();
+ 
+		for (int i=0;i< dbtypes.length;i++)
 		{
-			wDBType.add(DatabaseMeta.getDBTypeDescLongList()[i]);
+			wDBType.add((String)dbtypes[i]);
 		}
+    
 		// Select a default: the first
 		if (info.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_NONE) 
 		{

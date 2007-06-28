@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -452,11 +453,21 @@ public class DatabaseDialog extends Dialog
 
         wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
         props.setLook(wConnType);
-        String[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
+        Object[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
+        
+        // PMD-101: Sort the connection types, as a convenience (this could be pushed lower) 
+        TreeMap sortTypes = new TreeMap();
         for (int i = 0; i < dbtypes.length; i++)
         {
-            wConnType.add(dbtypes[i]);
+            sortTypes.put(dbtypes[i], dbtypes[i]);
         }
+        dbtypes = sortTypes.keySet().toArray();
+     
+        for (int i = 0; i < dbtypes.length; i++)
+        {
+            wConnType.add((String)dbtypes[i]);
+        }
+        
         props.setLook(wConnType);
         FormData fdConnType = new FormData();
         fdConnType.top = new FormAttachment(wConn, margin);
