@@ -27,7 +27,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -215,7 +214,7 @@ public class RowGenerator extends BaseStep implements StepInterface
         if (super.init(smi, sdi))
         {
             // Determine the number of rows to generate...
-            data.rowLimit = Const.toLong(StringUtil.environmentSubstitute(meta.getRowLimit()), -1L);
+            data.rowLimit = Const.toLong(environmentSubstitute(meta.getRowLimit()), -1L);
             
             if (data.rowLimit<0L) // Unable to parse
             {

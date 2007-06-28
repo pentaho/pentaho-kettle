@@ -862,7 +862,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
-        String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+        String soFile = environmentSubstitute(sharedObjectsFile);
         SharedObjects sharedObjects = new SharedObjects(soFile); 
         Map objectsMap = sharedObjects.getObjectsMap();
         Collection objects = objectsMap.values();
@@ -891,7 +891,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         try
         {
             // First load all the shared objects...
-            String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+            String soFile = environmentSubstitute(sharedObjectsFile);
             SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there

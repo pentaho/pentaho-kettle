@@ -9,7 +9,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.Repository;
@@ -54,16 +54,19 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     
     /** The minimum number of rows to read before the percentage evaluation takes place */
     private long     minPercentRows;
+    
+    private VariableSpace variables;
 
     
     /**
      * Create a new step error handling metadata object
      * @param sourceStep The source step that can send the error rows
      */
-    public StepErrorMeta(StepMeta sourceStep)
+    public StepErrorMeta(VariableSpace space, StepMeta sourceStep)
     {
         this.sourceStep = sourceStep;
         this.enabled = true;
+        this.variables = space;
     }
 
     /**
@@ -71,11 +74,12 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
      * @param sourceStep The source step that can send the error rows
      * @param targetStep The target step to send the error rows to
      */
-    public StepErrorMeta(StepMeta sourceStep, StepMeta targetStep)
+    public StepErrorMeta(VariableSpace space, StepMeta sourceStep, StepMeta targetStep)
     {
         this.sourceStep = sourceStep;
         this.targetStep = targetStep;
         this.enabled = true;
+        this.variables = space;
     }
     
     /**
@@ -87,7 +91,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
      * @param errorFieldsValuename the name of the field value to contain the fields for which the error(s) occured (null or empty means it's not needed)
      * @param errorCodesValuename the name of the field value to contain the error code(s) (null or empty means it's not needed)
      */
-    public StepErrorMeta(StepMeta sourceStep, StepMeta targetStep, String nrErrorsValuename, String errorDescriptionsValuename, String errorFieldsValuename, String errorCodesValuename)
+    public StepErrorMeta(VariableSpace space, StepMeta sourceStep, StepMeta targetStep, String nrErrorsValuename, String errorDescriptionsValuename, String errorFieldsValuename, String errorCodesValuename)
     {
         this.sourceStep = sourceStep;
         this.targetStep = targetStep;
@@ -96,6 +100,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         this.errorDescriptionsValuename = errorDescriptionsValuename;
         this.errorFieldsValuename = errorFieldsValuename;
         this.errorCodesValuename = errorCodesValuename;
+        this.variables = space;
     }
     
     public Object clone()
@@ -294,26 +299,26 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     {
         RowMetaInterface row = new RowMeta();
         
-        String nrErr = StringUtil.environmentSubstitute(getNrErrorsValuename());
+        String nrErr = variables.environmentSubstitute(getNrErrorsValuename());
         if (!Const.isEmpty(nrErr))
         {
             ValueMetaInterface v = new ValueMeta(nrErr, ValueMetaInterface.TYPE_INTEGER);
             v.setLength(3);
             row.addValueMeta(v);
         }
-        String errDesc = StringUtil.environmentSubstitute(getErrorDescriptionsValuename());
+        String errDesc = variables.environmentSubstitute(getErrorDescriptionsValuename());
         if (!Const.isEmpty(errDesc))
         {
             ValueMetaInterface v = new ValueMeta(errDesc, ValueMetaInterface.TYPE_STRING);
             row.addValueMeta(v);
         }
-        String errFields = StringUtil.environmentSubstitute(getErrorFieldsValuename());
+        String errFields = variables.environmentSubstitute(getErrorFieldsValuename());
         if (!Const.isEmpty(errFields))
         {
             ValueMetaInterface v = new ValueMeta(errFields, ValueMetaInterface.TYPE_STRING);
             row.addValueMeta(v);
         }
-        String errCodes = StringUtil.environmentSubstitute(getErrorCodesValuename());
+        String errCodes = variables.environmentSubstitute(getErrorCodesValuename());
         if (!Const.isEmpty(errCodes))
         {
             ValueMetaInterface v = new ValueMeta(errCodes, ValueMetaInterface.TYPE_STRING);
@@ -327,25 +332,25 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     {
         int index = startIndex;
         
-        String nrErr = StringUtil.environmentSubstitute(getNrErrorsValuename());
+        String nrErr = variables.environmentSubstitute(getNrErrorsValuename());
         if (!Const.isEmpty(nrErr))
         {
             row[index] = new Long(nrErrors);
             index++;
         }
-        String errDesc = StringUtil.environmentSubstitute(getErrorDescriptionsValuename());
+        String errDesc = variables.environmentSubstitute(getErrorDescriptionsValuename());
         if (!Const.isEmpty(errDesc))
         {
             row[index] = errorDescriptions;
             index++;
         }
-        String errFields = StringUtil.environmentSubstitute(getErrorFieldsValuename());
+        String errFields = variables.environmentSubstitute(getErrorFieldsValuename());
         if (!Const.isEmpty(errFields))
         {
             row[index] = fieldNames;
             index++;
         }
-        String errCodes = StringUtil.environmentSubstitute(getErrorCodesValuename());
+        String errCodes = variables.environmentSubstitute(getErrorCodesValuename());
         if (!Const.isEmpty(errCodes))
         {
             row[index] = errorCodes;

@@ -27,7 +27,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -229,7 +228,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsNotDefined"), this)); //$NON-NLS-1$
     } else {
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsDefined"), this)); //$NON-NLS-1$
-      String realFileName = StringUtil.environmentSubstitute(getFilename());
+      String realFileName = environmentSubstitute(getFilename());
       FileObject fileObject = null;
       try {
         fileObject = KettleVFS.getFileObject(realFileName);

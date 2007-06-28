@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -172,7 +171,7 @@ public class TableOutput extends BaseStep implements StepInterface
             }
             
             Object partitioningValueData = rowMeta.getDate(r, data.indexOfPartitioningField); 
-            tableName=StringUtil.environmentSubstitute(meta.getTablename())+"_"+data.dateFormater.format((Date)partitioningValueData);
+            tableName=environmentSubstitute(meta.getTablename())+"_"+data.dateFormater.format((Date)partitioningValueData);
         }
         else
         {
@@ -189,7 +188,7 @@ public class TableOutput extends BaseStep implements StepInterface
         if (insertStatement==null)
         {
             String sql = data.db.getInsertStatement(
-            		              StringUtil.environmentSubstitute(meta.getSchemaName()), 
+            		              environmentSubstitute(meta.getSchemaName()), 
             		              tableName,
                                   data.insertRowMeta);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
@@ -401,13 +400,13 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    
-                	data.tableName = StringUtil.environmentSubstitute(meta.getTablename());                
+                	data.tableName = environmentSubstitute(meta.getTablename());                
                 	
                     // Only the first one truncates in a non-partitioned step copy
                     //
                     if (meta.truncateTable() && ( getCopy()==0 || !Const.isEmpty(getPartitionID())) )
     				{                	
-    					data.db.truncateTable(StringUtil.environmentSubstitute(meta.getSchemaName()), 
+    					data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), 
     							              data.tableName);
     				}
                 }

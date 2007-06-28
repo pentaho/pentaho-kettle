@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -819,9 +818,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     public void check(List<CheckResult> remarks, JobMeta jobMeta) {
       String transformation = null;
       if (!Const.isEmpty(getFilename())) {
-        transformation = StringUtil.environmentSubstitute(getFilename());
+        transformation = jobMeta.environmentSubstitute(getFilename());
       } else if (!Const.isEmpty(getTransname()) && getDirectory() != null) {  // Load from the repository
-        transformation = StringUtil.environmentSubstitute(getTransname());
+        transformation = jobMeta.environmentSubstitute(getTransname());
       }
       
       if (transformation != null) {

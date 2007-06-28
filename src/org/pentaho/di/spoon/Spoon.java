@@ -3033,7 +3033,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
             if (stepErrorMeta==null)
             {
-                stepErrorMeta = new StepErrorMeta(stepMeta);
+                stepErrorMeta = new StepErrorMeta(transMeta, stepMeta);
             }
             List<StepMeta> targetSteps = new ArrayList<StepMeta>();
             int nrNext = transMeta.findNrNextSteps(stepMeta);

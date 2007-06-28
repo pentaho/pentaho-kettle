@@ -15,6 +15,7 @@
 
  
 package org.pentaho.di.spoon.job;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobHopMeta;
@@ -90,9 +90,6 @@ import org.pentaho.xul.swt.tab.TabItem;
 import org.w3c.dom.Document;
 
 
-
-
-
 /**
  * Handles the display of Jobs in Chef, in a graphical form.
  * 
@@ -100,7 +97,6 @@ import org.w3c.dom.Document;
  * Created on 17-mei-2003
  *
  */
-
 public class JobGraph extends Composite implements Redrawable, TabItemInterface
 {
 	private static final int HOP_SEL_MARGIN = 9;
@@ -1484,8 +1480,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
 	protected void openTransformation(JobEntryTrans entry)
 	{
-        String exactFilename = StringUtil.environmentSubstitute(entry.getFilename() );
-        String exactTransname = StringUtil.environmentSubstitute(entry.getTransname() );
+        String exactFilename = jobMeta.environmentSubstitute(entry.getFilename() );
+        String exactTransname = jobMeta.environmentSubstitute(entry.getTransname() );
         
         // check, whether a tab of this name is already opened
         TabItem tab = spoon.findTabItem(exactFilename, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
@@ -1559,8 +1555,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	public void launchChef(JobEntryJob entry)
 	{
-        String exactFilename = StringUtil.environmentSubstitute(entry.getFilename() );
-        String exactJobname = StringUtil.environmentSubstitute(entry.getJobName() );
+        String exactFilename = jobMeta.environmentSubstitute(entry.getFilename() );
+        String exactJobname = jobMeta.environmentSubstitute(entry.getJobName() );
         
 		// Load from repository?
 		if ( Const.isEmpty(exactFilename) && !Const.isEmpty(exactJobname) )
