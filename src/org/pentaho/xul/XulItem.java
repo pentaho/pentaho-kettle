@@ -10,4 +10,5 @@ public interface XulItem {
 
 	public void setParent(XulItem parent);
 
+	public Object getNativeObject();
 }
