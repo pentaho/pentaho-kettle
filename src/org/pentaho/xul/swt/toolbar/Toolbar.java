@@ -33,11 +33,6 @@ public class Toolbar extends XulObject implements XulToolbar {
         toolBar.setLayoutData(fdBar);
 
 	}
-	
-	public void addMenuListener(String id, Object listener,
-			Class listenerClass, String methodName) {
-		handler.addMenuListener(id, listener, listenerClass, methodName);
-	}
 
 	public void addMenuListener(String id, Object listener, String methodName) {
 		handler.addMenuListener(id, listener, methodName);
@@ -88,6 +83,13 @@ public class Toolbar extends XulObject implements XulToolbar {
 		XulToolbarButton button = getButtonById( id );
 		if( button != null ) {
 			button.setHint(text);
+		}
+	}
+
+	public void setTextById(String id, String text) {
+		XulToolbarButton button = getButtonById( id );
+		if( button != null ) {
+			button.setText(text);
 		}
 	}
 
