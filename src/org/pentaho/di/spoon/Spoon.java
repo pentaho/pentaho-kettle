@@ -18,6 +18,7 @@ package org.pentaho.di.spoon;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -180,9 +180,9 @@ import org.pentaho.di.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.spoon.dialog.GetSQLProgressDialog;
+import org.pentaho.di.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.spoon.dialog.TipsDialog;
-import org.pentaho.di.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.spoon.job.JobGraph;
 import org.pentaho.di.spoon.job.JobHistory;
 import org.pentaho.di.spoon.job.JobHistoryRefresher;
@@ -223,11 +223,12 @@ import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
-import org.pentaho.xul.swt.menu.Menu;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuBar;
 import org.pentaho.xul.menu.XulMenuItem;
 import org.pentaho.xul.menu.XulPopupMenu;
+import org.pentaho.xul.swt.menu.Menu;
 import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.swt.menu.MenuHelper;
 import org.pentaho.xul.swt.menu.PopupMenu;
@@ -3817,17 +3818,43 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
     
     private String lastFileOpened="";
+//    private String lastVfsUsername="";
+//    private String lastVfsPassword="";
     
     public void openFileVFSFile()
     {
-        // "Open a file", "Specify the URL of the file to open:"
-        EnterStringDialog enterStringDialog = new EnterStringDialog(shell, lastFileOpened, Messages.getString("Spoon.Dialog.OpenFileVFS.Title"), Messages.getString("Spoon.Dialog.OpenFileVFS.Message"));
-        String fileName = enterStringDialog.open();
-        if (fileName!=null)
-        {
-            lastFileOpened=fileName;
-            openFile(fileName, false);
+      FileObject initialFile = null;
+      FileObject rootFile = null;
+      try {
+        initialFile = KettleVFS.getFileObject(lastFileOpened);
+        rootFile = initialFile.getFileSystem().getRoot();
+      } catch (IOException e) {
+        e.printStackTrace();
+        String message = e.getMessage();
+        if (e.getCause() != null) {
+          message = e.getCause().getMessage();
         }
+        MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+        messageDialog.setText("Error");
+        messageDialog.setMessage(message);
+        messageDialog.open();
+
+        // bring up a dialog to prompt for userid/password and try again
+        // lastVfsUsername = "";
+        // lastVfsPassword = "";
+//        if (lastFileOpened != null && lastFileOpened.indexOf("@") == -1) {
+//          lastFileOpened = lastFileOpened.substring(0, lastFileOpened.indexOf("//")+2) + lastVfsUsername + ":" + lastVfsPassword + "@" + lastFileOpened.substring(lastFileOpened.indexOf("//")+2);
+//        }
+//        openFileVFSFile();
+        return;
+      }
+      
+      VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
+      FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN);
+      if (selectedFile != null) {
+        lastFileOpened=selectedFile.getName().getFriendlyURI();
+        openFile(selectedFile.getName().getFriendlyURI(), false);
+      }      
     }
     
     public void addFileListener( FileListener listener, String extension, String rootNodeName ) {
@@ -4431,12 +4458,29 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
         boolean saved=false;
 
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+        FileObject rootFile = null;
+        FileObject initialFile = null;
+        try {
+          initialFile = KettleVFS.getFileObject(lastFileOpened);
+          rootFile = KettleVFS.getFileObject(lastFileOpened).getFileSystem().getRoot();
+        } catch (Exception e) {
+          e.printStackTrace();
+          MessageBox messageDialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+          messageDialog.setText("Error");
+          messageDialog.setMessage(e.getMessage());
+          messageDialog.open();
+          return false;
+        }
+        
+        String fname = null;
+        VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
+        FileObject selectedFile = vfsFileChooser.open(shell, "Untitled", Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_SAVEAS);
+        if (selectedFile != null) {
+          fname=selectedFile.getName().getFriendlyURI();
+        }        
+
+
         String extensions[] = meta.getFilterExtensions();
-        dialog.setFilterExtensions(extensions);
-        dialog.setFilterNames     (meta.getFilterNames());
-        String fname = dialog.open();
         if (fname!=null) 
         {
             // Is the filename ending on .ktr, .xml?
