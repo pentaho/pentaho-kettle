@@ -48,13 +48,14 @@ import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.dialog.EnterMappingDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.dialog.SelectObjectDialog;
-import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -463,7 +464,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             loadTransformation();
             
             // If we're still here, mappingTransMeta is valid.
-            Spoon.getInstance().addTransGraph(mappingTransMeta);
+        	SpoonInterface spoon = SpoonFactory.getInstance();
+        	if( spoon != null ) {
+                spoon.addTransGraph(mappingTransMeta);
+        	}
+
         }
         catch(KettleException e)
         {

@@ -56,12 +56,14 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterNumberDialog;
@@ -93,10 +95,11 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-import org.pentaho.xul.swt.menu.Menu;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuChoice;
+import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.MenuObject;
-import org.pentaho.xul.swt.menu.PopupMenu;
+import org.pentaho.xul.swt.menu.MenuHelper;
 import org.w3c.dom.Document;
 
 
@@ -229,7 +232,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     			ids.add( "trans-graph-background" );
     			ids.add( "trans-graph-note" );
     			
-    			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
+    			menuMap = MenuHelper.createPopupMenusFromXul( doc, shell, xulMessages, ids );
     		}
 		} catch (Throwable t ) {
 			// TODO log this
@@ -1486,7 +1489,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void settings()
     {
-        spoon.editTransformationProperties(transMeta);
+        transMeta.editProperties(spoon, spoon.getRepository());
     }
 
     public void newStep( String description )
@@ -1515,18 +1518,18 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
         		setCurrentStep( stepMeta );
         		
-    			PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
+        		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
     			if( menu != null ) {
     	            int sels = transMeta.nrSelectedSteps();
     	            
-    				MenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
+    				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
     				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHopClick" ); //$NON-NLS-1$ //$NON-NLS-2$
     				item.setEnabled( sels == 2 );
     				
     				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
 	            	item.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
 
-				Menu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
+				XulMenu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
 				if( aMenu != null ) {
 					aMenu.setEnabled( sels > 1 );
 				}
@@ -1573,7 +1576,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				menu.addMenuListener( "trans-graph-entry-clustering", this, "clustering" ); //$NON-NLS-1$ //$NON-NLS-2$
 				menu.addMenuListener( "trans-graph-entry-errors", this, "errorHandling" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-				canvas.setMenu(menu.getSwtMenu());
+				canvas.setMenu((Menu)menu.getNativeObject());
     			}
     			
         }
@@ -1583,11 +1586,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             if (hi != null) // We clicked on a HOP!
             {
             	
-    				PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
+            		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
     				if( menu != null ) {
     					setCurrentHop( hi );
     				
-    					MenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
+    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
     					if( item != null ) {
     						if (hi.isEnabled()) {
     							item.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
@@ -1601,7 +1604,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
     					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
 
-    					canvas.setMenu(menu.getSwtMenu());
+    					canvas.setMenu((Menu)menu.getNativeObject());
 
     				}
 
@@ -1615,19 +1618,19 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 				if (ni!=null)
 				{
 
-					PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-note" ); //$NON-NLS-1$
+					XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-note" ); //$NON-NLS-1$
 					if( menu != null ) {
 					
 						menu.addMenuListener( "trans-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-		                canvas.setMenu(menu.getSwtMenu());
+						canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
 				}
                 else
                 {
 
-					PopupMenu menu = (PopupMenu) menuMap.get( "trans-graph-background" ); //$NON-NLS-1$
+                	XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-background" ); //$NON-NLS-1$
 					if( menu != null ) {
 					
 						menu.addMenuListener( "trans-graph-background-new-note", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1637,12 +1640,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 						
 						
 	                    final String clipcontent = spoon.fromClipboard();
-	                    MenuChoice item  = menu.getMenuItemById( "trans-graph-background-paste" ); //$NON-NLS-1$
+	                    XulMenuChoice item  = menu.getMenuItemById( "trans-graph-background-paste" ); //$NON-NLS-1$
 	                    if( item != null ) {
 	                    		item.setEnabled( clipcontent != null );
 	                    }
 
-	                    Menu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
+	                    XulMenu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
 	                    if( subMenu.getItemCount() == 0 ) {
 	                        StepLoader steploader = StepLoader.getInstance();
 	                        final StepPlugin sp[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
@@ -1656,7 +1659,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	                        }	                    	
 	                    }
 	                    
-		                canvas.setMenu(menu.getSwtMenu());
+	    				canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
 
@@ -2137,9 +2140,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return this.getClass().getName();
     }
 
+    public EngineMetaInterface getMeta() {
+    	return transMeta;
+    }
+
     /**
      * @return the transMeta
-     */
+     * /
     public TransMeta getTransMeta()
     {
         return transMeta;
@@ -2181,7 +2188,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     
     public boolean applyChanges()
     {
-        return spoon.saveTransFile(transMeta);
+        return spoon.saveToFile(transMeta);
     }
 
     public boolean canBeClosed()

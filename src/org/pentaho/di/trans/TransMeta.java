@@ -31,6 +31,7 @@ import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -38,6 +39,8 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
@@ -47,6 +50,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
@@ -74,7 +78,10 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.spoon.UndoInterface;
+import org.pentaho.di.trans.Messages;
+import org.pentaho.di.spoon.Spoon;
+import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.trans.dialog.TransDialog;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -92,7 +99,7 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt
  */
-public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace
+public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface
 {
     public static final String XML_TAG = "transformation";
         
@@ -2350,6 +2357,22 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     public int indexOfNote(NotePadMeta ni)
     {
         return notes.indexOf(ni);
+    }
+
+	public String getFileType() {
+		return LastUsedFile.FILE_TYPE_TRANSFORMATION;
+	}
+	
+	public String[] getFilterNames() {
+		return Const.getTransformationFilterNames();
+	}
+	
+    public String[] getFilterExtensions() {
+    	return Const.STRING_TRANS_FILTER_EXT;
+    }
+
+    public String getDefaultExtension() {
+    	return Const.STRING_TRANS_DEFAULT_EXT;
     }
 
     public String getXML()
@@ -5413,7 +5436,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         this.sharedObjectsFile = sharedObjectsFile;
     }
 
-    public void saveSharedObjects() throws KettleException
+    public boolean saveSharedObjects()
     {
         try
         {
@@ -5441,10 +5464,12 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             
             // Save the objects
             sharedObjects.saveToFile();
+            return true;
         }
-        catch(IOException e)
+        catch(Exception e)
         {
-            
+            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
+            return false;
         }
     }
 
@@ -5689,4 +5714,43 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 	{
 		variables.injectVariables(prop);		
 	}        
+
+    public boolean editProperties(Spoon spoon, Repository rep)
+    {
+        
+        TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, this, rep);
+        TransMeta ti = tid.open();
+        
+        // In this case, load shared objects
+        //
+        if (tid.isSharedObjectsFileChanged())
+        {
+            try
+            {
+                readSharedObjects(rep);
+            }
+            catch(Exception e)
+            {
+                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(this)), e);
+            }
+        }
+        
+        if (tid.isSharedObjectsFileChanged() || ti!=null)
+        {
+            try
+            {
+                readSharedObjects(rep);
+            }
+            catch(KettleException e)
+            {
+                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(this)), e);
+            }                                
+            spoon.refreshTree();
+            spoon.renameTabs(); // cheap operation, might as will do it anyway
+        }
+        
+        spoon.setShellText();
+        return ti!=null;
+    }
+    	
 }

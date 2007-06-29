@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
@@ -452,7 +453,7 @@ public class TransLog extends Composite implements TabItemInterface
 			{
 				if (spoon.props.getAutoSave())
 				{
-					spoon.saveTransFile(transMeta);
+					spoon.saveToFile(transMeta);
 				}
 				else
 				{
@@ -464,7 +465,7 @@ public class TransLog extends Composite implements TabItemInterface
 					int answer = md.open();
 					if ( (answer & 0xFF) == 0)
 					{
-						spoon.saveTransFile(transMeta);
+						spoon.saveToFile(transMeta);
 					}
 					spoon.props.setAutoSave(md.getToggleState());
 				}
@@ -1001,9 +1002,13 @@ public class TransLog extends Composite implements TabItemInterface
         return wSafeMode.getSelection();
     }
 
+    public EngineMetaInterface getMeta() {
+    	return transMeta;
+    }
+
     /**
      * @return the transMeta
-     */
+     * /
     public TransMeta getTransMeta()
     {
         return transMeta;
