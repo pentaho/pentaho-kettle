@@ -441,7 +441,7 @@ public class Repository
 					public int compare(Object[] r1, Object[] r2) 
 					{
 						try {
-							return stepAttributesRowMeta.compare(r1, r2);
+							return stepAttributesRowMeta.compare(r1, r2, new int[] {0, 1, 2});
 						} catch (KettleValueException e) {
 							return 0; // conversion errors
 						}
