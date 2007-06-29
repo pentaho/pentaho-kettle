@@ -60,7 +60,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.spoon.job.JobTracker;
+import org.pentaho.di.core.gui.JobTracker;
 import org.w3c.dom.Node;
 
 
