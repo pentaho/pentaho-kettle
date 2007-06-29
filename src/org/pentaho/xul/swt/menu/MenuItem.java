@@ -1,23 +1,27 @@
 package org.pentaho.xul.swt.menu;
 
 import org.eclipse.swt.graphics.Image;
+import org.pentaho.xul.XulObject;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuBar;
+import org.pentaho.xul.menu.XulMenuItem;
 
-public class MenuItem extends MenuObject {
+public class MenuItem extends XulObject implements XulMenuItem {
 
     private org.eclipse.swt.widgets.MenuItem menuItem;
     private boolean enabled;
     private boolean checked;
     
-	public MenuItem(Menu parent, String id ) {
+	public MenuItem(XulMenu parent, String id ) {
 		super( id, parent );
 	}
 
-	public MenuItem(MenuBar parent, String id ) {
+	public MenuItem(XulMenuBar parent, String id ) {
 		super( id, parent );
 	}
 
-	public Menu getMenu() {
-		return (Menu) getParent();
+	public XulMenu getMenu() {
+		return (XulMenu) getParent();
 	}
 
 	public void register() {
@@ -26,6 +30,10 @@ public class MenuItem extends MenuObject {
 	}
 
 	public org.eclipse.swt.widgets.MenuItem getSwtMenuItem() {
+		return menuItem;
+	}
+
+	public Object getNativeObject() {
 		return menuItem;
 	}
 
