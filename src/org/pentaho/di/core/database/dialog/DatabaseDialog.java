@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -84,7 +82,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @since 18-05-2003
  * 
  */
-
 public class DatabaseDialog extends Dialog
 {
     private DatabaseMeta   databaseMeta;
