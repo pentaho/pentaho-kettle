@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.swt.SWT;
@@ -63,13 +64,14 @@ import org.pentaho.di.core.dialog.SelectRowDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
-import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
@@ -453,15 +455,16 @@ public class DatabaseDialog extends Dialog
 
         wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
         props.setLook(wConnType);
-        Object[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
+        String[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
         
         // PMD-101: Sort the connection types, as a convenience (this could be pushed lower) 
-        TreeMap sortTypes = new TreeMap();
+        TreeMap<String,String> sortTypes = new TreeMap<String,String>();
         for (int i = 0; i < dbtypes.length; i++)
         {
             sortTypes.put(dbtypes[i], dbtypes[i]);
         }
-        dbtypes = sortTypes.keySet().toArray();
+        Set<String> keys = sortTypes.keySet();
+        dbtypes = keys.toArray( new String[keys.size()] );
      
         for (int i = 0; i < dbtypes.length; i++)
         {
@@ -1273,7 +1276,7 @@ public class DatabaseDialog extends Dialog
             boolean openedTab = false;
             try
             {
-                Spoon spoon = Spoon.getInstance();
+            	SpoonInterface spoon = SpoonFactory.getInstance();
                 if (spoon != null)
                 {
                     openedTab = spoon.addSpoonBrowser(Messages.getString("DatabaseDialog.JDBCOptions.Tab", meta.getDatabaseTypeDesc()), helpText);
