@@ -483,7 +483,7 @@ public class Props implements Cloneable
             fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
-            log.logDetailed(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SaveProperties"));
+            log.logDetailed(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{
@@ -494,12 +494,12 @@ public class Props implements Cloneable
             if (spoonRc.isHidden() && filename.indexOf('\\') != -1)
             {
                 // If filename contains a backslash we consider Spoon as running on Windows
-                log.logError(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
+                log.logError(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
             }
             else
             {
                 // Another reason why the save failed
-                log.logError(toString(), org.pentaho.di.spoon.Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
+                log.logError(toString(), org.pentaho.di.core.Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
             }
 		}
 	}
