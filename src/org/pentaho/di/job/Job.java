@@ -42,7 +42,7 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.spoon.job.JobTracker;
+import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.trans.StepLoader;
 
 

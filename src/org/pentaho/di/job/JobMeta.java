@@ -31,10 +31,13 @@ import org.apache.commons.vfs.VFS;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
@@ -42,6 +45,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -60,6 +64,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -67,9 +72,10 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.spoon.UndoInterface;
+import org.pentaho.di.spoon.Spoon;
+import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
-import org.pentaho.di.trans.Messages;
+import org.pentaho.di.job.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -81,7 +87,7 @@ import org.w3c.dom.Node;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace
+public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace, EngineMetaInterface
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
@@ -501,6 +507,22 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return false;
     }
 
+	public String getFileType() {
+		return LastUsedFile.FILE_TYPE_JOB;
+	}
+    
+	public String[] getFilterNames() {
+		return Const.getJobFilterNames();
+	}
+	
+    public String[] getFilterExtensions() {
+    	return Const.STRING_JOB_FILTER_EXT;
+    }
+
+    public String getDefaultExtension() {
+    	return Const.STRING_JOB_DEFAULT_EXT;
+    }
+
     public String getXML()
     {
         Props props = null;
@@ -886,7 +908,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         }
     }
     
-    public void saveSharedObjects() throws KettleException
+    public boolean saveSharedObjects()
     {
         try
         {
@@ -910,10 +932,12 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             
             // Save the objects
             sharedObjects.saveToFile();
+            return true;
         }
-        catch(IOException e)
+        catch(Exception e)
         {
-            
+            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
+            return false;
         }
     }   
 
@@ -2585,4 +2609,33 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     }
   }
   
+  public boolean editProperties(Spoon spoon, Repository rep)
+  {
+      JobDialog jd = new JobDialog(spoon.getShell(), SWT.NONE, this, rep);
+      JobMeta ji = jd.open();
+      
+      // In this case, load shared objects
+      //
+      if (jd.isSharedObjectsFileChanged())
+      {
+          try
+          {
+              readSharedObjects(rep);
+          }
+          catch(Exception e)
+          {
+              new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeJobGraphTabName(this)), e);
+          }
+      }
+      
+      if (jd.isSharedObjectsFileChanged() || ji!=null)
+      {
+    	  spoon.refreshTree();
+    	  spoon.renameTabs(); // cheap operation, might as will do it anyway
+      }
+      
+      spoon.setShellText();
+      return ji!=null;
+  }
+
 }
