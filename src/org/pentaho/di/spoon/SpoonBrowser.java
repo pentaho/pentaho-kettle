@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.pentaho.di.core.EngineMetaInterface;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -177,6 +178,9 @@ public class SpoonBrowser implements TabItemInterface
         this.composite = composite;
     }
 
-    
+    public EngineMetaInterface getMeta() {
+    	return null;
+    }
+
     
 }

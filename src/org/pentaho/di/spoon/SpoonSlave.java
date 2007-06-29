@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
@@ -527,4 +528,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
     {
         return SWT.YES;
     }
+    
+    public EngineMetaInterface getMeta() {
+    	return null;
+    }
+
 }

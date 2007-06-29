@@ -1,6 +1,6 @@
 package org.pentaho.di.spoon;
 
-
+import org.pentaho.di.core.EngineMetaInterface;
 
 public interface TabItemInterface
 {
@@ -14,5 +14,6 @@ public interface TabItemInterface
     public boolean hasContentChanged();    
     public int showChangedWarning();
     public boolean applyChanges();
+    public EngineMetaInterface getMeta();
     
 }

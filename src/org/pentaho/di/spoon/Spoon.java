@@ -83,8 +83,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -94,6 +92,7 @@ import org.pentaho.di.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.core.AddUndoPositionInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectUsageCount;
@@ -131,6 +130,9 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
@@ -150,7 +152,6 @@ import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
-import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.job.dialog.JobSaveProgressDialog;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
@@ -181,6 +182,7 @@ import org.pentaho.di.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.spoon.dialog.GetSQLProgressDialog;
 import org.pentaho.di.spoon.dialog.ShowCreditsDialog;
 import org.pentaho.di.spoon.dialog.TipsDialog;
+import org.pentaho.di.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.spoon.job.JobGraph;
 import org.pentaho.di.spoon.job.JobHistory;
 import org.pentaho.di.spoon.job.JobHistoryRefresher;
@@ -203,11 +205,9 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
-import org.pentaho.di.trans.dialog.TransDialog;
 import org.pentaho.di.trans.dialog.TransExecutionConfigurationDialog;
 import org.pentaho.di.trans.dialog.TransHopDialog;
 import org.pentaho.di.trans.dialog.TransLoadProgressDialog;
-import org.pentaho.di.trans.dialog.TransSaveProgressDialog;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -224,15 +224,17 @@ import org.pentaho.di.www.PrepareExecutionTransServlet;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.xul.swt.menu.Menu;
-import org.pentaho.xul.swt.menu.MenuBar;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuBar;
+import org.pentaho.xul.menu.XulMenuItem;
+import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.MenuItem;
-import org.pentaho.xul.swt.menu.MenuItemSeparator;
-import org.pentaho.xul.swt.menu.MenuObject;
+import org.pentaho.xul.swt.menu.MenuHelper;
 import org.pentaho.xul.swt.menu.PopupMenu;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
 import org.pentaho.xul.swt.tab.TabSet;
+import org.pentaho.xul.toolbar.XulToolbar;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -242,7 +244,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface, TabListener
+public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface
 {
     public static final String APP_NAME = Messages.getString("Spoon.Application.Name");  //"Spoon";
     
@@ -295,9 +297,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener
      * This contains a map with all the unnamed transformation (just a filename)
      */
 
-    private ToolBar  tBar;
+    private XulToolbar toolbar;
 
-    private MenuBar menuBar;
+    private XulMenuBar menuBar;
     
     private Tree selectionTree;
     // private TreeItem  tiTransBase, tiJobBase;
@@ -358,21 +360,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
     private int coreObjectsState = STATE_CORE_OBJECTS_NONE;
     
-    private ToolItem tiSQL, tiImpact, tiFileCheck, tiFileReplay, tiFilePreview, tiFileRun, tiFilePrint, tiFileSaveAs, tiFileSave;
-    
     private boolean stepHistoryChanged;
     
-    public Spoon(LogWriter l, Repository rep)
-    {
-        this(l, null, null, rep);
+    protected Map<String,FileListener> fileExtensionMap = new HashMap<String,FileListener>();
+    protected Map<String,FileListener> fileNodeMap = new HashMap<String,FileListener>();
+
+    private List<Object[]> menuListeners = new ArrayList<Object[]>();
+
+    public Spoon(Display d) {
+    	this( null, d, null );
     }
 
-    public Spoon(LogWriter l, Display d, Repository rep)
+    public Spoon(LogWriter l, Repository rep)
     {
-        this(l, d, null, rep);
+        this(l, null, rep);
     }
     
-    public Spoon(LogWriter log, Display d, TransMeta ti, Repository rep)
+    public Spoon(LogWriter log, Display d, Repository rep)
     {
         this.log        = log;
         this.rep = rep;
@@ -389,6 +393,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         } 
         shell=new Shell(display);
         shell.setText(APPL_TITLE);
+        staticSpoon = this;
+        SpoonFactory.setSpoonInstance( this );
+    }
+    
+    public void init( TransMeta ti ) {
         FormLayout layout = new FormLayout();
         layout.marginWidth = 0;
         layout.marginHeight = 0;
@@ -398,6 +407,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         jobMap = new Hashtable<String,JobMeta>();
         tabMap = new Hashtable<String,TabMapEntry>();
         
+        TransFileListener transListener = new TransFileListener();
+        addFileListener( transListener, "ktr", TransMeta.XML_TAG );
+        
+        JobFileListener jobListener = new JobFileListener();
+        addFileListener( jobListener, "kjb", JobMeta.XML_TAG );
+
         // INIT Data structure
         if (ti!=null)
         {
@@ -460,7 +475,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                     case SWT.ARROW_LEFT: key = "left"; break; //$NON-NLS-1$
                     case SWT.ARROW_RIGHT: key = "right"; break; //$NON-NLS-1$
                     case SWT.HOME: key = "home"; break; //$NON-NLS-1$
-                    default: { System.out.println("keyCode="+e.keyCode); }
+                    default: ;
                     }
                     
                     if( key == null && ctrl) {
@@ -498,17 +513,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         
         addBar();
 
-        FormData fdBar = new FormData();
-        fdBar.left = new FormAttachment(0, 0);
-        fdBar.top = new FormAttachment(0, 0);
-        tBar.setLayoutData(fdBar);
+        
 
         sashform = new SashForm(shell, SWT.HORIZONTAL);
         props.setLook(sashform);
         
         FormData fdSash = new FormData();
         fdSash.left = new FormAttachment(0, 0);
-        fdSash.top = new FormAttachment(tBar, 0);
+        fdSash.top = new FormAttachment((org.eclipse.swt.widgets.ToolBar)toolbar.getNativeObject(), 0);
         fdSash.bottom = new FormAttachment(100, 0);
         fdSash.right  = new FormAttachment(100, 0);
         sashform.setLayoutData(fdSash);
@@ -559,7 +571,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return staticSpoon;
     }
 
-    public MenuBar getMenuBar() {
+    public XulMenuBar getMenuBar() {
     		return menuBar;
     }
 
@@ -1008,8 +1020,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     		File xulFile = new File( XUL_FILE_MENUBAR );
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
-    			menuBar = MenuObject.createMenuBarFromXul( doc, shell, xulMessages );
-    	        shell.setMenuBar(menuBar.getSwtMenu());
+    			menuBar = MenuHelper.createMenuBarFromXul( doc, shell, xulMessages );
+    	        shell.setMenuBar((org.eclipse.swt.widgets.Menu)menuBar.getNativeObject());
     		}
     		else
     		{
@@ -1021,7 +1033,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 		}
 		
 		try {
-    		// first get the XML document
     		File xulFile = new File( XUL_FILE_MENUS ); //$NON-NLS-1$
     		if( xulFile.exists() ) {
     			Document doc = XMLHandler.loadXMLFile( xulFile );
@@ -1045,7 +1056,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     			ids.add( "cluster-schema-inst" );
     			ids.add( "slave-server-inst" );
     			
-    			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
+    			menuMap = MenuHelper.createPopupMenusFromXul( doc, shell, xulMessages, ids );
     		}
     		else
     		{
@@ -1061,7 +1072,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     public void addMenuListeners() {
 		try {
 			// first get the XML document
-    			File propertiesFile = new File( XUL_FILE_MENU_PROPERTIES ); //$NON-NLS-1$
+    			File propertiesFile = new File( XUL_FILE_MENU_PROPERTIES ); 
     			if( propertiesFile.exists() ) {
     				Properties props = new Properties();
     				props.load( new FileInputStream( propertiesFile ) );
@@ -1069,7 +1080,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     				for( int i=0; i<ids.length; i++ ) {
         				String methodName = (String) props.get( ids[i] );
         				if( methodName != null ) {
-                            menuBar.addMenuListener( ids[i], this, methodName ); //$NON-NLS-1$ //$NON-NLS-2$
+                            menuBar.addMenuListener( ids[i], this, methodName ); 
+                            toolbar.addMenuListener( ids[i], this, methodName );
+
         				}
     				}
     				Iterator it = menuMap.keySet().iterator();
@@ -1080,12 +1093,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         				for( int i=0; i<ids.length; i++ ) {
             				String methodName = (String) props.get( ids[i] );
             				if( methodName != null ) {
-            					menu.addMenuListener( ids[i], this, methodName ); //$NON-NLS-1$ //$NON-NLS-2$
+            					menu.addMenuListener( ids[i], this, methodName ); 
             				}
         				}
             			for( int i=0; i<menuListeners.size(); i++ ) {
             				Object info[] = menuListeners.get( i );
-            				menu.addMenuListener( (String) info[0], info[1], (String) info[2] ); //$NON-NLS-1$ //$NON-NLS-2$
+            				menu.addMenuListener( (String) info[0], info[1], (String) info[2] ); 
             			}
     				}
 
@@ -1172,7 +1185,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     }
     
     public void editTransformationProperties() {
-    		editTransformationProperties(getActiveTransformation()); 
+    		getActiveTransformation().editProperties(this, rep); 
     }
     
     public void executeJob() {
@@ -1205,11 +1218,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         } 
     }
 
-    private void addMenuLast()
+    public void addMenuLast()
     {
     	
-    		MenuItemSeparator sep = menuBar.getSeparatorById( "file-last-separator" ); //$NON-NLS-1$
-    		Menu msFile = null;
+    		XulMenuItem sep = menuBar.getSeparatorById( "file-last-separator" ); //$NON-NLS-1$
+    		XulMenu msFile = null;
     		if( sep != null ) {
     			msFile = sep.getMenu( ); //$NON-NLS-1$
     		}
@@ -1222,7 +1235,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         // Remove everything until end... 
         for (int i=max-1;i>idx;i--)
         {
-            MenuItem mi = msFile.getItem(i);
+            XulMenuItem mi = msFile.getItem(i);
             msFile.remove( mi );
            mi.dispose();
         }
@@ -1321,9 +1334,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     
     private void addBar()
     {
-        tBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT );
-        // props.setLook(tBar);
+
+        XulMessages xulMessages = new XulMessages();
         
+		try {
+    		// first get the XML document
+    		File xulFile = new File( XUL_FILE_MENUBAR );
+    		if( xulFile.exists() ) {
+    			Document doc = XMLHandler.loadXMLFile( xulFile );
+    	    	toolbar = MenuHelper.createToolbarFromXul( doc, shell, xulMessages, this );
+    		}
+    		else
+    		{
+    			throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message", XUL_FILE_MENUBAR));
+    		}
+		} catch (Throwable t ) {
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUBAR), new Exception(t));
+		}
+
+/*    	
+    	ToolbarButton button = new ToolbarButton(shell, "file-new-trans", toolbar);
+        final Image imFileNewTrans = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new RGB(192, 192, 192)); 
+        button.setImage(imFileNewTrans);
+        button.setHint(Messages.getString("Spoon.Tooltip.NewFile"));
+
         final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH);
         final Image imFileNew = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
         tiFileNew.setImage(imFileNew);
@@ -1433,6 +1468,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         tBar.addKeyListener(defKeys);
         tBar.addKeyListener(modKeys);
         tBar.pack();
+        */
     }
 
     private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
@@ -2317,7 +2353,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     }
     
     public void editTransformationPropertiesPopup() {
-    		editTransformationProperties((TransMeta)selectionObject);
+    		((TransMeta)selectionObject).editProperties(this, rep);
     }
     
     public void addTransLog() {
@@ -2334,10 +2370,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     
     public void editJobProperties( String id ) {
     		if( "job-settings".equals( id ) ) {
-    			editJobProperties( getActiveJob() );
+    			getActiveJob().editProperties(this, rep);
     		}
     		else if( "job-inst-settings".equals( id ) ) {
-    			editJobProperties( (JobMeta)selectionObject);	
+    			( (JobMeta)selectionObject).editProperties(this, rep);	
     		}
     }
 
@@ -2580,12 +2616,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             {
 				spoonMenu = (PopupMenu) menuMap.get( "database-inst" );
                 // disable for now if the connection is an SAP R/3 type of database...
-				MenuItem item = ((PopupMenu)spoonMenu).getMenuItemById( "database-inst-explore" );
+				XulMenuItem item = ((XulPopupMenu)spoonMenu).getMenuItemById( "database-inst-explore" );
 				if( item != null ) {
 	                final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
 	                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SAPR3) item.setEnabled(false);
 				}
-				item = ((PopupMenu)spoonMenu).getMenuItemById( "database-inst-clear-cache" );
+				item = ((XulPopupMenu)spoonMenu).getMenuItemById( "database-inst-clear-cache" );
 				if( item != null ) {
 					final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
 					item.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+databaseMeta.getName());//Clear DB Cache of 
@@ -2649,8 +2685,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         }
         else
         {
-            if (selection instanceof TransMeta) editTransformationProperties((TransMeta)selection);
-            if (selection instanceof JobMeta) editJobProperties((JobMeta)selection);
+            if (selection instanceof TransMeta) ((TransMeta)selection).editProperties(this, rep);
+            if (selection instanceof JobMeta) ((JobMeta)selection).editProperties(this, rep);
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
             if (selection instanceof DatabaseMeta) editConnection((DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
@@ -2807,10 +2843,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                 // Another way to implement this may be to keep track of the
                 // state of the core object tree in method addCoreObjectsToTree()
                 //
-                if ( entry.getObject() instanceof TransGraph)
+                if ( entry.getObject() instanceof TransGraph || entry.getObject() instanceof JobGraph)
                 {
-                   TransGraph graph = (TransGraph)entry.getObject();
-                   TransMeta meta = graph.getTransMeta();
+                	EngineMetaInterface meta = entry.getObject().getMeta();
                    if ( meta != null )
                    {
                 	   meta.setInternalKettleVariables();
@@ -2820,19 +2855,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                        refreshCoreObjects();
                    }
                 }
-                if ( entry.getObject() instanceof JobGraph)
-                {
-                   JobGraph graph = (JobGraph)entry.getObject();
-                   JobMeta meta = graph.getJobMeta();
-                   if ( meta != null )
-                   {
-                 	   meta.setInternalKettleVariables();
-                   }
-                   if ( getCoreObjectsState() != STATE_CORE_OBJECTS_CHEF )
-                   {
-                       refreshCoreObjects();
-                   }
-                }                            
             }
         }
         
@@ -3808,48 +3830,36 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         }
     }
     
+    public void addFileListener( FileListener listener, String extension, String rootNodeName ) {
+    	fileExtensionMap.put( extension, listener );
+    	fileNodeMap.put( rootNodeName, listener );
+    }
+    
     public void openFile(String fname, boolean importfile)
     {
         // Open the XML and see what's in there.
         // We expect a single <transformation> or <job> root at this time...
         try
         {
-            Document document = XMLHandler.loadXMLFile(fname);
+        	
             boolean loaded = false;
-            // Check for a transformation...
-            Node transNode = XMLHandler.getSubNode(document, TransMeta.XML_TAG);
-            if (transNode!=null) // yep, found a transformation
-            {
-                TransMeta transMeta = new TransMeta();
-                transMeta.loadXML(transNode, rep, true);
-                props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
-                addMenuLast();
-                if (!importfile) transMeta.clearChanged();
-                transMeta.setFilename(fname);
-                addTransGraph(transMeta);
-
-                refreshTree();
-                refreshHistory();
-                loaded=true;
-            }
-            
-            // Check for a job...
-            Node jobNode = XMLHandler.getSubNode(document, JobMeta.XML_TAG);
-            if (jobNode!=null) // Indeed, found a job
-            {
-                JobMeta jobMeta = new JobMeta(log);
-                jobMeta.loadXML(jobNode, rep);
-                props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
-                addMenuLast();
-                if (!importfile) jobMeta.clearChanged();
-                jobMeta.setFilename(fname);
-                addJobGraph(jobMeta);
-                
-                refreshTree();
-                refreshHistory();
-                loaded=true;
-            }
-            
+            FileListener listener = null;
+        	// match by extension first
+        	int idx = fname.lastIndexOf('.');
+        	if( idx != -1 ) {
+            	String extension = fname.substring(  idx + 1 );
+            	listener = fileExtensionMap.get( extension );
+        	}
+        	// otherwise try by looking at the root node
+            Document document = XMLHandler.loadXMLFile(fname);
+            Node root = document.getFirstChild();
+        	if( listener == null ) {
+            	listener = fileNodeMap.get( root.getNodeName() );
+        	}
+        	
+        	if( listener != null ) {
+        		loaded = listener.open(root, fname, importfile);
+        	}
             if (!loaded)
             {
                 // Give error back
@@ -3865,6 +3875,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         }
     }
 
+    public Props getProperties() {
+    	return props;
+    }
+    
     public void newFile()
     {
         String[] choices = new String[] { STRING_TRANSFORMATION, STRING_JOB };
@@ -4095,17 +4109,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     public boolean saveFile()
     {
         TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return saveTransFile(transMeta);
+        if (transMeta!=null) return saveToFile(transMeta);
 
         JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) return saveJobFile(jobMeta);
+        if (jobMeta!=null) return saveToFile(jobMeta);
 
         return false;
     }
     
-    public boolean saveTransFile(TransMeta transMeta)
+    public boolean saveToFile(EngineMetaInterface meta)
     {
-        if (transMeta==null) return false;
+        if (meta==null) return false;
         
         boolean saved=false;
         
@@ -4113,28 +4127,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         
         if (rep!=null)
         {
-            saved=saveTransRepository(transMeta);
+            saved=saveToRepository(meta);
         }
         else
         {
-            if (transMeta.getFilename()!=null)
+            if (meta.getFilename()!=null)
             {
-                saved=save(transMeta, transMeta.getFilename());
+                saved=save(meta, meta.getFilename());
             }
             else
             {
-                saved=saveTransFileAs(transMeta);
+                saved=saveFileAs(meta);
             }
         }
         
         if (saved) // all was OK
         {
-            saved=saveTransSharedObjects(transMeta);
+            saved=meta.saveSharedObjects();
         }
         
         try
         {
-            if (props.useDBCache()) transMeta.getDbCache().saveCache(log);
+            if (props.useDBCache() && meta instanceof TransMeta) ((TransMeta)meta).getDbCache().saveCache(log);
         }
         catch(KettleException e)
         {
@@ -4147,19 +4161,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return saved;
     }
     
-    public boolean saveTransRepository(TransMeta transMeta)
+    public boolean saveToRepository(EngineMetaInterface meta)
     {
-        return saveTransRepository(transMeta, false);
+        return saveToRepository(meta, false);
     }
 
-    public boolean saveTransRepository(TransMeta transMeta, boolean ask_name)
+    public boolean saveToRepository(EngineMetaInterface meta, boolean ask_name)
     {
         log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToRepository"));//"Save to repository..."
         if (rep!=null)
         {
             boolean answer = true;
             boolean ask    = ask_name;
-            while (answer && ( ask || Const.isEmpty(transMeta.getName()) ) )
+            while (answer && ( ask || Const.isEmpty(meta.getName()) ) )
             {
                 if (!ask)
                 {
@@ -4169,18 +4183,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                     mb.open();
                 }
                 ask=false;
-                answer = editTransformationProperties(transMeta);
+                answer = meta.editProperties(this, rep);
             }
             
-            if (answer && !Const.isEmpty(transMeta.getName()))
+            if (answer && !Const.isEmpty(meta.getName()))
             {
                 if (!rep.getUserInfo().isReadonly())
                 {
                     int response = SWT.YES;
-                    if (transMeta.showReplaceWarning(rep))
+                    if (meta.showReplaceWarning(rep))
                     {
                         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteTransformation.Message",transMeta.getName(),Const.CR));//"There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteTransformation.Message",meta.getName(),Const.CR));//"There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
                         mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteTransformation.Title"));//"Overwrite?"
                         response = mb.open();
                     }
@@ -4191,23 +4205,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                         shell.setCursor(cursor_hourglass);
 						
 						// Keep info on who & when this transformation was created...
-						if (  transMeta.getCreatedUser()==null || transMeta.getCreatedUser().equals("-"))
+						if (  meta.getCreatedUser()==null || meta.getCreatedUser().equals("-"))
 						{
-							transMeta.setCreatedDate( new Date() );   
-							transMeta.setCreatedUser( rep.getUserInfo().getLogin() );
+							meta.setCreatedDate( new Date() );   
+							meta.setCreatedUser( rep.getUserInfo().getLogin() );
 						}
 						else
 						{
 
-							transMeta.setCreatedDate( transMeta.getCreatedDate() );                 
-							transMeta.setCreatedUser( transMeta.getCreatedUser());
+							meta.setCreatedDate( meta.getCreatedDate() );                 
+							meta.setCreatedUser( meta.getCreatedUser());
 						}
 
                         // Keep info on who & when this transformation was changed...
-                        transMeta.setModifiedDate( new Date() );   
-                        transMeta.setModifiedUser( rep.getUserInfo().getLogin() );
+                        meta.setModifiedDate( new Date() );   
+                        meta.setModifiedUser( rep.getUserInfo().getLogin() );
 
-                        TransSaveProgressDialog tspd = new TransSaveProgressDialog(shell, rep, transMeta);
+                        SaveProgressDialog tspd = new SaveProgressDialog(shell, rep, meta);
                         if (tspd.open())
                         {
                             saved=true;
@@ -4228,7 +4242,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                             }
     
                             // Handle last opened files...
-                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, transMeta.getName(), transMeta.getDirectory().getPath(), true, getRepositoryName());
+                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
                             saveSettings();
                             addMenuLast();
     
@@ -4257,18 +4271,128 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return false;
     }
 
+    public boolean saveJobRepository(JobMeta jobMeta)
+    {
+        return saveToRepository(jobMeta, false);
+    }
+
+    public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name)
+    {
+        log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
+        if (rep!=null)
+        {
+            boolean answer = true;
+            boolean ask    = ask_name;
+            while (answer && ( ask || jobMeta.getName()==null || jobMeta.getName().length()==0 ) )
+            {
+                if (!ask)
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+                ask=false;
+                answer = jobMeta.editProperties(this, rep);
+            }
+            
+            if (answer && jobMeta.getName()!=null && jobMeta.getName().length()>0)
+            {
+                if (!rep.getUserInfo().isReadonly())
+                {
+                    boolean saved=false;
+                    int response = SWT.YES;
+                    if (jobMeta.showReplaceWarning(rep))
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+                        mb.setMessage("'"+jobMeta.getName()+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        mb.setText(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
+                        response = mb.open();
+                    }
+                    
+                    if (response == SWT.YES)
+                    {
+
+						// Keep info on who & when this job was created...
+						if (  jobMeta.getCreatedUser()==null || jobMeta.getCreatedUser().equals("-"))
+						{
+							jobMeta.setCreatedDate( new Date() );
+							jobMeta.setCreatedUser( rep.getUserInfo().getLogin() );
+						}
+						else
+						{
+
+							jobMeta.setCreatedDate( jobMeta.getCreatedDate() );                 
+							jobMeta.setCreatedUser( jobMeta.getCreatedUser());
+						}
+
+
+                        // Keep info on who & when this job was changed...
+                        jobMeta.modifiedDate = new Date();
+                        jobMeta.modifiedUser = rep.getUserInfo().getLogin();
+
+                        JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
+                        if (jspd.open())
+                        {
+                            if (!props.getSaveConfirmation())
+                            {
+                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
+                                     null,
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
+                                     MessageDialog.QUESTION,
+                                     new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
+                                     0,
+                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
+                                     props.getSaveConfirmation()
+                                     );
+                                md.open();
+                                props.setSaveConfirmation(md.getToggleState());
+                            }
+    
+                            // Handle last opened files...
+                            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
+                            saveSettings();
+                            addMenuLast();
+    
+                            setShellText();
+                            
+                            saved=true;
+                        }
+                    }
+                    return saved;
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
+                    mb.open();
+                }
+            }
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+            mb.setMessage(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
+            mb.open();
+        }
+        return false;
+    }
+
     public boolean saveFileAs()
     {
         TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return saveTransFileAs(transMeta);
+        if (transMeta!=null) return saveFileAs(transMeta);
 
         JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) return saveJobFileAs(jobMeta);
+        if (jobMeta!=null) return saveFileAs(jobMeta);
 
         return false;
     }
     
-    public boolean saveTransFileAs(TransMeta transMeta)
+    public boolean saveFileAs(EngineMetaInterface meta)
     {
         boolean saved=false;
         
@@ -4276,13 +4400,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener
 
         if (rep!=null)
         {
-            transMeta.setID(-1L);
-            saved=saveTransRepository(transMeta, true);
+            meta.setID(-1L);
+            saved=saveToRepository(meta, true);
             renameTabs();
         }
         else
         {
-            saved=saveTransXMLFile(transMeta);
+            saved=saveXMLFile(meta);
             renameTabs();
         }
         
@@ -4291,94 +4415,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return saved;
     }
     
-    private void loadTransSharedObjects(TransMeta transMeta)
-    {
-        try
-        {
-            transMeta.readSharedObjects(rep);
-        }
-        catch(Exception e)
-        {
-            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTransGraphTabName(transMeta)), e);
-        }
-    }
-    
-    private boolean saveTransSharedObjects(TransMeta transMeta)
-    {
-        try
-        {
-            transMeta.saveSharedObjects();
-            return true;
-        }
-        catch(Exception e)
-        {
-            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
-            return false;
-        }
-    }
-    
-    private void loadJobSharedObjects(JobMeta jobMeta)
-    {
-        try
-        {
-            jobMeta.readSharedObjects(rep);
-        }
-        catch(Exception e)
-        {
-            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeJobGraphTabName(jobMeta)), e);
-        }
-    }
-    
-    private boolean saveJobSharedObjects(JobMeta jobMeta)
-    {
-        try
-        {
-            jobMeta.saveSharedObjects();
-            return true;
-        }
-        catch(Exception e)
-        {
-            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
-            return false;
-        }
-    }
-
-    
     public boolean saveXMLFile()
     {
         TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return saveTransXMLFile(transMeta);
+        if (transMeta!=null) return saveXMLFile( (EngineMetaInterface) transMeta);
 
         JobMeta jobMeta = getActiveJob();
-        if (jobMeta!=null) return saveJobXMLFile(jobMeta);
+        if (jobMeta!=null) return saveXMLFile( (EngineMetaInterface) jobMeta);
         
         return false;
     }
     
-
-    private boolean saveTransXMLFile(TransMeta transMeta)
+    public boolean saveXMLFile(EngineMetaInterface meta)
     {
+        log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
         boolean saved=false;
-        
+
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
-        dialog.setFilterNames(Const.getTransformationFilterNames());
+        //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+        String extensions[] = meta.getFilterExtensions();
+        dialog.setFilterExtensions(extensions);
+        dialog.setFilterNames     (meta.getFilterNames());
         String fname = dialog.open();
         if (fname!=null) 
         {
             // Is the filename ending on .ktr, .xml?
             boolean ending=false;
-            for (int i=0;i<Const.STRING_TRANS_FILTER_EXT.length-1;i++)
+            for (int i=0;i<extensions.length-1;i++)
             {
-                if (fname.endsWith(Const.STRING_TRANS_FILTER_EXT[i].substring(1))) 
-                {
-                    ending=true;
-                } 
+                if (fname.endsWith(extensions[i].substring(1))) ending=true;
             }
-            if (fname.endsWith(Const.STRING_TRANS_DEFAULT_EXT)) ending=true;
+            if (fname.endsWith(meta.getDefaultExtension())) ending=true;
             if (!ending)
             {
-                fname+=Const.STRING_TRANS_DEFAULT_EXT;
+                fname+=meta.getDefaultExtension();
             }
             // See if the file already exists...
             int id = SWT.YES;
@@ -4399,45 +4469,64 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             }
             if (id==SWT.YES)
             {
-                saved=save(transMeta, fname);
+                save(meta, fname);
             }
-        }
-        
+        } 
         return saved;
     }
-    
-    private boolean save(TransMeta transMeta, String fname)
-    {
-        transMeta.setFilename(fname);
-        if (Const.isEmpty(transMeta.getName()) || isDefaultTransformationName(transMeta.getName()))
-        {
-            transMeta.nameFromFilename();
-        }
+
+    public boolean save(EngineMetaInterface meta, String fname) {
         boolean saved = false;
-        String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
+        FileListener listener = null;
+    	// match by extension first
+    	int idx = fname.lastIndexOf('.');
+    	if( idx != -1 ) {
+        	String extension = fname.substring(  idx + 1 );
+        	listener = fileExtensionMap.get( extension );
+    	}
+    	if( listener == null ) {
+        	listener = fileExtensionMap.get( meta.getDefaultExtension() );
+    	}
+    	
+    	if( listener != null ) {
+    		saved = listener.save(meta, fname);
+    	}
+    	return saved;
+    }
+
+    public boolean saveMeta(EngineMetaInterface meta, String fname)
+    {
+    	meta.setFilename(fname);
+        if (Const.isEmpty(meta.getName()) || isDefaultJobName(meta.getName()))
+        {
+        	meta.nameFromFilename();
+        }
+
+        boolean saved = false;
+        String xml = XMLHandler.getXMLHeader() + meta.getXML();
         try
         {
             DataOutputStream dos = new DataOutputStream(KettleVFS.getOutputStream(fname, false));
             dos.write(xml.getBytes(Const.XML_ENCODING));
             dos.close();
-
+            
             saved=true;
 
             // Handle last opened files...
-            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null);
+            props.addLastFile(meta.getFileType(), fname, null, false, null); //$NON-NLS-1$
             saveSettings();
             addMenuLast();
-            
-            transMeta.clearChanged();
-            setShellText();
+
             log.logDebug(toString(), Messages.getString("Spoon.Log.FileWritten")+" ["+fname+"]"); //"File written to
+            meta.setFilename( fname );
+            meta.clearChanged();
+            setShellText();
         }
         catch(Exception e)
         {
             log.logDebug(toString(), Messages.getString("Spoon.Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"), Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString(), e);
         }
-        
         return saved;
     }
     
@@ -5099,15 +5188,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         menuBar.setEnableById( "repository-edit-user", enableRepositoryMenu);
         
         // Do the bar as well
-        tiSQL.setEnabled(enableTransMenu || enableJobMenu);
-        tiImpact.setEnabled(enableTransMenu);
-        tiFileCheck.setEnabled(enableTransMenu);
-        tiFileReplay.setEnabled(enableTransMenu);
-        tiFilePreview.setEnabled(enableTransMenu);
-        tiFileRun.setEnabled(enableTransMenu || enableJobMenu);
-        tiFilePrint.setEnabled(enableTransMenu || enableJobMenu);
-        tiFileSaveAs.setEnabled(enableTransMenu || enableJobMenu);
-        tiFileSave.setEnabled(enableTransMenu || enableJobMenu);
+        toolbar.setEnableById("sql", enableTransMenu || enableJobMenu);
+        toolbar.setEnableById("impact", enableTransMenu);
+        toolbar.setEnableById("check", enableTransMenu);
+        toolbar.setEnableById("replay", enableTransMenu);
+        toolbar.setEnableById("preview", enableTransMenu);
+        toolbar.setEnableById("run", enableTransMenu || enableJobMenu);
+        toolbar.setEnableById("print", enableTransMenu || enableJobMenu);
+        toolbar.setEnableById("saveas", enableTransMenu || enableJobMenu);
+        toolbar.setEnableById("save", enableTransMenu || enableJobMenu);
         
         // What steps & plugins to show?
         refreshCoreObjects();
@@ -5239,7 +5328,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof TransGraph)
             {
                 TransGraph transGraph = (TransGraph) mapEntry.getObject();
-                if (transGraph.getTransMeta().equals(transMeta)) return transGraph;
+                if (transGraph.getMeta().equals(transMeta)) return transGraph;
             }
         }
         return null;
@@ -5255,7 +5344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof JobGraph)
             {
                 JobGraph jobGraph = (JobGraph) mapEntry.getObject();
-                if (jobGraph.getJobMeta().equals(jobMeta)) return jobGraph;
+                if (jobGraph.getMeta().equals(jobMeta)) return jobGraph;
             }
         }
         return null;
@@ -5271,7 +5360,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof TransLog)
             {
                 TransLog transLog = (TransLog) mapEntry.getObject();
-                if (transLog.getTransMeta().equals(transMeta)) return transLog;
+                if (transLog.getMeta().equals(transMeta)) return transLog;
             }
         }
         return null;
@@ -5287,7 +5376,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof JobLog)
             {
                 JobLog jobLog = (JobLog) mapEntry.getObject();
-                if (jobLog.getJobMeta().equals(jobMeta)) return jobLog;
+                if (jobLog.getMeta().equals(jobMeta)) return jobLog;
             }
         }
         return null;
@@ -5305,7 +5394,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof TransHistory)
             {
                 TransHistory transHistory = (TransHistory) mapEntry.getObject();
-                if (transHistory.getTransMeta()!=null && transHistory.getTransMeta().equals(transMeta)) return transHistory;
+                if (transHistory.getMeta()!=null && transHistory.getMeta().equals(transMeta)) return transHistory;
             }
         }
         return null;
@@ -5323,7 +5412,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             if (mapEntry.getObject() instanceof JobHistory)
             {
                 JobHistory jobHistory = (JobHistory) mapEntry.getObject();
-                if (jobHistory.getJobMeta()!=null && jobHistory.getJobMeta().equals(jobMeta)) return jobHistory;
+                if (jobHistory.getMeta()!=null && jobHistory.getMeta().equals(jobMeta)) return jobHistory;
             }
         }
         return null;
@@ -5340,12 +5429,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return findTransHistoryOfTransformation(transMeta);
     }
     
-    
-    /**
-     * @return The active TransMeta object by looking at the selected TransGraph, TransLog, TransHist
-     *         If nothing valueable is selected, we return null
-     */
-    public TransMeta getActiveTransformation()
+    public EngineMetaInterface getActiveMeta()
     {
         if (tabfolder==null) return null;
         TabItem tabItem = tabfolder.getSelected();
@@ -5355,15 +5439,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         // TransLog, TransGraph & TransHist contain the same transformation
         //
         TabMapEntry mapEntry = tabMap.get(tabfolder.getSelected().getText());
-        TransMeta transMeta = null;
+        EngineMetaInterface meta = null;
         if (mapEntry != null)
         {
-            if (mapEntry.getObject() instanceof TransGraph) transMeta = ((TransGraph) mapEntry.getObject()).getTransMeta();
-            if (mapEntry.getObject() instanceof TransLog) transMeta = ((TransLog) mapEntry.getObject()).getTransMeta();
-            if (mapEntry.getObject() instanceof TransHistory) transMeta = ((TransHistory) mapEntry.getObject()).getTransMeta();
+            if (mapEntry.getObject() instanceof TransGraph) meta = (mapEntry.getObject()).getMeta();
+            if (mapEntry.getObject() instanceof TransLog) meta = ( mapEntry.getObject()).getMeta();
+            if (mapEntry.getObject() instanceof TransHistory) meta = ( mapEntry.getObject()).getMeta();
+            if (mapEntry.getObject() instanceof JobGraph) meta = ( mapEntry.getObject()).getMeta();
+            if (mapEntry.getObject() instanceof JobLog) meta = ( mapEntry.getObject()).getMeta();
+            if (mapEntry.getObject() instanceof JobHistory) meta = ( mapEntry.getObject()).getMeta();
         }
         
-        return transMeta;
+        return meta;
+    }
+    
+    /**
+     * @return The active TransMeta object by looking at the selected TransGraph, TransLog, TransHist
+     *         If nothing valueable is selected, we return null
+     */
+    public TransMeta getActiveTransformation()
+    {
+        EngineMetaInterface meta = getActiveMeta();
+        if( meta instanceof TransMeta ) {
+        	return (TransMeta) meta;
+        }
+        return null;
     }
     
     /**
@@ -5372,30 +5472,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener
      */
     public JobMeta getActiveJob()
     {
-        if (tabfolder==null) return null;
-        TabItem tabItem = tabfolder.getSelected();
-        if (tabItem==null) return null;
-        
-        // What job is in the active tab?
-        // JobLog, JobGraph & JobHist contain the same job
-        //
-        TabMapEntry mapEntry = tabMap.get(tabfolder.getSelected().getText());
-        JobMeta jobMeta = null;
-        if (mapEntry != null)
-        {
-            if (mapEntry.getObject() instanceof JobGraph) jobMeta = ((JobGraph) mapEntry.getObject()).getJobMeta();
-            if (mapEntry.getObject() instanceof JobLog) jobMeta = ((JobLog) mapEntry.getObject()).getJobMeta();
-            if (mapEntry.getObject() instanceof JobHistory) jobMeta = ((JobHistory) mapEntry.getObject()).getJobMeta();
+        EngineMetaInterface meta = getActiveMeta();
+        if( meta instanceof JobMeta ) {
+        	return (JobMeta) meta;
         }
-        
-        return jobMeta;
+        return null;
     }
-    
+
     public UndoInterface getActiveUndoInterface()
     {
-        TransMeta transMeta = getActiveTransformation();
-        if (transMeta!=null) return transMeta;
-        return getActiveJob();
+    	return (UndoInterface) this.getActiveMeta();
     }
 
     public TransMeta findTransformation(String tabItemText)
@@ -5420,38 +5506,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return list.toArray(new JobMeta[list.size()]);
     }
 
-    public boolean editTransformationProperties(TransMeta transMeta)
-    {
-        if (transMeta==null) return false;
-        
-        TransDialog tid = new TransDialog(shell, SWT.NONE, transMeta, rep);
-        TransMeta ti = tid.open();
-        
-        // In this case, load shared objects
-        //
-        if (tid.isSharedObjectsFileChanged())
-        {
-            loadTransSharedObjects(transMeta);
-        }
-        
-        if (tid.isSharedObjectsFileChanged() || ti!=null)
-        {
-            try
-            {
-                transMeta.readSharedObjects(rep);
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTransGraphTabName(transMeta)), e);
-            }                                
-            refreshTree();
-            renameTabs(); // cheap operation, might as will do it anyway
-        }
-        
-        setShellText();
-        return ti!=null;
-    }
-    
     public void saveSettings()
     {
         WindowProperty winprop = new WindowProperty(shell);
@@ -6873,48 +6927,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         return APP_NAME;
     }
     
-    /**
-     * This is the main procedure for Spoon.
-     * 
-     * @param a Arguments are available in the "Get System Info" step.
-     */
-    public static void main (String [] a) throws KettleException
-    {
-    	EnvUtil.environmentInit();
-        ArrayList<String> args = new ArrayList<String>();
-        for (int i=0;i<a.length;i++) args.add(a[i]);
-        
-        Display display = new Display();
-        
-        Splash splash = new Splash(display);
-        
-        StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionTransname, optionFilename, optionDirname, optionLogfile, optionLoglevel;
+    public void createSpoon( ) throws KettleException {
 
-		CommandLineOption options[] = new CommandLineOption[] 
-            {
-			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
-			    new CommandLineOption("job", "The name of the job to launch", optionJobname=new StringBuffer()),
-			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname=new StringBuffer()),
-			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
-			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
-			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
-            };
-
-		// Parse the options...
-		CommandLineOption.parseArguments(args, options);
-
-        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
-        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
-        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
-        
-        if (!Const.isEmpty(kettleRepname )) optionRepname  = new StringBuffer(kettleRepname);
-        if (!Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
-        if (!Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
-        
+	    StringBuffer optionLogfile = getCommandLineOption("logfile").getArgument();
+	    StringBuffer optionLoglevel = getCommandLineOption("level").getArgument();
+    	
         // Before anything else, check the runtime version!!!
         String version = Const.JAVA_VERSION;
         if ("1.4".compareToIgnoreCase(version)>0)
@@ -6927,7 +6944,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         // Set default Locale:
         Locale.setDefault(Const.DEFAULT_LOCALE);
         
-        LogWriter log;
         LogWriter.setConsoleAppenderDebug();
         if (Const.isEmpty(optionLogfile))
         {
@@ -6962,57 +6978,46 @@ public class Spoon implements AddUndoPositionInterface, TabListener
             return;
         }
 
-        final Spoon spoon = new Spoon(log, display, null);
-        staticSpoon = spoon;
-        spoon.setDestroy(true);
-        spoon.setArguments(args.toArray(new String[args.size()]));
+        
+        init(null);
+        
+        SpoonFactory.setSpoonInstance( this );
+        staticSpoon = this;
+        setDestroy(true);
         
         log.logBasic(APP_NAME, Messages.getString("Spoon.Log.MainWindowCreated"));//Main window is created.
         
+    	
+    }
+    
+    public boolean selectRep( Splash splash ) {
         RepositoryMeta repositoryMeta = null;
         UserInfo userinfo = null;
-        
-        if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && spoon.props.showRepositoriesDialogAtStartup())
+
+	    StringBuffer optionRepname = getCommandLineOption("rep").getArgument();
+	    StringBuffer optionFilename = getCommandLineOption("file").getArgument();
+
+        if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && props.showRepositoriesDialogAtStartup())
         {       
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
             int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION, PermissionMeta.TYPE_PERMISSION_JOB };
             splash.hide();
-            RepositoriesDialog rd = new RepositoriesDialog(spoon.display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
+            RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name"));//"Spoon"
             if (rd.open())
             {
                 repositoryMeta = rd.getRepository();
                 userinfo = rd.getUser();
                 if (!userinfo.useTransformations())
                 {
-                    MessageBox mb = new MessageBox(spoon.shell, SWT.OK | SWT.ICON_ERROR );
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
                     mb.setMessage(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Message"));//"Sorry, this repository user can't work with transformations from the repository."
                     mb.setText(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Title"));//"Error!"
                     mb.open();
                     
                     userinfo = null;
                     repositoryMeta  = null;
-                }
-            }
-            else
-            {
-                // Exit point: user pressed CANCEL!
-                if (rd.isCancelled()) 
-                {
-                    splash.dispose();
-                    spoon.quitFile();
-                    return;
-                }
-            }
-        }
-        
-        try
-        {
-            // Read kettle transformation specified on command-line?
-            if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
-            {           
-                if (!Const.isEmpty(optionRepname))
-                {
+                } else {
                     RepositoriesMeta repsinfo = new RepositoriesMeta(log);
                     if (repsinfo.readData())
                     {
@@ -7020,15 +7025,55 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                         if (repositoryMeta!=null)
                         {
                             // Define and connect to the repository...
-                            spoon.rep = new Repository(log, repositoryMeta, userinfo);
-                            if (spoon.rep.connect(Messages.getString("Spoon.Application.Name")))//"Spoon"
+                            setRepository( new Repository(log, repositoryMeta, userinfo) );
+                        } else {
+                            log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
+                        }
+                    } else {
+                        log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+                    }
+
+                }
+            }
+            else
+            {
+                // Exit point: user pressed CANCEL!
+                if (rd.isCancelled()) 
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public void handleStartOptions( ) {
+    	
+	    StringBuffer optionRepname = getCommandLineOption("rep").getArgument();
+	    StringBuffer optionFilename = getCommandLineOption("file").getArgument();
+	    StringBuffer optionDirname = getCommandLineOption("dir").getArgument();
+		StringBuffer optionTransname = getCommandLineOption("trans").getArgument();
+	    StringBuffer optionJobname = getCommandLineOption("job").getArgument();
+		StringBuffer optionUsername = getCommandLineOption("user").getArgument();
+	    StringBuffer optionPassword = getCommandLineOption("pass").getArgument();
+	    
+	    
+        try
+        {
+            // Read kettle transformation specified on command-line?
+            if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
+            {           
+                if (!Const.isEmpty(optionRepname))
+                {
+                	if( rep != null ) {
+                            if (rep.connect(Messages.getString("Spoon.Application.Name")))//"Spoon"
                             {
                                 if (Const.isEmpty(optionDirname)) optionDirname=new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
                                 
                                 // Check username, password
-                                spoon.rep.userinfo = new UserInfo(spoon.rep, optionUsername.toString(), optionPassword.toString());
+                                rep.userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
                                 
-                                if (spoon.rep.userinfo.getID()>0)
+                                if (rep.userinfo.getID()>0)
                                 {
                                 	// Options /file, /job and /trans are mutually exclusive
                                 	int t = (Const.isEmpty(optionFilename) ? 0 : 1) +
@@ -7042,13 +7087,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                                 	{
                                 		if (!Const.isEmpty(optionFilename))
                                 		{
-                                            spoon.openFile(optionFilename.toString(), false);
+                                            openFile(optionFilename.toString(), false);
                                 		}
                                 		else
                                 		{
                                 			// OK, if we have a specified job or transformation, try to load it...
                                 			// If not, keep the repository logged in.
-                                			RepositoryDirectory repdir = spoon.rep.getDirectoryTree().findDirectory(optionDirname.toString());
+                                			RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(optionDirname.toString());
                                 			if (repdir == null)
                                 			{
                                 				log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory", optionDirname.toString())); //"Can't find directory ["+dirname+"] in the repository."
@@ -7056,20 +7101,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                                 			else {
                                 				if (!Const.isEmpty(optionTransname))
                                 				{
-                                					TransMeta transMeta = new TransMeta(spoon.rep, optionTransname.toString(), repdir);
+                                					TransMeta transMeta = new TransMeta(rep, optionTransname.toString(), repdir);
                                 					transMeta.setFilename(optionRepname.toString());
                                 					transMeta.clearChanged();
                                 					transMeta.setInternalKettleVariables();
-                                					spoon.addTransGraph(transMeta);
+                                					addTransGraph(transMeta);
                                 				}
                                 				else
                                         		{
                                 					// Try to load a specified job if any
-                                					JobMeta jobMeta = new JobMeta(log, spoon.rep, optionJobname.toString(), repdir);
+                                					JobMeta jobMeta = new JobMeta(log, rep, optionJobname.toString(), repdir);
                                 					jobMeta.setFilename(optionRepname.toString());
                                 					jobMeta.clearChanged();
                                 					jobMeta.setInternalKettleVariables();
-                                					spoon.addJobGraph(jobMeta);
+                                					addJobGraph(jobMeta);
                                         		}
                                 			}
                                         }
@@ -7078,8 +7123,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                                 else
                                 {
                                     log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableVerifyUser"));//"Can't verify username and password."
-                                    spoon.rep.disconnect();
-                                    spoon.rep=null;
+                                    rep.disconnect();
+                                    rep=null;
                                 }
                             }
                             else
@@ -7087,11 +7132,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                                 log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableConnectToRepository"));//"Can't connect to the repository."
                             }
                         }
-                        else
-                        {
-                            log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
-                        }
-                    }
                     else
                     {
                         log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
@@ -7100,32 +7140,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                 else
                 if (!Const.isEmpty(optionFilename))
                 {
-                    spoon.openFile(optionFilename.toString(), false);
+                    openFile(optionFilename.toString(), false);
                 }
             }
             else // Normal operations, nothing on the commandline...
             {
                 // Can we connect to the repository?
-                if (repositoryMeta!=null && userinfo!=null)
+                if (rep!=null && rep.userinfo!=null)
                 {
-                    spoon.rep = new Repository(log, repositoryMeta, userinfo);
-                    if (!spoon.rep.connect(Messages.getString("Spoon.Application.Name"))) //"Spoon"
+                    if (!rep.connect(Messages.getString("Spoon.Application.Name"))) //"Spoon"
                     {
-                        spoon.rep = null;
+                        setRepository(null);
                     }
                 }
     
-                if (spoon.props.openLastFile())
+                if (props.openLastFile())
                 {
                     log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
                     
-                    List lastUsedFiles = spoon.props.getLastUsedFiles();
+                    List lastUsedFiles = props.getLastUsedFiles();
                     
                     if (lastUsedFiles.size()>0)
                     {
                         LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(0);
-                        
-                        spoon.loadLastUsedFile(lastUsedFile, repositoryMeta);
+                        RepositoryMeta repInfo = (rep == null) ? null : rep.getRepositoryInfo();
+                        loadLastUsedFile(lastUsedFile, repInfo);
                     }
                 }
             }
@@ -7134,32 +7173,119 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
             log.logError(APP_NAME, Const.getStackTracker(ke));
-            spoon.rep=null;
+            rep=null;
         }
-                
-        spoon.open ();
 
-        splash.dispose();
-        
-        try
-        {
-            while (!spoon.isDisposed ()) 
-            {
-                if (!spoon.readAndDispatch ()) spoon.sleep ();
+    }
+    
+    public void start() {
+    	if( !selectRep( splash ) ) {
+            splash.dispose();
+            quitFile();
+    	} else {
+    		handleStartOptions(  );
+            open ();
+
+            if( splash != null ) {
+                splash.dispose();
             }
-        }
-        catch(Throwable e)
-        {
-            log.logError(APP_NAME, Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
-            log.logError(APP_NAME, Const.getStackTracker(e));
+            try
+            {
+                while (!isDisposed ()) 
+                {
+                    if (!readAndDispatch ()) sleep ();
+                }
+            }
+            catch(Throwable e)
+            {
+                log.logError(APP_NAME, Messages.getString("Spoon.Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
+                log.logError(APP_NAME, Const.getStackTracker(e));
 
-        }
-        spoon.dispose();
+            }
+            dispose();
 
-        log.logBasic(APP_NAME, APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
+            log.logBasic(APP_NAME, APP_NAME+" "+Messages.getString("Spoon.Log.AppHasEnded"));//" has ended."
 
-        // Close the logfile
-        log.close();
+            // Close the logfile
+            log.close();
+    	}
+
+    }
+    
+    public Splash splash;
+
+    public CommandLineOption options[];
+    
+    public CommandLineOption getCommandLineOption( String opt ) {
+    	for( int i=0; i<options.length;i++ ) {
+    		if( options[i].getOption().equals( opt ) ) {
+    			return options[i];
+    		}
+    	}
+    	return null;
+    }
+    
+    public void getCommandLineArgs( ArrayList<String> args ) {
+
+		options = new CommandLineOption[] 
+            {
+			    new CommandLineOption("rep", "Repository name", new StringBuffer()),
+			    new CommandLineOption("user", "Repository username", new StringBuffer()),
+			    new CommandLineOption("pass", "Repository password", new StringBuffer()),
+			    new CommandLineOption("job", "The name of the job to launch", new StringBuffer()),
+			    new CommandLineOption("trans", "The name of the transformation to launch", new StringBuffer()),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", new StringBuffer()),
+			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", new StringBuffer()),
+			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", new StringBuffer()),
+			    new CommandLineOption("logfile", "The logging file to write to", new StringBuffer()),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", new StringBuffer(), false, true),
+            };
+
+		// Parse the options...
+		CommandLineOption.parseArguments(args, options);
+
+		String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+
+        if (!Const.isEmpty(kettleRepname )) options[0].setArgument(new StringBuffer(kettleRepname));
+        if (!Const.isEmpty(kettleUsername)) options[1].setArgument(new StringBuffer(kettleUsername));
+        if (!Const.isEmpty(kettlePassword)) options[2].setArgument(new StringBuffer(kettlePassword));
+
+    }
+    
+    public void createSplash() {
+        splash = new Splash(display);
+    }
+    
+    public void run( ArrayList<String> args ) {
+    	try {
+        	createSplash();
+            getCommandLineArgs( args );
+            createSpoon( );
+            setArguments(args.toArray(new String[args.size()]));
+            start();
+    	} catch (Throwable t) {
+    		t.printStackTrace();
+    		log.logError("Fatal error", t.getMessage());
+    	}
+    }
+    
+    /**
+     * This is the main procedure for Spoon.
+     * 
+     * @param a Arguments are available in the "Get System Info" step.
+     */
+    public static void main (String [] a) throws KettleException
+    {
+
+    	EnvUtil.environmentInit();
+        ArrayList<String> args = new ArrayList<String>();
+        for (int i=0;i<a.length;i++) args.add(a[i]);
+        
+        Display display = new Display();
+        Spoon spoon = new Spoon(display);
+        spoon.run(args);
         
         // Kill all remaining things in this VM!
         System.exit(0);
@@ -7225,19 +7351,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         {
             if (lastUsedFile.isTransformation())
             {
+            	openFile(lastUsedFile.getFilename(), false);
+            	/*
                 TransMeta transMeta = new TransMeta(lastUsedFile.getFilename());
                 transMeta.setFilename(lastUsedFile.getFilename());
                 transMeta.clearChanged();
                 props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), null, false, null);
                 addTransGraph(transMeta);
+                */
             }
             if (lastUsedFile.isJob())
             {
+            	openFile(lastUsedFile.getFilename(), false);
+            	/*
                 JobMeta jobMeta = new JobMeta(log, lastUsedFile.getFilename(), rep);
                 jobMeta.setFilename(lastUsedFile.getFilename());
                 jobMeta.clearChanged();
                 props.addLastFile(LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), null, false, null);
                 addJobGraph(jobMeta);
+                */
             }
             refreshTree();
         }                       
@@ -7696,6 +7828,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         {
             new ErrorDialog(shell, "Split transformation", "There was an error during transformation split", e);
         }
+    }
+
+    public void runFile() {
+    	executeFile( true, false, false, false, null);
+    }
+
+    public void previewFile() {
+    	executeFile( true, false, false, true, null);
     }
 
     public void executeFile(boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
@@ -8196,7 +8336,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     /**
      * @return the tabMap
      */
-    public Map getTabMap()
+    public Map<String, TabMapEntry> getTabMap()
     {
         return tabMap;
     }
@@ -8214,7 +8354,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         // Is there an active TransGraph?
         TransGraph transGraph = getActiveTransGraph();
         if (transGraph==null) return;
-        TransMeta transMeta = transGraph.getTransMeta();
+        TransMeta transMeta = (TransMeta)transGraph.getMeta();
         
         String clipcontent = fromClipboard();
         if (clipcontent != null)
@@ -8331,309 +8471,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener
         }
     }
 
-    public boolean saveJobFile(JobMeta jobMeta)
-    {
-        log.logDetailed(toString(), "Save file..."); //$NON-NLS-1$
-        boolean saved = false;
-        if (rep!=null)
-        {
-            saved  = saveJobRepository(jobMeta);
-        }
-        else
-        {
-            if (jobMeta.getFilename()!=null)
-            {
-                saved = saveJob(jobMeta, jobMeta.getFilename());
-            }
-            else
-            {
-                saved = saveJobFileAs(jobMeta);
-            }
-        }
-        
-        if (saved) // all was OK
-        {
-            saved=saveJobSharedObjects(jobMeta);
-        }
-        return saved;
-    }
-    
-    private boolean saveJobXMLFile(JobMeta jobMeta)
-    {
-        boolean saved=false;
-        
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-        dialog.setFilterNames(Const.getJobFilterNames());
-        String fname = dialog.open();
-        if (fname!=null) 
-        {
-            // Is the filename ending on .ktr, .xml?
-            boolean ending=false;
-            for (int i=0;i<Const.STRING_JOB_FILTER_EXT.length-1;i++)
-            {
-                if (fname.endsWith(Const.STRING_JOB_FILTER_EXT[i].substring(1))) 
-                {
-                    ending=true;
-                } 
-            }
-            if (fname.endsWith(Const.STRING_JOB_DEFAULT_EXT)) ending=true;
-            if (!ending)
-            {
-                fname+=Const.STRING_JOB_DEFAULT_EXT;
-            }
-            // See if the file already exists...
-            File f = new File(fname);
-            int id = SWT.YES;
-            if (f.exists())
-            {
-                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
-                mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
-                id = mb.open();
-            }
-            if (id==SWT.YES)
-            {
-                saved=saveJob(jobMeta, fname);
-            }
-        }
-        
-        return saved;
-    }
-
-
-    public boolean saveJobRepository(JobMeta jobMeta)
-    {
-        return saveJobRepository(jobMeta, false);
-    }
-
-    public boolean saveJobRepository(JobMeta jobMeta, boolean ask_name)
-    {
-        log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
-        if (rep!=null)
-        {
-            boolean answer = true;
-            boolean ask    = ask_name;
-            while (answer && ( ask || jobMeta.getName()==null || jobMeta.getName().length()==0 ) )
-            {
-                if (!ask)
-                {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("Spoon.Dialog.GiveJobANameBeforeSaving.Title")); //$NON-NLS-1$
-                    mb.open();
-                }
-                ask=false;
-                answer = editJobProperties(jobMeta);
-            }
-            
-            if (answer && jobMeta.getName()!=null && jobMeta.getName().length()>0)
-            {
-                if (!rep.getUserInfo().isReadonly())
-                {
-                    boolean saved=false;
-                    int response = SWT.YES;
-                    if (jobMeta.showReplaceWarning(rep))
-                    {
-                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                        mb.setMessage("'"+jobMeta.getName()+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        mb.setText(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
-                        response = mb.open();
-                    }
-                    
-                    if (response == SWT.YES)
-                    {
-
-						// Keep info on who & when this job was created...
-						if (  jobMeta.getCreatedUser()==null || jobMeta.getCreatedUser().equals("-"))
-						{
-							jobMeta.setCreatedDate( new Date() );
-							jobMeta.setCreatedUser( rep.getUserInfo().getLogin() );
-						}
-						else
-						{
-
-							jobMeta.setCreatedDate( jobMeta.getCreatedDate() );                 
-							jobMeta.setCreatedUser( jobMeta.getCreatedUser());
-						}
-
-
-                        // Keep info on who & when this job was changed...
-                        jobMeta.modifiedDate = new Date();
-                        jobMeta.modifiedUser = rep.getUserInfo().getLogin();
-
-                        JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
-                        if (jspd.open())
-                        {
-                            if (!props.getSaveConfirmation())
-                            {
-                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
-                                     null,
-                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
-                                     MessageDialog.QUESTION,
-                                     new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
-                                     0,
-                                     Messages.getString("Spoon.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
-                                     props.getSaveConfirmation()
-                                     );
-                                md.open();
-                                props.setSaveConfirmation(md.getToggleState());
-                            }
-    
-                            // Handle last opened files...
-                            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta.getDirectory().getPath(), true, rep.getName());
-                            saveSettings();
-                            addMenuLast();
-    
-                            setShellText();
-                            
-                            saved=true;
-                        }
-                    }
-                    return saved;
-                }
-                else
-                {
-                    MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("Spoon.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
-                    mb.open();
-                }
-            }
-        }
-        else
-        {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
-            mb.setText(Messages.getString("Spoon.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
-            mb.open();
-        }
-        return false;
-    }
-    
-    public boolean saveJobFileAs(JobMeta jobMeta)
-    {
-        boolean saved=false;
-        
-        if (rep!=null)
-        {
-            jobMeta.setID(-1L);
-            saved=saveJobRepository(jobMeta, true);
-            renameTabs();
-        }
-        else
-        {
-            saved=saveJobXMLFile(jobMeta);
-            renameTabs();
-        }
-        
-        return saved;
-    }
-
-
-    public void saveJobFileAsXML(JobMeta jobMeta)
-    {
-        log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
-
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-        dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
-        dialog.setFilterNames     (Const.getJobFilterNames());
-        String fname = dialog.open();
-        if (fname!=null) 
-        {
-            // Is the filename ending on .ktr, .xml?
-            boolean ending=false;
-            for (int i=0;i<Const.STRING_JOB_FILTER_EXT.length-1;i++)
-            {
-                if (fname.endsWith(Const.STRING_JOB_FILTER_EXT[i].substring(1))) ending=true;
-            }
-            if (fname.endsWith(Const.STRING_JOB_DEFAULT_EXT)) ending=true;
-            if (!ending)
-            {
-                fname+=Const.STRING_JOB_DEFAULT_EXT;
-            }
-            // See if the file already exists...
-            File f = new File(fname);
-            int id = SWT.YES;
-            if (f.exists())
-            {
-                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$
-                mb.setText(Messages.getString("Spoon.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
-                id = mb.open();
-            }
-            if (id==SWT.YES)
-            {
-                saveJob(jobMeta, fname);
-            }
-        } 
-    }
-    
-    private boolean saveJob(JobMeta jobMeta, String fname)
-    {
-        jobMeta.setFilename(fname);
-        if (Const.isEmpty(jobMeta.getName()) || isDefaultJobName(jobMeta.getName()))
-        {
-            jobMeta.nameFromFilename();
-        }
-
-        boolean saved = false;
-        String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
-        try
-        {
-            DataOutputStream dos = new DataOutputStream(KettleVFS.getOutputStream(fname, false));
-            dos.write(xml.getBytes(Const.XML_ENCODING));
-            dos.close();
-            
-            saved=true;
-
-            // Handle last opened files...
-            props.addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
-            saveSettings();
-            addMenuLast();
-
-            log.logDebug(toString(), "File written to ["+fname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            jobMeta.setFilename( fname );
-            jobMeta.clearChanged();
-            setShellText();
-        }
-        catch(Exception e)
-        {
-            log.logDebug(toString(), "Error opening file for writing! --> "+e.toString()); //$NON-NLS-1$
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString()); //$NON-NLS-1$
-            mb.setText(Messages.getString("Spoon.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
-            mb.open();
-        }
-        return saved;
-    }
-    
-    public boolean editJobProperties(JobMeta jobMeta)
-    {
-        if (jobMeta==null) return false;
-        JobDialog jd = new JobDialog(shell, SWT.NONE, jobMeta, rep);
-        JobMeta ji = jd.open();
-        
-        // In this case, load shared objects
-        //
-        if (jd.isSharedObjectsFileChanged())
-        {
-            loadJobSharedObjects(jobMeta);
-        }
-        
-        if (jd.isSharedObjectsFileChanged() || ji!=null)
-        {
-            refreshTree();
-            renameTabs(); // cheap operation, might as will do it anyway
-        }
-        
-        setShellText();
-        return ji!=null;
-    }
-
-    
     public void editJobEntry(JobMeta jobMeta, JobEntryCopy je)
     {
         try
@@ -8882,11 +8719,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                 
                 if (page3.getRepositoryDirectory()!=null)
                 {
-                    saveJobRepository(jobMeta);
+                    saveToRepository(jobMeta);
                 }
                 else
                 {
-                    saveJobFile(jobMeta);
+                	saveToFile(jobMeta);
                 }
                 
                 addJobGraph(jobMeta);
@@ -9059,11 +8896,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener
                     boolean ok;
                     if (rep!=null)
                     {
-                        ok=saveTransRepository(transMeta);
+                        ok=saveToRepository(transMeta);
                     }
                     else
                     {
-                        ok=saveTransFile(transMeta);
+                        ok=saveToFile(transMeta);
                     }
                     if (!ok)
                     {
@@ -9186,12 +9023,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener
     }
     
     public Repository getRepository() {
-    		return rep;
-    }
-    
-    private static List<Object[]> menuListeners = new ArrayList<Object[]>();
-    
-    public static void addListener( String id, Object listener, String methodName ) {
+		return rep;
+}
+
+    public void setRepository( Repository rep ) {
+		this.rep = rep;
+}
+
+    public void addMenuListener( String id, Object listener, String methodName ) {
     		menuListeners.add( new Object[] { id, listener, methodName } );
     }
 }
