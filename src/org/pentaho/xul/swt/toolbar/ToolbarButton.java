@@ -74,5 +74,9 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 	public void setHint(String text) {
 		toolItem.setToolTipText( text );
 	}
+	
+	public void setText( String text ) {
+		toolItem.setText( text );
+	}
 
 }
