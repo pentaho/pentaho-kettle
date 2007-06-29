@@ -31,13 +31,12 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * This class contains a number of (static final) methods to facilitate 

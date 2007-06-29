@@ -15,6 +15,7 @@
  
 package org.pentaho.di.trans.steps.mapping;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -57,85 +57,19 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     private String transName;
     private String fileName;
     private String directoryPath;
-    
-    // Also specify the required fields: tell which fields to use: make the mapping REALLY generic
-    private String inputField[];
-    private String inputMapping[];
-    private String outputField[];
-    private String outputMapping[];
+
+    private List<MappingIODefinition> inputMappings;
+    private List<MappingIODefinition> outputMappings;
+    private MappingParameters         mappingParameters;
 
 	public MappingMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-
-    /**
-     * @return Returns the inputField.
-     */
-    public String[] getInputField()
-    {
-        return inputField;
-    }
-
-    /**
-     * @param inputField The inputField to set.
-     */
-    public void setInputField(String[] inputField)
-    {
-        this.inputField = inputField;
-    }
-
-    /**
-     * @return Returns the mappingField.
-     */
-    public String[] getInputMapping()
-    {
-        return inputMapping;
-    }
-
-    /**
-     * @param mappingField The mappingField to set.
-     */
-    public void setInputMapping(String[] mappingField)
-    {
-        this.inputMapping = mappingField;
-    }
-
-    /**
-     * @return Returns the outputField.
-     */
-    public String[] getOutputField()
-    {
-        return outputField;
-    }
-
-    /**
-     * @param outputField The outputField to set.
-     */
-    public void setOutputField(String[] outputField)
-    {
-        this.outputField = outputField;
-    }
-
-    /**
-     * @return Returns the outputRename.
-     */
-    public String[] getOutputMapping()
-    {
-        return outputMapping;
-    }
-
-    /**
-     * @param outputRename The outputRename to set.
-     */
-    public void setOutputMapping(String[] outputRename)
-    {
-        this.outputMapping = outputRename;
-    }
-
-    public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
-		throws KettleXMLException
+ 
+    public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleXMLException
 	{
+    	setDefault();
         try
         {
             readData(stepnode);
@@ -158,35 +92,83 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         fileName       = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
         directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
         
-        Node inputNode  = XMLHandler.getSubNode(stepnode, "input"); //$NON-NLS-1$
-        Node outputNode = XMLHandler.getSubNode(stepnode, "output"); //$NON-NLS-1$
-
-        int nrInput  = XMLHandler.countNodes(inputNode, "connector"); //$NON-NLS-1$
-        int nrOutput = XMLHandler.countNodes(outputNode, "connector"); //$NON-NLS-1$
-
-        allocate(nrInput, nrOutput);
-        
-        for (int i=0;i<nrInput;i++)
+        Node mappingsNode  = XMLHandler.getSubNode(stepnode, "mappings"); //$NON-NLS-1$
+                
+        if (mappingsNode!=null)
         {
-            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
-            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
-            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
+        	// Read all the input mapping definitions...
+        	Node inputNode  = XMLHandler.getSubNode(mappingsNode, "input"); //$NON-NLS-1$
+        	int nrInputMappings = XMLHandler.countNodes(inputNode, MappingIODefinition.XML_TAG); //$NON-NLS-1$
+        	for (int i=0;i<nrInputMappings;i++) {
+        		Node mappingNode = XMLHandler.getSubNodeByNr(inputNode, MappingIODefinition.XML_TAG, i);
+        		MappingIODefinition inputMappingDefinition = new MappingIODefinition(mappingNode);
+        		inputMappings.add(inputMappingDefinition);
+        	}
+        	Node outputNode  = XMLHandler.getSubNode(mappingsNode, "output"); //$NON-NLS-1$
+        	int nrOutputMappings = XMLHandler.countNodes(inputNode, MappingIODefinition.XML_TAG); //$NON-NLS-1$
+        	for (int i=0;i<nrOutputMappings;i++) {
+        		Node mappingNode = XMLHandler.getSubNodeByNr(outputNode, MappingIODefinition.XML_TAG, i);
+        		MappingIODefinition outputMappingDefinition = new MappingIODefinition(mappingNode);
+        		outputMappings.add(outputMappingDefinition);
+        	}
+        	
+        	// Load the mapping parameters too..
+        	Node mappingParametersNode = XMLHandler.getSubNode(mappingsNode, MappingParameters.XML_TAG);
+        	mappingParameters = new MappingParameters(mappingParametersNode);
         }
-        
-        for (int i=0;i<nrOutput;i++)
+        else
         {
-            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
-            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
-            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
+        	// backward compatibility...
+        	//
+            Node inputNode  = XMLHandler.getSubNode(stepnode, "input"); //$NON-NLS-1$
+            Node outputNode = XMLHandler.getSubNode(stepnode, "output"); //$NON-NLS-1$
+            
+	        int nrInput  = XMLHandler.countNodes(inputNode, "connector"); //$NON-NLS-1$
+	        int nrOutput = XMLHandler.countNodes(outputNode, "connector"); //$NON-NLS-1$
+	        
+	        MappingIODefinition inputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        
+	        String inputField[] = new String[nrInput];
+	        String inputMapping[] = new String[nrInput];
+	        
+	        for (int i=0;i<nrInput;i++)
+	        {
+	            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
+	            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
+	            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
+	        }
+	        inputMappingDefinition.setParentField(inputField);
+	        inputMappingDefinition.setMappingField(inputMapping);
+
+	        MappingIODefinition outputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        
+	        String outputField[] = new String[nrOutput];
+	        String outputMapping[] = new String[nrOutput];
+	        
+	        for (int i=0;i<nrOutput;i++)
+	        {
+	            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
+	            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
+	            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
+	        }
+	        
+	        outputMappingDefinition.setMappingField(outputMapping);
+	        outputMappingDefinition.setParentField(outputField);
+	        
+	        // Don't forget to add these to the input and output mapping definitions...
+	        //
+	        inputMappings.add(inputMappingDefinition);
+	        outputMappings.add(outputMappingDefinition);
+	        
+	        // The default is to have no mapping parameters: the concept didn't exist before.
+	        mappingParameters = new MappingParameters();
         }
 	}
     
     public void allocate(int nrInput, int nrOutput)
     {
-        inputField   = new String[nrInput];
-        inputMapping = new String[nrInput];
-        outputField  = new String[nrOutput];
-        outputMapping = new String[nrOutput];
+    	inputMappings = new ArrayList<MappingIODefinition>(nrInput);
+    	outputMappings = new ArrayList<MappingIODefinition>(nrOutput);
     }
 
     public String getXML()
@@ -197,19 +179,23 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
         retval.append("    "+XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
         
-        retval.append("  <input>"+Const.CR); //$NON-NLS-1$
-        for (int i=0;i<inputField.length;i++)
+        retval.append("    ").append(XMLHandler.openTag("mappings")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
+
+        retval.append("      ").append(XMLHandler.openTag("input")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
+        for (int i=0;i<inputMappings.size();i++)
         {
-            retval.append("    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            retval.append(inputMappings.get(i).getXML());
         }
-        retval.append("    </input>"+Const.CR); //$NON-NLS-1$
-        
-        retval.append("  <output>"+Const.CR); //$NON-NLS-1$
-        for (int i=0;i<outputField.length;i++)
+        retval.append("      ").append(XMLHandler.closeTag("input")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
+
+        retval.append("      ").append(XMLHandler.openTag("output")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
+        for (int i=0;i<outputMappings.size();i++)
         {
-            retval.append("    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            retval.append(outputMappings.get(i).getXML());
         }
-        retval.append("    </output>"+Const.CR); //$NON-NLS-1$
+        retval.append("      ").append(XMLHandler.closeTag("output")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
+
+        retval.append("    ").append(XMLHandler.closeTag("mappings")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
         
         return retval.toString();
     }
@@ -219,8 +205,17 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         allocate(0,0);
 	}
     
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[]) throws KettleStepException
+    public void getFields(RowMetaInterface r, String origin, RowMetaInterface info[]) throws KettleStepException
     {
+    	/*
+    	 * TODO re-enable this.
+    	 *      The problem for now is: we need to select a primary output and multiple targeted outputs...
+    	 *      This getFields should only deal with the targetted one.
+    	 *      We run into a certain little problem here.
+    	 *      What we need to do is pass the "next step" into the equation/interface so that we know who's asking.
+    	 *      If nobody is asking here, it's the main step.
+    	 *      If one of the next steps is asking, it should be a certain other response.
+    	 *      
     	// Change the names of the fields if this is required by the mapping.
     	for (int i=0;i<inputField.length;i++)
 		{
@@ -293,10 +288,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToGetFieldsFromMapping")); //$NON-NLS-1$
         }
+        */
     }
 
-	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException
+    public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException
 	{
+    	/*
+    	 * TODO re-enable repository support
+    	 * 
         transName        = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
         fileName         = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
         directoryPath    = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
@@ -317,10 +316,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field"); //$NON-NLS-1$
             outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping"); //$NON-NLS-1$
         }
+        */
 	}
     
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
+    	/*
+    	 * TODO re-enable repository support
+    	 * 
         rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
         rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
         rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
@@ -338,6 +341,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, i, "output_mapping", outputMapping[i]); //$NON-NLS-1$
         }
+        */
     }
 
     public synchronized static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep) throws KettleException
@@ -418,6 +422,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
         
+		/*
+		 * TODO re-enable validation code for mappings...
+		 * 
     	// Change the names of the fields if this is required by the mapping.
     	for (int i=0;i<inputField.length;i++)
 		{
@@ -517,6 +524,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.NoMappingSpecified"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
+        */
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
@@ -582,5 +590,45 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         this.transName = transName;
     }
 
+	/**
+	 * @return the inputMappings
+	 */
+	public List<MappingIODefinition> getInputMappings() {
+		return inputMappings;
+	}
 
+	/**
+	 * @param inputMappings the inputMappings to set
+	 */
+	public void setInputMappings(List<MappingIODefinition> inputMappings) {
+		this.inputMappings = inputMappings;
+	}
+
+	/**
+	 * @return the outputMappings
+	 */
+	public List<MappingIODefinition> getOutputMappings() {
+		return outputMappings;
+	}
+
+	/**
+	 * @param outputMappings the outputMappings to set
+	 */
+	public void setOutputMappings(List<MappingIODefinition> outputMappings) {
+		this.outputMappings = outputMappings;
+	}
+
+	/**
+	 * @return the mappingParameters
+	 */
+	public MappingParameters getMappingParameters() {
+		return mappingParameters;
+	}
+
+	/**
+	 * @param mappingParameters the mappingParameters to set
+	 */
+	public void setMappingParameters(MappingParameters mappingParameters) {
+		this.mappingParameters = mappingParameters;
+	}
 }

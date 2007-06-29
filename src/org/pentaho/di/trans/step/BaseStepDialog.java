@@ -47,9 +47,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
@@ -59,14 +65,6 @@ import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.GUIResource;
-
 
 
 public class BaseStepDialog extends Dialog
@@ -91,18 +89,22 @@ public class BaseStepDialog extends Dialog
 	protected SelectionAdapter lsDef;
 	protected Listener lsResize;
 	protected boolean changed, backupChanged;
-	protected BaseStepMeta baseInput;
+	protected BaseStepMeta baseStepMeta;
 	protected Props props;
     protected Repository repository;   
+
+	protected StepMeta stepMeta;
 	
-	public BaseStepDialog(Shell parent, BaseStepMeta in, TransMeta transMeta, String sname)
+	public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname)
 	{
 		super(parent, SWT.NONE);
-		log=LogWriter.getInstance();
+		
+		this.log=LogWriter.getInstance();
 		this.transMeta=transMeta;
-		stepname=sname;
-		baseInput=in;
-		backupChanged=in.hasChanged();
+		this.stepname=stepname;
+		this.stepMeta = transMeta.findStep(stepname);
+		this.baseStepMeta=baseStepMeta;
+		this.backupChanged=baseStepMeta.hasChanged();
 		this.props = Props.getInstance();
 	}
 

@@ -108,7 +108,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 
 		// Copy to any possible next steps...
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null);
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 		// rowset(s).
 

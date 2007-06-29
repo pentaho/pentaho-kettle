@@ -6,8 +6,6 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import org.pentaho.di.core.Const;
-
 /**
  * This is a result file: a file as a result of the execution of a job entry, a transformation step, etc.
  * 

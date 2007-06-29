@@ -54,7 +54,7 @@ import org.pentaho.di.spoon.TabItemInterface;
 
 
 /**
- * ChefHistory handles the display of the historical information regarding earlier runs of this job.
+ * This class handles the display of the historical information regarding earlier runs of this job.
  * The idea is that this Composite is only populated when after loading of a job, we find a connection and logging table.
  * We then read from this table and populate the grid and log.
  *  
@@ -108,19 +108,19 @@ public class JobHistory extends Composite implements TabItemInterface
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("ChefHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("JobHistoryColumn.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("JobHistoryColumn.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
         
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -139,7 +139,7 @@ public class JobHistory extends Composite implements TabItemInterface
 		wText.setVisible(true);
 		
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(Messages.getString("ChefHistory.Button.Refresh")); //$NON-NLS-1$
+		wRefresh.setText(Messages.getString("JobHistoryButton.Refresh")); //$NON-NLS-1$
 
 		fdRefresh    = new FormData(); 
 		fdRefresh.left   = new FormAttachment(15, 0);  
@@ -147,7 +147,7 @@ public class JobHistory extends Composite implements TabItemInterface
 		wRefresh.setLayoutData(fdRefresh);
 		
 		wReplay = new Button(this, SWT.PUSH);
-		wReplay.setText(Messages.getString("ChefHistory.Button.Replay")); //$NON-NLS-1$
+		wReplay.setText(Messages.getString("JobHistoryButton.Replay")); //$NON-NLS-1$
 
 		fdReplay    = new FormData(); 
 		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
@@ -225,9 +225,9 @@ public class JobHistory extends Composite implements TabItemInterface
                     if (dateString == null || dateString.equals(Const.NULL_STRING))
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                        mb.setMessage(Messages.getString("ChefHistory.Error.ReplayingJob") //$NON-NLS-1$
-                                + Const.CR + Messages.getString("ChefHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
-                        mb.setText(Messages.getString("ChefHistory.ERROR")); //$NON-NLS-1$
+                        mb.setMessage(Messages.getString("JobHistoryError.ReplayingJob") //$NON-NLS-1$
+                                + Const.CR + Messages.getString("JobHistoryError.ReplayDateCannotBeNull")); //$NON-NLS-1$
+                        mb.setText(Messages.getString("JobHistoryERROR")); //$NON-NLS-1$
                         mb.open();
                         return;
                     }
@@ -238,8 +238,8 @@ public class JobHistory extends Composite implements TabItemInterface
                     }
                     catch (ParseException e1)
                     {
-                        new ErrorDialog(shell, Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
-                                Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
+                        new ErrorDialog(shell, Messages.getString("JobHistoryError.ReplayingJob2"), //$NON-NLS-1$
+                                Messages.getString("JobHistoryError.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
                     }
                 }
             }
@@ -321,7 +321,7 @@ public class JobHistory extends Composite implements TabItemInterface
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(this.getShell(), Messages.getString("ChefHistory.Error.GettingLoggingInfo"), Messages.getString("ChefHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(this.getShell(), Messages.getString("JobHistoryError.GettingLoggingInfo"), Messages.getString("JobHistoryError.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally

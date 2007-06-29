@@ -1564,9 +1564,11 @@ public class Trans implements VariableSpace
 		return transMeta.getName();
 	}
 
-    public MappingInput findMappingInput()
+    public MappingInput[] findMappingInput()
     {
 		if (steps==null) return null;
+		
+		List<MappingInput> list = new ArrayList<MappingInput>();
 		
         // Look in threads and find the MappingInput step thread...
         for (int i=0;i<steps.size();i++)
@@ -1574,24 +1576,31 @@ public class Trans implements VariableSpace
             StepMetaDataCombi smdc = steps.get(i);
             StepInterface step = smdc.step;
             if (step.getStepID().equalsIgnoreCase("MappingInput")) //$NON-NLS-1$
-                return (MappingInput)step;
+            {
+                list.add((MappingInput)step);
+            }
         }
-        return null;
+        return list.toArray(new MappingInput[list.size()]);
     }
 
-    public MappingOutput findMappingOutput()
+    public MappingOutput[] findMappingOutput()
     {
-		if (steps==null) return null;
+		List<MappingOutput> list = new ArrayList<MappingOutput>();
 		
-        // Look in threads and find the MappingInput step thread...
-        for (int i=0;i<steps.size();i++)
-        {
-            StepMetaDataCombi smdc = steps.get(i);
-            StepInterface step = smdc.step;
-            if (step.getStepID().equalsIgnoreCase("MappingOutput")) //$NON-NLS-1$
-                return (MappingOutput)step;
-        }
-        return null;
+		if (steps!=null)
+		{
+	        // Look in threads and find the MappingInput step thread...
+	        for (int i=0;i<steps.size();i++)
+	        {
+	            StepMetaDataCombi smdc = steps.get(i);
+	            StepInterface step = smdc.step;
+	            if (step.getStepID().equalsIgnoreCase("MappingOutput")) //$NON-NLS-1$
+	            {
+	                list.add((MappingOutput)step);
+	            }
+	        }
+		}
+        return list.toArray(new MappingOutput[list.size()]);
     }
 
     /**

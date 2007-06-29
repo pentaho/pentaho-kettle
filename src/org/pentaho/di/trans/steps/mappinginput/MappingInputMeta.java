@@ -223,9 +223,10 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
     
-    public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException
+    @Override
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException 
     {
-        for (int i=0;i<fieldName.length;i++)
+    	for (int i=0;i<fieldName.length;i++)
         {
             if (fieldName[i]!=null && fieldName[i].length()!=0)
             {
@@ -233,7 +234,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                 if (v.getType()==ValueMetaInterface.TYPE_NONE) v.setType(ValueMetaInterface.TYPE_STRING);
                 v.setLength(fieldLength[i]);
                 v.setPrecision(fieldPrecision[i]);
-                v.setOrigin(name);
+                v.setOrigin(origin);
                 row.addValueMeta(v);
             }
         }

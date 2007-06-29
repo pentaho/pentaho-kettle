@@ -19,7 +19,7 @@ package org.pentaho.di.trans.steps.mappingoutput;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.mapping.Mapping;
+import org.pentaho.di.trans.step.StepInterface;
 
 
 
@@ -32,7 +32,7 @@ import org.pentaho.di.trans.steps.mapping.Mapping;
 public class MappingOutputData extends BaseStepData implements StepDataInterface
 {
 
-	public Mapping mapping;
+	public StepInterface targetStep;
     public String[] outputField;
     public String[] outputMapping;
     public RowMetaInterface outputRowMeta;

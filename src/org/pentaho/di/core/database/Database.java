@@ -38,22 +38,21 @@ import javax.sql.DataSource;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.core.util.DatasourceHelper;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.exception.KettleDatabaseBatchException;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleDatabaseBatchException;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 

@@ -34,6 +34,18 @@ public class RowMeta implements RowMetaInterface
         return rowMeta;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        for (int i=0;i<size();i++)
+        {
+            if (i>0) buffer.append(", ");
+            buffer.append( "[" );
+            buffer.append(getValueMeta(i).toString());
+            buffer.append( "]" );
+        }
+        return buffer.toString();
+    }
     /**
      * @return the list of value Metadata 
      */

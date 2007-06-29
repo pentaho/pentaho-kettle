@@ -72,7 +72,7 @@ public class GetVariable extends BaseStep implements StepInterface
             
             // Make output metadata
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null);
 		}
 		
         // Add the variables to the row...

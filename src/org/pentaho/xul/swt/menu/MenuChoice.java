@@ -3,8 +3,6 @@ package org.pentaho.xul.swt.menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-
 import org.pentaho.xul.Messages;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuBar;
@@ -42,7 +40,7 @@ public class MenuChoice extends MenuItem implements Listener, XulMenuChoice {
         		flags |= SWT.CHECK;
         }
         // create the menu item
-        org.eclipse.swt.widgets.MenuItem menuItem = new org.eclipse.swt.widgets.MenuItem( (Menu) menu.getNativeObject(), flags); 
+        org.eclipse.swt.widgets.MenuItem menuItem = new org.eclipse.swt.widgets.MenuItem( (org.eclipse.swt.widgets.Menu) menu.getNativeObject(), flags); 
 		setSwtMenuItem( menuItem );
 
 		setText(text);

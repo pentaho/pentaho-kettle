@@ -62,7 +62,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 		ResultFile resultFile = (ResultFile) data.resultFilesList.get((int) linesRead);
 		RowMetaAndData r = resultFile.getRow();
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		smi.getFields(data.outputRowMeta, getStepname(), null);
+		smi.getFields(data.outputRowMeta, getStepname(), null, null);
 		linesRead++;
 
 		putRow(data.outputRowMeta, r.getData()); // copy row to possible alternate

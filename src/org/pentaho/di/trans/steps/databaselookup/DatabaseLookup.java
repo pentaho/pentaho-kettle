@@ -251,7 +251,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
             
             // create the output metadata
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null);
 
             if (meta.isCached())
             {

@@ -11,13 +11,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.repository.Repository;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.repository.Repository;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we are exporting the complete

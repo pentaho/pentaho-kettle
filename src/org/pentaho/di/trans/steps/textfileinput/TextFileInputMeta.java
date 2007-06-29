@@ -662,7 +662,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit = 0L;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		for (int i = 0; i < inputFields.length; i++)
 		{

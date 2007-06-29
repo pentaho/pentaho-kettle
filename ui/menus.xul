@@ -165,54 +165,54 @@
   </menupopup>
 
   <menupopup id="job-graph-entry">
-    <menuitem value="job-graph-entry-newhop" label="%ChefGraph.PopupMenu.JobEntry.NewHop"/>
-    <menuitem value="job-graph-entry-launch" label="%ChefGraph.PopupMenu.JobEntry.LaunchSpoon"/>
-    <menuitem value="job-graph-entry-edit" label="%ChefGraph.PopupMenu.JobEntry.Edit"/>
-    <menuitem value="job-graph-entry-edit-description" label="%ChefGraph.PopupMenu.JobEntry.EditDescription"/>
+    <menuitem value="job-graph-entry-newhop" label="%JobGraph.PopupMenu.JobEntry.NewHop"/>
+    <menuitem value="job-graph-entry-launch" label="%JobGraph.PopupMenu.JobEntry.LaunchSpoon"/>
+    <menuitem value="job-graph-entry-edit" label="%JobGraph.PopupMenu.JobEntry.Edit"/>
+    <menuitem value="job-graph-entry-edit-description" label="%JobGraph.PopupMenu.JobEntry.EditDescription"/>
 	<menuseparator/>
-    <menuitem value="job-graph-entry-duplicate" label="%ChefGraph.PopupMenu.JobEntry.Duplicate"/>
-    <menuitem value="job-graph-entry-copy" label="%ChefGraph.PopupMenu.JobEntry.CopyToClipboard"/>
+    <menuitem value="job-graph-entry-duplicate" label="%JobGraph.PopupMenu.JobEntry.Duplicate"/>
+    <menuitem value="job-graph-entry-copy" label="%JobGraph.PopupMenu.JobEntry.CopyToClipboard"/>
 	<menuseparator/>
-    <menu value="job-graph-entry-align" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute">
+    <menu value="job-graph-entry-align" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute">
 		<menupopup>
-			<menuitem value="job-graph-entry-align-left" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Left" accesskey="ctrl-left"/>
-			<menuitem value="job-graph-entry-align-right" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Right" accesskey="ctrl-right"/>
-			<menuitem value="job-graph-entry-align-top" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Top" accesskey="ctrl-up"/>
-			<menuitem value="job-graph-entry-align-bottom" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Bottom" accesskey="ctrl-down"/>
+			<menuitem value="job-graph-entry-align-left" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Left" accesskey="ctrl-left"/>
+			<menuitem value="job-graph-entry-align-right" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Right" accesskey="ctrl-right"/>
+			<menuitem value="job-graph-entry-align-top" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Top" accesskey="ctrl-up"/>
+			<menuitem value="job-graph-entry-align-bottom" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom" accesskey="ctrl-down"/>
 			<menuseparator/>
-			<menuitem value="job-graph-entry-align-horz" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally" accesskey="alt-right"/>
-			<menuitem value="job-graph-entry-align-vert" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.Vertically" accesskey="alt-up" />
+			<menuitem value="job-graph-entry-align-horz" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally" accesskey="alt-right"/>
+			<menuitem value="job-graph-entry-align-vert" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically" accesskey="alt-up" />
 			<menuseparator/>
-			<menuitem value="job-graph-entry-align-snap" label="%ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" accesskey="alt-home" />
+			<menuitem value="job-graph-entry-align-snap" label="%JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" accesskey="alt-home" />
 		</menupopup>
 	</menu>
-    <menuitem value="job-graph-entry-detach" label="%ChefGraph.PopupMenu.Hop.Detach"/>
-    <menuitem value="job-graph-entry-hide" label="%ChefGraph.PopupMenu.JobEntry.Hide"/>
-    <menuitem value="job-graph-entry-delete" label="%ChefGraph.PopupMenu.JobEntry.Delete"/>
+    <menuitem value="job-graph-entry-detach" label="%JobGraph.PopupMenu.Hop.Detach"/>
+    <menuitem value="job-graph-entry-hide" label="%JobGraph.PopupMenu.JobEntry.Hide"/>
+    <menuitem value="job-graph-entry-delete" label="%JobGraph.PopupMenu.JobEntry.Delete"/>
   </menupopup>
 
   <menupopup id="job-graph-hop">
-    <menu value="job-graph-hop-evaluation" label="%ChefGraph.PopupMenu.Hop.Evaluation">
+    <menu value="job-graph-hop-evaluation" label="%JobGraph.PopupMenu.Hop.Evaluation">
 		<menupopup>
-			<menuitem value="job-graph-hop-evaluation-uncond" type="checkbox" label="%ChefGraph.PopupMenu.Hop.Evaluation.Unconditional"/>
-			<menuitem value="job-graph-hop-evaluation-true" type="checkbox" label="%ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenOK"/>
-			<menuitem value="job-graph-hop-evaluation-false" type="checkbox" label="%ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed"/>
+			<menuitem value="job-graph-hop-evaluation-uncond" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.Unconditional"/>
+			<menuitem value="job-graph-hop-evaluation-true" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenOK"/>
+			<menuitem value="job-graph-hop-evaluation-false" type="checkbox" label="%JobGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed"/>
 		</menupopup>
 	</menu>
-    <menuitem value="job-graph-hop-flip" label="%ChefGraph.PopupMenu.Hop.FlipDirection"/>
-    <menuitem value="job-graph-hop-enabled" label="%ChefGraph.PopupMenu.Hop.Disable"/>
-    <menuitem value="job-graph-hop-delete" label="%ChefGraph.PopupMenu.Hop.Delete"/>
+    <menuitem value="job-graph-hop-flip" label="%JobGraph.PopupMenu.Hop.FlipDirection"/>
+    <menuitem value="job-graph-hop-enabled" label="%JobGraph.PopupMenu.Hop.Disable"/>
+    <menuitem value="job-graph-hop-delete" label="%JobGraph.PopupMenu.Hop.Delete"/>
   </menupopup>
 
   <menupopup id="job-graph-note">
-    <menuitem value="job-graph-note-edit" label="%ChefGraph.PopupMenu.Note.Edit"/>
-    <menuitem value="job-graph-note-delete" label="%ChefGraph.PopupMenu.Note.Delete"/>
+    <menuitem value="job-graph-note-edit" label="%JobGraph.PopupMenu.Note.Edit"/>
+    <menuitem value="job-graph-note-delete" label="%JobGraph.PopupMenu.Note.Delete"/>
   </menupopup>
 
   <menupopup id="job-graph-background">
-    <menuitem value="job-graph-note-new" label="%ChefGraph.PopupMenu.Note.New"/>
-    <menuitem value="job-graph-note-paste" label="%ChefGraph.PopupMenu.PasteStepFromClipboard"/>
-    <menuitem value="job-graph-background-settings" label="%ChefGraph.PopupMenu.Settings"/>
+    <menuitem value="job-graph-note-new" label="%JobGraph.PopupMenu.Note.New"/>
+    <menuitem value="job-graph-note-paste" label="%JobGraph.PopupMenu.PasteStepFromClipboard"/>
+    <menuitem value="job-graph-background-settings" label="%JobGraph.PopupMenu.Settings"/>
   </menupopup>
 
 </popupset>

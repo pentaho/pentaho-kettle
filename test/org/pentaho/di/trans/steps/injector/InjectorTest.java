@@ -24,10 +24,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.StepLoader;
@@ -38,10 +41,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.util.EnvUtil;
 
 
 /**

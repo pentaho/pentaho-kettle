@@ -65,9 +65,20 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.cluster.dialog.SlaveServerDialog;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.dialog.EnterStringDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.widget.DoubleClickInterface;
+import org.pentaho.di.core.widget.TreeItemAccelerator;
+import org.pentaho.di.core.widget.TreeMemory;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.partition.dialog.PartitionSchemaDialog;
@@ -78,18 +89,6 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.w3c.dom.Document;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.GUIResource;
-import org.pentaho.di.core.widget.DoubleClickInterface;
-import org.pentaho.di.core.widget.TreeItemAccelerator;
-import org.pentaho.di.core.widget.TreeMemory;
 
 
 

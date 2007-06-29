@@ -1,6 +1,5 @@
 package org.pentaho.di.core.logging;
 
-import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * Contains a Logging message with a message and a subject

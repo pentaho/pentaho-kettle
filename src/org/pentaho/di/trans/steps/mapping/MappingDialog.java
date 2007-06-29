@@ -20,9 +20,16 @@
 
 package org.pentaho.di.trans.steps.mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +40,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -44,8 +52,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.dialog.EnterMappingDialog;
+import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -61,60 +71,63 @@ import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
-import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private MappingMeta input;
+	private MappingMeta mappingMeta;
 
     private Group       gTransGroup;
-    private FormData    fdTransGroup;
     
     // File
     private Button      wFileRadio;
-    private FormData    fdFileRadio;
     
     private Button       wbbFilename; // Browse: add file or directory
     private TextVar      wFilename;
-    private FormData     fdbFilename, fdFilename;
     
     // Repository
     private Button      wRepRadio;
-    private FormData    fdRepRadio;
     
     private TextVar     wTransName, wTransDir;
-    private FormData    fdTransName, fdTransDir;
     private Button      wbTrans;
-    private FormData    fdbTrans;
     
     private Button      wEditTrans;
-    private FormData    fdEditTrans;
     
-    private TableView   wInputFields;
-    private FormData    fdInputFields;
-
-    private Button      wbInput;
-    private FormData    fdbInput;
-
-    private TableView   wOutputFields;
-    private FormData    fdOutputFields;
-    
-    private Button      wbOutput;
-    private FormData    fdbOutput;
+    private CTabFolder  wTabFolder;
     
     TransMeta mappingTransMeta = null;
 
     protected boolean transModified;
 
+	private ModifyListener lsMod;
 
+	private int middle;
+
+	private int margin;
+	
+	private MappingParameters mappingParameters;
+	private List<MappingIODefinition> inputMappings;
+	private List<MappingIODefinition> outputMappings;
+
+	private Button wAddInput;
+
+	private Button wAddOutput;
     
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(MappingMeta)in;
+		mappingMeta=(MappingMeta)in;
         transModified=false;
+
+        // Make a copy for our own purposes...
+        // This allows us to change everything directly in the classes with listeners.
+        // Later we need to copy it to the input class on ok()
+        //
+        mappingParameters = (MappingParameters) mappingMeta.getMappingParameters().clone();
+        inputMappings = new ArrayList<MappingIODefinition>();
+        outputMappings = new ArrayList<MappingIODefinition>();
+        for (int i=0;i<mappingMeta.getInputMappings().size();i++) inputMappings.add((MappingIODefinition) mappingMeta.getInputMappings().get(i).clone());
+        for (int i=0;i<mappingMeta.getOutputMappings().size();i++) outputMappings.add((MappingIODefinition) mappingMeta.getOutputMappings().get(i).clone());
 	}
 
 	public String open()
@@ -124,16 +137,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
  		props.setLook(shell);
-        setShellImage(shell, input);
+        setShellImage(shell, mappingMeta);
 
-		ModifyListener lsMod = new ModifyListener() 
+		lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
-				input.setChanged();
+				mappingMeta.setChanged();
 			}
 		};
-		changed = input.hasChanged();
+		changed = mappingMeta.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -142,8 +155,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("MappingDialog.Shell.Title")); //$NON-NLS-1$
 		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		middle = props.getMiddlePct();
+		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
@@ -188,7 +201,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wFileRadio.setSelection(false);
         wFileRadio.setText(Messages.getString("MappingDialog.RadioFile.Label")); //$NON-NLS-1$
         wFileRadio.setToolTipText(Messages.getString("MappingDialog.RadioFile.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-        fdFileRadio=new FormData();
+        FormData fdFileRadio = new FormData();
         fdFileRadio.left   = new FormAttachment(0, 0);
         fdFileRadio.right  = new FormAttachment(100, 0);
         fdFileRadio.top    = new FormAttachment(0, 0); 
@@ -198,7 +211,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wbbFilename);
         wbbFilename.setText(Messages.getString("System.Button.Browse"));
         wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-        fdbFilename=new FormData();
+        FormData fdbFilename = new FormData();
         fdbFilename.right= new FormAttachment(100, 0);
         fdbFilename.top  = new FormAttachment(wFileRadio, margin);
         wbbFilename.setLayoutData(fdbFilename);
@@ -207,7 +220,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wFilename=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
-        fdFilename=new FormData();
+        FormData fdFilename = new FormData();
         fdFilename.left = new FormAttachment(0, 25);
         fdFilename.right= new FormAttachment(wbbFilename, -margin);
         fdFilename.top  = new FormAttachment(wbbFilename, 0, SWT.CENTER);
@@ -221,7 +234,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wRepRadio.setSelection(false);
         wRepRadio.setText(Messages.getString("MappingDialog.RadioRep.Label")); //$NON-NLS-1$
         wRepRadio.setToolTipText(Messages.getString("MappingDialog.RadioRep.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-        fdRepRadio=new FormData();
+        FormData fdRepRadio = new FormData();
         fdRepRadio.left   = new FormAttachment(0, 0);
         fdRepRadio.right  = new FormAttachment(100, 0);
         fdRepRadio.top    = new FormAttachment(wbbFilename, 2*margin); 
@@ -231,7 +244,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wbTrans);
         wbTrans.setText(Messages.getString("MappingDialog.Select.Button"));
         wbTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-        fdbTrans=new FormData();
+        FormData fdbTrans = new FormData();
         fdbTrans.right= new FormAttachment(100, 0);
         fdbTrans.top  = new FormAttachment(wRepRadio, 2*margin);
         wbTrans.setLayoutData(fdbTrans);
@@ -240,7 +253,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wTransDir=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransDir);
         wTransDir.addModifyListener(lsMod);
-        fdTransDir=new FormData();
+        FormData fdTransDir = new FormData();
         fdTransDir.left = new FormAttachment(middle+(100-middle)/2, 0);
         fdTransDir.right= new FormAttachment(wbTrans, -margin);
         fdTransDir.top  = new FormAttachment(wbTrans, 0, SWT.CENTER);
@@ -249,7 +262,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wTransName=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransName);
         wTransName.addModifyListener(lsMod);
-        fdTransName=new FormData();
+        FormData fdTransName = new FormData();
         fdTransName.left = new FormAttachment(0, 25);
         fdTransName.right= new FormAttachment(wTransDir, -margin);
         fdTransName.top  = new FormAttachment(wbTrans, 0, SWT.CENTER);
@@ -259,14 +272,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wEditTrans);
         wEditTrans.setText(Messages.getString("MappingDialog.Edit.Button"));
         wEditTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
-        fdEditTrans=new FormData();
+        FormData fdEditTrans = new FormData();
         fdEditTrans.left = new FormAttachment(0,   0);
         fdEditTrans.right= new FormAttachment(100, 0);
         fdEditTrans.top  = new FormAttachment(wTransName, 3*margin);
         wEditTrans.setLayoutData(fdEditTrans);
         wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTrans(); }});
 
-        fdTransGroup=new FormData();
+        FormData fdTransGroup = new FormData();
         fdTransGroup.left   = new FormAttachment(0, 0);
         fdTransGroup.top    = new FormAttachment(wStepname, 2*margin); 
         fdTransGroup.right  = new FormAttachment(100, 0);
@@ -274,89 +287,45 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         gTransGroup.setLayoutData(fdTransGroup);
 
         
-
-
+        // 
+        // Add a tab folder for the parameters and various input and output streams
+        //
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
+        props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+        wTabFolder.setSimple(false);
+        wTabFolder.setUnselectedCloseVisible(true);
         
-
-        /*
-        /*
-         * INPUT MAPPING CONNECTORS
-         */
-        ColumnInfo[] colinfo=new ColumnInfo[]
-        {
-            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.InputField"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.InputMapping"),  ColumnInfo.COLUMN_TYPE_TEXT,    false ) //$NON-NLS-1$
-        };
-        colinfo[ 1].setToolTip(Messages.getString("MappingDialog.InputMapping.ToolTip")); //$NON-NLS-1$
+        FormData fdTabFolder = new FormData();
+        fdTabFolder.left   = new FormAttachment(0, 0);
+        fdTabFolder.right  = new FormAttachment(100, 0);
+        fdTabFolder.top    = new FormAttachment(gTransGroup, margin*2);
+        fdTabFolder.bottom = new FormAttachment(100, -75);
+        wTabFolder.setLayoutData(fdTabFolder);
         
-        wInputFields = new TableView(shell, 
-                              SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
-                              colinfo, 
-                              input.getInputField()!=null?input.getInputField().length:1,  
-                              lsMod,
-                              props
-                              );
-        props.setLook(wInputFields);
-        fdInputFields=new FormData();
-        fdInputFields.left   = new FormAttachment(0, 0);
-        fdInputFields.right  = new FormAttachment(50, -margin);
-        fdInputFields.top    = new FormAttachment(gTransGroup, margin*2);
-        fdInputFields.bottom = new FormAttachment(100, -75);
-        wInputFields.setLayoutData(fdInputFields);
+		// Now add buttons that will allow us to add or remove input or output tabs...
+		wAddInput = new Button(shell, SWT.PUSH);
+		props.setLook(wAddInput);
+		wAddInput.setText(Messages.getString("MappingDialog.button.AddInput"));
+		wAddInput.addSelectionListener(new SelectionAdapter() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				
+				// Simply add a new MappingIODefinition object to the inputMappings
+				MappingIODefinition definition = new MappingIODefinition();
+				inputMappings.add(definition);
+				int index = inputMappings.size()-1;
+				addInputMappingDefinitionTab(definition, index);
+			}
+		
+		});
+
+		wAddOutput = new Button(shell, SWT.PUSH);
+		props.setLook(wAddOutput);
+		wAddOutput.setText(Messages.getString("MappingDialog.button.AddOutput"));
         
-        wbInput = new Button(shell, SWT.PUSH);
-        wbInput.setText(Messages.getString("MappingDialog.GetFromMapping.Button")); //$NON-NLS-1$
-        fdbInput=new FormData();
-        fdbInput.left   = new FormAttachment(0, 0);
-        fdbInput.right  = new FormAttachment(50, -margin);
-        fdbInput.top    = new FormAttachment(wInputFields, margin);
-        wbInput.setLayoutData(fdbInput);
-        wbInput.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    getInput();
-                }            
-            }
-        );
-       
-        /*
-         * OUTPUT MAPPING CONNECTORS
-         */
-        ColumnInfo[] colinfoOutput = new ColumnInfo[] 
-        { 
-            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.OutputMapping"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.OutputField"),   ColumnInfo.COLUMN_TYPE_TEXT, false)  //$NON-NLS-1$
-        };
-
-        wOutputFields = new TableView(shell, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfoOutput, input.getOutputField() != null ? input
-                .getOutputField().length : 1, lsMod, props);
-        props.setLook(wOutputFields);
-        fdOutputFields = new FormData();
-        fdOutputFields.left = new FormAttachment(50, 0);
-        fdOutputFields.right = new FormAttachment(100, 0);
-        fdOutputFields.top = new FormAttachment(gTransGroup, margin*2);
-        fdOutputFields.bottom = new FormAttachment(100, -75);
-        wOutputFields.setLayoutData(fdOutputFields);
-
-        wbOutput = new Button(shell, SWT.PUSH);
-        wbOutput.setText(Messages.getString("MappingDialog.GetFromMapping.Button")); //$NON-NLS-1$
-        fdbOutput=new FormData();
-        fdbOutput.left   = new FormAttachment(50, 0);
-        fdbOutput.right  = new FormAttachment(100, 0);
-        fdbOutput.top    = new FormAttachment(wOutputFields, margin);
-        wbOutput.setLayoutData(fdbOutput);
-        wbOutput.addSelectionListener(new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent e)
-                    {
-                        getOutput();
-                    }            
-                }
-            );
-
-
-
+		setButtonPositions(new Button[] { wAddInput, wAddOutput}, margin, wTabFolder);
+		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -383,7 +352,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
-		input.setChanged(changed);
+		mappingMeta.setChanged(changed);
 	
 		shell.open();
 		while (!shell.isDisposed())
@@ -500,139 +469,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }    
     }
 
-    private void getInput()
-    {
-        try
-        {
-            loadTransformation();
-            
-            // Get the fields from the mapping...
-            if (mappingTransMeta!=null)
-            {
-                StepMeta inputStepMeta  = mappingTransMeta.getMappingInputStep();
-                
-                if (inputStepMeta!=null)
-                {
-                    MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
-                    
-                    String[] source = mappingInputMeta.getFieldName();
-                    
-                    RowMetaInterface prev = null;
-                    try
-                    {
-                    	prev=transMeta.getPrevStepFields(stepname);
-                    }
-                    catch(KettleException e)
-                    {
-                    	new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                    
-                    if (prev!=null)
-                    {
-    	                String[] target = prev.getFieldNames();
-    	                
-    	                EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
-    	                List mappings = dialog.open();
-    	                if (mappings!=null)
-    	                {
-    	                	for (int i=0;i<mappings.size();i++)
-    	                	{
-    	                		TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-    	                		SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
-    	                		item.setText(2, mapping.getSourceString(source));
-    	                		item.setText(1, mapping.getTargetString(target));
-    	                	}
-    	                }
-                    }
-                    else
-                    {
-    	                log.logDetailed(stepname, Messages.getString("MappingDialog.Log.GettingInputFields")+source.length+")"); //$NON-NLS-1$ //$NON-NLS-2$
-    	                for (int i=0;i<source.length;i++)
-    	                {
-    	                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-    	                    item.setText(2, source[i]);
-    	                }
-                    }
-                    wInputFields.removeEmptyRows();
-                    wInputFields.setRowNums();
-                    wInputFields.optWidth(true);
-                }
-                else
-                {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogMessage")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogTitle")); //$NON-NLS-1$
-                    mb.open();
-                }
-            }
-            else
-            {
-                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified.DialogMessage")); //$NON-NLS-1$
-                mb.setText(Messages.getString("MappingDialog.NoMappingSpecified.DialogTitle")); //$NON-NLS-1$
-                mb.open();
-            }
-        }
-        catch(Exception e)
-        {
-            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
-                    Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
-
-        }
-    }
-
-    private void getOutput()
-    {
-        try
-        {
-            loadTransformation();
-            // Get the fields from the mapping...
-            if (mappingTransMeta!=null)
-            {
-                StepMeta outputStepMeta  = mappingTransMeta.getMappingOutputStep();
-                
-                if (outputStepMeta!=null)
-                {
-                    MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
-                    System.out.println(Messages.getString("MappingDialog.Log.GettingInputFields")+mappingOutputMeta.getFieldName().length+")"); //$NON-NLS-1$ //$NON-NLS-2$
-    
-                    for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
-                    {
-                        if (mappingOutputMeta.getFieldAdded()[i]) // We can only map added fields!
-                        {
-                            TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
-                            item.setText(1, mappingOutputMeta.getFieldName()[i]);
-                            item.setText(2, mappingOutputMeta.getFieldName()[i]);
-                        }
-                    }
-                    
-                    wOutputFields.removeEmptyRows();
-                    wOutputFields.setRowNums();
-                    wOutputFields.optWidth(true);
-                }
-                else
-                {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogMessage")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogTitle")); //$NON-NLS-1$
-                    mb.open();
-                }
-            }
-            else
-            {
-                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified2.DialogMessage")); //$NON-NLS-1$
-                mb.setText(Messages.getString("MappingDialog.NoMappingSpecified2.DialogTitle")); //$NON-NLS-1$
-                mb.open();
-            }
-        }
-        catch(Exception e)
-        {
-            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
-                    Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
-        }
-    }
-
     /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -640,18 +476,18 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		wStepname.selectAll();
         
-        wFilename.setText(Const.NVL(input.getFileName(), ""));
-        wTransName.setText(Const.NVL(input.getTransName(), ""));
-        wTransDir.setText(Const.NVL(input.getDirectoryPath(), ""));
+        wFilename.setText(Const.NVL(mappingMeta.getFileName(), ""));
+        wTransName.setText(Const.NVL(mappingMeta.getTransName(), ""));
+        wTransDir.setText(Const.NVL(mappingMeta.getDirectoryPath(), ""));
 
         // if we have a filename, then we use the filename, otherwise we go with the repository...
-        if (!Const.isEmpty(input.getFileName()))
+        if (!Const.isEmpty(mappingMeta.getFileName()))
         {
             wFileRadio.setSelection(true);
         }
         else
         {
-            if (repository!=null && !Const.isEmpty(input.getTransName()) && !Const.isEmpty(input.getDirectoryPath()))
+            if (repository!=null && !Const.isEmpty(mappingMeta.getTransName()) && !Const.isEmpty(mappingMeta.getDirectoryPath()))
             {
                 wRepRadio.setSelection(true);
             }
@@ -659,32 +495,560 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         setFlags();
         
-        if (input.getInputField()!=null)
-        for (int i=0;i<input.getInputField().length;i++)
-        {
-            TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-            if (input.getInputField()[i]!=null) item.setText(1, input.getInputField()[i]);
-            if (input.getInputMapping()[i]!=null) item.setText(2, input.getInputMapping()[i]);
-        }
+        // Add the parameters tab
+        addParametersTab(mappingParameters);
+        wTabFolder.setSelection(0);
         
-        if (input.getOutputField()!=null)
-        for (int i=0;i<input.getOutputField().length;i++)
-        {
-            TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
-            if (input.getOutputMapping()[i]!=null) item.setText(1, input.getOutputMapping()[i]);
-            if (input.getOutputField()[i]!=null) item.setText(2, input.getOutputField()[i]);
-        }
+        // Now add the input stream tabs: where is our data coming from?
+		for (int i = 0; i < inputMappings.size(); i++) {
+			addInputMappingDefinitionTab(inputMappings.get(i), i);
+		}
 
-        wInputFields.removeEmptyRows();
-        wInputFields.setRowNums();
-        wInputFields.optWidth(true);
+		// Now add the output stream tabs: where is our data going to?
+		for (int i = 0; i < outputMappings.size(); i++) {
+			addOutputMappingDefinitionTab(outputMappings.get(i), i);
+		}
+		
+		try 
+		{
+			loadTransformation();
+		}
+		catch(Throwable t) {
+			
+		}
+	}
+	
+	private void addOutputMappingDefinitionTab(MappingIODefinition definition, int index) {
+		addMappingDefinitionTab(outputMappings.get(index), index+1+inputMappings.size(), Messages.getString("MappingDialog.OutputTab.Title"), Messages
+				.getString("MappingDialog.InputTab.Tooltip"), Messages
+				.getString("MappingDialog.OutputTab.label.InputSourceStepName"), Messages
+				.getString("MappingDialog.OutputTab.label.OutputTargetStepName"), Messages
+				.getString("MappingDialog.OutputTab.label.Description"), Messages
+				.getString("MappingDialog.OutputTab.column.SourceField"), Messages
+				.getString("MappingDialog.OutputTab.column.TargetField"),
+				false);
+		
+	}
 
-        wOutputFields.removeEmptyRows();
-        wOutputFields.setRowNums();
-        wOutputFields.optWidth(true);
+	private void addInputMappingDefinitionTab(MappingIODefinition definition, int index) {
+		addMappingDefinitionTab(definition, index+1, Messages.getString("MappingDialog.InputTab.Title"), Messages
+				.getString("MappingDialog.InputTab.Tooltip"), Messages
+				.getString("MappingDialog.InputTab.label.InputSourceStepName"), Messages
+				.getString("MappingDialog.InputTab.label.OutputTargetStepName"), Messages
+				.getString("MappingDialog.InputTab.label.Description"), Messages
+				.getString("MappingDialog.InputTab.column.SourceField"), Messages
+				.getString("MappingDialog.InputTab.column.TargetField"),
+				true);
+
+	}
+
+	private void addParametersTab(final MappingParameters parameters) {
+    	
+    	CTabItem wParametersTab = new CTabItem(wTabFolder, SWT.NONE);
+        wParametersTab.setText(Messages.getString("MappingDialog.Parameters.Title")); //$NON-NLS-1$
+        wParametersTab.setToolTipText(Messages.getString("MappingDialog.Parameters.Tooltip")); //$NON-NLS-1$
+
+        Composite wParametersComposite = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wParametersComposite);
+
+        FormLayout parameterTabLayout = new FormLayout();
+        parameterTabLayout.marginWidth = Const.FORM_MARGIN;
+        parameterTabLayout.marginHeight = Const.FORM_MARGIN;
+        wParametersComposite.setLayout(parameterTabLayout);
+
+        // Add the parameters source step line...
+        //
+        Button wbParamStep = new Button(wParametersComposite, SWT.PUSH);
+        props.setLook(wbParamStep);
+        wbParamStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
+        FormData fdbParamStep = new FormData();
+        fdbParamStep.top = new FormAttachment(0, 0);
+        fdbParamStep.right = new FormAttachment(100, 0); // First one in the left top corner
+        wbParamStep.setLayoutData(fdbParamStep);
+
+        Label wlParamStep = new Label(wParametersComposite, SWT.RIGHT);
+        props.setLook(wlParamStep);
+        wlParamStep.setText(Messages.getString("MappingDialog.Parameters.label.SourceStepName")); //$NON-NLS-1$
+        FormData fdlParamStep = new FormData();
+        fdlParamStep.top = new FormAttachment(wbParamStep, 0, SWT.CENTER);
+        fdlParamStep.left = new FormAttachment(0, 0); // First one in the left top corner
+        fdlParamStep.right = new FormAttachment(middle, -margin);
+        wlParamStep.setLayoutData(fdlParamStep);
+
+        final Text wParamStep = new Text(wParametersComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wParamStep);
+        wParamStep.setText(Const.NVL(parameters.getStepname(), ""));
+        wParamStep.addModifyListener(lsMod);
+        FormData fdParamStep = new FormData();
+        fdParamStep.top = new FormAttachment(wbParamStep, 0, SWT.CENTER);
+        fdParamStep.left = new FormAttachment(middle, 0); // To the right of the label
+        fdParamStep.right = new FormAttachment(wbParamStep, -margin);
+        wParamStep.setLayoutData(fdParamStep);
+        wParamStep.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				parameters.setStepname(wParamStep.getText());
+			}
+		});
+        
+        wbParamStep.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				// select a step from the parent transformation, NOT the mapping
+				//
+				String stepName = selectTransformationStepname(true, false); 
+				if (stepName!=null)
+				{
+					wParamStep.setText(stepName);
+					parameters.setStepname(stepName);
+				}
+			}
+		});
+
+        // Now add a tableview with the 2 columns to specify: input and output fields for the source and target steps.
+        //
+        ColumnInfo[] colinfo = new ColumnInfo[] {
+				new ColumnInfo(Messages.getString("MappingDialog.Parameters.column.Variable"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+				new ColumnInfo(Messages.getString("MappingDialog.Parameters.column.ValueOrField"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+		};
+        colinfo[1].setUsingVariables(true);
+        
+		final TableView wMappingParameters = new TableView(wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
+				parameters.getVariable().length, lsMod, props);
+		props.setLook(wMappingParameters);
+		FormData fdMappings = new FormData();
+		fdMappings.left = new FormAttachment(0, 0);
+		fdMappings.right = new FormAttachment(100, 0);
+		fdMappings.top = new FormAttachment(wParamStep, margin * 2);
+		fdMappings.bottom = new FormAttachment(100, -20);
+		wMappingParameters.setLayoutData(fdMappings);
+        
+        for (int i = 0; i < parameters.getVariable().length ; i++) {
+			TableItem tableItem = wMappingParameters.table.getItem(i);
+			tableItem.setText(1, parameters.getVariable()[i]);
+			tableItem.setText(2, parameters.getInputField()[i]);
+		}
+        wMappingParameters.setRowNums();
+        wMappingParameters.optWidth(true);
+        
+        wMappingParameters.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				int nrLines = wMappingParameters.nrNonEmpty();
+				String variables[] = new String[nrLines];
+				String inputFields[] = new String[nrLines];
+				parameters.setVariable(variables);
+				parameters.setInputField(inputFields);
+				for (int i=0;i<nrLines;i++)
+				{
+					TableItem item = wMappingParameters.getNonEmpty(i);
+					variables[i]=item.getText(1);
+					inputFields[i]=item.getText(2);
+				}
+			}
+		});
+        
+        FormData fdParametersComposite = new FormData();
+        fdParametersComposite.left = new FormAttachment(0, 0);
+        fdParametersComposite.top = new FormAttachment(0, 0);
+        fdParametersComposite.right = new FormAttachment(100, 0);
+        fdParametersComposite.bottom = new FormAttachment(100, 0);
+        wParametersComposite.setLayoutData(fdParametersComposite);
+
+        wParametersComposite.layout();
+        wParametersTab.setControl(wParametersComposite);
+
 	}
     
-    private void setFlags()
+    protected String selectTransformationStepname(boolean getTransformationStep, boolean mappingInput) {
+    	String dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
+    	String dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
+    	if (getTransformationStep) {
+    		dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
+    		dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
+	    	String[] stepnames = transMeta.getPrevStepNames(stepMeta);
+			EnterSelectionDialog dialog = new EnterSelectionDialog(shell, stepnames, dialogTitle, dialogMessage);
+			return dialog.open();
+    	}
+    	else {
+    		dialogTitle = Messages.getString("MappingDialog.SelectMappingStep.Title");
+    		dialogMessage = Messages.getString("MappingDialog.SelectMappingStep.Message");
+
+    		String[] stepnames = getMappingSteps(mappingTransMeta, mappingInput);
+			EnterSelectionDialog dialog = new EnterSelectionDialog(shell, stepnames, dialogTitle, dialogMessage);
+			return dialog.open();
+    	}
+	}
+    
+    public static String[] getMappingSteps(TransMeta mappingTransMeta, boolean mappingInput)
+    {
+		List<StepMeta> steps = new ArrayList<StepMeta>();
+		for (StepMeta stepMeta : mappingTransMeta.getSteps()) {
+			if (mappingInput && stepMeta.getStepID().equals("MappingInput")) {
+				steps.add(stepMeta);
+			}
+			if (!mappingInput && stepMeta.getStepID().equals("MappingOutput")) {
+				steps.add(stepMeta);
+			}
+		}
+		String[] stepnames = new String[steps.size()];
+		for (int i=0;i<stepnames.length;i++) stepnames[i] = steps.get(i).getName();
+		
+		return stepnames;
+
+    }
+    
+	public RowMetaInterface getFieldsFromStep(String stepname, boolean getTransformationStep, boolean mappingInput) throws KettleException { 
+		if (getTransformationStep) {
+			if (Const.isEmpty(stepname)) {
+				// If we don't have a specified stepname we return the input row metadata
+				//
+				return transMeta.getPrevStepFields(this.stepname);
+			}
+			else {
+				// OK, a fieldname is specified...
+				// See if we can find it...
+				StepMeta stepMeta = transMeta.findStep(stepname);
+				if (stepMeta==null) {
+					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+				}
+				return transMeta.getStepFields(stepMeta);
+			}
+			
+		} else {
+			if (Const.isEmpty(stepname)) {
+				// If we don't have a specified stepname we select the one and only "mapping input" step.
+				//
+				String[] stepnames = getMappingSteps(mappingTransMeta, mappingInput);
+				if (stepnames.length>1) {
+					throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingInputStepAllowed", ""+stepnames.length));
+				}
+				if (stepnames.length==0) {
+					throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired", ""+stepnames.length));
+				}
+				return mappingTransMeta.getStepFields(stepnames[0]);
+			}
+			else {
+				// OK, a fieldname is specified...
+				// See if we can find it...
+				StepMeta stepMeta = mappingTransMeta.findStep(stepname);
+				if (stepMeta==null) {
+					throw new KettleException(Messages.getString("MappingDialog.Exception.SpecifiedStepWasNotFound", stepname));
+				}
+				return mappingTransMeta.getStepFields(stepMeta);
+			}
+		}
+	}
+
+	private void addMappingDefinitionTab(final MappingIODefinition definition, int index,
+    		final String tabTitle, final String tabTooltip, 
+    		String inputStepLabel, String outputStepLabel, 
+    		String descriptionLabel,
+    		String sourceColumnLabel, String targetColumnLabel,
+    		final boolean input
+    		) {
+		
+		final CTabItem wTab;
+		if (index>=wTabFolder.getItemCount())
+		{
+			wTab = new CTabItem(wTabFolder, SWT.CLOSE);
+		}
+		else
+		{
+			wTab = new CTabItem(wTabFolder, SWT.CLOSE, index);
+		}
+    	setMappingDefinitionTabNameAndToolTip(wTab, tabTitle, tabTooltip, definition, input);
+
+        Composite wInputComposite = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wInputComposite);
+
+        FormLayout tabLayout = new FormLayout();
+        tabLayout.marginWidth = Const.FORM_MARGIN;
+        tabLayout.marginHeight = Const.FORM_MARGIN;
+        wInputComposite.setLayout(tabLayout);
+
+        // What's the stepname to read from? (empty is OK too)
+        //
+        Button wbInputStep = new Button(wInputComposite, SWT.PUSH);
+        props.setLook(wbInputStep);
+        wbInputStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
+        FormData fdbInputStep = new FormData();
+        fdbInputStep.top = new FormAttachment(0, 0);
+        fdbInputStep.right = new FormAttachment(100, 0); // First one in the left top corner
+        wbInputStep.setLayoutData(fdbInputStep);
+
+        Label wlInputStep = new Label(wInputComposite, SWT.RIGHT);
+        props.setLook(wlInputStep);
+        wlInputStep.setText(inputStepLabel); //$NON-NLS-1$
+        FormData fdlInputStep = new FormData();
+        fdlInputStep.top = new FormAttachment(wbInputStep, 0, SWT.CENTER);
+        fdlInputStep.left = new FormAttachment(0, 0); // First one in the left top corner
+        fdlInputStep.right = new FormAttachment(middle, -margin);
+        wlInputStep.setLayoutData(fdlInputStep);
+
+        final Text wInputStep = new Text(wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInputStep);
+        wInputStep.setText(Const.NVL(definition.getInputStepname(), ""));
+        wInputStep.addModifyListener(lsMod);
+        FormData fdInputStep = new FormData();
+        fdInputStep.top = new FormAttachment(wbInputStep, 0, SWT.CENTER);
+        fdInputStep.left = new FormAttachment(middle, 0); // To the right of the label
+        fdInputStep.right = new FormAttachment(wbInputStep, -margin);
+        wInputStep.setLayoutData(fdInputStep);
+        wInputStep.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				definition.setInputStepname(wInputStep.getText());
+				setMappingDefinitionTabNameAndToolTip(wTab, tabTitle, tabTooltip, definition, input);
+			}
+		});
+        wbInputStep.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				String stepName = selectTransformationStepname(input, false);
+				if (stepName!=null)
+				{
+					wInputStep.setText(stepName);
+					definition.setInputStepname(stepName);
+					setMappingDefinitionTabNameAndToolTip(wTab, tabTitle, tabTooltip, definition, input);
+				}
+			}
+		});
+        
+        
+        // What's the stepname to read from? (empty is OK too)
+        //
+        Button wbOutputStep = new Button(wInputComposite, SWT.PUSH);
+        props.setLook(wbOutputStep);
+        wbOutputStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
+        FormData fdbOutputStep = new FormData();
+        fdbOutputStep.top = new FormAttachment(wbInputStep, margin);
+        fdbOutputStep.right = new FormAttachment(100, 0); // First one in the left top corner
+        wbOutputStep.setLayoutData(fdbOutputStep);
+        
+        Label wlOutputStep = new Label(wInputComposite, SWT.RIGHT);
+        props.setLook(wlOutputStep);
+        wlOutputStep.setText(outputStepLabel); //$NON-NLS-1$
+        FormData fdlOutputStep = new FormData();
+        fdlOutputStep.top = new FormAttachment(wbOutputStep, 0, SWT.CENTER);
+        fdlOutputStep.left = new FormAttachment(0, 0); // First one in the left top corner
+        fdlOutputStep.right = new FormAttachment(middle, -margin);
+        wlOutputStep.setLayoutData(fdlOutputStep);
+
+        final Text wOutputStep = new Text(wInputComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wOutputStep);
+        wOutputStep.setText(Const.NVL(definition.getOutputStepname(), ""));
+        wOutputStep.addModifyListener(lsMod);
+        FormData fdOutputStep = new FormData();
+        fdOutputStep.top = new FormAttachment(wbOutputStep, 0, SWT.CENTER);
+        fdOutputStep.left = new FormAttachment(middle, 0); // To the right of the label
+        fdOutputStep.right = new FormAttachment(wbOutputStep, -margin);
+        wOutputStep.setLayoutData(fdOutputStep);
+        wOutputStep.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				definition.setOutputStepname(wOutputStep.getText());
+			}
+		});
+        wbOutputStep.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				String stepName = selectTransformationStepname(!input, true);
+				if (stepName!=null)
+				{
+					wOutputStep.setText(stepName);
+					definition.setOutputStepname(stepName);
+				}
+			}
+		});
+
+        
+        // Allow for a small description
+        //
+        Label wlDescription = new Label(wInputComposite, SWT.RIGHT);
+        props.setLook(wlDescription);
+        wlDescription.setText(descriptionLabel); //$NON-NLS-1$
+        FormData fdlDescription = new FormData();
+        fdlDescription.top = new FormAttachment(wbOutputStep, margin);
+        fdlDescription.left = new FormAttachment(0, 0); // First one in the left top corner
+        fdlDescription.right = new FormAttachment(middle, -margin);
+        wlDescription.setLayoutData(fdlDescription);
+
+        final Text wDescription = new Text(wInputComposite, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        props.setLook(wDescription);
+        wDescription.setText(Const.NVL(definition.getDescription(), ""));
+        wDescription.addModifyListener(lsMod);
+        FormData fdDescription = new FormData();
+        fdDescription.top = new FormAttachment(wbOutputStep, margin);
+        fdDescription.bottom = new FormAttachment(wOutputStep, 100+margin);
+        fdDescription.left = new FormAttachment(middle, 0); // To the right of the label
+        fdDescription.right = new FormAttachment(wbOutputStep, -margin);
+        wDescription.setLayoutData(fdDescription);
+        wDescription.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				definition.setDescription(wDescription.getText());
+			}
+		});
+
+        // Now add a tableview with the 2 columns to specify: input and output fields for the source and target steps.
+        //
+        Button wbEnterMapping = new Button(wInputComposite, SWT.PUSH);
+        props.setLook(wbEnterMapping);
+        wbEnterMapping.setText(Messages.getString("MappingDialog.button.EnterMapping"));
+        FormData fdbEnterMapping = new FormData();
+        fdbEnterMapping.top = new FormAttachment(wDescription, margin * 2);
+        fdbEnterMapping.right = new FormAttachment(100, 0); // First one in the left top corner
+        wbEnterMapping.setLayoutData(fdbEnterMapping);
+        
+        ColumnInfo[] colinfo = new ColumnInfo[] {
+				new ColumnInfo(sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+				new ColumnInfo(targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+		};
+		final TableView wFieldMappings = new TableView(wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
+				1, lsMod, props);
+		props.setLook(wFieldMappings);
+		FormData fdMappings = new FormData();
+		fdMappings.left = new FormAttachment(0, 0);
+		fdMappings.right = new FormAttachment(wbEnterMapping, -margin);
+		fdMappings.top = new FormAttachment(wDescription, margin * 2);
+		fdMappings.bottom = new FormAttachment(100, -20);
+		wFieldMappings.setLayoutData(fdMappings);
+        
+        for (int i = 0; i < definition.getParentField().length; i++) {
+			TableItem tableItem = new TableItem(wFieldMappings.table, SWT.NONE);
+			tableItem.setText(1, definition.getParentField()[i]);
+			tableItem.setText(2, definition.getMappingField()[i]);
+		}
+        wFieldMappings.removeEmptyRows();
+        wFieldMappings.setRowNums();
+        wFieldMappings.optWidth(true);
+        
+        // Reset content of definition *every* time the table loses focus.
+        // This might not be very elegant resource wise, but the code is :-)
+        // Typically the number of fields passes is very small anyway.
+        //
+        wFieldMappings.addFocusListener(new FocusAdapter() {
+        	
+			@Override
+			public void focusLost(FocusEvent event) {
+				int nrLines = wFieldMappings.nrNonEmpty();
+				String parentField[] = new String[nrLines];
+				String mappingField[] = new String[nrLines];
+				definition.setParentField(parentField);
+				definition.setMappingField(mappingField);
+				for (int i=0;i<nrLines;i++)
+				{
+					TableItem item = wFieldMappings.getNonEmpty(i);
+					parentField[i]=item.getText(1);
+					mappingField[i]=item.getText(2);
+				}
+			}
+			
+		});
+        
+        wbEnterMapping.addSelectionListener(new SelectionAdapter() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				try
+				{
+					RowMetaInterface sourceRowMeta = getFieldsFromStep(wInputStep.getText(), true, input);
+					RowMetaInterface targetRowMeta = getFieldsFromStep(wOutputStep.getText(), false, input);
+					String sourceFields[] = sourceRowMeta.getFieldNames();
+					String targetFields[] = targetRowMeta.getFieldNames();
+					
+					EnterMappingDialog dialog = new EnterMappingDialog(shell, sourceFields, targetFields);
+					List<SourceToTargetMapping> mappings = dialog.open();
+					if (mappings!=null) {
+						// first clear the dialog...
+						wFieldMappings.clearAll(false);
+						
+						// Now add the new values...
+						for (SourceToTargetMapping mapping : mappings) {
+							TableItem item = new TableItem(wFieldMappings.table, SWT.NONE);
+							item.setText(1, mapping.getSourceString(sourceFields));
+							item.setText(2, mapping.getTargetString(targetFields));
+						}
+						wFieldMappings.removeEmptyRows();
+						wFieldMappings.setRowNums();
+				        wFieldMappings.optWidth(true);
+					}
+				}
+				catch(KettleException e)
+				{
+					new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("MappingDialog.Exception.ErrorGettingMappingSourceAndTargetFields", e.toString()), e);
+				}
+			}
+		
+		});
+        
+        FormData fdParametersComposite = new FormData();
+        fdParametersComposite.left = new FormAttachment(0, 0);
+        fdParametersComposite.top = new FormAttachment(0, 0);
+        fdParametersComposite.right = new FormAttachment(100, 0);
+        fdParametersComposite.bottom = new FormAttachment(100, 0);
+        wInputComposite.setLayoutData(fdParametersComposite);
+        
+        wInputComposite.layout();
+        wTab.setControl(wInputComposite);
+        
+        // OK, suppose for some weird reason the user wants to remove an input or output tab...
+        wTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+		
+			@Override
+			public void close(CTabFolderEvent event) {
+				if (event.item.equals(wTab)) {
+					// The user has the audacity to try and close this mapping definition tab.
+					// We really should warn him that this is a bad idea...
+					MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
+					box.setText(Messages.getString("MappingDialog.CloseDefinitionTabAreYouSure.Title"));
+					box.setMessage(Messages.getString("MappingDialog.CloseDefinitionTabAreYouSure.Message"));
+					int answer = box.open();
+					if (answer!=SWT.YES) {
+						event.doit = false;
+					} 
+					else {
+						// Remove it from our list to make sure it's gone...
+						if (input) inputMappings.remove(definition);
+						else outputMappings.remove(definition);
+					}
+				}
+			}
+		
+		});
+	}
+	
+
+
+	private void setMappingDefinitionTabNameAndToolTip(CTabItem wTab, String tabTitle, String tabTooltip, MappingIODefinition definition, boolean input) {
+		
+		String stepname;
+		if (input)
+		{
+			stepname = definition.getInputStepname();
+		}
+		else
+		{
+			stepname = definition.getOutputStepname();
+		}
+		String description = definition.getDescription();
+		
+		if (Const.isEmpty(stepname)) {
+    		wTab.setText(tabTitle); //$NON-NLS-1$
+    	} else {
+    		wTab.setText(tabTitle+" : "+stepname); //$NON-NLS-1$ $NON-NLS-2$
+    	}
+    	String tooltip = tabTooltip; //$NON-NLS-1$
+    	if (!Const.isEmpty(stepname)) {
+    		tooltip+=Const.CR+Const.CR+stepname;
+    	}if (!Const.isEmpty(description)) {
+    		tooltip+=Const.CR+Const.CR+description;
+    	}
+        wTab.setToolTipText(tooltip); //$NON-NLS-1$
+	}
+
+	private void setFlags()
     {
         if (repository==null)
         {
@@ -698,7 +1062,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	private void cancel()
 	{
 		stepname=null;
-		input.setChanged(changed);
+		mappingMeta.setChanged(changed);
 		dispose();
 	}
 	
@@ -710,29 +1074,18 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
             loadTransformation();
             
-            input.setFileName(wFilename.getText());
-            input.setTransName(wTransName.getText());
-            input.setDirectoryPath(wTransDir.getText());
+            mappingMeta.setFileName(wFilename.getText());
+            mappingMeta.setTransName(wTransName.getText());
+            mappingMeta.setDirectoryPath(wTransDir.getText());
 
-            int nrInput = wInputFields.nrNonEmpty();
-            int nrOutput = wOutputFields.nrNonEmpty();
-
-            input.allocate(nrInput, nrOutput);
-
-            for (int i = 0; i < nrInput; i++)
-            {
-                TableItem item = wInputFields.getNonEmpty(i);
-                input.getInputField()[i] = item.getText(1);
-                input.getInputMapping()[i] = item.getText(2);
-            }
-
-            for (int i = 0; i < nrOutput; i++)
-            {
-                TableItem item = wOutputFields.getNonEmpty(i);
-                input.getOutputMapping()[i] = item.getText(1);
-                input.getOutputField()[i] = item.getText(2);
-            }
+            // Load the information on the tabs, optionally do some verifications...
+            // 
+            mappingMeta.setMappingParameters(mappingParameters);
+            mappingMeta.setInputMappings(inputMappings);
+            mappingMeta.setOutputMappings(outputMappings);
             
+            mappingMeta.setChanged(true);
+
             dispose();
         }
         catch (KettleException e)

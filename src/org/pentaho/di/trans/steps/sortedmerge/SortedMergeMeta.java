@@ -177,7 +177,7 @@ public class SortedMergeMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info) throws KettleStepException
+    public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
     {
         // Set the sorted properties: ascending/descending
         for (int i=0;i<fieldName.length;i++)

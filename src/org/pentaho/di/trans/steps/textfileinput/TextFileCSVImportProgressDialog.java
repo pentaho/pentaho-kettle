@@ -130,7 +130,7 @@ public class TextFileCSVImportProgressDialog
         int nrfields = meta.getInputFields().length;
         
         RowMetaInterface outputRowMeta = new RowMeta();
-        meta.getFields(outputRowMeta, null, null);
+        meta.getFields(outputRowMeta, null, null, null);
 
         RowMetaInterface convertRowMeta = (RowMetaInterface) outputRowMeta.clone();
         for (int i=0;i<convertRowMeta.size();i++) convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
@@ -247,7 +247,7 @@ public class TextFileCSVImportProgressDialog
             
             if (log.isDebug()) debug = "convert line #" + linenr + " to row";
             RowMetaInterface rowMeta = new RowMeta();
-            meta.getFields(rowMeta, "stepname", null);
+            meta.getFields(rowMeta, "stepname", null, null);
             
             Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 

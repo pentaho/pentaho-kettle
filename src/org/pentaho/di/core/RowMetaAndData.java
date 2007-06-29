@@ -3,13 +3,12 @@ package org.pentaho.di.core;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-
-import org.pentaho.di.core.exception.KettleValueException;
 
 public class RowMetaAndData implements Cloneable
 {

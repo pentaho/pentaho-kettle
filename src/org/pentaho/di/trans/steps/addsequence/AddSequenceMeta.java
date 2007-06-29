@@ -253,7 +253,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		maxValue    = 9999999L;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(valuename, ValueMetaInterface.TYPE_INTEGER);
 		v.setLength(9);

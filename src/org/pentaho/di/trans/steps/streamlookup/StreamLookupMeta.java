@@ -366,7 +366,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException
+    @Override
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		if (info!=null && info.length==1)
 		{
@@ -376,7 +377,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 				if (v!=null) // Configuration error/missing resources...
 				{
 					v.setName(valueName[i]);
-					v.setOrigin(name);
+					v.setOrigin(origin);
 					row.addValueMeta(v);
 				}
 				else
@@ -390,7 +391,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<valueName.length;i++)
 			{
 				ValueMetaInterface v=new ValueMeta(valueName[i], valueDefaultType[i]);
-				v.setOrigin(name);
+				v.setOrigin(origin);
 				row.addValueMeta(v);		
 			}
 		}

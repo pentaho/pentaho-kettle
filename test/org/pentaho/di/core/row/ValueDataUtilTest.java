@@ -2,6 +2,7 @@ package org.pentaho.di.core.row;
 
 
 import junit.framework.TestCase;
+
 import org.pentaho.di.core.exception.KettleValueException;
 
 /**

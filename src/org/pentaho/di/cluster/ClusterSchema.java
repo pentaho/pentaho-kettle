@@ -3,15 +3,14 @@ package org.pentaho.di.cluster;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Node;
 
 /**
  * A cluster schema combines a list of slave servers so that they can be set altogether. 

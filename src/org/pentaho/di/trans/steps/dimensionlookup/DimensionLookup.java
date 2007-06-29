@@ -119,7 +119,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
             
             data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null);
                         
             // Lookup values
             data.keynrs = new int[meta.getKeyStream().length];

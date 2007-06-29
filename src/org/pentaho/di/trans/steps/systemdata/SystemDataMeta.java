@@ -265,7 +265,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

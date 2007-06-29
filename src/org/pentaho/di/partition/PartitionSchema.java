@@ -1,14 +1,13 @@
 package org.pentaho.di.partition;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.repository.Repository;
-import org.w3c.dom.Node;
-
-import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.shared.SharedObjectInterface;
+import org.w3c.dom.Node;
 
 /**
  * A partition schema allow you to partition a step according into a number of partitions that run independendly.

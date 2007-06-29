@@ -22,15 +22,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterTextDialog;
-import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.gui.GUIResource;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.www.AddTransServlet;
 
 /**

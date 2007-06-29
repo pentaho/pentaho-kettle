@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-
 import org.pentaho.di.core.exception.KettleDatabaseException;
 
 /**

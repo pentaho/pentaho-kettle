@@ -976,7 +976,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             
             // Create the output row metadata
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null); // get the metadata populated.  Simple and easy.
+            meta.getFields(data.outputRowMeta, getStepname(), null, null); // get the metadata populated.  Simple and easy.
             
             // Create convertor metadata objects that will contain Date & Number formatters
             //

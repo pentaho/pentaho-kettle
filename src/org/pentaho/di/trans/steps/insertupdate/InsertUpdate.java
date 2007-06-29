@@ -183,7 +183,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             first=false;
             
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null);
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
             

@@ -325,11 +325,11 @@ public class Job extends Thread implements VariableSpace
 				
 		// Try all next job entries.
 		// Launch only those where the hopinfo indicates true or false
-		int nrNext = jobMeta.findNrNextChefGraphEntries(startpoint);
+		int nrNext = jobMeta.findNrNextJobEntries(startpoint);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
 			// The next entry is...
-			JobEntryCopy nextEntry = jobMeta.findNextChefGraphEntry(startpoint, i);
+			JobEntryCopy nextEntry = jobMeta.findNextJobEntry(startpoint, i);
 			
 			// See if we need to execute this...
 			JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);

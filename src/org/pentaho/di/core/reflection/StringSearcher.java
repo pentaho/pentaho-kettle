@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.pentaho.di.core.Condition;
-
 import org.pentaho.di.core.Const;
 
 

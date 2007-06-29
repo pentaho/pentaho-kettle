@@ -56,9 +56,10 @@ public interface StepMetaInterface
 	 * @param name The name of the step to be used as origin
 	 * @param info The input rows metadata that enters the step through the specified channels in the same order as in method getInfoSteps().  The step metadata can then choose what to do with it: ignore it or not.
      *        Interesting is also that in case of database lookups, the layout of the target database table is put in info[0]
+     * @param nextStep if this is a non-null value, it's the next step in the transformation.  The one who's asking, the step where the data is targetted towards.
 	 * @throws KettleStepException when an error occurred searching for the fields.
 	 */
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info) throws KettleStepException;
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException;
 
 	/**
 	 * Get the XML that represents the values in this step

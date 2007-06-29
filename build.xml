@@ -20,7 +20,7 @@
 	  <property name="build"      			location="build"/>
 	  <property name="lib"        			location="lib"/>
 	  <property name="plugins"        		location="plugins"/>
-	  <property name="ui"        				location="ui"/>
+	  <property name="ui"        			location="ui"/>
 	  <property name="homepage"        		location="homepage"/>
 	  <property name="samples"        		location="samples"/>
 	  <property name="libext"     	        location="libext"/>
@@ -250,7 +250,7 @@
 	  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
 	  			</copy>
 
-        		<!-- plugins -->
+        		<!-- ui -->
   			<mkdir dir="${distrib}/ui"/>
   			<copy todir="${distrib}/ui">
   				<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>

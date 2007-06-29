@@ -374,7 +374,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[]) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep) throws KettleStepException
 	{
         RowMetaInterface row=null;
 

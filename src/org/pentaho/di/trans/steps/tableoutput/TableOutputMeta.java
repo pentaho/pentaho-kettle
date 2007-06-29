@@ -472,13 +472,14 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException 
-	{
-		// Just add the returning key field...
+    @Override
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException 
+    {
+    	// Just add the returning key field...
 		if (returningGeneratedKeys && generatedKeyField!=null && generatedKeyField.length()>0)
 		{
 			ValueMetaInterface key = new ValueMeta(generatedKeyField, ValueMetaInterface.TYPE_INTEGER);
-			key.setOrigin(name);
+			key.setOrigin(origin);
 			row.addValueMeta(key);
 		}
 	}

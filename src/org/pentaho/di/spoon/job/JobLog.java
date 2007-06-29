@@ -136,31 +136,31 @@ public class JobLog extends Composite implements TabItemInterface
         TreeMemory.addTreeListener(wTree, STRING_CHEF_LOG_TREE_NAME);
         
         TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
-        column1.setText(Messages.getString("ChefLog.Column.JobJobEntry")); //$NON-NLS-1$
+        column1.setText(Messages.getString("JobLog.Column.JobJobEntry")); //$NON-NLS-1$
         column1.setWidth(200);
         
         TreeColumn column2 = new TreeColumn(wTree, SWT.LEFT);
-        column2.setText(Messages.getString("ChefLog.Column.Comment")); //$NON-NLS-1$
+        column2.setText(Messages.getString("JobLog.Column.Comment")); //$NON-NLS-1$
         column2.setWidth(200);
         
         TreeColumn column3 = new TreeColumn(wTree, SWT.LEFT);
-        column3.setText(Messages.getString("ChefLog.Column.Result")); //$NON-NLS-1$
+        column3.setText(Messages.getString("JobLog.Column.Result")); //$NON-NLS-1$
         column3.setWidth(100);
 
         TreeColumn column4 = new TreeColumn(wTree, SWT.LEFT);
-        column4.setText(Messages.getString("ChefLog.Column.Reason")); //$NON-NLS-1$
+        column4.setText(Messages.getString("JobLog.Column.Reason")); //$NON-NLS-1$
         column4.setWidth(200);
 
         TreeColumn column5 = new TreeColumn(wTree, SWT.LEFT);
-        column5.setText(Messages.getString("ChefLog.Column.Filename")); //$NON-NLS-1$
+        column5.setText(Messages.getString("JobLog.Column.Filename")); //$NON-NLS-1$
         column5.setWidth(200);
 
         TreeColumn column6 = new TreeColumn(wTree, SWT.RIGHT);
-        column6.setText(Messages.getString("ChefLog.Column.Nr")); //$NON-NLS-1$
+        column6.setText(Messages.getString("JobLog.Column.Nr")); //$NON-NLS-1$
         column6.setWidth(50);
 
         TreeColumn column7 = new TreeColumn(wTree, SWT.RIGHT);
-        column7.setText(Messages.getString("ChefLog.Column.LogDate")); //$NON-NLS-1$
+        column7.setText(Messages.getString("JobLog.Column.LogDate")); //$NON-NLS-1$
         column7.setWidth(120);
 
 		FormData fdTable=new FormData();
@@ -176,25 +176,25 @@ public class JobLog extends Composite implements TabItemInterface
 		wText.setVisible(true);
 
 		wStart = new Button(this, SWT.PUSH);
-		wStart.setText(Messages.getString("ChefLog.Button.Start"));  //$NON-NLS-1$
+		wStart.setText(Messages.getString("JobLog.Button.Start"));  //$NON-NLS-1$
 
         wStop = new Button(this, SWT.PUSH);
-        wStop.setText(Messages.getString("ChefLog.Button.Stop"));  //$NON-NLS-1$
+        wStop.setText(Messages.getString("JobLog.Button.Stop"));  //$NON-NLS-1$
 
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(Messages.getString("ChefLog.Button.RefreshLog")); //$NON-NLS-1$
+		wRefresh.setText(Messages.getString("JobLog.Button.RefreshLog")); //$NON-NLS-1$
 
 		wError = new Button(this, SWT.PUSH);
-		wError.setText(Messages.getString("ChefLog.Button.ShowErrorLines")); //$NON-NLS-1$
+		wError.setText(Messages.getString("JobLog.Button.ShowErrorLines")); //$NON-NLS-1$
 
 		wClear = new Button(this, SWT.PUSH);
-		wClear.setText(Messages.getString("ChefLog.Button.ClearLog")); //$NON-NLS-1$
+		wClear.setText(Messages.getString("JobLog.Button.ClearLog")); //$NON-NLS-1$
 
 		wLog = new Button(this, SWT.PUSH);
-		wLog.setText(Messages.getString("ChefLog.Button.LogSettings")); //$NON-NLS-1$
+		wLog.setText(Messages.getString("JobLog.Button.LogSettings")); //$NON-NLS-1$
 
         wAuto = new Button(this, SWT.CHECK);
-        wAuto.setText(Messages.getString("ChefLog.Button.AutoRefresh")); //$NON-NLS-1$
+        wAuto.setText(Messages.getString("JobLog.Button.AutoRefresh")); //$NON-NLS-1$
         wAuto.setSelection(true);
 
         enableFields();
@@ -259,7 +259,7 @@ public class JobLog extends Composite implements TabItemInterface
 		}
 		catch(Exception e)
 		{
-			System.out.println(Messages.getString("ChefLog.Error.CouldNotCreateInputPipe")); //$NON-NLS-1$
+			System.out.println(Messages.getString("JobLog.Error.CouldNotCreateInputPipe")); //$NON-NLS-1$
 		}
 		
 		lsRefresh = new SelectionAdapter() 
@@ -341,20 +341,20 @@ public class JobLog extends Composite implements TabItemInterface
 			{
 				if (spoon.props.getAutoSave()) 
 				{
-					log.logDetailed(toString(), Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
-					System.out.println(Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
+					log.logDetailed(toString(), Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+					System.out.println(Messages.getString("JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
 					spoon.saveToFile(jobMeta);
 				}
 				else
 				{
 					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
 						 null,
-						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("ChefLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("JobLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 						 MessageDialog.QUESTION,
 						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 						 0,
-						 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
+						 Messages.getString("JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
 						 spoon.props.getAutoSave()
 						 );
 					int answer = md.open();
@@ -381,7 +381,7 @@ public class JobLog extends Composite implements TabItemInterface
 						job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getDirectory().getPath());
                         job.getJobMeta().setArguments(jobMeta.getArguments());
 						
-                        log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
+                        log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
                         // Link to the new jobTracker!
                         jobTracker = job.getJobTracker();
@@ -389,15 +389,15 @@ public class JobLog extends Composite implements TabItemInterface
 					}
 					catch(KettleException e)
 					{
-						new ErrorDialog(shell, Messages.getString("ChefLog.Dialog.CanNotOpenJob.Title"), Messages.getString("ChefLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, Messages.getString("JobLog.Dialog.CanNotOpenJob.Title"), Messages.getString("JobLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 						job=null;
 					}
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("ChefLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("ChefLog.Dialog.JobIsAlreadyRunning.Message"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.JobIsAlreadyRunning.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -406,23 +406,23 @@ public class JobLog extends Composite implements TabItemInterface
 				if (jobMeta.hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("ChefLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("ChefLog.Dialog.JobHasChangedSave.Message"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("JobLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.JobHasChangedSave.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				if (spoon.rep!=null && jobMeta.getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("ChefLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("ChefLog.Dialog.PleaseGiveThisJobAName.Message"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.PleaseGiveThisJobAName.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("ChefLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("ChefLog.Dialog.NoFilenameSaveYourJobFirst.Message"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("JobLog.Dialog.NoFilenameSaveYourJobFirst.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -442,14 +442,14 @@ public class JobLog extends Composite implements TabItemInterface
                 LocalVariables.getInstance().removeKettleVariables(job.getName());
                 job=null;
                 isRunning=false;
-                log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobWasStopped")); //$NON-NLS-1$
             }
         }
         catch(KettleJobException je)
         {
             MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-            m.setText(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
-            m.setMessage(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());    //$NON-NLS-1$
+            m.setText(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("JobLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());    //$NON-NLS-1$
             m.open();
         }
         finally
@@ -525,7 +525,7 @@ public class JobLog extends Composite implements TabItemInterface
                 if(Const.isEmpty(jobName)) 
                 {
                     if (!Const.isEmpty(jobTracker.getJobFilename())) jobName = jobTracker.getJobFilename();
-                    else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
+                    else jobName = Messages.getString("JobLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
                 }
                 treeItem.setText(0, jobName);
                 TreeMemory.getInstance().storeExpanded(STRING_CHEF_LOG_TREE_NAME, new String[] { jobName }, true);
@@ -551,7 +551,7 @@ public class JobLog extends Composite implements TabItemInterface
                 if (jobTracker.nrJobTrackers()>0)
                 {
                     // This is a sub-job: display the name at the top of the list...
-                    treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix")+jobTracker.getJobName() ); //$NON-NLS-1$
+                    treeItem.setText( 0, Messages.getString("JobLog.Tree.JobPrefix")+jobTracker.getJobName() ); //$NON-NLS-1$
                     
                     // then populare the sub-job entries ...
                     for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -576,7 +576,7 @@ public class JobLog extends Composite implements TabItemInterface
                         }
                         else
                         {
-                            treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix2")+jobTracker.getJobName()); //$NON-NLS-1$
+                            treeItem.setText( 0, Messages.getString("JobLog.Tree.JobPrefix2")+jobTracker.getJobName()); //$NON-NLS-1$
                         }
                         String comment = result.getComment();
                         if (comment!=null)
@@ -586,7 +586,7 @@ public class JobLog extends Composite implements TabItemInterface
                         Result res = result.getResult();
                         if (res!=null)
                         {
-                            treeItem.setText(2, res.getResult()?Messages.getString("ChefLog.Tree.Success"):Messages.getString("ChefLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
+                            treeItem.setText(2, res.getResult()?Messages.getString("JobLog.Tree.Success"):Messages.getString("JobLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
                             treeItem.setText(5, Long.toString(res.getEntryNr())); //$NON-NLS-1$
                         }
                         String reason = result.getReason();
@@ -619,7 +619,7 @@ public class JobLog extends Composite implements TabItemInterface
             job=null;
             isRunning=false;
             if (chefHistoryRefresher!=null) chefHistoryRefresher.markRefreshNeeded();
-            log.logMinimal(Spoon.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
+            log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		
 		if (!wStart.isDisposed())
@@ -663,8 +663,8 @@ public class JobLog extends Composite implements TabItemInterface
 			if (all.substring(i, i+crlen).equalsIgnoreCase(Const.CR))
 			{
 				String line = all.substring(startpos, i);
-				if (line.toUpperCase().indexOf(Messages.getString("ChefLog.System.ERROR"))>=0 || //$NON-NLS-1$
-				    line.toUpperCase().indexOf(Messages.getString("ChefLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+				if (line.toUpperCase().indexOf(Messages.getString("JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
+				    line.toUpperCase().indexOf(Messages.getString("JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
 				    ) 
 				{
 					err.add(line);
@@ -676,8 +676,8 @@ public class JobLog extends Composite implements TabItemInterface
 			i++;
 		}
 		String line = all.substring(startpos);
-		if (line.toUpperCase().indexOf(Messages.getString("ChefLog.System.ERROR"))>=0 || //$NON-NLS-1$
-		    line.toUpperCase().indexOf(Messages.getString("ChefLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+		if (line.toUpperCase().indexOf(Messages.getString("JobLog.System.ERROR"))>=0 || //$NON-NLS-1$
+		    line.toUpperCase().indexOf(Messages.getString("JobLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
 		    ) 
 		{
 			err.add(line);
@@ -688,7 +688,7 @@ public class JobLog extends Composite implements TabItemInterface
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("ChefLog.Dialog.ErrorLines.Title"), Messages.getString("ChefLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("JobLog.Dialog.ErrorLines.Title"), Messages.getString("JobLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{
@@ -755,7 +755,7 @@ public class JobLog extends Composite implements TabItemInterface
     {
         // show running error.
         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-        mb.setMessage(Messages.getString("ChefLog.Message.Warning.PromptExitWhenRunJob"));// There is a running job.  Do you want to stop it and quit Spoon?
+        mb.setMessage(Messages.getString("JobLog.Message.Warning.PromptExitWhenRunJob"));// There is a running job.  Do you want to stop it and quit Spoon?
         mb.setText(Messages.getString("System.Warning")); //Warning
         int answer = mb.open();
         if (answer==SWT.NO) return SWT.CANCEL;

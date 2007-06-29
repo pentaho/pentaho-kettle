@@ -336,11 +336,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public static final int STATE_CORE_OBJECTS_CHEF     = 2;   // Chef state: job entries
     public static final int STATE_CORE_OBJECTS_SPOON    = 3;   // Spoon state: steps
 
-	private static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
+	public static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
 
-	private static final String XUL_FILE_MENUS = "ui/menus.xul";
+	public static final String XUL_FILE_MENUS = "ui/menus.xul";
 
-	private static final String XUL_FILE_MENU_PROPERTIES = "ui/menubar.properties";
+	public static final String XUL_FILE_MENU_PROPERTIES = "ui/menubar.properties";
             
     public  KeyAdapter defKeys;
     public  KeyAdapter modKeys;

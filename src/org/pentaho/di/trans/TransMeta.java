@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -58,7 +59,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -1169,7 +1169,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             {
                 if (isStepInformative(stepMeta, hi.getFromStep()))
                 {
-                    getThisStepFields(stepMeta, row);
+                    getThisStepFields(stepMeta, null, row);
                     return row;
                 }
             }
@@ -1476,7 +1476,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
         }
         // Finally, see if we need to add/modify/delete fields with this step "name"
-        return getThisStepFields(stepMeta, row, monitor);
+        return getThisStepFields(stepMeta, targetStep, row, monitor);
     }
 
     /**
@@ -1557,31 +1557,33 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public RowMetaInterface getThisStepFields(String stepname, RowMetaInterface row) throws KettleStepException
     {
-        return getThisStepFields(findStep(stepname), row);
+        return getThisStepFields(findStep(stepname), null, row);
     }
 
     /**
      * Returns the fields that are emitted by a step
      *
      * @param stepMeta : The StepMeta object that's being queried
+     * @param nextStep : if non-null this is the next step that's call back to ask what's being sent
      * @param row : A row containing the input fields or an empty row if no input is required.
      *
      * @return A Row containing the output fields.
      */
-    public RowMetaInterface getThisStepFields(StepMeta stepMeta, RowMetaInterface row) throws KettleStepException
+    public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row) throws KettleStepException
     {
-        return getThisStepFields(stepMeta, row, null);
+        return getThisStepFields(stepMeta, nextStep, row, null);
     }
 
     /**
      * Returns the fields that are emitted by a step
      *
      * @param stepMeta : The StepMeta object that's being queried
+     * @param nextStep : if non-null this is the next step that's call back to ask what's being sent
      * @param row : A row containing the input fields or an empty row if no input is required.
      *
      * @return A Row containing the output fields.
      */
-    public RowMetaInterface getThisStepFields(StepMeta stepMeta, RowMetaInterface row, IProgressMonitor monitor) throws KettleStepException
+    public RowMetaInterface getThisStepFields(StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row, IProgressMonitor monitor) throws KettleStepException
     {
         // Then this one.
         log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1605,7 +1607,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             for (int i=0;i<lu.length;i++) inform[i] = getStepFields(lu[i]);
         }
 
-        stepint.getFields(row, name, inform);
+        stepint.getFields(row, name, inform, nextStep);
 
         return row;
     }

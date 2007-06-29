@@ -190,7 +190,7 @@ public interface StepInterface
     /**
      * @return The list of active output rowsets for the step
      */
-    public List getOutputRowSets();
+    public List<RowSet> getOutputRowSets();
 
     /**
      * @return true if the step is running partitioned

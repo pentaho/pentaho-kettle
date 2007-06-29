@@ -23,7 +23,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ImageUtil;
-
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobPlugin;
 import org.pentaho.di.job.entry.JobEntryInterface;

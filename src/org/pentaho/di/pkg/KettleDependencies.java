@@ -3,10 +3,9 @@ package org.pentaho.di.pkg;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.trans.TransMeta;
-
-import org.pentaho.di.core.Const;
 
 public class KettleDependencies
 {

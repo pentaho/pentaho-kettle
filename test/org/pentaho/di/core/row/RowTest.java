@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import junit.framework.TestCase;
+
 import org.pentaho.di.core.exception.KettleValueException;
 
 public class RowTest extends TestCase

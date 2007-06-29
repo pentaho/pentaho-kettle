@@ -19,9 +19,8 @@
  */
 
 package org.pentaho.di.pkg;
-import org.pentaho.di.pan.Pan;
-
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.pan.Pan;
 
 
 /**

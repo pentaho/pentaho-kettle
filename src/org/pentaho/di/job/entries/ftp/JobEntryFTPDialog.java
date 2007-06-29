@@ -40,7 +40,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.LabelText;
 import org.pentaho.di.core.widget.LabelTextVar;
 import org.pentaho.di.job.JobMeta;
@@ -48,10 +51,6 @@ import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.util.StringUtil;
 
 
 /**

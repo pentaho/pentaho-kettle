@@ -1,9 +1,8 @@
 
 package org.pentaho.di.core.database;
 
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Computer Associates Ingres specific information through static final members 
@@ -258,5 +257,9 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return new String[] { "iijdbc.jar" };
     }
 
+    @Override
+    public boolean supportsGetBlob() {
+    	return false;
+    }
 
 }

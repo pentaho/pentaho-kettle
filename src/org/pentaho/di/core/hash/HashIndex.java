@@ -1,5 +1,6 @@
 package org.pentaho.di.core.hash;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 

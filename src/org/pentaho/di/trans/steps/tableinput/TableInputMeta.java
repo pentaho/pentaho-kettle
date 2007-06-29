@@ -209,8 +209,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface info[]) throws KettleStepException
-	{
+    @Override
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException 
+    {
 		if (databaseMeta==null) return; // TODO: throw an exception here
 
         boolean param=false;
@@ -237,7 +238,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<add.size();i++)
 			{
 				ValueMetaInterface v=add.getValueMeta(i);
-				v.setOrigin(name);
+				v.setOrigin(origin);
 			}
 			row.addRowMeta( add );
 		}
@@ -255,7 +256,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				for (int i=0;i<add.size();i++)
 				{
 					ValueMetaInterface v=add.getValueMeta(i);
-					v.setOrigin(name);
+					v.setOrigin(origin);
 				}
 				row.addRowMeta( add );
 			}
@@ -477,7 +478,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		// Find the lookupfields...
         RowMetaInterface out = new RowMeta(); 
         // TODO: this builds, but does it work in all cases.
-        getFields(out, stepMeta.getName(), new RowMetaInterface[] { info });
+        getFields(out, stepMeta.getName(), new RowMetaInterface[] { info }, null);
         
 		if (out!=null)
 		{

@@ -45,6 +45,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -64,10 +65,10 @@ import org.pentaho.di.core.dialog.EnterTextDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
@@ -93,10 +94,10 @@ import org.w3c.dom.Document;
 
 
 /**
- * Handles the display of Jobs in Chef, in a graphical form.
+ * Handles the display of Jobs in Spoon, in a graphical form.
  * 
  * @author Matt
- * Created on 17-mei-2003
+ * Created on 17-may-2003
  *
  */
 public class JobGraph extends Composite implements Redrawable, TabItemInterface
@@ -157,7 +158,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         
 		try {
     		// first get the XML document
-    		File xulFile = new File( "ui/menus.xul" ); //$NON-NLS-1$
+    		File xulFile = new File( Spoon.XUL_FILE_MENUS ); //$NON-NLS-1$
     		if( xulFile.exists() ) {
     	        XulMessages xulMessages = new XulMessages();
     			Document doc = XMLHandler.loadXMLFile( xulFile );
@@ -169,9 +170,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     			
     			menuMap = MenuHelper.createPopupMenusFromXul( doc, shell, xulMessages, ids );
     		}
+    		else
+    		{
+    			throw new KettleException(Messages.getString("JobGraph.Exception.XULFileNotFound.Message", Spoon.XUL_FILE_MENUS));
+    		}
 		} catch (Throwable t ) {
-			// TODO log this
-			t.printStackTrace();
+			log.logError(toString(), Const.getStackTracker(t));
+			new ErrorDialog(shell, Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Title"), Messages.getString("JobGraph.Exception.ErrorReadingXULFile.Message", Spoon.XUL_FILE_MENUS), new Exception(t));
 		}
 
         setLayout(new FillLayout());
@@ -225,14 +230,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 				Point real = screen2real(e.x, e.y);
 				
-				JobEntryCopy jobentry = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+				JobEntryCopy jobentry = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
 				if (jobentry != null) 
 				{
 					if (e.button==1) 
 					{
 						editEntry(jobentry);
 					}
-					else // launch Chef or Spoon 
+					else // open tab in Spoon 
 					{
 						launchStuff(jobentry);
 					}
@@ -275,7 +280,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                     return;
                 }
 				
-				JobEntryCopy je = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+				JobEntryCopy je = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
 				if (je != null) 
 				{
 					selected_entries = jobMeta.getSelectedEntries();
@@ -329,12 +334,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						else
 						{
 							hop_candidate.setConditional();
-							int nr = jobMeta.findNrNextChefGraphEntries(hop_candidate.from_entry);
+							int nr = jobMeta.findNrNextJobEntries(hop_candidate.from_entry);
 	
 							// If there is one green link: make this one red! (or vice-versa)
 							if (nr == 1) 
 							{
-								JobEntryCopy jge = jobMeta.findNextChefGraphEntry(hop_candidate.from_entry, 0);
+								JobEntryCopy jge = jobMeta.findNextJobEntry(hop_candidate.from_entry, 0);
 								JobHopMeta other = jobMeta.findJobHop(hop_candidate.from_entry, jge);
 								if (other != null) 
 								{
@@ -404,13 +409,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 							if (!spoon.props.getAutoSplit())
 							{
 								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-            						 Messages.getString("ChefGraph.Dialog.SplitHop.Title"),
+            						 Messages.getString("JobGraph.Dialog.SplitHop.Title"),
             						 null,
-            						 Messages.getString("ChefGraph.Dialog.SplitHop.Message")+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(),
+            						 Messages.getString("JobGraph.Dialog.SplitHop.Message")+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(),
             						 MessageDialog.QUESTION,
             						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") },
             						 0,
-            						 Messages.getString("ChefGraph.Dialog.SplitHop.Toggle"),
+            						 Messages.getString("JobGraph.Dialog.SplitHop.Toggle"),
             						 spoon.props.getAutoSplit()
             						 );
 								id = md.open();
@@ -548,7 +553,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                     //	The middle button perhaps?
 					if (last_button == 2 || (last_button == 1 && shift))	
 					{
-						JobEntryCopy si = jobMeta.getChefGraphEntry(real.x, real.y, iconsize);
+						JobEntryCopy si = jobMeta.getJobEntryCopy(real.x, real.y, iconsize);
 						if (si != null && !selected_icon.equals(si)) 
 						{
 							if (hop_candidate == null) 
@@ -701,7 +706,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				}
                 catch(Exception e)
                 {
-                    new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("Chefraph.Dialog.ErrorDroppingObject.Title"), e);
+                    new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("JobGraph.Dialog.ErrorDroppingObject.Title"), e);
                 }
             }
             
@@ -711,6 +716,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 		});
 
+		
 		// Keyboard shortcuts...
 		canvas.addKeyListener(new KeyAdapter() 
 		{
@@ -911,8 +917,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	public static void showOnlyStartOnceMessage(Shell shell)
     {
         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-        mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message"));
-        mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title"));
+        mb.setMessage(Messages.getString("JobGraph.Dialog.OnlyUseStartOnce.Message"));
+        mb.setText(Messages.getString("JobGraph.Dialog.OnlyUseStartOnce.Title"));
         mb.open();
     }
 
@@ -1062,8 +1068,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	public void editEntryDescription() 
 	{
-		String title = Messages.getString("ChefGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
-		String message = Messages.getString("ChefGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
+		String title = Messages.getString("JobGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
+		String message = Messages.getString("JobGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
 		EnterTextDialog dd = new EnterTextDialog(shell, title, message, getJobEntry().getDescription());
 		String des = dd.open();
 		if (des != null) jobEntry.setDescription(des);
@@ -1110,7 +1116,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         currentMouseX = x;
         currentMouseY = y;
 
-		final JobEntryCopy jobEntry = jobMeta.getChefGraphEntry(x, y, iconsize);
+		final JobEntryCopy jobEntry = jobMeta.getJobEntryCopy(x, y, iconsize);
 		setJobEntry( jobEntry );
 		if (jobEntry != null) // We clicked on a Job Entry!
 		{
@@ -1129,14 +1135,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
 					{
 						item.setEnabled(true);
-						item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchSpoon"));
+						item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
 						menu.addMenuListener( "job-graph-entry-launch", this, "openTransformation" ); //$NON-NLS-1$ //$NON-NLS-2$
 						break;
 					}
 				case JobEntryInterface.TYPE_JOBENTRY_JOB:
 					{
 						item.setEnabled(true);
-						item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchChef"));
+						item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
 						menu.addMenuListener( "job-graph-entry-launch", this, "launchChef" ); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					break;
@@ -1148,7 +1154,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				}				
 				
 				item = menu.getMenuItemById( "job-graph-entry-align-snap" ); //$NON-NLS-1$
-	            	item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
+	            	item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
 
 				XulMenu aMenu = menu.getMenuById( "job-graph-entry-align" ); //$NON-NLS-1$
 				if( aMenu != null ) {
@@ -1245,8 +1251,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					}
 
 					if( miDisHop != null ) {
-						if (hi.isEnabled()) miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
-						else                miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
+						if (hi.isEnabled()) miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+						else                miDisHop.setText(Messages.getString("JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
 					}
 					canvas.setMenu((Menu)menu.getNativeObject());
 				}
@@ -1306,8 +1312,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	public void newNote() 
 	{ 
 		selrect=null;
-		String title = Messages.getString("ChefGraph.Dialog.EditNote.Title");
-		String message = Messages.getString("ChefGraph.Dialog.EditNote.Message");
+		String title = Messages.getString("JobGraph.Dialog.EditNote.Title");
+		String message = Messages.getString("JobGraph.Dialog.EditNote.Message");
 		EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
 		String n = dd.open();
 		if (n!=null) 
@@ -1354,8 +1360,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		{
 			spoon.refreshGraph();
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-			mb.setMessage(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Message"));
-			mb.setText(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Title"));
+			mb.setMessage(Messages.getString("JobGraph.Dialog.HopFlipCausesLoop.Message"));
+			mb.setText(Messages.getString("JobGraph.Dialog.HopFlipCausesLoop.Title"));
 			mb.open();
 
 			dummy = currentHop.from_entry;
@@ -1420,7 +1426,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	{
         String newTip=null;
         
-		final JobEntryCopy je = jobMeta.getChefGraphEntry(x, y, iconsize);
+		final JobEntryCopy je = jobMeta.getJobEntryCopy(x, y, iconsize);
 		if (je != null && je.isDrawn()) // We hover above a Step!
 		{
 			// Set the tooltip!
@@ -1520,7 +1526,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception)e); 
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), (Exception)e); 
 			}
 		}
 		else
@@ -1530,7 +1536,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                 // only try to load if the file exists...
                 if (Const.isEmpty(exactFilename))
                 {
-                    throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
+                    throw new Exception(Messages.getString("JobGraph.Exception.NoFilenameSpecified"));
                 }
                 TransMeta launchTransMeta = null;
                 if (KettleVFS.fileExists(exactFilename))
@@ -1549,7 +1555,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception)e);
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message"), (Exception)e);
 			}
 
 		}
@@ -1571,7 +1577,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), new Exception(e));
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message"), new Exception(e));
 			}
 		}
 		else
@@ -1580,7 +1586,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			{
                 if (Const.isEmpty(exactFilename))
                 {
-                    throw new Exception(Messages.getString("ChefGraph.Exception.NoFilenameSpecified"));
+                    throw new Exception(Messages.getString("JobGraph.Exception.NoFilenameSpecified"));
                 }
 
                 JobMeta newJobMeta;
@@ -1599,7 +1605,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 			catch(Throwable e)
 			{
-                new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), new Exception(e));
+                new ErrorDialog(shell, Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title"), Messages.getString("JobGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message"), new Exception(e));
 			}
 		}
 	}
@@ -1663,7 +1669,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		for (int j = 0; j < jobMeta.nrJobEntries(); j++)
 		{
 			JobEntryCopy cge = jobMeta.getJobEntry(j);
-			drawChefGraphEntryShadow(gc, cge);
+			drawJobGraphEntryShadow(gc, cge);
 		}
 
 		// ... and then the rest on top of it...
@@ -1681,7 +1687,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		for (int j = 0; j < jobMeta.nrJobEntries(); j++) 
 		{
 			JobEntryCopy je = jobMeta.getJobEntry(j);
-			drawChefGraphEntry(gc, je);
+			drawJobEntryCopy(gc, je);
 		}
 
 		if (drop_candidate != null)
@@ -1721,7 +1727,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return im;
 	}
 
-	protected void drawChefGraphEntry(GC gc, JobEntryCopy je) 
+	protected void drawJobEntryCopy(GC gc, JobEntryCopy je) 
 	{
 		if (!je.isDrawn()) return;
 
@@ -1772,7 +1778,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 	}
 
-	protected void drawChefGraphEntryShadow(GC gc, JobEntryCopy je) 
+	protected void drawJobGraphEntryShadow(GC gc, JobEntryCopy je) 
 	{
 		if (je==null) return;
 		if (!je.isDrawn()) return;
@@ -1966,8 +1972,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	protected void editNote(NotePadMeta ni)
 	{	
 		NotePadMeta before = (NotePadMeta)ni.clone();
-		String title = Messages.getString("ChefGraph.Dialog.EditNote.Title");
-		String message = Messages.getString("ChefGraph.Dialog.EditNote.Message");
+		String title = Messages.getString("JobGraph.Dialog.EditNote.Title");
+		String message = Messages.getString("JobGraph.Dialog.EditNote.Message");
 		EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
 		String n = dd.open();
 		if (n!=null) 

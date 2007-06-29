@@ -6,11 +6,10 @@
 package org.pentaho.di.job.entries.job;
 
 import org.pentaho.di.core.Result;
-import org.pentaho.di.job.Job;
-
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.job.Job;
 
 /**
  * 

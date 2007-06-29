@@ -330,7 +330,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit="10";
 	}
 	
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

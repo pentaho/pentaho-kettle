@@ -9,13 +9,12 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.exception.KettleStepException;
 
 /**
  * 

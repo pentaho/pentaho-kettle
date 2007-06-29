@@ -16,12 +16,11 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -30,6 +29,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mappinginput.MappingInput;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 
 
 
@@ -60,156 +61,115 @@ public class Mapping extends BaseStep implements StepInterface
 	{
 		meta=(MappingMeta)smi;
 		data=(MappingData)sdi;
-
-		Object[] r=getRow();    // get row, set busy!
-		if (r==null)       // no more input to be expected...
-		{
-            // Signal output done to the mapping input step in the mapping...
-            // But only if the mapping was started in the first place.
-            // This only happens when 0 lines of data are processed.
-            //
-            if (data.wasStarted)
-            {
-    			data.mappingInput.setOutputDone();
-                
-    			// The wait for mapping input is over...
-                data.mappingInput.setFinished();
-            }
-            else
-            {
-                // Zero rows were received, the mapping was never started: so just signal "END"...
-                setOutputDone();
-            }
-
-			return false;
-		}
         
+        // Start the mapping/transformation threads
         //
-        // OK, we have a row.
-        // We need to "give" this row to the running mapping (sub-transformation).
-        // We do this by looking up the MappingInput step in the transformation.
-        // We give the row to this step ...
+        // Start the transformation in the background!
+        // Pass the arguments to THIS transformation...
+        data.trans.execute(getTrans().getTransMeta().getArguments());
+        
+        List<Thread> connectorThreads = new ArrayList<Thread>();
+        
+        // OK, check the input mapping definitions and look up the steps to read from.
+        for (MappingIODefinition inputDefinition : meta.getInputMappings()) {
+        	// This is an input mapping, so it reads from this transformation and writes to the mapping...
+        	// What step is it reading from?
+        	StepInterface sourceStep = (StepInterface) getTrans().findRunThread(inputDefinition.getInputStepname());
+        	
+        	// What step is it writing to?
+        	StepInterface targetStep = (StepInterface) getTrans().findRunThread(inputDefinition.getOutputStepname());
+        	if (targetStep==null) {
+        		// No target was specifically specified.
+        		// That means we only expect one "mapping input" step in the mapping...
+        		MappingInput[] mappingInputSteps = data.trans.findMappingInput();
+        		
+        		if (mappingInputSteps.length==0) {
+        			throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingInputStepRequired"));
+        		}
+        		if (mappingInputSteps.length>1) {
+        			throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingInputStepAllowed", ""+mappingInputSteps.length));
+        		}
+        		
+        		targetStep = mappingInputSteps[0];
+        	}
+        	MappingThread mappingThread = new MappingThread(this, sourceStep, targetStep);
+        	Thread connectorThread = new Thread(mappingThread);
+        	connectorThreads.add(connectorThread);
+        }
+        
+        // Now we have a List of connector threads.
+        // If we start all these we'll be starting to pump data into the mapping
+        // If we don't have any threads to start, nothings going in there...
+        // However, before we send anything over, let's first explain to the mapping output steps where the data needs to go...
         //
-        // Before we can send out this data, we need to convert field-names and actually do the field mapping
-		// This means that we're renaming fields in case they are not the same.
-		// They will stay renamed even after the mapping step.
-		// 
-		if (first)
-		{
-			first=false;
-            
-            // Start the mapping/transformation threads
-            //
-            // Start the transformation in the background!
-            // Pass the arguments to THIS transformation...
-            data.trans.execute(getTrans().getTransMeta().getArguments());
-            
-            // Now, the transformation runs in the background.
-            // We pick it up and close shop when this step has finished processing.
-            
-            // Let's find out what the MappingInput step is...
-            data.mappingInput = data.trans.findMappingInput();
-            if (data.mappingInput==null)
-            {
-                logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep")); //$NON-NLS-1$
-                return false;
-            }
-            
-            // And the mapping output step?
-            data.mappingOutput = data.trans.findMappingOutput();
-            if (data.mappingOutput==null)
-            {
-                logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep2")); //$NON-NLS-1$
-                return false;
-            }
-            
-            // OK, now tell the MappingOutput step to send records over here!!
-            data.mappingOutput.setConnectorStep(this);
-            data.mappingOutput.setOutputField(meta.getOutputField());
-            data.mappingOutput.setOutputMapping(meta.getOutputMapping());
-            
-            data.wasStarted = true;
-            
-            // Now we continue with out regular program... 
-			data.renameFieldIndexes = new ArrayList<Integer>();
-			data.renameFieldNames   = new ArrayList<String>();
-			
-            // See if the same field get's mapped to a different target multiple times
-            // To do this, we simply check if the inputFields contains doubles.
-            String[] inputFields = new String[meta.getInputField().length];
-            for (int i=0;i<inputFields.length;i++) inputFields[i]=meta.getInputField()[i];
-            Arrays.sort(inputFields);
-            for (int i=0;i<inputFields.length-1;i++)
-            {
-                if (inputFields[i].equalsIgnoreCase(inputFields[i+1]))
-                {
-                    throw new KettleException(Messages.getString("Mapping.Exception.SameFieldMappedTwice", inputFields[i]));
-                }
-            }
-            
-			for (int i=0;i<meta.getInputField().length;i++)
-			{
-				if (meta.getInputField()[i]!=null && meta.getInputField()[i].length()>0)
-				{
-					if (meta.getInputMapping()[i]!=null && meta.getInputMapping()[i].length()>0)
-					{
-						if (!meta.getInputField()[i].equals(meta.getInputMapping()[i])) // rename these!
-						{
-							int idx = getInputRowMeta().indexOfValue(meta.getInputField()[i]);
-							if (idx<0)
-							{
-								logError(Messages.getString("Mapping.Log.TargetFieldNotPresent",meta.getInputField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
-								setErrors(1);
-								stopAll();
-								data.trans.stopAll();
-								return false;
-							}
-							data.renameFieldIndexes.add(new Integer(idx));
-							data.renameFieldNames.add(meta.getInputMapping()[i]);
-							if (log.isRowLevel()) logRowlevel(Messages.getString("Mapping.Log.RenameFieldInfo",data.renameFieldIndexes.size()+"",i+"",meta.getInputMapping()[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						}
-					}
-					else
-					{
-						logError(Messages.getString("Mapping.Log.TargetFieldNotSpecified",i+"",meta.getInputField()[i])+"]!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						setErrors(1);
-						stopAll();
-						data.trans.stopAll();
-						return false;
-					}
-				}
-				else
-				{
-					logError(Messages.getString("Mapping.Log.InputFieldNotSpecified",i+"")); //$NON-NLS-1$ //$NON-NLS-2$
-					setErrors(1);
-					stopAll();
-					data.trans.stopAll();
-					return false;
-				}
+        for (MappingIODefinition outputDefinition : meta.getOutputMappings()) {
+        	// OK, what is the source (input) step in the mapping: it's the mapping output step...
+        	// What step are we reading from here?
+        	//
+        	MappingOutput sourceStep = (MappingOutput) getTrans().findRunThread(outputDefinition.getInputStepname());
+        	if (sourceStep==null) {
+        		// No source step was specified: we're reading from a single Mapping Output step.
+        		// We should verify this if this is really the case...
+        		//
+        		MappingOutput[] mappingOutputSteps = data.trans.findMappingOutput();
+        		
+        		if (mappingOutputSteps.length==0) {
+        			throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingOutputStepRequired"));
+        		}
+        		if (mappingOutputSteps.length>1) {
+        			throw new KettleException(Messages.getString("MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", ""+mappingOutputSteps.length));
+        		}
+        		
+        		sourceStep = mappingOutputSteps[0];
+        	}
+        	
+        	// To what step in this transformation are we writing to?
+        	//
+        	StepInterface targetStep;
+        	if (!Const.isEmpty(outputDefinition.getOutputStepname())) {
+        		// If we have a target step specification for the output of the mapping, we need to send it over there...
+        		//
+            	targetStep = (StepInterface) getTrans().findRunThread(outputDefinition.getOutputStepname());
+            	if (targetStep==null) {
+            		throw new KettleException(Messages.getString("MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
+            	}
+        	}
+        	else {
+        		targetStep=this; // Just send the data over here if no target step is specified.
+        	}
+        	
+        	// Now tell the mapping output step where to look...
+        	sourceStep.setConnectorStep(targetStep);
+        }
+        
+        // OK, now's as good as any time to start the connector threads...
+        // 
+        for (Thread connectorThread : connectorThreads) {
+        	connectorThread.start();
+        }
+        
+        // In case any data comes our way, we should pass it along...
+        //
+        Object[] row = getRow();
+        while (row!=null && !isStopped()) {
+        	putRow(getInputRowMeta(), row); // pass it along to the next step...
+        	row = getRow();
+        }
+        setOutputDone();
+        
+        // The transformation still runs in the background and might have some more work to do.
+        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
+        // Join all the threads and we should be done with it.
+        //
+        for (Thread connectorThread : connectorThreads) {
+        	try {
+				connectorThread.join();
+			} catch (InterruptedException e) {
+				// Ignore this
 			}
-            
-            // Create the output row metadata for the mapping input step...
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            
-            for (int i=0;i<data.renameFieldIndexes.size();i++)
-            {
-                int idx = ((Integer)data.renameFieldIndexes.get(i)).intValue();
-                String newName = (String)data.renameFieldNames.get(i);
-                data.outputRowMeta.getValueMeta(idx).setName(newName);
-            }
-                        
-		} // end of first block
-		
-		data.mappingInput.putRow(data.outputRowMeta, r);     // copy row to possible alternate rowset(s) in the mapping.
+        }
         
-        if (checkFeedback(linesRead)) logBasic(Messages.getString("Mapping.Log.LineNumber")+linesRead); //$NON-NLS-1$
-
-        //
-        // The problem now is to get a row back from the mapping...
-        // This transformed row we need to send to the next step.
-        // Well actually this is not done here but in the mapping output.  See init()
-        //
-		return true;
+		return false;
 	}
 
 

@@ -8,7 +8,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
-
 import org.pentaho.di.core.Const;
 
 public class Log4jPipedAppender implements Appender

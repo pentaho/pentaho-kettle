@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.steps.mappingoutput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -25,7 +26,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.mapping.Mapping;
 
 
 
@@ -58,13 +58,13 @@ public class MappingOutput extends BaseStep implements StepInterface
             // No more input to be expected...
             // Tell the next steps.
             //
-			if ( data.mapping != null )
+			if ( data.targetStep != null )
 			{
 				// Code hardening for bug #5054, data.mapping can be null when the
 				// mapping step fails before any input row is generated. This way
 				// the method "setConnectorStep()" of this step is not called leaving
 				// data.mapping set to null.
-			    data.mapping.setOutputDone();
+			    data.targetStep.setOutputDone();
 			}
 			return false;
 		}
@@ -81,7 +81,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
             //
             int totalsleep = 0;
-            while (!isStopped() && data.mapping==null)
+            while (!isStopped() && data.targetStep==null)
             {
                 try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
                 if (totalsleep>60000)
@@ -91,7 +91,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             }
         }
                 
-		data.mapping.putRow(data.outputRowMeta, r);     // copy row to possible alternate rowset(s).
+		data.targetStep.putRow(data.outputRowMeta, r);     // copy row to possible alternate rowset(s).
 
         if (checkFeedback(linesRead)) logBasic(Messages.getString("MappingOutput.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
@@ -136,19 +136,17 @@ public class MappingOutput extends BaseStep implements StepInterface
 		}
 	}
 
-    public void setConnectorStep(Mapping mapping)
+    public void setConnectorStep(StepInterface targetStep)
     {
-        data.mapping = mapping;
-    }
-
-    public void setOutputField(String[] outputField)
-    {
-        data.outputField = outputField;
+        data.targetStep = targetStep;
         
-    }
-
-    public void setOutputMapping(String[] outputMapping)
-    {
-        data.outputMapping = outputMapping;       
+        // OK, before we leave, let's see if there is a rowset that covers the path to this target step.
+        // If not, we need to create a new RowSet and add it to the Input RowSets of the target step
+        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+        
+        // This is always a single copy, but for source and target...
+        rowSet.setThreadNameFromToCopy(getStepname(), 0, targetStep.getStepname(), 0);
+        
+        targetStep.getOutputRowSets().add(rowSet);
     }
 }

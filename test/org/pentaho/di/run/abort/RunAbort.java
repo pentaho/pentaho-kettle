@@ -3,10 +3,9 @@ package org.pentaho.di.run.abort;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
 import org.pentaho.di.run.TimedTransRunner;
-
-import org.pentaho.di.core.logging.LogWriter;
 
 public class RunAbort extends TestCase
 {

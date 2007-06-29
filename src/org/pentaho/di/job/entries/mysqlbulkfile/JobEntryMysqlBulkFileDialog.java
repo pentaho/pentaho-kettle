@@ -41,12 +41,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.job.JobMeta;
@@ -54,11 +58,6 @@ import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.gui.WindowProperty;
-import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 
 
 /**

@@ -1,10 +1,9 @@
 
 package org.pentaho.di.core.database;
 
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Oracle specific information through static final members 

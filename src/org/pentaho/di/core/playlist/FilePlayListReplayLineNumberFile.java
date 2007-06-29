@@ -10,9 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.vfs.FileObject;
-
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogWriter;
 
 class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile
 {

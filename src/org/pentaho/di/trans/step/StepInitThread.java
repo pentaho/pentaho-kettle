@@ -1,8 +1,8 @@
 package org.pentaho.di.trans.step;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.Messages;
 
 public class StepInitThread implements Runnable

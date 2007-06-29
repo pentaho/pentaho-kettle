@@ -23,12 +23,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.encryption.Encr;
 
 
 

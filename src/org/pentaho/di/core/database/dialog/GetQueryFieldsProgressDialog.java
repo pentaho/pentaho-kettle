@@ -9,10 +9,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.dialog.ErrorDialog;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.LocalVariables;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while 

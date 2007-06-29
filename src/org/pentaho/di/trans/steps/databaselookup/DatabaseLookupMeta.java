@@ -476,7 +476,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         eatingRowOnLookupFailure = false;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		if (Const.isEmpty(info)) // null or length 0
 		{

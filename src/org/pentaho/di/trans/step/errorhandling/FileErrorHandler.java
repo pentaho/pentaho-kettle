@@ -1,7 +1,6 @@
 package org.pentaho.di.trans.step.errorhandling;
 
 import org.apache.commons.vfs.FileObject;
-
 import org.pentaho.di.core.exception.KettleException;
 
 /**

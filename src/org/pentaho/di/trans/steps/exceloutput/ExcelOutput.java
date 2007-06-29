@@ -30,7 +30,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 
 import org.apache.commons.vfs.FileObject;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;

@@ -1,10 +1,9 @@
 package org.pentaho.di.trans.step;
 
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleXMLException;
 
 public class StepStatus
 {

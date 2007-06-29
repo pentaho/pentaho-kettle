@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
@@ -51,7 +52,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -1216,7 +1216,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         }
     }
 
-    public JobEntryCopy getChefGraphEntry(int x, int y, int iconsize)
+    public JobEntryCopy getJobEntryCopy(int x, int y, int iconsize)
     {
         int i, s;
         s = nrJobEntries();
@@ -1415,8 +1415,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         int i;
         for (i = 0; i < nrJobEntries(); i++)
         {
-            // log.logDebug("findChefGraphEntry()", "looking at nr: "+i);
-
             JobEntryCopy jec = getJobEntry(i);
             JobEntryInterface je = jec.getEntry();
             if (je.toString().equalsIgnoreCase(full_name_nr)) { return jec; }
@@ -1475,17 +1473,17 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return null;
     }
 
-    public int findNrPrevChefGraphEntries(JobEntryCopy from)
+    public int findNrPrevJobEntries(JobEntryCopy from)
     {
-        return findNrPrevChefGraphEntries(from, false);
+        return findNrPrevJobEntries(from, false);
     }
 
-    public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr)
+    public JobEntryCopy findPrevJobEntry(JobEntryCopy to, int nr)
     {
-        return findPrevChefGraphEntry(to, nr, false);
+        return findPrevJobEntry(to, nr, false);
     }
 
-    public int findNrPrevChefGraphEntries(JobEntryCopy to, boolean info)
+    public int findNrPrevJobEntries(JobEntryCopy to, boolean info)
     {
         int count = 0;
         int i;
@@ -1501,7 +1499,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return count;
     }
 
-    public JobEntryCopy findPrevChefGraphEntry(JobEntryCopy to, int nr, boolean info)
+    public JobEntryCopy findPrevJobEntry(JobEntryCopy to, int nr, boolean info)
     {
         int count = 0;
         int i;
@@ -1518,7 +1516,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return null;
     }
 
-    public int findNrNextChefGraphEntries(JobEntryCopy from)
+    public int findNrNextJobEntries(JobEntryCopy from)
     {
         int count = 0;
         int i;
@@ -1530,7 +1528,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return count;
     }
 
-    public JobEntryCopy findNextChefGraphEntry(JobEntryCopy from, int cnt)
+    public JobEntryCopy findNextJobEntry(JobEntryCopy from, int cnt)
     {
         int count = 0;
         int i;

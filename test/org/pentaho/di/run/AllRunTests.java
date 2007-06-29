@@ -3,8 +3,13 @@ package org.pentaho.di.run;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.run.abort.RunAbort;
 import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
@@ -34,12 +39,6 @@ import org.pentaho.di.run.textfileinput.RunTextFileInput;
 import org.pentaho.di.run.textfileoutput.RunTextFileOutput;
 import org.pentaho.di.run.uniquerows.RunUniqueRows;
 import org.pentaho.di.run.update.RunUpdate;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.EnvUtil;
 
 public class AllRunTests
 {

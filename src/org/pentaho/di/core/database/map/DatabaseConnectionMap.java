@@ -3,9 +3,8 @@ package org.pentaho.di.core.database.map;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.pentaho.di.core.database.Database;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 
 /**
  * This class contains a map between on the one hand

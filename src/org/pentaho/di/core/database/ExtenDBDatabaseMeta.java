@@ -1,8 +1,7 @@
 package org.pentaho.di.core.database;
 
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains ExtenDB specific information through static final members 
@@ -177,10 +176,6 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return retval;
     }
 
-    
-    /**
-     * @see DatabaseInterface#getFieldDefinition(Value, String, String, boolean, boolean, boolean)
-     */
     public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
     {
         String retval="";
