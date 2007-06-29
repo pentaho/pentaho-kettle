@@ -1,17 +1,22 @@
 package org.pentaho.xul.swt.menu;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.xul.EventHandler;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuChoice;
+import org.pentaho.xul.menu.XulMenuItem;
+import org.pentaho.xul.menu.XulPopupMenu;
 
-public class PopupMenu extends Menu {
+public class PopupMenu extends Menu implements XulPopupMenu {
 
-    private MenuHandler handler;
+    private EventHandler handler;
 
 	public PopupMenu(Shell shell, String id) {
 		super(shell, id);
-		handler = new MenuHandler();
+		handler = new EventHandler();
 	}
 
-	public void register( MenuItem item, String id, String accessKey ) {
+	public void register( XulMenuItem item, String id, String accessKey ) {
 	     handler.register( item, id, accessKey );
 	}
 
@@ -31,27 +36,23 @@ public class PopupMenu extends Menu {
 		handler.handleAccessKey( accessKey );
 	}
 
-	public void register( Object item, String id, String accessKey ) {
-		handler.register( item, id, accessKey );
-	}
-	
 	public String[] getMenuItemIds() {
 		return handler.getMenuItemIds();
 	}
 	
-	public MenuChoice getMenuItemById( String id ) {
+	public XulMenuChoice getMenuItemById( String id ) {
 		return handler.getMenuItemById( id );
 	}
 	
-	public Menu getMenuById( String id ) {
+	public XulMenu getMenuById( String id ) {
 		return handler.getMenuById( id );
 	}
 	
-	public MenuItemSeparator getSeparatorById( String id ) {
+	public XulMenuItem getSeparatorById( String id ) {
 		return handler.getSeparatorById( id );
 	}
 	
-	public MenuChoice getMenuItemByKey( String accessKey ) {
+	public XulMenuChoice getMenuItemByKey( String accessKey ) {
 		return handler.getMenuItemByKey( accessKey );
 	}
 	
