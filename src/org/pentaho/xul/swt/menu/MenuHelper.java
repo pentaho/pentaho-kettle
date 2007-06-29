@@ -1,5 +1,6 @@
 package org.pentaho.xul.swt.menu;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,11 @@ public class MenuHelper {
 								button.setHint(hint);
 //						        final Image image = ImageUtil.makeImageTransparent(shell.getDisplay(), 
 //						        		new Image(shell.getDisplay(), caller.getClass().getResourceAsStream(imagePath)), new RGB(192, 192, 192)); 
-						        final Image image = new Image(shell.getDisplay(), caller.getClass().getResourceAsStream(imagePath)); 
-						        button.setImage(image);
+								InputStream stream = caller.getClass().getResourceAsStream(imagePath);
+								if( stream != null ) {
+							        final Image image = new Image(shell.getDisplay(), stream); 
+							        button.setImage(image);
+								}
 
 							}
 							else if( "toolbarseparator".equals( buttonNode.getNodeName() ) ) { //$NON-NLS-1$
