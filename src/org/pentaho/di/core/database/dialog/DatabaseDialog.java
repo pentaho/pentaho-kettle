@@ -457,15 +457,6 @@ public class DatabaseDialog extends Dialog
         wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
         props.setLook(wConnType);
         String[] dbtypes = DatabaseMeta.getDBTypeDescLongList();
-        
-        // PMD-101: Sort the connection types, as a convenience (this could be pushed lower) 
-        TreeMap<String,String> sortTypes = new TreeMap<String,String>();
-        for (int i = 0; i < dbtypes.length; i++)
-        {
-            sortTypes.put(dbtypes[i], dbtypes[i]);
-        }
-        Set<String> keys = sortTypes.keySet();
-        dbtypes = keys.toArray( new String[keys.size()] );
      
         for (int i = 0; i < dbtypes.length; i++)
         {
