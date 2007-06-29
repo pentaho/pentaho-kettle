@@ -3,7 +3,7 @@ package org.pentaho.di.core.gui;
 import java.util.List;
 
 import org.pentaho.di.core.AddUndoPositionInterface;
-import org.pentaho.di.spoon.UndoInterface;
+import org.pentaho.di.core.gui.UndoInterface;
 
 public class SnapAllignDistribute
 {
