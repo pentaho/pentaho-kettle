@@ -6,6 +6,10 @@ public class XulObject implements XulItem {
     private String id;
     private XulItem parent;
 
+	public XulObject( ) {
+		this( null, null );
+	}
+
 	public XulObject( String id, XulItem parent ) {
 		super();
 		this.id = id;
@@ -28,4 +32,7 @@ public class XulObject implements XulItem {
 		this.parent = parent;
 	}
 	
+	public Object getNativeObject() {
+		return null;
+	}
 }
