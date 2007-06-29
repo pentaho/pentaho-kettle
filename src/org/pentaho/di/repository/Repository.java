@@ -642,7 +642,7 @@ public class Repository
 		par.addValue(new ValueMeta("value", ValueMetaInterface.TYPE_STRING), value);
 		RowMetaAndData result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename)+ " WHERE " + databaseMeta.quoteField(lookupfield) + " = ?", par.getRowMeta(), par.getData());
 
-		if (result != null && result.isNumeric(0))
+		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
 		return -1;
 	}
@@ -655,7 +655,7 @@ public class Repository
 		RowMetaAndData result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField( lookupfield ) + " = ? AND "
 									+ databaseMeta.quoteField(lookupkey) + " = ?", par.getRowMeta(), par.getData());
 
-        if (result != null && result.isNumeric(0))
+		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
 		return -1;
 	}
@@ -675,7 +675,7 @@ public class Repository
 			sql += databaseMeta.quoteField(lookupkey[i]) + " = ? ";
 		}
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
-		if (result != null && result.isNumeric(0))
+		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
 		return -1;
 	}
@@ -694,7 +694,7 @@ public class Repository
 		}
 
 		RowMetaAndData result = database.getOneRow(sql, par.getRowMeta(), par.getData());
-		if (result != null && result.isNumeric(0))
+		if (result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric(0))
 			return result.getInteger(0, 0);
 		return -1;
 	}
