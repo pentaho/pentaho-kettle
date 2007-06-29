@@ -3198,8 +3198,13 @@ public class Database implements VariableSpace
 				sel_stmt=null;
 			}
             rowMeta=null;
+            // we need a RowMeta object for the result otherwise
+            RowMeta tmpMeta = new RowMeta();
+            // is this always an integer?
+            ValueMeta valueMeta = new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER, 16, 8 );
+            tmpMeta.addValueMeta(valueMeta);
             
-			return new RowMetaAndData(rowMeta, row);
+			return new RowMetaAndData(tmpMeta, row);
 		}
 		else
 		{
