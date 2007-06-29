@@ -5,26 +5,29 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuBar;
+import org.pentaho.xul.menu.XulMenuItem;
 
-public class Menu extends MenuItem {
+public class Menu extends MenuItem implements XulMenu {
 
     private org.eclipse.swt.widgets.Menu menu;
-    private MenuBar menuBar;
+    private XulMenuBar menuBar;
     private Menu parentMenu;
     protected String accessKey;
-    private List<MenuItem> items = new ArrayList<MenuItem>();
+    private List<XulMenuItem> items = new ArrayList<XulMenuItem>();
 
-	public Menu( MenuBar parent, String name, String id, String accessKey ) {
+	public Menu( XulMenuBar parent, String name, String id, String accessKey ) {
 		super( parent, id );
 		this.menuBar = parent;
 		this.parentMenu = null;
 		this.accessKey = accessKey;
 
-		org.eclipse.swt.widgets.MenuItem menuItem = new org.eclipse.swt.widgets.MenuItem(parent.getSwtMenu(), SWT.CASCADE); 
+		org.eclipse.swt.widgets.MenuItem menuItem = new org.eclipse.swt.widgets.MenuItem((org.eclipse.swt.widgets.Menu)parent.getNativeObject(), SWT.CASCADE); 
 		setSwtMenuItem( menuItem );
         menuItem.setText( name );
 
-        menu = new org.eclipse.swt.widgets.Menu(parent.getSwtShell(), SWT.DROP_DOWN);
+        menu = new org.eclipse.swt.widgets.Menu(((MenuBar)parent).getSwtShell(), SWT.DROP_DOWN);
         menuItem.setMenu( menu);
 
         register();
@@ -56,7 +59,7 @@ public class Menu extends MenuItem {
 
 	public int indexOf( String id ) {
 		
-		MenuChoice item = menuBar.getMenuItemById( id );
+		MenuChoice item = (MenuChoice) menuBar.getMenuItemById( id );
 		if( item == null ) {
 			return -1;
 		}
@@ -64,13 +67,13 @@ public class Menu extends MenuItem {
 		return (menu).indexOf( swtItem );
 	}
 	
-	public int indexOf( MenuItem item ) {
+	public int indexOf( XulMenuItem item ) {
 		
-		org.eclipse.swt.widgets.MenuItem swtItem = item.getSwtMenuItem();
+		org.eclipse.swt.widgets.MenuItem swtItem = (org.eclipse.swt.widgets.MenuItem)item.getNativeObject();
 		return (menu).indexOf( swtItem );
 	}
 	
-	public void register( MenuItem item, String id, String accessKey ) {
+	public void register( XulMenuItem item, String id, String accessKey ) {
 		if( getMenuBar() != null ) {
 	        getMenuBar().register( item, id, accessKey );
 		}
@@ -88,7 +91,7 @@ public class Menu extends MenuItem {
 		}
 	}
 
-	public MenuBar getMenuBar() {
+	public XulMenuBar getMenuBar() {
 		return menuBar;
 	}
 
@@ -114,17 +117,21 @@ public class Menu extends MenuItem {
 		return menu.getItemCount();
 	}
 	
-	public void addItem( MenuItem item ) {
+	public void addItem( XulMenuItem item ) {
 		items.add( item );
 	}
 	
-	public MenuItem getItem( int idx ) {
+	public XulMenuItem getItem( int idx ) {
 		return items.get( idx );
 	}
 	
-	public void remove( MenuItem item ) {
+	public void remove( XulMenuItem item ) {
 		items.remove( item );
 		item.dispose();
+	}
+	
+	public Object getNativeObject() {
+		return menu;
 	}
 	
 	public org.eclipse.swt.widgets.Menu getSwtMenu() {

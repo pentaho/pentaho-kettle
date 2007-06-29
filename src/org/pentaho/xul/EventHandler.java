@@ -1,17 +1,22 @@
-package org.pentaho.xul.swt.menu;
+package org.pentaho.xul;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MenuHandler {
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuChoice;
+import org.pentaho.xul.menu.XulMenuItem;
+import org.pentaho.xul.toolbar.XulToolbarButton;
+
+public class EventHandler {
 
     private Map<String,Object> idMap = new HashMap<String,Object>();
     private Map<String,Object> keyMap = new HashMap<String,Object>();
     private Map<String,Method> functionMap = new HashMap<String,Method>();
     private Map<String,Object> objectMap = new HashMap<String,Object>();
 
-	public MenuHandler() {
+	public EventHandler() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -42,7 +47,7 @@ public class MenuHandler {
 
 	public void handleAccessKey( String accessKey ) {
 		try {
-			MenuChoice menuItem = (MenuChoice) keyMap.get( accessKey );
+			XulMenuChoice menuItem = (XulMenuChoice) keyMap.get( accessKey );
 			if( menuItem != null ) {
 				handleMenuEvent( menuItem.getId() );
 			}
@@ -52,7 +57,16 @@ public class MenuHandler {
 		}
 	}
 
-	public void register( Object item, String id, String accessKey ) {
+	public void register( XulMenuItem item, String id, String accessKey ) {
+		if( id != null ) {
+			idMap.put( id, item );
+		}
+		if( accessKey != null ) {
+			keyMap.put( accessKey, item );
+		}
+	}
+	
+	public void register( XulToolbarButton item, String id, String accessKey ) {
 		if( id != null ) {
 			idMap.put( id, item );
 		}
@@ -66,20 +80,20 @@ public class MenuHandler {
 		return idMap.keySet().toArray( ids );
 	}
 	
-	public MenuChoice getMenuItemById( String id ) {
-		return (MenuChoice) idMap.get( id );
+	public XulMenuChoice getMenuItemById( String id ) {
+		return (XulMenuChoice) idMap.get( id );
 	}
 	
-	public Menu getMenuById( String id ) {
-		return (Menu) idMap.get( id );
+	public XulMenu getMenuById( String id ) {
+		return (XulMenu) idMap.get( id );
 	}
 	
-	public MenuItemSeparator getSeparatorById( String id ) {
-		return (MenuItemSeparator) idMap.get( id );
+	public XulMenuItem getSeparatorById( String id ) {
+		return (XulMenuItem) idMap.get( id );
 	}
 	
-	public MenuChoice getMenuItemByKey( String accessKey ) {
-		return (MenuChoice) keyMap.get( accessKey );
+	public XulMenuChoice getMenuItemByKey( String accessKey ) {
+		return (XulMenuChoice) keyMap.get( accessKey );
 	}
 	
 	public void addMenuListener( String id, Object listener, String methodName ) {
@@ -89,19 +103,23 @@ public class MenuHandler {
 	
 	public void addMenuListener( String id, Object listener, Class<?> listenerClass, String methodName ) {
 		Method method = null;
-		try {
-			method = listenerClass.getDeclaredMethod( methodName, new Class[0] );
-			functionMap.put( id, method );
-			objectMap.put( id, listener );
-			return;
-		} catch (NoSuchMethodException e) {
-		}
-		try {
-			method = listenerClass.getDeclaredMethod( methodName, new Class[] {String.class} );
-			functionMap.put( id, method );
-			objectMap.put( id, listener );
-			return;
-		} catch (NoSuchMethodException e) {
+		while(listenerClass != null ) {
+			try {
+				method = listenerClass.getDeclaredMethod( methodName, new Class[0] );
+				functionMap.put( id, method );
+				objectMap.put( id, listener );
+				return;
+			} catch (NoSuchMethodException e) {
+			}
+			try {
+				method = listenerClass.getDeclaredMethod( methodName, new Class[] {String.class} );
+				functionMap.put( id, method );
+				objectMap.put( id, listener );
+				return;
+			} catch (NoSuchMethodException e) {
+			}
+			
+			listenerClass = listenerClass.getSuperclass();
 		}
 		System.err.println( "No valid listener for menu item: "+id );
 	}
