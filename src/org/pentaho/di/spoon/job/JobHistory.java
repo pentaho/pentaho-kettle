@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.dialog.ErrorDialog;
@@ -402,9 +403,13 @@ public class JobHistory extends Composite implements TabItemInterface
 		}
 	}
 
+    public EngineMetaInterface getMeta() {
+    	return jobMeta;
+    }
+
     /**
      * @return the jobMeta
-     */
+     * /
     public JobMeta getJobMeta()
     {
         return jobMeta;

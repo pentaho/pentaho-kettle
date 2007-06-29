@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
@@ -63,7 +64,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.dialog.LogSettingsDialog;
-
+import org.pentaho.di.core.gui.JobTracker;
 
 
 /*** 
@@ -124,7 +125,8 @@ public class JobLog extends Composite implements TabItemInterface
 		
 		setVisible(true);
 		white = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
+		// should we dispose of a system color? next time we try to use it its been disposed of...
+//		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
 
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
 								
@@ -341,7 +343,7 @@ public class JobLog extends Composite implements TabItemInterface
 				{
 					log.logDetailed(toString(), Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
 					System.out.println(Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
-					spoon.saveJobFile(jobMeta);
+					spoon.saveToFile(jobMeta);
 				}
 				else
 				{
@@ -358,7 +360,7 @@ public class JobLog extends Composite implements TabItemInterface
 					int answer = md.open();
 					if ( (answer&0xFF) == 0)
 					{
-						spoon.saveJobFile(jobMeta);
+						spoon.saveToFile(jobMeta);
 					}
 					spoon.props.setAutoSave(md.getToggleState());
 				}
@@ -709,9 +711,13 @@ public class JobLog extends Composite implements TabItemInterface
         this.chefHistoryRefresher = chefHistoryRefresher;
     }
 
+    public EngineMetaInterface getMeta() {
+    	return jobMeta;
+    }
+
     /**
      * @return the jobMeta
-     */
+     * /
     public JobMeta getJobMeta()
     {
         return jobMeta;

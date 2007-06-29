@@ -51,11 +51,13 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.EnterTextDialog;
@@ -82,10 +84,10 @@ import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TabMapEntry;
 import org.pentaho.di.spoon.TransPainter;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.MenuObject;
-import org.pentaho.xul.swt.menu.PopupMenu;
-import org.pentaho.xul.swt.menu.Menu;
+import org.pentaho.xul.menu.XulMenu;
+import org.pentaho.xul.menu.XulMenuChoice;
+import org.pentaho.xul.menu.XulPopupMenu;
+import org.pentaho.xul.swt.menu.MenuHelper;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.w3c.dom.Document;
 
@@ -165,7 +167,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     			ids.add( "job-graph-background" );
     			ids.add( "job-graph-entry" );
     			
-    			menuMap = MenuObject.createPopupMenusFromXul( doc, shell, xulMessages, ids );
+    			menuMap = MenuHelper.createPopupMenusFromXul( doc, shell, xulMessages, ids );
     		}
 		} catch (Throwable t ) {
 			// TODO log this
@@ -1113,11 +1115,11 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		if (jobEntry != null) // We clicked on a Job Entry!
 		{
 			
-			PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-entry" ); //$NON-NLS-1$
+			XulPopupMenu menu = (XulPopupMenu) menuMap.get( "job-graph-entry" ); //$NON-NLS-1$
 			if( menu != null ) {
 				int sels = jobMeta.nrSelected();
 				
-				MenuChoice item  = menu.getMenuItemById( "job-graph-entry-newhop" ); //$NON-NLS-1$
+				XulMenuChoice item  = menu.getMenuItemById( "job-graph-entry-newhop" ); //$NON-NLS-1$
 				menu.addMenuListener( "job-graph-entry-newhop", this, JobGraph.class, "newHopClick" ); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setEnabled( sels == 2 );
 
@@ -1148,7 +1150,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				item = menu.getMenuItemById( "job-graph-entry-align-snap" ); //$NON-NLS-1$
 	            	item.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME");
 
-				Menu aMenu = menu.getMenuById( "job-graph-entry-align" ); //$NON-NLS-1$
+				XulMenu aMenu = menu.getMenuById( "job-graph-entry-align" ); //$NON-NLS-1$
 				if( aMenu != null ) {
 					aMenu.setEnabled( sels > 1 );
 				}
@@ -1184,7 +1186,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				menu.addMenuListener( "job-graph-entry-hide", this, "hideEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				menu.addMenuListener( "job-graph-entry-delete", this, "deleteEntry" ); //$NON-NLS-1$ //$NON-NLS-2$ 
 				
-				canvas.setMenu(menu.getSwtMenu());
+				canvas.setMenu((Menu)menu.getNativeObject());
 			}
 			
 		}
@@ -1196,12 +1198,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			if (hi != null) // We clicked on a HOP!
 			{
 				
-				PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-hop" ); //$NON-NLS-1$
+				XulPopupMenu menu = (XulPopupMenu) menuMap.get( "job-graph-hop" ); //$NON-NLS-1$
 				if( menu != null ) {
-					MenuChoice miPopEvalUncond  = menu.getMenuItemById( "job-graph-hop-evaluation-uncond" ); //$NON-NLS-1$
-					MenuChoice miPopEvalTrue  = menu.getMenuItemById( "job-graph-hop-evaluation-true" ); //$NON-NLS-1$
-					MenuChoice miPopEvalFalse  = menu.getMenuItemById( "job-graph-hop-evaluation-false" ); //$NON-NLS-1$
-					MenuChoice miDisHop  = menu.getMenuItemById( "job-graph-hop-enabled" ); //$NON-NLS-1$
+					XulMenuChoice miPopEvalUncond  = menu.getMenuItemById( "job-graph-hop-evaluation-uncond" ); //$NON-NLS-1$
+					XulMenuChoice miPopEvalTrue  = menu.getMenuItemById( "job-graph-hop-evaluation-true" ); //$NON-NLS-1$
+					XulMenuChoice miPopEvalFalse  = menu.getMenuItemById( "job-graph-hop-evaluation-false" ); //$NON-NLS-1$
+					XulMenuChoice miDisHop  = menu.getMenuItemById( "job-graph-hop-enabled" ); //$NON-NLS-1$
 					
 					menu.addMenuListener( "job-graph-hop-evaluation-uncond", this, "setHopConditional" ); //$NON-NLS-1$ //$NON-NLS-2$
 					menu.addMenuListener( "job-graph-hop-evaluation-true", this, "setHopConditional" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1246,7 +1248,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						if (hi.isEnabled()) miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
 						else                miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
 					}
-	                canvas.setMenu(menu.getSwtMenu());
+					canvas.setMenu((Menu)menu.getNativeObject());
 				}
 
 			}
@@ -1258,18 +1260,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				if (ni!=null)
 				{
 
-					PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-note" ); //$NON-NLS-1$
+					XulPopupMenu menu = (XulPopupMenu) menuMap.get( "job-graph-note" ); //$NON-NLS-1$
 					if( menu != null ) {
 					
 						menu.addMenuListener( "job-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "job-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-		                canvas.setMenu(menu.getSwtMenu());
+						canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
 				}
 				else
 				{
-					PopupMenu menu = (PopupMenu) menuMap.get( "job-graph-background" ); //$NON-NLS-1$
+					XulPopupMenu menu = (XulPopupMenu) menuMap.get( "job-graph-background" ); //$NON-NLS-1$
 					if( menu != null ) {
 					
 						menu.addMenuListener( "job-graph-note-new", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1278,12 +1280,12 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 						
 						
 	                    final String clipcontent = spoon.fromClipboard();
-	                    MenuChoice item  = menu.getMenuItemById( "job-graph-note-paste" ); //$NON-NLS-1$
+	                    XulMenuChoice item  = menu.getMenuItemById( "job-graph-note-paste" ); //$NON-NLS-1$
 	                    if( item != null ) {
 	                    		item.setEnabled( clipcontent != null );
 	                    }
 
-		                canvas.setMenu(menu.getSwtMenu());
+	    				canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
 				}
@@ -1292,7 +1294,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	}
 
 	public void editJobProperties() {
-        spoon.editJobProperties(jobMeta);
+        jobMeta.editProperties(spoon, spoon.getRepository());
 	}
 	
 	public void pasteNote() {
@@ -2179,9 +2181,13 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		return Spoon.APP_NAME;
 	}
 
+    public EngineMetaInterface getMeta() {
+    	return jobMeta;
+    }
+
     /**
      * @return the jobMeta
-     */
+     * /
     public JobMeta getJobMeta()
     {
         return jobMeta;
@@ -2197,7 +2203,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
     public boolean applyChanges()
     {
-        return spoon.saveJobFile(jobMeta);
+        return spoon.saveToFile(jobMeta);
     }
 
     public boolean canBeClosed()
