@@ -1,8 +1,7 @@
 package org.pentaho.di.core;
 
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.spoon.UndoInterface;
-
+import org.pentaho.di.core.gui.UndoInterface;
 
 public interface AddUndoPositionInterface
 {
