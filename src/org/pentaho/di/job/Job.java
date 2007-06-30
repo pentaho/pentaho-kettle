@@ -728,11 +728,6 @@ public class Job extends Thread implements VariableSpace
         this.result = result;
     }
 
-    public KettleVariables getKettleVariables()
-    {
-       return LocalVariables.getKettleVariables(getName());
-    }
-
     /**
      * @return Returns the initialized.
      */

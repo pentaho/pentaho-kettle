@@ -19,10 +19,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -97,28 +94,6 @@ public class SetVariable extends BaseStep implements StepInterface
                     break;
                 case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB:
                     {
-                    	////////////////////////////////////////////////////
-                    	///// DEAD CODE EXECUTING, THIS WILL BE REMOVED ////
-                    	////////////////////////////////////////////////////
-                        KettleVariables.getInstance().setVariable(varname, value);
-
-                        Job parentJob1 = getTrans().getParentJob();
-                        Job rootJob1 = parentJob1;
-                        while (parentJob1!=null)
-                        {
-                            KettleVariables vars = LocalVariables.getKettleVariables(parentJob1.getName());
-                            vars.setVariable(varname, value);
-                            rootJob1 = parentJob1;
-                            parentJob1 = parentJob1.getParentJob();
-                        }
-                        // OK, we have the rootjob, set the variable on it...
-                        if (rootJob1==null)
-                        {
-                            throw new KettleStepException("Can't set variable ["+varname+"] on root job: the root job is not available (meaning: not even the parent job)");
-                        }
-                        //////////////////////////////////////////////////
-                        //////////////////////////////////////////////////
-                        //////////////////////////////////////////////////
                         setVariable(varname, value);
 
                         VariableSpace rootJob = null;
@@ -138,33 +113,6 @@ public class SetVariable extends BaseStep implements StepInterface
                     break;
                 case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
                     {
-                    	////////////////////////////////////////////////////
-                    	///// DEAD CODE EXECUTING, THIS WILL BE REMOVED ////
-                    	////////////////////////////////////////////////////                    	
-                        KettleVariables.getInstance().setVariable(varname, value);
-
-                        Job parentJob1 = getTrans().getParentJob();
-                        if (parentJob1!=null)
-                        {
-                            parentJob1.getKettleVariables().setVariable(varname, value);
-                            Job gpJob = parentJob1.getParentJob();
-                            if (gpJob!=null)
-                            {
-                                gpJob.getKettleVariables().setVariable(varname, value);
-                            }
-                            else
-                            {
-                                throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the grand parent job is not available");
-                            }
-                        }
-                        else
-                        {
-                            throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the parent job is not available");
-                        }
-                        //////////////////////////////////////////////////
-                        //////////////////////////////////////////////////
-                        //////////////////////////////////////////////////
-                        
                         setVariable(varname, value);
 
                         VariableSpace parentJob = getParentVariableSpace();
@@ -188,14 +136,7 @@ public class SetVariable extends BaseStep implements StepInterface
                         
                     }
                 case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
-                    {
-                    	// WILL BE REMOVED 
-                        // This thread, the transformation and the parent job run in the same namespace.
-                        //
-                        KettleVariables.getInstance().setVariable(varname, value);
-                        ///
-                        ///
-                        
+                    {                        
                         setVariable(varname, value);
 
                         VariableSpace parentJob = getParentVariableSpace();
