@@ -395,7 +395,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
             
             data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null);
+            meta.getFields(data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this);
             
             // Handle the NULL values (not found...)
             handleNullIf();

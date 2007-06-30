@@ -333,7 +333,7 @@ public class SortRows extends BaseStep implements StepInterface
             
             // Metadata
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 		
 		err=addBuffer(getInputRowMeta(), r);

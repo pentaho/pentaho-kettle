@@ -131,29 +131,6 @@ public class StringUtil
 	}
 
 	/**
-	 * Substitutes variables in <code>aString</code> with Kettle system and
-	 * local environment values.
-	 * 
-	 * @param aString
-	 *            the string on which to apply the substitution.
-	 * @return the string with the substitution applied.
-	 */
-	public static final String environmentSubstitute(String aString)
-	{
-		if (aString == null || aString.length() == 0)
-			return aString;
-
-		KettleVariables vars = KettleVariables.getInstance();
-
-		Properties systemProperties = new Properties();
-		systemProperties.putAll(System.getProperties());
-		systemProperties.putAll(vars.getProperties()); // overwrite with
-		// local vars
-
-		return environmentSubstitute(aString, systemProperties);
-	}
-
-	/**
 	 * Substitutes variables in <code>aString</code> with the environment
 	 * values in the system properties
 	 * 
@@ -168,32 +145,6 @@ public class StringUtil
 		aString = substituteWindows(aString, systemProperties);
 		aString = substituteUnix(aString, systemProperties);
 		return aString;
-	}
-
-	/**
-	 * Replaces environment variables in an array of strings.
-	 * <p>
-	 * See also: environmentSubstitute(String string)
-	 * 
-	 * @param string
-	 *            The array of strings that wants its variables to be replaced.
-	 * @return the array with the environment variables replaced.
-	 */
-	public static final String[] environmentSubstitute(String string[])
-	{
-		KettleVariables vars = KettleVariables.getInstance();
-
-		Properties systemProperties = new Properties();
-		systemProperties.putAll(System.getProperties());
-		systemProperties.putAll(vars.getProperties()); // overwrite with
-		// local vars
-
-		String retval[] = new String[string.length];
-		for (int i = 0; i < string.length; i++)
-		{
-			retval[i] = environmentSubstitute(string[i], systemProperties);
-		}
-		return retval;
 	}
 
 	/**
@@ -434,7 +385,5 @@ public class StringUtil
 
 			throw new KettleValueException("TO_DATE Couldn't convert String to Date" + e.toString());
 		}
-
 	}
-
 }

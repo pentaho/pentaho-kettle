@@ -63,7 +63,7 @@ public class GetFileNames extends BaseStep implements StepInterface
         {
             first = false;
             data.outputRowMeta = new RowMeta();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
         }
 
         try

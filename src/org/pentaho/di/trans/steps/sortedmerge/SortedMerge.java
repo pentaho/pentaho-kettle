@@ -119,7 +119,7 @@ public class SortedMerge extends BaseStep implements StepInterface
                 	//get the RowMeta 
                 	data.rowMeta=rowSet.getRowMeta();
                 	// Set the sorted properties: ascending/descending
-                	meta.getFields(data.rowMeta, getStepname(), null, null);                	
+                	meta.getFields(data.rowMeta, getStepname(), null, null, this);                	
                 }
                 
                 if (smallestRow==null)

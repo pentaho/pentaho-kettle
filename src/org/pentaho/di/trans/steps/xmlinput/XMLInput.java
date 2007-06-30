@@ -65,7 +65,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			first = false;
 			RowMetaInterface irow = getInputRowMeta();
 			data.outputRowMeta = irow != null ? (RowMetaInterface)irow.clone() : new RowMeta();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null);
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 
 		Object[] row = getRowFromXML();

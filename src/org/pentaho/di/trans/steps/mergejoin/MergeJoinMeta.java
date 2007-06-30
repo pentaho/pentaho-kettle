@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -362,7 +363,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
         remarks.add(cr);
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just merge in the info fields.

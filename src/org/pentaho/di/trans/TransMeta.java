@@ -1607,7 +1607,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             for (int i=0;i<lu.length;i++) inform[i] = getStepFields(lu[i]);
         }
 
-        stepint.getFields(row, name, inform, nextStep);
+        stepint.getFields(row, name, inform, nextStep, this);
 
         return row;
     }

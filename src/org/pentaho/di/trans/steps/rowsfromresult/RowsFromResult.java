@@ -65,7 +65,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
 		linesRead++;
 		data = (RowsFromResultData) sdi;
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		putRow(data.outputRowMeta, r); // copy row to possible alternate
 										// rowset(s).
 

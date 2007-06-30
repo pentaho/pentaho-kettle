@@ -85,7 +85,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 
 		Object[] row = null;
 		data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		
 		
 		if (!meta.isExecutedEachInputRow())

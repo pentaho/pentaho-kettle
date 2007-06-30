@@ -28,7 +28,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -154,7 +154,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep) throws KettleStepException
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
         RowMetaInterface row=null;
 
@@ -166,7 +166,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
             if (variableString[i]!=null)
             {
-                String string = StringUtil.environmentSubstitute(variableString[i]);
+                String string = space.environmentSubstitute(variableString[i]);
                 if (string.length()>length) length=string.length();
             }
 		}

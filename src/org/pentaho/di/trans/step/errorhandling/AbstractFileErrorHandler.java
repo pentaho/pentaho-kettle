@@ -14,7 +14,6 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.BaseStep;
 
@@ -69,7 +68,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			name = processingFilename + sourceAdding + "." + dateString; //$NON-NLS-1$
 		else
 			name = processingFilename + sourceAdding + "." + dateString + "." + extension; //$NON-NLS-1$ //$NON-NLS-2$
-		return KettleVFS.getFileObject(StringUtil.environmentSubstitute(destinationDirectory)+"/"+name);
+		return KettleVFS.getFileObject(destinationDirectory+"/"+name);
 	}
 
 	public static FileObject getReplayFilename(String destinationDirectory,

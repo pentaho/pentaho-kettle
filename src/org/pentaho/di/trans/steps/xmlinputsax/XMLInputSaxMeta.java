@@ -418,7 +418,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		rowLimit=0L;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{		
 		int i;
 		for (i=0;i<inputFields.length;i++)

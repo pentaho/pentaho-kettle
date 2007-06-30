@@ -196,7 +196,7 @@ public class Update extends BaseStep implements StepInterface
             
             // What's the output Row format?
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
                         

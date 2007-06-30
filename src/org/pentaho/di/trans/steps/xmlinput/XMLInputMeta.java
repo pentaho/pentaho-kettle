@@ -399,7 +399,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
         nrRowsToSkip=0;
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep)
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
 		
 		int i;

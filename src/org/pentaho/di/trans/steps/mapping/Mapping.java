@@ -101,7 +101,7 @@ public class Mapping extends BaseStep implements StepInterface
             try
             {
                 Repository repository = Repository.getCurrentRepository();
-                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), repository);
+                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), repository, this);
                 if (data.mappingTransMeta!=null) // Do we have a mapping at all?
                 {
                     // Create the transformation from meta-data...

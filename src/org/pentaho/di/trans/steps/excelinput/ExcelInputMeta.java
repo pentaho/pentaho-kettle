@@ -604,7 +604,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         lineNumberFilesExtension = "line";
 	}
     
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		for (int i=0;i<field.length;i++)
 		{

@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -208,8 +208,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         allocate();
 	}
 	
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep) throws KettleStepException {
-    	// First load some intersting data...
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    	// First load some interesting data...
     	
     	// Then see which fields get added to the row.
     	//
@@ -217,7 +217,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         TransMeta mappingTransMeta = null;
         try
         {
-            mappingTransMeta = loadMappingMeta(fileName, transName, directoryPath, repository);
+            mappingTransMeta = loadMappingMeta(fileName, transName, directoryPath, repository, space);
         }
         catch(KettleException e)
         {
@@ -418,12 +418,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         */
     }
 
-    public synchronized static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep) throws KettleException
+    public synchronized static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep, VariableSpace space) throws KettleException
     {
         TransMeta mappingTransMeta = null;
         
-        String realFilename = StringUtil.environmentSubstitute(fileName);
-        String realTransname = StringUtil.environmentSubstitute(transName);
+        String realFilename = space.environmentSubstitute(fileName);
+        String realTransname = space.environmentSubstitute(transName);
         
         if ( !Const.isEmpty(realFilename))
         {
