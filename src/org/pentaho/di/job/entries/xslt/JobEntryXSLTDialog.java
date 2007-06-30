@@ -167,7 +167,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 		fdbxmlFilename.right= new FormAttachment(100, 0);
 		fdbxmlFilename.top  = new FormAttachment(wName, 0);
 		wbxmlFilename.setLayoutData(fdbxmlFilename);
-		wxmlFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wxmlFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wxmlFilename);
 		wxmlFilename.addModifyListener(lsMod);
 		fdxmlFilename=new FormData();
@@ -223,7 +223,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 		fdbxslFilename.right= new FormAttachment(100, 0);
 		fdbxslFilename.top  = new FormAttachment(wxmlFilename, 0);
 		wbxslFilename.setLayoutData(fdbxslFilename);
-		wxslFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wxslFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wxslFilename);
 		wxslFilename.addModifyListener(lsMod);
 		fdxslFilename=new FormData();
@@ -272,7 +272,7 @@ public class JobEntryXSLTDialog extends Dialog implements JobEntryDialogInterfac
 		fdlOutputFilename.top = new FormAttachment(wxslFilename, margin);
 		fdlOutputFilename.right = new FormAttachment(middle, -margin);
 		wlOutputFilename.setLayoutData(fdlOutputFilename);
-		wOutputFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wOutputFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wOutputFilename);
 		wOutputFilename.addModifyListener(lsMod);
 		fdOutputFilename = new FormData();

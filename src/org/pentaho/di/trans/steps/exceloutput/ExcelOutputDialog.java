@@ -245,7 +245,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -521,7 +521,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlSheetname.top  = new FormAttachment(wSplitEvery, margin);
 		fdlSheetname.right= new FormAttachment(middle, -margin);
 		wlSheetname.setLayoutData(fdlSheetname);
-		wSheetname=new TextVar(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSheetname=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSheetname.setToolTipText(Messages.getString("ExcelOutputDialog.Sheetname.Tooltip"));
 		props.setLook(wSheetname);
 		wSheetname.addModifyListener(lsMod);
@@ -568,7 +568,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdlPassword.top  = new FormAttachment(wProtectSheet, margin);
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new TextVar(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD);
+		wPassword=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD);
 		wPassword.setToolTipText(Messages.getString("ExcelOutputDialog.Password.Tooltip"));
 		props.setLook(wPassword);
 		wPassword.setEchoChar('*');
@@ -622,7 +622,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbTemplateFilename.top  = new FormAttachment(wTemplate, 0);
 		wbTemplateFilename.setLayoutData(fdbTemplateFilename);
 
-		wTemplateFilename=new TextVar(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTemplateFilename=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTemplateFilename);
 		wTemplateFilename.addModifyListener(lsMod);
 		fdTemplateFilename=new FormData();
@@ -753,7 +753,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		        new ColumnInfo(Messages.getString("ExcelOutputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
             };
 		
-		wFields=new TableView(wFieldsComp, 
+		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

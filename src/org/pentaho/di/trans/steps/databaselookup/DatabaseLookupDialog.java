@@ -308,7 +308,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		tableFieldColumns.add(ciKey[0]);
 		fieldColumns.add(ciKey[2]);
 		fieldColumns.add(ciKey[3]);
-		wKey=new TableView(shell, 
+		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
 						      nrKeyRows,  
@@ -420,7 +420,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         ciReturn[3]=new ColumnInfo(Messages.getString("DatabaseLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()); //$NON-NLS-1$
         tableFieldColumns.add(ciReturn[0]);
         
-        wReturn=new TableView(shell, 
+        wReturn=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                               ciReturn, 
                               UpInsRows,  

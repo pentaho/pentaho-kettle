@@ -148,7 +148,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 	        }
 		);
 
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

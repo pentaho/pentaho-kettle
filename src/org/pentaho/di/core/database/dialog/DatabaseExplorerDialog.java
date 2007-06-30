@@ -653,7 +653,7 @@ public class DatabaseExplorerDialog extends Dialog
 	    {
 			if (rows.size()>0)
 			{
-				PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, tableName, pd.getRowMeta(), rows);
+				PreviewRowsDialog prd = new PreviewRowsDialog(shell, dbMeta, SWT.NONE, tableName, pd.getRowMeta(), rows);
 				prd.open();
 			}
 			else
@@ -679,7 +679,7 @@ public class DatabaseExplorerDialog extends Dialog
         RowMetaInterface result = pd.open();         
 		if (result!=null)
 		{
-			StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, tableName, result);
+			StepFieldsDialog sfd = new StepFieldsDialog(shell, dbMeta, SWT.NONE, tableName, result);
 			sfd.open();
 		}
 	}

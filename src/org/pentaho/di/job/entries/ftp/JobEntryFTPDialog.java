@@ -135,8 +135,10 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
     private Combo        wControlEncoding;
     
     private FormData     fdlControlEncoding, fdControlEncoding;
+    
+    private JobMeta jobMeta;
 
-    private boolean changed;
+    private boolean changed;        
     
     // These should not be translated, they are required to exist on all
     // platforms according to the documentation of "Charset".
@@ -206,7 +208,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wName.setLayoutData(fdName);
 
         // ServerName line
-        wServerName = new LabelTextVar(shell, Messages.getString("JobFTP.Server.Label"), Messages
+        wServerName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Server.Label"), Messages
             .getString("JobFTP.Server.Tooltip"));
         props.setLook(wServerName);
         wServerName.addModifyListener(lsMod);
@@ -217,7 +219,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wServerName.setLayoutData(fdServerName);
 
         // UserName line
-        wUserName = new LabelTextVar(shell, Messages.getString("JobFTP.User.Label"), Messages
+        wUserName = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.User.Label"), Messages
             .getString("JobFTP.User.Tooltip"));
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
@@ -228,7 +230,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wUserName.setLayoutData(fdUserName);
 
         // Password line
-        wPassword = new LabelTextVar(shell, Messages.getString("JobFTP.Password.Label"), Messages
+        wPassword = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Password.Label"), Messages
             .getString("JobFTP.Password.Tooltip"));
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
@@ -249,7 +251,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         });
 
         // FtpDirectory line
-        wFtpDirectory = new LabelTextVar(shell, Messages.getString("JobFTP.RemoteDir.Label"),
+        wFtpDirectory = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.RemoteDir.Label"),
             Messages.getString("JobFTP.RemoteDir.Tooltip"));
         props.setLook(wFtpDirectory);
         wFtpDirectory.addModifyListener(lsMod);
@@ -260,7 +262,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wFtpDirectory.setLayoutData(fdFtpDirectory);
 
         // TargetDirectory line
-        wTargetDirectory = new LabelTextVar(shell, Messages.getString("JobFTP.TargetDir.Label"),
+        wTargetDirectory = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.TargetDir.Label"),
             Messages.getString("JobFTP.TargetDir.Tooltip"));
         props.setLook(wTargetDirectory);
         wTargetDirectory.addModifyListener(lsMod);
@@ -271,7 +273,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wTargetDirectory.setLayoutData(fdTargetDirectory);
 
         // Wildcard line
-        wWildcard = new LabelTextVar(shell, Messages.getString("JobFTP.Wildcard.Label"), Messages
+        wWildcard = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Wildcard.Label"), Messages
             .getString("JobFTP.Wildcard.Tooltip"));
         props.setLook(wWildcard);
         wWildcard.addModifyListener(lsMod);
@@ -300,7 +302,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wBinaryMode.setLayoutData(fdBinaryMode);
 
         // Timeout line
-        wTimeout = new LabelTextVar(shell, Messages.getString("JobFTP.Timeout.Label"), Messages
+        wTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobFTP.Timeout.Label"), Messages
             .getString("JobFTP.Timeout.Tooltip"));
         props.setLook(wTimeout);
         wTimeout.addModifyListener(lsMod);

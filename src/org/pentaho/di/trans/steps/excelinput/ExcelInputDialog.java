@@ -90,10 +90,6 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
 
-
-
-
-
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
@@ -337,7 +333,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbaFilename.top  = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -498,7 +494,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		colinfo[ 2]=new ColumnInfo(Messages.getString("ExcelInputDialog.Required.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
 		colinfo[ 2].setToolTip(Messages.getString("ExcelInputDialog.Required.Tooltip"));
 		
-		wFilenameList = new TableView(wFileComp, 
+		wFilenameList = new TableView(transMeta, wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
 						      input.getFileName().length,  
@@ -564,7 +560,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		shinfo[ 1]=new ColumnInfo(Messages.getString("ExcelInputDialog.StartRow.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		shinfo[ 2]=new ColumnInfo(Messages.getString("ExcelInputDialog.StartColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		
-		wSheetnameList = new TableView(wSheetComp, 
+		wSheetnameList = new TableView(transMeta, wSheetComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, 
 						      shinfo, 
 						      input.getSheetName().length,  
@@ -851,7 +847,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		colinf[ 5].setToolTip(Messages.getString("ExcelInputDialog.Repeat.Tooltip"));
 
-		wFields=new TableView(wFieldsComp, 
+		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  
@@ -1621,7 +1617,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
 
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
             prd.open();
         }
 	}
@@ -1850,5 +1846,4 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		return this.getClass().getName();
 	}
-
 }

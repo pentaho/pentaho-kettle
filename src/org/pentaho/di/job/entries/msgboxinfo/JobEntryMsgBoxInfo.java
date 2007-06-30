@@ -208,7 +208,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	}
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryMsgBoxInfoDialog(shell,this);
+        return new JobEntryMsgBoxInfoDialog(shell,this, jobMeta);
     }
     
 	public String getRealTitleMessage()

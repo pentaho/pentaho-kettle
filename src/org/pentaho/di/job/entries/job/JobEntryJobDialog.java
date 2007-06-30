@@ -181,14 +181,17 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
     private Display display;
 
     private Repository repository;
+    
+    private JobMeta jobMeta;
 
-    public JobEntryJobDialog(Shell parent, JobEntryJob jobEntry, Repository repository)
+    public JobEntryJobDialog(Shell parent, JobEntryJob jobEntry, Repository repository, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
         this.props = Props.getInstance();
         this.log = LogWriter.getInstance();
         this.jobEntry = jobEntry;
         this.repository = repository;
+        this.jobMeta = jobMeta;
     }
 
     public JobEntryInterface open()
@@ -257,7 +260,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         wbJobname.setLayoutData(fdbJobname);
         wbJobname.setEnabled(repository != null);
 
-        wJobname = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wJobname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wJobname);
         wJobname.setToolTipText(Messages.getString("JobJob.InternalName.Tooltip"));
         wJobname.addModifyListener(lsMod);
@@ -306,7 +309,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         fdbFilename.right = new FormAttachment(100, 0);
         wbFilename.setLayoutData(fdbFilename);
 
-        wFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename = new FormData();
@@ -362,7 +365,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         fdlLogfile.top = new FormAttachment(wlSetLogfile, margin);
         fdlLogfile.right = new FormAttachment(middle, 0);
         wlLogfile.setLayoutData(fdlLogfile);
-        wLogfile = new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLogfile.setText("");
         props.setLook(wLogfile);
         fdLogfile = new FormData();
@@ -380,7 +383,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
         fdlLogext.top = new FormAttachment(wLogfile, margin);
         fdlLogext.right = new FormAttachment(middle, 0);
         wlLogext.setLayoutData(fdlLogext);
-        wLogext = new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogext = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLogext.setText("");
         props.setLook(wLogext);
         fdLogext = new FormData();
@@ -521,7 +524,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
             ColumnInfo.COLUMN_TYPE_TEXT, false);
         colinf[0].setUsingVariables(true);
 
-        wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+        wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
             FieldsRows, lsMod, props);
 
         fdFields = new FormData();

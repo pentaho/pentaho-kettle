@@ -41,6 +41,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -53,7 +54,6 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @since 19-06-2003
  *
  */
-
 public class SQLStatementsDialog extends Dialog
 {
 	private List<SQLStatement>    stats;
@@ -71,21 +71,24 @@ public class SQLStatementsDialog extends Dialog
 	private Color    red;
 	
 	private String stepname;
+	
+	private VariableSpace variables;
     
     /**
      * @deprecated Use CT without <i>props</i> parameter
      */
-    public SQLStatementsDialog(Shell parent, int style, LogWriter log, Props props, List<SQLStatement> stats)
+    public SQLStatementsDialog(Shell parent, VariableSpace space, int style, LogWriter log, Props props, List<SQLStatement> stats)
     {
-        this(parent, style, stats);
+        this(parent, space, style, stats);
         this.props = props;
     }
     
-    public SQLStatementsDialog(Shell parent, int style, List<SQLStatement> stats)
+    public SQLStatementsDialog(Shell parent, VariableSpace space, int style, List<SQLStatement> stats)
     {
             super(parent, style);
             this.stats=stats;
             this.props=Props.getInstance();
+            this.variables = space;
             
             this.stepname = null;
     }
@@ -119,7 +122,7 @@ public class SQLStatementsDialog extends Dialog
 		colinf[2]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.SQL"),          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		colinf[3]=new ColumnInfo(Messages.getString("SQLStatementDialog.TableCol.Error"),        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(variables, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

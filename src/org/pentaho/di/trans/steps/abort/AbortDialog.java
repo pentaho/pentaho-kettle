@@ -105,7 +105,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		fdlRowThreshold.right= new FormAttachment(middle, -margin);
 		fdlRowThreshold.top  = new FormAttachment(wStepname, margin);
 		wlRowThreshold.setLayoutData(fdlRowThreshold);
-		wRowThreshold=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wRowThreshold=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wRowThreshold.setText(""); //$NON-NLS-1$
  		props.setLook(wRowThreshold);
  		wRowThreshold.addModifyListener(lsMod);
@@ -126,7 +126,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface
 		fdlMessage.right= new FormAttachment(middle, -margin);
 		fdlMessage.top  = new FormAttachment(wRowThreshold, margin);
 		wlMessage.setLayoutData(fdlMessage);
-		wMessage=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMessage=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wMessage.setText(""); //$NON-NLS-1$
  		props.setLook(wMessage);
  		wMessage.addModifyListener(lsMod);

@@ -376,7 +376,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		ciKey[0]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.DimensionField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciKey[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.FieldInStream"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 
-		wKey=new TableView(wKeyComp,
+		wKey=new TableView(transMeta, wKeyComp,
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 						      ciKey,
 						      nrKeyRows,
@@ -435,7 +435,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		ciUpIns[1]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.StreamField"),                 ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciUpIns[2]=new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.TypeOfDimensionUpdate"),     ColumnInfo.COLUMN_TYPE_CCOMBO, input.isUpdate()?DimensionLookupMeta.typeDesc:DimensionLookupMeta.typeDescLookup ); //$NON-NLS-1$
 
-		wUpIns=new TableView(wFieldsComp,
+		wUpIns=new TableView(transMeta, wFieldsComp,
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 							  ciUpIns,
 							  UpInsRows,

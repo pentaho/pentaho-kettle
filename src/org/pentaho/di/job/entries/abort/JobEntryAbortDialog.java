@@ -42,6 +42,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -82,13 +83,16 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
 	private TextVar wMessageAbort;
 	
 	private FormData fdlMessageAbort, fdMessageAbort;
+	
+	private JobMeta jobMeta;
 
 
-    public JobEntryAbortDialog(Shell parent, JobEntryAbort jobEntry)
+    public JobEntryAbortDialog(Shell parent, JobEntryAbort jobEntry, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta = jobMeta;
 
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("JobEntryAbortDialog.Jobname.Label"));
@@ -158,7 +162,7 @@ public class JobEntryAbortDialog extends Dialog implements JobEntryDialogInterfa
 		fdlMessageAbort.top = new FormAttachment(wName, margin);
 		wlMessageAbort.setLayoutData(fdlMessageAbort);
 
-		wMessageAbort = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMessageAbort = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wMessageAbort);
 		wMessageAbort.setToolTipText(Messages.getString("JobEntryAbortDialog.MessageAbort.Tooltip"));
 		wMessageAbort.addModifyListener(lsMod);

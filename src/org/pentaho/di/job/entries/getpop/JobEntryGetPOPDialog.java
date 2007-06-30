@@ -195,7 +195,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlServerName.top  = new FormAttachment(wName, margin);
 		fdlServerName.right= new FormAttachment(middle, -margin);
 		wlServerName.setLayoutData(fdlServerName);
-		wServerName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerName=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wServerName);
 		wServerName.addModifyListener(lsMod);
 		fdServerName=new FormData();
@@ -214,7 +214,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlUserName.top  = new FormAttachment(wServerName, margin);
 		fdlUserName.right= new FormAttachment(middle, -margin);
 		wlUserName.setLayoutData(fdlUserName);
-		wUserName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUserName=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wUserName);
 		wUserName.setToolTipText(Messages.getString("JobGetPOP.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
@@ -234,7 +234,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlPassword.top  = new FormAttachment(wUserName, margin);
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wPassword);
 		wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
@@ -291,7 +291,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlSSLPort.top  = new FormAttachment(wUseSSL, margin);
 		fdlSSLPort.right= new FormAttachment(middle, -margin);
 		wlSSLPort.setLayoutData(fdlSSLPort);
-		wSSLPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSSLPort=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSSLPort);
 		wSSLPort.setToolTipText(Messages.getString("JobGetPOP.SSLPort.Tooltip"));
 		wSSLPort.addModifyListener(lsMod);
@@ -311,7 +311,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlOutputDirectory.top  = new FormAttachment(wSSLPort, margin);
 		fdlOutputDirectory.right= new FormAttachment(middle, -margin);
 		wlOutputDirectory.setLayoutData(fdlOutputDirectory);
-		wOutputDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wOutputDirectory=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wOutputDirectory);
 		wOutputDirectory.setToolTipText(Messages.getString("JobGetPOP.OutputDirectory.Tooltip"));
 		wOutputDirectory.addModifyListener(lsMod);
@@ -330,7 +330,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlFilenamePattern.top  = new FormAttachment(wOutputDirectory, margin);
 		fdlFilenamePattern.right= new FormAttachment(middle, -margin);
 		wlFilenamePattern.setLayoutData(fdlFilenamePattern);
-		wFilenamePattern=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilenamePattern=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilenamePattern);
 		wFilenamePattern.setToolTipText(Messages.getString("JobGetPOP.FilenamePattern.Tooltip"));
 		wFilenamePattern.addModifyListener(lsMod);
@@ -392,7 +392,7 @@ public class JobEntryGetPOPDialog extends Dialog implements JobEntryDialogInterf
 		fdlFirstmails.top = new FormAttachment(wListmails, margin);
 		wlFirstmails.setLayoutData(fdlFirstmails);
 
-		wFirstmails = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFirstmails = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFirstmails);
 		wFirstmails.addModifyListener(lsMod);
 		fdFirstmails = new FormData();

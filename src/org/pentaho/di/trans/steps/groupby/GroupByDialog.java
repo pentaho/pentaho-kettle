@@ -195,7 +195,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         fdbSortDir.top  = new FormAttachment(wAllRows, margin);
         wbSortDir.setLayoutData(fdbSortDir);
 
-        wSortDir=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSortDir=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSortDir);
         wSortDir.addModifyListener(lsMod);
         fdSortDir=new FormData();
@@ -306,7 +306,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
 		ciKey[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
-		wGroup=new TableView(shell, 
+		wGroup=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
 						      nrKeyRows,  
@@ -345,7 +345,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		ciReturn[1]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[2]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc); //$NON-NLS-1$
 		
-		wAgg=new TableView(shell, 
+		wAgg=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 							  ciReturn, 
 							  UpInsRows,  

@@ -281,7 +281,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlSchemaname.top = new FormAttachment(wConnection, margin);
 		wlSchemaname.setLayoutData(fdlSchemaname);
 
-		wSchemaname = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
 		wSchemaname.setToolTipText(Messages.getString("JobMysqlBulkLoad.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
@@ -310,7 +310,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		wbTable.setLayoutData(fdbTable);
 		wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 
-		wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
 		wTablename.addModifyListener(lsMod);
 		fdTablename = new FormData();
@@ -337,7 +337,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdbFilename.top = new FormAttachment(wTablename, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename = new FormData();
@@ -437,7 +437,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlSeparator.top = new FormAttachment(wProrityValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
-		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSeparator = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSeparator);
 		wSeparator.addModifyListener(lsMod);
 		fdSeparator = new FormData();
@@ -456,7 +456,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlEnclosed.top = new FormAttachment(wSeparator, margin);
 		wlEnclosed.setLayoutData(fdlEnclosed);
 
-		wEnclosed = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEnclosed = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wEnclosed);
 		wEnclosed.addModifyListener(lsMod);
 		fdEnclosed = new FormData();
@@ -475,7 +475,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlEscaped.top = new FormAttachment(wEnclosed, margin);
 		wlEscaped.setLayoutData(fdlEscaped);
 
-		wEscaped= new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEscaped= new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wEscaped);
 		wEscaped.setToolTipText(Messages.getString("JobMysqlBulkLoad.Escaped.Tooltip"));
 		wEscaped.addModifyListener(lsMod);
@@ -495,7 +495,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlLinestarted.top = new FormAttachment(wEscaped, margin);
 		wlLinestarted.setLayoutData(fdlLinestarted);
 
-		wLinestarted = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLinestarted = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLinestarted);
 		wLinestarted.addModifyListener(lsMod);
 		fdLinestarted = new FormData();
@@ -514,7 +514,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlLineterminated.top = new FormAttachment(wLinestarted, margin);
 		wlLineterminated.setLayoutData(fdlLineterminated);
 
-		wLineterminated = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLineterminated = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLineterminated);
 		wLineterminated.addModifyListener(lsMod);
 		fdLineterminated = new FormData();
@@ -542,7 +542,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		wbListattribut.setLayoutData(fdbListattribut);
 		wbListattribut.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getListColumns(); } } );
 
-		wListattribut = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wListattribut = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wListattribut);
 		wListattribut.setToolTipText(Messages.getString("JobMysqlBulkLoad.Listattribut.Tooltip"));
 		wListattribut.addModifyListener(lsMod);
@@ -587,7 +587,7 @@ public class JobEntryMysqlBulkLoadDialog extends Dialog implements JobEntryDialo
 		fdlIgnorelines.top = new FormAttachment(wReplacedata, margin);
 		wlIgnorelines.setLayoutData(fdlIgnorelines);
 
-		wIgnorelines = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wIgnorelines = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wIgnorelines);
 		wIgnorelines.addModifyListener(lsMod);
 		fdIgnorelines = new FormData();

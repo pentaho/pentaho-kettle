@@ -651,6 +651,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
     {
-        return new JobEntryJobDialog(shell,this,rep);
+        return new JobEntryJobDialog(shell,this,rep, jobMeta);
     }
 }

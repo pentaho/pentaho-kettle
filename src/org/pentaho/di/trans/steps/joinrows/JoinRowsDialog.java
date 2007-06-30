@@ -156,7 +156,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
         wbSortDir.setLayoutData(fdbSortDir);
 
-    	wSortDir=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    	wSortDir=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSortDir.setText(Messages.getString("JoinRowsDialog.Temp.Label")); //$NON-NLS-1$
  		props.setLook(wSortDir);
 		wSortDir.addModifyListener(lsMod);

@@ -234,7 +234,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         fdSchema=new FormData();
@@ -260,7 +260,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
-		wTable = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable = new FormData();
@@ -286,7 +286,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbSqlldr.right = new FormAttachment(100, 0);
 		fdbSqlldr.top = new FormAttachment(wTable, margin);
 		wbSqlldr.setLayoutData(fdbSqlldr);
-		wSqlldr = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSqlldr = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSqlldr);
 		wSqlldr.addModifyListener(lsMod);
 		fdSqlldr = new FormData();
@@ -364,7 +364,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlMaxErrors.top = new FormAttachment(wLoadAction, margin);
 		fdlMaxErrors.right = new FormAttachment(middle, -margin);
 		wlMaxErrors.setLayoutData(fdlMaxErrors);
-		wMaxErrors = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wMaxErrors = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMaxErrors);
 		wMaxErrors.addModifyListener(lsMod);
 		fdMaxErrors = new FormData();
@@ -382,7 +382,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlCommit.top = new FormAttachment(wMaxErrors, margin);
 		fdlCommit.right = new FormAttachment(middle, -margin);
 		wlCommit.setLayoutData(fdlCommit);
-		wCommit = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wCommit = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCommit);
 		wCommit.addModifyListener(lsMod);
 		fdCommit = new FormData();
@@ -400,7 +400,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlBindSize.top = new FormAttachment(wCommit, margin);
 		fdlBindSize.right = new FormAttachment(middle, -margin);
 		wlBindSize.setLayoutData(fdlBindSize);
-		wBindSize = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wBindSize = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wBindSize);
 		wBindSize.addModifyListener(lsMod);
 		fdBindSize = new FormData();
@@ -418,7 +418,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdlReadSize.top = new FormAttachment(wBindSize, margin);
 		fdlReadSize.right = new FormAttachment(middle, -margin);
 		wlReadSize.setLayoutData(fdlReadSize);
-		wReadSize = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wReadSize = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wReadSize);
 		wReadSize.addModifyListener(lsMod);
 		fdReadSize = new FormData();
@@ -443,7 +443,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbControlFile.right = new FormAttachment(100, 0);
 		fdbControlFile.top = new FormAttachment(wReadSize, margin);
 		wbControlFile.setLayoutData(fdbControlFile);
-		wControlFile = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);				
+		wControlFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);				
  		props.setLook(wControlFile);
 		wControlFile.addModifyListener(lsMod);
 		fdControlFile = new FormData();
@@ -468,7 +468,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbDataFile.right = new FormAttachment(100, 0);
 		fdbDataFile.top = new FormAttachment(wControlFile, margin);
 		wbDataFile.setLayoutData(fdbDataFile);	
-		wDataFile = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDataFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDataFile);
 		wDataFile.addModifyListener(lsMod);
 		fdDataFile = new FormData();
@@ -493,7 +493,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbLogFile.right = new FormAttachment(100, 0);
 		fdbLogFile.top = new FormAttachment(wDataFile, margin);
 		wbLogFile.setLayoutData(fdbLogFile);
-		wLogFile = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLogFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLogFile);
 		wLogFile.addModifyListener(lsMod);
 		fdLogFile = new FormData();
@@ -518,7 +518,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbBadFile.right = new FormAttachment(100, 0);
 		fdbBadFile.top = new FormAttachment(wLogFile, margin);
 		wbBadFile.setLayoutData(fdbBadFile);		
-		wBadFile = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wBadFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wBadFile);
 		wBadFile.addModifyListener(lsMod);
 		fdBadFile = new FormData();
@@ -543,7 +543,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		fdbDiscardFile.right = new FormAttachment(100, 0);
 		fdbDiscardFile.top = new FormAttachment(wBadFile, margin);
 		wbDiscardFile.setLayoutData(fdbDiscardFile);
-		wDiscardFile = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDiscardFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDiscardFile);
 		wDiscardFile.addModifyListener(lsMod);
 		fdDiscardFile = new FormData();
@@ -657,7 +657,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			                                       Messages.getString("OraBulkLoaderDialog.DateMask.Label"),
 	                                        	   Messages.getString("OraBulkLoaderDialog.DateTimeMask.Label")}, true); 
 
-		wReturn = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+		wReturn = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
 
 		wGetLU = new Button(shell, SWT.PUSH);

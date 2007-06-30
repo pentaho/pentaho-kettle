@@ -144,6 +144,8 @@ import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ImageUtil;
 import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -799,7 +801,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         if (rows.size()!=0)
         {
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("Spoon.StringSearchResult.Subtitle"), rowMeta, rows);
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, Messages.getString("Spoon.StringSearchResult.Subtitle"), rowMeta, rows);
             String title = Messages.getString("Spoon.StringSearchResult.Title");
             String message = Messages.getString("Spoon.StringSearchResult.Message");
             prd.setTitleMessage(title, message);
@@ -3063,7 +3065,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             for (int i=0;i<nrNext;i++) targetSteps.add( transMeta.findNextStep(stepMeta, i) );
             
             // now edit this stepErrorMeta object:
-            StepErrorMetaDialog dialog = new StepErrorMetaDialog(shell, stepErrorMeta, targetSteps);
+            StepErrorMetaDialog dialog = new StepErrorMetaDialog(shell, stepErrorMeta, transMeta, targetSteps);
             if (dialog.open())
             {
                 stepMeta.setStepErrorMeta(stepErrorMeta);
@@ -6508,7 +6510,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         TransGraph transGraph = findTransGraphOfTransformation(transMeta);
         if (transGraph==null) return;
         
-        CheckResultDialog crd = new CheckResultDialog(shell, SWT.NONE, transGraph.getRemarks());
+        CheckResultDialog crd = new CheckResultDialog(transMeta, shell, SWT.NONE, transGraph.getRemarks());
         String stepname = crd.open();
         if (stepname!=null)
         {
@@ -6573,7 +6575,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (rows.size()>0)
         {
             // Display all the rows...
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "-", rowMeta, rows);
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, "-", rowMeta, rows);
             prd.setTitleMessage(Messages.getString("Spoon.Dialog.ImpactAnalyses.Title"), Messages.getString("Spoon.Dialog.ImpactAnalyses.Message"));//"Impact analyses"  "Result of analyses:"
             prd.open();
         }
@@ -6613,7 +6615,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         {
             if (stats.size()>0)
             {
-                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, SWT.NONE, stats);
+                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, Variables.getADefaultVariableSpace(), SWT.NONE, stats);
                 ssd.open();
             }
             else
@@ -6638,7 +6640,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         {
             if (stats.size()>0)
             {
-                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, SWT.NONE, stats);
+                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, (VariableSpace)jobMeta, SWT.NONE, stats);
                 ssd.open();
             }
             else

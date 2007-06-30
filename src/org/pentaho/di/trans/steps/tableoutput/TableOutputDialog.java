@@ -192,7 +192,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         fdSchema=new FormData();
@@ -219,7 +219,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();

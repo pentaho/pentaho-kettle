@@ -295,7 +295,7 @@ public class SQLEditor extends Dialog
                                     RowMetaInterface rowMeta = db.getReturnRowMeta();
     								if (rows.size()>0)
     								{
-    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
+    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, ci, SWT.NONE, Messages.getString("SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
     									prd.open();
     								}
     								else

@@ -28,6 +28,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.trans.TransMeta;
 
 
 
@@ -68,14 +69,17 @@ public class StepErrorMetaDialog extends Dialog
     private StepErrorMeta originalStepErrorMeta;
     private boolean ok;
     
-	public StepErrorMetaDialog(Shell par, StepErrorMeta stepErrorMeta, List targetSteps)
+    private TransMeta transMeta;
+    
+	public StepErrorMetaDialog(Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta, List targetSteps)
 	{
 		super(par, SWT.NONE);
 		this.stepErrorMeta=(StepErrorMeta)stepErrorMeta.clone();
         this.originalStepErrorMeta=stepErrorMeta;
         this.targetSteps = targetSteps;
+        this.transMeta = transMeta;
 		props=Props.getInstance();
-        ok=false;
+        ok=false;        
 	}
 	
 	public boolean open() 
@@ -191,7 +195,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlNrErrors.right = new FormAttachment(middle, -margin);
         wlNrErrors.setLayoutData(fdlNrErrors);
 
-        wNrErrors = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wNrErrors = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wNrErrors);
         wNrErrors.addModifyListener(lsMod);
         FormData fdNrErrors = new FormData();
@@ -210,7 +214,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlErrDesc.right = new FormAttachment(middle, -margin);
         wlErrDesc.setLayoutData(fdlErrDesc);
 
-        wErrDesc = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wErrDesc = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wErrDesc);
         wErrDesc.addModifyListener(lsMod);
         FormData fdErrDesc = new FormData();
@@ -229,7 +233,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlErrFields.right= new FormAttachment(middle, -margin);
         wlErrFields.setLayoutData(fdlErrFields);
 
-        wErrFields = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wErrFields = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wErrFields);
         wErrFields.addModifyListener(lsMod);
         FormData fdErrFields = new FormData();
@@ -248,7 +252,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlErrCodes.right= new FormAttachment(middle, -margin);
         wlErrCodes.setLayoutData(fdlErrCodes);
 
-        wErrCodes = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wErrCodes = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wErrCodes);
         wErrCodes.addModifyListener(lsMod);
         FormData fdErrCodes = new FormData();
@@ -267,7 +271,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlMaxErrors.right= new FormAttachment(middle, -margin);
         wlMaxErrors.setLayoutData(fdlMaxErrors);
 
-        wMaxErrors = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wMaxErrors = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wMaxErrors);
         wMaxErrors.addModifyListener(lsMod);
         FormData fdMaxErrors = new FormData();
@@ -286,7 +290,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlMaxPct.right= new FormAttachment(middle, -margin);
         wlMaxPct.setLayoutData(fdlMaxPct);
 
-        wMaxPct = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wMaxPct = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wMaxPct);
         wMaxPct.addModifyListener(lsMod);
         FormData fdMaxPct = new FormData();
@@ -305,7 +309,7 @@ public class StepErrorMetaDialog extends Dialog
         fdlMinPctRows.right= new FormAttachment(middle, -margin);
         wlMinPctRows.setLayoutData(fdlMinPctRows);
 
-        wMinPctRows = new TextVar(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wMinPctRows = new TextVar(transMeta, composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wMinPctRows);
         wMinPctRows.addModifyListener(lsMod);
         FormData fdMinPctRows = new FormData();

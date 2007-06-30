@@ -225,7 +225,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		ciKey[2]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciKey[3]=new ColumnInfo(Messages.getString("DeleteDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
-		wKey=new TableView(shell, 
+		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
 						      nrKeyRows,  

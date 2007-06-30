@@ -82,11 +82,6 @@ import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 
-
-
-
-
-
 public class TransDialog extends Dialog
 {
 	private LogWriter    log;
@@ -987,7 +982,7 @@ public class TransDialog extends Dialog
         colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
         colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
         
-        wFields=new TableView(wDepComp, 
+        wFields=new TableView(transMeta, wDepComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FieldsRows,  
@@ -1121,7 +1116,7 @@ public class TransDialog extends Dialog
         fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
         fdlSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
         wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
-        wSharedObjectsFile=new TextVar(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSharedObjectsFile=new TextVar(transMeta, wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wlSharedObjectsFile.setToolTipText(Messages.getString("TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
         wSharedObjectsFile.setToolTipText(Messages.getString("TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
         props.setLook(wSharedObjectsFile);
@@ -1256,7 +1251,7 @@ public class TransDialog extends Dialog
             {
                 new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
             };
-        wPartitions=new TableView(wPartComp, 
+        wPartitions=new TableView(transMeta, wPartComp, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               partitionColumns, 
                               1,  

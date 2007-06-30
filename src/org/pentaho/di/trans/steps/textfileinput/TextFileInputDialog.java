@@ -690,7 +690,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbaFilename.top  = new FormAttachment(0, 0);
         wbaFilename.setLayoutData(fdbaFilename);
 
-        wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename=new FormData();
@@ -860,7 +860,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         colinfo[ 1].setToolTip(Messages.getString("TextFileInputDialog.RegExpColumn.Column"));
         colinfo[ 2].setToolTip(Messages.getString("TextFileInputDialog.RequiredColumn.Tooltip"));
 
-        wFilenameList = new TableView(wFileComp, 
+        wFilenameList = new TableView(transMeta, wFileComp, 
                               SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
                               colinfo, 
                               3,  
@@ -1816,7 +1816,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         colinf[2].setToolTip(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Tooltip"));
         
-        wFilter=new TableView(wFilterComp, 
+        wFilter=new TableView(transMeta, wFilterComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FilterRows,  
@@ -1889,7 +1889,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         colinf[12].setToolTip(Messages.getString("TextFileInputDialog.RepeatColumn.Tooltip"));
         
-        wFields=new TableView(wFieldsComp, 
+        wFields=new TableView(transMeta, wFieldsComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FieldsRows,  
@@ -2541,7 +2541,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 }
             }
             
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
             prd.open();
         }
     }

@@ -11,6 +11,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -27,7 +28,8 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -40,11 +42,11 @@ import org.pentaho.di.www.StopTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Node;
 
-public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface
+public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
 {
     public static final String XML_TAG = "slaveserver";
 
-    private static LogWriter log = LogWriter.getInstance();
+    private static LogWriter log = LogWriter.getInstance();    
     
     private String name;
     private String hostname;
@@ -61,8 +63,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     private boolean shared;
     private long id;
     
+    private VariableSpace variables = new Variables();
+    
     public SlaveServer()
     {
+    	initializeVariablesFrom(null);
         id=-1L;
     }
     
@@ -85,6 +90,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.nonProxyHosts = nonProxyHosts;
         
         this.master = master;
+        initializeVariablesFrom(null);
     }
     
     public SlaveServer(Node slaveNode)
@@ -99,6 +105,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.proxyPort     = XMLHandler.getTagValue(slaveNode, "proxy_port");
         this.nonProxyHosts = XMLHandler.getTagValue(slaveNode, "non_proxy_hosts");
         this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue(slaveNode, "master") );
+        initializeVariablesFrom(null);
     }
 
     public String getXML()
@@ -200,7 +207,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public String getServerAndPort()
     {
-        String realHostname = StringUtil.environmentSubstitute(hostname);
+        String realHostname = environmentSubstitute(hostname);
         if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
         return "Slave Server";
     }
@@ -309,7 +316,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public String getPortSpecification()
     {
-        String realPort = StringUtil.environmentSubstitute(port);
+        String realPort = environmentSubstitute(port);
         String portSpec = ":"+realPort;
         if (Const.isEmpty(realPort) || port.equals("80"))
         {
@@ -320,7 +327,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public String constructUrl(String serviceAndArguments)
     {
-        String realHostname = StringUtil.environmentSubstitute(hostname);
+        String realHostname = environmentSubstitute(hostname);
         String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments;
         retval = Const.replace(retval, " ", "%20");
         return retval;
@@ -417,7 +424,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         client.getState().setCredentials
               (
-                new AuthScope(hostname, Const.toInt(StringUtil.environmentSubstitute(port), 80), "Kettle"),
+                new AuthScope(hostname, Const.toInt(environmentSubstitute(port), 80), "Kettle"),
                 new UsernamePasswordCredentials(username, password)
               );
     }
@@ -665,6 +672,58 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this.id = id;
     }
 
-    
-}
+	public void copyVariablesFrom(VariableSpace space) 
+	{
+		variables.copyVariablesFrom(space);		
+	}
 
+	public String environmentSubstitute(String aString) 
+	{
+		return variables.environmentSubstitute(aString);
+	}
+
+	public String[] environmentSubstitute(String aString[]) 
+	{
+		return variables.environmentSubstitute(aString);
+	}		
+
+	public VariableSpace getParentVariableSpace() 
+	{
+		return variables.getParentVariableSpace();
+	}
+
+	public String getVariable(String variableName, String defaultValue) 
+	{
+		return variables.getVariable(variableName, defaultValue);
+	}
+
+	public String getVariable(String variableName) 
+	{
+		return variables.getVariable(variableName);
+	}
+
+	public void initializeVariablesFrom(VariableSpace parent) 
+	{
+		variables.initializeVariablesFrom(parent);	
+	}
+
+	public String[] listVariables() 
+	{
+		return variables.listVariables();
+	}
+
+	public void setVariable(String variableName, String variableValue) 
+	{
+		variables.setVariable(variableName, variableValue);		
+	}
+
+	public void shareVariablesWith(VariableSpace space) 
+	{
+		variables = space;		
+	}
+
+	public void injectVariables(Properties prop) 
+	{
+		variables.injectVariables(prop);		
+	}	       
+}

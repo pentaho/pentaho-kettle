@@ -213,7 +213,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdbaFilename.top = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename = new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename = new FormData();
@@ -285,7 +285,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 		colinfo[1].setToolTip(Messages.getString("GetFileNamesDialog.RegExpColumn.Column"));
 
-		wFilenameList = new TableView(wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
+		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				colinfo.length, lsMod, props);
 		props.setLook(wFilenameList);
 		fdFilenameList = new FormData();
@@ -667,7 +667,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				}
 				
 				
-				PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(),progressDialog.getPreviewRowsMeta(wStepname.getText()),
+				PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),progressDialog.getPreviewRowsMeta(wStepname.getText()),
 						progressDialog.getPreviewRows(wStepname.getText()), loggingText);
 				prd.open();
 			}

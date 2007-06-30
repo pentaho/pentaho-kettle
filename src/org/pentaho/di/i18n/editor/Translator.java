@@ -34,6 +34,7 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -355,7 +356,8 @@ public class Translator
              new ColumnInfo("Not available in", ColumnInfo.COLUMN_TYPE_TEXT,   true),
            };
         
-        wGrid=new TableView(  composite, 
+        wGrid=new TableView(  Variables.getADefaultVariableSpace(),
+        		              composite, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               0,  

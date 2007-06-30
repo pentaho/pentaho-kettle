@@ -132,7 +132,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
         colinf[1].setToolTip(Messages.getString("GetVariableDialog.VariableColumn.Tooltip"));
         colinf[1].setUsingVariables(true);
         
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

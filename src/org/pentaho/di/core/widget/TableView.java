@@ -88,8 +88,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
-
-
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
@@ -160,13 +159,15 @@ public class TableView extends Composite
     private Map<String,Color> usedColors;
     private ColumnInfo numberColumn;
     protected int textWidgetCaretPosition;
+    
+    private VariableSpace variables;
 
-	public TableView(Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
+	public TableView(VariableSpace space, Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
 	{
-		this(par, st, c, r, false, lsm, pr);
+		this(space, par, st, c, r, false, lsm, pr);
 	}
 
-	public TableView(Composite par, int st, ColumnInfo[] c, int r, boolean ro, ModifyListener lsm, Props pr)
+	public TableView(VariableSpace space, Composite par, int st, ColumnInfo[] c, int r, boolean ro, ModifyListener lsm, Props pr)
 	{
 		super(par, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP);
 		parent  = par;
@@ -176,6 +177,7 @@ public class TableView extends Composite
 		props   = pr;
 		readonly= ro;
 		clipboard=null;
+		variables=space;
 				
 		sortfield = 0;
 		sortingDescending = false;
@@ -1881,7 +1883,7 @@ public class TableView extends Composite
                     }
                 };
             
-            final TextVar textWidget = new TextVar(table, SWT.NONE, getCaretPositionInterface, insertTextInterface);
+            final TextVar textWidget = new TextVar(variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface);
 
             text = textWidget;
             textWidget.setText(content); 

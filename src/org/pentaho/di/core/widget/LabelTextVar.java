@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Adds a line of text with a label and a variable to a composite (like a dialog shell)
@@ -26,13 +27,14 @@ public class LabelTextVar extends Composite
     
     private Label wLabel;
     private TextVar wText;
+    private VariableSpace variables;
 
-    public LabelTextVar(Composite composite, String labelText, String toolTipText)
+    public LabelTextVar(VariableSpace space, Composite composite, String labelText, String toolTipText)
     {
-        this(composite, SWT.NONE, labelText, toolTipText);
+        this(space, composite, SWT.NONE, labelText, toolTipText);
     }
 
-    public LabelTextVar(Composite composite, int flags, String labelText, String toolTipText)
+    public LabelTextVar(VariableSpace space, Composite composite, int flags, String labelText, String toolTipText)
     {
         super(composite, SWT.NONE);
         props.setLook(this);
@@ -51,7 +53,7 @@ public class LabelTextVar extends Composite
         int textFlags = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
         if (flags!=SWT.NONE) textFlags = flags;
         
-        wText = new TextVar(this, textFlags, toolTipText);
+        wText = new TextVar(variables, this, textFlags, toolTipText);
         FormData fdText = new FormData();
         fdText.left = new FormAttachment(middle, margin);
         fdText.right= new FormAttachment(100, 0);

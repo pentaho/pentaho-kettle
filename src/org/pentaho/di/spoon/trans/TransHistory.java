@@ -130,7 +130,8 @@ public class TransHistory extends Composite implements TabItemInterface
 		
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
         
-        wFields=new TableView(sash, 
+        wFields=new TableView(transMeta, 
+        		              sash, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, 
 							  colinf, 
 							  FieldsRows,  

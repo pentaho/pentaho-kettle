@@ -40,6 +40,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -70,13 +71,16 @@ public class StepFieldsDialog extends Dialog
 	private String        stepname;
 	
 	private SelectionAdapter lsDef;
+	
+	private VariableSpace variables;
     
-	public StepFieldsDialog(Shell parent, int style, String stepname, RowMetaInterface input)
+	public StepFieldsDialog(Shell parent, VariableSpace space, int style, String stepname, RowMetaInterface input)
 	{
 			super(parent, style);
 			this.stepname=stepname;
             this.input=input;
-			props=Props.getInstance();
+            this.variables = space;
+			props=Props.getInstance();			
 	}
 
 	public Object open()
@@ -131,7 +135,7 @@ public class StepFieldsDialog extends Dialog
 		colinf[3]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 		colinf[4]=new ColumnInfo(Messages.getString("StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(variables, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

@@ -300,7 +300,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlSchemaname.top = new FormAttachment(wConnection, margin);
 		wlSchemaname.setLayoutData(fdlSchemaname);
 
-		wSchemaname = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
 		wSchemaname.setToolTipText(Messages.getString("JobMysqlBulkFile.Schemaname.Tooltip"));
 		wSchemaname.addModifyListener(lsMod);
@@ -329,7 +329,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
         wbTable.setLayoutData(fdbTable);
         wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 
-		wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTablename);
 		wTablename.setToolTipText(Messages.getString("JobMysqlBulkFile.Tablename.Tooltip"));
 		wTablename.addModifyListener(lsMod);
@@ -359,7 +359,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		// fdbFilename.height = 22;
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename = new FormData();
@@ -473,7 +473,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlSeparator.top = new FormAttachment(wOutDumpValue, margin);
 		wlSeparator.setLayoutData(fdlSeparator);
 
-		wSeparator = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSeparator = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSeparator);
 		wSeparator.addModifyListener(lsMod);
 		fdSeparator = new FormData();
@@ -492,7 +492,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlEnclosed.top = new FormAttachment(wSeparator, margin);
 		wlEnclosed.setLayoutData(fdlEnclosed);
 
-		wEnclosed = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wEnclosed = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wEnclosed);
 		wEnclosed.addModifyListener(lsMod);
 		fdEnclosed = new FormData();
@@ -537,7 +537,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlLineterminated.top = new FormAttachment(wOptionEnclosed, margin);
 		wlLineterminated.setLayoutData(fdlLineterminated);
 
-		wLineterminated = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLineterminated = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLineterminated);
 		wLineterminated.addModifyListener(lsMod);
 		fdLineterminated = new FormData();
@@ -546,9 +546,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdLineterminated.right = new FormAttachment(100, 0);
 		wLineterminated.setLayoutData(fdLineterminated);
 
-
-
-
+		
 		// List of columns to set for
 		wlListColumn = new Label(shell, SWT.RIGHT);
 		wlListColumn.setText(Messages.getString("JobMysqlBulkFile.ListColumn.Label"));
@@ -568,7 +566,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
         wbListColumns.setLayoutData(fdbListColumns);
         wbListColumns.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getListColumns(); } } );
 
-		wListColumn = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wListColumn = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wListColumn);
 		wListColumn.setToolTipText(Messages.getString("JobMysqlBulkFile.ListColumn.Tooltip"));
 		wListColumn.addModifyListener(lsMod);
@@ -591,7 +589,7 @@ public class JobEntryMysqlBulkFileDialog extends Dialog implements JobEntryDialo
 		fdlLimitlines.top = new FormAttachment(wListColumn, margin);
 		wlLimitlines.setLayoutData(fdlLimitlines);
 
-		wLimitlines = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLimitlines = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wLimitlines);
 		wLimitlines.setToolTipText(Messages.getString("JobMysqlBulkFile.Limitlines.Tooltip"));
 		wLimitlines.addModifyListener(lsMod);

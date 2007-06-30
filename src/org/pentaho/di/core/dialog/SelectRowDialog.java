@@ -39,6 +39,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -65,6 +66,8 @@ public class SelectRowDialog extends Dialog
     
 	private RowMetaAndData selection;
     private RowMetaInterface rowMeta;
+    
+    private VariableSpace variables;
 	
     /**
      * 
@@ -72,10 +75,11 @@ public class SelectRowDialog extends Dialog
      * @param style
      * @param buf
      */
-	public SelectRowDialog(Shell parent, int style, ArrayList buffer)
+	public SelectRowDialog(Shell parent, VariableSpace space, int style, ArrayList buffer)
 	{
 		super(parent, style);
 		this.buffer=buffer;
+		this.variables = space;
 		props=Props.getInstance();
 		
 		selection = null;
@@ -122,7 +126,7 @@ public class SelectRowDialog extends Dialog
             colinf[i].setReadOnly(true);
 		}
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(variables, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

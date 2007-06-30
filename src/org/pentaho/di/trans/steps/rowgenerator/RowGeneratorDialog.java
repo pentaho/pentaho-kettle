@@ -133,7 +133,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		fdlLimit.top  = new FormAttachment(wStepname, margin);
 		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLimit=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
@@ -164,7 +164,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		colinf[7]=new ColumnInfo(Messages.getString("System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[8]=new ColumnInfo(Messages.getString("System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  
@@ -376,7 +376,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
                 }
             }
             
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
             prd.open();
         }
     }

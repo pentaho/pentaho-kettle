@@ -41,12 +41,10 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
-
-
-
 
 
 /**
@@ -80,19 +78,22 @@ public class PreviewRowsDialog extends Dialog
     private String loggingText;
 
     private RowMetaInterface rowMeta;
+    
+    private VariableSpace variables;
 
-    public PreviewRowsDialog(Shell parent, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer)
+    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer)
     {
-        this(parent, style, stepName, rowMeta, rowBuffer, null);
+        this(parent, space, style, stepName, rowMeta, rowBuffer, null);
     }
 
-    public PreviewRowsDialog(Shell parent, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer, String loggingText)
+    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer, String loggingText)
     {
         super(parent, style);
         this.stepname = stepName;
         this.buffer = rowBuffer;
         this.loggingText = loggingText;
         this.rowMeta = rowMeta;
+        this.variables = space;
 
         props = Props.getInstance();
         bounds = null;
@@ -161,7 +162,7 @@ public class PreviewRowsDialog extends Dialog
             colinf[i].setValueMeta(v);
         }
 
-        wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+        wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
             FieldsRows, null, props);
 
         fdFields = new FormData();

@@ -214,7 +214,7 @@ public class SlaveServerDialog extends Dialog
 		fdlHostname.right = new FormAttachment(middle, -margin);
 		wlHostname.setLayoutData(fdlHostname);
 
-		wHostname = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wHostname = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wHostname);
 		wHostname.addModifyListener(lsMod);
 		FormData fdHostname = new FormData();
@@ -233,7 +233,7 @@ public class SlaveServerDialog extends Dialog
 		fdlPort.right = new FormAttachment(middle, -margin);
 		wlPort.setLayoutData(fdlPort);
 
-		wPort = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wPort = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wPort);
 		wPort.addModifyListener(lsMod);
 		FormData fdPort = new FormData();
@@ -252,7 +252,7 @@ public class SlaveServerDialog extends Dialog
 		fdlUsername.right= new FormAttachment(middle, -margin);
 		wlUsername.setLayoutData(fdlUsername);
 
-		wUsername = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wUsername = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wUsername);
 		wUsername.addModifyListener(lsMod);
 		FormData fdUsername = new FormData();
@@ -272,7 +272,7 @@ public class SlaveServerDialog extends Dialog
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
 
-		wPassword = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wPassword = new TextVar(slaveServer, wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wPassword);
 		wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
@@ -342,7 +342,7 @@ public class SlaveServerDialog extends Dialog
 		fdlProxyHost.right = new FormAttachment(middle, -margin);
 		wlProxyHost.setLayoutData(fdlProxyHost);
 
-		wProxyHost = new TextVar(wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
+		wProxyHost = new TextVar(slaveServer, wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
 		props.setLook(wProxyHost);
 		wProxyHost.addModifyListener(lsMod);
 		FormData fdProxyHost = new FormData();
@@ -361,7 +361,7 @@ public class SlaveServerDialog extends Dialog
 		fdlProxyPort.right = new FormAttachment(middle, -margin);
 		wlProxyPort.setLayoutData(fdlProxyPort);
 
-		wProxyPort = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wProxyPort = new TextVar(slaveServer, wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wProxyPort);
 		wProxyPort.addModifyListener(lsMod);
 		FormData fdProxyPort = new FormData();
@@ -380,7 +380,7 @@ public class SlaveServerDialog extends Dialog
 		fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
 		wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
 
-		wNonProxyHosts = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wNonProxyHosts = new TextVar(slaveServer, wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
 		props.setLook(wNonProxyHosts);
 		wNonProxyHosts.addModifyListener(lsMod);
 		FormData fdNonProxyHosts = new FormData();

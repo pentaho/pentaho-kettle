@@ -137,7 +137,7 @@ public class EditDatabaseTable extends Dialog
 			colinf[i].setToolTip(v.toStringMeta());
 		}
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(dbinfo, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

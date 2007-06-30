@@ -256,7 +256,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		fdbaFilename.top = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename = new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename = new FormData();
@@ -327,7 +327,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		colinfo[1].setToolTip(Messages.getString("XMLInputSaxDialog.Column.FileDirectory.ToolTip")); //$NON-NLS-1$
 
-		wFilenameList = new TableView(wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,
+		wFilenameList = new TableView(transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2,
 				lsMod, props);
 		props.setLook(wFilenameList);
 		fdFilenameList = new FormData();
@@ -465,7 +465,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 		int nrElements = input.getInputPosition() != null ? input.getInputPosition().length : 0;
 
-		wPosition = new TableView(wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements,
+		wPosition = new TableView(transMeta, wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements,
 				lsMod, props);
 		wPosition.addModifyListener(lsMod);
 		fdPosition = new FormData();
@@ -547,7 +547,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 						Messages.getString("XMLInputSaxDialog.Column.Position.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		};
 
-		wFields = new TableView(wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
+		wFields = new TableView(transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
 
 		final int AttributesRows = input.getDefinitionLength();
 
@@ -558,7 +558,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 						Messages.getString("XMLInputSaxDialog.Column.DefiningAttribute.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		};
 
-		wAttributes = new TableView(wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinfatt, AttributesRows,
+		wAttributes = new TableView(transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinfatt, AttributesRows,
 				lsMod, props);
 
 		fdAttributes = new FormData();
@@ -1102,7 +1102,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 
 				if (!progressDialog.isCancelled())
 				{
-					PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(),
+					PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(),
 							progressDialog.getPreviewRowsMeta(wStepname.getText()),
 							(ArrayList) progressDialog.getPreviewRows(wStepname.getText()));
 					prd.open();

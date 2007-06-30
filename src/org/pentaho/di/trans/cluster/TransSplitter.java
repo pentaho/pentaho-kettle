@@ -12,7 +12,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -174,7 +173,7 @@ public class TransSplitter
         Integer port = (Integer) clusterPortMap.get(clusterSchema);
         if (port==null)
         {
-            p = Integer.parseInt( StringUtil.environmentSubstitute(clusterSchema.getBasePort())  );
+            p = Integer.parseInt( clusterSchema.environmentSubstitute(clusterSchema.getBasePort())  );
         }
         else
         {

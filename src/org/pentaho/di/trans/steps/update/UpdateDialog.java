@@ -283,7 +283,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		ciKey[2]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField1"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciKey[3]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField2"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
-		wKey=new TableView(shell, 
+		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
 						      nrKeyRows,  
@@ -332,7 +332,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		ciReturn[0]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.TableField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[1]=new ColumnInfo(Messages.getString("UpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
-		wReturn=new TableView(shell, 
+		wReturn=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 							  ciReturn, 
 							  UpInsRows,  

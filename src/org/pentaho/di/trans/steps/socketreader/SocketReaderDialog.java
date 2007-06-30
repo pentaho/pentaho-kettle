@@ -116,7 +116,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         fdlHostname.right= new FormAttachment(middle, -margin);
         fdlHostname.top  = new FormAttachment(wStepname, margin);
         wlHostname.setLayoutData(fdlHostname);
-        wHostname=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wHostname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wHostname.setText(stepname);
         props.setLook(wHostname);
         wHostname.addModifyListener(lsMod);
@@ -135,7 +135,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         fdlPort.right= new FormAttachment(middle, -margin);
         fdlPort.top  = new FormAttachment(wHostname, margin);
         wlPort.setLayoutData(fdlPort);
-        wPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPort=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wPort.setText(stepname);
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
@@ -154,7 +154,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         fdlBufferSize.right= new FormAttachment(middle, -margin);
         fdlBufferSize.top  = new FormAttachment(wPort, margin);
         wlBufferSize.setLayoutData(fdlBufferSize);
-        wBufferSize=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wBufferSize=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wBufferSize.setText(stepname);
         props.setLook(wBufferSize);
         wBufferSize.addModifyListener(lsMod);

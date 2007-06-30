@@ -131,7 +131,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 						Messages.getString("RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		};
 
-		wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
+		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
 				lsMod, props);
 
 		// Some buttons

@@ -163,7 +163,7 @@ public class JobEntryWaitForFileDialog extends Dialog implements JobEntryDialogI
 		fdbFilename.top  = new FormAttachment(wName, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -212,7 +212,7 @@ public class JobEntryWaitForFileDialog extends Dialog implements JobEntryDialogI
         fdlMaximumTimeout.top = new FormAttachment(wFilename, margin);
         fdlMaximumTimeout.right = new FormAttachment(middle, -margin);
         wlMaximumTimeout.setLayoutData(fdlMaximumTimeout);
-        wMaximumTimeout = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wMaximumTimeout = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wMaximumTimeout);
         wMaximumTimeout.setToolTipText(Messages.getString("JobWaitForFile.MaximumTimeout.Tooltip"));
         wMaximumTimeout.addModifyListener(lsMod);
@@ -231,7 +231,7 @@ public class JobEntryWaitForFileDialog extends Dialog implements JobEntryDialogI
         fdlCheckCycleTime.top = new FormAttachment(wMaximumTimeout, margin);
         fdlCheckCycleTime.right = new FormAttachment(middle, -margin);
         wlCheckCycleTime.setLayoutData(fdlCheckCycleTime);
-        wCheckCycleTime = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCheckCycleTime = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wCheckCycleTime);
         wCheckCycleTime.setToolTipText(Messages.getString("JobWaitForFile.CheckCycleTime.Tooltip"));
         wCheckCycleTime.addModifyListener(lsMod);

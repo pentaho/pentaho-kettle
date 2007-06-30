@@ -498,7 +498,7 @@ public class DatabaseDialog extends Dialog
         fdlHostName.right = new FormAttachment(middle, -margin);
         wlHostName.setLayoutData(fdlHostName);
 
-        wHostName = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wHostName = new TextVar(databaseMeta, wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wHostName);
         wHostName.addModifyListener(lsMod);
         FormData fdHostName = new FormData();
@@ -517,7 +517,7 @@ public class DatabaseDialog extends Dialog
         fdlDBName.right = new FormAttachment(middle, -margin);
         wlDBName.setLayoutData(fdlDBName);
 
-        wDBName = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDBName = new TextVar(databaseMeta, wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wDBName);
         wDBName.addModifyListener(lsMod);
         FormData fdDBName = new FormData();
@@ -536,7 +536,7 @@ public class DatabaseDialog extends Dialog
         fdlPort.right = new FormAttachment(middle, -margin);
         wlPort.setLayoutData(fdlPort);
 
-        wPort = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPort = new TextVar(databaseMeta, wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
         FormData fdPort = new FormData();
@@ -555,7 +555,7 @@ public class DatabaseDialog extends Dialog
         fdlUsername.right = new FormAttachment(middle, -margin);
         wlUsername.setLayoutData(fdlUsername);
 
-        wUsername = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wUsername = new TextVar(databaseMeta, wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUsername);
         wUsername.addModifyListener(lsMod);
         FormData fdUsername = new FormData();
@@ -574,7 +574,7 @@ public class DatabaseDialog extends Dialog
         fdlPassword.right = new FormAttachment(middle, -margin);
         wlPassword.setLayoutData(fdlPassword);
 
-        wPassword = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPassword = new TextVar(databaseMeta, wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -651,7 +651,7 @@ public class DatabaseDialog extends Dialog
         fdlInitPool.right = new FormAttachment(middle, -margin);
         wlInitPool.setLayoutData(fdlInitPool);
 
-        wInitPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wInitPool = new TextVar(databaseMeta, wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wInitPool.setText(Integer.toString(databaseMeta.getInitialPoolSize()));
         props.setLook(wInitPool);
         wInitPool.addModifyListener(lsMod);
@@ -671,7 +671,7 @@ public class DatabaseDialog extends Dialog
         fdlMaxPool.right = new FormAttachment(middle, -margin);
         wlMaxPool.setLayoutData(fdlMaxPool);
 
-        wMaxPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wMaxPool = new TextVar(databaseMeta, wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wMaxPool.setText(Integer.toString(databaseMeta.getMaximumPoolSize()));
         props.setLook(wMaxPool);
         wMaxPool.addModifyListener(lsMod);
@@ -709,7 +709,7 @@ public class DatabaseDialog extends Dialog
             {
                 if (parameters.size()<=0) return;
                 
-                SelectRowDialog dialog = new SelectRowDialog(shell, SWT.NONE, parameters);
+                SelectRowDialog dialog = new SelectRowDialog(shell, databaseMeta, SWT.NONE, parameters);
                 RowMetaAndData row = dialog.open();
                 if (row != null)
                 {
@@ -730,7 +730,7 @@ public class DatabaseDialog extends Dialog
             }
         });
 
-        wPoolParameters = new TableView(wPoolComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
+        wPoolParameters = new TableView(databaseMeta, wPoolComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wPoolParameters);
         FormData fdOptions = new FormData();
         fdOptions.left = new FormAttachment(0, 0);
@@ -776,7 +776,7 @@ public class DatabaseDialog extends Dialog
         fdlData.right = new FormAttachment(middle, -margin);
         wlData.setLayoutData(fdlData);
 
-        wData = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wData = new TextVar(databaseMeta, wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wData.setText(NVL(databaseMeta.getDataTablespace() == null ? "" : databaseMeta.getDataTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wData);
         wData.addModifyListener(lsMod);
@@ -796,7 +796,7 @@ public class DatabaseDialog extends Dialog
         fdlIndex.right = new FormAttachment(middle, -margin);
         wlIndex.setLayoutData(fdlIndex);
 
-        wIndex = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wIndex = new TextVar(databaseMeta, wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wIndex.setText(NVL(databaseMeta.getIndexTablespace() == null ? "" : databaseMeta.getIndexTablespace(), "")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wIndex);
         wIndex.addModifyListener(lsMod);
@@ -1021,7 +1021,7 @@ public class DatabaseDialog extends Dialog
         fdlURL.right = new FormAttachment(middle, -margin);
         wlURL.setLayoutData(fdlURL);
 
-        wURL = new TextVar(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wURL = new TextVar(databaseMeta, wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wURL);
         wURL.addModifyListener(lsMod);
         FormData fdURL = new FormData();
@@ -1040,7 +1040,7 @@ public class DatabaseDialog extends Dialog
         fdlDriverClass.right = new FormAttachment(middle, -margin);
         wlDriverClass.setLayoutData(fdlDriverClass);
 
-        wDriverClass = new TextVar(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDriverClass = new TextVar(databaseMeta, wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wDriverClass);
         wDriverClass.addModifyListener(lsMod);
         FormData fdDriverClass = new FormData();
@@ -1101,7 +1101,7 @@ public class DatabaseDialog extends Dialog
         colinfo[1].setToolTip(Messages.getString("DatabaseDialog.tooltip.Parameter")); //$NON-NLS-1$
         colinfo[2].setUsingVariables(true);
 
-        wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
+        wOptions = new TableView(databaseMeta, wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wOptions);
         FormData fdOptions = new FormData();
         fdOptions.left = new FormAttachment(0, 0);
@@ -1230,7 +1230,7 @@ public class DatabaseDialog extends Dialog
         colinfo[5].setPasswordField(true);
         colinfo[5].setUsingVariables(true);
 
-        wCluster = new TableView(wClusterComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
+        wCluster = new TableView(databaseMeta, wClusterComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wCluster);
         FormData fdCluster = new FormData();
         fdCluster.left = new FormAttachment(0, 0);

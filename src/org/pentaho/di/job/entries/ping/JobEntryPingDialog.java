@@ -152,7 +152,7 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
         fdlHostname.right = new FormAttachment(middle, 0);
         wlHostname.setLayoutData(fdlHostname);
 
-        wHostname = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wHostname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wHostname);
         wHostname.addModifyListener(lsMod);
         fdHostname = new FormData();
@@ -180,7 +180,7 @@ public class JobEntryPingDialog extends Dialog implements JobEntryDialogInterfac
 		fdlNbrPackets.top = new FormAttachment(wHostname, margin);
 		wlNbrPackets.setLayoutData(fdlNbrPackets);
 
-		wNbrPackets = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wNbrPackets = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wNbrPackets);
 		wNbrPackets.addModifyListener(lsMod);
 		fdNbrPackets = new FormData();

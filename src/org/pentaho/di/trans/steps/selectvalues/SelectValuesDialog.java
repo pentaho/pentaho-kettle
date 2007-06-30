@@ -203,7 +203,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		colinf[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 
 		fieldColumns.add(colinf[0]);
-		wFields=new TableView(wSelectComp, 
+		wFields=new TableView(transMeta, wSelectComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  
@@ -278,7 +278,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		ColumnInfo[] colrem=new ColumnInfo[RemoveCols];
 		colrem[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{Messages.getString("SelectValuesDialog.ColumnInfo.Loading")},  false ); //$NON-NLS-1$
 		fieldColumns.add(colrem[0]);
-		wRemove=new TableView(wRemoveComp, 
+		wRemove=new TableView(transMeta, wRemoveComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colrem, 
 						      RemoveRows,  
@@ -349,7 +349,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		colmeta[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		colmeta[4]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		fieldColumns.add(colmeta[0]);
-		wMeta=new TableView(wMetaComp, 
+		wMeta=new TableView(transMeta, wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colmeta, 
 						      MetaRows,  

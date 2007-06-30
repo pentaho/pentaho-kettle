@@ -173,7 +173,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
         // fdbFilename.height = 22;
         wbFilename.setLayoutData(fdbFilename);
 
-        wFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename = new FormData();

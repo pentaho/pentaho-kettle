@@ -139,7 +139,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
         colinf[0]=new ColumnInfo(Messages.getString("SortedMergeDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
         colinf[1]=new ColumnInfo(Messages.getString("SortedMergeDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
         
-        wFields=new TableView(shell, 
+        wFields=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FieldsRows,  

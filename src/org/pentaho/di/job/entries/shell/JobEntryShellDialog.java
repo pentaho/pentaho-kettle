@@ -44,6 +44,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -153,12 +154,15 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
     private Props props;
 
     private Display display;
+    
+    private JobMeta jobMeta;
 
-    public JobEntryShellDialog(Shell parent, JobEntryShell jobEntry)
+    public JobEntryShellDialog(Shell parent, JobEntryShell jobEntry, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta = jobMeta;
     }
 
     public JobEntryInterface open()
@@ -229,7 +233,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
         fdbFilename.right = new FormAttachment(100, 0);
         wbFilename.setLayoutData(fdbFilename);
 
-        wFilename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename = new FormData();
@@ -287,7 +291,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
         fdlLogfile.top = new FormAttachment(wlSetLogfile, margin);
         fdlLogfile.right = new FormAttachment(middle, 0);
         wlLogfile.setLayoutData(fdlLogfile);
-        wLogfile = new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogfile = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLogfile.setText("");
         props.setLook(wLogfile);
         fdLogfile = new FormData();
@@ -305,7 +309,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
         fdlLogext.top = new FormAttachment(wLogfile, margin);
         fdlLogext.right = new FormAttachment(middle, 0);
         wlLogext.setLayoutData(fdlLogext);
-        wLogext = new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLogext = new TextVar(jobMeta, wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wLogext.setText("");
         props.setLook(wLogext);
         fdLogext = new FormData();
@@ -467,8 +471,8 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
         colinf[0] = new ColumnInfo(Messages.getString("JobShell.Fields.Argument.Label"),
             ColumnInfo.COLUMN_TYPE_TEXT, false);
 
-        wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-            FieldsRows, lsMod, props);
+        wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+                                FieldsRows, lsMod, props);
 
         fdFields = new FormData();
         fdFields.left = new FormAttachment(0, 0);

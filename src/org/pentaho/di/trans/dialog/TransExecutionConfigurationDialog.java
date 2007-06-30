@@ -258,7 +258,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         previewSizeMeta.setConversionMask("0");
         cPreviewSteps[1].setValueMeta(previewSizeMeta);
                 
-        wPreviewSteps = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), false, null, props);
+        wPreviewSteps = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), false, null, props);
         FormData fdPreviewSteps = new FormData();
         fdPreviewSteps.left   = new FormAttachment(  0, 0);
         fdPreviewSteps.top    = new FormAttachment(wPreview, margin);
@@ -336,7 +336,7 @@ public class TransExecutionConfigurationDialog extends Dialog
           };
               
         int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 0; 
-        wArguments = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
+        wArguments = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
         FormData fdArguments = new FormData();
         fdArguments.left   = new FormAttachment(0, 0);
         fdArguments.right  = new FormAttachment(50, -margin);
@@ -361,7 +361,7 @@ public class TransExecutionConfigurationDialog extends Dialog
           };
               
         int nrVariables = configuration.getVariables() !=null ? configuration.getVariables().size() : 0; 
-        wVariables = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
+        wVariables = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, true, null, props);
         FormData fdVariables = new FormData();
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);

@@ -135,7 +135,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
                 new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false), //$NON-NLS-1$
             };
 
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

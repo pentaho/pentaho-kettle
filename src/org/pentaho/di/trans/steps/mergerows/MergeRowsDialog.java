@@ -217,7 +217,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
             new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
-        wKeys=new TableView(shell, 
+        wKeys=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                               ciKeys, 
                               nrKeyRows,  
@@ -265,7 +265,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
             new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
-        wValues=new TableView(shell, 
+        wValues=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                               ciValues, 
                               nrValueRows,  

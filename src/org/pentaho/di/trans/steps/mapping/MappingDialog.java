@@ -218,7 +218,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbbFilename.setLayoutData(fdbFilename);
         wbbFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectFileTrans(); }});
 
-        wFilename=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename=new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         FormData fdFilename = new FormData();
@@ -251,7 +251,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbTrans.setLayoutData(fdbTrans);
         wbTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectRepositoryTrans(); }});
         
-        wTransDir=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTransDir=new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransDir);
         wTransDir.addModifyListener(lsMod);
         FormData fdTransDir = new FormData();
@@ -260,7 +260,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdTransDir.top  = new FormAttachment(wbTrans, 0, SWT.CENTER);
         wTransDir.setLayoutData(fdTransDir);
 
-        wTransName=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTransName=new TextVar(transMeta, gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransName);
         wTransName.addModifyListener(lsMod);
         FormData fdTransName = new FormData();
@@ -614,7 +614,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		};
         colinfo[1].setUsingVariables(true);
         
-		final TableView wMappingParameters = new TableView(wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
+		final TableView wMappingParameters = new TableView(transMeta, wParametersComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				parameters.getVariable().length, lsMod, props);
 		props.setLook(wMappingParameters);
 		FormData fdMappings = new FormData();
@@ -940,7 +940,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				new ColumnInfo(sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
 				new ColumnInfo(targetColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
 		};
-		final TableView wFieldMappings = new TableView(wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
+		final TableView wFieldMappings = new TableView(transMeta, wInputComposite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo,
 				1, lsMod, props);
 		props.setLook(wFieldMappings);
 		FormData fdMappings = new FormData();

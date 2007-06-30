@@ -31,6 +31,7 @@ import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.partition.PartitionSchema;
@@ -161,7 +162,9 @@ public class PartitionSchemaDialog extends Dialog
             {
                 new ColumnInfo(Messages.getString("PartitionSchemaDialog.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
             };
-        wPartitions=new TableView(shell, 
+        wPartitions=new TableView(
+        					  Variables.getADefaultVariableSpace(),  // probably better push this up. TODO
+        		              shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               partitionColumns, 
                               1,  

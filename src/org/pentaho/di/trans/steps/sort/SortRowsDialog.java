@@ -159,7 +159,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
 		wbSortDir.setLayoutData(fdbSortDir);
 
-		wSortDir=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSortDir=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSortDir.setText("temp");
  		props.setLook(wSortDir);
 		wSortDir.addModifyListener(lsMod);
@@ -300,7 +300,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		colinf[0]=new ColumnInfo(Messages.getString("SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[1]=new ColumnInfo(Messages.getString("SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

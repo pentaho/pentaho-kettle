@@ -129,7 +129,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
                 new ColumnInfo(Messages.getString("InjectorDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
             };
         
-        wFields=new TableView(shell, 
+        wFields=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FieldsRows,  

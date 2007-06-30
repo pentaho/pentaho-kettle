@@ -193,7 +193,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
           new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.IgnoreCase"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true ) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

@@ -189,7 +189,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 				.getString("ExecSQLDialog.ColumnInfo.ArgumentFieldname"), ColumnInfo.COLUMN_TYPE_TEXT, false) //$NON-NLS-1$
 		};
 
-		wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
+		wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
 				lsMod, props);
 
 		fdFields = new FormData();

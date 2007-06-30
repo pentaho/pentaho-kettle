@@ -158,7 +158,7 @@ public class ClusterSchemaDialog extends Dialog
         fdlPort.right = new FormAttachment(middle, 0);
         wlPort.setLayoutData(fdlPort);
 
-        wPort = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wPort = new TextVar(clusterSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
         FormData fdPort = new FormData();
@@ -178,7 +178,7 @@ public class ClusterSchemaDialog extends Dialog
         fdlBufferSize.right = new FormAttachment(middle, 0);
         wlBufferSize.setLayoutData(fdlBufferSize);
 
-        wBufferSize = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wBufferSize = new TextVar(clusterSchema,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wBufferSize);
         wBufferSize.addModifyListener(lsMod);
         FormData fdBufferSize = new FormData();
@@ -197,7 +197,7 @@ public class ClusterSchemaDialog extends Dialog
         fdlFlushInterval.right = new FormAttachment(middle, 0);
         wlFlushInterval.setLayoutData(fdlFlushInterval);
 
-        wFlushInterval = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wFlushInterval = new TextVar(clusterSchema, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wFlushInterval);
         wFlushInterval.addModifyListener(lsMod);
         FormData fdFlushInterval = new FormData();
@@ -250,7 +250,7 @@ public class ClusterSchemaDialog extends Dialog
                 new ColumnInfo( Messages.getString("ClusterSchemaDialog.ColumnInfoServiceURL.Label"), ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
                 new ColumnInfo( Messages.getString("ClusterSchemaDialog.ColumnInfoMaster.Label"), ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
         };
-        wServers = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod, props);
+        wServers = new TableView(clusterSchema, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod, props);
         wServers.setReadonly(false);
         props.setLook(wServers);
         FormData fdServers = new FormData();

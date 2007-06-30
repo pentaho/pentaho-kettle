@@ -796,7 +796,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryTransDialog(shell,this,rep);
+        return new JobEntryTransDialog(shell,this,rep,jobMeta);
     }
 
     /**

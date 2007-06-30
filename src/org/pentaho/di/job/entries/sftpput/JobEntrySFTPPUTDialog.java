@@ -102,6 +102,8 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 	private Props       	props;
 
 	private SelectionAdapter lsDef;
+	
+	private JobMeta jobMeta;
 
 	private boolean changed;
 	
@@ -110,6 +112,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 			super(parent, SWT.NONE);
 			props=Props.getInstance();
 			this.jobEntry=jobEntry;
+			this.jobMeta=jobMeta;
 	
 			if (this.jobEntry.getName() == null) this.jobEntry.setName(Messages.getString("JobSFTPPUT.Title"));
 	}
@@ -169,7 +172,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlServerName.top  = new FormAttachment(wName, margin);
 		fdlServerName.right= new FormAttachment(middle, -margin);
 		wlServerName.setLayoutData(fdlServerName);
-		wServerName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerName=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wServerName);
 		wServerName.addModifyListener(lsMod);
 		fdServerName=new FormData();
@@ -187,7 +190,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlServerPort.top  = new FormAttachment(wServerName, margin);
 		fdlServerPort.right= new FormAttachment(middle, -margin);
 		wlServerPort.setLayoutData(fdlServerPort);
-		wServerPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerPort=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wServerPort);
 		wServerPort.setToolTipText(Messages.getString("JobSFTPPUT.Port.Tooltip"));
 		wServerPort.addModifyListener(lsMod);
@@ -206,7 +209,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlUserName.top  = new FormAttachment(wServerPort, margin);
 		fdlUserName.right= new FormAttachment(middle, -margin);
 		wlUserName.setLayoutData(fdlUserName);
-		wUserName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUserName=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUserName);
 		wUserName.setToolTipText(Messages.getString("JobSFTPPUT.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
@@ -225,7 +228,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlPassword.top  = new FormAttachment(wUserName, margin);
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -244,7 +247,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlScpDirectory.top  = new FormAttachment(wPassword, margin);
 		fdlScpDirectory.right= new FormAttachment(middle, -margin);
 		wlScpDirectory.setLayoutData(fdlScpDirectory);
-		wScpDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wScpDirectory=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wScpDirectory);
  		wScpDirectory.setToolTipText(Messages.getString("JobSFTPPUT.RemoteDir.Tooltip"));
         wScpDirectory.addModifyListener(lsMod);
@@ -263,7 +266,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlLocalDirectory.top  = new FormAttachment(wScpDirectory, margin);
 		fdlLocalDirectory.right= new FormAttachment(middle, -margin);
 		wlLocalDirectory.setLayoutData(fdlLocalDirectory);
-		wLocalDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLocalDirectory=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLocalDirectory);
  		wLocalDirectory.setToolTipText(Messages.getString("JobSFTPPUT.LocalDir.Tooltip"));
 		wLocalDirectory.addModifyListener(lsMod);
@@ -282,7 +285,7 @@ public class JobEntrySFTPPUTDialog extends Dialog implements JobEntryDialogInter
 		fdlWildcard.top  = new FormAttachment(wLocalDirectory, margin);
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wWildcard=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wWildcard);
  		wWildcard.setToolTipText(Messages.getString("JobSFTPPUT.Wildcard.Tooltip"));
 		wWildcard.addModifyListener(lsMod);

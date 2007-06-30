@@ -134,7 +134,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		colinf[7]=new ColumnInfo(Messages.getString("ConstantDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[8]=new ColumnInfo(Messages.getString("ConstantDialog.Value.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

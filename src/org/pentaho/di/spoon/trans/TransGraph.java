@@ -1842,7 +1842,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
         if (fields != null && fields.size() > 0)
         {
-            StepFieldsDialog sfd = new StepFieldsDialog(shell, SWT.NONE, stepMeta.getName(), fields);
+            StepFieldsDialog sfd = new StepFieldsDialog(shell, transMeta, SWT.NONE, stepMeta.getName(), fields);
             String sn = (String) sfd.open();
             if (sn != null)
             {

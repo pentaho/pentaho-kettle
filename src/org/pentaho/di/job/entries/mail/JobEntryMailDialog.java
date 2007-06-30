@@ -47,6 +47,7 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.LabelText;
 import org.pentaho.di.core.widget.LabelTextVar;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -183,15 +184,17 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
     private Display display;
     
+    private JobMeta jobMeta;
+    
     private boolean  gotEncodings = false;
     
 
-
-    public JobEntryMailDialog(Shell parent, JobEntryMail jobEntry)
+    public JobEntryMailDialog(Shell parent, JobEntryMail jobEntry, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta  = jobMeta;
     }
 
     public JobEntryInterface open()
@@ -234,7 +237,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wName.setLayoutData(fdName);
 
         // Destination line
-        wDestination = new LabelTextVar(shell, Messages
+        wDestination = new LabelTextVar(jobMeta, shell, Messages
             .getString("JobMail.DestinationAddress.Label"), Messages
             .getString("JobMail.DestinationAddress.Tooltip"));
         wDestination.addModifyListener(lsMod);
@@ -246,7 +249,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
 
 		// Destination Cc
-		wDestinationCc = new LabelTextVar(shell, Messages
+		wDestinationCc = new LabelTextVar(jobMeta, shell, Messages
 			.getString("JobMail.DestinationAddressCc.Label"), Messages
 			.getString("JobMail.DestinationAddressCc.Tooltip"));
 		wDestinationCc.addModifyListener(lsMod);
@@ -257,7 +260,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wDestinationCc.setLayoutData(fdDestinationCc);
 
 		// Destination BCc
-		wDestinationBCc = new LabelTextVar(shell, Messages
+		wDestinationBCc = new LabelTextVar(jobMeta, shell, Messages
 			.getString("JobMail.DestinationAddressBCc.Label"), Messages
 			.getString("JobMail.DestinationAddressBCc.Tooltip"));
 		wDestinationBCc.addModifyListener(lsMod);
@@ -269,7 +272,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
 
         // Server line
-        wServer = new LabelTextVar(shell, Messages.getString("JobMail.SMTPServer.Label"), Messages
+        wServer = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.SMTPServer.Label"), Messages
             .getString("JobMail.SMTPServer.Tooltip"));
         wServer.addModifyListener(lsMod);
         fdServer = new FormData();
@@ -279,7 +282,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wServer.setLayoutData(fdServer);
 
         // Port line
-        wPort = new LabelTextVar(shell, Messages.getString("JobMail.Port.Label"), Messages
+        wPort = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.Port.Label"), Messages
             .getString("JobMail.Port.Tooltip"));
         wPort.addModifyListener(lsMod);
         fdPort = new FormData();
@@ -314,7 +317,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         });
 
         // AuthUser line
-        wAuthUser = new LabelTextVar(shell, Messages.getString("JobMail.AuthenticationUser.Label"),
+        wAuthUser = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.AuthenticationUser.Label"),
             Messages.getString("JobMail.AuthenticationUser.Tooltip"));
         wAuthUser.addModifyListener(lsMod);
         fdAuthUser = new FormData();
@@ -324,7 +327,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wAuthUser.setLayoutData(fdAuthUser);
 
         // AuthPass line
-        wAuthPass = new LabelTextVar(shell, Messages
+        wAuthPass = new LabelTextVar(jobMeta, shell, Messages
             .getString("JobMail.AuthenticationPassword.Label"), Messages
             .getString("JobMail.AuthenticationPassword.Tooltip"));
         wAuthPass.setEchoChar('*');
@@ -361,7 +364,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         });
 
         // Reply line
-        wReply = new LabelTextVar(shell, Messages.getString("JobMail.ReplyAddress.Label"), Messages
+        wReply = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ReplyAddress.Label"), Messages
             .getString("JobMail.ReplyAddress.Tooltip"));
         wReply.addModifyListener(lsMod);
         fdReply = new FormData();
@@ -371,7 +374,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wReply.setLayoutData(fdReply);
 
         // Subject line
-        wSubject = new LabelTextVar(shell, Messages.getString("JobMail.Subject.Label"), Messages
+        wSubject = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.Subject.Label"), Messages
             .getString("JobMail.Subject.Tooltip"));
         wSubject.addModifyListener(lsMod);
         fdSubject = new FormData();
@@ -477,7 +480,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         });
 
         // ZipFilename line
-        wZipFilename = new LabelTextVar(shell, Messages.getString("JobMail.ZipFilename.Label"),
+        wZipFilename = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ZipFilename.Label"),
             Messages.getString("JobMail.ZipFilename.Tooltip"));
         wZipFilename.addModifyListener(lsMod);
         fdZipFilename = new FormData();
@@ -487,7 +490,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wZipFilename.setLayoutData(fdZipFilename);
 
         // ZipFilename line
-        wPerson = new LabelTextVar(shell, Messages.getString("JobMail.ContactPerson.Label"),
+        wPerson = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ContactPerson.Label"),
             Messages.getString("JobMail.ContactPerson.Tooltip"));
         wPerson.addModifyListener(lsMod);
         fdPerson = new FormData();
@@ -497,7 +500,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wPerson.setLayoutData(fdPerson);
 
         // Phone line
-        wPhone = new LabelTextVar(shell, Messages.getString("JobMail.ContactPhone.Label"), Messages
+        wPhone = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ContactPhone.Label"), Messages
             .getString("JobMail.ContactPhone.Tooltip"));
         wPhone.addModifyListener(lsMod);
         fdPhone = new FormData();

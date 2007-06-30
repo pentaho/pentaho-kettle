@@ -135,7 +135,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
             new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Added"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 
-        wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
+        wFields = new TableView(transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
 
         fdFields = new FormData();
         fdFields.left = new FormAttachment(0, 0);

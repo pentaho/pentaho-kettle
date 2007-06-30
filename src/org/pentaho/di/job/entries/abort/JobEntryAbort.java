@@ -183,7 +183,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 	}
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryAbortDialog(shell,this);
+        return new JobEntryAbortDialog(shell,this, jobMeta);
     }
 	public void setMessageabort(String messageabort)
 	{

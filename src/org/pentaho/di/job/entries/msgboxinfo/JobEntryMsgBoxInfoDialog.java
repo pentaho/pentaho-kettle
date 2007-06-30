@@ -42,6 +42,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -80,6 +81,8 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
     private Props props;
 
     private SelectionAdapter lsDef;
+    
+    private JobMeta jobMeta;
 
     private boolean changed;
 
@@ -90,11 +93,12 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 
 	private FormData fdlTitleMessage, fdTitleMessage;
 
-    public JobEntryMsgBoxInfoDialog(Shell parent, JobEntryMsgBoxInfo jobEntry)
+    public JobEntryMsgBoxInfoDialog(Shell parent, JobEntryMsgBoxInfo jobEntry, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
         props = Props.getInstance();
         this.jobEntry = jobEntry;
+        this.jobMeta = jobMeta;
 
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("MsgBoxInfo.Name.Default"));
@@ -165,7 +169,7 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 		fdlTitleMessage.right = new FormAttachment(middle, -margin);
 		wlTitleMessage.setLayoutData(fdlTitleMessage);
 
-		wTitleMessage = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTitleMessage = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wTitleMessage);
 		wTitleMessage.addModifyListener(lsMod);
 		fdTitleMessage = new FormData();
@@ -173,9 +177,6 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 		fdTitleMessage.top = new FormAttachment(wName, margin);
 		fdTitleMessage.right = new FormAttachment(100, 0);
 		wTitleMessage.setLayoutData(fdTitleMessage);
-
-
-
 
         // Body Msgbox
 		wlBodyMessage = new Label(shell, SWT.RIGHT);

@@ -128,7 +128,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		colinf[0]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.Name"),       				 ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		colinf[1]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.ValueToNull"),    ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

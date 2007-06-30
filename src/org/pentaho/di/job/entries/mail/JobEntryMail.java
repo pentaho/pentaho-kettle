@@ -1061,7 +1061,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 	}
 
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryMailDialog(shell,this);
+        return new JobEntryMailDialog(shell,this, jobMeta);
     }
 
     /**

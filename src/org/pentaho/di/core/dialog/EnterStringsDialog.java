@@ -41,6 +41,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.step.BaseStepDialog;
@@ -122,7 +123,8 @@ public class EnterStringsDialog extends Dialog
                 new ColumnInfo(Messages.getString("EnterStringsDialog.StringValue.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
             };
         
-        wFields=new TableView(shell, 
+        wFields=new TableView(Variables.getADefaultVariableSpace(),
+        		              shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
                               colinf, 
                               FieldsRows,  

@@ -10,11 +10,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.widget.GetCaretPositionInterface;
 import org.pentaho.di.core.widget.InsertTextInterface;
-
 
 
 public class VariableButtonListenerFactory
@@ -70,7 +68,7 @@ public class VariableButtonListenerFactory
                     if (insertTextInterface==null)
                     {
                         destination.insert(var);
-                        destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
+                        //destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
                         e.doit=false;
                     }
                     else
@@ -82,5 +80,3 @@ public class VariableButtonListenerFactory
         };
     }
 }
-
-

@@ -41,6 +41,7 @@ import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
@@ -80,13 +81,16 @@ public class CheckResultDialog extends Dialog
 	
 	private String stepname;
 	
+	private TransMeta transMeta;
+	
 
-	public CheckResultDialog(Shell parent, int style, List<CheckResult> rem)
+	public CheckResultDialog(TransMeta transMeta, Shell parent, int style, List<CheckResult> rem)
 	{
 			super(parent, style);
 			remarks=rem;
 			props=Props.getInstance();
 			stepname=null;
+			this.transMeta=transMeta;
 	}
 
 	public String open()
@@ -129,7 +133,8 @@ public class CheckResultDialog extends Dialog
 		colinf[1]=new ColumnInfo(Messages.getString("CheckResultDialog.Result.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		colinf[2]=new ColumnInfo(Messages.getString("CheckResultDialog.Remark.Label"),   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta,
+				              shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

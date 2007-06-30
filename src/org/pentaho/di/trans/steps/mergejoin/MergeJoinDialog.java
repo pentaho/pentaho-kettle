@@ -221,7 +221,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
             new ColumnInfo(Messages.getString("MergeJoinDialog.ColumnInfo.KeyField1"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
-        wKeys1=new TableView(shell, 
+        wKeys1=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                               ciKeys1, 
                               nrKeyRows1,  
@@ -269,7 +269,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
             new ColumnInfo(Messages.getString("MergeJoinDialog.ColumnInfo.KeyField2"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
-        wKeys2=new TableView(shell, 
+        wKeys2=new TableView(transMeta, shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
                               ciKeys2, 
                               nrKeyRows2,  

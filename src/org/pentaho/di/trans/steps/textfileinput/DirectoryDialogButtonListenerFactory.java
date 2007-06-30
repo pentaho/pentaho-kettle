@@ -6,7 +6,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.util.StringUtil;
 
 public class DirectoryDialogButtonListenerFactory
 {
@@ -20,7 +19,8 @@ public class DirectoryDialogButtonListenerFactory
                     DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
                     if (destination.getText()!=null)
                     {
-                        String fpath = StringUtil.environmentSubstitute(destination.getText());
+                    	String fpath = destination.getText();
+                        //String fpath = StringUtil.environmentSubstitute(destination.getText());
                         dialog.setFilterPath( fpath );
                     }
                     

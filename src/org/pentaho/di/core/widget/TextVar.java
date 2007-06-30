@@ -25,9 +25,8 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIResource;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
-
 
 
 /**
@@ -49,60 +48,32 @@ public class TextVar extends Composite
 
     private InsertTextInterface insertTextInterface;
     
-    public TextVar(Composite composite, int flags)
+    private VariableSpace variables;
+    
+    
+    public TextVar(VariableSpace space, Composite composite, int flags)
     {
-        this(composite, flags, null, null, null);
+        this(space, composite, flags, null, null, null);
     }
-
-    /**
-     * @return the getCaretPositionInterface
-     */
-    public GetCaretPositionInterface getGetCaretPositionInterface()
+    
+    public TextVar(VariableSpace space, Composite composite, int flags, String toolTipText)
     {
-        return getCaretPositionInterface;
-    }
-
-    /**
-     * @param getCaretPositionInterface the getCaretPositionInterface to set
-     */
-    public void setGetCaretPositionInterface(GetCaretPositionInterface getCaretPositionInterface)
-    {
-        this.getCaretPositionInterface = getCaretPositionInterface;
-    }
-
-    /**
-     * @return the insertTextInterface
-     */
-    public InsertTextInterface getInsertTextInterface()
-    {
-        return insertTextInterface;
-    }
-
-    /**
-     * @param insertTextInterface the insertTextInterface to set
-     */
-    public void setInsertTextInterface(InsertTextInterface insertTextInterface)
-    {
-        this.insertTextInterface = insertTextInterface;
-    }
-
-    public TextVar(Composite composite, int flags, String toolTipText)
-    {
-        this(composite, flags, toolTipText, null, null);
+        this(space, composite, flags, toolTipText, null, null);
     }
     
 
-    public TextVar(Composite composite, int flags, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
+    public TextVar(VariableSpace space, Composite composite, int flags, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
     {
-        this(composite, flags, null, getCaretPositionInterface, insertTextInterface);
+        this(space, composite, flags, null, getCaretPositionInterface, insertTextInterface);
     }
     
-    public TextVar(Composite composite, int flags, String toolTipText, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
+    public TextVar(VariableSpace space, Composite composite, int flags, String toolTipText, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
     {
         super(composite, SWT.NONE);
         this.toolTipText = toolTipText;
         this.getCaretPositionInterface = getCaretPositionInterface;
         this.insertTextInterface = insertTextInterface;
+        this.variables = space;
         
         props.setLook(this);
         
@@ -138,6 +109,38 @@ public class TextVar extends Composite
         layoutControl.setLayoutData(fdText);
     }
     
+    /**
+     * @return the getCaretPositionInterface
+     */
+    public GetCaretPositionInterface getGetCaretPositionInterface()
+    {
+        return getCaretPositionInterface;
+    }
+
+    /**
+     * @param getCaretPositionInterface the getCaretPositionInterface to set
+     */
+    public void setGetCaretPositionInterface(GetCaretPositionInterface getCaretPositionInterface)
+    {
+        this.getCaretPositionInterface = getCaretPositionInterface;
+    }
+
+    /**
+     * @return the insertTextInterface
+     */
+    public InsertTextInterface getInsertTextInterface()
+    {
+        return insertTextInterface;
+    }
+
+    /**
+     * @param insertTextInterface the insertTextInterface to set
+     */
+    public void setInsertTextInterface(InsertTextInterface insertTextInterface)
+    {
+        this.insertTextInterface = insertTextInterface;
+    }    
+    
     private ModifyListener getModifyListenerTooltipText(final Text textField)
     {
         return new ModifyListener()
@@ -156,7 +159,7 @@ public class TextVar extends Composite
                     {
                         tip=toolTipText;
                     }
-                    textField.setToolTipText(StringUtil.environmentSubstitute( tip ) );
+                    textField.setToolTipText(variables.environmentSubstitute( tip ) );
                 }
             }
         };

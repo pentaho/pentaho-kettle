@@ -496,7 +496,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
     		 new ColumnInfo(Messages.getString("ScriptValuesDialogMod.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
            };
 		
-		wFields=new TableView(wBottom, 
+		wFields=new TableView(transMeta, wBottom, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

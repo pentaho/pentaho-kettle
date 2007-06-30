@@ -292,7 +292,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		ciKey[0]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.DimensionField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciKey[1]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.FieldInStream"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
-		wKey=new TableView(shell,
+		wKey=new TableView(transMeta, shell,
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 						      ciKey,
 						      nrKeyRows,

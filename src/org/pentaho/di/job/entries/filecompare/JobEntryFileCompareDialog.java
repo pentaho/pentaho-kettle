@@ -150,7 +150,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		fdbFilename1.right= new FormAttachment(100, 0);
 		fdbFilename1.top  = new FormAttachment(wName, 0);
 		wbFilename1.setLayoutData(fdbFilename1);
-		wFilename1=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename1=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename1);
 		wFilename1.addModifyListener(lsMod);
 		fdFilename1=new FormData();
@@ -206,7 +206,7 @@ public class JobEntryFileCompareDialog extends Dialog implements JobEntryDialogI
 		fdbFilename2.right= new FormAttachment(100, 0);
 		fdbFilename2.top  = new FormAttachment(wFilename1, 0);
 		wbFilename2.setLayoutData(fdbFilename2);
-		wFilename2=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename2=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename2);
 		wFilename2.addModifyListener(lsMod);
 		fdFilename2=new FormData();

@@ -576,7 +576,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     		new ColumnInfo(Messages.getString("XMLOutputDialog.Null.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false)
           };
 		
-		wFields=new TableView(wFieldsComp, 
+		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

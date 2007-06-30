@@ -42,6 +42,7 @@ import org.pentaho.di.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
@@ -189,7 +190,9 @@ public class EnterPreviewRowsDialog extends Dialog
 		
         if (rowMeta!=null && buffer!=null && buffer.size()>0)
         {
-    		PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, name, rowMeta, buffer);
+    		PreviewRowsDialog prd = new PreviewRowsDialog(shell,
+    										Variables.getADefaultVariableSpace(),
+    				                        SWT.NONE, name, rowMeta, buffer);
     		prd.open();
         }
 	}

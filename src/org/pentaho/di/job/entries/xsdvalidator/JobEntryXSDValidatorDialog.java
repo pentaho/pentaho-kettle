@@ -157,7 +157,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 		fdbxmlFilename.right= new FormAttachment(100, 0);
 		fdbxmlFilename.top  = new FormAttachment(wName, 0);
 		wbxmlFilename.setLayoutData(fdbxmlFilename);
-		wxmlFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wxmlFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wxmlFilename);
 		wxmlFilename.addModifyListener(lsMod);
 		fdxmlFilename=new FormData();
@@ -213,7 +213,7 @@ public class JobEntryXSDValidatorDialog extends Dialog implements JobEntryDialog
 		fdbxsdFilename.right= new FormAttachment(100, 0);
 		fdbxsdFilename.top  = new FormAttachment(wxmlFilename, 0);
 		wbxsdFilename.setLayoutData(fdbxsdFilename);
-		wxsdFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wxsdFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wxsdFilename);
 		wxsdFilename.addModifyListener(lsMod);
 		fdxsdFilename=new FormData();

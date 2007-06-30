@@ -106,7 +106,7 @@ public class PreviewSelectDialog extends Dialog
 		  new ColumnInfo( Messages.getString("PreviewSelectDialog.Column.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
 		};
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(trans, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

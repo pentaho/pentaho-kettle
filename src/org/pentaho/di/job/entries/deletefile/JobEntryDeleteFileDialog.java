@@ -151,7 +151,7 @@ public class JobEntryDeleteFileDialog extends Dialog implements JobEntryDialogIn
 		fdbFilename.top  = new FormAttachment(wName, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();

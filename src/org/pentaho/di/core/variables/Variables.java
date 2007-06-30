@@ -149,4 +149,19 @@ public class Variables implements VariableSpace
 		    injection = (Properties)prop.clone();
 		}	
 	}
+	
+	/**
+	 * Get a default variable space as a placeholder. Everytime you 
+	 * will get a new instance.
+	 * 
+	 * @return a default variable space.
+	 */
+	public static VariableSpace getADefaultVariableSpace()
+	{
+	    VariableSpace space = new Variables();
+	    
+	    space.initializeVariablesFrom(null);
+	    
+	    return space;
+	}
 }

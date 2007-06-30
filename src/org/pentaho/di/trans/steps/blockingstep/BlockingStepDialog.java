@@ -166,7 +166,7 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 		fdbSpoolDir.top  = new FormAttachment(wPassAllRows, margin);
 		wbSpoolDir.setLayoutData(fdbSpoolDir);
 
-		wSpoolDir=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSpoolDir=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wSpoolDir);
 		wSpoolDir.addModifyListener(lsMod);
 		fdSpoolDir=new FormData();

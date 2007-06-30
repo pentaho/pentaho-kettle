@@ -128,7 +128,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		wName.setLayoutData(fdName);
 
 		// MaximumTimeout line
-		wMaximumTimeout = new LabelTextVar(shell, Messages.getString("JobEval.MaximumTimeout.Label"), Messages
+		wMaximumTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobEval.MaximumTimeout.Label"), Messages
 			.getString("JobEval.MaximumTimeout.Tooltip"));
 		props.setLook(wMaximumTimeout);
 		wMaximumTimeout.addModifyListener(lsMod);

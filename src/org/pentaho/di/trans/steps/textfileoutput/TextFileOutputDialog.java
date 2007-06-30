@@ -261,7 +261,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -846,7 +846,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		colinf[7]=new ColumnInfo(Messages.getString("TextFileOutputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NullColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
-		wFields=new TableView(wFieldsComp, 
+		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
 						      FieldsRows,  

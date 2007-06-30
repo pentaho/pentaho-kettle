@@ -327,7 +327,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		fdbaFilename.top  = new FormAttachment(wSettings, margin);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -376,7 +376,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		fdlFilemask.top = new FormAttachment(wFilename, margin);
 		fdlFilemask.right = new FormAttachment(middle, -margin);
 		wlFilemask.setLayoutData(fdlFilemask);
-		wFilemask = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+		wFilemask = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
 				                Messages.getString("JobDeleteFiles.Wildcard.Tooltip"));
 		props.setLook(wFilemask);
 		wFilemask.addModifyListener(lsMod);
@@ -433,7 +433,7 @@ public class JobEntryDeleteFilesDialog extends Dialog implements JobEntryDialogI
 		colinf[1].setUsingVariables(true);
 		colinf[1].setToolTip(Messages.getString("JobDeleteFiles.Wildcard.Column"));
 
-		wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+		wFields = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
 			FieldsRows, lsMod, props);
 
 		fdFields = new FormData();

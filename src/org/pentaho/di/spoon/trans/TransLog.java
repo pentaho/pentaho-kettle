@@ -197,7 +197,7 @@ public class TransLog extends Composite implements TabItemInterface
         colinf[12].setAllignement(SWT.RIGHT);
 		colinf[13].setAllignement(SWT.RIGHT);
 
-		wFields = new TableView(sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
+		wFields = new TableView(transMeta, sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
 				null, // Listener
 				spoon.props);
 

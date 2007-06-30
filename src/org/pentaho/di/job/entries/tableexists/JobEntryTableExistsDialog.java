@@ -214,7 +214,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
         fdlTablename.top = new FormAttachment(wConnection, margin);
         wlTablename.setLayoutData(fdlTablename);
 
-        wTablename = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTablename);
         wTablename.addModifyListener(lsMod);
         fdTablename = new FormData();

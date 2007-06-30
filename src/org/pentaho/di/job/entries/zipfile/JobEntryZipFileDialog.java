@@ -169,7 +169,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdlSourceDirectory.top = new FormAttachment(wName, margin);
 		fdlSourceDirectory.right = new FormAttachment(middle, -margin);
 		wlSourceDirectory.setLayoutData(fdlSourceDirectory);
-		wSourceDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
+		wSourceDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobZipFiles.SourceDir.Tooltip"));
 		props.setLook(wSourceDirectory);
 		wSourceDirectory.addModifyListener(lsMod);
@@ -188,7 +188,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdlWildcard.top = new FormAttachment(wSourceDirectory, margin);
 		fdlWildcard.right = new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
+		wWildcard = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobZipFiles.Wildcard.Tooltip"));
 		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
@@ -207,7 +207,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdlWildcardExclude.top = new FormAttachment(wWildcard, margin);
 		fdlWildcardExclude.right = new FormAttachment(middle, -margin);
 		wlWildcardExclude.setLayoutData(fdlWildcardExclude);
-		wWildcardExclude = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
+		wWildcardExclude = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobZipFiles.WildcardExclude.Tooltip"));
 		props.setLook(wWildcardExclude);
 		wWildcardExclude.addModifyListener(lsMod);
@@ -233,7 +233,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdbZipFilename.right= new FormAttachment(100, 0);
 		fdbZipFilename.top  = new FormAttachment(wWildcardExclude, 0);
 		wbZipFilename.setLayoutData(fdbZipFilename);
-		wZipFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wZipFilename=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wZipFilename);
 		wZipFilename.addModifyListener(lsMod);
 		fdZipFilename=new FormData();
@@ -380,7 +380,7 @@ public class JobEntryZipFileDialog extends Dialog implements JobEntryDialogInter
 		fdlMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
 		fdlMovetoDirectory.right = new FormAttachment(middle, -margin);
 		wlMovetoDirectory.setLayoutData(fdlMovetoDirectory);
-		wMovetoDirectory = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
+		wMovetoDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
 			.getString("JobZipFiles.MovetoDirectory.Tooltip"));
 		props.setLook(wMovetoDirectory);
 		wMovetoDirectory.addModifyListener(lsMod);

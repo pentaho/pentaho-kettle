@@ -188,7 +188,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		ciKey[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciKey[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
-		wKey=new TableView(shell, 
+		wKey=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 						      ciKey, 
 						      nrKeyRows,  
@@ -221,7 +221,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		ciReturn[2]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		ciReturn[3]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
 		
-		wReturn=new TableView(shell, 
+		wReturn=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
 							  ciReturn, 
 							  UpInsRows,  
