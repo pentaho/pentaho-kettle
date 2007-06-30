@@ -93,7 +93,7 @@ public class TextVar extends Composite
         Control layoutControl = decoratedField.getLayoutControl();
         props.setLook(layoutControl);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
-        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface);
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface, space);
         wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
         
         // Put some decorations on it...

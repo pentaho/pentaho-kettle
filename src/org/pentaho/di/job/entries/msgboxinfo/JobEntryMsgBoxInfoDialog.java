@@ -199,13 +199,8 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 		fdBodyMessage.bottom =new FormAttachment(wOK, -margin);
         wBodyMessage.setLayoutData(fdBodyMessage);
 
-
-
-		SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wBodyMessage);
+		SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wBodyMessage, jobMeta);
 		wBodyMessage.addKeyListener(TextVar.getControlSpaceKeyListener(wBodyMessage, lsVar));
-
-
-
 
         // Add listeners
         lsCancel = new Listener()

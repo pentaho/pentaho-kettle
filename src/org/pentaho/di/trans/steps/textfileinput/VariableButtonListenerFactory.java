@@ -1,54 +1,45 @@
 package org.pentaho.di.trans.steps.textfileinput;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.Arrays;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.GetCaretPositionInterface;
 import org.pentaho.di.core.widget.InsertTextInterface;
 
 
 public class VariableButtonListenerFactory
 {
-    private static KettleVariables kettleVariables = KettleVariables.getInstance();
-
     // Listen to the Variable... button
-    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination)
+    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, VariableSpace space)
     {
-        return getSelectionAdapter(composite, destination, null, null);
+        return getSelectionAdapter(composite, destination, null, null, space);
     }
 
     // Listen to the Variable... button
     @SuppressWarnings("unchecked")
-    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface)
+    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface, final VariableSpace space)
     {
         return new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e) 
             {
-                Properties sp = new Properties();
-                sp.putAll( kettleVariables.getProperties() );
-                sp.putAll( System.getProperties() );
+            	String keys[] = space.listVariables();
+                Arrays.sort(keys);
                 
-                List<String> keys = new ArrayList( sp.keySet() );
-                Collections.sort(keys);
-                
-                int size = keys.size();
+                int size = keys.length;
                 String key[] = new String[size];
                 String val[] = new String[size];
                 String str[] = new String[size];
                 
-                for (int i=0;i<keys.size();i++)
+                for (int i=0;i<keys.length;i++)
                 {
-                    key[i] = (String)keys.get(i);
-                    val[i] = sp.getProperty(key[i]);
+                    key[i] = keys[i];
+                    val[i] = space.getVariable(key[i]);
                     str[i] = key[i]+"  ["+val[i]+"]";
                 }
                 

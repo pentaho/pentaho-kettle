@@ -628,7 +628,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdComment.right = new FormAttachment(100, 0);
         fdComment.bottom = new FormAttachment(wUseHTML, -margin);
         wComment.setLayoutData(fdComment);
-        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
         wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
 
         // Add listeners

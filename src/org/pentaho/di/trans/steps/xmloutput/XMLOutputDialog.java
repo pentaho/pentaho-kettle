@@ -644,7 +644,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 
 		// Listen to the Variable... button
-		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
+		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename, transMeta));
 
 		wbFilename.addSelectionListener
 		(

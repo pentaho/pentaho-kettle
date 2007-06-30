@@ -1625,7 +1625,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbbWarnDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wWarnDestDir));
 
         // Listen to the Variable... button
-        wbvWarnDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wWarnDestDir));        
+        wbvWarnDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wWarnDestDir, transMeta));        
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wWarnDestDir.addModifyListener(getModifyListenerTooltipText(wWarnDestDir));
@@ -1692,7 +1692,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbbErrorDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wErrorDestDir));
 
         // Listen to the Variable... button
-        wbvErrorDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wErrorDestDir));        
+        wbvErrorDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wErrorDestDir, transMeta));        
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wErrorDestDir.addModifyListener(getModifyListenerTooltipText(wErrorDestDir));        
@@ -1759,7 +1759,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbbLineNrDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wLineNrDestDir));
 
         // Listen to the Variable... button
-        wbvLineNrDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wLineNrDestDir));        
+        wbvLineNrDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wLineNrDestDir, transMeta));        
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wLineNrDestDir.addModifyListener(getModifyListenerTooltipText(wLineNrDestDir));

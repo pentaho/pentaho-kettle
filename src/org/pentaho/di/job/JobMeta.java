@@ -174,6 +174,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         log = l;
         clear();
+        initializeVariablesFrom(null);
     }
 
     public long getID()
