@@ -434,6 +434,8 @@ public class Repository
         		code, // CODE
         		new Long(nr), // NR
         };
+        
+        final int[] keyPositions = new int[] {0, 1, 2};
 
         int index = Collections.binarySearch(stepAttributesBuffer, key, 
         		new Comparator<Object[]>() 
@@ -441,7 +443,7 @@ public class Repository
 					public int compare(Object[] r1, Object[] r2) 
 					{
 						try {
-							return stepAttributesRowMeta.compare(r1, r2, new int[] {0, 1, 2});
+							return stepAttributesRowMeta.compare(r1, r2, keyPositions);
 						} catch (KettleValueException e) {
 							return 0; // conversion errors
 						}
@@ -453,7 +455,7 @@ public class Repository
         // Check this...  If it is not, we didn't find it!
         Object[] look = stepAttributesBuffer.get(index);
         
-        if (stepAttributesRowMeta.compare(look, key)==0)
+        if (stepAttributesRowMeta.compare(look, key, keyPositions)==0)
         {
             return index;
         }
