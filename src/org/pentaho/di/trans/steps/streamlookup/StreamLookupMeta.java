@@ -366,10 +366,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-    @Override
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
-		if (info!=null && info.length==1)
+		if (info!=null && info.length==1 && info[0]!=null)
 		{
             for (int i=0;i<valueName.length;i++)
 			{

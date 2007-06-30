@@ -448,7 +448,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
-	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep)
 	{
 
 		// No values are added to the row in this type of step

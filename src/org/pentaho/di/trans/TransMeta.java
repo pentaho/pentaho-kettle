@@ -5754,5 +5754,60 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         spoon.setShellText();
         return ti!=null;
     }
-    	
+    
+    public StepMeta findMappingInputStep(String stepname) throws KettleStepException {
+		if (!Const.isEmpty(stepname)) {
+			StepMeta stepMeta = findStep(stepname); // TODO verify that it's a mapping input!!
+			if (stepMeta==null) {
+				throw new KettleStepException(Messages.getString("TransMeta.Exception.StepNameNotFound", stepname));
+			}
+			return stepMeta;
+		}
+		else {
+			// Find the first mapping input step that fits the bill.
+			StepMeta stepMeta = null;
+			for (StepMeta mappingStep : steps) {
+				if (mappingStep.getStepID().equals("MappingInput")) {
+					if (stepMeta==null) {
+						stepMeta = mappingStep;
+					} 
+					else if (stepMeta!=null) {
+						throw new KettleStepException(Messages.getString("TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2"));
+					}
+				}
+			}
+			if (stepMeta==null) {
+				throw new KettleStepException(Messages.getString("TransMeta.Exception.OneMappingInputStepRequired"));
+			}
+			return stepMeta;
+		}
+    }
+    
+    public StepMeta findMappingOutputStep(String stepname) throws KettleStepException {
+		if (!Const.isEmpty(stepname)) {
+			StepMeta stepMeta = findStep(stepname); // TODO verify that it's a mapping output step.
+			if (stepMeta==null) {
+				throw new KettleStepException(Messages.getString("TransMeta.Exception.StepNameNotFound", stepname));
+			}
+			return stepMeta;
+		}
+		else {
+			// Find the first mapping output step that fits the bill.
+			StepMeta stepMeta = null;
+			for (StepMeta mappingStep : steps) {
+				if (mappingStep.getStepID().equals("MappingOutput")) {
+					if (stepMeta==null) {
+						stepMeta = mappingStep;
+					} 
+					else if (stepMeta!=null) {
+						throw new KettleStepException(Messages.getString("TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2"));
+					}
+				}
+			}
+			if (stepMeta==null) {
+				throw new KettleStepException(Messages.getString("TransMeta.Exception.OneMappingOutputStepRequired"));
+			}
+			return stepMeta;
+		}
+    }
 }

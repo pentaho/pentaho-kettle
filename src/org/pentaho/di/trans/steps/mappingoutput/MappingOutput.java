@@ -55,17 +55,9 @@ public class MappingOutput extends BaseStep implements StepInterface
 		Object[] r=getRow();    // get row, set busy!
 		if (r==null) 
 		{
-            // No more input to be expected...
-            // Tell the next steps.
+            // No more input to be expected...  Tell the next steps.
             //
-			if ( data.targetStep != null )
-			{
-				// Code hardening for bug #5054, data.mapping can be null when the
-				// mapping step fails before any input row is generated. This way
-				// the method "setConnectorStep()" of this step is not called leaving
-				// data.mapping set to null.
-			    data.targetStep.setOutputDone();
-			}
+			setOutputDone();
 			return false;
 		}
 		
@@ -74,14 +66,14 @@ public class MappingOutput extends BaseStep implements StepInterface
             first=false;
             
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null);
+            meta.getFields(data.outputRowMeta, getStepname(), null, null);
             
             // 
             // Wait until we know were to store the row...
             // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
             //
             int totalsleep = 0;
-            while (!isStopped() && data.targetStep==null)
+            while (!isStopped() && data.targetSteps==null)
             {
                 try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
                 if (totalsleep>60000)
@@ -90,8 +82,11 @@ public class MappingOutput extends BaseStep implements StepInterface
                 }
             }
         }
-                
-		data.targetStep.putRow(data.outputRowMeta, r);     // copy row to possible alternate rowset(s).
+        
+        // Copy row to possible alternate rowset(s).
+        // Rowsets where added for all the possible targets in the setter for data.targetSteps...
+        // 
+		putRow(data.outputRowMeta, r);     
 
         if (checkFeedback(linesRead)) logBasic(Messages.getString("MappingOutput.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
@@ -136,17 +131,25 @@ public class MappingOutput extends BaseStep implements StepInterface
 		}
 	}
 
-    public void setConnectorStep(StepInterface targetStep)
+    public void setConnectorSteps(StepInterface[] targetSteps)
     {
-        data.targetStep = targetStep;
+        for (int i=0;i<targetSteps.length;i++) {
+	        	
+	        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
+	        // We need to create a new RowSet and add it to the Input RowSets of the target step
+        	//
+	        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+	        
+	        // This is always a single copy, but for source and target...
+	        //
+	        rowSet.setThreadNameFromToCopy(getStepname(), 0, targetSteps[i].getStepname(), 0);
+	        
+	        // Make sure to connect it to both sides...
+	        //
+	        getOutputRowSets().add(rowSet);
+	        targetSteps[i].getInputRowSets().add(rowSet);
+        }
         
-        // OK, before we leave, let's see if there is a rowset that covers the path to this target step.
-        // If not, we need to create a new RowSet and add it to the Input RowSets of the target step
-        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
-        
-        // This is always a single copy, but for source and target...
-        rowSet.setThreadNameFromToCopy(getStepname(), 0, targetStep.getStepname(), 0);
-        
-        targetStep.getOutputRowSets().add(rowSet);
+        data.targetSteps = targetSteps;
     }
 }

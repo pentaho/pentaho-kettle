@@ -140,7 +140,7 @@ public class BaseStepMeta implements Cloneable
 	}
 
 	
-	/**
+	/*
 	    getFields determines which fields are
 	      - added to the stream
 	      - removed from the stream
@@ -152,11 +152,12 @@ public class BaseStepMeta implements Cloneable
 	 * @param info Fields used as extra lookup information
 	 * 
 	 * @return The fields that are being put out by this step.
-	 */
+	 *
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		// Default: no values are added to the row in the step
 	}
+	*/
 
     /**
      * Each step must be able to report on the impact it has on a database, table field, etc.

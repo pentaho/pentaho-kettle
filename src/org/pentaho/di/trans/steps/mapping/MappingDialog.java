@@ -30,6 +30,7 @@ import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -666,7 +667,13 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     	if (getTransformationStep) {
     		dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
     		dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
-	    	String[] stepnames = transMeta.getPrevStepNames(stepMeta);
+	    	String[] stepnames;
+	    	if (mappingInput) {
+	    		stepnames = transMeta.getPrevStepNames(stepMeta);
+	    	}
+	    	else {
+	    		stepnames = transMeta.getNextStepNames(stepMeta);
+	    	}
 			EnterSelectionDialog dialog = new EnterSelectionDialog(shell, stepnames, dialogTitle, dialogMessage);
 			return dialog.open();
     	}
@@ -699,7 +706,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     }
     
 	public RowMetaInterface getFieldsFromStep(String stepname, boolean getTransformationStep, boolean mappingInput) throws KettleException { 
-		if (getTransformationStep) {
+		if (!(mappingInput^getTransformationStep)) {
 			if (Const.isEmpty(stepname)) {
 				// If we don't have a specified stepname we return the input row metadata
 				//
@@ -715,7 +722,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				return transMeta.getStepFields(stepMeta);
 			}
 			
-		} else {
+		} 
+		else {
 			if (Const.isEmpty(stepname)) {
 				// If we don't have a specified stepname we select the one and only "mapping input" step.
 				//
@@ -823,7 +831,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbOutputStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
         FormData fdbOutputStep = new FormData();
         fdbOutputStep.top = new FormAttachment(wbInputStep, margin);
-        fdbOutputStep.right = new FormAttachment(100, 0); // First one in the left top corner
+        fdbOutputStep.right = new FormAttachment(100, 0);
         wbOutputStep.setLayoutData(fdbOutputStep);
         
         Label wlOutputStep = new Label(wInputComposite, SWT.RIGHT);
@@ -831,7 +839,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wlOutputStep.setText(outputStepLabel); //$NON-NLS-1$
         FormData fdlOutputStep = new FormData();
         fdlOutputStep.top = new FormAttachment(wbOutputStep, 0, SWT.CENTER);
-        fdlOutputStep.left = new FormAttachment(0, 0); // First one in the left top corner
+        fdlOutputStep.left = new FormAttachment(0, 0);
         fdlOutputStep.right = new FormAttachment(middle, -margin);
         wlOutputStep.setLayoutData(fdlOutputStep);
 
@@ -853,7 +861,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbOutputStep.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				String stepName = selectTransformationStepname(!input, true);
+				String stepName = selectTransformationStepname(!input, false);
 				if (stepName!=null)
 				{
 					wOutputStep.setText(stepName);
@@ -862,6 +870,33 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		});
 
+        // Add a checkbox to indicate the main step to read from, the main data path...
+        Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
+        props.setLook(wlMainPath);
+        wlMainPath.setText(Messages.getString("MappingDialog.input.MainDataPath")); //$NON-NLS-1$
+        FormData fdlMainPath = new FormData();
+        fdlMainPath.top = new FormAttachment(wbOutputStep, margin);
+        fdlMainPath.left = new FormAttachment(0, 0);
+        fdlMainPath.right = new FormAttachment(middle, -margin);
+        wlMainPath.setLayoutData(fdlMainPath);
+
+        Button wMainPath = new Button(wInputComposite, SWT.CHECK);
+        props.setLook(wMainPath);
+        FormData fdMainPath = new FormData();
+        fdMainPath.top = new FormAttachment(wbOutputStep, margin);
+        fdMainPath.left = new FormAttachment(middle, 0);
+        // fdMainPath.right = new FormAttachment(100, 0); // who cares, it's a checkbox
+        wMainPath.setLayoutData(fdMainPath);
+        
+        wMainPath.setSelection(definition.isMainDataPath());
+        wMainPath.addSelectionListener(new SelectionAdapter() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				definition.setMainDataPath(!definition.isMainDataPath()); // flip the switch
+			}
+		
+		});
         
         // Allow for a small description
         //
@@ -869,7 +904,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wlDescription);
         wlDescription.setText(descriptionLabel); //$NON-NLS-1$
         FormData fdlDescription = new FormData();
-        fdlDescription.top = new FormAttachment(wbOutputStep, margin);
+        fdlDescription.top = new FormAttachment(wMainPath, margin);
         fdlDescription.left = new FormAttachment(0, 0); // First one in the left top corner
         fdlDescription.right = new FormAttachment(middle, -margin);
         wlDescription.setLayoutData(fdlDescription);
@@ -879,7 +914,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wDescription.setText(Const.NVL(definition.getDescription(), ""));
         wDescription.addModifyListener(lsMod);
         FormData fdDescription = new FormData();
-        fdDescription.top = new FormAttachment(wbOutputStep, margin);
+        fdDescription.top = new FormAttachment(wMainPath, margin);
         fdDescription.bottom = new FormAttachment(wOutputStep, 100+margin);
         fdDescription.left = new FormAttachment(middle, 0); // To the right of the label
         fdDescription.right = new FormAttachment(wbOutputStep, -margin);
@@ -928,24 +963,27 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         // This might not be very elegant resource wise, but the code is :-)
         // Typically the number of fields passes is very small anyway.
         //
-        wFieldMappings.addFocusListener(new FocusAdapter() {
+        FocusListener focusListener = new FocusAdapter() {
         	
-			@Override
+        	@Override
 			public void focusLost(FocusEvent event) {
-				int nrLines = wFieldMappings.nrNonEmpty();
-				String parentField[] = new String[nrLines];
-				String mappingField[] = new String[nrLines];
-				definition.setParentField(parentField);
-				definition.setMappingField(mappingField);
+			
+        		System.out.println("!!!!!!!!!!!!  Field mapping : focus lost !!!!!!!!!!");
+    			
+        		int nrLines = wFieldMappings.nrNonEmpty();
+				definition.setParentField(new String[nrLines]);
+				definition.setMappingField(new String[nrLines]);
 				for (int i=0;i<nrLines;i++)
 				{
 					TableItem item = wFieldMappings.getNonEmpty(i);
-					parentField[i]=item.getText(1);
-					mappingField[i]=item.getText(2);
+					definition.getParentField()[i]=item.getText(1);
+					definition.getMappingField()[i]=item.getText(2);
+					System.out.println("#"+i+" --> parent="+definition.getParentField()[i]+", mapping="+definition.getMappingField()[i]);
 				}
 			}
-			
-		});
+		};
+		// wFieldMappings.addFocusListener(focusListener);
+		wFieldMappings.table.addFocusListener(focusListener);
         
         wbEnterMapping.addSelectionListener(new SelectionAdapter() {
 		
@@ -964,11 +1002,19 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 						// first clear the dialog...
 						wFieldMappings.clearAll(false);
 						
+						// 
+						definition.setParentField(new String[mappings.size()]);
+						definition.setMappingField(new String[mappings.size()]);
+						
 						// Now add the new values...
-						for (SourceToTargetMapping mapping : mappings) {
+						for (int i=0;i<mappings.size();i++) {
+							SourceToTargetMapping mapping = mappings.get(i);
 							TableItem item = new TableItem(wFieldMappings.table, SWT.NONE);
 							item.setText(1, mapping.getSourceString(sourceFields));
 							item.setText(2, mapping.getTargetString(targetFields));
+							
+						    definition.getParentField()[i] = input ? item.getText(1) : item.getText(2); 
+						    definition.getMappingField()[i] = input ? item.getText(2) : item.getText(1); 
 						}
 						wFieldMappings.removeEmptyRows();
 						wFieldMappings.setRowNums();

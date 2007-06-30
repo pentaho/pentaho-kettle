@@ -209,7 +209,6 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    @Override
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException 
     {
 		if (databaseMeta==null) return; // TODO: throw an exception here

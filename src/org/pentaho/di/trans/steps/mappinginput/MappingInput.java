@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.steps.mappinginput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -47,34 +48,46 @@ public class MappingInput extends BaseStep implements StepInterface
 	
     // ProcessRow is not doing anything
     // It's a placeholder for accepting rows from the parent transformation...
-    // So, basically, we wait for output to be done...
+    // So, basically, this is a glorified Dummy with a little bit of metadata
     //
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(MappingInputMeta)smi;
 		data=(MappingInputData)sdi;
-
-        // wait a while
-        while (!data.finished && !isStopped())
+		
+        if (first)
         {
-            try
+            first=false;
+            
+            // 
+            // Wait until we know were to read from the parent transformation...
+            // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
+            //
+            int totalsleep = 0;
+            while (!isStopped() && data.sourceSteps==null)
             {
-                Thread.sleep(10);
+                try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
+                if (totalsleep>60000)
+                {
+                    throw new KettleException(Messages.getString("MappingInput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                }
             }
-            catch(InterruptedException e)
-            {
-                stopAll();
-            }
+            
+            // OK, now we're ready to read from the parent source steps.
         }
         
-		return false;
+		Object[] row = getRow();
+		if (row==null) {
+			setOutputDone();
+			return false;
+		}
+		
+
+		putRow(getInputRowMeta(), row);
+		
+		return true;
 	}
-
-    public void setFinished()
-    {
-        data.finished = true;
-    }
-
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(MappingInputMeta)smi;
@@ -82,14 +95,12 @@ public class MappingInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-            data.finished = false;
-
-            return true;
+		    // Add init code here.
+		    return true;
 		}
 		return false;
 	}
-	
-	//
+
 	// Run is were the action happens!
 	public void run()
 	{
@@ -111,5 +122,27 @@ public class MappingInput extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
+	}
+
+	public void setConnectorSteps(StepInterface[] sourceSteps) {
+		
+        for (int i=0;i<sourceSteps.length;i++) {
+        	
+	        // OK, before we leave, make sure there is a rowset that covers the path to this target step.
+	        // We need to create a new RowSet and add it to the Input RowSets of the target step
+        	//
+	        RowSet rowSet = new RowSet(getTransMeta().getSizeRowset());
+	        
+	        // This is always a single copy, both for source and target...
+	        //
+	        rowSet.setThreadNameFromToCopy(sourceSteps[i].getStepname(), 0, getStepname(), 0);
+	        
+	        // Make sure to connect it to both sides...
+	        //
+	        sourceSteps[i].getOutputRowSets().add(rowSet);
+	        getInputRowSets().add(rowSet);
+        }
+		data.sourceSteps = sourceSteps;
+		
 	}
 }

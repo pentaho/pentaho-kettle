@@ -60,6 +60,9 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     private int     fieldPrecision[];
     
     private boolean fieldAdded[];
+    
+    private volatile String[] oldName;
+    private volatile String[] newName;
 
     public MappingOutputMeta()
     {
@@ -243,8 +246,24 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[]) throws KettleStepException
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep) throws KettleStepException
     {
+    	// TODO it's best that this method doesn't change anything by itself.
+    	// Eventually it's the Mapping step that's going to tell this step how to behave metadata wise.
+    	// So what we'll have is the mapping step tell the mapping output step what fields to rename.
+    	// 
+    	if (oldName!=null && newName!=null) {
+    		for (int i=0;i<oldName.length;i++) {
+    			int index = r.indexOfValue(oldName[i]);
+    			if (index>=0) {
+    				r.getValueMeta(index).setName(newName[i]);
+    			}
+    		}
+    	}
+    	
+    	// For now, that's all there is really...
+    	
+    	/*
         //
         // Always overwrite and ignore input values
         // Catch mismatches in check.
@@ -285,6 +304,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                 }
             }
         }
+        */
     }
 
     public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException
@@ -385,4 +405,32 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		return row;
     }
+
+	/**
+	 * @return the newName
+	 */
+	public String[] getNewName() {
+		return newName;
+	}
+
+	/**
+	 * @param newName the newName to set
+	 */
+	public void setNewName(String[] newName) {
+		this.newName = newName;
+	}
+
+	/**
+	 * @return the oldName
+	 */
+	public String[] getOldName() {
+		return oldName;
+	}
+
+	/**
+	 * @param oldName the oldName to set
+	 */
+	public void setOldName(String[] oldName) {
+		this.oldName = oldName;
+	}
 }

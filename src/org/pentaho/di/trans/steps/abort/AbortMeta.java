@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -39,6 +40,11 @@ public class AbortMeta  extends BaseStepMeta implements StepMetaInterface {
 	 */
 	private boolean alwaysLogRows;
 	
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	{
+		// Default: no values are added to the row in the step
+	}
+
 	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
         // See if we have input streams leading to this step!

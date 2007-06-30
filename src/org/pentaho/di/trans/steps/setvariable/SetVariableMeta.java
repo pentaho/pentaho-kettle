@@ -230,7 +230,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	
-	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		for (int i=0;i<fieldName.length;i++)
 		{

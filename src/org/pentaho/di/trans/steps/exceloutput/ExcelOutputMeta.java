@@ -622,7 +622,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	}
 
 	
-	public void getFields(RowMetaInterface  r, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface  r, String name, RowMetaInterface[] info, StepMeta nextStep)
 	{
 		if (r==null) r=new RowMeta(); // give back values
 		

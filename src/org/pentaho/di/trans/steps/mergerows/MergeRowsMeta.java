@@ -374,7 +374,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	    return null;
 	}
     
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info) throws KettleStepException
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
     {
         // We don't have any input fields here in "r" as they are all info fields.
         // So we just merge in the info fields.

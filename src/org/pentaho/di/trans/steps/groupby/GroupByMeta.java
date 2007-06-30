@@ -332,7 +332,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		allocate( sizegroup, nrfields );
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep)
 	{
 		// Loop over the aggregate names.
 		// Keep the fields to group over and the aggregates

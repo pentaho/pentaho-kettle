@@ -427,7 +427,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		useAutoinc  = false;
 	}
 
-	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 		ValueMetaInterface v=new ValueMeta(technicalKeyField, ValueMetaInterface.TYPE_INTEGER);
 		v.setLength(10);

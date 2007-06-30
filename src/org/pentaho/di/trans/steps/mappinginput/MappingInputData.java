@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.mappinginput;
 
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 
 
 
@@ -30,6 +31,7 @@ public class MappingInputData extends BaseStepData implements StepDataInterface
 {
 
 	public boolean finished;
+	public StepInterface[] sourceSteps;
 
     /**
 	 * 

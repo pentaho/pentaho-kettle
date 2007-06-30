@@ -57,6 +57,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 
     private int    fieldPrecision[];
 
+	private volatile RowMetaInterface inputRowMeta;
+
     public MappingInputMeta()
     {
         super(); // allocate BaseStepMeta
@@ -223,21 +225,35 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
     
-    @Override
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException 
     {
-    	for (int i=0;i<fieldName.length;i++)
-        {
-            if (fieldName[i]!=null && fieldName[i].length()!=0)
-            {
-                ValueMetaInterface v=new ValueMeta(fieldName[i], fieldType[i]);
-                if (v.getType()==ValueMetaInterface.TYPE_NONE) v.setType(ValueMetaInterface.TYPE_STRING);
-                v.setLength(fieldLength[i]);
-                v.setPrecision(fieldPrecision[i]);
-                v.setOrigin(origin);
-                row.addValueMeta(v);
-            }
-        }
+    	// Row should normally be empty when we get here.
+    	// That is because there is no previous step to this mapping input step.
+    	//
+    	if (inputRowMeta!=null) {
+    		row.mergeRowMeta(inputRowMeta); // this gets set only in the parent transformation...
+    		
+	    	for (int i=0;i<fieldName.length;i++) {
+	    		if (row.indexOfValue(fieldName[i])<0) {
+	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
+	    		}
+	        }
+    	}
+    	else {
+	    	// We'll have to work with the statically provided information
+	    	for (int i=0;i<fieldName.length;i++)
+	        {
+	            if (!Const.isEmpty(fieldName[i]))
+	            {
+	                ValueMetaInterface v=new ValueMeta(fieldName[i], fieldType[i]);
+	                if (v.getType()==ValueMetaInterface.TYPE_NONE) v.setType(ValueMetaInterface.TYPE_STRING);
+	                v.setLength(fieldLength[i]);
+	                v.setPrecision(fieldPrecision[i]);
+	                v.setOrigin(origin);
+	                row.addValueMeta(v);
+	            }
+	        }
+    	}
     }
     
 
@@ -325,5 +341,16 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return new MappingInputData();
     }
+
+	public void setInputRowMeta(RowMetaInterface inputRowMeta) {
+		this.inputRowMeta = inputRowMeta;
+	}
+
+	/**
+	 * @return the inputRowMeta
+	 */
+	public RowMetaInterface getInputRowMeta() {
+		return inputRowMeta;
+	}
 
 }

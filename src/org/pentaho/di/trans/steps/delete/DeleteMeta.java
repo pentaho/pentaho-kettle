@@ -370,6 +370,11 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException(Messages.getString("DeleteMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
+	
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	{
+		// Default: nothing changes to rowMeta
+	}
     
 	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{

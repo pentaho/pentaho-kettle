@@ -97,7 +97,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null);
 		putRow(data.outputRowMeta, r); // in case we want it to go further...
 
 		if (checkFeedback(linesOutput))

@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -40,6 +41,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
+import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
 import org.w3c.dom.Node;
 
 
@@ -105,7 +108,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         		inputMappings.add(inputMappingDefinition);
         	}
         	Node outputNode  = XMLHandler.getSubNode(mappingsNode, "output"); //$NON-NLS-1$
-        	int nrOutputMappings = XMLHandler.countNodes(inputNode, MappingIODefinition.XML_TAG); //$NON-NLS-1$
+        	int nrOutputMappings = XMLHandler.countNodes(outputNode, MappingIODefinition.XML_TAG); //$NON-NLS-1$
         	for (int i=0;i<nrOutputMappings;i++) {
         		Node mappingNode = XMLHandler.getSubNodeByNr(outputNode, MappingIODefinition.XML_TAG, i);
         		MappingIODefinition outputMappingDefinition = new MappingIODefinition(mappingNode);
@@ -127,30 +130,30 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	        int nrOutput = XMLHandler.countNodes(outputNode, "connector"); //$NON-NLS-1$
 	        
 	        MappingIODefinition inputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        inputMappingDefinition.setMainDataPath(true);
 	        
 	        String inputField[] = new String[nrInput];
 	        String inputMapping[] = new String[nrInput];
 	        
-	        for (int i=0;i<nrInput;i++)
-	        {
-	            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
-	            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
-	            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
-	        }
+	        for (int i = 0; i < nrInput; i++) {
+				Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
+				inputField[i] = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
+				inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
+			}
 	        inputMappingDefinition.setParentField(inputField);
 	        inputMappingDefinition.setMappingField(inputMapping);
 
 	        MappingIODefinition outputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
+	        outputMappingDefinition.setMainDataPath(true);
 	        
 	        String outputField[] = new String[nrOutput];
 	        String outputMapping[] = new String[nrOutput];
 	        
-	        for (int i=0;i<nrOutput;i++)
-	        {
-	            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
-	            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
-	            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
-	        }
+	        for (int i = 0; i < nrOutput; i++) {
+				Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
+				outputField[i] = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
+				outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
+			}
 	        
 	        outputMappingDefinition.setMappingField(outputMapping);
 	        outputMappingDefinition.setParentField(outputField);
@@ -165,10 +168,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
     
-    public void allocate(int nrInput, int nrOutput)
+    public void allocate()
     {
-    	inputMappings = new ArrayList<MappingIODefinition>(nrInput);
-    	outputMappings = new ArrayList<MappingIODefinition>(nrOutput);
+    	inputMappings = new ArrayList<MappingIODefinition>();
+    	outputMappings = new ArrayList<MappingIODefinition>();
     }
 
     public String getXML()
@@ -202,48 +205,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-        allocate(0,0);
+        allocate();
 	}
-    
-    public void getFields(RowMetaInterface r, String origin, RowMetaInterface info[]) throws KettleStepException
-    {
-    	/*
-    	 * TODO re-enable this.
-    	 *      The problem for now is: we need to select a primary output and multiple targeted outputs...
-    	 *      This getFields should only deal with the targetted one.
-    	 *      We run into a certain little problem here.
-    	 *      What we need to do is pass the "next step" into the equation/interface so that we know who's asking.
-    	 *      If nobody is asking here, it's the main step.
-    	 *      If one of the next steps is asking, it should be a certain other response.
-    	 *      
-    	// Change the names of the fields if this is required by the mapping.
-    	for (int i=0;i<inputField.length;i++)
-		{
-			if (inputField[i]!=null && inputField[i].length()>0)
-			{
-				if (inputMapping[i]!=null && inputMapping[i].length()>0)
-				{
-					if (!inputField[i].equals(inputMapping[i])) // rename these!
-					{
-						int idx = r.indexOfValue(inputField[i]);
-						if (idx<0)
-						{
-							throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingTargetFieldNotPresent",inputField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-						}
-						r.getValueMeta(idx).setName(inputMapping[i]);
-					}
-				}
-				else
-				{
-					throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingTargetFieldNotSpecified",i+"",inputField[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				}
-			}
-			else
-			{
-				throw new KettleStepException(Messages.getString("MappingMeta.Exception.InputFieldNotSpecified",i+"")); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-
+	
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep) throws KettleStepException {
+    	// First load some intersting data...
+    	
     	// Then see which fields get added to the row.
     	//
         Repository repository = Repository.getCurrentRepository(); 
@@ -256,39 +223,146 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToLoadMappingTransformation"), e);
         }
+        
+        /*
+         * Before we ask the mapping outputs anything, we should teach the mapping input steps in the sub-transformation
+         * about the data coming in...
+         */
+        for (MappingIODefinition definition : inputMappings) {
+        	
+        	RowMetaInterface inputRowMeta;
+        	
+        	if (definition.isMainDataPath() || Const.isEmpty(definition.getInputStepname()) ) {
+        		// The row metadata, what we pass to the mapping input step definition.getOutputStep(), is "row"
+        		// However, we do need to re-map some fields...
+        		// 
+        		inputRowMeta = (RowMetaInterface) row.clone();
+        		for (int i=0;i<definition.getParentField().length;i++) {
+        			ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(definition.getParentField()[i]);
+        			if (valueMeta==null) {
+        				throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindField", definition.getParentField()[i]));
+        			}
+        			valueMeta.setName(definition.getMappingField()[i]);
+        		}
+        	}
+        	else {
+        		// The row metadata that goes to the info mapping input comes from the specified step
+        		// In fact, it's one of the info steps that is going to contain this information...
+        		//
+        		String[] infoSteps = getInfoSteps();
+        		int infoStepIndex = Const.indexOfString(definition.getInputStepname(), infoSteps);
+        	    if (infoStepIndex<0) {
+        	    	throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindMetadataInfo", definition.getInputStepname()));
+        	    }
+        	    inputRowMeta = (RowMetaInterface) info[infoStepIndex].clone();
+        	}
+        	
+    		// What is this mapping input step?
+    		//
+    		StepMeta mappingInputStep = mappingTransMeta.findMappingInputStep(definition.getOutputStepname());
+    		
+    		// We're certain it's a MappingInput step...
+    		//
+    		MappingInputMeta mappingInputMeta = (MappingInputMeta) mappingInputStep.getStepMetaInterface();
 
-        if (mappingTransMeta!=null)
-        {
-            StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
-            if (stepMeta!=null)
-            {
-            	stepMeta.getStepMetaInterface().getFields(r, name, info);
-            	
-                // Change the output fields that are specified...
-                for (int i=0;i<outputMapping.length;i++)
-                {
-                    ValueMetaInterface v = r.searchValueMeta(outputMapping[i]);
-                    if (v!=null)
-                    {
-                        v.setName(outputField[i]);
-                        v.setOrigin(name);
-            		}
-            		else
-            		{
-            			throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindField")+outputMapping[i]); //$NON-NLS-1$
-            		}
-                }
-            }
-            else
-            {
-            	throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingOutputStepRequired")); //$NON-NLS-1$
-            }
+    		// Inform the mapping input step about what it's going to receive...
+    		//
+    		mappingInputMeta.setInputRowMeta(inputRowMeta);
         }
-        else
-        {
-            throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToGetFieldsFromMapping")); //$NON-NLS-1$
-        }
-        */
+        
+        // All the mapping steps now know what they will be receiving.
+        // That also means that the sub-transformation / mapping has everything it needs.
+        // So that means that the MappingOutput steps know exactly what the output is going to be.
+        // That could basically be anything.
+        // It also could have absolutely no resemblence to what came in on the input.
+        // The relative old apprach is therefor no longer suited.
+        // 
+        // OK, but what we *can* do is have the MappingOutput step rename the appropriate fields.
+        // The mapping step will tell this step how it's done.
+        //
+        // Let's look for the mapping output step that is relevant for this actual call...
+        //
+        MappingIODefinition mappingOutputDefinition = null;
+    	if (nextStep==null) {
+    		// This is the main step we read from...
+    		// Look up the main step to write to.
+    		// This is the output mapping definition with "main path" enabled.
+    		//
+    		for (MappingIODefinition definition : outputMappings) {
+    			if (definition.isMainDataPath() || Const.isEmpty(definition.getOutputStepname())) {
+    				// This is the definition to use...
+    				//
+    				mappingOutputDefinition = definition;
+    			}
+    		}
+    	}
+    	else {
+    		// Is there an output mapping definition for this step?
+    		// If so, we can look up the Mapping output step to see what has changed.
+    		//
+    		
+    		for (MappingIODefinition definition : outputMappings) {
+    			if (nextStep.getName().equals(definition.getOutputStepname()) || 
+    			    definition.isMainDataPath() || 
+    			    Const.isEmpty(definition.getOutputStepname())
+    			    ) {
+    				mappingOutputDefinition = definition;
+    			}
+    		}
+    	}
+    	
+    	if (mappingOutputDefinition==null) {
+    		throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindMappingDefinition"));
+    	}
+    		
+		// OK, now find the mapping output step in the mapping...
+		// This method in TransMeta takes into account a number of things, such as the step not specified, etc.
+		// The method never returns null but throws an exception.
+		//
+		StepMeta mappingOutputStep = mappingTransMeta.findMappingOutputStep(mappingOutputDefinition.getInputStepname());
+		
+		// We know it's a mapping output step...
+		MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) mappingOutputStep.getStepMetaInterface();
+		mappingOutputMeta.setOldName(mappingOutputDefinition.getMappingField());
+		mappingOutputMeta.setNewName(mappingOutputDefinition.getParentField());
+		
+		// Now we know wat's going to come out of there...
+		// This is going to be the full row, including all the remapping, etc.
+		//
+		RowMetaInterface mappingOutputRowMeta = mappingTransMeta.getStepFields(mappingOutputStep);
+		
+		row.clear();
+		row.addRowMeta(mappingOutputRowMeta);
+    }
+    
+    @Override
+    public String[] getInfoSteps() {
+
+    	List<String> infoSteps = new ArrayList<String>();
+    	// The infosteps are those steps that are specified in the input mappings
+    	for (MappingIODefinition definition : inputMappings) {
+    		if (!definition.isMainDataPath() && !Const.isEmpty(definition.getInputStepname())) {
+    			infoSteps.add(definition.getInputStepname());
+    		}
+    	}
+    	if (infoSteps.isEmpty()) return null;
+
+    	return infoSteps.toArray(new String[infoSteps.size()]);
+    }
+    
+    @Override
+    public String[] getTargetSteps() {
+
+    	List<String> targetSteps = new ArrayList<String>();
+    	// The infosteps are those steps that are specified in the input mappings
+    	for (MappingIODefinition definition : outputMappings) {
+    		if (!definition.isMainDataPath() && !Const.isEmpty(definition.getOutputStepname())) {
+    			targetSteps.add(definition.getOutputStepname());
+    		}
+    	}
+    	if (targetSteps.isEmpty()) return null;
+
+    	return targetSteps.toArray(new String[targetSteps.size()]);
     }
 
     public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException

@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -116,6 +117,12 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
             remarks.add(cr);
         }
     }
+	
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	{
+		// Default: no values are added to the row in the step
+	}
+
     
     public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String stepname) {
         return new BlockingStepDialog(shell, info, transMeta, stepname);

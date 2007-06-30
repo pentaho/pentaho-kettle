@@ -25,6 +25,8 @@ public class MappingIODefinition implements Cloneable {
 	private String parentField[];
 
 	private String childField[];
+	
+	private boolean mainDataPath;
 
 	/**
 	 * No input or output step is defined:<br> 
@@ -37,6 +39,7 @@ public class MappingIODefinition implements Cloneable {
 		this.outputStepname = null;
 		this.parentField = new String[] {};
 		this.childField = new String[] {};
+		this.mainDataPath = false;
 	}
 	/**
 	 * @param inputStepname the name of the step to "connect" to.  
@@ -69,6 +72,7 @@ public class MappingIODefinition implements Cloneable {
 		
 		inputStepname = XMLHandler.getTagValue(mappingNode, "input_step");  //$NON-NLS-1$
 		outputStepname = XMLHandler.getTagValue(mappingNode, "output_step");  //$NON-NLS-1$
+		mainDataPath =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "main_path"));  //$NON-NLS-1$ $NON-NLS-2$
 		description = XMLHandler.getTagValue(mappingNode, "description");  //$NON-NLS-1$
 		
 		int nrConnectors  = XMLHandler.countNodes(mappingNode, "connector"); //$NON-NLS-1$
@@ -91,6 +95,7 @@ public class MappingIODefinition implements Cloneable {
 		
 		xml.append("    ").append(XMLHandler.addTagValue("input_step", inputStepname));
 		xml.append("    ").append(XMLHandler.addTagValue("output_step", outputStepname));
+		xml.append("    ").append(XMLHandler.addTagValue("main_path", mainDataPath));
 		xml.append("    ").append(XMLHandler.addTagValue("description", description));
 		
 		for (int i=0;i<parentField.length;i++)
@@ -174,5 +179,19 @@ public class MappingIODefinition implements Cloneable {
 	 */
 	public void setOutputStepname(String outputStepname) {
 		this.outputStepname = outputStepname;
+	}
+	
+	/**
+	 * @return true if this is the main data path for the mapping step.
+	 */
+	public boolean isMainDataPath() {
+		return mainDataPath;
+	}
+	
+	/**
+	 * @param mainDataPath true if this is the main data path for the mapping step.
+	 */
+	public void setMainDataPath(boolean mainDataPath) {
+		this.mainDataPath = mainDataPath;
 	}
 }

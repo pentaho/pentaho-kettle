@@ -82,7 +82,7 @@ public class FilesFromResultMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 	}
 	
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 
 		// Add the fields from a ResultFile

@@ -265,7 +265,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		arguments = new String[0];
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info) throws KettleStepException
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
 	{
 
 		Object[] add = ExecSQL.getResultRow(new Result(), getUpdateField(), getInsertField(), getDeleteField(),

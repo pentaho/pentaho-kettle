@@ -63,7 +63,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 		if (log.isRowLevel())
 			logRowlevel("Read row: " + row.toString());
 		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null);
+		meta.getFields(data.outputRowMeta, getStepname(), null, null);
 		putRow(data.outputRowMeta, row);
 
 		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) // limit

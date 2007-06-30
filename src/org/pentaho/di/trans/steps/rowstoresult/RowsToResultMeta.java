@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
@@ -79,6 +80,11 @@ public class RowsToResultMeta extends BaseStepMeta implements StepMetaInterface
 	public void saveRep(Repository rep, long id_transformation, long id_step)
 		throws KettleException
 	{
+	}
+	
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	{
+		// Default: nothing changes to rowMeta
 	}
 
 	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)

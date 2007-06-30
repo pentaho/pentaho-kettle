@@ -149,7 +149,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         }
 	}
 	
-    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info) throws KettleStepException
+    public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
     {
         for (int i=0;i<calculation.length;i++)
         {

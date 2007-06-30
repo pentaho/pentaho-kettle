@@ -1268,7 +1268,7 @@ public class BaseStep extends Thread implements VariableSpace
         if (output_rowset_nr < 0) 
         {
             // No rowset found: normally it can't happen: we deleted the rowset because it was finished
-        	throw new KettleRowException("Couldn't find hop '" + from + "' to read from"); 
+        	throw new KettleRowException("Couldn't find step with name '" + from + "' to read from"); 
         }
 
         return getRowFrom(output_rowset_nr);

@@ -1293,7 +1293,7 @@ public class Trans implements VariableSpace
 			if (transMeta.getWriteStep()   !=null && rt.getStepname().equals(transMeta.getWriteStep().getName()))    result.setNrLinesWritten(result.getNrLinesWritten()+rt.linesWritten);
 			if (transMeta.getOutputStep()  !=null && rt.getStepname().equals(transMeta.getOutputStep().getName()))   result.setNrLinesOutput(result.getNrLinesOutput()+rt.linesOutput);
 			if (transMeta.getUpdateStep()  !=null && rt.getStepname().equals(transMeta.getUpdateStep().getName()))   result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.linesUpdated);
-            if (transMeta.getRejectedStep()!=null && rt.getStepname().equals(transMeta.getRejectedStep().getName())) result.setNrLinesUpdated(result.getNrLinesRejected()+rt.linesRejected);
+            if (transMeta.getRejectedStep()!=null && rt.getStepname().equals(transMeta.getRejectedStep().getName())) result.setNrLinesRejected(result.getNrLinesRejected()+rt.linesRejected);
 		}
 
 		result.setRows( transMeta.getResultRows() );
@@ -1553,7 +1553,7 @@ public class Trans implements VariableSpace
 	/**
 	 * @return Returns the steps.
 	 */
-	public List getSteps()
+	public List<StepMetaDataCombi> getSteps()
 	{
 		return steps;
 	}

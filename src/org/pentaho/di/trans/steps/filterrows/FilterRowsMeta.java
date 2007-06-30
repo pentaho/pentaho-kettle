@@ -24,6 +24,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -387,6 +388,11 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
             sendFalseStep = targetSteps[1];
         }
     }
+    
+	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
+	{
+		// Default: nothing changes to rowMeta
+	}
 
     public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{

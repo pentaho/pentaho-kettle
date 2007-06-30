@@ -49,7 +49,7 @@ public class Result implements Cloneable
 	private Map<String, ResultFile> resultFiles;
 	
 	public boolean stopped;
-    private int nrLinesRejected;
+    private long nrLinesRejected;
 	
 	public Result()
 	{
@@ -389,7 +389,7 @@ public class Result implements Cloneable
     /**
      * @return the nrLinesRejected
      */
-    public int getNrLinesRejected()
+    public long getNrLinesRejected()
     {
         return nrLinesRejected;
     }
@@ -397,7 +397,7 @@ public class Result implements Cloneable
     /**
      * @param nrLinesRejected the nrLinesRejected to set
      */
-    public void setNrLinesRejected(int nrLinesRejected)
+    public void setNrLinesRejected(long nrLinesRejected)
     {
         this.nrLinesRejected = nrLinesRejected;
     }

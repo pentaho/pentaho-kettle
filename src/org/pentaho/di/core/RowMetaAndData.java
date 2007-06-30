@@ -46,6 +46,15 @@ public class RowMetaAndData implements Cloneable
         
         return c;
     }
+    
+    @Override
+    public String toString() {
+    	try {
+			return rowMeta.getString(data);
+		} catch (KettleValueException e) {
+			return rowMeta.toString()+", error presenting data: "+e.toString();
+		}
+    }
 
     /**
      * @return the data

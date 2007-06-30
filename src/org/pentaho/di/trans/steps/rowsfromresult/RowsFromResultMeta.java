@@ -225,7 +225,7 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         }
 	}
     
-    public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info) throws KettleStepException
+    public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep) throws KettleStepException
     {
         for (int i=0;i<this.name.length;i++)
         {
