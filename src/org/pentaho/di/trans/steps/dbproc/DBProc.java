@@ -96,11 +96,11 @@ public class DBProc extends BaseStep implements StepInterface
         //
 		for (int i = 0; i < data.argnrs.length; i++) {
 			if (meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) {
-				//add
+				// add
 				row=RowDataUtil.addValueData(row, add.getData()[addIndex]); 
 				addIndex++;
 			} else if (meta.getArgumentDirection()[i].equalsIgnoreCase("INOUT")) {
-				//replace
+				// replace
 				row[data.argnrs[i]]=add.getData()[addIndex];
 				addIndex++;
 			}
