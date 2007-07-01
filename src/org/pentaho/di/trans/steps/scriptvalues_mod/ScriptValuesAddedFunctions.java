@@ -70,7 +70,8 @@ import org.mozilla.javascript.WrappedException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
@@ -92,6 +93,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "print", "println", "resolveIP", "trim", "substr", 
         };
 	
+	// This is only used for reading, so no concurrency problems.
+	private static VariableSpace variables = Variables.getADefaultVariableSpace();
 
 	// Functions to Add
 	// date2num, num2date,  
@@ -1177,7 +1180,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==1){
 			try{
 				String sArg1 = Context.toString(ArgList[0]);
-				sRC = StringUtil.getVariable(sArg1,"");
+				sRC = variables.getVariable(sArg1,"");
 			}catch(Exception e){
 				sRC="";
 			}

@@ -40,7 +40,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1722,12 +1721,6 @@ public class Trans implements VariableSpace
     public void setParentJob(Job parentJob)
     {
         this.parentJob = parentJob;
-    }
-
-    public KettleVariables getKettleVariables()
-    {
-        KettleVariables vars = KettleVariables.getInstance();
-        return vars;
     }
 
     /**

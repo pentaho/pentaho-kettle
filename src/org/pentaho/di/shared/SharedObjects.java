@@ -17,7 +17,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
@@ -168,7 +168,7 @@ public class SharedObjects
         {
             // First fallback is the environment/kettle variable ${KETTLE_SHARED_OBJECTS}
             // This points to the file
-            filename = KettleVariables.getInstance().getVariable("KETTLE_SHARED_OBJECTS");
+            filename = Variables.getADefaultVariableSpace().getVariable("KETTLE_SHARED_OBJECTS");
             
             // Last line of defence...
             if (Const.isEmpty(filename))

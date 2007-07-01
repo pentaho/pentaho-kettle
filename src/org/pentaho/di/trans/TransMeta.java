@@ -67,7 +67,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -5571,48 +5570,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                }
            }
        }
-    }
-
-    // TO BE DELETED TODO SB
-    public void setInternalKettleVariablesOld()
-    {
-        KettleVariables variables = KettleVariables.getInstance();
-        
-        if (!Const.isEmpty(filename)) // we have a finename that's defined.
-        {
-            try
-            {
-                FileObject fileObject = KettleVFS.getFileObject(filename);
-                FileName fileName = fileObject.getName();
-                
-                // The filename of the transformation
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName());
-
-                // The directory of the transformation
-                FileName fileDir = fileName.getParent();
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI());
-            }
-            catch(IOException e)
-            {
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-                variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-            }
-        }
-        else
-        {
-            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "");
-            variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "");
-        }
-        
-        // The name of the transformation
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL(name, ""));
-
-        // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
-        
-        // Here we don't undefine the job specific parameters, as it may come in handy.
-    }
-    
+    }   
     
     public void setInternalKettleVariables()
     {        
@@ -5621,7 +5579,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     
     public void setInternalKettleVariables(VariableSpace var)
     {        
-    	setInternalKettleVariablesOld();
         if (!Const.isEmpty(filename)) // we have a finename that's defined.
         {
             try

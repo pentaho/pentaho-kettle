@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.variables.KettleVariables;
 
 /**
  * A collection of utilities to manipulate strings.
@@ -235,29 +234,6 @@ public class StringUtil
 	{
 		getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list, includeSystemVariables);
 		getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list, includeSystemVariables);
-	}
-
-	/**
-	 * Return the value of a Kettle or system variable. (in that order or
-	 * occurence)
-	 * 
-	 * @param variable
-	 *            the variable to look for, without the $ or % variable
-	 *            specification, just the name.
-	 * @param defaultValue
-	 *            the default value in case nothing was found.
-	 * @return the value for that (kettle) variable
-	 */
-	public static final String getVariable(String variable, String defaultValue)
-	{
-		KettleVariables vars = KettleVariables.getInstance();
-
-		Properties systemProperties = new Properties();
-		systemProperties.putAll(System.getProperties());
-		systemProperties.putAll(vars.getProperties()); // overwrite with
-		// local vars
-
-		return systemProperties.getProperty(variable, defaultValue);
 	}
 
 	public static final String generateRandomString(int length, String prefix, String postfix,

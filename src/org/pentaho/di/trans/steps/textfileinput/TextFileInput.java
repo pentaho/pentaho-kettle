@@ -39,7 +39,6 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -1540,7 +1539,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				return false;
 			}
             
-            String nr = KettleVariables.getInstance().getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
+            String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
             if (!Const.isEmpty(nr))
             {
                 // TODO: add metadata to configure this.

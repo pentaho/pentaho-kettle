@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-
 import org.pentaho.di.core.util.StringUtil;
 
 
@@ -156,12 +155,12 @@ public class Variables implements VariableSpace
 	 * 
 	 * @return a default variable space.
 	 */
-	public static VariableSpace getADefaultVariableSpace()
+	synchronized public static VariableSpace getADefaultVariableSpace()
 	{
 	    VariableSpace space = new Variables();
 	    
 	    space.initializeVariablesFrom(null);
 	    
 	    return space;
-	}
+	}	
 }
