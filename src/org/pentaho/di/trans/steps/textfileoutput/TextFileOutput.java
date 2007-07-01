@@ -402,8 +402,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				else
 				{
 		            log.logDetailed(toString(), "Opening output stream in nocompress mode");
-                    OutputStream fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
-                    outputStream=fos;
+                    data.fos = KettleVFS.getOutputStream(filename, meta.isFileAppended());
+                    outputStream=data.fos;
 				}
                 
 	            if (!Const.isEmpty(meta.getEncoding()))
@@ -438,10 +438,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		boolean retval=false;
 		
 		try
-		{
-			logDebug("Closing output stream");
-			data.writer.close();
-			logDebug("Closed output stream");
+		{			
+			if ( data.writer != null )
+			{
+				logDebug("Closing output stream");
+			    data.writer.close();
+			    logDebug("Closed output stream");
+			}			
 			data.writer = null;
 			if (data.cmdProc != null)
 			{
@@ -452,12 +455,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logDebug("Closing normal file ..");
+				logDebug("Closing normal file ...");
 				if (meta.getFileCompression() == "Zip")
 				{
-					//System.out.println("close zip entry ");
 					data.zip.closeEntry();
-					//System.out.println("finish file...");
 					data.zip.finish();
 					data.zip.close();
 				}
@@ -471,7 +472,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     data.fos=null;
                 }
 			}
-			//System.out.println("Closed file...");
 
 			retval=true;
 		}
