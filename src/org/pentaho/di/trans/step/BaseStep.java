@@ -60,6 +60,7 @@ import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
 import org.pentaho.di.trans.steps.constant.ConstantMeta;
 import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
+import org.pentaho.di.trans.steps.dbproc.DBProcMeta;
 import org.pentaho.di.trans.steps.delete.DeleteMeta;
 import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
@@ -179,11 +180,11 @@ public class BaseStep extends Thread implements VariableSpace
         new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
         new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
         new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
+        new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),        
         
         /*
             
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
-            new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(CubeInputMeta.class, "CubeInput", Messages.getString("BaseStep.TypeLongDesc.CubeInput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeinput"), "CIP.png", CATEGORY_INPUT),
