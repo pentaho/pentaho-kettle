@@ -33,7 +33,6 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;

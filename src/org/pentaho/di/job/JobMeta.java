@@ -26,8 +26,6 @@ import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -58,7 +56,6 @@ import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -2174,55 +2171,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return list;
     }
 
-    /**
-     * This method sets various internal kettle variables that can be used by the transformation.
-     */
-    public void setInternalKettleVariablesOld()
-    {
-        KettleVariables variables = KettleVariables.getInstance();
-
-        if (filename!=null) // we have a finename that's defined.
-        {
-            try
-            {
-                FileSystemManager fsManager = VFS.getManager();
-                FileObject fileObject = fsManager.resolveFile( filename );
-                FileName fileName = fileObject.getName();
-                
-                // The filename of the transformation
-                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName());
-
-                // The directory of the transformation
-                FileName fileDir = fileName.getParent();
-                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI());
-            }
-            catch(IOException e)
-            {
-                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
-                variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
-            }
-        }
-        else
-        {
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, ""); //$NON-NLS-1$
-            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, ""); //$NON-NLS-1$
-        }
-
-        // The name of the job
-        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, "")); //$NON-NLS-1$
-
-        // The name of the directory in the repository
-        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null ? directory.getPath() : ""); //$NON-NLS-1$
-        
-        // Undefine the transformation specific variables
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null);
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null);
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null);
-        variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null);
-    }
-
     public boolean haveConnectionsChanged()
     {
         if (changed_databases) return true;
@@ -2476,7 +2424,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      */
     public void setInternalKettleVariables(VariableSpace var)
     {
-    	setInternalKettleVariablesOld();   // TODO to be deleted after migration
         if (filename!=null) // we have a finename that's defined.
         {
             try

@@ -91,10 +91,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 
-
-
 /**
- * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
+ * This class defines a transformation and offers methods to save and load it 
+ * from XML or a PDI database repository.
  *
  * @since 20-jun-2003
  * @author Matt
@@ -103,9 +102,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 {
     public static final String XML_TAG = "transformation";
         
-    private static LogWriter    log                = LogWriter.getInstance();
+    private static LogWriter         log = LogWriter.getInstance();
 
-    private List                inputFiles;
+    private List                     inputFiles;
 
     private List<DatabaseMeta>       databases;
 
@@ -129,7 +128,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
 	private String              description;
 
-	private String             extended_description;
+	private String              extended_description;
 
 	private String				trans_version;
 
@@ -1641,7 +1640,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /**  
-     *
      * Saves the transformation to a repository.
      *
      * @param rep The repository.

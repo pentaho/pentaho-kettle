@@ -159,14 +159,6 @@ public class KettleVariables
     }
 
     /**
-     * @param localThread The localThread to set.
-     */
-    public void setLocalThread(String localThread)
-    {
-        this.localThread = localThread;
-    }
-
-    /**
      * @return Returns the parentThread.
      */
     public String getParentThread()

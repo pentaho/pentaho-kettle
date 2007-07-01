@@ -1650,16 +1650,14 @@ public class BaseStep extends Thread implements VariableSpace
 
     public void setInternalVariables()
     {
-        KettleVariables kettleVariables = KettleVariables.getNamedInstance(getName());
-
-        kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
-        kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
+        setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
+        setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
 
         // Also set the internal variable for the partition
         if (!Const.isEmpty(partitionID))
         {
-            kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
-        }
+            setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+        }        
     }
 
     public void markStop()
