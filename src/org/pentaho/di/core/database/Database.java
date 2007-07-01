@@ -807,6 +807,8 @@ public class Database implements VariableSpace
                 
 				setValue(cstmt, valueMeta, value, pos);
 				pos++;
+			} else {
+				pos++; //next parameter when OUT
 			}
 		}
 	}
@@ -2860,7 +2862,7 @@ public class Database implements VariableSpace
 					case ValueMetaInterface.TYPE_BOOLEAN   : cstmt.registerOutParameter(i+pos, java.sql.Types.BOOLEAN); break;
 					default: break;
 					}
-				}
+				} 
 			}
 		}
 		catch(SQLException ex)
