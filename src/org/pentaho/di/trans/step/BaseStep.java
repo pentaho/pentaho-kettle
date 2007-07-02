@@ -23,16 +23,21 @@ package org.pentaho.di.trans.step;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.config.ConfigManager;
+import org.pentaho.di.core.config.KettleConfig;
+import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -51,58 +56,6 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.steps.abort.AbortMeta;
-import org.pentaho.di.trans.steps.addsequence.AddSequenceMeta;
-import org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta;
-import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
-import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupMeta;
-import org.pentaho.di.trans.steps.constant.ConstantMeta;
-import org.pentaho.di.trans.steps.databaselookup.DatabaseLookupMeta;
-import org.pentaho.di.trans.steps.dbproc.DBProcMeta;
-import org.pentaho.di.trans.steps.delete.DeleteMeta;
-import org.pentaho.di.trans.steps.dimensionlookup.DimensionLookupMeta;
-import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
-import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
-import org.pentaho.di.trans.steps.exceloutput.ExcelOutputMeta;
-import org.pentaho.di.trans.steps.filesfromresult.FilesFromResultMeta;
-import org.pentaho.di.trans.steps.filestoresult.FilesToResultMeta;
-import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
-import org.pentaho.di.trans.steps.getfilenames.GetFileNamesMeta;
-import org.pentaho.di.trans.steps.getvariable.GetVariableMeta;
-import org.pentaho.di.trans.steps.groupby.GroupByMeta;
-import org.pentaho.di.trans.steps.http.HTTPMeta;
-import org.pentaho.di.trans.steps.injector.InjectorMeta;
-import org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta;
-import org.pentaho.di.trans.steps.joinrows.JoinRowsMeta;
-import org.pentaho.di.trans.steps.mapping.MappingMeta;
-import org.pentaho.di.trans.steps.mappinginput.MappingInputMeta;
-import org.pentaho.di.trans.steps.mappingoutput.MappingOutputMeta;
-import org.pentaho.di.trans.steps.mergejoin.MergeJoinMeta;
-import org.pentaho.di.trans.steps.mergerows.MergeRowsMeta;
-import org.pentaho.di.trans.steps.nullif.NullIfMeta;
-import org.pentaho.di.trans.steps.orabulkloader.OraBulkLoaderMeta;
-import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
-import org.pentaho.di.trans.steps.rowsfromresult.RowsFromResultMeta;
-import org.pentaho.di.trans.steps.rowstoresult.RowsToResultMeta;
-import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
-import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
-import org.pentaho.di.trans.steps.setvariable.SetVariableMeta;
-import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
-import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
-import org.pentaho.di.trans.steps.sort.SortRowsMeta;
-import org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta;
-import org.pentaho.di.trans.steps.sql.ExecSQLMeta;
-import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
-import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
-import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
-import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
-import org.pentaho.di.trans.steps.update.UpdateMeta;
-import org.pentaho.di.trans.steps.xmlinput.XMLInputMeta;
-import org.pentaho.di.trans.steps.xmlinputsax.XMLInputSaxMeta;
-import org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta;
 
 public class BaseStep extends Thread implements VariableSpace
 {
@@ -122,8 +75,24 @@ public class BaseStep extends Thread implements VariableSpace
     public static final String CATEGORY_DEPRECATED     = Messages.getString("BaseStep.Category.Deprecated");
 
     protected static LocalVariables localVariables = LocalVariables.getInstance();
-
-    public static final StepPluginMeta[] steps =
+    
+    public static StepPluginMeta[] steps = null;
+    
+    static
+    {
+    	try
+    	{
+    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getLoader("steps-config");
+    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
+    		steps = csteps.toArray(new StepPluginMeta[csteps.size()]);
+    	}
+    	catch(KettleConfigException e)
+    	{
+    		throw new RuntimeException(e.getMessage());
+    	}
+    }
+    
+   /* public static final StepPluginMeta[] steps =
         {
         new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages.getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
         new StepPluginMeta(DummyTransMeta.class, "Dummy", Messages.getString("BaseStep.TypeLongDesc.Dummy"), Messages.getString("BaseStep.TypeTooltipDesc.Dummy", Const.CR), "DUM.png", CATEGORY_TRANSFORM),
@@ -180,7 +149,7 @@ public class BaseStep extends Thread implements VariableSpace
         new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
         new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),        
         
-        /*
+      
             
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
@@ -196,8 +165,8 @@ public class BaseStep extends Thread implements VariableSpace
             new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages.getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages.getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
-           */                     
-        };
+                              
+        };*/
 
     public static final String category_order[] =
         {
