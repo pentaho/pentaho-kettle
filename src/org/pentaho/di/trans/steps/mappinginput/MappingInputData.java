@@ -16,10 +16,13 @@
 
 package org.pentaho.di.trans.steps.mappinginput;
 
+import java.util.List;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 
 
@@ -33,10 +36,9 @@ public class MappingInputData extends BaseStepData implements StepDataInterface
 
 	public boolean finished;
 	public StepInterface[] sourceSteps;
-	public String[] sourceFieldname;
-	public String[] targetFieldname;
 	public boolean linked;
 	public RowMetaInterface outputRowMeta;
+	public List<MappingValueRename> valueRenames;
 
     /**
 	 * 

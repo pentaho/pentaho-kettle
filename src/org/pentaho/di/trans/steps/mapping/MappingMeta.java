@@ -137,31 +137,22 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	        MappingIODefinition inputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
 	        inputMappingDefinition.setMainDataPath(true);
 	        
-	        String inputField[] = new String[nrInput];
-	        String inputMapping[] = new String[nrInput];
-	        
 	        for (int i = 0; i < nrInput; i++) {
 				Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
-				inputField[i] = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
-				inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
+				String inputField = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
+				String inputMapping = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
+				inputMappingDefinition.getValueRenames().add( new MappingValueRename(inputField, inputMapping) );
 			}
-	        inputMappingDefinition.setParentField(inputField);
-	        inputMappingDefinition.setMappingField(inputMapping);
 
 	        MappingIODefinition outputMappingDefinition = new MappingIODefinition(); // null means: auto-detect
 	        outputMappingDefinition.setMainDataPath(true);
 	        
-	        String outputField[] = new String[nrOutput];
-	        String outputMapping[] = new String[nrOutput];
-	        
 	        for (int i = 0; i < nrOutput; i++) {
 				Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
-				outputField[i] = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
-				outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
+				String outputField = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
+				String outputMapping = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
+				outputMappingDefinition.getValueRenames().add( new MappingValueRename(outputField, outputMapping) );
 			}
-	        
-	        outputMappingDefinition.setMappingField(outputMapping);
-	        outputMappingDefinition.setParentField(outputField);
 	        
 	        // Don't forget to add these to the input and output mapping definitions...
 	        //
@@ -231,6 +222,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToLoadMappingTransformation"), e);
         }
         
+        // Keep track of all the fields that need renaming...
+        //
+        List<MappingValueRename> inputRenameList = new ArrayList<MappingValueRename>();
+        
         /*
          * Before we ask the mapping outputs anything, we should teach the mapping input steps in the sub-transformation
          * about the data coming in...
@@ -244,12 +239,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         		// However, we do need to re-map some fields...
         		// 
         		inputRowMeta = (RowMetaInterface) row.clone();
-        		for (int i=0;i<definition.getParentField().length;i++) {
-        			ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(definition.getParentField()[i]);
+        		for (MappingValueRename valueRename : definition.getValueRenames()) {
+        			ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
         			if (valueMeta==null) {
-        				throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindField", definition.getParentField()[i]));
+        				throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindField", valueRename.getSourceValueName()));
         			}
-        			valueMeta.setName(definition.getMappingField()[i]);
+        			valueMeta.setName(valueRename.getTargetValueName());
         		}
         	}
         	else {
@@ -275,14 +270,22 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     		// Inform the mapping input step about what it's going to receive...
     		//
     		mappingInputMeta.setInputRowMeta(inputRowMeta);
+    		
+    		// What values are we changing names for?
+    		//
+    		mappingInputMeta.setValueRenames(definition.getValueRenames());
+    		
+    		// Keep a list of the input rename values that need to be changed back at the output
+    		// 
+    		if (definition.isRenamingOnOutput()) Mapping.addInputRenames(inputRenameList, definition.getValueRenames());
         }
         
         // All the mapping steps now know what they will be receiving.
         // That also means that the sub-transformation / mapping has everything it needs.
         // So that means that the MappingOutput steps know exactly what the output is going to be.
         // That could basically be anything.
-        // It also could have absolutely no resemblence to what came in on the input.
-        // The relative old apprach is therefor no longer suited.
+        // It also could have absolutely no resemblance to what came in on the input.
+        // The relative old approach is therefore no longer suited.
         // 
         // OK, but what we *can* do is have the MappingOutput step rename the appropriate fields.
         // The mapping step will tell this step how it's done.
@@ -330,8 +333,13 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		
 		// We know it's a mapping output step...
 		MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) mappingOutputStep.getStepMetaInterface();
-		mappingOutputMeta.setOldName(mappingOutputDefinition.getMappingField());
-		mappingOutputMeta.setNewName(mappingOutputDefinition.getParentField());
+
+		// Change a few columns.
+		mappingOutputMeta.setOutputValueRenames(mappingOutputDefinition.getValueRenames());
+		
+		// Perhaps we need to change a few input columns back to the original?
+		//
+		mappingOutputMeta.setInputValueRenames(inputRenameList);
 		
 		// Now we know wat's going to come out of there...
 		// This is going to be the full row, including all the remapping, etc.

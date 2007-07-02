@@ -15,6 +15,8 @@
  
 package org.pentaho.di.trans.steps.mappinginput;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -28,6 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 
 
@@ -102,12 +105,12 @@ public class MappingInput extends BaseStep implements StepInterface
             // That means that all fields go through unchanged, unless specified.
             // 
             //
-            for (int i=0;i<data.sourceFieldname.length;i++) {
-            	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(data.sourceFieldname[i]);
+            for (MappingValueRename valueRename : data.valueRenames) {
+            	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
             	if (valueMeta==null) {
-            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", data.sourceFieldname[i]));
+            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
             	}
-            	valueMeta.setName(data.targetFieldname[i]);
+            	valueMeta.setName(valueRename.getTargetValueName());
             }
 		}
 		
@@ -152,7 +155,7 @@ public class MappingInput extends BaseStep implements StepInterface
 		}
 	}
 
-	public void setConnectorSteps(StepInterface[] sourceSteps, String[] sourceFieldname, String[] targetFieldname) {
+	public void setConnectorSteps(StepInterface[] sourceSteps, List<MappingValueRename> valueRenames) {
 		
         for (int i=0;i<sourceSteps.length;i++) {
         	
@@ -170,8 +173,7 @@ public class MappingInput extends BaseStep implements StepInterface
 	        sourceSteps[i].getOutputRowSets().add(rowSet);
 	        getInputRowSets().add(rowSet);
         }
-        data.sourceFieldname = sourceFieldname;
-        data.targetFieldname = targetFieldname;
+        data.valueRenames = valueRenames;
         
 		data.sourceSteps = sourceSteps;
 	}

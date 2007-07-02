@@ -49,6 +49,49 @@
   <order>
   <hop> <from>Text file input</from><to>File writer</to><enabled>Y</enabled> </hop>  </order>
   <step>
+    <name>File writer</name>
+    <type>Mapping</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <trans_name>Transformation 1</trans_name>
+    <filename>${Internal.Transformation.Filename.Directory}&#47;filewriter.ktr</filename>
+    <directory_path/>
+    <mappings>
+      <input>
+    <mapping>    <input_step>Text file input</input_step>
+    <output_step>Mapping input specification</output_step>
+    <main_path>Y</main_path>
+    <rename_on_output>N</rename_on_output>
+    <description/>
+       <connector><parent>id</parent><child>write-id</child></connector>
+       <connector><parent>name</parent><child>write-name</child></connector>
+       <connector><parent>firstname</parent><child>write-firstname</child></connector>
+    </mapping>      </input>
+      <output>
+    <mapping>    <input_step/>
+    <output_step/>
+    <main_path>Y</main_path>
+    <rename_on_output>N</rename_on_output>
+    <description/>
+    </mapping>      </output>
+          <parameters>       <variablemapping><variable>FILENAME</variable><input>${Internal.Transformation.Filename.Directory}&#47;output</input></variablemapping>
+    </parameters>
+    </mappings>
+     <cluster_schema/>
+    <GUI>
+      <xloc>396</xloc>
+      <yloc>194</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Text file input</name>
     <type>TextFileInput</type>
     <description/>
@@ -261,43 +304,6 @@
      <cluster_schema/>
     <GUI>
       <xloc>160</xloc>
-      <yloc>194</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>File writer</name>
-    <type>Mapping</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <trans_name>Transformation 1</trans_name>
-    <filename>${Internal.Transformation.Filename.Directory}&#47;filewriter.ktr</filename>
-    <directory_path/>
-    <mappings>
-      <input>
-    <mapping>    <input_step>Text file input</input_step>
-    <output_step>Mapping input specification</output_step>
-    <main_path>Y</main_path>
-    <description/>
-       <connector><parent>id</parent><child>write-id</child></connector>
-       <connector><parent>name</parent><child>write-name</child></connector>
-       <connector><parent>firstname</parent><child>write-firstname</child></connector>
-    </mapping>      </input>
-      <output>
-      </output>
-          <parameters>       <variablemapping><variable>FILENAME</variable><input>${Internal.Transformation.Filename.Directory}&#47;output</input></variablemapping>
-    </parameters>
-    </mappings>
-     <cluster_schema/>
-    <GUI>
-      <xloc>396</xloc>
       <yloc>194</yloc>
       <draw>Y</draw>
       </GUI>

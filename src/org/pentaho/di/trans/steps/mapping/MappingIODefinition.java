@@ -1,5 +1,8 @@
 package org.pentaho.di.trans.steps.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
@@ -22,11 +25,11 @@ public class MappingIODefinition implements Cloneable {
 	
 	private String description;
 
-	private String parentField[];
-
-	private String childField[];
+	private List<MappingValueRename> valueRenames;
 	
 	private boolean mainDataPath;
+	
+	private boolean renamingOnOutput;
 
 	/**
 	 * No input or output step is defined:<br> 
@@ -37,9 +40,9 @@ public class MappingIODefinition implements Cloneable {
 		super();
 		this.inputStepname = null;
 		this.outputStepname = null;
-		this.parentField = new String[] {};
-		this.childField = new String[] {};
+		this.valueRenames = new ArrayList<MappingValueRename>();
 		this.mainDataPath = false;
+		this.renamingOnOutput= false;
 	}
 	/**
 	 * @param inputStepname the name of the step to "connect" to.  
@@ -73,17 +76,17 @@ public class MappingIODefinition implements Cloneable {
 		inputStepname = XMLHandler.getTagValue(mappingNode, "input_step");  //$NON-NLS-1$
 		outputStepname = XMLHandler.getTagValue(mappingNode, "output_step");  //$NON-NLS-1$
 		mainDataPath =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "main_path"));  //$NON-NLS-1$ $NON-NLS-2$
+		renamingOnOutput = "Y".equalsIgnoreCase(XMLHandler.getTagValue(mappingNode, "rename_on_output"));  //$NON-NLS-1$ $NON-NLS-2$
 		description = XMLHandler.getTagValue(mappingNode, "description");  //$NON-NLS-1$
 		
 		int nrConnectors  = XMLHandler.countNodes(mappingNode, "connector"); //$NON-NLS-1$
-		parentField = new String[nrConnectors];
-		childField = new String[nrConnectors];
 		
         for (int i=0;i<nrConnectors;i++)
         {
             Node inputConnector = XMLHandler.getSubNodeByNr(mappingNode, "connector", i); //$NON-NLS-1$
-            parentField[i]  = XMLHandler.getTagValue(inputConnector, "parent"); //$NON-NLS-1$
-            childField[i] = XMLHandler.getTagValue(inputConnector, "child"); //$NON-NLS-1$
+            String parentField = XMLHandler.getTagValue(inputConnector, "parent"); //$NON-NLS-1$
+            String childField = XMLHandler.getTagValue(inputConnector, "child"); //$NON-NLS-1$
+            valueRenames.add( new MappingValueRename(parentField, childField) );
         }
 	}
 	
@@ -96,13 +99,14 @@ public class MappingIODefinition implements Cloneable {
 		xml.append("    ").append(XMLHandler.addTagValue("input_step", inputStepname));
 		xml.append("    ").append(XMLHandler.addTagValue("output_step", outputStepname));
 		xml.append("    ").append(XMLHandler.addTagValue("main_path", mainDataPath));
+		xml.append("    ").append(XMLHandler.addTagValue("rename_on_output", renamingOnOutput));
 		xml.append("    ").append(XMLHandler.addTagValue("description", description));
 		
-		for (int i=0;i<parentField.length;i++)
+		for (MappingValueRename valueRename : valueRenames)
 		{
 			xml.append("       ").append(XMLHandler.openTag("connector"));  //$NON-NLS-1$ $NON-NLS-2$
-			xml.append(XMLHandler.addTagValue("parent", parentField[i], false));  //$NON-NLS-1$
-			xml.append(XMLHandler.addTagValue("child", childField[i], false));  //$NON-NLS-1$
+			xml.append(XMLHandler.addTagValue("parent", valueRename.getSourceValueName(), false));  //$NON-NLS-1$
+			xml.append(XMLHandler.addTagValue("child", valueRename.getTargetValueName(), false));  //$NON-NLS-1$
 			xml.append(XMLHandler.closeTag("connector")).append(Const.CR);  //$NON-NLS-1$
 		}
 		
@@ -123,34 +127,6 @@ public class MappingIODefinition implements Cloneable {
 	 */
 	public void setInputStepname(String inputStepname) {
 		this.inputStepname = inputStepname;
-	}
-
-	/**
-	 * @return the mappingField
-	 */
-	public String[] getMappingField() {
-		return childField;
-	}
-
-	/**
-	 * @param mappingField the mappingField to set
-	 */
-	public void setMappingField(String[] mappingField) {
-		this.childField = mappingField;
-	}
-
-	/**
-	 * @return the parentField
-	 */
-	public String[] getParentField() {
-		return parentField;
-	}
-
-	/**
-	 * @param parentField the parentField to set
-	 */
-	public void setParentField(String[] parentField) {
-		this.parentField = parentField;
 	}
 
 	/**
@@ -193,5 +169,29 @@ public class MappingIODefinition implements Cloneable {
 	 */
 	public void setMainDataPath(boolean mainDataPath) {
 		this.mainDataPath = mainDataPath;
+	}
+	/**
+	 * @return the renamingOnOutput
+	 */
+	public boolean isRenamingOnOutput() {
+		return renamingOnOutput;
+	}
+	/**
+	 * @param renamingOnOutput the renamingOnOutput to set
+	 */
+	public void setRenamingOnOutput(boolean renamingOnOutput) {
+		this.renamingOnOutput = renamingOnOutput;
+	}
+	/**
+	 * @return the valueRenames
+	 */
+	public List<MappingValueRename> getValueRenames() {
+		return valueRenames;
+	}
+	/**
+	 * @param valueRenames the valueRenames to set
+	 */
+	public void setValueRenames(List<MappingValueRename> valueRenames) {
+		this.valueRenames = valueRenames;
 	}
 }

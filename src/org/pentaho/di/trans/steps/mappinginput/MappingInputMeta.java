@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 import org.w3c.dom.Node;
 
 
@@ -60,6 +61,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     private int    fieldPrecision[];
 
 	private volatile RowMetaInterface inputRowMeta;
+	private volatile List<MappingValueRename> valueRenames;
 
     public MappingInputMeta()
     {
@@ -233,8 +235,27 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     	// That is because there is no previous step to this mapping input step.
     	//
     	if (inputRowMeta!=null) {
-    		row.mergeRowMeta(inputRowMeta); // this gets set only in the parent transformation...
+    		// this gets set only in the parent transformation...
+    		// It includes all the renames that needed to be done
+    		// 
+    		row.mergeRowMeta(inputRowMeta); 
     		
+    		/*
+    		// OK, now rename all the fields in the valueRenames list...
+    		//
+    		for (MappingValueRename valueRename : valueRenames) {
+    			ValueMetaInterface valueMeta = row.searchValueMeta(valueRename.getTargetValueName()); 
+    			if (valueMeta==null) {
+    				throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", valueRename.getTargetValueName()));
+    			}
+    			// apply the rename : change it back to the original value.
+    			//
+    			valueMeta.setName(valueRename.getSourceValueName());
+    		}
+    		*/
+    		
+    		// Now, after all the mapping exercises that we did, we should validate the existence of all the spec-ed fields...
+    		//
 	    	for (int i=0;i<fieldName.length;i++) {
 	    		if (row.indexOfValue(fieldName[i])<0) {
 	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
@@ -353,6 +374,20 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public RowMetaInterface getInputRowMeta() {
 		return inputRowMeta;
+	}
+
+	/**
+	 * @return the valueRenames
+	 */
+	public List<MappingValueRename> getValueRenames() {
+		return valueRenames;
+	}
+
+	/**
+	 * @param valueRenames the valueRenames to set
+	 */
+	public void setValueRenames(List<MappingValueRename> valueRenames) {
+		this.valueRenames = valueRenames;
 	}
 
 }

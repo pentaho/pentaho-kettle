@@ -177,13 +177,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			// The grid
 			//
     		int nrLines = wFieldMappings.nrNonEmpty();
-			definition.setParentField(new String[nrLines]);
-			definition.setMappingField(new String[nrLines]);
+			definition.getValueRenames().clear();
 			for (int i=0;i<nrLines;i++)
 			{
 				TableItem item = wFieldMappings.getNonEmpty(i);
-				definition.getParentField()[i]=item.getText(1);
-				definition.getMappingField()[i]=item.getText(2);
+				definition.getValueRenames().add( new MappingValueRename(item.getText(1), item.getText(2)) );
 			}
 		}
 	}
@@ -883,6 +881,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 
         // Add a checkbox to indicate the main step to read from, the main data path...
+        //
         Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
         props.setLook(wlMainPath);
         wlMainPath.setText(Messages.getString("MappingDialog.input.MainDataPath")); //$NON-NLS-1$
@@ -910,13 +909,42 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
 		});
         
+        // Add a checkbox to indicate that all output mappings need to rename the values back...
+        //
+        Label wlRenameOutput = new Label(wInputComposite, SWT.RIGHT);
+        props.setLook(wlRenameOutput);
+        wlRenameOutput.setText(Messages.getString("MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
+        FormData fdlRenameOutput = new FormData();
+        fdlRenameOutput.top = new FormAttachment(wMainPath, margin);
+        fdlRenameOutput.left = new FormAttachment(0, 0);
+        fdlRenameOutput.right = new FormAttachment(middle, -margin);
+        wlRenameOutput.setLayoutData(fdlRenameOutput);
+
+        Button wRenameOutput = new Button(wInputComposite, SWT.CHECK);
+        props.setLook(wRenameOutput);
+        FormData fdRenameOutput = new FormData();
+        fdRenameOutput.top = new FormAttachment(wMainPath, margin);
+        fdRenameOutput.left = new FormAttachment(middle, 0);
+        // fdRenameOutput.right = new FormAttachment(100, 0); // who cares, it's a check box
+        wRenameOutput.setLayoutData(fdRenameOutput);
+        
+        wRenameOutput.setSelection(definition.isRenamingOnOutput());
+        wRenameOutput.addSelectionListener(new SelectionAdapter() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				definition.setMainDataPath(!definition.isRenamingOnOutput()); // flip the switch
+			}
+		
+		});
+        
         // Allow for a small description
         //
         Label wlDescription = new Label(wInputComposite, SWT.RIGHT);
         props.setLook(wlDescription);
         wlDescription.setText(descriptionLabel); //$NON-NLS-1$
         FormData fdlDescription = new FormData();
-        fdlDescription.top = new FormAttachment(wMainPath, margin);
+        fdlDescription.top = new FormAttachment(wRenameOutput, margin);
         fdlDescription.left = new FormAttachment(0, 0); // First one in the left top corner
         fdlDescription.right = new FormAttachment(middle, -margin);
         wlDescription.setLayoutData(fdlDescription);
@@ -926,8 +954,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wDescription.setText(Const.NVL(definition.getDescription(), ""));
         wDescription.addModifyListener(lsMod);
         FormData fdDescription = new FormData();
-        fdDescription.top = new FormAttachment(wMainPath, margin);
-        fdDescription.bottom = new FormAttachment(wOutputStep, 100+margin);
+        fdDescription.top = new FormAttachment(wRenameOutput, margin);
+        fdDescription.bottom = new FormAttachment(wRenameOutput, 100+margin);
         fdDescription.left = new FormAttachment(middle, 0); // To the right of the label
         fdDescription.right = new FormAttachment(wbOutputStep, -margin);
         wDescription.setLayoutData(fdDescription);
@@ -938,7 +966,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		});
 
-        // Now add a tableview with the 2 columns to specify: input and output fields for the source and target steps.
+        // Now add a table view with the 2 columns to specify: input and output fields for the source and target steps.
         //
         final Button wbEnterMapping = new Button(wInputComposite, SWT.PUSH);
         props.setLook(wbEnterMapping);
@@ -962,10 +990,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdMappings.bottom = new FormAttachment(100, -20);
 		wFieldMappings.setLayoutData(fdMappings);
         
-        for (int i = 0; i < definition.getParentField().length; i++) {
+        for (MappingValueRename valueRename : definition.getValueRenames()) {
 			TableItem tableItem = new TableItem(wFieldMappings.table, SWT.NONE);
-			tableItem.setText(1, definition.getParentField()[i]);
-			tableItem.setText(2, definition.getMappingField()[i]);
+			tableItem.setText(1, valueRename.getSourceValueName());
+			tableItem.setText(2, valueRename.getTargetValueName());
 		}
         wFieldMappings.removeEmptyRows();
         wFieldMappings.setRowNums();
@@ -989,8 +1017,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 						wFieldMappings.clearAll(false);
 						
 						// 
-						definition.setParentField(new String[mappings.size()]);
-						definition.setMappingField(new String[mappings.size()]);
+						definition.getValueRenames().clear();
 						
 						// Now add the new values...
 						for (int i=0;i<mappings.size();i++) {
@@ -999,8 +1026,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 							item.setText(1, mapping.getSourceString(sourceFields));
 							item.setText(2, mapping.getTargetString(targetFields));
 							
-						    definition.getParentField()[i] = input ? item.getText(1) : item.getText(2); 
-						    definition.getMappingField()[i] = input ? item.getText(2) : item.getText(1); 
+						    String source = input ? item.getText(1) : item.getText(2); 
+						    String target = input ? item.getText(2) : item.getText(1);
+						    definition.getValueRenames().add( new MappingValueRename(source, target) );
 						}
 						wFieldMappings.removeEmptyRows();
 						wFieldMappings.setRowNums();

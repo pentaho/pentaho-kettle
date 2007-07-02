@@ -15,6 +15,8 @@
  
 package org.pentaho.di.trans.steps.mapping;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -176,7 +178,13 @@ public class Mapping extends BaseStep implements StepInterface
         		}
         	}
         	
-        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getParentField(), inputDefinition.getMappingField());
+        	// Before we pass the field renames to the mapping input step, let's add functionality to rename it back on ALL
+        	// mapping output steps.
+        	// To do this, we need a list of values that changed so we can revert that in the metadata before the rows come back.
+        	// 
+        	if (inputDefinition.isRenamingOnOutput()) addInputRenames(data.inputRenameList, inputDefinition.getValueRenames());
+        	
+        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getValueRenames());
         }
         
         // Now we have a List of connector threads.
@@ -234,14 +242,23 @@ public class Mapping extends BaseStep implements StepInterface
         	}
         	
         	// Now tell the mapping output step where to look...
+        	// Also explain the mapping output steps how to rename the values back...
         	//
-        	mappingOutputSource.setConnectorSteps(targetSteps);
+        	mappingOutputSource.setConnectorSteps(targetSteps, data.inputRenameList, outputDefinition.getValueRenames());
         	
         	// Is this mapping copying or distributing?
         	// Make sure the mapping output step mimics this behavior:
         	//
         	mappingOutputSource.setDistributed(isDistributed());        	
         }
+	}
+
+	public static void addInputRenames(List<MappingValueRename> renameList, List<MappingValueRename> addRenameList) {
+		for (MappingValueRename rename : addRenameList) {
+			if (renameList.indexOf(rename)<0) {
+				renameList.add(rename);
+			}
+		}
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

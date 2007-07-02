@@ -15,6 +15,7 @@
 
 package org.pentaho.di.trans.steps.mappingoutput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 import org.w3c.dom.Node;
 
 
@@ -63,12 +65,14 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     private boolean fieldAdded[];
     
-    private volatile String[] oldName;
-    private volatile String[] newName;
+    private volatile List<MappingValueRename> inputValueRenames;
+    private volatile List<MappingValueRename> outputValueRenames;
 
     public MappingOutputMeta()
     {
         super(); // allocate BaseStepMeta
+        inputValueRenames = new ArrayList<MappingValueRename>();
+        inputValueRenames = new ArrayList<MappingValueRename>();
     }
 
     /**
@@ -248,69 +252,33 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
-    {
-    	// TODO it's best that this method doesn't change anything by itself.
-    	// Eventually it's the Mapping step that's going to tell this step how to behave metadata wise.
-    	// So what we'll have is the mapping step tell the mapping output step what fields to rename.
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    	// It's best that this method doesn't change anything by itself.
+    	// Eventually it's the Mapping step that's going to tell this step how to behave meta-data wise.
+    	// It is the mapping step that tells the mapping output step what fields to rename.
     	// 
-    	if (oldName!=null && newName!=null) {
-    		for (int i=0;i<oldName.length;i++) {
-    			int index = r.indexOfValue(oldName[i]);
+    	if (inputValueRenames!=null) {
+    		for (MappingValueRename valueRename : inputValueRenames) {
+    			int index = r.indexOfValue(valueRename.getSourceValueName());
     			if (index>=0) {
-    				r.getValueMeta(index).setName(newName[i]);
+    				r.getValueMeta(index).setName(valueRename.getTargetValueName());
     			}
     		}
     	}
     	
-    	// For now, that's all there is really...
-    	
-    	/*
-        //
-        // Always overwrite and ignore input values
-        // Catch mismatches in check.
-        // It's probably better like this instead of recursively going down: this takes a long time!
-        // 
-        for (int i = 0; i < fieldName.length; i++)
-        {
-            if (fieldName[i] != null && fieldName[i].length() != 0)
-            {
-                ValueMetaInterface v = new ValueMeta(fieldName[i], fieldType[i]);
-                v.setLength(fieldLength[i]);
-                v.setPrecision(fieldPrecision[i]);
-                v.setOrigin(name);
-                
-                if (fieldAdded[i])
-                {
-                    // Before adding, see it it's not already there...
-                    //
-                    int idx = r.indexOfValue(fieldName[i]);
-                    if (idx>=0)
-                    {
-                        // Replace this version
-                        r.setValueMeta(idx, v);
-                    }
-                    else
-                    {
-                        // Just add it!
-                        r.addValueMeta(v);
-                    }
-                }
-                else
-                {
-                    int idx = r.indexOfValue(fieldName[i]);
-                    if (idx>=0)
-                    {
-                        r.removeValueMeta(idx); // Remove the value from the stream.
-                    }
-                }
-            }
-        }
-        */
+    	// This is the optionally entered stuff in the output tab of the mapping dialog.
+    	//
+    	if (outputValueRenames!=null) {
+    		for (MappingValueRename valueRename : outputValueRenames) {
+    			int index = r.indexOfValue(valueRename.getSourceValueName());
+    			if (index>=0) {
+    				r.getValueMeta(index).setName(valueRename.getTargetValueName());
+    			}
+    		}
+    	}
     }
 
-    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
-    {
+    public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
         try
         {
             int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
@@ -409,30 +377,31 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
 	/**
-	 * @return the newName
+	 * @return the inputValueRenames
 	 */
-	public String[] getNewName() {
-		return newName;
+	public List<MappingValueRename> getInputValueRenames() {
+		return inputValueRenames;
 	}
 
 	/**
-	 * @param newName the newName to set
+	 * @param inputValueRenames the inputValueRenames to set
 	 */
-	public void setNewName(String[] newName) {
-		this.newName = newName;
+	public void setInputValueRenames(List<MappingValueRename> inputValueRenames) {
+		this.inputValueRenames = inputValueRenames;
 	}
 
 	/**
-	 * @return the oldName
+	 * @return the outputValueRenames
 	 */
-	public String[] getOldName() {
-		return oldName;
+	public List<MappingValueRename> getOutputValueRenames() {
+		return outputValueRenames;
 	}
 
 	/**
-	 * @param oldName the oldName to set
+	 * @param outputValueRenames the outputValueRenames to set
 	 */
-	public void setOldName(String[] oldName) {
-		this.oldName = oldName;
+	public void setOutputValueRenames(List<MappingValueRename> outputValueRenames) {
+		this.outputValueRenames = outputValueRenames;
 	}
+
 }

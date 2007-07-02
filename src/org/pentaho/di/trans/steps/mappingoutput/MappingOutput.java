@@ -15,6 +15,8 @@
  
 package org.pentaho.di.trans.steps.mappingoutput;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -26,6 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 
 
@@ -66,6 +69,8 @@ public class MappingOutput extends BaseStep implements StepInterface
             first=false;
             
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            meta.setOutputValueRenames(data.outputValueRenames);
+            meta.setInputValueRenames(data.inputValueRenames);
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             // 
@@ -131,7 +136,7 @@ public class MappingOutput extends BaseStep implements StepInterface
 		}
 	}
 
-    public void setConnectorSteps(StepInterface[] targetSteps)
+    public void setConnectorSteps(StepInterface[] targetSteps, List<MappingValueRename> inputValueRenames, List<MappingValueRename> outputValueRenames)
     {
         for (int i=0;i<targetSteps.length;i++) {
 	        	
@@ -150,6 +155,8 @@ public class MappingOutput extends BaseStep implements StepInterface
 	        targetSteps[i].getInputRowSets().add(rowSet);
         }
         
+        data.inputValueRenames = inputValueRenames;
+        data.outputValueRenames = outputValueRenames;
         data.targetSteps = targetSteps;
     }
 }
