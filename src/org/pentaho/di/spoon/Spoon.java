@@ -4464,6 +4464,67 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
         boolean saved=false;
 
+
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        //dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+        String extensions[] = meta.getFilterExtensions();
+        dialog.setFilterExtensions(extensions);
+        dialog.setFilterNames     (meta.getFilterNames());
+        String fname = dialog.open();
+        if (fname!=null) 
+        {
+            // Is the filename ending on .ktr, .xml?
+            boolean ending=false;
+            for (int i=0;i<extensions.length-1;i++)
+            {
+                if (fname.endsWith(extensions[i].substring(1))) ending=true;
+            }
+            if (fname.endsWith(meta.getDefaultExtension())) ending=true;
+            if (!ending)
+            {
+                fname+=meta.getDefaultExtension();
+            }
+            // See if the file already exists...
+            int id = SWT.YES;
+            try
+            {
+                FileObject f = KettleVFS.getFileObject(fname);
+                if (f.exists())
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
+                    mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
+                    id = mb.open();
+                }
+            }
+            catch(Exception e)
+            {
+                // TODO do we want to show an error dialog here?  My first guess is not, but we might.
+            }
+            if (id==SWT.YES)
+            {
+                save(meta, fname);
+            }
+        } 
+        return saved;
+    }
+
+    public boolean saveXMLFileToVfs()
+    {
+        TransMeta transMeta = getActiveTransformation();
+        if (transMeta!=null) return saveXMLFileToVfs( (EngineMetaInterface) transMeta);
+
+        JobMeta jobMeta = getActiveJob();
+        if (jobMeta!=null) return saveXMLFileToVfs( (EngineMetaInterface) jobMeta);
+        
+        return false;
+    }
+    
+    public boolean saveXMLFileToVfs(EngineMetaInterface meta)
+    {
+        log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
+        boolean saved=false;
+
         FileObject rootFile = null;
         FileObject initialFile = null;
         try {
