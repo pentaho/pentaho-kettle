@@ -333,7 +333,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
 						ZipEntry entry = zin.getNextEntry();
 						
-*
 					     while (entry != null) 
 					     {
 								String name = entry.getName();
