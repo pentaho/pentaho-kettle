@@ -818,10 +818,12 @@ public class TransLog extends Composite implements TabItemInterface
 
 				// SB: don't set it to the first tabfolder
                 // spoon.tabfolder.setSelection(1);
+                // 
 				trans = new Trans(transMeta);
 				trans.setPreview(true);
 				trans.setPreviewSteps(executionConfiguration.getPreviewSteps());
 				trans.setPreviewSizes(executionConfiguration.getPreviewSizes());
+				trans.setPreview(true);
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
 				preview = true;

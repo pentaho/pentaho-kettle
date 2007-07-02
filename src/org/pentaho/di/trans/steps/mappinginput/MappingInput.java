@@ -18,6 +18,9 @@ package org.pentaho.di.trans.steps.mappinginput;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -47,18 +50,16 @@ public class MappingInput extends BaseStep implements StepInterface
 	}
 	
     // ProcessRow is not doing anything
-    // It's a placeholder for accepting rows from the parent transformation...
-    // So, basically, this is a glorified Dummy with a little bit of metadata
-    //
+    // It's a place holder for accepting rows from the parent transformation...
+    // So, basically, this is a glorified Dummy with a little bit of meta-data
+    // 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(MappingInputMeta)smi;
 		data=(MappingInputData)sdi;
 		
-        if (first)
+        if (!data.linked)
         {
-            first=false;
-            
             // 
             // Wait until we know were to read from the parent transformation...
             // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
@@ -74,6 +75,7 @@ public class MappingInput extends BaseStep implements StepInterface
             }
             
             // OK, now we're ready to read from the parent source steps.
+            data.linked=true;
         }
         
 		Object[] row = getRow();
@@ -82,8 +84,34 @@ public class MappingInput extends BaseStep implements StepInterface
 			return false;
 		}
 		
-
-		putRow(getInputRowMeta(), row);
+		if (first) {
+			first=false;
+			
+            // The Input RowMetadata is not the same as the output row meta-data.
+            // The difference is described in the data interface 
+			// 
+            // String[] data.sourceFieldname 
+            // String[] data.targetFieldname 
+            //
+            // --> getInputRowMeta() is not corresponding to what we're outputting.
+			// In essence, we need to rename a couple of fields...
+			//
+            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            
+            // Now change the field names according to the mapping specification...
+            // That means that all fields go through unchanged, unless specified.
+            // 
+            //
+            for (int i=0;i<data.sourceFieldname.length;i++) {
+            	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(data.sourceFieldname[i]);
+            	if (valueMeta==null) {
+            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", data.sourceFieldname[i]));
+            	}
+            	valueMeta.setName(data.targetFieldname[i]);
+            }
+		}
+		
+		putRow(data.outputRowMeta, row);
 		
 		return true;
 	}
@@ -124,7 +152,7 @@ public class MappingInput extends BaseStep implements StepInterface
 		}
 	}
 
-	public void setConnectorSteps(StepInterface[] sourceSteps) {
+	public void setConnectorSteps(StepInterface[] sourceSteps, String[] sourceFieldname, String[] targetFieldname) {
 		
         for (int i=0;i<sourceSteps.length;i++) {
         	
@@ -142,7 +170,9 @@ public class MappingInput extends BaseStep implements StepInterface
 	        sourceSteps[i].getOutputRowSets().add(rowSet);
 	        getInputRowSets().add(rowSet);
         }
+        data.sourceFieldname = sourceFieldname;
+        data.targetFieldname = targetFieldname;
+        
 		data.sourceSteps = sourceSteps;
-		
 	}
 }

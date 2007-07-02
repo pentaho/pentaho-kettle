@@ -176,8 +176,7 @@ public class Mapping extends BaseStep implements StepInterface
         		}
         	}
         	
-        	mappingInputTarget.setConnectorSteps(sourceSteps);
-        	
+        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getParentField(), inputDefinition.getMappingField());
         }
         
         // Now we have a List of connector threads.
