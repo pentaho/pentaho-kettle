@@ -11,13 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.KettleVariables;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
-
 
 
 public class PrepareExecutionTransServlet extends HttpServlet
@@ -67,9 +64,6 @@ public class PrepareExecutionTransServlet extends HttpServlet
     
         try
         {
-            // Create a variables space to work in, separate from the other transformations running.
-            KettleVariables kettleVariables = LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), transformationMap.getParentThreadName(), false);
-            
             Trans trans = transformationMap.getTransformation(transName);
             TransConfiguration transConfiguration = transformationMap.getConfiguration(transName);
             if (trans!=null && transConfiguration!=null)
@@ -78,7 +72,6 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 // Set the appropriate logging, variables, arguments, replaydate, ...
                 // etc.
                 log.setLogLevel(executionConfiguration.getLogLevel());
-                kettleVariables.setVariables(executionConfiguration.getVariables());
                 trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
                 trans.setReplayDate(executionConfiguration.getReplayDate());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());

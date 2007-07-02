@@ -16,10 +16,8 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-
 
 
 /**
@@ -38,7 +36,6 @@ public class TransPreviewProgressDialog
     
     private boolean cancelled;
     private String loggingText;
-    private Thread parentThread;
     
     /**
      * Creates a new dialog that will handle the wait while previewing a transformation...
@@ -51,9 +48,6 @@ public class TransPreviewProgressDialog
         this.previewSize = previewSize;
         
         cancelled = false;
-        
-        // Get the parent of the new thread that will start on "Open", *before* this thread starts.
-        this.parentThread = Thread.currentThread();
     }
     
     public TransMeta open()
@@ -62,7 +56,6 @@ public class TransPreviewProgressDialog
         {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
             {
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
                 doPreview(monitor);
             }
         };

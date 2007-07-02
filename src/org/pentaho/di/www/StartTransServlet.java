@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
-
 
 
 public class StartTransServlet extends HttpServlet
@@ -66,9 +64,6 @@ public class StartTransServlet extends HttpServlet
     
         try
         {
-            // Create a variables space to work in, separate from the other transformations running.
-            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), transformationMap.getParentThreadName(), false);
-            
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {

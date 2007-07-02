@@ -14,14 +14,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.dialog.Messages;
 
-import org.pentaho.di.core.variables.LocalVariables;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.EngineMetaInterface;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
-
-
 
 
 /**
@@ -35,17 +30,8 @@ public class SaveProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private EngineMetaInterface meta;
-    private Thread parentThread;
 	
-    /**
-     * Creates a new dialog that will handle the wait while saving a transformation...
-     * @deprecated please use the constructor version without log or props
-     */
-    public SaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, EngineMetaInterface meta)
-    {
-        this(shell, rep, meta);
-    }
-    
+
 	/**
 	 * Creates a new dialog that will handle the wait while saving a transformation...
 	 */
@@ -54,8 +40,6 @@ public class SaveProgressDialog
 		this.shell = shell;
 		this.rep = rep;
 		this.meta = meta;
-        
-        this.parentThread = Thread.currentThread();
 	}
 	
 	public boolean open()
@@ -66,9 +50,6 @@ public class SaveProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				try
 				{
 					meta.saveRep(rep, monitor);

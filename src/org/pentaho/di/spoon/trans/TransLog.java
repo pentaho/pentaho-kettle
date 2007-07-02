@@ -59,7 +59,6 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
@@ -75,8 +74,6 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepStatus;
-
-
 
 
 /**
@@ -101,7 +98,6 @@ public class TransLog extends Composite implements TabItemInterface
     private Shell shell;
     private TransMeta transMeta;
     
-
 	private ColumnInfo[] colinf;
 	private TableView wFields;
 	private Button wOnlyActive;
@@ -600,7 +596,6 @@ public class TransLog extends Composite implements TabItemInterface
         {
             public void run()
             {
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
                 initialized = trans.prepareExecution(args);
                 halted = trans.hasHaltedSteps();
             }
@@ -824,6 +819,7 @@ public class TransLog extends Composite implements TabItemInterface
 				// SB: don't set it to the first tabfolder
                 // spoon.tabfolder.setSelection(1);
 				trans = new Trans(transMeta);
+				trans.setPreview(true);
 				trans.setPreviewSteps(executionConfiguration.getPreviewSteps());
 				trans.setPreviewSizes(executionConfiguration.getPreviewSizes());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());

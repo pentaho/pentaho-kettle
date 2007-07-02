@@ -13,7 +13,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 
 
 /**
@@ -32,8 +31,7 @@ public class GetPreviewTableProgressDialog
 	private List<Object[]> rows;
     private RowMetaInterface rowMeta;
 	
-	private Database db;
-    private Thread parentThread;
+	private Database db;    
 
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
@@ -44,9 +42,7 @@ public class GetPreviewTableProgressDialog
 		this.dbMeta = dbInfo;
 		this.tableName = tableName;
 		this.limit = limit;
-        
-        this.parentThread = Thread.currentThread();
-	}
+    }
 	
 	public List<Object[]> open()
 	{
@@ -54,9 +50,6 @@ public class GetPreviewTableProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				db = new Database(dbMeta);
 				try 
 				{

@@ -15,7 +15,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.repository.Repository;
 
 /**
@@ -30,15 +29,12 @@ public class RepositoryExportProgressDialog
     private Shell shell;
     private Repository rep;
     private String filename;
-    private Thread parentThread;
 
     public RepositoryExportProgressDialog(Shell shell, Repository rep, String filename)
     {
         this.shell = shell;
         this.rep = rep;
         this.filename = filename;
-
-        this.parentThread = Thread.currentThread();
     }
 
     public boolean open()
@@ -49,9 +45,6 @@ public class RepositoryExportProgressDialog
         {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
             {
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
                 try
                 {
                     rep.exportAllObjects(monitor, filename);

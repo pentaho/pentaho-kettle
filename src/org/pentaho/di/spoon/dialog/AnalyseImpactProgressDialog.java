@@ -13,11 +13,8 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
-
-
 
 
 /**
@@ -33,7 +30,6 @@ public class AnalyseImpactProgressDialog
 	private TransMeta transMeta;
 	private List<DatabaseImpact> impact;
 	private boolean impactHasRun;
-    private Thread parentThread;
 
     
 	/**
@@ -43,9 +39,7 @@ public class AnalyseImpactProgressDialog
 	{
 		this.shell = shell;
 		this.transMeta = transMeta;
-		this.impact = impact;
-        
-        this.parentThread = Thread.currentThread();
+		this.impact = impact;        
     }
 	
 	public boolean open()
@@ -54,9 +48,6 @@ public class AnalyseImpactProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				try
 				{
 					impact.clear(); // Start with a clean slate!!

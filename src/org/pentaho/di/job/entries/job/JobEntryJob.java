@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package org.pentaho.di.job.entries.job;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -443,13 +443,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 
                 // Tell this sub-job about its parent...
                 job.setParentJob(parentJob);
-                
-                // Variables are passed down automagically now...
-                LocalVariables localVariables = LocalVariables.getInstance();
-                
-                // Create a new KettleVariables instance here...
-                localVariables.createKettleVariables(job.getName(), parentJob.getName(), false);
-                
+                                
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {
                     job.setPassedBatchId(parentJob.getBatchId());

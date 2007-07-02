@@ -40,7 +40,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -411,9 +410,6 @@ public class Trans implements VariableSpace
 
 					// Possibly, enable safe mode in the steps...
 					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
-
-                    // Create the kettle variables...
-                    LocalVariables.getInstance().createKettleVariables(((BaseStep)step).getName(), Thread.currentThread().getName(), true);
 
 					// Save the step too
 					combi.step = step;

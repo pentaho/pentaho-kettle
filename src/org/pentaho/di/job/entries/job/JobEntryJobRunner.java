@@ -63,9 +63,6 @@ public class JobEntryJobRunner implements Runnable
             
             // This JobEntryRunner is a replacement for the Job thread.
             // The job thread is never started because we simpy want to wait for the result.
-            // That is the reason why it's not in the same namespace as the parent (job, chef, etc.)
-            //
-            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), false);
             
 			result = job.execute(entryNr+1, result);
 		}

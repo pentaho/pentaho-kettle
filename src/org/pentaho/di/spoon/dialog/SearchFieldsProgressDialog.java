@@ -12,7 +12,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -28,7 +27,6 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 	private boolean   before;
 	private TransMeta transMeta;
 	private RowMetaInterface fields;
-    private Thread parentThread;
 	
 	public SearchFieldsProgressDialog(TransMeta transMeta, StepMeta stepMeta, boolean before)
 	{
@@ -36,16 +34,10 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		this.stepInfo  = stepMeta;
 		this.before    = before;
 		this.fields    = null;
-        
-        this.parentThread = Thread.currentThread();
 	}
 	
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 	{
-	    // This is running in a new process: copy some KettleVariables info
-        LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
-        
 		int size = transMeta.findNrPrevSteps(stepInfo);
 
 		try
@@ -69,9 +61,6 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 
 		monitor.done();
 	}
-	
-    
-	
 
 	/**
 	 * @return Returns the before.

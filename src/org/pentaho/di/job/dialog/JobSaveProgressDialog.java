@@ -11,15 +11,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
-
-
 
 
 /**
@@ -33,16 +28,6 @@ public class JobSaveProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private JobMeta jobInfo;
-    private Thread parentThread;
-	
-    /**
-     * Creates a new dialog that will handle the wait while saving a job...
-     * @deprecated please use the constructor version without log or props
-     */
-    public JobSaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, JobMeta jobInfo)
-    {
-        this(shell, rep, jobInfo);
-    }
     
 	/**
 	 * Creates a new dialog that will handle the wait while saving a job...
@@ -52,9 +37,7 @@ public class JobSaveProgressDialog
 		this.shell = shell;
 		this.rep = rep;
 		this.jobInfo = jobInfo;
-        
-        this.parentThread = Thread.currentThread();
-	}
+   	}
 	
 	public boolean open()
 	{
@@ -64,9 +47,6 @@ public class JobSaveProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				try
 				{
 					jobInfo.saveRep(rep, monitor);

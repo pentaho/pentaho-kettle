@@ -15,6 +15,7 @@
 
  
 package org.pentaho.di.spoon.job;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -55,7 +56,6 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
@@ -439,7 +439,6 @@ public class JobLog extends Composite implements TabItemInterface
                 job.stopAll();
                 job.endProcessing("stop", new Result()); //$NON-NLS-1$
                 job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
-                LocalVariables.getInstance().removeKettleVariables(job.getName());
                 job=null;
                 isRunning=false;
                 log.logMinimal(Spoon.APP_NAME, Messages.getString("JobLog.Log.JobWasStopped")); //$NON-NLS-1$
@@ -614,8 +613,6 @@ public class JobLog extends Composite implements TabItemInterface
 	{
 		if (isRunning && job!=null && job.isInitialized() && !job.isAlive())
         {
-            LocalVariables.getInstance().removeKettleVariables(job.getName());
-
             job=null;
             isRunning=false;
             if (chefHistoryRefresher!=null) chefHistoryRefresher.markRefreshNeeded();

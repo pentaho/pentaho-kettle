@@ -12,7 +12,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.LocalVariables;
 
 
 /**
@@ -30,7 +29,6 @@ public class GetTableSizeProgressDialog
 	private Long size;
 	
 	private Database db;
-    private Thread parentThread;
     
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
@@ -40,8 +38,6 @@ public class GetTableSizeProgressDialog
 		this.shell = shell;
 		this.dbMeta = dbInfo;
 		this.tableName = tableName;
-        
-        this.parentThread = Thread.currentThread();
 	}
 	
 	public Long open()
@@ -50,9 +46,6 @@ public class GetTableSizeProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				db = new Database(dbMeta);
 				try 
 				{

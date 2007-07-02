@@ -34,7 +34,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -83,9 +82,6 @@ public class Job extends Thread implements VariableSpace
      */
     private List<RowMetaAndData> sourceRows;
     
-    
-    private Thread parentThread;
-    
     /**
      * The result of the job, after execution.
      */
@@ -111,7 +107,6 @@ public class Job extends Thread implements VariableSpace
 		active=false;
 		stopped=false;
         jobTracker = new JobTracker(jobMeta);
-        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
         initialized=false;
         batchId = -1;
         passedBatchId = -1;
@@ -126,7 +121,6 @@ public class Job extends Thread implements VariableSpace
     // Empty constructor, for Class.newInstance()
     public Job()
     {
-        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
     }
     
     public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -140,7 +134,6 @@ public class Job extends Thread implements VariableSpace
         active=false;
         stopped=false;
         jobTracker = new JobTracker(jobMeta);
-        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
     }
 	
 	public void open(Repository rep, String fname, String jobname, String dirname) throws KettleException
@@ -200,10 +193,7 @@ public class Job extends Thread implements VariableSpace
 	{
 		try
 		{
-            // Now that we're running, add the Kettle variables automatically...
             // Create a new variable name space as we want jobs to have their own set of variables.
-            //
-            LocalVariables.getInstance().createKettleVariables(getName(), parentThread.getName(), false);
             initialized = true;
     
             // initialize from parentjob or null

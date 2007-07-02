@@ -32,7 +32,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobMeta;
@@ -52,8 +51,6 @@ public class Kitchen
 	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
-        Thread parentThread = Thread.currentThread();
-        LocalVariables.getInstance().createKettleVariables(parentThread.getName(), null, false);
 		
 	    List<String> args = new ArrayList<String>();
 	    for (int i=0;i<a.length;i++)
@@ -317,9 +314,6 @@ public class Kitchen
         
 		try
 		{
-            // Add Kettle variables for the job thread...
-            LocalVariables.getInstance().createKettleVariables(job.getName(), parentThread.getName(), true);
-            
             // Set the arguments on the job metadata as well...
             if ( args.size() == 0 )
             {

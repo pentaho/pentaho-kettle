@@ -58,7 +58,6 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.widget.TableView;
@@ -69,7 +68,6 @@ import org.pentaho.di.trans.TransMeta;
 
 public class BaseStepDialog extends Dialog
 {
-    protected static LocalVariables localVariables = LocalVariables.getInstance(); // TODO Remove for Variable replacement
     protected static VariableSpace variables = new Variables();
     
 	protected LogWriter    log;

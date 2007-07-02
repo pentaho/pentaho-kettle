@@ -11,12 +11,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.DatabaseMetaInformation;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 
 
 /**
@@ -30,15 +27,6 @@ public class GetDatabaseInfoProgressDialog
 {
 	private Shell shell;
 	private DatabaseMeta dbInfo;
-    private Thread parentThread;
-
-    /**
-     * @deprecated Use the constructor version without <i>log</i> and <i>props</i> parameter
-     */
-    public GetDatabaseInfoProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo)
-    {
-        this(shell, dbInfo);
-    }
 
 	/**
 	 * Creates a new dialog that will handle the wait while we're 
@@ -48,8 +36,6 @@ public class GetDatabaseInfoProgressDialog
 	{
 		this.shell = shell;
 		this.dbInfo = dbInfo;
-        
-        this.parentThread = Thread.currentThread();
 	}
 	
 	public DatabaseMetaInformation open()
@@ -61,9 +47,6 @@ public class GetDatabaseInfoProgressDialog
 			{
 				try
 				{
-                    // This is running in a new process: copy some KettleVariables info
-                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 					dmi.getData(monitor);
 				}
 				catch(Exception e)

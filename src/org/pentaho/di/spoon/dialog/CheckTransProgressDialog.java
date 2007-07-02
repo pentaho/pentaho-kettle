@@ -14,9 +14,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.trans.TransMeta;
-
 
 
 /**
@@ -31,10 +29,6 @@ public class CheckTransProgressDialog
 	private TransMeta transMeta;
 	private List<CheckResult> remarks;
 	private boolean onlySelected;
-    private Thread parentThread;
-
-
-
 
 	/**
 	 * Creates a new dialog that will handle the wait while checking a transformation...
@@ -45,8 +39,6 @@ public class CheckTransProgressDialog
 		this.transMeta = transMeta;
 		this.onlySelected = onlySelected;
 		this.remarks = remarks;
-        
-        this.parentThread = Thread.currentThread();
 	}
 	
 	public void open()
@@ -57,9 +49,6 @@ public class CheckTransProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 				try
 				{
 					transMeta.checkSteps(remarks, onlySelected, monitor);

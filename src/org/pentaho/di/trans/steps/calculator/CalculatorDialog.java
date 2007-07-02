@@ -50,7 +50,6 @@ import org.pentaho.di.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.trans.TransMeta;
@@ -197,9 +196,6 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void run()
             {
-                //  This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
                 StepMeta stepMeta = transMeta.findStep(stepname);
                 if (stepMeta!=null)
                 {

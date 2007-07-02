@@ -79,7 +79,6 @@ import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.spoon.Messages;
@@ -101,8 +100,6 @@ import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
 import org.pentaho.xul.swt.menu.MenuHelper;
 import org.w3c.dom.Document;
-
-
 
 
 /**
@@ -1800,7 +1797,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(transMeta, stepMeta, before);
         try
         {
-            final Thread parentThread = Thread.currentThread();
             final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
             
             // Run something in the background to cancel active database queries, forecably if needed!
@@ -1808,9 +1804,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             {
                 public void run()
                 {
-                    // This is running in a new process: copy some KettleVariables info
-                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
                     IProgressMonitor monitor = pmd.getProgressMonitor();
                     while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))
                     {

@@ -48,7 +48,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.StepLoader;
@@ -74,8 +73,6 @@ public class BaseStep extends Thread implements VariableSpace
     public static final String CATEGORY_EXPERIMENTAL   = Messages.getString("BaseStep.Category.Experimental");
     public static final String CATEGORY_DEPRECATED     = Messages.getString("BaseStep.Category.Deprecated");
 
-    protected static LocalVariables localVariables = LocalVariables.getInstance();
-    
     public static StepPluginMeta[] steps = null;
     
     static

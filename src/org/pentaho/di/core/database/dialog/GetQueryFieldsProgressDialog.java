@@ -11,7 +11,6 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.LocalVariables;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while 
@@ -28,7 +27,6 @@ public class GetQueryFieldsProgressDialog
 	private RowMetaInterface result;
 	
 	private Database db;
-    private Thread parentThread;
 
 	/**
 	 * Creates a new dialog that will handle the wait while we're 
@@ -38,9 +36,7 @@ public class GetQueryFieldsProgressDialog
 	{
 		this.shell = shell;
 		this.dbMeta = dbInfo;
-		this.sql = sql;
-        
-        this.parentThread = Thread.currentThread();
+		this.sql = sql;        
 	}
 	
 	public RowMetaInterface open()
@@ -49,9 +45,6 @@ public class GetQueryFieldsProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
-
 			    db = new Database(dbMeta);
 			    try
 				{
