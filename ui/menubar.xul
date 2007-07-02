@@ -100,7 +100,7 @@ align="vertical" >
 	 
 	 <toolbox>
 		<toolbar id="nav-toolbar" mode="full">
-			<toolbarbutton value="file-new-trans" label="%Spoon.Menu.File.New" image="org/pentaho/di/images/newtrans.png" tooltiptext="%Spoon.Tooltip.NewTranformation"/>
+			<toolbarbutton value="file-new-trans" label="%Spoon.Menu.File.New" image="/org/pentaho/di/images/newtrans.png" tooltiptext="%Spoon.Tooltip.NewTranformation"/>
 			<toolbarbutton value="file-new-job" label="%Spoon.Menu.File.New" image="/org/pentaho/di/images/newjob.png" tooltiptext="%Spoon.Tooltip.NewJob"/>
 			<toolbarseparator />
 			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="/org/pentaho/di/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
