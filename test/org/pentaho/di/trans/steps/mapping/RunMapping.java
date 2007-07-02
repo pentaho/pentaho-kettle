@@ -1,0 +1,34 @@
+package org.pentaho.di.trans.steps.mapping;
+
+import junit.framework.TestCase;
+
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.TimedTransRunner;
+
+public class RunMapping extends TestCase
+{
+    public void test_MERGE_JOIN_00()
+    {
+        System.out.println();
+        System.out.println("MAPPING");
+        System.out.println("==================");
+    }
+    
+    public void test_MAPPING_OUTPUT_ONLY() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/trans/steps/mapping/filereader/use filereader.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                1000
+            );
+        timedTransRunner.init();
+        timedTransRunner.runNewEngine(true);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+}
