@@ -73,10 +73,10 @@
 	    	>
 
 	    	<classpath id="cp-kettle">
-				<fileset dir="${libext}" 		includes="*.jar"/>
-				<fileset dir="${libext}/"	includes="**/*.jar"/>
-				<fileset dir="${libswt}" 		includes="*.jar"/>
-				<fileset dir="${libswt}/win32/" includes="*.jar"/>
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
 		  		</classpath>
 	    </javac>
 	  </target>
