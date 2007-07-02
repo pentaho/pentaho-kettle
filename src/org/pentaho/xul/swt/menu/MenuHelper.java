@@ -19,10 +19,6 @@ import org.w3c.dom.NodeList;
 
 public class MenuHelper {
 
-	public static Tree getTree( Document doc, String id ) {
-		
-	}
-	
 	public static Toolbar createToolbarFromXul( Document doc, Shell shell, Messages xulMessages, Object caller ) {
 		NodeList list = doc.getElementsByTagName( "toolbox" ); //$NON-NLS-1$
 		Toolbar toolbar = null;
