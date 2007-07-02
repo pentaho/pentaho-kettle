@@ -14,4 +14,8 @@ public interface XulToolbar extends XulItem {
 	
 	public void addMenuListener(String id, Object listener, String methodName);
 
+	public int getMode();
+	
+	public void setMode(int mode);
+
 }
