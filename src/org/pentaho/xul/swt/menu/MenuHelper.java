@@ -19,6 +19,10 @@ import org.w3c.dom.NodeList;
 
 public class MenuHelper {
 
+	public static Tree getTree( Document doc, String id ) {
+		
+	}
+	
 	public static Toolbar createToolbarFromXul( Document doc, Shell shell, Messages xulMessages, Object caller ) {
 		NodeList list = doc.getElementsByTagName( "toolbox" ); //$NON-NLS-1$
 		Toolbar toolbar = null;
@@ -30,8 +34,12 @@ public class MenuHelper {
 			while( toolbarNode != null ) {
 				if( "toolbar".equals( toolbarNode.getNodeName() ) ) { //$NON-NLS-1$
 			        	// create a top-level item
-						String id = XMLHandler.getTagAttribute( toolbarNode, "id" ); //$NON-NLS-1$
+					String id = XMLHandler.getTagAttribute( toolbarNode, "id" ); //$NON-NLS-1$
+					String mode = XMLHandler.getTagAttribute( toolbarNode, "mode" ); //$NON-NLS-1$
 				    	toolbar = new Toolbar(shell, id, null);
+				    	if( "full".equals( mode ) ) toolbar.setMode(Toolbar.MODE_FULL);
+				    	if( "icons".equals( mode ) ) toolbar.setMode(Toolbar.MODE_ICONS);
+				    	if( "text".equals( mode ) ) toolbar.setMode(Toolbar.MODE_TEXT);
 				    	
 						Node buttonNode = toolbarNode.getFirstChild();
 						while( buttonNode != null ) {
@@ -40,10 +48,11 @@ public class MenuHelper {
 								String imagePath = XMLHandler.getTagAttribute( buttonNode, "image" ); //$NON-NLS-1$
 								String hint = XMLHandler.getTagAttribute( buttonNode, "tooltiptext" ); //$NON-NLS-1$
 								hint = localizeXulText( hint, xulMessages );
+								String label = XMLHandler.getTagAttribute( buttonNode, "label" ); //$NON-NLS-1$
+								label = localizeXulText( label, xulMessages );
 								ToolbarButton button = new ToolbarButton(shell, value, toolbar);
 								button.setHint(hint);
-//						        final Image image = ImageUtil.makeImageTransparent(shell.getDisplay(), 
-//						        		new Image(shell.getDisplay(), caller.getClass().getResourceAsStream(imagePath)), new RGB(192, 192, 192)); 
+								button.setText(label);
 								InputStream stream = caller.getClass().getResourceAsStream(imagePath);
 								if( stream != null ) {
 							        final Image image = new Image(shell.getDisplay(), stream); 
@@ -206,7 +215,7 @@ public static Map<String,Menu> createAllPopupMenusFromXul( Document doc, Shell s
 }
 
 public static String localizeXulText( String text, Messages messages ) {
-    if( text.charAt( 0 ) == '%' ) {
+    if( text != null && text.charAt( 0 ) == '%' ) {
     		text = messages.getString( text.substring( 1, text.length() ) );
     }
     return text;
