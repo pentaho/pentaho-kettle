@@ -17,9 +17,14 @@ import org.pentaho.xul.toolbar.XulToolbox;
 
 public class Toolbar extends XulObject implements XulToolbar {
 
+	public static final int MODE_ICONS = 0;
+	public static final int MODE_TEXT = 1;
+	public static final int MODE_FULL = 2;
+	
 	private ToolBar  toolBar;
 	private XulToolbox parent;
     private EventHandler handler;
+    private int mode = MODE_ICONS;
 	private Map<String,XulToolbarButton> buttonMap = new HashMap<String,XulToolbarButton>();
 	
 	public Toolbar(Shell shell, String id, XulToolbox parent) {
@@ -87,10 +92,26 @@ public class Toolbar extends XulObject implements XulToolbar {
 	}
 
 	public void setTextById(String id, String text) {
-		XulToolbarButton button = getButtonById( id );
-		if( button != null ) {
-			button.setText(text);
+		if( mode != MODE_ICONS ) {
+			XulToolbarButton button = getButtonById( id );
+			if( button != null ) {
+				button.setText(text);
+			}
 		}
+	}
+
+	/**
+	 * @return the mode
+	 */
+	public int getMode() {
+		return mode;
+	}
+
+	/**
+	 * @param mode the mode to set
+	 */
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 }

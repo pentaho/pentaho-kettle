@@ -14,12 +14,14 @@ import org.pentaho.xul.toolbar.XulToolbarButton;
 public class ToolbarButton extends XulObject implements XulToolbarButton, SelectionListener {
 
 	private ToolItem toolItem;
+	private int mode;
 	
 	public ToolbarButton( Shell shell, String id, XulToolbar parent ) {
 		super( id, parent );
 		
 		toolItem = new ToolItem((ToolBar) parent.getNativeObject(), SWT.PUSH);
-        toolItem.addSelectionListener( this );
+    	toolItem.addSelectionListener( this );
+    	mode = parent.getMode();
 
 	}
 	
@@ -44,27 +46,39 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 	}
 	
 	public void setImage( Object image ) {
-		setImage( (Image) image );
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			setImage( (Image) image );
+		}
 	}
 	
 	public void setSelectedImage( Object image ) {
-		setSelectedImage( (Image) image );
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			setSelectedImage( (Image) image );
+		}
 	}
 	
 	public void setDisabledImage( Object image ) {
-		setDisabledImage( (Image) image );
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			setDisabledImage( (Image) image );
+		}
 	}
 	
 	public void setImage( Image image ) {
-		toolItem.setImage( (Image) image);
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			toolItem.setImage( (Image) image);
+		}
 	}
 	
 	public void setSelectedImage( Image image ) {
-		toolItem.setHotImage(image);
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			toolItem.setHotImage(image);
+		}
 	}
 	
 	public void setDisabledImage( Image image ) {
-		toolItem.setDisabledImage(image);
+		if( image != null && mode != Toolbar.MODE_TEXT ) {
+			toolItem.setDisabledImage(image);
+		}
 	}
 	
 	public void setEnable(boolean enabled) {
@@ -72,11 +86,15 @@ public class ToolbarButton extends XulObject implements XulToolbarButton, Select
 	}
 
 	public void setHint(String text) {
-		toolItem.setToolTipText( text );
+		if( text != null ) {
+			toolItem.setToolTipText( text );
+		}
 	}
 	
 	public void setText( String text ) {
-		toolItem.setText( text );
+		if( text != null && mode != Toolbar.MODE_ICONS ) {
+			toolItem.setText( text );
+		}
 	}
 
 }
