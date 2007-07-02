@@ -8,7 +8,6 @@ package org.pentaho.di.job.entries.job;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.job.Job;
 
 /**
@@ -25,22 +24,6 @@ public class JobEntryJobRunner implements Runnable
 	private int       entryNr;
 	private boolean   finished;
     
-    private Thread    parentThread;
-	
-	/**
-	 * @deprecated
-	 */
-	public JobEntryJobRunner(Job job, Result result, LogWriter log, int entryNr)
-	{
-		this.job = job;
-		this.result = result;
-		this.log = log;
-		this.entryNr = entryNr;
-		finished=false;
-        
-        this.parentThread = Thread.currentThread();
-	}
-    
     /**
      * 
      */
@@ -51,8 +34,6 @@ public class JobEntryJobRunner implements Runnable
         this.log = LogWriter.getInstance();
         this.entryNr = entryNr;
         finished=false;
-        
-        this.parentThread = Thread.currentThread();
     }
 	
 	public void run()

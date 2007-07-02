@@ -190,8 +190,6 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         // 
         // Search the fields in the background
         //
-        final Thread parentThread = Thread.currentThread();
-        
         final Runnable runnable = new Runnable()
         {
             public void run()

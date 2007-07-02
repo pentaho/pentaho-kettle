@@ -49,6 +49,25 @@
   <order>
   <hop> <from>Generate Rows</from><to>Inputoutput</to><enabled>Y</enabled> </hop>  <hop> <from>Inputoutput</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
   <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>602</xloc>
+      <yloc>55</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Generate Rows</name>
     <type>RowGenerator</type>
     <description/>
@@ -83,11 +102,11 @@
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10</limit>
+    <limit>10000000</limit>
      <cluster_schema/>
     <GUI>
-      <xloc>169</xloc>
-      <yloc>209</yloc>
+      <xloc>78</xloc>
+      <yloc>55</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -111,7 +130,7 @@
     <mapping>    <input_step/>
     <output_step>Mapping input specification</output_step>
     <main_path>Y</main_path>
-    <rename_on_output>N</rename_on_output>
+    <rename_on_output>Y</rename_on_output>
     <description/>
        <connector><parent>One</parent><child>A</child></connector>
        <connector><parent>Two</parent><child>B</child></connector>
@@ -128,27 +147,8 @@
     </mappings>
      <cluster_schema/>
     <GUI>
-      <xloc>431</xloc>
-      <yloc>209</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
-    <GUI>
-      <xloc>693</xloc>
-      <yloc>209</yloc>
+      <xloc>340</xloc>
+      <yloc>55</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

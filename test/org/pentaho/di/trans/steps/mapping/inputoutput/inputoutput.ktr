@@ -5,10 +5,11 @@
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <log>
-      <read/>
-      <write/>
+      <read>Mapping input specification</read>
+      <write>Mapping output specification</write>
       <input/>
       <output/>
       <update/>
@@ -48,6 +49,35 @@
   </notepads>
   <order>
   <hop> <from>Mapping input specification</from><to>Calculator</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator</from><to>Mapping output specification</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Calculator</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+       <calculation><field_name>Result</field_name>
+<calc_type>ADD</calc_type>
+<field_a>A</field_a>
+<field_b>B</field_b>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>6</value_length>
+<value_precision>-1</value_precision>
+<remove>N</remove>
+</calculation>
+     <cluster_schema/>
+    <GUI>
+      <xloc>445</xloc>
+      <yloc>219</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
   <step>
     <name>Mapping input specification</name>
     <type>MappingInput</type>
@@ -97,35 +127,6 @@
      <cluster_schema/>
     <GUI>
       <xloc>727</xloc>
-      <yloc>219</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Calculator</name>
-    <type>Calculator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-       <calculation><field_name>Result</field_name>
-<calc_type>ADD</calc_type>
-<field_a>A</field_a>
-<field_b>B</field_b>
-<field_c/>
-<value_type>Integer</value_type>
-<value_length>6</value_length>
-<value_precision>-1</value_precision>
-<remove>N</remove>
-</calculation>
-     <cluster_schema/>
-    <GUI>
-      <xloc>445</xloc>
       <yloc>219</yloc>
       <draw>Y</draw>
       </GUI>
