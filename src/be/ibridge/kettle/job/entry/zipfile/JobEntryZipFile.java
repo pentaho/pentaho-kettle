@@ -26,6 +26,8 @@ import java.text.DateFormat;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipInputStream;
+import java.util.TreeSet;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -201,6 +203,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		String realWildcardExclude   = StringUtil.environmentSubstitute(wildcardexclude);
 		String realTargetdirectory   = StringUtil.environmentSubstitute(sourcedirectory);
 		String realMovetodirectory   = StringUtil.environmentSubstitute(movetodirectory);
+		
+		File tempFile = null;
+		File fileZip =null;
+		
+		boolean renameOk = false;
 	
 		if (realZipfilename!=null)
 		{
@@ -261,6 +268,24 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					}
 					else if(ifzipfileexists==1 && Fileexists)
 					{
+						// the zip file exists and user want to append
+						
+						// get a temp file
+						fileZip = new File(realZipfilename);
+						tempFile = File.createTempFile(fileZip.getName(), null);
+				        
+						// delete it, otherwise we cannot rename existing zip to it.
+						tempFile.delete();
+						
+						renameOk=fileZip.renameTo(tempFile);
+						
+						if (!renameOk)
+						{
+							log.logError(toString(), Messages.getString("JobZipFiles.Cant_Rename_Temp1.Label")+ fileZip.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp2.Label") 
+										+ tempFile.getAbsolutePath() + Messages.getString("JobZipFiles.Cant_Rename_Temp3.Label"));
+
+						}
+						
 						log.logDebug(toString(), Messages.getString("JobZipFiles.Zip_FileAppend1.Label") + realZipfilename + 
 										Messages.getString("JobZipFiles.Zip_FileAppend2.Label"));
 					}
@@ -294,9 +319,48 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					
 					FileOutputStream dest = new FileOutputStream(realZipfilename);
 					BufferedOutputStream buff = new BufferedOutputStream(dest);
+					
 					ZipOutputStream out = new ZipOutputStream(buff);
-
-
+					
+					TreeSet fileSet = new TreeSet();
+										
+					if( renameOk)
+					{
+						// User want to append files to existing Zip file
+						
+						// The idea is to rename the existing zip file to a temporary file 
+						// and then adds all entries in the existing zip along with the new files, 
+						// excluding the zip entries that have the same name as one of the new files.
+						
+						ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
+						ZipEntry entry = zin.getNextEntry();
+						
+						
+						
+					     while (entry != null) 
+					     {
+								String name = entry.getName();
+								
+								if (!fileSet.contains(name))
+								{
+								
+									// Add ZIP entry to output stream.
+									out.putNextEntry(new ZipEntry(name));
+									// Transfer bytes from the ZIP file to the output file
+									int len;
+									while ((len = zin.read(buffer)) > 0) 
+									{
+										out.write(buffer, 0, len);
+									}
+									
+									fileSet.add(name);
+								}
+								entry = zin.getNextEntry();
+							}
+							// Close the streams		
+							zin.close();
+					}	
+					
 					// Set the method
 					out.setMethod(ZipOutputStream.DEFLATED);
 
@@ -304,6 +368,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					if (compressionrate==0)
 					{
 						out.setLevel(Deflater.NO_COMPRESSION);
+						
 					}
 					else if (compressionrate==1)
 					{
@@ -346,7 +411,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						String targetFilename = realTargetdirectory+Const.FILE_SEPARATOR+filelist[i];
 						File file = new File(targetFilename);
 
-						if (getIt && !getItexclude && !file.isDirectory())
+						if (getIt && !getItexclude && !file.isDirectory() && !fileSet.contains(filelist[i]))
 						{
 
 							// We can add the file to the Zip Archive
@@ -356,18 +421,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 										Messages.getString("JobZipFiles.Add_FilesToZip3.Label"));
 							
 							// Associate a file input stream for the current file
-							FileInputStream in = new FileInputStream(targetFilename);
+							FileInputStream in = new FileInputStream(targetFilename);															
 
 							// Add ZIP entry to output stream.
 							out.putNextEntry(new ZipEntry(filelist[i]));
-
-	
+							
+					
 							int len;
 							while ((len = in.read(buffer)) > 0)
 							{
 								out.write(buffer, 0, len);
 							}
-
+							out.flush();
 							out.closeEntry();
 
 							// Close the current file input stream
@@ -381,21 +446,40 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 						
 					// Close the ZipOutPutStream
 					out.close();
+					buff.close();
+					dest.close();
+					// Delete Temp File
+					if (tempFile !=null)
+					{
+						tempFile.delete();
+					}
 
 					//-----Get the list of Zipped Files and Move or Delete Them
 					if (afterzip == 1 || afterzip == 2)
 					{
+	
 						// iterate through the array of Zipped files
 						for (int i = 0; i < ZippedFiles.length; i++) 
 						{
 							if ( ZippedFiles[i] != null)
 							{
+								
 								// Delete File
 								FileObject fileObjectd = KettleVFS.getFileObject(realTargetdirectory+Const.FILE_SEPARATOR+ZippedFiles[i]);
 
+								
+								// Here gc() is explicitly called if e.g. createfile is used in the same
+								// job for the same file. The problem is that after creating the file the
+								// file object is not properly garbaged collected and thus the file cannot
+								// be deleted anymore. This is a known problem in the JVM.
+								
+								System.gc();
+								
 								// Here we can move, delete files
 								if (afterzip == 1)
 								{
+									
+								
 									// Delete File
 									boolean deleted = fileObjectd.delete();
 									if ( ! deleted )
@@ -454,6 +538,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					}
 					catch ( IOException ex ) {};
 				}
+
 			}
 		}
 		else
