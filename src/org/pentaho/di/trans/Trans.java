@@ -1383,7 +1383,7 @@ public class Trans implements VariableSpace
 		return true;
 	}
 
-	public BaseStep findRunThread(String name)
+	public BaseStep findRunThread(String stepname)
 	{
 		if (steps==null) return null;
 
@@ -1391,7 +1391,7 @@ public class Trans implements VariableSpace
 		{
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt = (BaseStep)sid.step;
-			if (rt.getStepname().equalsIgnoreCase(name)) return rt;
+			if (rt.getStepname().equalsIgnoreCase(stepname)) return rt;
 		}
 		return null;
 	}

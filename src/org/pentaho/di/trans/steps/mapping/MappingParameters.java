@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 /**
  * We need out mapping to be parameterized.<br>
  * This we do with the use of environment variables.<br>
- * To make this easier, we allow another step to provide the values OR we allow the values to be specified with strings, optionally containing other variables.<br>
  * That way we can set one variable to another, etc.<br>
  * 
  * @author matt
@@ -21,26 +20,14 @@ public class MappingParameters implements Cloneable {
 	
 	private static final String XML_VARIABLES_TAG = "variablemapping";  //$NON-NLS-1$
 	
-	/**
-	 * The step to receive the parameters from (Set Variables variant) This is
-	 * optional. If not specified (null or empty) it's going to be simply using
-	 * environment variables, not fields
-	 */
-	private String stepname;
-
 	/** The name of the variable to set in the sub-transformation */
 	private String variable[];
 
-	/** This is either an input field or a String (with optionally variables in them) **/
+	/** This is a simple String with optionally variables in them **/
 	private String input[];
 	
 	public MappingParameters() {
 		super();
-	}
-
-	public MappingParameters(String stepname) {
-		super();
-		this.stepname = stepname;
 	}
 	
 	@Override
@@ -54,8 +41,6 @@ public class MappingParameters implements Cloneable {
 	}
 	
 	public MappingParameters(Node paramNode) {
-		
-		stepname = XMLHandler.getTagValue(paramNode, "stepname");  //$NON-NLS-1$
 		
 		int nrVariables  = XMLHandler.countNodes(paramNode, XML_VARIABLES_TAG);
 		variable = new String[nrVariables];
@@ -100,21 +85,6 @@ public class MappingParameters implements Cloneable {
 	 */
 	public void setInputField(String[] inputField) {
 		this.input = inputField;
-	}
-
-	/**
-	 * @return the stepname
-	 */
-	public String getStepname() {
-		return stepname;
-	}
-
-	/**
-	 * @param stepname
-	 *            the stepname to set
-	 */
-	public void setStepname(String stepname) {
-		this.stepname = stepname;
 	}
 
 	/**

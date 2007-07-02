@@ -429,13 +429,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
 		return stepid;
 	}
-
-	/*
-	public String getStepTypeDesc()
-	{
-		return BaseStep.type_desc[steptype];
-	}
-	*/
 	
 	public String getName()
 	{

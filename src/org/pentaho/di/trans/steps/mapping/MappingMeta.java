@@ -199,6 +199,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
         retval.append("      ").append(XMLHandler.closeTag("output")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
 
+        // Add the mapping parameters too
+        //
+        retval.append("      ").append(mappingParameters.getXML()).append(Const.CR); //$NON-NLS-1$
+        
         retval.append("    ").append(XMLHandler.closeTag("mappings")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
         
         return retval.toString();

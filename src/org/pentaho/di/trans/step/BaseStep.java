@@ -1477,10 +1477,12 @@ public class BaseStep extends Thread implements VariableSpace
                 }
                 else
                 {
-                    logError(Messages.getString("BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
-                    setErrors(1);
-                    stopAll();
-                    return;
+                	if (!prevSteps[i].isMapping() && !stepMeta.isMapping()) {
+	                    logError(Messages.getString("BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
+	                    setErrors(1);
+	                    stopAll();
+	                    return;
+                	}
                 }
             }
         }
@@ -1560,10 +1562,12 @@ public class BaseStep extends Thread implements VariableSpace
                 }
                 else
                 {
-                    logError(Messages.getString("BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
-                    setErrors(1);
-                    stopAll();
-                    return;
+                	if (!stepMeta.isMapping() && !nextSteps[i].isMapping()) {
+	                    logError(Messages.getString("BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
+	                    setErrors(1);
+	                    stopAll();
+	                    return;
+                	}
                 }
             }
         }

@@ -30,7 +30,6 @@ import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -113,6 +112,83 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	private Button wAddInput;
 
 	private Button wAddOutput;
+	
+	private interface ApplyChanges {
+		public void applyChanges();
+	}
+	
+	private class MappingParametersTab implements ApplyChanges {
+		private TableView wMappingParameters;
+		private MappingParameters parameters;
+		
+		public MappingParametersTab(TableView wMappingParameters, MappingParameters parameters) {
+			this.wMappingParameters = wMappingParameters;
+			this.parameters = parameters;
+		}
+		
+		public void applyChanges() {
+	    	
+	    	int nrLines = wMappingParameters.nrNonEmpty();
+			String variables[] = new String[nrLines];
+			String inputFields[] = new String[nrLines];
+			parameters.setVariable(variables);
+			parameters.setInputField(inputFields);
+			for (int i=0;i<nrLines;i++) {
+				TableItem item = wMappingParameters.getNonEmpty(i);
+				parameters.getVariable()[i]=item.getText(1);
+				parameters.getInputField()[i]=item.getText(2);
+			}
+		}
+	}
+	
+	private class MappingDefinitionTab implements ApplyChanges {
+		private MappingIODefinition definition;
+		private Text wInputStep;
+		private Text wOutputStep;
+		private Button wMainPath;
+		private Text wDescription;
+		private TableView wFieldMappings;
+		
+		public MappingDefinitionTab(MappingIODefinition definition, Text inputStep, Text outputStep,
+				Button mainPath, Text description, TableView fieldMappings) {
+			super();
+			this.definition = definition;
+			wInputStep = inputStep;
+			wOutputStep = outputStep;
+			wMainPath = mainPath;
+			wDescription = description;
+			wFieldMappings = fieldMappings;
+		}
+
+		public void applyChanges() {
+			
+			// The input step
+			definition.setInputStepname(wInputStep.getText());
+
+			// The output step
+			definition.setOutputStepname(wOutputStep.getText());
+			
+			// The description
+			definition.setDescription(wDescription.getText());
+			
+			// The main path flag
+			definition.setMainDataPath(wMainPath.getSelection());
+			
+			// The grid
+			//
+    		int nrLines = wFieldMappings.nrNonEmpty();
+			definition.setParentField(new String[nrLines]);
+			definition.setMappingField(new String[nrLines]);
+			for (int i=0;i<nrLines;i++)
+			{
+				TableItem item = wFieldMappings.getNonEmpty(i);
+				definition.getParentField()[i]=item.getText(1);
+				definition.getMappingField()[i]=item.getText(2);
+			}
+		}
+	}
+	
+	private List<ApplyChanges> changeList;
     
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -129,6 +205,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         outputMappings = new ArrayList<MappingIODefinition>();
         for (int i=0;i<mappingMeta.getInputMappings().size();i++) inputMappings.add((MappingIODefinition) mappingMeta.getInputMappings().get(i).clone());
         for (int i=0;i<mappingMeta.getOutputMappings().size();i++) outputMappings.add((MappingIODefinition) mappingMeta.getOutputMappings().get(i).clone());
+        
+        changeList = new ArrayList<ApplyChanges>();
 	}
 
 	public String open()
@@ -556,56 +634,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         parameterTabLayout.marginWidth = Const.FORM_MARGIN;
         parameterTabLayout.marginHeight = Const.FORM_MARGIN;
         wParametersComposite.setLayout(parameterTabLayout);
-
-        // Add the parameters source step line...
-        //
-        Button wbParamStep = new Button(wParametersComposite, SWT.PUSH);
-        props.setLook(wbParamStep);
-        wbParamStep.setText(Messages.getString("MappingDialog.button.SourceStepName"));
-        FormData fdbParamStep = new FormData();
-        fdbParamStep.top = new FormAttachment(0, 0);
-        fdbParamStep.right = new FormAttachment(100, 0); // First one in the left top corner
-        wbParamStep.setLayoutData(fdbParamStep);
-
-        Label wlParamStep = new Label(wParametersComposite, SWT.RIGHT);
-        props.setLook(wlParamStep);
-        wlParamStep.setText(Messages.getString("MappingDialog.Parameters.label.SourceStepName")); //$NON-NLS-1$
-        FormData fdlParamStep = new FormData();
-        fdlParamStep.top = new FormAttachment(wbParamStep, 0, SWT.CENTER);
-        fdlParamStep.left = new FormAttachment(0, 0); // First one in the left top corner
-        fdlParamStep.right = new FormAttachment(middle, -margin);
-        wlParamStep.setLayoutData(fdlParamStep);
-
-        final Text wParamStep = new Text(wParametersComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wParamStep);
-        wParamStep.setText(Const.NVL(parameters.getStepname(), ""));
-        wParamStep.addModifyListener(lsMod);
-        FormData fdParamStep = new FormData();
-        fdParamStep.top = new FormAttachment(wbParamStep, 0, SWT.CENTER);
-        fdParamStep.left = new FormAttachment(middle, 0); // To the right of the label
-        fdParamStep.right = new FormAttachment(wbParamStep, -margin);
-        wParamStep.setLayoutData(fdParamStep);
-        wParamStep.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent event) {
-				parameters.setStepname(wParamStep.getText());
-			}
-		});
         
-        wbParamStep.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				// select a step from the parent transformation, NOT the mapping
-				//
-				String stepName = selectTransformationStepname(true, false); 
-				if (stepName!=null)
-				{
-					wParamStep.setText(stepName);
-					parameters.setStepname(stepName);
-				}
-			}
-		});
-
         // Now add a tableview with the 2 columns to specify: input and output fields for the source and target steps.
         //
         ColumnInfo[] colinfo = new ColumnInfo[] {
@@ -620,8 +649,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		FormData fdMappings = new FormData();
 		fdMappings.left = new FormAttachment(0, 0);
 		fdMappings.right = new FormAttachment(100, 0);
-		fdMappings.top = new FormAttachment(wParamStep, margin * 2);
-		fdMappings.bottom = new FormAttachment(100, -20);
+		fdMappings.top = new FormAttachment(0, 0);
+		fdMappings.bottom = new FormAttachment(100, -30);
 		wMappingParameters.setLayoutData(fdMappings);
         
         for (int i = 0; i < parameters.getVariable().length ; i++) {
@@ -631,23 +660,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		}
         wMappingParameters.setRowNums();
         wMappingParameters.optWidth(true);
-        
-        wMappingParameters.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent event) {
-				int nrLines = wMappingParameters.nrNonEmpty();
-				String variables[] = new String[nrLines];
-				String inputFields[] = new String[nrLines];
-				parameters.setVariable(variables);
-				parameters.setInputField(inputFields);
-				for (int i=0;i<nrLines;i++)
-				{
-					TableItem item = wMappingParameters.getNonEmpty(i);
-					variables[i]=item.getText(1);
-					inputFields[i]=item.getText(2);
-				}
-			}
-		});
         
         FormData fdParametersComposite = new FormData();
         fdParametersComposite.left = new FormAttachment(0, 0);
@@ -659,9 +671,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wParametersComposite.layout();
         wParametersTab.setControl(wParametersComposite);
 
+        changeList.add( new MappingParametersTab(wMappingParameters, parameters) );
 	}
-    
-    protected String selectTransformationStepname(boolean getTransformationStep, boolean mappingInput) {
+
+	protected String selectTransformationStepname(boolean getTransformationStep, boolean mappingInput) {
     	String dialogTitle = Messages.getString("MappingDialog.SelectTransStep.Title");
     	String dialogMessage = Messages.getString("MappingDialog.SelectTransStep.Message");
     	if (getTransformationStep) {
@@ -813,7 +826,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbInputStep.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				String stepName = selectTransformationStepname(input, false);
+				String stepName = selectTransformationStepname(input, input);
 				if (stepName!=null)
 				{
 					wInputStep.setText(stepName);
@@ -824,7 +837,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		});
         
         
-        // What's the stepname to read from? (empty is OK too)
+        // What's the step name to read from? (empty is OK too)
         //
         Button wbOutputStep = new Button(wInputComposite, SWT.PUSH);
         props.setLook(wbOutputStep);
@@ -852,23 +865,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdOutputStep.left = new FormAttachment(middle, 0); // To the right of the label
         fdOutputStep.right = new FormAttachment(wbOutputStep, -margin);
         wOutputStep.setLayoutData(fdOutputStep);
-        wOutputStep.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent event) {
-				definition.setOutputStepname(wOutputStep.getText());
-			}
-		});
-        wbOutputStep.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				String stepName = selectTransformationStepname(!input, false);
-				if (stepName!=null)
-				{
-					wOutputStep.setText(stepName);
-					definition.setOutputStepname(stepName);
-				}
-			}
-		});
+
 
         // Add a checkbox to indicate the main step to read from, the main data path...
         Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
@@ -928,7 +925,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
         // Now add a tableview with the 2 columns to specify: input and output fields for the source and target steps.
         //
-        Button wbEnterMapping = new Button(wInputComposite, SWT.PUSH);
+        final Button wbEnterMapping = new Button(wInputComposite, SWT.PUSH);
         props.setLook(wbEnterMapping);
         wbEnterMapping.setText(Messages.getString("MappingDialog.button.EnterMapping"));
         FormData fdbEnterMapping = new FormData();
@@ -958,33 +955,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wFieldMappings.removeEmptyRows();
         wFieldMappings.setRowNums();
         wFieldMappings.optWidth(true);
-        
-        // Reset content of definition *every* time the table loses focus.
-        // This might not be very elegant resource wise, but the code is :-)
-        // Typically the number of fields passes is very small anyway.
-        //
-        FocusListener focusListener = new FocusAdapter() {
-        	
-        	@Override
-			public void focusLost(FocusEvent event) {
-			
-        		System.out.println("!!!!!!!!!!!!  Field mapping : focus lost !!!!!!!!!!");
-    			
-        		int nrLines = wFieldMappings.nrNonEmpty();
-				definition.setParentField(new String[nrLines]);
-				definition.setMappingField(new String[nrLines]);
-				for (int i=0;i<nrLines;i++)
-				{
-					TableItem item = wFieldMappings.getNonEmpty(i);
-					definition.getParentField()[i]=item.getText(1);
-					definition.getMappingField()[i]=item.getText(2);
-					System.out.println("#"+i+" --> parent="+definition.getParentField()[i]+", mapping="+definition.getMappingField()[i]);
-				}
-			}
-		};
-		// wFieldMappings.addFocusListener(focusListener);
-		wFieldMappings.table.addFocusListener(focusListener);
-        
+                
         wbEnterMapping.addSelectionListener(new SelectionAdapter() {
 		
 			@Override
@@ -1029,6 +1000,37 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
 		});
         
+        wOutputStep.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent event) {
+				definition.setOutputStepname(wOutputStep.getText());
+				try {
+					enableMappingButton(wbEnterMapping, input, wInputStep.getText(), wOutputStep.getText());
+				} catch (KettleException e) {
+					// Show the missing/wrong step name error
+					// 
+					new ErrorDialog(shell, "Error", "Unexpected error", e);
+				}
+			}
+		});
+        wbOutputStep.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				String stepName = selectTransformationStepname(!input, input);
+				if (stepName!=null)
+				{
+					wOutputStep.setText(stepName);
+					definition.setOutputStepname(stepName);
+					try {
+						enableMappingButton(wbEnterMapping, input, wInputStep.getText(), wOutputStep.getText());
+					} catch (KettleException e) {
+						// Show the missing/wrong stepname error
+						new ErrorDialog(shell, "Error", "Unexpected error", e);
+					}
+				}
+			}
+		});
+        
         FormData fdParametersComposite = new FormData();
         fdParametersComposite.left = new FormAttachment(0, 0);
         fdParametersComposite.top = new FormAttachment(0, 0);
@@ -1038,6 +1040,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         wInputComposite.layout();
         wTab.setControl(wInputComposite);
+        
+        final ApplyChanges applyChanges = new MappingDefinitionTab(definition, wInputStep, wOutputStep, wMainPath, wDescription, wFieldMappings);
+        changeList.add( applyChanges );        
         
         // OK, suppose for some weird reason the user wants to remove an input or output tab...
         wTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
@@ -1058,11 +1063,46 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 						// Remove it from our list to make sure it's gone...
 						if (input) inputMappings.remove(definition);
 						else outputMappings.remove(definition);
+						
+						// remove it from the changeList too...
+						// Otherwise the dialog leaks memory.
+						// 
+						changeList.remove(applyChanges);
 					}
 				}
 			}
 		
 		});
+        
+	}
+	
+	/**
+	 * Enables or disables the mapping button.
+	 * We can only enable it if the target steps allows a mapping to be made against it.
+	 * 
+	 * @param button The button to disable or enable
+	 * @param input input or output.  If it's true, we keep the button enabled all the time.
+	 * @param sourceStepname The mapping output step
+	 * @param targetStepname The target step to verify
+	 * @throws KettleException 
+	 */
+	private void enableMappingButton(final Button button, boolean input, String sourceStepname, String targetStepname) throws KettleException {
+		if (input) return; // nothing to do
+		
+		boolean enabled = false;
+		
+		if (mappingTransMeta!=null) {
+			StepMeta mappingInputStep = mappingTransMeta.findMappingInputStep(sourceStepname);
+			if (mappingInputStep!=null) {
+				StepMeta mappingOutputStep = transMeta.findMappingOutputStep(targetStepname);
+				RowMetaInterface requiredFields = mappingOutputStep.getStepMetaInterface().getRequiredFields();
+				if (requiredFields!=null && requiredFields.size()>0) {
+					enabled=true;
+				}
+			}
+		}
+		
+		button.setEnabled(enabled);
 	}
 	
 
@@ -1126,6 +1166,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
             // Load the information on the tabs, optionally do some verifications...
             // 
+            collectInformation();
+            
             mappingMeta.setMappingParameters(mappingParameters);
             mappingMeta.setInputMappings(inputMappings);
             mappingMeta.setOutputMappings(outputMappings);
@@ -1140,4 +1182,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                     Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
         }
     }
+
+	private void collectInformation() {
+		for (ApplyChanges applyChanges : changeList) {
+			applyChanges.applyChanges(); // collect information from all tabs...
+		}
+	}
 }

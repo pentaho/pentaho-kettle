@@ -233,7 +233,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn.left  = new FormAttachment(0, 0);
 		fdReturn.top   = new FormAttachment(wlReturn, margin);
 		fdReturn.right = new FormAttachment(100, 0);
-		fdReturn.bottom= new FormAttachment(100, -95);
+		fdReturn.bottom= new FormAttachment(100, -125);
 		wReturn.setLayoutData(fdReturn);
 
         /*
