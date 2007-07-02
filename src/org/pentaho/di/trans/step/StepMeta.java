@@ -55,6 +55,10 @@ import org.w3c.dom.Node;
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, CheckResultSourceInterface
 {
 	public static final String XML_TAG = "step";
+
+	public static final Object STRING_ID_MAPPING        = "Mapping";
+	public static final Object STRING_ID_MAPPING_INPUT  = "MappingInput";
+	public static final Object STRING_ID_MAPPING_OUTPUT = "MappingOutput";
     
     private String        stepid;   // --> StepPlugin.id
 	private String        stepname;
@@ -771,4 +775,16 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     public String getTypeId() {
       return this.getStepID();
     }
+    
+    public boolean isMapping() {
+    	return STRING_ID_MAPPING.equals(stepid);
+    }
+
+    public boolean isMappingInput() {
+    	return STRING_ID_MAPPING_INPUT.equals(stepid);
+    }
+    public boolean isMappingOutput() {
+    	return STRING_ID_MAPPING_OUTPUT.equals(stepid);
+    }
+
 }

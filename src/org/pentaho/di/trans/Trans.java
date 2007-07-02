@@ -311,9 +311,13 @@ public class Trans implements VariableSpace
 		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
 
 		// First allocate all the rowsets required!
+		// Note that a mapping doesn't receive ANY input or output rowsets...
+		//
 		for (int i=0;i<hopsteps.size();i++)
 		{
 			StepMeta thisStep=hopsteps.get(i);
+			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
+			
 			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
 			int nrTargets = transMeta.findNrNextSteps(thisStep);
@@ -322,7 +326,8 @@ public class Trans implements VariableSpace
 			{
 				// What's the next step?
 				StepMeta nextStep = transMeta.findNextStep(thisStep, n);
-
+				if (nextStep.isMapping()) continue; // handled and allocated by the mapping step itself.
+				
                 // How many times do we start the source step?
                 int thisCopies = thisStep.getCopies();
 

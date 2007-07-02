@@ -15,12 +15,8 @@
  
 package org.pentaho.di.trans.steps.mapping;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.Repository;
@@ -30,7 +26,6 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
@@ -115,39 +110,14 @@ public class Mapping extends BaseStep implements StepInterface
                     	return false;
                     }
                     
-                    // Before we add rowsets and all, we should remove the current input and output rowsets from this step.
+                    // Before we add rowsets and all, we should note that the mapping step did not receive ANY input and output rowsets.
+                    // This is an exception to the general rule, built into Trans.prepareExecution()
+                    //
                     // A Mapping Input step is supposed to read directly from the previous steps.
                     // A Mapping Output step is supposed to write directly to the next steps.
-                    // 
-                    // We just remove all rowsets from all steps that have this step as source or target...
-                    // This is a tad over the top but I can't find a trivial beuatiful solution right now.
-                    //
-                    for (StepMetaDataCombi combi : getTrans().getSteps()) {
-                    	List<RowSet> remove = new ArrayList<RowSet>();
-                    	for (RowSet rowSet : combi.step.getInputRowSets()) {
-                    		if (rowSet.getDestinationStepName().equals(getStepname())) {
-                    			remove.add(rowSet);
-                    		} else if (rowSet.getOriginStepName().equals(getStepname())) {
-                    			remove.add(rowSet);
-                    		}
-                    	}
-                    	for (RowSet rowSet : remove) combi.step.getInputRowSets().remove(rowSet);
-                    }
-                    
-                    for (StepMetaDataCombi combi : getTrans().getSteps()) {
-                    	List<RowSet> remove = new ArrayList<RowSet>();
-                    	for (RowSet rowSet : combi.step.getOutputRowSets()) {
-                    		if (rowSet.getDestinationStepName().equals(getStepname())) {
-                    			remove.add(rowSet);
-                    		} else if (rowSet.getOriginStepName().equals(getStepname())) {
-                    			remove.add(rowSet);
-                    		}
-                    	}
-                    	for (RowSet rowSet : remove) combi.step.getOutputRowSets().remove(rowSet);
-                    }
-                    
                     
                     // OK, check the input mapping definitions and look up the steps to read from.
+                    // 
                     StepInterface[] sourceSteps;
                     for (MappingIODefinition inputDefinition : meta.getInputMappings()) {
                     	// If we have a single step to read from, we use this

@@ -4997,24 +4997,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         return new RowMetaAndData(argsMeta, data);
     }
 
-    public StepMeta getMappingInputStep()
-    {
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            if (getStep(i).getStepID().equalsIgnoreCase("MappingInput")) { return getStep(i); } //$NON-NLS-1$
-        }
-        return null;
-    }
-
-    public StepMeta getMappingOutputStep()
-    {
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            if (getStep(i).getStepID().equalsIgnoreCase("MappingOutput")) { return getStep(i); } //$NON-NLS-1$
-        }
-        return null;
-    }
-
     /**
      * @return Sleep time waiting when buffer is empty, in nano-seconds
      */
