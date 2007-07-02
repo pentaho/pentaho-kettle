@@ -1,0 +1,22 @@
+<kettle-config>
+	<config id="steps-config">
+		<config-class>org.pentaho.di.core.config.DigesterConfigManager</config-class>
+		
+		<!-- Properties are automatically injected into fields/methods of the above class annotated with @Inject -->
+		<property name="configURL" value="kettle-steps.xml"/> 
+		<property name="rulesURL" value="org/pentaho/di/core/config/steps-rules.xml"/>
+		<property name="setNext" value="steps/step"/>
+	</config>
+	
+	<!--  THIS IS JUST TO SHOW HOW WE COULD HAVE A CONFIGURATION MANAGER IMPLEMENTED AS A DATABASE REPOSITORY.
+	<config id="db-config">
+		<config-class>org.pentaho.di.core.config.DatabaseConfigManager</config-class>
+		<property name="connectionURL" value="jdbc:oracle:thin:@192.168.1.11:1521:kettle"/>
+		<property name="table" value="KETTLE_CONFIG"/>
+		<property name="columns" value="COL1,COL2,COL3"/>
+	</config>
+	-->
+	
+</kettle-config>
+
+
