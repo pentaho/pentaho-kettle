@@ -133,16 +133,13 @@ public class TransPreviewProgressDialog
             int nrDone = 0;
             for (int i=0 ; i<previewSize.length ; i++)
             {
-                List buffer = trans.getPreviewRows(previewStepNames[i], 0);
+                List<Object[]> buffer = trans.getPreviewRows(previewStepNames[i], 0);
                 nrDone+=buffer.size();
             }
             
-            //int pct = (int)Math.round((double)nrDone/(double)nrRows);
             int pct = 100*nrDone/nrRows;
             
-            
             int worked = pct - previousPct;
-            //System.out.println("nrDone="+nrDone+", nrRows="+nrRows+", pct="+pct+", worked="+worked);
             
             if (worked>0) progressMonitor.worked(worked);
             previousPct = pct;
@@ -170,7 +167,7 @@ public class TransPreviewProgressDialog
      * @param stepname the name of the step to get the preview rows for
      * @return A list of rows as the result of the preview run.
      */
-    public List getPreviewRows(String stepname)
+    public List<Object[]> getPreviewRows(String stepname)
     {
         return trans.getPreviewRows(stepname, 0);
     }

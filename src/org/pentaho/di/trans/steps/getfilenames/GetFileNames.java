@@ -145,7 +145,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 
     private void handleMissingFiles() throws KettleException
     {
-        List nonExistantFiles = data.files.getNonExistantFiles();
+        List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
 
         if (nonExistantFiles.size() != 0)
         {
@@ -154,7 +154,7 @@ public class GetFileNames extends BaseStep implements StepInterface
             throw new KettleException("Following required files are missing: " + message);
         }
 
-        List nonAccessibleFiles = data.files.getNonAccessibleFiles();
+        List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
         if (nonAccessibleFiles.size() != 0)
         {
             String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);

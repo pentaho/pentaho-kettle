@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -1544,7 +1544,7 @@ public class Trans implements VariableSpace
 	/**
 	 * @return Returns the rowsets.
 	 */
-	public List getRowsets()
+	public List<RowSet> getRowsets()
 	{
 		return rowsets;
 	}
@@ -1929,7 +1929,7 @@ public class Trans implements VariableSpace
             //
             TransMeta master = transSplitter.getMaster();
             SlaveServer masterServer = null;
-            List masterSteps = master.getTransHopSteps(false);
+            List<StepMeta> masterSteps = master.getTransHopSteps(false);
             if (masterSteps.size()>0) // If there is something that needs to be done on the master...
             {
                 masterServer = transSplitter.getMasterServer();
@@ -2130,7 +2130,7 @@ public class Trans implements VariableSpace
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}	        

@@ -3,7 +3,7 @@ package org.pentaho.di.core.gui;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -75,11 +75,11 @@ public class GUIResource
     private ManagedFont fontLarge;
 
     /* * * Images * * */
-    private Hashtable<String,Image> imagesSteps;
-    private Hashtable<String,Image> imagesStepsSmall;
+    private Map<String,Image> imagesSteps;
+    private Map<String,Image> imagesStepsSmall;
     
-    private Hashtable<String,Image> imagesJobentries;
-    private Hashtable<String,Image> imagesJobentriesSmall;
+    private Map<String,Image> imagesJobentries;
+    private Map<String,Image> imagesJobentriesSmall;
     
     private Image     imageHop;
     private Image     imageConnection; 
@@ -249,10 +249,11 @@ public class GUIResource
         }
     }
     
-    private void disposeImages(Collection c)
+    private void disposeImages(Collection<Image> c)
     {
-        for (Iterator iter = c.iterator(); iter.hasNext();)
-            disposeImage((Image) iter.next());
+        for (Image image : c) {
+        	disposeImage(image);
+        }
     }
 
     private void disposeImage(Image image)
@@ -727,7 +728,7 @@ public class GUIResource
     /**
      * @return Returns the imagesSteps.
      */
-    public Hashtable getImagesSteps()
+    public Map<String, Image> getImagesSteps()
     {
         return imagesSteps;
     }
@@ -735,7 +736,7 @@ public class GUIResource
     /**
      * @return Returns the imagesStepsSmall.
      */
-    public Hashtable getImagesStepsSmall()
+    public Map<String, Image> getImagesStepsSmall()
     {
         return imagesStepsSmall;
     }
@@ -759,7 +760,7 @@ public class GUIResource
     /**
      * @return Returns the imagesJobentries.
      */
-    public Hashtable getImagesJobentries()
+    public Map<String, Image> getImagesJobentries()
     {
         return imagesJobentries;
     }
@@ -775,7 +776,7 @@ public class GUIResource
     /**
      * @return Returns the imagesJobentriesSmall.
      */
-    public Hashtable<String,Image> getImagesJobentriesSmall()
+    public Map<String,Image> getImagesJobentriesSmall()
     {
         return imagesJobentriesSmall;
     }

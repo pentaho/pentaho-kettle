@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -26,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.w3c.dom.Node;
@@ -88,8 +90,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 			{
 				// Simply load this, we only want the name, we don't care about
 				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList<DatabaseMeta>(), new Hashtable(),
-						new ArrayList());
+				StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(),
+						new ArrayList<PartitionSchema>());
 				from_step = StepMeta.findStep(steps, stepMeta.getName());
 			}
 			from_step.setDraw(true);
@@ -101,8 +103,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
 			{
 				// Simply load this, we only want the name, we don't care about
 				// the rest...
-				StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList<DatabaseMeta>(), new Hashtable(),
-						new ArrayList());
+				StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(),
+						new ArrayList<PartitionSchema>());
 				to_step = StepMeta.findStep(steps, stepMeta.getName());
 			}
 			to_step.setDraw(true);

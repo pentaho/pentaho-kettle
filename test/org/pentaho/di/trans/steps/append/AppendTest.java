@@ -136,7 +136,7 @@ public class AppendTest extends TestCase
 	 *  Check the 2 lists comparing the rows in order.
 	 *  If they are not the same fail the test. 
 	 */
-    public void checkRows(List rows1, List rows2)
+    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
     {
     	int idx = 1;
         if ( rows1.size() != rows2.size() )
@@ -144,8 +144,8 @@ public class AppendTest extends TestCase
         	fail("Number of rows is not the same: " + 
           		 rows1.size() + " and " + rows2.size());
         }
-        Iterator it1 = rows1.iterator();
-        Iterator it2 = rows2.iterator();
+        Iterator<RowMetaAndData> it1 = rows1.iterator();
+        Iterator<RowMetaAndData> it2 = rows2.iterator();
         
         while ( it1.hasNext() && it2.hasNext() )
         {
@@ -273,7 +273,7 @@ public class AppendTest extends TestCase
 
         // add rows to tail step
         List<RowMetaAndData> inputList2 = createData2();
-        Iterator it2 = inputList2.iterator();
+        Iterator<RowMetaAndData> it2 = inputList2.iterator();
         while ( it2.hasNext() )
         {
         	RowMetaAndData rm = (RowMetaAndData)it2.next();
@@ -283,7 +283,7 @@ public class AppendTest extends TestCase
         
         // add rows to head step
         List<RowMetaAndData> inputList1 = createData1();
-        Iterator it1 = inputList1.iterator();
+        Iterator<RowMetaAndData> it1 = inputList1.iterator();
         while ( it1.hasNext() )
         {
         	RowMetaAndData rm = (RowMetaAndData)it1.next();
@@ -299,7 +299,7 @@ public class AppendTest extends TestCase
         expectedList.addAll(inputList1);
         expectedList.addAll(inputList2);
         
-        List resultRows1 = dummyRc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsRead();
         checkRows(resultRows1, expectedList);
     }    
 }

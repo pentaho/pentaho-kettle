@@ -22,7 +22,6 @@
 package org.pentaho.di.trans.dialog;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -1458,9 +1457,8 @@ public class TransDialog extends Dialog
 		wFields.optWidth(true);
         
         // The partitions?
-        for (Iterator iter = schemas.iterator(); iter.hasNext();)
+        for (PartitionSchema schema : schemas)
         {
-            PartitionSchema schema = (PartitionSchema) iter.next();
             wSchemaList.add(schema.getName());
         }
         if (schemas.size()>0)

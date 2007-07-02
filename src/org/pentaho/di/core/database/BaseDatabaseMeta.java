@@ -865,11 +865,11 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     /**
      * @return all the extra options that are set to be used for the database URL
      */
-    public Map getExtraOptions()
+    public Map<String, String> getExtraOptions()
     {
         Map<String,String> map = new Hashtable<String,String>();
         
-        for (Enumeration keys = attributes.keys();keys.hasMoreElements();)
+        for (Enumeration<Object> keys = attributes.keys() ; keys.hasMoreElements();)
         {
             String attribute = (String) keys.nextElement();
             if (attribute.startsWith(ATTRIBUTE_PREFIX_EXTRA_OPTION))
@@ -1090,7 +1090,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     {
         Properties properties = new Properties();
         
-        for (Iterator iter = attributes.keySet().iterator(); iter.hasNext();)
+        for (Iterator<Object> iter = attributes.keySet().iterator(); iter.hasNext();)
         {
             String element = (String) iter.next();
             if (element.startsWith(ATTRIBUTE_POOLING_PARAMETER_PREFIX))
@@ -1107,7 +1107,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     public void setConnectionPoolingProperties(Properties properties)
     {
         // Clear our the previous set of pool parameters
-        for (Iterator iter = attributes.keySet().iterator(); iter.hasNext();)
+        for (Iterator<Object> iter = attributes.keySet().iterator(); iter.hasNext();)
         {
             String key = (String) iter.next();
             if (key.startsWith(ATTRIBUTE_POOLING_PARAMETER_PREFIX))
@@ -1116,7 +1116,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
             }
         }
         
-        for (Iterator iter = properties.keySet().iterator(); iter.hasNext();)
+        for (Iterator<Object> iter = properties.keySet().iterator(); iter.hasNext();)
         {
             String element = (String) iter.next();
             String value = properties.getProperty(element);
@@ -1204,7 +1204,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}    

@@ -16,9 +16,6 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -31,8 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class CalculatorData extends BaseStepData implements StepDataInterface
 {
-    public Map indexCache;
-    
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface calcRowMeta;
     
@@ -46,8 +41,6 @@ public class CalculatorData extends BaseStepData implements StepDataInterface
 	public CalculatorData()
 	{
 		super();
-        
-        indexCache = new Hashtable();
 	}
 
 }

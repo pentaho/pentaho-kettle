@@ -18,7 +18,6 @@ package org.pentaho.di.trans.steps.excelinput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -52,8 +51,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
+import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
@@ -411,30 +410,30 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 	private void handleMissingFiles() throws KettleException
 	{
-		List nonExistantFiles = data.files.getNonExistantFiles();
+		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic("Required files", "WARNING: Missing " + message);
 			if (meta.isErrorIgnored())
-				for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
+				for (FileObject fileObject : nonExistantFiles)
 				{
-					data.errorHandler.handleNonExistantFile((FileObject) iter.next());
+					data.errorHandler.handleNonExistantFile( fileObject );
 				}
 			else
 				throw new KettleException("Following required files are missing: " + message);
 		}
 
-		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
 			log.logBasic("Required files", "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored())
-				for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
+				for (FileObject fileObject : nonAccessibleFiles)
 				{
-					data.errorHandler.handleNonAccessibleFile((FileObject) iter.next());
+					data.errorHandler.handleNonAccessibleFile(fileObject);
 				}
 			else
 				throw new KettleException("Following required files are not accessible: " + message);
@@ -607,7 +606,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 	private void initErrorHandling()
 	{
-		List<AbstractFileErrorHandler>errorHandlers = new ArrayList<AbstractFileErrorHandler>(2);
+		List<FileErrorHandler> errorHandlers = new ArrayList<FileErrorHandler>(2);
 
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
 			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), "Latin1", this));
@@ -647,9 +646,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Determine the maximum filename length...
 				data.maxfilelength = -1;
 
-				for (Iterator iter = data.files.getFiles().iterator(); iter.hasNext();)
+				for (FileObject file : data.files.getFiles())
 				{
-					FileObject file = (FileObject) iter.next();
 					String name = KettleVFS.getFilename(file);
 					if (name.length() > data.maxfilelength) data.maxfilelength = name.length();
 				}

@@ -16,7 +16,6 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -241,14 +240,11 @@ public class MergeJoin extends BaseStep implements StepInterface
 	                	data.twos.add(data.two_next);
 	            	}
             	}
-            	Iterator one_iter = data.ones.iterator();
-            	while (one_iter.hasNext())
+            	for (Object[] one : data.ones)
             	{
-            		Object[] one = (Object[]) one_iter.next();
-            		Iterator two_iter = data.twos.iterator();
-            		while (two_iter.hasNext())
+            		for (Object[] two : data.twos)
             		{
-            			Object[] combi = RowDataUtil.addRowData(one, (Object[]) two_iter.next());
+            			Object[] combi = RowDataUtil.addRowData(one, two);
             			putRow(data.oneTwoMeta, combi);
             		}
             	}

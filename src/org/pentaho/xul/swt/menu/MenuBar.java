@@ -72,7 +72,7 @@ public class MenuBar extends XulObject implements XulMenuBar {
 		return handler.getMenuItemByKey( accessKey );
 	}
 
-	public void addMenuListener( String id, Object listener, Class listenerClass, String methodName ) {
+	public void addMenuListener( String id, Object listener, Class<?> listenerClass, String methodName ) {
 		handler.addMenuListener( id, listener, listenerClass, methodName );
 	}
 

@@ -64,10 +64,12 @@ public class EnterPreviewRowsDialog extends Dialog
 	private Listener lsShow, lsClose;
 
 	private Shell         shell;
-	private java.util.List stepNames, rowMetas, rowDatas;
+	private java.util.List<String> stepNames;
+	private java.util.List<RowMetaInterface> rowMetas;
+	private java.util.List<java.util.List<Object[]>> rowDatas;
 	private Props 		  props;
 
-	public EnterPreviewRowsDialog(Shell parent, int style, java.util.List stepNames, java.util.List rowMetas, java.util.List rowBuffers)
+	public EnterPreviewRowsDialog(Shell parent, int style, java.util.List<String> stepNames, java.util.List<RowMetaInterface> rowMetas, java.util.List<java.util.List<Object[]>> rowBuffers)
 	{
 			super(parent, style);
 			this.stepNames=stepNames;
@@ -184,7 +186,7 @@ public class EnterPreviewRowsDialog extends Dialog
 		
 		int nr = wStepList.getSelectionIndex();
 
-		java.util.List buffer = (java.util.List)rowDatas.get(nr);
+		java.util.List<Object[]> buffer = (java.util.List<Object[]>)rowDatas.get(nr);
         RowMetaInterface rowMeta = (RowMetaInterface)rowMetas.get(nr);
 		String    name   = (String)stepNames.get(nr);
 		

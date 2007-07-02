@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -44,7 +43,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -273,7 +271,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     private int                          in_handling, out_handling;
 
-    public ArrayList                     thr;
+    public List<BaseStep>                thr;
 
     /** The rowsets on the input, size() == nr of source steps */
     public List<RowSet> inputRowSets;
@@ -2016,7 +2014,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @return the partitionTargets
      */
-    public Map getPartitionTargets()
+    public Map<String,RowSet> getPartitionTargets()
     {
         return partitionTargets;
     }
@@ -2213,7 +2211,7 @@ public class BaseStep extends Thread implements VariableSpace
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}

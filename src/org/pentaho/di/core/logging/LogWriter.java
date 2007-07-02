@@ -133,10 +133,10 @@ public class LogWriter
         // Check if there already is a console appender (ConsoleAppender) (in the app server for example)
         // 
         boolean found = false;
-        Enumeration appenders = rootLogger.getAllAppenders();
+        Enumeration<?> appenders = rootLogger.getAllAppenders();
         
         // Set the logging level for the Jackcess stuff to INFO...
-        // TODO: make some kind of general configuation possible for this, load from file, etc.
+        // TODO: make some kind of general configuration possible for this, load from file, etc.
         Logger.getLogger("com.healthmarketscience.jackcess").setLevel(Level.INFO);
 
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -248,7 +248,7 @@ public class LogWriter
     }
 
     public static void setConsoleAppenderDebug() {
-        Enumeration appenders = Logger.getRootLogger().getAllAppenders();
+        Enumeration<?> appenders = Logger.getRootLogger().getAllAppenders();
         
         while(appenders.hasMoreElements())
         {
@@ -278,7 +278,7 @@ public class LogWriter
 		{
 			// Close all appenders...
             Logger logger = Logger.getRootLogger();
-            Enumeration loggers = logger.getAllAppenders();
+            Enumeration<?> loggers = logger.getAllAppenders();
             while (loggers.hasMoreElements())
             {
                 Appender appender = (Appender) loggers.nextElement();
@@ -574,7 +574,7 @@ public class LogWriter
     {
         LogWriter.layout = layout; // save for later creation of new files...
         
-        Enumeration appenders = getInstance().getRootLogger().getAllAppenders();
+        Enumeration<?> appenders = getInstance().getRootLogger().getAllAppenders();
         while (appenders.hasMoreElements())
         {
             Appender appender = (Appender) appenders.nextElement();

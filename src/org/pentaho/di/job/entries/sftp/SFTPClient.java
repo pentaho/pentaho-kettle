@@ -93,7 +93,7 @@ public class SFTPClient {
 		String[] fileList = null;
 		
 		try {
-			java.util.Vector v=c.ls(".");
+			java.util.Vector<?> v=c.ls(".");
 			java.util.Vector<String> o = new java.util.Vector<String>();
 			if(v!=null){
 			  for(int i=0; i<v.size(); i++){

@@ -24,6 +24,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -39,10 +40,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
  */
 public class GetFileNamesData extends BaseStepData implements StepDataInterface
 {
-	/** @deprecated */
-	public String thisline, nextline, lastline;
-
-	public ArrayList lineBuffer;
+	public List<String> lineBuffer;
 
 	public Object[] previous_row;
 
@@ -99,10 +97,7 @@ public class GetFileNamesData extends BaseStepData implements StepDataInterface
 	{
 		super();
 
-		thisline = null;
-		nextline = null;
-
-		lineBuffer = new ArrayList();
+		lineBuffer = new ArrayList<String>();
 		nf = NumberFormat.getInstance();
 		df = (DecimalFormat) nf;
 		dfs = new DecimalFormatSymbols();

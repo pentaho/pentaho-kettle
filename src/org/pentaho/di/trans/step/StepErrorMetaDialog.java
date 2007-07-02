@@ -45,7 +45,7 @@ import org.pentaho.di.trans.TransMeta;
 public class StepErrorMetaDialog extends Dialog 
 {
 	private StepErrorMeta stepErrorMeta;
-	private List          targetSteps;
+	private List<StepMeta> targetSteps;
     
     private Composite composite;
     private Shell     shell;
@@ -71,7 +71,7 @@ public class StepErrorMetaDialog extends Dialog
     
     private TransMeta transMeta;
     
-	public StepErrorMetaDialog(Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta, List targetSteps)
+	public StepErrorMetaDialog(Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta, List<StepMeta> targetSteps)
 	{
 		super(par, SWT.NONE);
 		this.stepErrorMeta=(StepErrorMeta)stepErrorMeta.clone();

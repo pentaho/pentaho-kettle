@@ -27,11 +27,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -758,7 +758,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             String filter = filterString;
             if (filter!=null) filter = filter.toUpperCase();
             
-            List stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            List<StringSearchResult> stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
             for (int i=0;i<stringList.size();i++)
             {
                 StringSearchResult result = (StringSearchResult) stringList.get(i);
@@ -781,11 +781,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             String filter = filterString;
             if (filter!=null) filter = filter.toUpperCase();
             
-            List stringList = jobMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
-            for (int i=0;i<stringList.size();i++)
+            List<StringSearchResult> stringList = jobMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            for (StringSearchResult result : stringList)
             {
-                StringSearchResult result = (StringSearchResult) stringList.get(i);
-
                 boolean add = Const.isEmpty(filter);
                 if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
                 if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
@@ -1007,7 +1005,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         display.sleep();
     }
     
-    private Map menuMap = new HashMap();
+    private Map<String,Menu> menuMap = new HashMap<String,Menu>();
     
     public void createMenuBarFromXul() {
     		
@@ -1088,9 +1086,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         				}
     				}
-    				Iterator it = menuMap.keySet().iterator();
-    				while( it.hasNext() ) {
-    					String id = (String) it.next();
+    				for( String id : menuMap.keySet() ) {
     					PopupMenu menu = (PopupMenu) menuMap.get( id );
         				ids = menu.getMenuItemIds();
         				for( int i=0; i<ids.length; i++ ) {
@@ -1244,10 +1240,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
 
         // Previously loaded files...
-        List lastUsedFiles = props.getLastUsedFiles();
+        List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
         for (int i = 0; i < lastUsedFiles.size(); i++)
         {
-            final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            final LastUsedFile lastUsedFile = lastUsedFiles.get(i);
 
             char chr = (char) ('1' + i);
             String accessKey = "ctrl-"+chr; //$NON-NLS-1$
@@ -1278,62 +1274,57 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     }
     
-    public void lastFileSelect( String id ) {
+    public void lastFileSelect(String id) {
 
-    		int idx = Integer.parseInt( id.substring( "last-file-".length() ) );
-        List lastUsedFiles = props.getLastUsedFiles();
-        final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(idx);
-        
-    		// If the file comes from a repository and it's not the same as
-                // the one we're connected to, ask for a username/password!
-                //
-                boolean cancelled = false;
-                if (lastUsedFile.isSourceRepository() && (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())))
-                {
-                    // Ask for a username password to get the required repository access
-                    //
-                    int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-                    RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
-                    rd.setRepositoryName(lastUsedFile.getRepositoryName());
-                    if (rd.open())
-                    {
-                        // Close the previous connection...
-                        if (rep != null) rep.disconnect();
-                        rep = new Repository(log, rd.getRepository(), rd.getUser());
-                        try
-                        {
-                            rep.connect(APP_NAME);
-                        }
-                        catch (KettleException ke)
-                        {
-                            rep = null;
-                            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-                        }
-                    }
-                    else
-                    {
-                        cancelled = true;
-                    }
-                }
-                
-                if (!cancelled)
-                {
-                    try
-                    {
-                        RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
-                        loadLastUsedFile(lastUsedFile, meta);
-                        addMenuLast();
-                        refreshHistory();
-                    }
-                    catch(KettleException ke)
-                    {
-                        // "Error loading transformation", "I was unable to load this transformation from the
-                        // XML file because of an error"
-                        new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
-                    }
-                }
-        
-    }
+		int idx = Integer.parseInt(id.substring("last-file-".length()));
+		List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
+		final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(idx);
+
+		// If the file comes from a repository and it's not the same as
+		// the one we're connected to, ask for a username/password!
+		//
+		boolean cancelled = false;
+		if (lastUsedFile.isSourceRepository()
+				&& (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))) {
+			// Ask for a username password to get the required repository access
+			//
+			int perms[] = new int[] {
+				PermissionMeta.TYPE_PERMISSION_TRANSFORMATION
+			};
+			RepositoriesDialog rd = new RepositoriesDialog(display, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
+			rd.setRepositoryName(lastUsedFile.getRepositoryName());
+			if (rd.open()) {
+				// Close the previous connection...
+				if (rep != null)
+					rep.disconnect();
+				rep = new Repository(log, rd.getRepository(), rd.getUser());
+				try {
+					rep.connect(APP_NAME);
+				} catch (KettleException ke) {
+					rep = null;
+					new ErrorDialog( shell, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			} else {
+				cancelled = true;
+			}
+		}
+
+		if (!cancelled) {
+			try {
+				RepositoryMeta meta = (rep == null ? null : rep.getRepositoryInfo());
+				loadLastUsedFile(lastUsedFile, meta);
+				addMenuLast();
+				refreshHistory();
+			} catch (KettleException ke) {
+				// "Error loading transformation", "I was unable to load this
+				// transformation from the
+				// XML file because of an error"
+				new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages
+						.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
+			}
+		}
+
+	}
     
     private void addBar()
     {
@@ -1356,122 +1347,140 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			new ErrorDialog(shell, Messages.getString("Spoon.Exception.ErrorReadingXULFile.Title"), Messages.getString("Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUBAR), new Exception(t));
 		}
 
-/*    	
-    	ToolbarButton button = new ToolbarButton(shell, "file-new-trans", toolbar);
-        final Image imFileNewTrans = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new RGB(192, 192, 192)); 
-        button.setImage(imFileNewTrans);
-        button.setHint(Messages.getString("Spoon.Tooltip.NewFile"));
-
-        final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileNew = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
-        tiFileNew.setImage(imFileNew);
-        tiFileNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newFile(); }});
-        tiFileNew.setToolTipText(Messages.getString("Spoon.Tooltip.NewFile"));
-
-        final ToolItem tiFileNewTrans = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileNewTrans = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new RGB(192, 192, 192)); 
-        tiFileNewTrans.setImage(imFileNewTrans);
-        tiFileNewTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newTransFile(); }});
-        tiFileNewTrans.setToolTipText(Messages.getString("Spoon.Tooltip.NewTranformation"));
-
-        final ToolItem tiFileNewJob = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileNewJob = ImageUtil.makeImageTransparent(display, new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newjob.png")), new RGB(192, 192, 192)); 
-        tiFileNewJob.setImage(imFileNewJob);
-        tiFileNewJob.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newJobFile(); }});
-        tiFileNewJob.setToolTipText(Messages.getString("Spoon.Tooltip.NewJob"));
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-
-        final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileOpen = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 
-        tiFileOpen.setImage(imFileOpen);
-        tiFileOpen.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openFile(false); }});
-        tiFileOpen.setToolTipText(Messages.getString("Spoon.Tooltip.OpenTranformation"));//Open tranformation
-
-        tiFileSave = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileSave = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
-        tiFileSave.setImage(imFileSave);
-        tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(); }});
-        tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save current transformation
-
-        tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileSaveAs = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
-        tiFileSaveAs.setImage(imFileSaveAs);
-        tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(); }});
-        tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save transformation with different name
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-        tiFilePrint = new ToolItem(tBar, SWT.PUSH);
-        final Image imFilePrint = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
-        tiFilePrint.setImage(imFilePrint);
-        tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
-        tiFilePrint.setToolTipText(Messages.getString("Spoon.Tooltip.Print"));//Print
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-        tiFileRun = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileRun = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
-        tiFileRun.setImage(imFileRun);
-        tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, false, null); }});
-        tiFileRun.setToolTipText(Messages.getString("Spoon.Tooltip.RunTranformation"));//Run this transformation
-
-        tiFilePreview = new ToolItem(tBar, SWT.PUSH);
-        final Image imFilePreview = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
-        tiFilePreview.setImage(imFilePreview);
-        tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
-        tiFilePreview.setToolTipText(Messages.getString("Spoon.Tooltip.PreviewTranformation"));//Preview this transformation
-
-        tiFileReplay = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileReplay = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
-        tiFileReplay.setImage(imFileReplay);
-        tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeFile(true, false, false, true, null); }});
-        tiFileReplay.setToolTipText(Messages.getString("Spoon.Tooltip.ReplayTranformation"));
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-        tiFileCheck = new ToolItem(tBar, SWT.PUSH);
-        final Image imFileCheck = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png")); 
-        tiFileCheck.setImage(imFileCheck);
-        tiFileCheck.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { checkTrans(getActiveTransformation()); }});
-        tiFileCheck.setToolTipText(Messages.getString("Spoon.Tooltip.VerifyTranformation"));//Verify this transformation
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-        tiImpact = new ToolItem(tBar, SWT.PUSH);
-        final Image imImpact = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"impact.png")); 
-        // Can't seem to get the transparency correct for this image!
-        ImageData idImpact = imImpact.getImageData();
-        int impactPixel = idImpact.palette.getPixel(new RGB(255, 255, 255));
-        idImpact.transparentPixel = impactPixel;
-        Image imImpact2 = new Image(display, idImpact);
-        tiImpact.setImage(imImpact2);
-        tiImpact.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { analyseImpact(getActiveTransformation()); }});
-        tiImpact.setToolTipText(Messages.getString("Spoon.Tooltip.AnalyzeTranformation"));//Analyze the impact of this transformation on the database(s)
-
-        new ToolItem(tBar, SWT.SEPARATOR);
-        tiSQL = new ToolItem(tBar, SWT.PUSH);
-        final Image imSQL = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
-        // Can't seem to get the transparency correct for this image!
-        ImageData idSQL = imSQL.getImageData();
-        int sqlPixel= idSQL.palette.getPixel(new RGB(255, 255, 255));
-        idSQL.transparentPixel = sqlPixel;
-        Image imSQL2= new Image(display, idSQL);
-        tiSQL.setImage(imSQL2);
-        tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL();  }});
-        tiSQL.setToolTipText(Messages.getString("Spoon.Tooltip.GenerateSQLForTranformation"));//Generate the SQL needed to run this transformation
-
-        tBar.addDisposeListener(new DisposeListener() 
-            {
-                public void widgetDisposed(DisposeEvent e) 
-                {
-                    imFileNew.dispose();
-                    imFileOpen.dispose();
-                    imFileSave.dispose();
-                    imFileSaveAs.dispose();
-                }
-            }
-        );
-        tBar.addKeyListener(defKeys);
-        tBar.addKeyListener(modKeys);
-        tBar.pack();
-        */
+/*
+ * ToolbarButton button = new ToolbarButton(shell, "file-new-trans", toolbar);
+ * final Image imFileNewTrans = ImageUtil.makeImageTransparent(display, new
+ * Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new
+ * RGB(192, 192, 192)); button.setImage(imFileNewTrans);
+ * button.setHint(Messages.getString("Spoon.Tooltip.NewFile"));
+ * 
+ * final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH); final Image
+ * imFileNew = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png"));
+ * tiFileNew.setImage(imFileNew); tiFileNew.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * newFile(); }});
+ * tiFileNew.setToolTipText(Messages.getString("Spoon.Tooltip.NewFile"));
+ * 
+ * final ToolItem tiFileNewTrans = new ToolItem(tBar, SWT.PUSH); final Image
+ * imFileNewTrans = ImageUtil.makeImageTransparent(display, new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newtrans.png")), new
+ * RGB(192, 192, 192)); tiFileNewTrans.setImage(imFileNewTrans);
+ * tiFileNewTrans.addSelectionListener(new SelectionAdapter() { public void
+ * widgetSelected(SelectionEvent e) { newTransFile(); }});
+ * tiFileNewTrans.setToolTipText(Messages.getString("Spoon.Tooltip.NewTranformation"));
+ * 
+ * final ToolItem tiFileNewJob = new ToolItem(tBar, SWT.PUSH); final Image
+ * imFileNewJob = ImageUtil.makeImageTransparent(display, new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"newjob.png")), new
+ * RGB(192, 192, 192)); tiFileNewJob.setImage(imFileNewJob);
+ * tiFileNewJob.addSelectionListener(new SelectionAdapter() { public void
+ * widgetSelected(SelectionEvent e) { newJobFile(); }});
+ * tiFileNewJob.setToolTipText(Messages.getString("Spoon.Tooltip.NewJob"));
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR);
+ * 
+ * final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH); final Image
+ * imFileOpen = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png"));
+ * tiFileOpen.setImage(imFileOpen); tiFileOpen.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * openFile(false); }});
+ * tiFileOpen.setToolTipText(Messages.getString("Spoon.Tooltip.OpenTranformation"));//Open
+ * tranformation
+ * 
+ * tiFileSave = new ToolItem(tBar, SWT.PUSH); final Image imFileSave = new
+ * Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png"));
+ * tiFileSave.setImage(imFileSave); tiFileSave.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * saveFile(); }});
+ * tiFileSave.setToolTipText(Messages.getString("Spoon.Tooltip.SaveCurrentTranformation"));//Save
+ * current transformation
+ * 
+ * tiFileSaveAs = new ToolItem(tBar, SWT.PUSH); final Image imFileSaveAs = new
+ * Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png"));
+ * tiFileSaveAs.setImage(imFileSaveAs); tiFileSaveAs.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * saveFileAs(); }});
+ * tiFileSaveAs.setToolTipText(Messages.getString("Spoon.Tooltip.SaveDifferentNameTranformation"));//Save
+ * transformation with different name
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR); tiFilePrint = new ToolItem(tBar,
+ * SWT.PUSH); final Image imFilePrint = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png"));
+ * tiFilePrint.setImage(imFilePrint); tiFilePrint.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * printFile(); }});
+ * tiFilePrint.setToolTipText(Messages.getString("Spoon.Tooltip.Print"));//Print
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR); tiFileRun = new ToolItem(tBar, SWT.PUSH);
+ * final Image imFileRun = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png"));
+ * tiFileRun.setImage(imFileRun); tiFileRun.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * executeFile(true, false, false, false, null); }});
+ * tiFileRun.setToolTipText(Messages.getString("Spoon.Tooltip.RunTranformation"));//Run
+ * this transformation
+ * 
+ * tiFilePreview = new ToolItem(tBar, SWT.PUSH); final Image imFilePreview = new
+ * Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png"));
+ * tiFilePreview.setImage(imFilePreview); tiFilePreview.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * executeFile(true, false, false, true, null); }});
+ * tiFilePreview.setToolTipText(Messages.getString("Spoon.Tooltip.PreviewTranformation"));//Preview
+ * this transformation
+ * 
+ * tiFileReplay = new ToolItem(tBar, SWT.PUSH); final Image imFileReplay = new
+ * Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png"));
+ * tiFileReplay.setImage(imFileReplay); tiFileReplay.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * executeFile(true, false, false, true, null); }});
+ * tiFileReplay.setToolTipText(Messages.getString("Spoon.Tooltip.ReplayTranformation"));
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR); tiFileCheck = new ToolItem(tBar,
+ * SWT.PUSH); final Image imFileCheck = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png"));
+ * tiFileCheck.setImage(imFileCheck); tiFileCheck.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) {
+ * checkTrans(getActiveTransformation()); }});
+ * tiFileCheck.setToolTipText(Messages.getString("Spoon.Tooltip.VerifyTranformation"));//Verify
+ * this transformation
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR); tiImpact = new ToolItem(tBar, SWT.PUSH);
+ * final Image imImpact = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"impact.png")); // Can't
+ * seem to get the transparency correct for this image! ImageData idImpact =
+ * imImpact.getImageData(); int impactPixel = idImpact.palette.getPixel(new
+ * RGB(255, 255, 255)); idImpact.transparentPixel = impactPixel; Image imImpact2 =
+ * new Image(display, idImpact); tiImpact.setImage(imImpact2);
+ * tiImpact.addSelectionListener(new SelectionAdapter() { public void
+ * widgetSelected(SelectionEvent e) { analyseImpact(getActiveTransformation());
+ * }});
+ * tiImpact.setToolTipText(Messages.getString("Spoon.Tooltip.AnalyzeTranformation"));//Analyze
+ * the impact of this transformation on the database(s)
+ * 
+ * new ToolItem(tBar, SWT.SEPARATOR); tiSQL = new ToolItem(tBar, SWT.PUSH);
+ * final Image imSQL = new Image(display,
+ * getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); //
+ * Can't seem to get the transparency correct for this image! ImageData idSQL =
+ * imSQL.getImageData(); int sqlPixel= idSQL.palette.getPixel(new RGB(255, 255,
+ * 255)); idSQL.transparentPixel = sqlPixel; Image imSQL2= new Image(display,
+ * idSQL); tiSQL.setImage(imSQL2); tiSQL.addSelectionListener(new
+ * SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL();
+ * }});
+ * tiSQL.setToolTipText(Messages.getString("Spoon.Tooltip.GenerateSQLForTranformation"));//Generate
+ * the SQL needed to run this transformation
+ * 
+ * tBar.addDisposeListener(new DisposeListener() { public void
+ * widgetDisposed(DisposeEvent e) { imFileNew.dispose(); imFileOpen.dispose();
+ * imFileSave.dispose(); imFileSaveAs.dispose(); } } );
+ * tBar.addKeyListener(defKeys); tBar.addKeyListener(modKeys); tBar.pack();
+ */
     }
 
     private static final String STRING_SPOON_MAIN_TREE = Messages.getString("Spoon.MainTree.Label");
@@ -1711,7 +1720,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 
                 ExpandItem historyExpandItem = new ExpandItem(mainExpandBar, SWT.NONE);
                 
-                List pluginHistory = props.getPluginHistory();
+                List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
                 String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
                 
                 for (int i=0;i<pluginHistory.size() && i<10;i++) // top 10 maximum, the rest is not interesting anyway -- for GUI performance reasons
@@ -2367,7 +2376,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     		addTransHistory((TransMeta)selectionObject, true);
     }
     
-    public Map getMenuMap() {
+    public Map<String, Menu> getMenuMap() {
     		return menuMap;
     }
     
@@ -2759,13 +2768,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	public boolean tabClose(TabItem item) {
         // Try to find the tab-item that's being closed.
-        ArrayList<TabMapEntry> collection = new ArrayList<TabMapEntry>();
+        List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
         collection.addAll(tabMap.values());
         
         boolean close = true;
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry entry : collection)
         {
-            TabMapEntry entry = (TabMapEntry) iter.next();
             if (item.equals(entry.getTabItem())) 
             {
                 TabItemInterface itemInterface = entry.getObject();
@@ -2835,9 +2843,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		
         // See which core objects to show
         //
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry entry : collection)
         {
-            TabMapEntry entry = (TabMapEntry) iter.next();
             if (item.equals(entry.getTabItem())) 
             {
                 // TabItemInterface itemInterface = entry.getObject();
@@ -4065,9 +4072,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         List<TabMapEntry> list = new ArrayList<TabMapEntry>();
         list.addAll(tabMap.values());
         
-        for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
+        for (TabMapEntry mapEntry : list)
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             TabItemInterface itemInterface = mapEntry.getObject();
             
             if (!itemInterface.canBeClosed())
@@ -4098,10 +4104,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
         if (exit) // we have asked about it all and we're still here.  Now close all the tabs, stop the running transformations
         {
-            for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
+            for (TabMapEntry mapEntry : list)
             {
-                TabMapEntry mapEntry = (TabMapEntry) iter.next();
-                
                 if (!mapEntry.getObject().canBeClosed())
                 {
                     // Unsaved transformation?
@@ -5250,10 +5254,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     private void markTabsChanged()
     {
-        Collection c = tabMap.values();
-        for (Iterator iter = c.iterator(); iter.hasNext();)
+        for (TabMapEntry entry : tabMap.values())
         {
-            TabMapEntry entry = (TabMapEntry) iter.next();
             if (entry.getTabItem().isDisposed()) continue;
             
             boolean changed = entry.getObject().hasContentChanged();
@@ -5367,10 +5369,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public TransGraph findTransGraphOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof TransGraph)
             {
                 TransGraph transGraph = (TransGraph) mapEntry.getObject();
@@ -5383,10 +5383,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public JobGraph findJobGraphOfJob(JobMeta jobMeta)
     {
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof JobGraph)
             {
                 JobGraph jobGraph = (JobGraph) mapEntry.getObject();
@@ -5399,10 +5397,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public TransLog findTransLogOfTransformation(TransMeta transMeta)
     {
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof TransLog)
             {
                 TransLog transLog = (TransLog) mapEntry.getObject();
@@ -5415,10 +5411,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public JobLog findJobLogOfJob(JobMeta jobMeta)
     {
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof JobLog)
             {
                 JobLog jobLog = (JobLog) mapEntry.getObject();
@@ -5433,10 +5427,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (transMeta==null) return null;
         
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof TransHistory)
             {
                 TransHistory transHistory = (TransHistory) mapEntry.getObject();
@@ -5451,10 +5443,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (jobMeta==null) return null;
         
         // Now loop over the entries in the tab-map
-        Collection collection = tabMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        for (TabMapEntry mapEntry : tabMap.values())
         {
-            TabMapEntry mapEntry = (TabMapEntry) iter.next();
             if (mapEntry.getObject() instanceof JobHistory)
             {
                 JobHistory jobHistory = (JobHistory) mapEntry.getObject();
@@ -6775,7 +6765,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         {
             try
             {
-                List repDBs = rep.getDatabases();
+                List<DatabaseMeta> repDBs = rep.getDatabases();
                 for (int i=0;i<repDBs.size();i++)
                 {
                     DatabaseMeta databaseMeta = (DatabaseMeta) repDBs.get(i);
@@ -7204,7 +7194,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 {
                     log.logDetailed(APP_NAME, Messages.getString("Spoon.Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
                     
-                    List lastUsedFiles = props.getLastUsedFiles();
+                    List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
                     
                     if (lastUsedFiles.size()>0)
                     {
@@ -7770,7 +7760,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             //
             TransMeta master = transSplitter.getMaster();
             SlaveServer masterServer = null;
-            List masterSteps = master.getTransHopSteps(false);
+            List<StepMeta> masterSteps = master.getTransHopSteps(false);
             if (masterSteps.size()>0) // If there is something that needs to be done on the master...
             {
                 masterServer = transSplitter.getMasterServer();
@@ -7964,10 +7954,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     public TabItem findTabItem(String tabItemText, int objectType)
     {
-        
-        for (Iterator iter = tabMap.values().iterator(); iter.hasNext();)
+        for (TabMapEntry entry : tabMap.values())
         {                       
-            TabMapEntry entry = (TabMapEntry) iter.next();
             if (entry.getTabItem().isDisposed()) continue;
             if (objectType == entry.getObjectType() && entry.getTabItem().getText().equalsIgnoreCase(tabItemText))
             {
@@ -8366,7 +8354,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
      * @return the transformation map
      */
-    public Map getTransformationMap()
+    public Map<String, TransMeta> getTransformationMap()
     {
         return transformationMap;
     }

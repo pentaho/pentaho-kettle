@@ -108,7 +108,7 @@ public class DBCache
 		}
 		else
 		{
-			Enumeration keys = cache.keys();
+			Enumeration<DBCacheEntry> keys = cache.keys();
 			while (keys.hasMoreElements())
 			{
 				DBCacheEntry entry = (DBCacheEntry)keys.nextElement();

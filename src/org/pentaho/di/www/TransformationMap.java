@@ -86,7 +86,7 @@ public class TransformationMap
     /**
      * @return the configurationMap
      */
-    public Map getConfigurationMap()
+    public Map<String, TransConfiguration> getConfigurationMap()
     {
         return configurationMap;
     }

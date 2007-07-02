@@ -19,7 +19,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -116,7 +115,7 @@ public class TableOutput extends BaseStep implements StepInterface
         String errorMessage = null;
         boolean rowIsSafe = false;
         int[] updateCounts = null;
-        List exceptionsList = null;
+        List<Exception> exceptionsList = null;
         boolean batchProblem = false;
         Object generatedKey = null;
         
@@ -326,7 +325,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		return outputRowData;
 	}
 	
-	private void processBatchException(String errorMessage, int[] updateCounts, List exceptionsList) throws KettleStepException
+	private void processBatchException(String errorMessage, int[] updateCounts, List<Exception> exceptionsList) throws KettleStepException
     {
         // There was an error with the commit
         // We should put all the failing rows out there...
@@ -430,10 +429,8 @@ public class TableOutput extends BaseStep implements StepInterface
 
 		try
 		{
-            Iterator preparedStatements = data.preparedStatements.values().iterator();
-            while (preparedStatements.hasNext())
+            for (PreparedStatement insertStatement : data.preparedStatements.values())
             {
-                PreparedStatement insertStatement = (PreparedStatement) preparedStatements.next();
                 data.db.insertFinished(insertStatement, data.batchMode);
             }
             for (int i=0;i<data.batchBuffer.size();i++)

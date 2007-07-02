@@ -14,7 +14,7 @@ public interface RowMetaInterface extends Cloneable
     /**
      * @return the list of value Metadata 
      */
-    public List getValueMetaList();
+    public List<ValueMetaInterface> getValueMetaList();
 
     /**
      * @param valueMetaList the list of valueMeta to set
@@ -23,7 +23,7 @@ public interface RowMetaInterface extends Cloneable
 
     /**
      * Check if a value is already present in this row with the same name
-     * @param meta the value to check for existance
+     * @param meta the value to check for existence
      * @return true if a value with the same name already exists in the row
      */
     public boolean exists(ValueMetaInterface meta);

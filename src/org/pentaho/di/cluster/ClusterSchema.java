@@ -2,7 +2,7 @@ package org.pentaho.di.cluster;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -446,7 +446,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}    

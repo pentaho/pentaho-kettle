@@ -21,10 +21,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -59,6 +57,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -77,9 +76,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.Messages;
 import org.pentaho.di.spoon.Spoon;
-import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.trans.dialog.TransDialog;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
@@ -103,7 +100,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         
     private static LogWriter         log = LogWriter.getInstance();
 
-    private List                     inputFiles;
+    // private List                inputFiles;
 
     private List<DatabaseMeta>       databases;
 
@@ -1876,9 +1873,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             ClusterSchema clusterSchema = getStep(i).getClusterSchema();
             if (clusterSchema!=null)
             {
-                for (Iterator iter = clusterSchema.getSlaveServers().iterator(); iter.hasNext();)
+                for (SlaveServer check : clusterSchema.getSlaveServers())
                 {
-                    SlaveServer check = (SlaveServer) iter.next();
                     if (check.equals(slaveServer))
                     {
                         return true;
@@ -3890,46 +3886,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /**
-     * Find a step with the ID in a given ArrayList of steps
-     *
-     * @param steps The ArrayList of steps
-     * @param id The ID of the step
-     * @return The step if it was found, null if nothing was found
-     * @deprecated please use StepMeta.findStep()
-     */
-    public static final StepMeta findStep(ArrayList steps, long id)
-    {
-        if (steps == null) return null;
-
-        for (int i = 0; i < steps.size(); i++)
-        {
-            StepMeta stepMeta = (StepMeta) steps.get(i);
-            if (stepMeta.getID() == id) return stepMeta;
-        }
-        return null;
-    }
-
-    /**
-     * Find a step with its name in a given ArrayList of steps
-     *
-     * @param steps The ArrayList of steps
-     * @param stepname The name of the step
-     * @return The step if it was found, null if nothing was found
-     * @deprecated please use StepMeta.findStep()
-     */
-    public static final StepMeta findStep(ArrayList steps, String stepname)
-    {
-        if (steps == null) return null;
-
-        for (int i = 0; i < steps.size(); i++)
-        {
-            StepMeta stepMeta = (StepMeta) steps.get(i);
-            if (stepMeta.getName().equalsIgnoreCase(stepname)) return stepMeta;
-        }
-        return null;
-    }
-
-    /**
      * Look in the transformation and see if we can find a step in a previous location starting somewhere.
      *
      * @param startStep The starting step
@@ -5114,6 +5070,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         return false;
     }
 
+    /*
     public List getInputFiles() {
         return inputFiles;
     }
@@ -5121,6 +5078,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     public void setInputFiles(List inputFiles) {
         this.inputFiles = inputFiles;
     }
+    */
 
     /**
      * Get a list of all the strings used in this transformation.
@@ -5177,7 +5135,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         return stringList;
     }
 
-    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
+    public List<StringSearchResult> getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
     {
     	return getStringList(searchSteps, searchDatabases, searchNotes, false);
     }    
@@ -5667,7 +5625,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}        

@@ -33,7 +33,7 @@ public class GlobalMessages
     
     public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol", "Fran\u00E7ais", "Deutsch", "Portuguese (Brazil)" };
     
-    protected static Map getLocales()
+    protected static Map<String, ResourceBundle> getLocales()
     {
         return locales;
     }

@@ -224,10 +224,8 @@ public class HopTest extends TestCase
         
         // add rows
         List<RowMetaAndData> inputList = createData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        for (RowMetaAndData rm : inputList)
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp.finished();
@@ -335,10 +333,8 @@ public class HopTest extends TestCase
         int counter = 1;
         
         List<RowMetaAndData> inputList = createData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        for ( RowMetaAndData rm : inputList )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         	if ( counter % 2 == 0 )
         	{
@@ -463,10 +459,8 @@ public class HopTest extends TestCase
         int counter = 1;
         
         List<RowMetaAndData> inputList = createData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        for ( RowMetaAndData rm : inputList )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         	if ( counter % 2 == 0 )
         	{

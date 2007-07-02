@@ -18,7 +18,6 @@ package org.pentaho.di.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -95,10 +94,9 @@ public class Result implements Cloneable
 			if (resultFiles!=null)
 			{
 				Map<String, ResultFile> clonedFiles = new Hashtable<String, ResultFile>();
-                Collection files = resultFiles.values();
-                for (Iterator iter = files.iterator(); iter.hasNext();)
+                Collection<ResultFile> files = resultFiles.values();
+                for (ResultFile file : files)
                 {
-                    ResultFile file = (ResultFile) iter.next();
                     clonedFiles.put(file.getFile().toString(), file.clone());
                 }
 				result.setResultFiles(clonedFiles);

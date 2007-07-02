@@ -68,7 +68,7 @@ public class PreviewRowsDialog extends Dialog
     private Listener lsLog;
 
     private Shell shell;
-    private List buffer;
+    private List<Object[]> buffer;
     private Props props;
     private String title, message;
 
@@ -81,12 +81,12 @@ public class PreviewRowsDialog extends Dialog
     
     private VariableSpace variables;
 
-    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer)
+    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List<Object[]> rowBuffer)
     {
         this(parent, space, style, stepName, rowMeta, rowBuffer, null);
     }
 
-    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List rowBuffer, String loggingText)
+    public PreviewRowsDialog(Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta, List<Object[]> rowBuffer, String loggingText)
     {
         super(parent, style);
         this.stepname = stepName;

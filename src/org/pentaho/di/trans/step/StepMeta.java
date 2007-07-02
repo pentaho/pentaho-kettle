@@ -15,13 +15,14 @@
  
 package org.pentaho.di.trans.step;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -33,6 +34,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -147,10 +149,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	 * 
 	 * @param stepnode The XML step node.
 	 * @param databases A list of databases
-	 * @param counters A hashtable with all defined counters.
+	 * @param counters A map with all defined counters.
 	 * 
 	 */
-	public StepMeta(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleXMLException
+	public StepMeta(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
 	{
         this();
         LogWriter log = LogWriter.getInstance();
@@ -217,12 +219,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * Resolves the name of the cluster loaded from XML/Repository to the correct clusterSchema object
      * @param clusterSchemas The list of clusterSchemas to reference.
      */
-    public void setClusterSchemaAfterLoading(List clusterSchemas)
+    public void setClusterSchemaAfterLoading(List<ClusterSchema> clusterSchemas)
     {
         if (clusterSchemaName==null) return;
-        for (int i=0;i<clusterSchemas.size();i++)
+        for (ClusterSchema look : clusterSchemas)
         {
-            ClusterSchema look = (ClusterSchema) clusterSchemas.get(i);
             if (look.getName().equals(clusterSchemaName)) clusterSchema=look;
         }
     }
@@ -497,7 +498,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * @param partitionSchemas
      * @throws KettleException
      */
-	public StepMeta(Repository rep, long id_step, List<DatabaseMeta> databases, Hashtable counters, List partitionSchemas) throws KettleException
+	public StepMeta(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters, List<PartitionSchema> partitionSchemas) throws KettleException
 	{
         this();
         StepLoader steploader = StepLoader.getInstance();
@@ -712,14 +713,15 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * @param id The ID of the step
      * @return The step if it was found, null if nothing was found
      */
-    public static final StepMeta findStep(List steps, long id)
+    public static final StepMeta findStep(List<StepMeta> steps, long id)
     {
         if (steps == null) return null;
 
-        for (int i = 0; i < steps.size(); i++)
+        for (StepMeta stepMeta : steps)
         {
-            StepMeta stepMeta = (StepMeta) steps.get(i);
-            if (stepMeta.getID() == id) return stepMeta;
+            if (stepMeta.getID() == id) { 
+            	return stepMeta;
+            }
         }
         return null;
     }
@@ -731,13 +733,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * @param stepname The name of the step
      * @return The step if it was found, null if nothing was found
      */
-    public static final StepMeta findStep(List steps, String stepname)
+    public static final StepMeta findStep(List<StepMeta> steps, String stepname)
     {
         if (steps == null) return null;
 
-        for (int i = 0; i < steps.size(); i++)
+        for (StepMeta stepMeta : steps)
         {
-            StepMeta stepMeta = (StepMeta) steps.get(i);
             if (stepMeta.getName().equalsIgnoreCase(stepname)) return stepMeta;
         }
         return null;

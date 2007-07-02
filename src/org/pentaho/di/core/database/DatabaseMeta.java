@@ -481,7 +481,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             // OK, now get a list of all the attributes set on the database connection...
             // 
             Properties attributes = getAttributes();
-            Enumeration keys = getAttributes().keys();
+            Enumeration<Object> keys = getAttributes().keys();
             while (keys.hasMoreElements())
             {
                 String code = (String) keys.nextElement();
@@ -986,10 +986,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             String optionSeparator = getExtraOptionSeparator();
             String valueSeparator = getExtraOptionValueSeparator();
             
-            Map map = getExtraOptions();
+            Map<String, String> map = getExtraOptions();
             if (map.size()>0)
             {
-                Iterator iterator = map.keySet().iterator();
+                Iterator<String> iterator = map.keySet().iterator();
                 boolean first=true;
                 while (iterator.hasNext())
                 {
@@ -999,7 +999,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
                     {
                         String typeCode = typedParameter.substring(0,dotIndex);
                         String parameter = typedParameter.substring(dotIndex+1);
-                        String value = (String) map.get(typedParameter);
+                        String value = map.get(typedParameter);
                         
                         // Only add to the URL if it's the same database type code...
                         //
@@ -1033,10 +1033,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     {
         Properties properties =new Properties();
         
-        Map map = getExtraOptions();
+        Map<String, String> map = getExtraOptions();
         if (map.size()>0)
         {
-            Iterator iterator = map.keySet().iterator();
+            Iterator<String> iterator = map.keySet().iterator();
             while (iterator.hasNext())
             {
                 String typedParameter=(String)iterator.next();
@@ -1308,7 +1308,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 	{
 		if (allDatabaseInterfaces!=null) return allDatabaseInterfaces;
 		
-		Class ic[] = DatabaseInterface.implementingClasses;
+		Class<?> ic[] = DatabaseInterface.implementingClasses;
 		allDatabaseInterfaces = new DatabaseInterface[ic.length];
 		for (int i=0;i<ic.length;i++)
 		{
@@ -1993,7 +1993,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     /**
      * @return a map of all the extra URL options you want to set.
      */
-    public Map getExtraOptions()
+    public Map<String, String> getExtraOptions()
     {
         return databaseInterface.getExtraOptions();
     }
@@ -2224,13 +2224,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     }
     
     /**
-     * Find a database with a certain name in an arraylist of databases.
+     * Find a database with a certain name in an ArrayList of databases.
      * @param databases The ArrayList of databases
      * @param dbname The name of the database connection
      * @param exclude the name of the database connection to exclude from the search
      * @return The database object if one was found, null otherwise.
      */
-    public static final DatabaseMeta findDatabase(List databases, String dbname, String exclude)
+    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, String dbname, String exclude)
     {
         if (databases == null)
             return null;
@@ -2250,16 +2250,16 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * @param id The id of the database connection
      * @return The database object if one was found, null otherwise.
      */
-    public static final DatabaseMeta findDatabase(List databases, long id)
+    public static final DatabaseMeta findDatabase(List<DatabaseMeta> databases, long id)
     {
         if (databases == null)
             return null;
 
-        for (int i = 0; i < databases.size(); i++)
+        for (DatabaseMeta ci : databases)
         {
-            DatabaseMeta ci = (DatabaseMeta) databases.get(i);
-            if (ci.getID() == id)
+            if (ci.getID() == id) {
                 return ci;
+            }
         }
         return null;
     }
@@ -2314,7 +2314,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}    

@@ -100,7 +100,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		wTable.setFields(fields);
 	}
 	
-	public Vector getFields()
+	public Vector<TextFileInputFieldInterface> getFields()
 	{
 		return wTable.getFields();
 	}

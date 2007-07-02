@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.dbcp.ConnectionFactory;
@@ -21,27 +20,6 @@ public class ConnectionPoolUtil
     
     public static final int defaultInitialNrOfConnections=5;
     public static final int defaultMaximumNrOfConnections=10;
-    
-    /**
-     * @deprecated as it doesn't take the partitionId into account as it should.
-     * @param dbDatabaseMeta
-     * @param initialSize
-     * @param maxiumumSize
-     * @throws Exception
-     */
-    public static void createPoolingDriver(List dbDatabaseMeta, int initialSize, int maxiumumSize) throws Exception
-    {
-        //TODO:how to check if a given dbMeta has been processed
-        
-        for (Iterator iter = dbDatabaseMeta.iterator(); iter.hasNext();)
-        {
-            DatabaseMeta dbMeta = (DatabaseMeta) iter.next();
-            if(isPoolRegiested(dbMeta, null))
-                continue;
-            
-            createPool(dbMeta, null, initialSize, maxiumumSize);
-        }       
-    }
         
     private static boolean isPoolRegiested(DatabaseMeta dbMeta, String partitionId) throws KettleDatabaseException
     {
@@ -109,7 +87,7 @@ public class ConnectionPoolUtil
         
         // Now, replace the environment variables in there...
         Properties properties = new Properties();
-        Iterator iterator = originalProperties.keySet().iterator();
+        Iterator<Object> iterator = originalProperties.keySet().iterator();
         while (iterator.hasNext())
         {
             String key = (String) iterator.next();

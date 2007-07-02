@@ -23,12 +23,12 @@ public class FileInputList
     
     private static final String YES                = "Y";
 
-    public static String getRequiredFilesDescription(List nonExistantFiles)
+    public static String getRequiredFilesDescription(List<FileObject> nonExistantFiles)
     {
         StringBuffer buffer = new StringBuffer();
-        for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
+        for (Iterator<FileObject> iter = nonExistantFiles.iterator(); iter.hasNext();)
         {
-            FileObject file = (FileObject) iter.next();
+            FileObject file = iter.next();
             buffer.append(file.getName().getURI());
             buffer.append(Const.CR);
         }
@@ -52,11 +52,11 @@ public class FileInputList
     public static String[] createFilePathList(VariableSpace space, String[] fileName, String[] fileMask, String[] fileRequired,
         boolean[] includeSubdirs)
     {
-        List fileList = createFileList(space, fileName, fileMask, fileRequired, includeSubdirs).getFiles();
+    	List<FileObject> fileList = createFileList( space, fileName, fileMask, fileRequired, includeSubdirs ).getFiles();
         String[] filePaths = new String[fileList.size()];
         for (int i = 0; i < filePaths.length; i++)
         {
-            filePaths[i] = ((FileObject) fileList.get(i)).getName().getURI();
+            filePaths[i] = fileList.get(i).getName().getURI();
             // filePaths[i] = KettleVFS.getFilename((FileObject) fileList.get(i));
         }
         return filePaths;
@@ -183,161 +183,8 @@ public class FileInputList
 
         return fileInputList;
     }
-    
-    /* 
-    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired, boolean[] includeSubdirs)
-    {
-        FileInputList fileInputList = new FileInputList();
-
-        // Replace possible environment variables...
-        final String realfile[] = StringUtil.environmentSubstitute(fileName);
-        final String realmask[] = StringUtil.environmentSubstitute(fileMask);
-
-        for (int i = 0; i < realfile.length; i++)
-        {
-            final String onefile = realfile[i];
-            final String onemask = realmask[i];
-            final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
-            boolean subdirs = includeSubdirs[i];
-            // System.out.println("Checking file ["+onefile+"] mask
-            // ["+onemask+"]");
-            if (onefile == null) continue;
-
-            if (!Const.isEmpty(onemask))
-            // If wildcard is set we assume it's a directory
-            {
-                File file = new File(onefile);
-                try
-                {
-                    // Find all file names that match the wildcard in this directory
-                    String[] fileNames = file.list(new FilenameFilter()
-                    {
-                        public boolean accept(File dir, String name)
-                        {
-                            return Pattern.matches(onemask, name);
-                        }
-                    });
-                    if (subdirs)
-                    {
-                        Vector matchingFilenames = new Vector();
-                        appendToVector(matchingFilenames, fileNames, "");
-                        findMatchingFiles(file, onemask, matchingFilenames, "");
-                        fileNames = new String[matchingFilenames.size()];
-                        matchingFilenames.copyInto(fileNames);
-                    }
-
-                    if (fileNames != null) 
-                    {
-                        for (int j = 0; j < fileNames.length; j++)
-                        {
-                            File localFile = new File(file, fileNames[j]);
-                            if (!localFile.isDirectory() && localFile.isFile()) fileInputList.addFile(localFile);
-                        }
-                    }
-                    
-                    if (Const.isEmpty(fileNames))
-                    {
-                        if (onerequired) fileInputList.addNonAccessibleFile(file);
-                    }
-                }
-                catch (Exception e)
-                {
-                    LogWriter.getInstance().logError("FileInputList", Const.getStackTracker(e));
-                }
-            }
-            else
-            // A normal file...
-            {
-                File file = new File(onefile);
-                if (file.exists())
-                {
-                    if (file.canRead() && file.isFile())
-                    {
-                        if (file.isFile()) fileInputList.addFile(file);
-                    }
-                    else
-                    {
-                        if (onerequired) fileInputList.addNonAccessibleFile(file);
-                    }
-                }
-                else
-                {
-                    if (onerequired) fileInputList.addNonExistantFile(file);
-                }
-            }
-        }
-
-        // Sort the list: quicksort
-        fileInputList.sortFiles();
-
-        // OK, return the list in filelist...
-        // files = (String[]) filelist.toArray(new String[filelist.size()]);
-
-        return fileInputList;
-    }
-    */
-    
-    
-    /*
-     * Copies all elements of a String array into a Vector
-     * @param sArray The string array
-     * @param sPrefix the prefix to put before all strings to be copied to the vector
-     * @return The Vector.
-    private static void appendToVector(Vector v, String[] sArray, String sPrefix)
-    {
-        if (sArray == null || sArray.length == 0)
-            return;
-
-        for (int i = 0; i < sArray.length; i++)
-            v.add(sPrefix + sArray[i]);
-    }
-     */
-
-    /*
-    private static void appendToVector(Vector v, String[] sArray, String sPrefix)
-    {
-        if (sArray == null || sArray.length == 0)
-            return;
-
-        for (int i = 0; i < sArray.length; i++)
-            v.add(sPrefix + sArray[i]);
-    }
-    */
-
-    
-    /*
-     * 
-     * @param dir
-     * @param onemask
-     * @param matchingFileNames
-     * @param sPrefix
-    private static void findMatchingFiles(File dir, final String onemask, Vector matchingFileNames, String sPrefix)
-    {
-        if (!Const.isEmpty(sPrefix))
-        {
-            String[] fileNames = dir.list(new FilenameFilter()
-            {
-                public boolean accept(File dir, String name)
-                {
-                    return Pattern.matches(onemask, name);
-                }
-            });
-            appendToVector(matchingFileNames, fileNames, sPrefix);
-        }
         
-        String[] files = dir.list();
-        for (int i = 0; i < files.length; i++)
-        {
-            File f = new File(dir.getAbsolutePath() + Const.FILE_SEPARATOR + files[i]);
-            if (f.isDirectory())
-            {
-                findMatchingFiles(f, onemask, matchingFileNames, sPrefix + files[i] + Const.FILE_SEPARATOR);
-            }
-        }
-    }
-     */
-    
-    public List getFiles()
+    public List<FileObject> getFiles()
     {
         return files;
     }
@@ -352,12 +199,12 @@ public class FileInputList
         return fileStrings;
     }
 
-    public List getNonAccessibleFiles()
+    public List<FileObject> getNonAccessibleFiles()
     {
         return nonAccessibleFiles;
     }
 
-    public List getNonExistantFiles()
+    public List<FileObject> getNonExistantFiles()
     {
         return nonExistantFiles;
     }

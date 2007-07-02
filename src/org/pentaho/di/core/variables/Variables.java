@@ -17,9 +17,9 @@
 package org.pentaho.di.core.variables;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import org.pentaho.di.core.util.StringUtil;
 
 
@@ -30,14 +30,14 @@ import org.pentaho.di.core.util.StringUtil;
  */
 public class Variables implements VariableSpace 
 {
-    private Properties properties;
+    private Map<String, String> properties;
     private VariableSpace parent;
-    private Properties injection;
+    private Map<String, String> injection;
     private boolean initialized;
     
     public Variables()
     {
-        properties  = new Properties();
+        properties  = new Hashtable<String,String>();
         parent      = null;
         injection   = null;
         initialized = false;
@@ -51,8 +51,7 @@ public class Variables implements VariableSpace
 			String[] variableNames = space.listVariables();
 			for ( int idx = 0; idx < variableNames.length; idx++ )
 			{
-				properties.setProperty(variableNames[idx], 
-						               space.getVariable(variableNames[idx]));
+				properties.put(variableNames[idx], space.getVariable(variableNames[idx]));
 			}		
 		}
 	}
@@ -62,18 +61,23 @@ public class Variables implements VariableSpace
 	}
 
 	public String getVariable(String variableName, String defaultValue) {
-        String var = properties.getProperty(variableName, defaultValue);
+        String var = properties.get(variableName);
+        if (var==null) return defaultValue;
         return var;
 	}
 
 	public String getVariable(String variableName) {
-		return properties.getProperty(variableName);
+		return properties.get(variableName);
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) {
 	   this.parent = parent;
 	   
-	   properties.putAll(System.getProperties());
+	   // Add all the system properties...
+	   for (Object key : System.getProperties().keySet()) {
+		   properties.put((String)key, System.getProperties().getProperty((String)key));
+	   }
+	   
 	   if ( parent != null )
 	   {
            copyVariablesFrom(parent);
@@ -87,21 +91,19 @@ public class Variables implements VariableSpace
 	}
 
 	public String[] listVariables() {
-		Enumeration en = properties.propertyNames();
-		
 		List<String> list = new ArrayList<String>();
-		while ( en.hasMoreElements() )
+		for ( String name : properties.keySet() )
 		{
-			list.add((String)en.nextElement());
+			list.add(name);
 		}
-		return (String[])list.toArray(new String[0]);
+		return (String[])list.toArray(new String[list.size()]);
 	}
 
 	public void setVariable(String variableName, String variableValue) 
 	{
         if (variableValue!=null)
         {
-            properties.setProperty(variableName, variableValue);
+            properties.put(variableName, variableValue);
         }
         else
         {
@@ -131,7 +133,7 @@ public class Variables implements VariableSpace
 		// implementation
 	}
 
-	public void injectVariables(Properties prop) {
+	public void injectVariables(Map<String, String> prop) {
 		if ( initialized )
 		{
 		    // variables are already initialized
@@ -145,7 +147,8 @@ public class Variables implements VariableSpace
 		{
 			// We have our own personal copy, so changes afterwards
 			// to the input properties don't affect us.
-		    injection = (Properties)prop.clone();
+			injection = new Hashtable<String, String>();
+			injection.putAll(prop);
 		}	
 	}
 	

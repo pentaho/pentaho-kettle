@@ -118,8 +118,8 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	}
 
 	public void close() throws KettleException {
-		for (Iterator iter = writers.values().iterator(); iter.hasNext();) {
-			close((Writer) iter.next());
+		for (Iterator<Writer> iter = writers.values().iterator(); iter.hasNext();) {
+			close( iter.next() );
 		}
 		writers = new HashMap<Object,Writer>();
 

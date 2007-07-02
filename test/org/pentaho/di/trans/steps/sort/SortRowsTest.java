@@ -16,7 +16,6 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -102,16 +101,12 @@ public class SortRowsTest extends TestCase
 	/**
 	 *  Check the list, the list has to be sorted. 
 	 */
-	public void checkRows(List rows, boolean ascending) throws Exception
+	public void checkRows(List<RowMetaAndData> rows, boolean ascending) throws Exception
 	{
 		String prev_key1 = null, prev_key2 = null;
 		int idx = 0;
 		
-	    Iterator it = rows.iterator();
-        while ( it.hasNext() )
-        {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
-        	        	
+        for ( RowMetaAndData rm : rows ) {
         	Object[] r1 = rm.getData();
         	RowMetaInterface rmi = rm.getRowMeta();
 		
@@ -234,18 +229,16 @@ public class SortRowsTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createIntegerData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        List<RowMetaAndData> inputList = createIntegerData();
+        for ( RowMetaAndData rm : inputList )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp.finished();
  
         trans.waitUntilFinished();   
                                      
-        List resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
         checkRows(resultRows, true);
     }
     
@@ -322,18 +315,16 @@ public class SortRowsTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createIntegerData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        List<RowMetaAndData> inputList = createIntegerData();
+        for ( RowMetaAndData rm : inputList )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp.finished();
  
         trans.waitUntilFinished();   
                                      
-        List resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
         checkRows(resultRows, false);
     }        
 }

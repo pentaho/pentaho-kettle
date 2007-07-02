@@ -163,9 +163,9 @@ public class DatabaseDialog extends Dialog
 
     private String         previousDatabaseType;
 
-    private java.util.List<DatabaseMeta>      databases;
+    private java.util.List<DatabaseMeta> databases;
 
-    private Map            extraOptions;
+    private Map<String, String> extraOptions;
 
     private int            middle;
 
@@ -698,7 +698,7 @@ public class DatabaseDialog extends Dialog
                 new ColumnInfo(Messages.getString("DatabaseDialog.column.PoolValue"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
         };
         colinfo[2].setUsingVariables(true);
-        final ArrayList parameters = DatabaseConnectionPoolParameter.getRowList(
+        final java.util.List<RowMetaAndData> parameters = DatabaseConnectionPoolParameter.getRowList(
                 BaseDatabaseMeta.poolingParameters,
                 Messages.getString("DatabaseDialog.column.PoolParameter"), 
                 Messages.getString("DatabaseDialog.column.PoolDefault"), 
@@ -1370,7 +1370,7 @@ public class DatabaseDialog extends Dialog
     private void getOptionsData()
     {
         // The extra options as well...
-        Iterator keys = extraOptions.keySet().iterator();
+        Iterator<String> keys = extraOptions.keySet().iterator();
         while (keys.hasNext())
         {
             String parameter = (String) keys.next();
@@ -1403,7 +1403,7 @@ public class DatabaseDialog extends Dialog
     {
         // The extra options as well...
         Properties properties = databaseMeta.getConnectionPoolingProperties();
-        Iterator keys = properties.keySet().iterator();
+        Iterator<Object> keys = properties.keySet().iterator();
         while (keys.hasNext())
         {
             String parameter = (String) keys.next();

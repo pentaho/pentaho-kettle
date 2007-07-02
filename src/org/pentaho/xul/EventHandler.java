@@ -97,7 +97,7 @@ public class EventHandler {
 	}
 	
 	public void addMenuListener( String id, Object listener, String methodName ) {
-		Class listenerClass = listener.getClass();
+		Class<?> listenerClass = listener.getClass();
 		addMenuListener(id, listener, listenerClass, methodName);
 	}	
 	

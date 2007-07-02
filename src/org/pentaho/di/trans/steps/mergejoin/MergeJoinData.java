@@ -16,7 +16,7 @@
 
 package org.pentaho.di.trans.steps.mergejoin;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -34,7 +34,7 @@ public class MergeJoinData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface oneMeta, twoMeta;
 	public RowMetaInterface oneTwoMeta; //just for speed: oneMeta+twoMeta
 	public Object[] one_dummy, two_dummy;
-    public ArrayList<Object[]> ones, twos;
+    public List<Object[]> ones, twos;
     public Object[] one_next, two_next;
     public boolean one_optional, two_optional;
     public int[] keyNrs1;

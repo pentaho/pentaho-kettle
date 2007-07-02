@@ -237,7 +237,7 @@ public interface JobEntryInterface
 			Messages.getString("JobEntry.XSDValidator.Tooltip"),
  		};
 	
-	public final static Class type_classname[] = 
+	public final static Class<?> type_classname[] = 
 		{
 	        null,
 	        JobEntryTrans.class,

@@ -424,8 +424,9 @@ public class Props implements Cloneable
 
 	public void storeScreens()
 	{
-		// Add screens hastable to properties..
-		Enumeration keys = screens.keys();
+		// Add screens hash table to properties..
+		// 
+		Enumeration<String> keys = screens.keys();
 		int nr=1;
 		while (keys.hasMoreElements())
 		{
@@ -562,7 +563,7 @@ public class Props implements Cloneable
         }
     }
     
-    public List getLastUsedFiles()
+    public List<LastUsedFile> getLastUsedFiles()
     {
         return lastUsedFiles;
     }
@@ -1105,7 +1106,7 @@ public class Props implements Cloneable
 
     public void clearCustomParameters()
     {
-        Enumeration keys = properties.keys();
+        Enumeration<Object> keys = properties.keys();
         while (keys.hasMoreElements())
         {
             String key = (String) keys.nextElement();
@@ -1330,9 +1331,9 @@ public class Props implements Cloneable
     
     /**
      * Get the list of recently used step
-     * @return a list of strings: the plugin IDs
+     * @return a list of strings: the plug-in IDs
      */
-    public List getPluginHistory()
+    public List<ObjectUsageCount> getPluginHistory()
     {
         return pluginHistory;
     }

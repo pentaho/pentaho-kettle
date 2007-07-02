@@ -2,7 +2,7 @@ package org.pentaho.di.core;
 
 import java.util.Comparator;
 
-public class ObjectUsageCount implements Comparator, Comparable<ObjectUsageCount>
+public class ObjectUsageCount implements Comparator<ObjectUsageCount>, Comparable<ObjectUsageCount>
 {
     private String objectName;
 
@@ -30,11 +30,8 @@ public class ObjectUsageCount implements Comparator, Comparable<ObjectUsageCount
         return new ObjectUsageCount(string, 1);
     }
     
-    public int compare(Object o1, Object o2)
+    public int compare(ObjectUsageCount count1, ObjectUsageCount count2)
     {
-        ObjectUsageCount count1 = (ObjectUsageCount) o1;
-        ObjectUsageCount count2 = (ObjectUsageCount) o2;
-        
         return count1.compareTo(count2);
     }
     

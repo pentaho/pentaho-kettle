@@ -27,8 +27,8 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.net.URL;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.swt.widgets.Shell;
@@ -40,6 +40,8 @@ import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -48,7 +50,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.KettleURLClassLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -200,7 +201,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     }
     
     
-	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
 		readData(stepnode);
@@ -357,7 +358,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException
     {
 		try
 		{
@@ -805,7 +806,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				String strClassName =XMLHandler.getTagAttribute(fnode, "classname");
 				String strJSName = XMLHandler.getTagAttribute(fnode, "js_name");
 				
-				Class addClass = LoadAdditionalClass(strActPath + "/plugins/steps/ScriptValues_mod/"+ strJarName,strClassName);
+				Class<?> addClass = LoadAdditionalClass(strActPath + "/plugins/steps/ScriptValues_mod/"+ strJarName,strClassName);
 				Object addObject = addClass.newInstance();
 				additionalClasses[i] = new ScriptValuesAddClasses(addClass, addObject, strJSName);
 			}
@@ -814,13 +815,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 	}
 	
-	private static Class LoadAdditionalClass(String strJar, String strClassName) throws KettleException{
+	private static Class<?> LoadAdditionalClass(String strJar, String strClassName) throws KettleException{
 		try{
 			Thread t = Thread.currentThread();
 			ClassLoader cl = t.getContextClassLoader();
 			URL u = new URL("jar:file:"+strJar+"!/");
 			KettleURLClassLoader kl = new KettleURLClassLoader(new URL[]{u}, cl);
-			Class toRun = kl.loadClass(strClassName);
+			Class<?> toRun = kl.loadClass(strClassName);
 			return toRun;
 		}catch(Exception e){
 			throw new KettleException(Messages.getString("ScriptValuesMetaMod.Exception.UnableToLoadAdditionalClass"), e); //$NON-NLS-1$

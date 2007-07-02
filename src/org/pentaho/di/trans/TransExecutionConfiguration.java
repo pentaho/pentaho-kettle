@@ -255,7 +255,7 @@ public class TransExecutionConfiguration implements Cloneable
         sp.putAll(kettleVariables.getProperties());
         sp.putAll(System.getProperties());
  
-        List vars = transMeta.getUsedVariables();
+        List<String> vars = transMeta.getUsedVariables();
         if (vars!=null && vars.size()>0)
         {
             RowMetaInterface rowMeta = new RowMeta();

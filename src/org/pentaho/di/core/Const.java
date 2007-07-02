@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -810,12 +809,11 @@ public class Const
         String lastHostname = "localhost";
         try
         {
-            Enumeration en = NetworkInterface.getNetworkInterfaces();
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             while (en.hasMoreElements())
             {
-                NetworkInterface nwi = (NetworkInterface) en.nextElement();
-                //System.out.println("nwi : "+nwi.getName()+" ("+nwi.toString()+")");
-                Enumeration ip = nwi.getInetAddresses();
+                NetworkInterface nwi = en.nextElement();
+                Enumeration<InetAddress> ip = nwi.getInetAddresses();
 
                 while (ip.hasMoreElements())
                 {
@@ -847,11 +845,11 @@ public class Const
 	{
 		try
 		{
-			Enumeration enumInterfaces = NetworkInterface.getNetworkInterfaces();
+			Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
 			while (enumInterfaces.hasMoreElements())
 			{
 				NetworkInterface nwi = (NetworkInterface) enumInterfaces.nextElement();
-				Enumeration ip = nwi.getInetAddresses();
+				Enumeration<InetAddress> ip = nwi.getInetAddresses();
 				while (ip.hasMoreElements())
 				{
 					InetAddress in = (InetAddress) ip.nextElement();
@@ -1168,84 +1166,19 @@ public class Const
 	{
 		return getKettleDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
 	}
-
-	/**
-	 * Find a database with a certain name in an arraylist of databases.
-	 * @param databases The ArrayList of databases
-	 * @param dbname The name of the database connection
-	 * @return The database object if one was found, null otherwise.
-     * @deprecated please use DatabaseMeta.findDatabase()
-	 */
-	public static final DatabaseMeta findDatabase(List databases, String dbname)
-	{
-		if (databases == null)
-			return null;
-
-		for (int i = 0; i < databases.size(); i++)
-		{
-			DatabaseMeta ci = (DatabaseMeta) databases.get(i);
-			if (ci.getName().equalsIgnoreCase(dbname))
-				return ci;
-		}
-		return null;
-	}
-    
-    /**
-     * Find a database with a certain name in an arraylist of databases.
-     * @param databases The ArrayList of databases
-     * @param dbname The name of the database connection
-     * @param exclude the name of the database connection to exclude from the search
-     * @return The database object if one was found, null otherwise.
-     * @deprecated please use DatabaseMeta.findDatabase()
-     */
-    public static final DatabaseMeta findDatabase(List databases, String dbname, String exclude)
-    {
-        if (databases == null)
-            return null;
-
-        for (int i = 0; i < databases.size(); i++)
-        {
-            DatabaseMeta ci = (DatabaseMeta) databases.get(i);
-            if (ci.getName().equalsIgnoreCase(dbname))
-                return ci;
-        }
-        return null;
-    }
-
-	/**
-	 * Find a database with a certain ID in an arraylist of databases.
-	 * @param databases The ArrayList of databases
-	 * @param id The id of the database connection
-	 * @return The database object if one was found, null otherwise.
-     * @deprecated please use DatabaseMeta.findDatabase()
-	 */
-	public static final DatabaseMeta findDatabase(List databases, long id)
-	{
-		if (databases == null)
-			return null;
-
-		for (int i = 0; i < databases.size(); i++)
-		{
-			DatabaseMeta ci = (DatabaseMeta) databases.get(i);
-			if (ci.getID() == id)
-				return ci;
-		}
-		return null;
-	}
+   
 
 	/**
 	 * Select the SAP R/3 databases in the List of databases.
 	 * @param databases All the databases
 	 * @return SAP R/3 databases in a List of databases.
 	 */
-	public static final List<DatabaseMeta> selectSAPR3Databases(List databases)
+	public static final List<DatabaseMeta> selectSAPR3Databases(List<DatabaseMeta> databases)
 	{
 		List<DatabaseMeta> sap = new ArrayList<DatabaseMeta>();
 
-		Iterator it = databases.iterator();
-		while (it.hasNext())
+		for (DatabaseMeta db : databases)
 		{
-			DatabaseMeta db = (DatabaseMeta) it.next();
 			if (db.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
 			{
 				sap.add(db);
@@ -1253,69 +1186,6 @@ public class Const
 		}
 
 		return sap;
-	}
-
-	/**
-	 * Select the SAP R/3 databases in the List of databases.
-	 * @param databases All the databases
-	 * @return SAP R/3 databases in a List of databases.
-	 * @deprecated
-	 */
-	public static final ArrayList selectSAPR3Databases(ArrayList databases)
-	{
-		return (ArrayList)selectSAPR3Databases((List)databases);
-	}
-
-	/**
-	 * Gets the value of a commandline option 
-	 * @param args The command line arguments
-	 * @param option The option to look for
-	 * @return The value of the commandline option specified.
-	 * @deprecated
-	 */
-	public static final String getCommandlineOption(List args, String option)
-	{
-		String optionStart[] = new String[] { "-", "/" };
-		String optionDelim[] = new String[] { "=", ":" };
-
-		for (int s = 0; s < optionStart.length; s++)
-		{
-			for (int d = 0; d < optionDelim.length; d++)
-			{
-				String optstr = optionStart[s] + option + optionDelim[d];
-				String retval = searchCommandLineOption(args, optstr);
-				if (retval != null)
-					return retval;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Searches a command line option with a certain prefix in a list of command line options
-	 * @param args The list to search
-	 * @param prefix The prefix to look for
-	 * @return The content.
-	 */
-	private static final String searchCommandLineOption(List args, String prefix)
-	{
-		String retval = null;
-
-		for (int i = args.size() - 1; i >= 0; i--)
-		{
-			String arg = (String) args.get(i);
-			if (arg != null && arg.toUpperCase().startsWith(prefix.toUpperCase()))
-			{
-				retval = arg.substring(prefix.length());
-
-				// remove this options from the arguments list...
-				// This is why we go from back to front...
-				args.remove(i);
-
-				// System.out.println("Option ["+prefix+"] found: ["+retval+"]");
-			}
-		}
-		return retval;
 	}
 
 	/**

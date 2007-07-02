@@ -344,6 +344,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		this.password = password;
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -492,11 +493,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 								File filename_message = new File(getRealOutputDirectory(),	localfilename_message);
 								OutputStream os_filename = new FileOutputStream(filename_message);
-								Enumeration enums_POP = msg_POP.getAllHeaders();
+								Enumeration<Header> enums_POP =  msg_POP.getAllHeaders();
 								while (enums_POP.hasMoreElements()) 
 
 								{
-									Header header_POP = (Header) enums_POP.nextElement();
+									Header header_POP = enums_POP.nextElement();
 									os_filename.write(new StringBuffer(header_POP.getName())
 										.append(": ").append(header_POP.getValue())
 										.append("\r\n").toString().getBytes());

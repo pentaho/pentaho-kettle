@@ -16,7 +16,7 @@
 package org.pentaho.di.job.entry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultSourceInterface;
@@ -419,7 +419,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 		variables = space;		
 	}	        
 	
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}

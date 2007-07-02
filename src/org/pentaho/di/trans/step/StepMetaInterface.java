@@ -15,11 +15,12 @@
  
 package org.pentaho.di.trans.step;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -30,7 +31,6 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -76,7 +76,7 @@ public interface StepMetaInterface
 	 * @param counters Counters to reference.
 	 * @throws KettleXMLException When an unexpected XML error occurred. (malformed etc.)
 	 */
-	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleXMLException;
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException;
 
 	/**
 	 * Save the steps data into a Kettle repository
@@ -95,7 +95,7 @@ public interface StepMetaInterface
 	 * @param counters The counters to reference
 	 * @throws KettleException When an unexpected error occurred (database, network, etc)
 	 */
-	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters) throws KettleException;
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException;
     
 	/**
 	 * Checks the settings of this step and puts the findings in a remarks List.

@@ -205,7 +205,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		List rows = result.getRows();
+		List<RowMetaAndData> rows = result.getRows();
 		RowMetaAndData resultRow = null;
 
 		boolean rcode=true ;	

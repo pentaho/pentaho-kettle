@@ -6,7 +6,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +88,7 @@ public class SharedObjects
                 if (sharedObjectsNode!=null)
                 {
                     List<SlaveServer> privateSlaveServers = new ArrayList<SlaveServer>();
-                    List<SharedObjectInterface> privateDatabases = new ArrayList<SharedObjectInterface>();
+                    List<DatabaseMeta> privateDatabases = new ArrayList<DatabaseMeta>();
 
                     
                     NodeList childNodes = sharedObjectsNode.getChildNodes();
@@ -188,7 +187,7 @@ public class SharedObjects
         this(null);
     }
 
-    public Map getObjectsMap()
+    public Map<SharedEntry, SharedObjectInterface> getObjectsMap()
     {
         return objectsMap;
     }
@@ -220,10 +219,9 @@ public class SharedObjects
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
         out.println("<"+XML_TAG+">");
         
-        Collection collection = objectsMap.values();
-        for (Iterator iter = collection.iterator(); iter.hasNext();)
+        Collection<SharedObjectInterface> collection = objectsMap.values();
+        for (SharedObjectInterface sharedObject : collection)
         {
-            SharedObjectInterface sharedObject = (SharedObjectInterface) iter.next();
             out.println(sharedObject.getXML());
         }
 

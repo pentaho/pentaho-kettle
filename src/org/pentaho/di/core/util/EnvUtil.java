@@ -29,7 +29,7 @@ public class EnvUtil
 	 *            directory.
 	 * @return the map of properties.
 	 */
-	public static Map readProperties(String fileName)
+	public static Properties readProperties(String fileName)
 	{
 		Properties props = new Properties();
 		String kettlePropsFilename = Const.getKettleDirectory() + Const.FILE_SEPARATOR + fileName;

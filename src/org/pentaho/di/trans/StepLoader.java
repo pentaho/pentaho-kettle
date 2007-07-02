@@ -310,7 +310,7 @@ public class StepLoader
         {
             try
             {
-                Class cl = null;
+                Class<?> cl = null;
                 switch (sp.getType())
                 {
                 case StepPlugin.TYPE_NATIVE:
@@ -498,12 +498,12 @@ public class StepLoader
                 cat.put(sp.getCategory(locale), sp.getCategory(locale));
             }
         }
-        Enumeration keys = cat.keys();
+        Enumeration<String> keys = cat.keys();
         String retval[] = new String[cat.size()];
         int i = 0;
         while (keys.hasMoreElements())
         {
-            retval[i] = (String) keys.nextElement();
+            retval[i] = keys.nextElement();
             i++;
         }
 

@@ -47,9 +47,9 @@ public class RowMeta implements RowMetaInterface
         return buffer.toString();
     }
     /**
-     * @return the list of value Metadata 
+     * @return the list of value metadata 
      */
-    public List getValueMetaList()
+    public List<ValueMetaInterface> getValueMetaList()
     {
         return valueMetaList;
     }

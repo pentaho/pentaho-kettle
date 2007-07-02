@@ -17,12 +17,9 @@ package org.pentaho.di.job;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -50,6 +47,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
@@ -70,9 +68,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.spoon.Spoon;
-import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
-import org.pentaho.di.job.Messages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -884,15 +880,13 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         //
         String soFile = environmentSubstitute(sharedObjectsFile);
         SharedObjects sharedObjects = new SharedObjects(soFile); 
-        Map objectsMap = sharedObjects.getObjectsMap();
-        Collection objects = objectsMap.values();
+        Map<?, SharedObjectInterface> objectsMap = sharedObjects.getObjectsMap();
         
         // First read the databases...
         // We read databases & slaves first because there might be dependencies that need to be resolved.
         //
-        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        for (SharedObjectInterface object : objectsMap.values())
         {
-            Object object = iter.next();
             if (object instanceof DatabaseMeta)
             {
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
@@ -2136,14 +2130,13 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public List<String> getUsedVariables()
     {
         // Get the list of Strings.
-        List stringList = getStringList(true, true, false);
+        List<StringSearchResult> stringList = getStringList(true, true, false);
 
         List<String> varList = new ArrayList<String>();
 
         // Look around in the strings, see what we find...
-        for (int i = 0; i < stringList.size(); i++)
+        for (StringSearchResult result : stringList)
         {
-            StringSearchResult result = (StringSearchResult) stringList.get(i);
             StringUtil.getUsedVariables(result.getString(), varList, false);
         }
 
@@ -2377,16 +2370,16 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param id_jobentry The id of the jobentry
      * @return The JobEntry object if one was found, null otherwise.
      */
-    public static final JobEntryInterface findJobEntry(List jobentries, long id_jobentry)
+    public static final JobEntryInterface findJobEntry(List<JobEntryInterface> jobentries, long id_jobentry)
     {
         if (jobentries == null)
             return null;
 
-        for (int i = 0; i < jobentries.size(); i++)
+        for (JobEntryInterface je : jobentries)
         {
-            JobEntryInterface je = (JobEntryInterface) jobentries.get(i);
-            if (je.getID() == id_jobentry)
+            if (je.getID() == id_jobentry) {
                 return je;
+            }
         }
         return null;
     }
@@ -2397,16 +2390,16 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param id_jobentry_copy The id of the jobentry copy
      * @return The JobEntryCopy object if one was found, null otherwise.
      */
-    public static final JobEntryCopy findJobEntryCopy(List jobcopies, long id_jobentry_copy)
+    public static final JobEntryCopy findJobEntryCopy(List<JobEntryCopy> jobcopies, long id_jobentry_copy)
     {
         if (jobcopies == null)
             return null;
 
-        for (int i = 0; i < jobcopies.size(); i++)
+        for (JobEntryCopy jec : jobcopies)
         {
-            JobEntryCopy jec = (JobEntryCopy) jobcopies.get(i);
-            if (jec.getID() == id_jobentry_copy)
+            if (jec.getID() == id_jobentry_copy) {
                 return jec;
+            }
         }
         return null;
     }
@@ -2515,7 +2508,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}

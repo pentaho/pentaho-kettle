@@ -306,7 +306,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         String args[] = arguments;
         RowMetaAndData resultRow = null;
         boolean first = true;
-        List rows = result.getRows();
+        List<RowMetaAndData> rows = result.getRows();
         
         log.logDetailed(toString(), "Found "+(rows!=null?rows.size():0)+" previous result rows");
         
@@ -322,7 +322,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             	resultRow = null;
             }
             
-            List cmdRows = null;
+            List<RowMetaAndData> cmdRows = null;
             
             if (execPerRow) // Execute for each input row
             {
@@ -390,7 +390,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return result;		
 	}
         
-    private void executeShell(Result result, List cmdRows, String[] args)
+    private void executeShell(Result result, List<RowMetaAndData> cmdRows, String[] args)
     {
         LogWriter log = LogWriter.getInstance();
         

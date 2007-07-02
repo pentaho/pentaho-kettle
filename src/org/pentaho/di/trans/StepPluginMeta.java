@@ -2,7 +2,7 @@ package org.pentaho.di.trans;
 
 public class StepPluginMeta {
 
-    protected Class className;
+    protected Class<?> className;
     protected String id[];
     protected String longDesc;
     protected String tooltipDesc;
@@ -10,7 +10,7 @@ public class StepPluginMeta {
     protected String category;
     
     
-    public StepPluginMeta(Class className, String id, String longDesc, String tooltipDesc, String imageFileName, String category) {
+    public StepPluginMeta(Class<?> className, String id, String longDesc, String tooltipDesc, String imageFileName, String category) {
         this.className = className;
         this.id = new String[] { id };
         this.longDesc = longDesc;
@@ -19,7 +19,7 @@ public class StepPluginMeta {
         this.category = category;
     }
 
-    public StepPluginMeta(Class className, String id[], String longDesc, String tooltipDesc, String imageFileName, String category) {
+    public StepPluginMeta(Class<?> className, String id[], String longDesc, String tooltipDesc, String imageFileName, String category) {
         this.className = className;
         this.id = id ;
         this.longDesc = longDesc;
@@ -34,10 +34,10 @@ public class StepPluginMeta {
     public void setCategory(String category) {
         this.category = category;
     }
-    public Class getClassName() {
+    public Class<?> getClassName() {
         return className;
     }
-    public void setClassName(Class className) {
+    public void setClassName(Class<?> className) {
         this.className = className;
     }
     

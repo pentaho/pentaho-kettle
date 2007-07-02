@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -1299,29 +1298,34 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	private void handleMissingFiles() throws KettleException
 	{
-		List nonExistantFiles = data.files.getNonExistantFiles();
+		List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic("Required files", "WARNING: Missing " + message);
-			if (meta.isErrorIgnored()) for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
-			{
-				data.dataErrorLineHandler.handleNonExistantFile((FileObject) iter.next());
+			if (meta.isErrorIgnored()) {
+				for (FileObject fileObject : nonExistantFiles) {
+					data.dataErrorLineHandler.handleNonExistantFile(fileObject);
+				}
 			}
-			else throw new KettleException("Following required files are missing: " + message);
+			else {
+				throw new KettleException("Following required files are missing: " + message);
+			}
 		}
 
-		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
 			log.logBasic("Required files", "WARNING: Not accessible " + message);
-			if (meta.isErrorIgnored()) for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
-			{
-				data.dataErrorLineHandler.handleNonAccessibleFile((FileObject) iter.next());
+			if (meta.isErrorIgnored()) {
+				for (FileObject fileObject : nonAccessibleFiles) {
+					data.dataErrorLineHandler.handleNonAccessibleFile(fileObject);
+				}
+			} else {
+				throw new KettleException("Following required files are not accessible: " + message);
 			}
-			else throw new KettleException("Following required files are not accessible: " + message);
 		}
 	}
 

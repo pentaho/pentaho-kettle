@@ -40,9 +40,9 @@ public class KettleURLClassLoader extends URLClassLoader
         Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke "defineClass", 
         but you can call protected method in subclass without problems:
     */
-    public Class loadClass(String name, ProtectionDomain protectionDomain) 
+    public Class<?> loadClass(String name, ProtectionDomain protectionDomain) 
     {
-        Class loaded = findLoadedClass(name);
+        Class<?> loaded = findLoadedClass(name);
         if (loaded == null)
         {
             // Get the jar, load the bytes from the jar file, construct class from scratch as in snippet below...

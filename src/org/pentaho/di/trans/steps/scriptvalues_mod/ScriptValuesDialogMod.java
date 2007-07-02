@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -1263,14 +1262,14 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		
 		
 		Hashtable<String, String> hatFunctions =scVHelp.getFunctionList(); 
-	    Vector<String> v = new Vector<String>(hatFunctions.keySet());
+	    
+		Vector<String> v = new Vector<String>(hatFunctions.keySet());
 	    Collections.sort(v);
-	    Iterator it = v.iterator();
-	    while (it.hasNext()) {
-	       String strFunction =  (String)it.next();
+	    
+	    for (String strFunction : v) {
 	       String strFunctionType =(String)hatFunctions.get(strFunction);
 	       int iFunctionType = Integer.valueOf(strFunctionType).intValue();
-	       //System.out.println( element + " " + (String)hatFunctions.get(element));
+
 	       TreeItem itemFunction=null;
 			switch(iFunctionType){
 				case ScriptValuesAddedFunctions.STRING_FUNCTION: itemFunction = new TreeItem(itemStringFunctionsGroup,SWT.NULL); break;
@@ -1424,7 +1423,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	private String buildAddClassFunctionName(Method metForParams){
 		StringBuffer sbRC = new StringBuffer();
 		String strRC = "";
-		Class[] clsParamType = metForParams.getParameterTypes();
+		Class<?>[] clsParamType = metForParams.getParameterTypes();
 		String strParam;
 		
 

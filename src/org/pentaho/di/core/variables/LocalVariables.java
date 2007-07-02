@@ -8,15 +8,15 @@ import java.util.Map;
 import org.pentaho.di.core.logging.LogWriter;
 
 /**
- * This class is a container for "Local" enrvironment variables.
- * This is a singleton.  We are going to launch jobs using a customer classloader.
+ * This class is a container for "Local" environment variables.
+ * This is a singleton.  We are going to launch jobs using a customer ClassLoader.
  * This will make the variables inside it local.
  * 
  * @author Matt
  */
 public class LocalVariables
 {
-    ThreadLocal local;
+    // ThreadLocal local;
     private static LocalVariables localVariables;
     
     private Map<String, KettleVariables> map;
@@ -145,7 +145,7 @@ public class LocalVariables
     {
         LogWriter log = LogWriter.getInstance();
         
-        List children = getKettleVariablesWithParent(thread);
+        List<String> children = getKettleVariablesWithParent(thread);
         
         for (int i=0;i<children.size();i++)
         {

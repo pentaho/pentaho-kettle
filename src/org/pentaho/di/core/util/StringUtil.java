@@ -6,9 +6,9 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +48,7 @@ public class StringUtil
 	 *            the close delimiter for variables.
 	 * @return the string with the substitution applied.
 	 */
-	public static String substitute(String aString, Map variablesValues, String open, String close)
+	public static String substitute(String aString, Map<String, String> variablesValues, String open, String close)
 	{
 		return substitute(aString, variablesValues, open, close, 0);
 	}
@@ -72,7 +72,7 @@ public class StringUtil
 	 *            loops)
 	 * @return the string with the substitution applied.
 	 */
-	public static String substitute(String aString, Map variablesValues, String open, String close,
+	public static String substitute(String aString, Map<String, String> variablesValues, String open, String close,
 			int recursion)
 	{
 		if (aString == null)
@@ -139,10 +139,13 @@ public class StringUtil
 	 *            the system properties to use
 	 * @return the string with the substitution applied.
 	 */
-	public static final String environmentSubstitute(String aString, Properties systemProperties)
+	public static final String environmentSubstitute(String aString, Map<String, String> systemProperties)
 	{
-		aString = substituteWindows(aString, systemProperties);
-		aString = substituteUnix(aString, systemProperties);
+		Map<String, String> sysMap = new HashMap<String, String>();
+		sysMap.putAll(systemProperties);
+		
+		aString = substituteWindows(aString, sysMap);
+		aString = substituteUnix(aString, sysMap);
 		return aString;
 	}
 
@@ -158,7 +161,7 @@ public class StringUtil
 	 *            names, the values are the variable values.
 	 * @return the string with the substitution applied.
 	 */
-	public static String substituteUnix(String aString, Map variables)
+	public static String substituteUnix(String aString, Map<String, String> variables)
 	{
 		return substitute(aString, variables, UNIX_OPEN, UNIX_CLOSE);
 	}
@@ -175,7 +178,7 @@ public class StringUtil
 	 *            names, the values are the variable values.
 	 * @return the string with the substitution applied.
 	 */
-	public static String substituteWindows(String aString, Map variables)
+	public static String substituteWindows(String aString, Map<String, String> variables)
 	{
 		return substitute(aString, variables, WINDOWS_OPEN, WINDOWS_CLOSE);
 	}

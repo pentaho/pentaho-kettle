@@ -16,13 +16,13 @@
 
 package org.pentaho.di.trans.steps.tableinput;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -153,7 +153,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.lookupFromStep = lookupFromStep;
 	}
 	
-	public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -285,7 +285,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
 		try
@@ -453,7 +453,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		return null;
 	}
 
-	public void searchInfoAndTargetSteps(ArrayList steps)
+	/**
+	 * @param steps optionally search the info step in a list of steps
+	 */
+	public void searchInfoAndTargetSteps(List<StepMeta> steps)
 	{
 	    lookupFromStep = StepMeta.findStep(steps, lookupFromStepname);
 	}

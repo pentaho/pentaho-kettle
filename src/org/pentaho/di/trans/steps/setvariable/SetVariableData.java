@@ -16,8 +16,6 @@
 
 package org.pentaho.di.trans.steps.setvariable;
 
-import java.util.Hashtable;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -30,9 +28,7 @@ public class SetVariableData extends BaseStepData implements StepDataInterface
 {
     public int   keynr;
 	
-    public Hashtable hashtable;
-
-	public RowMetaInterface outputMeta;
+    public RowMetaInterface outputMeta;
 
 	/**
 	 * Default constructor.
@@ -40,7 +36,5 @@ public class SetVariableData extends BaseStepData implements StepDataInterface
 	public SetVariableData()
 	{
 		super();
-		
-		hashtable = null;
 	}
 }

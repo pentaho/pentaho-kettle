@@ -303,7 +303,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		colinf[1]=new ColumnInfo(Messages.getString("DBProcDialog.ColumnInfo.Direction"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		colinf[2]=new ColumnInfo(Messages.getString("DBProcDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ); //$NON-NLS-1$
 		
-		wFields=new TableView(shell, 
+		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
 							  FieldsRows,  

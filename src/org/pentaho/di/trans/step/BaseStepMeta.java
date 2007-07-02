@@ -92,6 +92,9 @@ public class BaseStepMeta implements Cloneable
 		return null;
 	}
 	
+	/**
+	 * @param steps optionally search the info step in a list of steps
+	 */
 	public void searchInfoAndTargetSteps(List<StepMeta> steps)
 	{
 	}

@@ -348,7 +348,7 @@ public class ClusterSchemaDialog extends Dialog
 	private void refreshSlaveServers()
     {
         wServers.clearAll(false);
-        List slaveServers = clusterSchema.getSlaveServers();
+        List<SlaveServer> slaveServers = clusterSchema.getSlaveServers();
         for (int i=0;i<slaveServers.size();i++)
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);

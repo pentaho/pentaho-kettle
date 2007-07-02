@@ -648,7 +648,7 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 
 	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, dbMeta, tableName, limit);
-	    List rows = pd.open();
+	    List<Object[]> rows = pd.open();
 	    if (rows!=null) // otherwise an already shown error...
 	    {
 			if (rows.size()>0)

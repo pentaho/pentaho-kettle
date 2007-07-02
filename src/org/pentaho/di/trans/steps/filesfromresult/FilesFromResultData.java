@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.filesfromresult;
 
 import java.util.List;
 
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -29,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class FilesFromResultData extends BaseStepData implements StepDataInterface
 {
-	public List resultFilesList;
+	public List<ResultFile> resultFilesList;
 
 	public RowMetaInterface outputRowMeta;
 

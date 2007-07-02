@@ -1,6 +1,7 @@
 package org.pentaho.di.core.variables;
 
-import java.util.Properties;
+import java.util.Map;
+
 
 /**
  * Interface to implement variable sensitive objects.
@@ -109,5 +110,5 @@ public interface VariableSpace
      *  
      * @param prop Properties object containing key-value pairs.
      */
-    void injectVariables(Properties prop);
+    void injectVariables(Map<String, String> prop);
 }

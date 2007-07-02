@@ -32,7 +32,6 @@ public class TransSplitter
     private static final int SPLIT  = 120;
     
     private TransMeta  originalTransformation;
-    private Map        serverTransMetaMap;
     private Map<ClusterSchema,Integer>        clusterPortMap;
     private Map<String,Integer>        clusterStepPortMap;
     private Map<SlaveServer,TransMeta>        slaveTransMap;
@@ -43,7 +42,6 @@ public class TransSplitter
 
     public TransSplitter()
     {
-        serverTransMetaMap = new Hashtable();
         clusterPortMap = new Hashtable<ClusterSchema,Integer>();
         clusterStepPortMap = new Hashtable<String,Integer>();
         
@@ -76,21 +74,6 @@ public class TransSplitter
         this.originalTransformation = originalTransformation;
     }
 
-    /**
-     * @return the serverTransMetaMap
-     */
-    public Map getServerTransMetaMap()
-    {
-        return serverTransMetaMap;
-    }
-
-    /**
-     * @param serverTransMetaMap the serverTransMetaMap to set
-     */
-    public void setServerTransMetaMap(Map serverTransMetaMap)
-    {
-        this.serverTransMetaMap = serverTransMetaMap;
-    }
     
     private void checkClusterConfiguration() throws KettleException
     {
@@ -291,7 +274,7 @@ public class TransSplitter
      * @return the slaveTransMap : the mapping between a slaveServer and the transformation
      *
      */
-    public Map getSlaveTransMap()
+    public Map<SlaveServer, TransMeta> getSlaveTransMap()
     {
         return slaveTransMap;
     }

@@ -1046,7 +1046,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             //
             // Perhaps we should get 20% random values and delete everything below the lowest but one TK.
             //
-            List keys = data.cache.getKeys();
+            List<byte[]> keys = data.cache.getKeys();
             int sizeBefore = keys.size();
             List<Long> samples = new ArrayList<Long>();
             

@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -51,6 +50,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -60,7 +60,6 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.core.gui.JobTracker;
 import org.w3c.dom.Node;
 
 
@@ -764,16 +763,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 			
 			if (includingFiles && result != null)
 		    {
-				List resultFiles = result.getResultFilesList();
+				List<ResultFile> resultFiles = result.getResultFilesList();
 				if (resultFiles!=null && resultFiles.size() > 0) 
 				{
 					if (!zipFiles)
 					{
 						// Add all files to the message...
 						//
-						for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
+						for ( ResultFile resultFile : resultFiles) 
 						{
-							ResultFile resultFile = (ResultFile) iter.next();
 							FileObject file = resultFile.getFile();
 							if (file != null && file.exists()) 
 							{
@@ -809,10 +807,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 						{
 							zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
                             
-							for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
+							for ( ResultFile resultFile : resultFiles) 
 							{
-                                ResultFile resultFile = (ResultFile) iter.next();
-                                
                                 boolean found=false;
                                 for (int i=0;i<fileType.length;i++)
                                 {

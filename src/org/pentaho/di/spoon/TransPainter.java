@@ -1,6 +1,6 @@
 package org.pentaho.di.spoon;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -55,7 +55,7 @@ public class TransPainter
     private int          iconsize;
     private Rectangle    selrect;
     private int          linewidth;
-    private Hashtable    images;
+    private Map<String, Image> images;
 
     public TransPainter(TransMeta transMeta)
     {

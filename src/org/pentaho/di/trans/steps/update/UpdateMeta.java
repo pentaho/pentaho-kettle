@@ -15,12 +15,13 @@
 
 package org.pentaho.di.trans.steps.update;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -277,7 +278,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 
 
-    public void loadXML(Node stepnode, List<? extends SharedObjectInterface> databases, Hashtable counters)
+    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleXMLException
 	{
 		readData(stepnode, databases);
@@ -430,7 +431,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		return retval.toString();
 	}
 
-	public void readRep(Repository rep, long id_step, List<? extends SharedObjectInterface> databases, Hashtable counters)
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 		throws KettleException
 	{
 		try

@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.pentaho.di.core.logging.LogWriter;
@@ -142,8 +141,8 @@ public class SortedFileOutputStream extends FileOutputStream
         }
 
         Collections.sort(lines);
-        for (Iterator it = lines.iterator(); it.hasNext();)
-            super.write(((String) it.next()).getBytes());
+        for (String line : lines)
+            super.write( line.getBytes() );
 
         super.flush();
         super.close();

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
@@ -136,11 +135,9 @@ public class Translator
             directories = new Hashtable<String,Integer>(files.size());
             locales = new Hashtable<String,Boolean>(10);
             
-            Enumeration fileEntries = files.keys();
-            while (fileEntries.hasMoreElements())
+            for (String filename : files.keySet())
             {
-                String entry = (String)fileEntries.nextElement();
-                String path = getPath(entry);
+                String path = getPath(filename);
                 
                 // is it already in there?
                 Integer num = directories.get(path);
@@ -155,12 +152,12 @@ public class Translator
                 directories.put(path, num);
                 
                 // What's the locale?
-                String locale = getLocale(entry);
+                String locale = getLocale(filename);
                 locales.put(locale, Boolean.TRUE);
                 
                 if (locale.charAt(2)!='_')
                 {
-                    log.logError(toString(), "This i18n locale file is not conform the Kettle standard: "+entry);
+                    log.logError(toString(), "This i18n locale file is not conform the Kettle standard: "+filename);
                 }
             }
         }
@@ -415,10 +412,8 @@ public class Translator
                     String dir = wList.getSelection()[i];
     
                     // Loop over the files and see if it belongs to this directory
-                    Enumeration enumeration = files.keys();
-                    while (enumeration.hasMoreElements())
+                    for (String filename : files.keySet())
                     {
-                        String filename = (String)enumeration.nextElement();
                         if (getPath(filename).equals(dir)) // yep, add this one
                         {
                             Properties properties = files.get(filename);

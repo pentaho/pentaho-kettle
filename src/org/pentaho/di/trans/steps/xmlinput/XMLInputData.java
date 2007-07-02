@@ -58,7 +58,7 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
 
 	public RowMetaInterface previousRowMeta;
 
-	public List files;
+	public List<FileObject> files;
 
 	public boolean last_file;
 

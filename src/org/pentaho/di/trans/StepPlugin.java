@@ -58,9 +58,9 @@ public class StepPlugin
     
     private boolean         separateClassloaderNeeded;
 
-    private Map             localizedCategories;
-    private Map             localizedDescriptions;
-    private Map             localizedTooltips;
+    private Map<String, String> localizedCategories;
+    private Map<String, String> localizedDescriptions;
+    private Map<String, String> localizedTooltips;
 
     public StepPlugin(int type, String id[], String description, String tooltip, String directory, String jarfiles[], String icon_filename,
             String classname, String category, String errorHelpFile)
@@ -77,9 +77,9 @@ public class StepPlugin
         this.errorHelpFile = errorHelpFile;
         this.separateClassloaderNeeded = false;
         
-        this.localizedCategories = new Hashtable();
-        this.localizedDescriptions = new Hashtable();
-        this.localizedTooltips = new Hashtable();
+        this.localizedCategories = new Hashtable<String, String>();
+        this.localizedDescriptions = new Hashtable<String, String>();
+        this.localizedTooltips = new Hashtable<String, String>();
     }
 
     public int getType()
@@ -241,21 +241,21 @@ public class StepPlugin
         this.jarfiles = jarfiles;
     }
 
-    public void setLocalizedCategories(Map localizedCategories)
+    public void setLocalizedCategories(Map<String, String> localizedCategories)
     {
-        this.            localizedCategories = localizedCategories;
+        this.localizedCategories = localizedCategories;
         
     }
 
     /**
      * @return the localized categories map.
      */
-    public Map getLocalizedCategories()
+    public Map<String, String> getLocalizedCategories()
     {
         return localizedCategories;
     }
 
-    public void setLocalizedDescriptions(Map localizedDescriptions)
+    public void setLocalizedDescriptions(Map<String, String> localizedDescriptions)
     {
         this.localizedDescriptions = localizedDescriptions;
     }
@@ -263,7 +263,7 @@ public class StepPlugin
     /**
      * @return the localized descriptions map.
      */
-    public Map getLocalizedDescriptions()
+    public Map<String, String> getLocalizedDescriptions()
     {
         return localizedDescriptions;
     }
@@ -271,7 +271,7 @@ public class StepPlugin
     /**
      * @return the localizedTooltips
      */
-    public Map getLocalizedTooltips()
+    public Map<String, String> getLocalizedTooltips()
     {
         return localizedTooltips;
     }
@@ -279,7 +279,7 @@ public class StepPlugin
     /**
      * @param localizedTooltips the localizedTooltips to set
      */
-    public void setLocalizedTooltips(Map localizedTooltips)
+    public void setLocalizedTooltips(Map<String, String> localizedTooltips)
     {
         this.localizedTooltips = localizedTooltips;
     }

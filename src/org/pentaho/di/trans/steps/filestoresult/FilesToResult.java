@@ -16,7 +16,6 @@
 package org.pentaho.di.trans.steps.filestoresult;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -58,10 +57,9 @@ public class FilesToResult extends BaseStep implements StepInterface
 		Object[] r = getRow(); // get row, set busy!
 		if (r == null) // no more input to be expected...
 		{
-			Iterator it = data.filenames.iterator();
-			while (it.hasNext())
+			for (ResultFile resultFile : data.filenames)
 			{
-				addResultFile((ResultFile) it.next());
+				addResultFile( resultFile );
 			}
 			logBasic(Messages.getString("FilesToResult.Log.AddedNrOfFiles", String.valueOf(data.filenames
 					.size())));

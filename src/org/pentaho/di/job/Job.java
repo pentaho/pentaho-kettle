@@ -18,7 +18,7 @@ package org.pentaho.di.job;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.LocalVariables;
@@ -41,7 +42,6 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.trans.StepLoader;
 
 
@@ -164,7 +164,7 @@ public class Job extends Thread implements VariableSpace
         try
         {
             // Load the class.
-            Class jobClass = Const.createNewClassLoader().loadClass(Job.class.getName()); 
+            Class<?> jobClass = Const.createNewClassLoader().loadClass(Job.class.getName()); 
 
             // create the class
             // Try to instantiate this one...
@@ -861,7 +861,7 @@ public class Job extends Thread implements VariableSpace
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}	    

@@ -11,7 +11,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -631,12 +631,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return null;
     }
     
-    public static String[] getSlaveServerNames(List slaveServers)
+    public static String[] getSlaveServerNames(List<SlaveServer> slaveServers)
     {
         String[] names = new String[slaveServers.size()];
         for (int i=0;i<slaveServers.size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = slaveServers.get(i);
             names[i] = slaveServer.getName();
         }
         return names;
@@ -722,7 +722,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 		variables = space;		
 	}
 
-	public void injectVariables(Properties prop) 
+	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
 	}	       

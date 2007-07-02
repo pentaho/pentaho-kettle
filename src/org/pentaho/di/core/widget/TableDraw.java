@@ -539,7 +539,7 @@ public class TableDraw extends Canvas
 		return area;
 	}
 	
-	public Vector getFields()
+	public Vector<TextFileInputFieldInterface> getFields()
 	{
 		return fields;
 	}

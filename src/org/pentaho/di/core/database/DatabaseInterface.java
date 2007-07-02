@@ -30,7 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 public interface DatabaseInterface extends Cloneable
 {
-	public static final Class[] implementingClasses =
+	public static final Class<?>[] implementingClasses =
 		{
 			MySQLDatabaseMeta.class,
 			OracleDatabaseMeta.class,
@@ -545,15 +545,15 @@ public interface DatabaseInterface extends Cloneable
     public boolean supportsBooleanDataType();
     
     /**
-     * @return true if the database defaults to naming tables and fields in uppercase.
+     * @return true if the database defaults to naming tables and fields in upper case.
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
     public boolean isDefaultingToUppercase();
 
     /**
-     * @return a map of all the extra URL options you want to set, retrieved from the attributes list (NOT synchronised!)
+     * @return a map of all the extra URL options you want to set, retrieved from the attributes list (NOT synchronized!)
      */
-    public Map getExtraOptions();
+    public Map<String, String> getExtraOptions();
 
     /**
      * Add an extra option to the attributes list

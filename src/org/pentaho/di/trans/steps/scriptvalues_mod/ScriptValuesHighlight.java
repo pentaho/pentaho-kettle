@@ -28,6 +28,7 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -238,10 +239,10 @@ class ScriptValuesHighlight implements LineStyleListener {
 	 */
 	public class JavaScanner {
 
-		protected Hashtable<String, Integer> fgKeys= null;
-		protected Hashtable fgFunctions= null;
-		protected Hashtable<String, Integer> kfKeys= null;
-		protected Hashtable kfFunctions= null;
+		protected Map<String, Integer> fgKeys= null;
+		protected Map<?, ?> fgFunctions= null;
+		protected Map<String, Integer> kfKeys= null;
+		protected Map<?, ?> kfFunctions= null;
 		protected StringBuffer fBuffer= new StringBuffer();
 		protected String fDoc;
 		protected int fPos;

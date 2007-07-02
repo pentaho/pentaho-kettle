@@ -102,7 +102,7 @@ public class InjectorTest extends TestCase
 	 *  Check the 2 lists comparing the rows in order.
 	 *  If they are not the same fail the test. 
 	 */
-    public void checkRows(List rows1, List rows2)
+    public void checkRows(List<RowMetaAndData> rows1, List<RowMetaAndData> rows2)
     {
     	int idx = 1;
         if ( rows1.size() != rows2.size() )
@@ -110,8 +110,8 @@ public class InjectorTest extends TestCase
         	fail("Number of rows is not the same: " + 
           		 rows1.size() + " and " + rows2.size());
         }
-        Iterator it1 = rows1.iterator();
-        Iterator it2 = rows2.iterator();
+        Iterator<RowMetaAndData> it1 = rows1.iterator();
+        Iterator<RowMetaAndData> it2 = rows2.iterator();
         
         while ( it1.hasNext() && it2.hasNext() )
         {
@@ -198,18 +198,16 @@ public class InjectorTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List inputList = createData();
-        Iterator it = inputList.iterator();
-        while ( it.hasNext() )
+        List<RowMetaAndData> inputList = createData();
+        for (RowMetaAndData rm : inputList )
         {
-        	RowMetaAndData rm = (RowMetaAndData)it.next();
         	rp.putRow(rm.getRowMeta(), rm.getData());
         }   
         rp.finished();
 
         trans.waitUntilFinished();   
         
-        List resultRows = rc.getRowsRead();
+        List<RowMetaAndData> resultRows = rc.getRowsRead();
         checkRows(resultRows, inputList);
     }
 }

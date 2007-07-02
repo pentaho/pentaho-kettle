@@ -2392,13 +2392,12 @@ public class Repository
 
     }
     
-    private long[] convertLongList(List list)
+    private long[] convertLongList(List<Long> list)
     {
         long[] ids = new long[list.size()];
-        for (int i=0;i<ids.length;i++) ids[i] = ((Long)list.get(i)).longValue();
+        for (int i=0;i<ids.length;i++) ids[i] = list.get(i);
         return ids;
     }
-
 
 	public synchronized String[] getDatabaseNames() throws KettleException
 	{
@@ -2926,7 +2925,7 @@ public class Repository
         return (int) r.getInteger(0, 0L);
     }
 
-    public synchronized List getTransAttributes(long id_transformation, String code, long nr) throws KettleException
+    public synchronized List<Object[]> getTransAttributes(long id_transformation, String code, long nr) throws KettleException
     {
         String sql = "SELECT * FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ? AND CODE = ? AND NR = ? ORDER BY VALUE_NUM";
         RowMetaAndData table = new RowMetaAndData();

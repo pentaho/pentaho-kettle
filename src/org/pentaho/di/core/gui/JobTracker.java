@@ -70,7 +70,7 @@ public class JobTracker
      /**
      * @return Returns the jobTrackers.
      */
-    public List getJobTrackers()
+    public List<JobTracker> getJobTrackers()
     {
         return jobTrackers;
     }

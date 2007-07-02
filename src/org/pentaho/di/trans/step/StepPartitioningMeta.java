@@ -162,13 +162,13 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      * Set the partitioning schema after loading from XML or repository
      * @param partitionSchemas the list of partitioning schemas
      */
-    public void setPartitionSchemaAfterLoading(List partitionSchemas)
+    public void setPartitionSchemaAfterLoading(List<PartitionSchema> partitionSchemas)
     {
         partitionSchema=null; // sorry, not found!
         
         for (int i=0;i<partitionSchemas.size() && partitionSchema==null;i++)
         {
-            PartitionSchema schema = (PartitionSchema) partitionSchemas.get(i);
+            PartitionSchema schema = partitionSchemas.get(i);
             if (schema.getName().equalsIgnoreCase(partitionSchemaName))
             {
                 partitionSchema = schema; // found!

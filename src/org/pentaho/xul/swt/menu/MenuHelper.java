@@ -157,7 +157,7 @@ public static MenuBar createMenuBarFromXul( Document doc, Shell shell, Messages 
 	return null;
 }
 
-public static Map createPopupMenusFromXul( Document doc, Shell shell, Messages xulMessages, List menuIds ) {
+public static Map<String,Menu> createPopupMenusFromXul( Document doc, Shell shell, Messages xulMessages, List<String> menuIds ) {
 	NodeList list = doc.getElementsByTagName( "popupset" ); //$NON-NLS-1$
 	Map<String,Menu> map = new HashMap<String,Menu>();
 	if( list != null && list.getLength() > 0 ) {
@@ -182,7 +182,7 @@ public static Map createPopupMenusFromXul( Document doc, Shell shell, Messages x
 	return map;
 }
 
-public static Map createAllPopupMenusFromXul( Document doc, Shell shell, Messages xulMessages ) {
+public static Map<String,Menu> createAllPopupMenusFromXul( Document doc, Shell shell, Messages xulMessages ) {
 	NodeList list = doc.getElementsByTagName( "popupset" ); //$NON-NLS-1$
 	Map<String,Menu> map = new HashMap<String,Menu>();
 	if( list != null && list.getLength() > 0 ) {

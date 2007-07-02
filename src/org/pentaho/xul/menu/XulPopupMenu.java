@@ -16,7 +16,7 @@ public interface XulPopupMenu extends XulMenu {
 	
 	public XulMenuChoice getMenuItemByKey( String accessKey );
 
-	public void addMenuListener( String id, Object listener, Class listenerClass, String methodName );
+	public void addMenuListener( String id, Object listener, Class<?> listenerClass, String methodName );
 
 	public void addMenuListener( String id, Object listener, String methodName );
 

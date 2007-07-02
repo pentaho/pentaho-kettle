@@ -22,7 +22,6 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jxl.Cell;
@@ -1634,8 +1633,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		getInfo(info);
 
 		FileInputList fileList = info.getFileList(transMeta);
-		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
-			FileObject fileObject = (FileObject) iter.next();
+		for (FileObject fileObject : fileList.getFiles()) {
 			try
 			{
 				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(fileObject));
@@ -1686,8 +1684,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		getInfo(info);
 
 		FileInputList fileList = info.getFileList(transMeta);
-		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
-			FileObject file = (FileObject) iter.next();
+		for (FileObject file : fileList.getFiles()) {
 			try
 			{
 				Workbook workbook = Workbook.getWorkbook(KettleVFS.getInputStream(file));

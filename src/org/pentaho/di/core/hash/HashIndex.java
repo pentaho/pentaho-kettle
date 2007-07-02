@@ -441,7 +441,7 @@ public final class HashIndex {
      * 
      * @see #safeIterator()
      */
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return new HashIterator(table);
     }
 
@@ -458,11 +458,11 @@ public final class HashIndex {
      *  
      * @see #iterator()
      */
-    public Iterator safeIterator() {
+    public Iterator<E> safeIterator() {
         return new HashIterator(table.clone());
     }
 
-    private final static class HashIterator implements Iterator {
+    private final static class HashIterator implements Iterator<E> {
         Entry next;    // next entry to return
         int index;        // current slot
         Entry[] table;
@@ -477,7 +477,7 @@ public final class HashIndex {
             return next != null;
         }
 
-        public Object next() {
+        public E next() {
             Entry e = next;
             if (e == null)
                 throw new NoSuchElementException();

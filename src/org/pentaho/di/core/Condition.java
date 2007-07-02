@@ -866,7 +866,7 @@ public class Condition implements Cloneable, XMLInterface
 		getUsedFields(fields);
 		
 		String retval[] = new String[fields.size()];
-		Enumeration keys = fields.keys();
+		Enumeration<String> keys = fields.keys();
 		int i=0;
 		while (keys.hasMoreElements())
 		{

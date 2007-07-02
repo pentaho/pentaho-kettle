@@ -27,20 +27,20 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 public class ScriptValuesAddClasses {
 	
-	private Class addClass;
+	private Class<?> addClass;
 	private Object addObject;
 	private String strJSName;
 	
 	// private String strJarFile;
 	
-	public ScriptValuesAddClasses(Class addClass, Object addObject, String strJSName){
+	public ScriptValuesAddClasses(Class<?> addClass, Object addObject, String strJSName){
 		super();
 		this.addClass = addClass;
 		this.addObject = addObject;
 		this.strJSName = strJSName;
 	}
 
-	public Class getAddClass(){
+	public Class<?> getAddClass(){
 		return this.addClass;
 	}
 	

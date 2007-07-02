@@ -91,7 +91,7 @@ public class KettleDatabaseBatchException extends KettleDatabaseException
         this.exceptionsList = exceptionsList;
     }
     
-    public List getExceptionsList()
+    public List<Exception> getExceptionsList()
     {
         return exceptionsList;
     }

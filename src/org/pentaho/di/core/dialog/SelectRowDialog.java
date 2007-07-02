@@ -17,7 +17,7 @@
 
 package org.pentaho.di.core.dialog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
@@ -60,7 +60,7 @@ public class SelectRowDialog extends Dialog
 	private Listener lsOK, lsCancel;
 
 	private Shell         shell;
-	private ArrayList     buffer;
+	private List<RowMetaAndData> buffer;
 	private Props         props;
 	private String        title;
     
@@ -75,7 +75,7 @@ public class SelectRowDialog extends Dialog
      * @param style
      * @param buf
      */
-	public SelectRowDialog(Shell parent, VariableSpace space, int style, ArrayList buffer)
+	public SelectRowDialog(Shell parent, VariableSpace space, int style, List<RowMetaAndData> buffer)
 	{
 		super(parent, style);
 		this.buffer=buffer;
@@ -113,7 +113,7 @@ public class SelectRowDialog extends Dialog
         //
 		if (buffer==null || buffer.size()==0) return null;
 		
-        rowMeta = ((RowMetaAndData)buffer.get(0)).getRowMeta();
+        rowMeta = buffer.get(0).getRowMeta();
         
 		int FieldsRows=buffer.size();
 		
@@ -185,7 +185,7 @@ public class SelectRowDialog extends Dialog
 	{
 		for (int i=0;i<buffer.size();i++)
 		{
-			RowMetaAndData rowMetaAndData = (RowMetaAndData)buffer.get(i);
+			RowMetaAndData rowMetaAndData = buffer.get(i);
             RowMetaInterface rowMeta = rowMetaAndData.getRowMeta();
             Object[] rowData = rowMetaAndData.getData();
 			
@@ -226,7 +226,7 @@ public class SelectRowDialog extends Dialog
 	    int idx[] = wFields.getSelectionIndices();
 	    if (idx.length==0) return;
         
-		selection=(RowMetaAndData)buffer.get(idx[0]);
+		selection=buffer.get(idx[0]);
 		dispose();
 	}	
 }

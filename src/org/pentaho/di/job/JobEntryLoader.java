@@ -230,7 +230,7 @@ public class JobEntryLoader
         {
             try
             {
-                Class cl = null;
+                Class<?> cl = null;
                 switch (sp.getType())
                 {
                 case JobPlugin.TYPE_NATIVE:

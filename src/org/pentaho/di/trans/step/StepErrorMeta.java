@@ -135,7 +135,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         return xml.toString();
     }
     
-    public StepErrorMeta(Node node, List steps)
+    public StepErrorMeta(Node node, List<StepMeta> steps)
     {
         sourceStep = StepMeta.findStep(steps, XMLHandler.getTagValue(node, "source_step"));
         targetStep = StepMeta.findStep(steps, XMLHandler.getTagValue(node, "target_step"));
@@ -164,7 +164,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         rep.saveStepAttribute(id_transformation, id_step, "step_error_handling_min_pct_rows",  minPercentRows);
     }
     
-    public StepErrorMeta(Repository rep, StepMeta stepMeta, List steps) throws KettleException
+    public StepErrorMeta(Repository rep, StepMeta stepMeta, List<StepMeta> steps) throws KettleException
     {
         sourceStep = stepMeta;
         targetStep = StepMeta.findStep( steps, rep.getStepAttributeString(stepMeta.getID(), "step_error_handling_target_step") );
