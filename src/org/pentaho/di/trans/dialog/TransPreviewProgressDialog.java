@@ -124,8 +124,11 @@ public class TransPreviewProgressDialog
         
         // This transformation is ready to run in preview!
         trans = new Trans(transMeta);
+        
+        trans.initializeVariablesFrom(null);
+        trans.setPreview(true);
         trans.setPreviewSteps(previewStepNames);
-        trans.setPreviewSizes(previewSize);
+        trans.setPreviewSizes(previewSize);        
         trans.execute(null);
         
         int previousPct = 0;
