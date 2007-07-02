@@ -320,7 +320,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 					BufferedOutputStream buff = new BufferedOutputStream(dest);
 					ZipOutputStream out = new ZipOutputStream(buff);
 					
-					TreeSet fileSet = new TreeSet();
+					TreeSet<String> fileSet = new TreeSet<String>();
 					
 					if( renameOk)
 					{
