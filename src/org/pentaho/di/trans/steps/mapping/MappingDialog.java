@@ -933,7 +933,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				definition.setMainDataPath(!definition.isRenamingOnOutput()); // flip the switch
+				definition.setRenamingOnOutput(!definition.isRenamingOnOutput()); // flip the switch
 			}
 		
 		});

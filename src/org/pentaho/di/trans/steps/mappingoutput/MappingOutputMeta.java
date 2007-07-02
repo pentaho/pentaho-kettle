@@ -259,9 +259,9 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     	// 
     	if (inputValueRenames!=null) {
     		for (MappingValueRename valueRename : inputValueRenames) {
-    			int index = r.indexOfValue(valueRename.getSourceValueName());
-    			if (index>=0) {
-    				r.getValueMeta(index).setName(valueRename.getTargetValueName());
+    			ValueMetaInterface valueMeta = r.searchValueMeta(valueRename.getTargetValueName());
+    			if (valueMeta!=null) {
+    				valueMeta.setName(valueRename.getSourceValueName());
     			}
     		}
     	}
@@ -270,9 +270,9 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     	//
     	if (outputValueRenames!=null) {
     		for (MappingValueRename valueRename : outputValueRenames) {
-    			int index = r.indexOfValue(valueRename.getSourceValueName());
-    			if (index>=0) {
-    				r.getValueMeta(index).setName(valueRename.getTargetValueName());
+    			ValueMetaInterface valueMeta = r.searchValueMeta(valueRename.getSourceValueName());
+    			if (valueMeta!=null) {
+    				valueMeta.setName(valueRename.getTargetValueName());
     			}
     		}
     	}
