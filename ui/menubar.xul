@@ -98,25 +98,25 @@ align="vertical" >
      </menubar>
 	 
 	 <toolbox>
-		<toolbar id="nav-toolbar">
-			<toolbarbutton value="file-new-trans" image="/org/pentaho/di/images/newtrans.png" tooltiptext="%Spoon.Tooltip.NewTranformation"/>
-			<toolbarbutton value="file-new-job" image="/org/pentaho/di/images/newjob.png" tooltiptext="%Spoon.Tooltip.NewJob"/>
+		<toolbar id="nav-toolbar" mode="full">
+			<toolbarbutton value="file-new-trans" label="%Spoon.Menu.File.New" image="/org/pentaho/di/images/newtrans.png" tooltiptext="%Spoon.Tooltip.NewTranformation"/>
+			<toolbarbutton value="file-new-job" label="%Spoon.Menu.File.New" image="/org/pentaho/di/images/newjob.png" tooltiptext="%Spoon.Tooltip.NewJob"/>
 			<toolbarseparator />
-			<toolbarbutton value="file-open" image="/org/pentaho/di/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
-			<toolbarbutton value="file-save" image="/org/pentaho/di/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
-			<toolbarbutton value="file-save-as" image="/org/pentaho/di/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
+			<toolbarbutton value="file-open" label="%Spoon.Menu.File.Open" image="/org/pentaho/di/images/open.png" tooltiptext="%Spoon.Tooltip.OpenTranformation" />
+			<toolbarbutton value="file-save" label="%Spoon.Menu.File.Save" image="/org/pentaho/di/images/save.png" tooltiptext="%Spoon.Tooltip.SaveCurrentTranformation" />
+			<toolbarbutton value="file-save-as" label="%Spoon.Menu.File.SaveAs" image="/org/pentaho/di/images/saveas.png" tooltiptext="%Spoon.Tooltip.SaveDifferentNameTranformation" />
 			<toolbarseparator />
-			<toolbarbutton value="file-print" image="/org/pentaho/di/images/print.png" tooltiptext="%Spoon.Tooltip.Print"/>
+			<toolbarbutton value="file-print" label="%Spoon.Menu.File.Print" image="/org/pentaho/di/images/print.png" tooltiptext="%Spoon.Tooltip.Print"/>
 			<toolbarseparator />
-			<toolbarbutton value="trans-run" image="/org/pentaho/di/images/run.png" tooltiptext="%Spoon.Tooltip.RunTranformation"/>
-			<toolbarbutton value="trans-preview" image="/org/pentaho/di/images/preview.png" tooltiptext="%Spoon.Tooltip.PreviewTranformation"/>
-			<toolbarbutton value="trans-replay" image="/org/pentaho/di/images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
+			<toolbarbutton value="trans-run" label="%Spoon.Menu.Transformation.Run" image="/org/pentaho/di/images/run.png" tooltiptext="%Spoon.Tooltip.RunTranformation"/>
+			<toolbarbutton value="trans-preview" label="%Spoon.Menu.Transformation.Preview" image="/org/pentaho/di/images/preview.png" tooltiptext="%Spoon.Tooltip.PreviewTranformation"/>
+			<toolbarbutton value="trans-replay"  label="%Spoon.Menu.Transformation.Replay" image="/org/pentaho/di/images/replay.png" tooltiptext="%Spoon.Tooltip.ReplayTranformation"/>
 			<toolbarseparator />
-			<toolbarbutton value="trans-verify" image="/org/pentaho/di/images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>
+			<toolbarbutton value="trans-verify" label="%Spoon.Menu.Transformation.Verify" image="/org/pentaho/di/images/check.png" tooltiptext="%Spoon.Tooltip.VerifyTranformation"/>
 			<toolbarseparator />
-			<toolbarbutton value="trans-impact" image="/org/pentaho/di/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
+			<toolbarbutton value="trans-impact" label="%Spoon.Menu.Transformation.Impact" image="/org/pentaho/di/images/impact.png" tooltiptext="%Spoon.Tooltip.AnalyzeTranformation"/>
 			<toolbarseparator />
-			<toolbarbutton value="trans-get-sql" image="/org/pentaho/di/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
+			<toolbarbutton value="trans-get-sql" label="%Spoon.Menu.Transformation.GetSQL" image="/org/pentaho/di/images/SQLbutton.png" tooltiptext="%Spoon.Tooltip.GenerateSQLForTranformation"/>
 		</toolbar>
 	</toolbox>
 
