@@ -269,7 +269,7 @@ public class TransBuilder
         targetDatabase.execStatements(sql);
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
         trans.execute(null);
         trans.waitUntilFinished();
         

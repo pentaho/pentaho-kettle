@@ -18,7 +18,6 @@ package org.pentaho.di.trans.steps.mapping;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -102,12 +101,13 @@ public class Mapping extends BaseStep implements StepInterface
 
 	public void prepareMappingExecution() throws KettleException {
         // Create the transformation from meta-data...
-        LogWriter log = LogWriter.getInstance();
-        data.trans = new Trans(log, data.mappingTransMeta);
+		//
+        data.trans = new Trans(data.mappingTransMeta);
         
         // We launch the transformation in the processRow when the first row is received.
         // This will allow the correct variables to be passed.
         // Otherwise the parent is the init() thread which will be gone once the init is done.
+        //
         if (!data.trans.prepareExecution(getTransMeta().getArguments())) {
         	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"));
         }

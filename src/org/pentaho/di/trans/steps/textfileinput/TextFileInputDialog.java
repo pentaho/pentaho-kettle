@@ -2518,7 +2518,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             return;
         }
         
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();

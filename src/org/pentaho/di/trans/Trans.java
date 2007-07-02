@@ -78,7 +78,8 @@ public class Trans implements VariableSpace
 {
     public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
 
-	private LogWriter log;
+	private static LogWriter log = LogWriter.getInstance();
+	
 	private TransMeta transMeta;
 
     /** The job that's launching this transformation. This gives us access to the whole chain, including the parent variables, etc. */
@@ -118,7 +119,7 @@ public class Trans implements VariableSpace
 
 	/**
 	 * The replayDate indicates that this transformation is a replay
-	 * tarnsformation for a transformation executed on replayDate. If replayDate
+	 * transformation for a transformation executed on replayDate. If replayDate
 	 * is null, the transformation is not a replay.
 	 */
 	private Date replayDate;
@@ -135,8 +136,8 @@ public class Trans implements VariableSpace
     public static final String STRING_INITIALIZING = "Initializing";
     public static final String STRING_WAITING      = "Waiting";
 
-	private String preview_steps[];
-	private int    preview_sizes[];
+	private String previewSteps[];
+	private int    previewSizes[];
 
 	private boolean safeModeEnabled;
 
@@ -150,50 +151,19 @@ public class Trans implements VariableSpace
 
     private boolean readyToStart;
 
-	/*
-	 * Initialize new empty transformation...
+	/**
+	 * Initialize a transformation from transformation meta-data defined in memory
+	 * @param transMeta the transformation meta-data to use.
 	 */
-	public Trans(LogWriter lw, String file, String name, String args[])
+	public Trans(TransMeta transMeta)
 	{
-		log=lw;
-		class_nr = 1;
-		transMeta = new TransMeta(file, name, args);
-		preview=false;
-        
-        // The trans runs in the same thread as the parent.
-        // So we can save that name for reference purposes
-        threadName = Thread.currentThread().getName();
-        initializeVariablesFrom(null);
-	}
-
-	/*
-	 * Initialize transformation for preview
-	 */
-	public Trans(LogWriter lw, TransMeta transMeta, String prev_steps[], int prev_sizes[])
-	{
-		this(lw, (String)null, (String)null, new String[] { Messages.getString("Trans.Dialog.Description.NoFileNamePreviewMode") }); //$NON-NLS-1$
-		this.transMeta=transMeta;
-		preview=true;
-		preview_steps=prev_steps;
-		preview_sizes=prev_sizes;
-		log.logBasic(toString(), Messages.getString("Trans.Log.TransformationIsInPreviewMode")); //$NON-NLS-1$
-		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToPreview",String.valueOf(transMeta.nrSteps()),String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
-		initializeVariablesFrom(null);
-	}
-
-	/*
-	 * Initialize transformation from transformation defined in memory
-	 */
-	public Trans(LogWriter lw, TransMeta transMeta)
-	{
-		this(lw, (String)null, (String)null, new String[] { Messages.getString("Trans.Dialog.Description.NoFileNamePreloadedTransformation") }); //$NON-NLS-1$
 		this.transMeta=transMeta;
 		preview=false;
-		preview_steps=null;
-		preview_sizes=null;
+		previewSteps=null;
+		previewSizes=null;
 		log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
-		initializeVariablesFrom(null);
+		initializeVariablesFrom(transMeta);
 	}
 
 	public String getName()
@@ -203,8 +173,12 @@ public class Trans implements VariableSpace
 		return transMeta.getName();
 	}
 
-	public void open(Repository rep, String name, String dirname, String filename) throws KettleException
+	public Trans(VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename) throws KettleException
 	{
+		preview=false;
+		previewSteps=null;
+		previewSizes=null;
+		
 		try
 		{
 			if (rep!=null)
@@ -212,7 +186,7 @@ public class Trans implements VariableSpace
 				RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirname);
 				if (repdir!=null)
 				{
-					transMeta = new TransMeta(rep, name, repdir, false);
+					this.transMeta = new TransMeta(rep, name, repdir, false);
 				}
 				else
 				{
@@ -221,8 +195,10 @@ public class Trans implements VariableSpace
 			}
 			else
 			{
-				transMeta = new TransMeta(filename, false);
+				this.transMeta = new TransMeta(filename, false);
 			}
+			
+			initializeVariablesFrom(parentVariableSpace);
 		}
 		catch(KettleException e)
 		{
@@ -493,18 +469,18 @@ public class Trans implements VariableSpace
 		}
 
 		// Set preview sizes
-		if (preview && preview_steps!=null)
+		if (preview && previewSteps!=null)
 		{
 			for (int i=0;i<steps.size();i++)
 			{
 				StepMetaDataCombi sid = steps.get(i);
 
 				BaseStep rt=(BaseStep)sid.step;
-				for (int x=0;x<preview_steps.length;x++)
+				for (int x=0;x<previewSteps.length;x++)
 				{
-					if (preview_steps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
+					if (previewSteps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
 					{
-						rt.previewSize=preview_sizes[x];
+						rt.previewSize=previewSizes[x];
 						rt.previewBuffer=new ArrayList<Object[]>();
 					}
 				}
@@ -1427,22 +1403,6 @@ public class Trans implements VariableSpace
 	}
 
 	/**
-	 * @return Returns the log.
-	 */
-	public LogWriter getLog()
-	{
-		return log;
-	}
-
-	/**
-	 * @param log The log to set.
-	 */
-	public void setLog(LogWriter log)
-	{
-		this.log = log;
-	}
-
-	/**
 	 * @return Returns the preview.
 	 */
 	public boolean isPreview()
@@ -1472,38 +1432,6 @@ public class Trans implements VariableSpace
 	public void setMonitored(boolean monitored)
 	{
 		this.monitored = monitored;
-	}
-
-	/**
-	 * @return Returns the preview_sizes.
-	 */
-	public int[] getPreview_sizes()
-	{
-		return preview_sizes;
-	}
-
-	/**
-	 * @param preview_sizes The preview_sizes to set.
-	 */
-	public void setPreview_sizes(int[] preview_sizes)
-	{
-		this.preview_sizes = preview_sizes;
-	}
-
-	/**
-	 * @return Returns the preview_steps.
-	 */
-	public String[] getPreview_steps()
-	{
-		return preview_steps;
-	}
-
-	/**
-	 * @param preview_steps The preview_steps to set.
-	 */
-	public void setPreview_steps(String[] preview_steps)
-	{
-		this.preview_steps = preview_steps;
 	}
 
 	/**
@@ -2138,5 +2066,33 @@ public class Trans implements VariableSpace
 	public void injectVariables(Map<String,String> prop) 
 	{
 		variables.injectVariables(prop);		
+	}
+
+	/**
+	 * @return the previewSteps
+	 */
+	public String[] getPreviewSteps() {
+		return previewSteps;
+	}
+
+	/**
+	 * @param previewSteps the previewSteps to set
+	 */
+	public void setPreviewSteps(String[] previewSteps) {
+		this.previewSteps = previewSteps;
+	}
+
+	/**
+	 * @return the previewSizes
+	 */
+	public int[] getPreviewSizes() {
+		return previewSizes;
+	}
+
+	/**
+	 * @param previewSizes the previewSizes to set
+	 */
+	public void setPreviewSizes(int[] previewSizes) {
+		this.previewSizes = previewSizes;
 	}	        
 }

@@ -82,13 +82,13 @@ public class Carte
         A.getFieldFormat()[2] = "yyyy/MM/dd"; 
         A.getValue()[2]       = "2006/11/13"; 
 
-        TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation(A, "A");
+        TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation(null, A, "A");
         transMeta.setName("Row generator test");
         transMeta.setSizeRowset(2500);
         transMeta.setFeedbackSize(50000);
         transMeta.setUsingThreadPriorityManagment(false);
 
-        return new Trans(LogWriter.getInstance(), transMeta);
+        return new Trans(transMeta);
         
     }
 }

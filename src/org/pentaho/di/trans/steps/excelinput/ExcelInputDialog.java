@@ -1593,7 +1593,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             return;
         }
 
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("ExcelInputDialog.PreviewSize.DialogTitle"), Messages.getString("ExcelInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();

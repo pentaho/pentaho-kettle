@@ -1086,7 +1086,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 			XMLInputSaxMeta oneMeta = new XMLInputSaxMeta();
 			getInfo(oneMeta);
 
-			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname
+			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 					.getText());
 
 			EnterNumberDialog numberDialog = new EnterNumberDialog(

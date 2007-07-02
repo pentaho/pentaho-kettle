@@ -123,7 +123,9 @@ public class TransPreviewProgressDialog
         log.addAppender(stringAppender);
         
         // This transformation is ready to run in preview!
-        trans = new Trans(log, transMeta, previewStepNames, previewSize);
+        trans = new Trans(transMeta);
+        trans.setPreviewSteps(previewStepNames);
+        trans.setPreviewSizes(previewSize);
         trans.execute(null);
         
         int previousPct = 0;

@@ -60,6 +60,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.LocalVariables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.spoon.Messages;
@@ -482,9 +483,8 @@ public class TransLog extends Composite implements TabItemInterface
                         // Set the requested logging level.
                         log.setLogLevel(executionConfiguration.getLogLevel());
 
-						trans = new Trans(log, transMeta.getFilename(), transMeta.getName(), new String[] { transMeta.getFilename() });
+						trans = new Trans((VariableSpace)transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 						trans.setReplayDate(executionConfiguration.getReplayDate());
-						trans.open(spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 
 						trans.setMonitored(true);
 						log.logBasic(toString(), Messages.getString("SpoonLog.Log.TransformationOpened")); //$NON-NLS-1$
@@ -823,7 +823,9 @@ public class TransLog extends Composite implements TabItemInterface
 
 				// SB: don't set it to the first tabfolder
                 // spoon.tabfolder.setSelection(1);
-				trans = new Trans(log, transMeta, executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
+				trans = new Trans(transMeta);
+				trans.setPreviewSteps(executionConfiguration.getPreviewSteps());
+				trans.setPreviewSizes(executionConfiguration.getPreviewSizes());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
 				preview = true;

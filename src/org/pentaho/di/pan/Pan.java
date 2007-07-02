@@ -304,7 +304,7 @@ public class Pan
 				{
                     log.logDetailed("Pan", "Loading transformation from XML file ["+optionFilename+"]");
 					transMeta = new TransMeta(optionFilename.toString());
-					trans = new Trans(log, transMeta);
+					trans = new Trans(transMeta);
 				}
                 
                 // Try to load the transformation from a jar file
@@ -321,7 +321,7 @@ public class Pan
                         inputStream.close();
                         Document document = XMLHandler.loadXMLString(xml.toString());
                         transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"));
-                        trans = new Trans(log, transMeta);
+                        trans = new Trans(transMeta);
                     }
                     catch(Exception e)
                     {

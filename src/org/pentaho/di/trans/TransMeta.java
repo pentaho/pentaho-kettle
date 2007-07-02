@@ -236,6 +236,16 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         clear();
         initializeVariablesFrom(null);
     }
+    
+    /**
+     * Builds a new empty transformation with a set of variables to inherit from.
+     * @param parent the variable space to inherit from
+     */
+    public TransMeta(VariableSpace parent)
+    {
+        clear();
+        initializeVariablesFrom(parent);
+    }
 
     /**
      * Constructs a new transformation specifying the filename, name and arguments.

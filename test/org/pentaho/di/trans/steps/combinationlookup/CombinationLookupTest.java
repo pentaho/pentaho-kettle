@@ -23,7 +23,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -205,7 +204,6 @@ public class CombinationLookupTest extends TestCase
 	 */
     public void testCombinationLookup() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
         try
         {
@@ -272,7 +270,7 @@ public class CombinationLookupTest extends TestCase
             transMeta.addTransHop(hi);
 
             // Now execute the transformation...
-            Trans trans = new Trans(log, transMeta);
+            Trans trans = new Trans(transMeta);
             trans.execute(null);            
 
             trans.waitUntilFinished();            

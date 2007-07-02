@@ -639,7 +639,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		GetFileNamesMeta oneMeta = new GetFileNamesMeta();
 		getInfo(oneMeta);
 
-		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname
+		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 				.getText());
 
 		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages

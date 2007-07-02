@@ -22,7 +22,6 @@ import java.util.Random;
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -161,7 +160,6 @@ public class SortRowsTest extends TestCase
 	 */
     public void testSortRows1() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -217,7 +215,7 @@ public class SortRowsTest extends TestCase
         transMeta.addTransHop(hi3);        
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 
@@ -247,7 +245,6 @@ public class SortRowsTest extends TestCase
 	 */
     public void testSortRows2() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -303,7 +300,7 @@ public class SortRowsTest extends TestCase
         transMeta.addTransHop(hi3);        
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 

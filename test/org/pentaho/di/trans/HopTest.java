@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -140,7 +139,6 @@ public class HopTest extends TestCase
 	 */
     public void testCopyHops() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -207,7 +205,7 @@ public class HopTest extends TestCase
 
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 
@@ -246,7 +244,6 @@ public class HopTest extends TestCase
 	 */
     public void testDefaultConfiguration() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -312,7 +309,7 @@ public class HopTest extends TestCase
         dummyStep.setDistributes(true);        
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 
@@ -371,7 +368,6 @@ public class HopTest extends TestCase
 	 */
     public void testDistributeHops() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -437,7 +433,7 @@ public class HopTest extends TestCase
         dummyStep.setDistributes(true);        
         
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 

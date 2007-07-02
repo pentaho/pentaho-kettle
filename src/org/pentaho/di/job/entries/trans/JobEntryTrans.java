@@ -368,9 +368,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		LogWriter log       = LogWriter.getInstance();
 		result.setEntryNr( nr );
 
-		LogWriter logwriter = log;
-
-        Log4jFileAppender appender = null;
+		Log4jFileAppender appender = null;
         int backupLogLevel = log.getLogLevel();
         if (setLogfile)
         {
@@ -631,7 +629,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 else // Local execution...
                 {
                     // Create the transformation from meta-data
-                    Trans trans = new Trans(logwriter, transMeta);
+                    Trans trans = new Trans(transMeta);
                     
                     if (parentJob.getJobMeta().isBatchIdPassed())
                     {

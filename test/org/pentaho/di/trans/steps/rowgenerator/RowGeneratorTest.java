@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -134,7 +133,6 @@ public class RowGeneratorTest extends TestCase
 	 */
     public void testRowGenerator() throws Exception
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
 
         //
@@ -186,7 +184,7 @@ public class RowGeneratorTest extends TestCase
         transMeta.addTransHop(hi);
                 
         // Now execute the transformation...
-        Trans trans = new Trans(log, transMeta);
+        Trans trans = new Trans(transMeta);
 
         trans.prepareExecution(null);
                 

@@ -163,7 +163,7 @@ public class TimedTransRunner
         }
         
         // OK, now run this transFormation.
-        Trans trans = new Trans(LogWriter.getInstance(), newTransMeta);
+        Trans trans = new Trans(newTransMeta);
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(newRowListenerStep))

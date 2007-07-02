@@ -486,7 +486,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         TableInputMeta oneMeta = new TableInputMeta();
         getInfo(oneMeta);
         
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
         
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages.getString("TableInputDialog.EnterPreviewSize"), Messages.getString("TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
         int previewSize = numberDialog.open();

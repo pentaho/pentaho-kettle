@@ -80,7 +80,7 @@ public class AddTransServlet extends HttpServlet
             
             // Create the transformation and store in the list...
             //
-            Trans trans = new Trans(log, transMeta);
+            Trans trans = new Trans(transMeta);
             
             Trans oldOne = transformationMap.getTransformation(trans.getName());
             if ( oldOne!=null && !oldOne.isFinished())

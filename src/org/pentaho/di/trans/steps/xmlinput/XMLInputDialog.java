@@ -1278,7 +1278,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			if (!checkInputPositionsFilled(oneMeta))
 				return;
 
-			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname
+			TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname
 					.getText());
 
 			EnterNumberDialog numberDialog = new EnterNumberDialog(shell, 500, Messages
