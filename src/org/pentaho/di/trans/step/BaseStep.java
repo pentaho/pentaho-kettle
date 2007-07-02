@@ -93,7 +93,7 @@ public class BaseStep extends Thread implements VariableSpace
     }
     
    /* public static final StepPluginMeta[] steps =
-        {
+      {
         new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages.getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
         new StepPluginMeta(DummyTransMeta.class, "Dummy", Messages.getString("BaseStep.TypeLongDesc.Dummy"), Messages.getString("BaseStep.TypeTooltipDesc.Dummy", Const.CR), "DUM.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(TableInputMeta.class, "TableInput", Messages.getString("BaseStep.TypeLongDesc.TableInput"), Messages.getString("BaseStep.TypeTooltipDesc.TableInput"), "TIP.png", CATEGORY_INPUT),
@@ -166,7 +166,7 @@ public class BaseStep extends Thread implements VariableSpace
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages.getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(AggregateRowsMeta.class, "AggregateRows", Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows", Const.CR), "AGG.png", CATEGORY_DEPRECATED),
                               
-        };*/
+      };*/
 
     public static final String category_order[] =
         {

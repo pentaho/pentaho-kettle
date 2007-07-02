@@ -238,7 +238,7 @@ public class TransDialog extends Dialog
         
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
-
+ 		wTabFolder.setSimple(false);
 
  		addTransTab();
 		addLogTab();

@@ -402,6 +402,20 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wAddOutput = new Button(shell, SWT.PUSH);
 		props.setLook(wAddOutput);
 		wAddOutput.setText(Messages.getString("MappingDialog.button.AddOutput"));
+		
+		wAddOutput.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				
+				// Simply add a new MappingIODefinition object to the inputMappings
+				MappingIODefinition definition = new MappingIODefinition();
+				outputMappings.add(definition);
+				int index = outputMappings.size()-1;
+				addOutputMappingDefinitionTab(definition, index);
+			}
+		
+		});
         
 		setButtonPositions(new Button[] { wAddInput, wAddOutput}, margin, wTabFolder);
 		
@@ -432,6 +446,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
 		getData();
 		mappingMeta.setChanged(changed);
+		wTabFolder.setSelection(0);
 	
 		shell.open();
 		while (!shell.isDisposed())
@@ -1073,6 +1088,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		
 		});
+        
+        wTabFolder.setSelection(wTab);
         
 	}
 	

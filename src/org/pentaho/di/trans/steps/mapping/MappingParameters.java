@@ -28,6 +28,9 @@ public class MappingParameters implements Cloneable {
 	
 	public MappingParameters() {
 		super();
+		
+		variable = new String[] {};
+		input = new String[] {};
 	}
 	
 	@Override

@@ -69,6 +69,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	public MappingMeta()
 	{
 		super(); // allocate BaseStepMeta
+		
+		inputMappings = new ArrayList<MappingIODefinition>();
+    	outputMappings = new ArrayList<MappingIODefinition>();
+    	mappingParameters = new MappingParameters();
 	}
  
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
@@ -171,8 +175,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     
     public void allocate()
     {
-    	inputMappings = new ArrayList<MappingIODefinition>();
-    	outputMappings = new ArrayList<MappingIODefinition>();
     }
 
     public String getXML()
