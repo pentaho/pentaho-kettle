@@ -85,7 +85,6 @@ public class BaseStep extends Thread implements VariableSpace
 	    		//annotated classes first
 	    		ConfigManager<?> stepsAnntCfg = KettleConfig.getInstance().getManager("step-annotation-config");
 	    		Collection<StepPluginMeta> mainSteps = stepsAnntCfg.loadAs(StepPluginMeta.class);
-	    		System.out.println(mainSteps.iterator().next().getTooltipDesc());
 	    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getManager("steps-xml-config");
 	    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
 	    		
