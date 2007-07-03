@@ -13,3 +13,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - Fix for bug #5771: throw an exception in getRowFrom() when called for unknown hop - Sven B - 2007-Jun-15
 - Fix for WaitForFile bug: the old version would check the file once and afterwards would return
   the cached result - Sven B - 2007-Jun-20
+- Fix for #5795 - Appending to an existing file is not working - Samatar S - 2007-Jul-2
