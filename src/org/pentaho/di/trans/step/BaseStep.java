@@ -60,7 +60,7 @@ public class BaseStep extends Thread implements VariableSpace
 {
 	private VariableSpace variables = new Variables();
 	
-    public static final String CATEGORY_INPUT          = Messages.getString("BaseStep.Category.Input");
+   /* public static final String CATEGORY_INPUT          = Messages.getString("BaseStep.Category.Input");
     public static final String CATEGORY_OUTPUT         = Messages.getString("BaseStep.Category.Output");
     public static final String CATEGORY_TRANSFORM      = Messages.getString("BaseStep.Category.Transform");
     public static final String CATEGORY_SCRIPTING      = Messages.getString("BaseStep.Category.Scripting");
@@ -71,8 +71,9 @@ public class BaseStep extends Thread implements VariableSpace
     public static final String CATEGORY_MAPPING        = Messages.getString("BaseStep.Category.Mapping");
     public static final String CATEGORY_INLINE         = Messages.getString("BaseStep.Category.Inline");
     public static final String CATEGORY_EXPERIMENTAL   = Messages.getString("BaseStep.Category.Experimental");
-    public static final String CATEGORY_DEPRECATED     = Messages.getString("BaseStep.Category.Deprecated");
+    public static final String CATEGORY_DEPRECATED     = Messages.getString("BaseStep.Category.Deprecated");*/
 
+    
     public static StepPluginMeta[] steps = null;
     
     static
@@ -87,9 +88,9 @@ public class BaseStep extends Thread implements VariableSpace
 	    		Collection<StepPluginMeta> mainSteps = stepsAnntCfg.loadAs(StepPluginMeta.class);
 	    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getManager("steps-xml-config");
 	    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
-	    		
+	    	
 	    		mainSteps.addAll(csteps);
-	    		
+	    
 	    		steps = mainSteps.toArray(new StepPluginMeta[mainSteps.size()]);
 	    	}
 	    	catch(KettleConfigException e)
@@ -177,20 +178,20 @@ public class BaseStep extends Thread implements VariableSpace
       };*/
 
     public static final String category_order[] =
-        {
-            CATEGORY_INPUT,
-            CATEGORY_OUTPUT,
-            CATEGORY_LOOKUP,
-            CATEGORY_TRANSFORM,
-            CATEGORY_JOINS,
-            CATEGORY_SCRIPTING,
-            CATEGORY_DATA_WAREHOUSE,
-            CATEGORY_MAPPING,
-            CATEGORY_JOB,
-            CATEGORY_INLINE,
-            CATEGORY_EXPERIMENTAL,
-            CATEGORY_DEPRECATED,
-        };
+    {
+        StepCategory.INPUT.getName(),
+        StepCategory.OUTPUT.getName(),
+        StepCategory.LOOKUP.getName(),
+        StepCategory.TRANSFORM.getName(),
+        StepCategory.JOINS.getName(),
+        StepCategory.SCRIPTING.getName(),
+        StepCategory.DATA_WAREHOUSE.getName(),
+        StepCategory.MAPPING.getName(),
+        StepCategory.JOB.getName(),
+        StepCategory.INLINE.getName(),
+        StepCategory.EXPERIMENTAL.getName(),
+        StepCategory.DEPRECATED.getName(),
+    };
 
     private static final int             MIN_PRIORITY            = 1;
     private static final int             LOW_PRIORITY            = 3;
