@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -36,6 +37,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepCategory;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -46,6 +48,8 @@ import org.w3c.dom.Node;
 /*
  * Created on 4-apr-2003
  */
+@Step(name="RowGenerator",image="GEN.png",tooltip="BaseStep.TypeTooltipDesc.GenerateRows",description="BaseStep.TypeLongDesc.GenerateRows",
+		category=StepCategory.INPUT)
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private  String rowLimit;
