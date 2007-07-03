@@ -3181,30 +3181,49 @@ public class Database implements VariableSpace
 		}
 	}
 
+	public RowMeta getMetaFromRow( Object[] row, ResultSetMetaData md ) throws SQLException {
+		RowMeta meta = new RowMeta();
+		
+		for( int i=0; i<md.getColumnCount(); i++ ) {
+           	String name = md.getColumnName(i+1);
+           	ValueMetaInterface valueMeta = getValueFromSQLType( name, md, i+1, true );
+           	meta.addValueMeta( valueMeta );
+		}
+
+		return meta;
+	}
+	
 	public RowMetaAndData getOneRow(String sql, RowMetaInterface param, Object[] data) throws KettleDatabaseException
 	{
 		ResultSet rs = openQuery(sql, param, data);
 		if (rs!=null)
 		{		
 			Object[] row = getRow(rs); // One value: a number;
-			try { rs.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close resultset", e); }
 			
-			if (pstmt!=null)
-			{
-				try { pstmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement pstmt", e); }
-				pstmt=null;
-			}
-			if (sel_stmt!=null)
-			{
-				try { sel_stmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement sel_stmt", e); }
-				sel_stmt=null;
-			}
             rowMeta=null;
-            // we need a RowMeta object for the result otherwise
-            RowMeta tmpMeta = new RowMeta();
-            // is this always an integer?
-            ValueMeta valueMeta = new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER, 16, 8 );
-            tmpMeta.addValueMeta(valueMeta);
+            RowMeta tmpMeta = null;
+        	try {
+
+                ResultSetMetaData md = rs.getMetaData();
+                tmpMeta = getMetaFromRow( row, md );
+
+            } catch (Exception e) {
+        		e.printStackTrace();
+        	} finally {
+    			try { rs.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close resultset", e); }
+    			
+    			if (pstmt!=null)
+    			{
+    				try { pstmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement pstmt", e); }
+    				pstmt=null;
+    			}
+    			if (sel_stmt!=null)
+    			{
+    				try { sel_stmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement sel_stmt", e); }
+    				sel_stmt=null;
+    			}
+        		
+        	}
             
 			return new RowMetaAndData(tmpMeta, row);
 		}
