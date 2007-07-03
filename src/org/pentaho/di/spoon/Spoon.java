@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -143,7 +144,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ImageUtil;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -819,11 +819,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         TransMeta[] transMetas = getLoadedTransformations();
         JobMeta[] jobMetas = getLoadedJobs();
         if ( (transMetas==null || transMetas.length==0) && (jobMetas==null || jobMetas.length==0)) return;
-        
-        KettleVariables kettleVariables = KettleVariables.getInstance();
+
         Properties sp = new Properties();
-        sp.putAll(kettleVariables.getProperties());
         sp.putAll(System.getProperties());
+
+        VariableSpace space = Variables.getADefaultVariableSpace();       
+        String keys[] = space.listVariables();
+        for ( int i=0; i<keys.length; i++ )
+        {
+            sp.put(keys[i], space.getVariable(keys[i]));
+        }
         
         for (int t=0;t<transMetas.length;t++)
         {
@@ -882,7 +887,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 
                 if (!Const.isEmpty(string))
                 {
-                    kettleVariables.setVariable(valueMeta.getName(), string);
+                	// TODO: no idea yet what to do with this.
+                    // kettleVariables.setVariable(valueMeta.getName(), string);
                 }
             }
         }
@@ -891,15 +897,23 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public void showVariables()
     {
         Properties sp = new Properties();
-        KettleVariables kettleVariables = KettleVariables.getInstance();
-        sp.putAll(kettleVariables.getProperties());
         sp.putAll(System.getProperties());
+        
+        VariableSpace space = Variables.getADefaultVariableSpace();
+        
+        String keys[] = space.listVariables();
+        for ( int i=0; i<keys.length; i++ )
+        {
+            sp.put(keys[i], space.getVariable(keys[i]));
+        }
 
         RowMetaAndData allVars = new RowMetaAndData();
         
-        for (String key : kettleVariables.getProperties().keySet())
+        Enumeration en = sp.keys();
+        while ( en.hasMoreElements())
         {
-            String value = kettleVariables.getVariable(key);
+        	String key = (String)en.nextElement();
+            String value = (String)sp.get(key);
             allVars.addValue(new ValueMeta(key, ValueMetaInterface.TYPE_STRING), value);
         }
         

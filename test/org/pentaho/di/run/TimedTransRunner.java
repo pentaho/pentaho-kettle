@@ -8,13 +8,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
-
 
 public class TimedTransRunner
 {
@@ -65,11 +63,6 @@ public class TimedTransRunner
         
         LogWriter.getInstance(logLevel);
         be.ibridge.kettle.core.LogWriter.getInstance(logLevel);
-        
-        // Set environment variables ${NR_OF_ROWS}
-        //
-        KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
-        be.ibridge.kettle.core.KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
     }
     
     public void printOldTransDescription()
@@ -164,6 +157,7 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(newTransMeta);
+        trans.setVariable("NR_OF_ROWS", Long.toString(records));
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(newRowListenerStep))

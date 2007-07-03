@@ -14,7 +14,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -251,9 +252,13 @@ public class TransExecutionConfiguration implements Cloneable
     public void getUsedVariables(TransMeta transMeta)
     {
         Properties sp = new Properties();
-        KettleVariables kettleVariables = KettleVariables.getInstance();
-        sp.putAll(kettleVariables.getProperties());
-        sp.putAll(System.getProperties());
+        VariableSpace space = Variables.getADefaultVariableSpace();
+        
+        String keys[] = space.listVariables();
+        for ( int i=0; i<keys.length; i++ )
+        {
+            sp.put(keys[i], space.getVariable(keys[i]));
+        }
  
         List<String> vars = transMeta.getUsedVariables();
         if (vars!=null && vars.size()>0)

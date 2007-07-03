@@ -58,7 +58,6 @@ import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.variables.KettleVariables;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
@@ -497,7 +496,7 @@ public class TransLog extends Composite implements TabItemInterface
 						RowMetaAndData arguments = executionConfiguration.getArguments();
                         final String args[];
 						if (arguments != null) args = convertArguments(arguments); else args = null;
-                        setVariables(executionConfiguration);
+                        setVariables(trans, executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
@@ -612,10 +611,28 @@ public class TransLog extends Composite implements TabItemInterface
         trans.startThreads();
     }
 
-    private void setVariables(TransExecutionConfiguration executionConfiguration)
+    /**
+     * Set the variables defined in the row values
+     * @param variables row of values with the name containing the name of the variable and the string the variable value.
+     */
+    private void setVariables(VariableSpace space, RowMetaAndData variables)
+    {
+        for (int i=0;i<variables.size();i++)
+        {
+            try
+            {
+                space.setVariable(variables.getValueMeta(i).getName(), variables.getString(i, ""));
+            }
+            catch (KettleValueException e)
+            {
+            }
+        }
+    }    
+    
+    private void setVariables(VariableSpace space, TransExecutionConfiguration executionConfiguration)
     {
         RowMetaAndData variables = executionConfiguration.getVariables();
-        KettleVariables.getInstance().setVariables(variables);
+        setVariables(space, variables);
     }
 
     public RowMetaAndData getArguments(TransMeta transMeta)
@@ -814,7 +831,7 @@ public class TransLog extends Composite implements TabItemInterface
 				{
 					args = convertArguments(arguments);
                 }
-                setVariables(executionConfiguration);
+                setVariables(trans, executionConfiguration);
 
 				// SB: don't set it to the first tabfolder
                 // spoon.tabfolder.setSelection(1);

@@ -12,8 +12,6 @@ import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.variables.KettleVariables;
-import org.pentaho.di.core.variables.LocalVariables;
 import org.pentaho.di.version.BuildVersion;
 
 public class EnvUtil
@@ -66,32 +64,25 @@ public class EnvUtil
     public static void environmentInit()
 	{
 		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
-        System.getProperties().putAll(kettleProperties);
-        
-        // OK, initialize the KettleVariables as well...
-        LocalVariables local = LocalVariables.getInstance();
-        KettleVariables variables = local.createKettleVariables(Thread.currentThread().getName(), null, false);
-
-        // add a bunch of internal variables...
-        addInternalVariables(variables);
+        System.getProperties().putAll(kettleProperties);        
 	}
 
     /**
      * Add a number of internal variables to the Kettle Variables at the root.
      * @param variables
      */
-    public static void addInternalVariables(KettleVariables variables)
+    public static void addInternalVariables(Properties prop)
     {
         // Add a bunch of internal variables
         
         // The Kettle version
-        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
 
         // The Kettle build version
-        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
 
         // The Kettle build date
-        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
+        prop.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
     }
 
     /**
@@ -144,12 +135,10 @@ public class EnvUtil
     @SuppressWarnings({"unchecked"})
     public static final String[] getEnvironmentVariablesForRuntimeExec()
     {
-        KettleVariables vars = KettleVariables.getInstance();
-        
         Properties sysprops = new Properties();
         sysprops.putAll( getEnv() );
         sysprops.putAll( System.getProperties() );
-        sysprops.putAll( vars.getProperties() );
+        addInternalVariables(sysprops);
         
         String[] envp = new String[sysprops.size()];
         List<String> list = new ArrayList(sysprops.keySet());
