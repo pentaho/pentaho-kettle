@@ -1,5 +1,9 @@
 package org.pentaho.di.core.config;
 
+import java.util.Collection;
+
+import org.pentaho.di.core.exception.KettleConfigException;
+
 /**
  * A base class for <code>ConfigManager</code> to derive from.
  * 
@@ -23,5 +27,21 @@ public abstract class BasicConfigManager<T> implements ConfigManager<T>
 	{
 		this.id = id;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <E> Collection<E> loadAs(Class<? extends E> type) throws KettleConfigException
+	{
+		Collection<T> coll = load();
+		for (T obj:coll)
+		{
+			if (obj.getClass().isAssignableFrom(type))
+				return (Collection<E>)coll;
+			
+			break;
+		}
+		
+		throw new KettleConfigException(type + " is not a valid class type for the configurations elements loaded!");
+	}
+
 	
 }

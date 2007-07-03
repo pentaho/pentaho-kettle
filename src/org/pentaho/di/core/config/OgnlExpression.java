@@ -26,11 +26,11 @@ public class OgnlExpression
 
     public Object getValue(OgnlContext context, Object rootObject) throws OgnlException
     {
-        return Ognl.getValue(getExpression(), context, rootObject);
+        return Ognl.getValue(expression, context, rootObject);
     }
 
     public void setValue(OgnlContext context, Object rootObject, Object value) throws OgnlException
     {
-        Ognl.setValue(getExpression(), context, rootObject, value);
+        Ognl.setValue(expression, context, rootObject, value);
     }
 }

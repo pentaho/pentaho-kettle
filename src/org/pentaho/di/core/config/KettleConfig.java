@@ -5,6 +5,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,14 +18,18 @@ import org.xml.sax.Attributes;
 /**
  * The gateway for all configuration operations.
  * 
- *  <h3>Configuration Managers Property Injection:</h3>
- * This class reads "<property>" elements from kettle-config.xml and attemps to inject the value of such
- * fields into the corresponding <code>ConfigManager</code> implementation, following the rules established the @Inject annotation.
- *  
- *  @see org.pentaho.core.annotations.Inject
+ * <h3>Configuration Managers Property Injection:</h3>
+ * This class reads "<property>" elements from kettle-config.xml and attemps to
+ * inject the value of such fields into the corresponding
+ * <code>ConfigManager</code> implementation, following the rules established
+ * the
+ * 
+ * @Inject annotation.
+ * 
+ * @see org.pentaho.core.annotations.Inject
  * 
  * @author Alex Silva
- *
+ * 
  */
 public class KettleConfig
 {
@@ -36,7 +41,7 @@ public class KettleConfig
 
 	private static KettleConfig config;
 
-	private Map<String, ConfigManager> configs = new HashMap<String, ConfigManager>();
+	private Map<String, ConfigManager<?>> configs = new HashMap<String, ConfigManager<?>>();
 
 	private KettleConfig()
 	{
@@ -49,6 +54,37 @@ public class KettleConfig
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String... args) throws Exception
+	{
+
+		Collection<ConfigManager<?>> configs = KettleConfig.getInstance().getManagers();
+		for (ConfigManager config:configs)
+		{
+			Collection c = config.load();
+			System.out.println(c);
+		}
+
+		/*
+		try
+		{
+			ApplicationContext context = new ClassPathXmlApplicationContext(
+			"classpath:cs/ucsd/bioinfo/config/context.xml");
+			
+			ConfigManager<?> stepsCfg = KettleConfig.getInstance().getLoader("steps-config");
+			Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
+			Class c = Class.forName("org.pentaho.di.trans.step.BaseStep");
+			Field field = c.getField("steps");
+			boolean isStatic = (field.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
+			field.set(isStatic?null:new Object(), csteps.toArray(new StepPluginMeta[csteps.size()]));
+			System.out.println(BaseStep.steps.length);
+
+		} catch (KettleConfigException e)
+		{
+			throw new RuntimeException(e.getMessage());
+		}*/
+
 	}
 
 	public static KettleConfig getInstance()
@@ -64,10 +100,19 @@ public class KettleConfig
 
 		return config;
 	}
-	
-	public ConfigManager<?> getLoader(String name) 
+
+	public ConfigManager<?> getManager(String name)
 	{
 		return configs.get(name);
+	}
+	
+	/**
+	 * Returns all loaders defined in kettle-config.xml.
+	 * @return
+	 */
+	public Collection<ConfigManager<?>> getManagers()
+	{
+		return configs.values();
 	}
 
 	private Digester createDigester()

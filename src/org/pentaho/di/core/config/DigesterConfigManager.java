@@ -1,8 +1,8 @@
 package org.pentaho.di.core.config;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.SetNextRule;
@@ -45,7 +45,7 @@ public class DigesterConfigManager<T> extends BasicConfigManager<T>
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
 		Digester digester = DigesterLoader.createDigester(loader.getResource(rulesURL));
-		final List<T> configObjs = new ArrayList<T>();
+		final Set<T> configObjs = new LinkedHashSet<T>();
 
 		digester.addRule(setNext, new SetNextRule("")
 		{
@@ -67,19 +67,5 @@ public class DigesterConfigManager<T> extends BasicConfigManager<T>
 		return configObjs;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <E> Collection<E> loadAs(Class<? extends E> type) throws KettleConfigException
-	{
-		Collection<T> coll = load();
-		for (T obj:coll)
-		{
-			if (obj.getClass().isAssignableFrom(type))
-				return (Collection<E>)coll;
-			
-			break;
-		}
-		
-		throw new KettleConfigException(type + " is not a valid class type for the configurations elements loaded!");
-	}
-
+	
 }
