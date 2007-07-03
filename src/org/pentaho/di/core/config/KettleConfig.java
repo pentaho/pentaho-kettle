@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.SetNextRule;
@@ -56,6 +57,8 @@ public class KettleConfig
 		}
 	}
 
+	
+
 	public static KettleConfig getInstance()
 
 	{
@@ -74,9 +77,10 @@ public class KettleConfig
 	{
 		return configs.get(name);
 	}
-	
+
 	/**
 	 * Returns all loaders defined in kettle-config.xml.
+	 * 
 	 * @return
 	 */
 	public Collection<ConfigManager<?>> getManagers()
