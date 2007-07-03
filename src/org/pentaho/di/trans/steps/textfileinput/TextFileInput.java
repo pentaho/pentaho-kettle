@@ -35,6 +35,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -599,7 +600,7 @@ public class TextFileInput extends BaseStep implements StepInterface
     public static final Object[] convertLineToRow(TextFileLine textFileLine, TextFileInputMeta info, RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr, FileErrorHandler errorHandler) throws KettleException
     {
         if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0) return null;
-        Object[] r = new Object[outputRowMeta.size()];
+        Object[] r = RowDataUtil.allocateRowData(outputRowMeta.size()); // over-allocate a bit in the row producing steps...
         
         int nrfields = info.getInputFields().length;
         int fieldnr;

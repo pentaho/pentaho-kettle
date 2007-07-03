@@ -23,6 +23,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -57,7 +58,7 @@ public class RowGenerator extends BaseStep implements StepInterface
     public static final RowMetaAndData buildRow(RowGeneratorMeta meta, RowGeneratorData data, List<CheckResult> remarks)
     {
         RowMetaInterface rowMeta=new RowMeta();
-        Object[] rowData = new Object[meta.getFieldName().length];
+        Object[] rowData = RowDataUtil.allocateRowData(meta.getFieldName().length);
         
         for (int i=0;i<meta.getFieldName().length;i++)
         {

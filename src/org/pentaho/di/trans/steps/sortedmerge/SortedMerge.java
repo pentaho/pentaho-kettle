@@ -15,10 +15,17 @@
  
 package org.pentaho.di.trans.steps.sortedmerge;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -58,128 +65,109 @@ public class SortedMerge extends BaseStep implements StepInterface
      */
     private synchronized Object[] getRowSorted() throws KettleException
     {
-        int smallestId = 0;
-        Object[] smallestRow = null;
-        
-        if (inputRowSets.size()==0) return null;
+        if (first) {
+        	first=false;
+        	
+        	// Read one row from all rowsets...
+        	data.sortedBuffer = new ArrayList<RowSetRow>();
+        	data.rowMeta = null;
+        	
+        	for (int i=0;i<inputRowSets.size() && !isStopped();i++) {
+        		
+        		RowSet rowSet = inputRowSets.get(i);
+        		if (!rowSet.isDone()) {
+	                RowMetaAndData row = getRowFrom(i);
+	                if (row!=null) {
+	                	// Add this row to the sortedBuffer...
+	                	// Which is not yet sorted, we'll get to that later.
+	                	//
+	                	data.sortedBuffer.add( new RowSetRow(rowSet, row.getRowMeta(), row.getData()) );
+	                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) row.getRowMeta().clone();
+	                	
+	                    // What fields do we compare on and in what order?
+	                    
+	                    // Better cache the location of the partitioning column
+	                    // First time operation only
+	                    //
+	                    if (data.fieldIndices==null)
+	                    {
+	                        // Get the indexes of the specified sort fields...
+	                        data.fieldIndices = new int[meta.getFieldName().length];
+	                        for (int f=0;f<data.fieldIndices.length;f++)
+	                        {
+	                            data.fieldIndices[f] = data.rowMeta.indexOfValue(meta.getFieldName()[f]);
+	                            if (data.fieldIndices[f]<0)
+	                            {
+	                                throw new KettleStepException("Unable to find fieldname ["+meta.getFieldName()[f]+"] in row : "+data.rowMeta);
+	                            }
+	                            
+	                            data.rowMeta.getValueMeta( data.fieldIndices[f] ).setSortedDescending( !meta.getAscending()[f] );
+	                        }
+	                    }
 
-        // Sort & binary search...
-        /*
-        Collections.sort(inputRowSets, data.rowComparator);
-        int idx = Collections.binarySearch(inputRowSets, new Row(), data.rowComparator);
-        */
-        
-        for (int i=0;i<inputRowSets.size();i++)
-        {
-            RowSet rowSet = (RowSet)inputRowSets.get(i);
+	                }
+                }
+        		
+        		data.comparator = new Comparator<RowSetRow>() {
+    				
+					public int compare(RowSetRow o1, RowSetRow o2) {
+						try {
+							return o1.getRowMeta().compare(o1.getRowData(), o2.getRowData(), data.fieldIndices);
+						} catch (KettleValueException e) {
+							return 0; // TODO see if we should fire off alarms over here... Perhaps throw a RuntimeException.
+						}
+					}
+			    };
+        		
+        		// Now sort the sortedBuffer for the first time.
+        		//
+        		Collections.sort(data.sortedBuffer, data.comparator);
+        	}
+        }
 
-            // First see if the input rowset is empty & done...
-            while (rowSet!=null && rowSet.isEmpty() && rowSet.isDone()) // nothing more here: remove it from input
-            {
-                inputRowSets.remove(i); // inputRowSets.size() became smaller!
-                if (inputRowSets.size()==0) // All done, no more rows to be found! 
-                {
-                    return null;
-                }
-                
-                if (i<inputRowSets.size())
-                {
-                    rowSet = (RowSet)inputRowSets.get(i);
-                }
-                else
-                {
-                    rowSet = null;
-                }
-            }
-
-            if (rowSet!=null)
-            {
-                // If it's empty : wait
-                int sleeptime=getTransMeta().getSleepTimeEmpty();
-                while (rowSet.isEmpty() && !stopped)
-                {
-                    try { if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
-                    catch(Exception e) 
-                    { 
-                        logError(Messages.getString("BaseStep.Log.SleepInterupted")+e.toString()); //$NON-NLS-1$
-                        setErrors(1); 
-                        stopAll(); 
-                        return null; 
-                    }
-                    if (sleeptime<100) sleeptime = ((int)(sleeptime*1.2))+1; else sleeptime=100; 
-                    setNrGetSleeps(getNrGetSleeps()+sleeptime);
-                }
-                
-                if (stopped) return null;
-                
-                // OK, now get the row and compare with smallest
-                Object[] row = rowSet.lookAtFirst();
-
-                if (data.rowMeta==null) {
-                	//get the RowMeta 
-                	data.rowMeta=rowSet.getRowMeta();
-                	// Set the sorted properties: ascending/descending
-                	meta.getFields(data.rowMeta, getStepname(), null, null, this);                	
-                }
-                
-                if (smallestRow==null)
-                {
-                    smallestRow = row;
-                    smallestId = i;
-                }
-                else
-                {
-                    // What fields do we compare on and in what order?
-    
-                    // Better cache the location of the partitioning column
-                    // First time operation only
-                    //
-                    if (data.fieldIndices==null)
-                    {
-                        // Get the indexes of the specified sort fields...
-                        data.fieldIndices = new int[meta.getFieldName().length];
-                        for (int f=0;f<data.fieldIndices.length;f++)
-                        {
-                            data.fieldIndices[f] = data.rowMeta.indexOfValue(meta.getFieldName()[f]);
-                            if (data.fieldIndices[f]<0)
-                            {
-                                throw new KettleStepException("Unable to find fieldname ["+meta.getFieldName()[f]+"] in row : "+row);
-                            }
-                        }
-                    }
-    
-                    // Do the compare.
-                    if (data.rowMeta.compare(row, smallestRow, data.fieldIndices)<0)
-                    {
-                        smallestRow = row;
-                        smallestId = i;
-                    }
-                }
-            }
+        // If our sorted buffer is empty, it means we're done...
+        //
+        if (data.sortedBuffer.isEmpty()) {
+        	return null;
         }
         
-        // OK then, take one row from the inputrow with the smallest record...
-        Object[] row = null;
-        if (!isSafeModeEnabled())
-        {
-        	row = ((RowSet)inputRowSets.get(smallestId)).getRow();
-        } 
-        else // OK, before we return the row, let's see if we need to check on mixing row compositions...
+        // now that we have all rows sorted, all we need to do is find out what the smallest row is.
+        // The smallest row is the first in our case...
+        //
+        RowSetRow smallestRow = data.sortedBuffer.get(0);
+        Object[] outputRowData = smallestRow.getRowData();
+
+        // We read another row from the row set where the smallest row came from.
+        // That we we exhaust all row sets.
+        //
+        RowMetaAndData extraRow = getRowFrom(smallestRow.getRowSet());
+        
+        // Add it to the sorted buffer in the right position...
+        //
+        if (extraRow!=null) {
+        	RowSetRow add = new RowSetRow(smallestRow.getRowSet(), extraRow.getRowMeta(), extraRow.getData());
+        	int index = Collections.binarySearch(data.sortedBuffer, add, data.comparator);
+        	if (index<0) {
+        		data.sortedBuffer.add(-index-1, add);
+        	} else
+        	{
+        		data.sortedBuffer.add(index, add);
+        	}
+        }
+        
+        // This concludes the regular program...
+        //
+        
+        // optionally perform safe mode checking to prevent problems.
+        // 
+        if (isSafeModeEnabled())
         {
         	// for checking we need to get data and meta
-        	RowSet rowSet=((RowSet)inputRowSets.get(smallestId));
-        	row = rowSet.getRow();
-            safeModeChecking(rowSet.getRowMeta());            
+        	//
+        	safeModeChecking(smallestRow.getRowMeta());            
         }
         
-        // Notify all rowlisteners...
-        for (int i=0;i<getRowListeners().size();i++)
-        {
-            RowListener rowListener = (RowListener)getRowListeners().get(i);
-            rowListener.rowReadEvent(data.rowMeta, row);
-        }
-        
-        return row;
+        return outputRowData;
     }
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException

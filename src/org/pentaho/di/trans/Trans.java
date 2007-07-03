@@ -922,7 +922,7 @@ public class Trans implements VariableSpace
 		{
 			StepMetaDataCombi sid = steps.get(i);
 			BaseStep rt=(BaseStep)sid.step;
-			rt.stopped=true;
+			rt.setStopped(true);
 
 			// Cancel queries etc. by force...
 			StepInterface si = (StepInterface)rt;

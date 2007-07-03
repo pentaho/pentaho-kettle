@@ -200,14 +200,10 @@ public class StreamLookup extends BaseStep implements StepInterface
     private Object[] lookupValues(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
 	{
 		// See if we need to stop.
-		if (stopped) return null;
+		if (isStopped()) return null;
 		
 		// Copy value references to lookup table.
-        Object[] lu = new Object[data.keynrs.length];
-		for (int i=0;i<meta.getKeystream().length;i++) 
-        {
-            lu[i] = row[data.keynrs[i]];
-        }
+        Object[] lu = RowDataUtil.resizeArray(row, data.keynrs.length);
 
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
         if (data.keyTypes!=null)

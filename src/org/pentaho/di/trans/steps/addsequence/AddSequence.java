@@ -87,7 +87,12 @@ public class AddSequence extends BaseStep implements StepInterface
 		
 		if (next!=null)
 		{
-			return RowDataUtil.addValueData(inputRowData, next );
+			Object[] outputRowData = inputRowData;
+			if (inputRowData.length<inputRowMeta.size()+1) {
+				outputRowData = RowDataUtil.resizeArray(inputRowData, inputRowMeta.size()+1);
+			}
+			outputRowData[inputRowMeta.size()]=next;
+			return outputRowData;
 		}
 		else
 		{

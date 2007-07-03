@@ -239,8 +239,8 @@ public class RowMeta implements RowMetaInterface
      */
     public Object[] cloneRow(Object[] objects) throws KettleValueException
     {
-        Object[] newObjects = new Object[objects.length];
-        for (int i=0;i<objects.length;i++)
+        Object[] newObjects = RowDataUtil.allocateRowData(size());
+        for (int i=0;i<valueMetaList.size();i++)
         {
             ValueMetaInterface valueMeta = getValueMeta(i);
             newObjects[i] = valueMeta.cloneValueData(objects[i]);

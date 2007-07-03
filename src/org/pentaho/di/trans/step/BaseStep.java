@@ -29,7 +29,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -240,15 +241,15 @@ public class BaseStep extends Thread implements VariableSpace
     public List<BaseStep>                thr;
 
     /** The rowsets on the input, size() == nr of source steps */
-    public List<RowSet> inputRowSets;
+    public ArrayList<RowSet> inputRowSets;
 
     /** the rowsets on the output, size() == nr of target steps */
-    public List<RowSet> outputRowSets;
+    public ArrayList<RowSet> outputRowSets;
 
     /** the rowset for the error rows */
     public RowSet errorRowSet;
 
-    public boolean                       stopped;
+    public AtomicBoolean                 stopped;
 
     public boolean                       waiting;
 
@@ -337,7 +338,20 @@ public class BaseStep extends Thread implements VariableSpace
     private RowMetaInterface errorRowMeta = null;
     private RowMetaInterface previewRowMeta;
 
-
+    private int putTimeOut; //s
+	private int getTimeOut; //s
+	private int singleWaitTime; //ms
+	private int maxPutWaitCount; 
+	private int maxGetWaitCount; 
+	private int count;
+	private TimeUnit timeUnit;
+	private int outputRowSetsSize;
+	private int inputRowSetsSize;
+	
+	private int rowListenersSize;
+	private boolean checkTransRunning;
+	private RowSet inRowSet;
+	private RowSet outRowSet;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -373,7 +387,7 @@ public class BaseStep extends Thread implements VariableSpace
 
         first = true;
 
-        stopped = false;
+        stopped = new AtomicBoolean(false);;
         init = false;
 
         linesRead = 0L; // Keep some statistics!
@@ -418,6 +432,18 @@ public class BaseStep extends Thread implements VariableSpace
         partitionColumnIndex = -1;
         partitionTargets = new Hashtable<String,RowSet>();
 
+        // tuning parameters
+	    putTimeOut = 10; //s
+	    getTimeOut = 500; //s
+	    timeUnit = TimeUnit.MILLISECONDS;
+	    // the smaller singleWaitTime, the faster the program run but cost CPU
+	    singleWaitTime = 1; //ms
+	    maxPutWaitCount = putTimeOut*1000/singleWaitTime; 
+	    maxGetWaitCount = getTimeOut*1000/singleWaitTime; 
+	    
+	    //worker = Executors.newFixedThreadPool(10);
+	    checkTransRunning = false;
+        
         dispatch();
     }
 
@@ -601,26 +627,31 @@ public class BaseStep extends Thread implements VariableSpace
      * @param row The row to put to the destination rowset(s).
      * @throws KettleStepException
      */
-    public synchronized void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
+    public void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
     {
-        // Have all threads started?
-        // Are we running yet?  If not, wait a bit until all threads have been started.
-        while (!trans.isRunning() && !stopped)
-        {
-            try { Thread.sleep(1); } catch (InterruptedException e) { }
-        }
+	    // Have all threads started?
+	    // Are we running yet?  If not, wait a bit until all threads have been started.
+	    if(this.checkTransRunning == false){
+	    	while (!trans.isRunning() && !stopped.get())
+	        {
+	            try { Thread.sleep(1); } catch (InterruptedException e) { }
+	        }
+	    	this.checkTransRunning = true;
+	    }
 
-        if (previewSize > 0 && previewBuffer.size() < previewSize)
+        if (previewSize > 0)
         {
-            try
-            {
-                if (previewRowMeta==null) previewRowMeta=(RowMetaInterface)rowMeta.clone();
-                previewBuffer.add(rowMeta.cloneRow(row));
-            }
-            catch (KettleValueException e)
-            {
-                throw new KettleStepException("Unable to clone row while adding rows to the preview buffer", e);
-            }
+        	if (previewBuffer.size() < previewSize) {
+	            try
+	            {
+	                if (previewRowMeta==null) previewRowMeta=(RowMetaInterface)rowMeta.clone();
+	                previewBuffer.add(rowMeta.cloneRow(row));
+	            }
+	            catch (KettleValueException e)
+	            {
+	                throw new KettleStepException("Unable to clone row while adding rows to the preview buffer", e);
+	            }
+        	}
         }
 
         // call all rowlisteners...
@@ -643,57 +674,13 @@ public class BaseStep extends Thread implements VariableSpace
             }
         }
 
-        if (outputRowSets.isEmpty())
-        {
-            // No more output rowsets!
-            return; // we're done here!
-        }
+	    if (outputRowSetsSize == 0)
+	    {
+	        // No more output rowsets!
+	        return; // we're done here!
+	    }
 
-        // Before we copy this row to output, wait for room...
-        for (int i = 0; i < outputRowSets.size(); i++) // Wait for all rowsets: keep synchronised!
-        {
-            int sleeptime = transMeta.getSleepTimeFull();
-            RowSet rs = (RowSet) outputRowSets.get(i);
-
-            // Set the priority every 128k rows only
-            //
-            if (transMeta.isUsingThreadPriorityManagment())
-            {
-                if (linesWritten>0 && (linesWritten & 0xFF) == 0)
-                {
-                    rs.setPriorityFrom(calcPutPriority(rs));
-                }
-            }
-
-            while (rs.isFull() && !stopped)
-            {
-                try
-                {
-                    if (sleeptime > 0)
-                    {
-                        sleep(0, sleeptime);
-                    }
-                    else
-                    {
-                        super.notifyAll();
-                    }
-                }
-                catch (Exception e)
-                {
-                    logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping") + e.toString()); //$NON-NLS-1$
-                    setErrors(1);
-                    stopAll();
-                    return;
-                }
-                nrPutSleeps += sleeptime;
-                if (sleeptime < 100)
-                    sleeptime = ((int) (sleeptime * 1.2)) + 1;
-                else
-                    sleeptime = 100;
-            }
-        }
-
-        if (stopped)
+        if (stopped.get())
         {
             if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
             stopAll();
@@ -707,7 +694,56 @@ public class BaseStep extends Thread implements VariableSpace
         //
         switch(repartitioning)
         {
+        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+        {
+            if (distributed)
+            {
+                // Copy the row to the "next" output rowset.
+                // We keep the next one in out_handling
+                RowSet rs = outputRowSets.get(out_handling);
+                
+                // Loop until we find room in the target rowset
+                //
+                while (!rs.putRow(rowMeta, row) && !isStopped());
+                linesWritten++;
+
+                // Now determine the next output rowset!
+                // Only if we have more then one output...
+                if (outputRowSets.size() > 1)
+                {
+                    out_handling++;
+                    if (out_handling >= outputRowSets.size()) out_handling = 0;
+                }
+            }
+            else
+            // Copy the row to all output rowsets!
+            {
+                // Copy to the row in the other output rowsets...
+                for (int i = 1; i < outputRowSets.size(); i++) // start at 1
+                {
+                    RowSet rs = outputRowSets.get(i);
+                    try
+                    {
+                        // Loop until we find room in the target rowset
+                        //
+                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped());
+                    }
+                    catch (KettleValueException e)
+                    {
+                        throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
+                    }
+                }
+
+                // set row in first output rowset
+                RowSet rs = outputRowSets.get(0);
+                while (!rs.putRow(rowMeta, row) && !isStopped());
+                linesWritten++;
+            }
+        }
+        break;
+
         case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
+        	
             {
                 // Do some pre-processing on the first row...
                 // This is only done once and should cost very little in terms of processing time.
@@ -747,7 +783,7 @@ public class BaseStep extends Thread implements VariableSpace
     
                     for (int r = 0; r < outputRowSets.size(); r++)
                     {
-                        RowSet rowSet = (RowSet) outputRowSets.get(r);
+                        RowSet rowSet = outputRowSets.get(r);
                         if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
                         {
                             // Find the target step metadata
@@ -779,8 +815,9 @@ public class BaseStep extends Thread implements VariableSpace
                 String targetPartition = partitionIDs[partitionNr];
     
                 // Put the row forward to the next step according to the partition rule.
-                RowSet rs = (RowSet) partitionTargets.get(targetPartition);
-                rs.putRow(rowMeta, row);
+                RowSet rs = partitionTargets.get(targetPartition);
+                
+                while (!rs.putRow(rowMeta, row) && !isStopped());
                 linesWritten++;
             }
             break;
@@ -790,50 +827,8 @@ public class BaseStep extends Thread implements VariableSpace
                 // 
                 for (int r = 0; r < outputRowSets.size(); r++)
                 {
-                    RowSet rowSet = (RowSet) outputRowSets.get(r);
-                    rowSet.putRow(rowMeta, row);
-                }
-            }
-            break;
-        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-            {
-                if (distributed)
-                {
-                    // Copy the row to the "next" output rowset.
-                    // We keep the next one in out_handling
-                    RowSet rs = (RowSet) outputRowSets.get(out_handling);
-                    rs.putRow(rowMeta, row);
-                    linesWritten++;
-    
-                    // Now determine the next output rowset!
-                    // Only if we have more then one output...
-                    if (outputRowSets.size() > 1)
-                    {
-                        out_handling++;
-                        if (out_handling >= outputRowSets.size()) out_handling = 0;
-                    }
-                }
-                else
-                // Copy the row to all output rowsets!
-                {
-                    // Copy to the row in the other output rowsets...
-                    for (int i = 1; i < outputRowSets.size(); i++) // start at 1
-                    {
-                        RowSet rs = (RowSet) outputRowSets.get(i);
-                        try
-                        {
-                            rs.putRow(rowMeta, rowMeta.cloneRow(row));
-                        }
-                        catch (KettleValueException e)
-                        {
-                            throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
-                        }
-                    }
-    
-                    // set row in first output rowset
-                    RowSet rs = (RowSet) outputRowSets.get(0);
-                    rs.putRow(rowMeta, row);
-                    linesWritten++;
+                    RowSet rowSet = outputRowSets.get(r);
+                    while (!rowSet.putRow(rowMeta, row) && !isStopped());
                 }
             }
             break;
@@ -873,8 +868,6 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public synchronized void putRowTo(RowMetaInterface rowMeta, Object[] row, int output_rowset_nr) throws KettleStepException
     {
-        int sleeptime;
-
         if (previewSize > 0 && previewBuffer.size() < previewSize)
         {
             try
@@ -888,6 +881,7 @@ public class BaseStep extends Thread implements VariableSpace
         }
 
         // call all rowlisteners...
+        //
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
@@ -909,35 +903,9 @@ public class BaseStep extends Thread implements VariableSpace
 
         if (outputRowSets.isEmpty()) return; // nothing to do here!
 
-        RowSet rs = (RowSet) outputRowSets.get(output_rowset_nr);
-        sleeptime = transMeta.getSleepTimeFull();
-        while (rs.isFull() && !stopped)
-        {
-            try
-            {
-                if (sleeptime > 0)
-                {
-                    sleep(0, sleeptime);
-                }
-                else
-                {
-                    super.notifyAll();
-                }
-            }
-            catch (Exception e)
-            {
-                logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping") + e.toString()); //$NON-NLS-1$
-                setErrors(1);
-                stopAll();
-                return;
-            }
-            nrPutSleeps += sleeptime;
-            if (sleeptime < 100)
-                sleeptime = ((int) (sleeptime * 1.2)) + 1;
-            else
-                sleeptime = 100;
-        }
-        if (stopped)
+        RowSet rs = outputRowSets.get(output_rowset_nr);
+        
+        if (stopped.get())
         {
             if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
             stopAll();
@@ -945,7 +913,8 @@ public class BaseStep extends Thread implements VariableSpace
         }
 
         // Don't distribute or anything, only go to this rowset!
-        rs.putRow(rowMeta, row);
+        //
+        while (!rs.putRow(rowMeta, row) && !isStopped());
         linesWritten++;
     }
 
@@ -979,7 +948,10 @@ public class BaseStep extends Thread implements VariableSpace
 
         linesRejected++;
 
-        if (errorRowSet!=null) errorRowSet.putRow(errorRowMeta, errorRowData);
+        if (errorRowSet!=null) {
+        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped());
+        	linesRejected++;
+        }
 
         verifyRejectionRates();
     }
@@ -1013,7 +985,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     private synchronized RowSet currentInputStream()
     {
-        return (RowSet) inputRowSets.get(in_handling);
+        return inputRowSets.get(in_handling);
     }
 
     /**
@@ -1038,92 +1010,45 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public synchronized Object[] getRow() throws KettleException
     {
-        int sleeptime;
-        int switches;
+	    if (stopped.get())
+	    {
+	        if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+	        stopAll();
+	        return null;
+	    }
+	    
+	    // Have all threads started?
+	    // Are we running yet?  If not, wait a bit until all threads have been started.
+	    if (this.checkTransRunning == false){
+	    	while (!trans.isRunning() && !stopped.get())
+	        {
+	            try { Thread.sleep(1); } catch (InterruptedException e) { }
+	        }
+	    	this.checkTransRunning = true;
+	    }
 
-        // Have all threads started?
-        // Are we running yet?  If not, wait a bit until all threads have been started.
-        while (!trans.isRunning() && !stopped)
-        {
-            try { Thread.sleep(1); } catch (InterruptedException e) { }
-        }
-
-        // If everything is finished, we can stop immediately!
-        if (inputRowSets.isEmpty())
-        {
-            return null;
-        }
+	    // If everything is finished, we can stop immediately!
+	    if (inputRowSetsSize == 0)
+	    {
+	        return null;
+	    }
 
         // What's the current input stream?
         RowSet in = currentInputStream();
-        switches = 0;
-        sleeptime = transMeta.getSleepTimeEmpty();
-        while (in.isEmpty() && !stopped)
+        Object[] row = in.getRow();
+        
+        while (!in.isDone() && row==null && !stopped.get())
         {
-            // in : empty
-            synchronized(in)
-            {
-                if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
-                {
-                    inputRowSets.remove(in_handling);
-                    if (inputRowSets.isEmpty()) // nothing more to be found!
-                    {
-                        return null;
-                    }
-                }
-            }
-            nextInputStream();
-            in = currentInputStream();
-            switches++;
-            if (switches >= inputRowSets.size()) // every n looks, wait a bit! Don't use too much CPU!
-            {
-                switches = 0;
-                try
-                {
-                    if (sleeptime > 0)
-                    {
-                        sleep(0, sleeptime);
-                    }
-                    else
-                    {
-                        super.notifyAll();
-                    }
-                }
-                catch (Exception e)
-                {
-                    logError(Messages.getString("BaseStep.Log.SleepInterupted") + e.toString()); //$NON-NLS-1$
-                    setErrors(1);
-                    stopAll();
-                    return null;
-                }
-                if (sleeptime < 100)
-                    sleeptime = ((int) (sleeptime * 1.2)) + 1;
-                else
-                    sleeptime = 100;
-                nrGetSleeps += sleeptime;
-            }
+        	row = in.getRow();
         }
-        if (stopped)
+        
+        if (stopped.get())
         {
             if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
             stopAll();
             return null;
         }
 
-        // Set the appropriate priority depending on the amount of data in the rowset:
-        // Only do this every 4096 rows...
-        // Mmm, the less we do it, the faster the tests run, let's leave this out for now ;-)
-        if (transMeta.isUsingThreadPriorityManagment())
-        {
-            if (linesRead>0 && (linesRead & 0xFF) == 0)
-            {
-                in.setPriorityTo(calcGetPriority(in));
-            }
-        }
-
-        // Get this row!
-        Object[] row = in.getRow();
-        
         // Also set the metadata on the first occurence.
         if (inputRowMeta==null) inputRowMeta=in.getRowMeta();
         
@@ -1212,7 +1137,7 @@ public class BaseStep extends Thread implements VariableSpace
      * The difference to getRowFrom is we only get the data, not the RowMeta.
      * We use this now and can optimize later on (now internally the RowMeta is there).
      */
-    public synchronized Object[] getRowDataFrom(String from) throws KettleRowException
+    public Object[] getRowDataFrom(String from) throws KettleRowException
     {
     	RowMetaAndData rmd=getRowFrom(from);
     	if (rmd!=null) {
@@ -1226,7 +1151,7 @@ public class BaseStep extends Thread implements VariableSpace
      * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
      * Otherwise it's the same as the other one.
      */
-    public synchronized RowMetaAndData getRowFrom(String from) throws KettleRowException
+    public RowMetaAndData getRowFrom(String from) throws KettleRowException
     {
         output_rowset_nr = findInputRowSetNumber(from, 0, stepname, 0);
         
@@ -1239,55 +1164,40 @@ public class BaseStep extends Thread implements VariableSpace
         return getRowFrom(output_rowset_nr);
     }
     
-    public synchronized RowMetaAndData getRowFrom(int input_rowset_nr)
+    public RowMetaAndData getRowFrom(int input_rowset_nr)
     {
-        // Read from one specific rowset
-        //
-        int sleeptime = transMeta.getSleepTimeEmpty();
+        RowSet in = inputRowSets.get(input_rowset_nr);
+        return getRowFrom(in);
+    }
 
-        RowSet in = (RowSet) inputRowSets.get(input_rowset_nr);
-        while (in.isEmpty() && !in.isDone() && !stopped)
+    public RowMetaAndData getRowFrom(RowSet rowSet) {
+        
+        Object[] row = rowSet.getRow();
+        while (row==null && !rowSet.isDone() && !stopped.get())
         {
-            try
-            {
-                if (sleeptime > 0)
-                {
-                    sleep(0, sleeptime);
-                }
-                else
-                {
-                    super.notifyAll();
-                }
-            }
-            catch (Exception e)
-            {
-                logError(Messages.getString("BaseStep.Log.SleepInterupted2", in.getOriginStepName()) + e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-                setErrors(1);
-                stopAll();
-                return null;
-            }
-            nrGetSleeps += sleeptime;
+        	row=rowSet.getRow();
         }
 
-        if (stopped)
+        if (stopped.get())
         {
-            logError(Messages.getString("BaseStep.Log.SleepInterupted3", in.getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Messages.getString("BaseStep.Log.SleepInterupted3", rowSet.getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$
             stopAll();
             return null;
         }
 
-        if (in.isEmpty() && in.isDone())
+        if (row==null && rowSet.isDone())
         {
-            inputRowSets.remove(input_rowset_nr);
+            inputRowSets.remove(rowSet);
             return null;
         }
 
-        Object[] rowData = in.getRow(); // Get this row!
-        RowMetaInterface rowMeta = in.getRowMeta();
+        Object[] rowData = rowSet.getRow(); // Get this row!
+        RowMetaInterface rowMeta = rowSet.getRowMeta();
         
         linesRead++;
 
         // call all rowlisteners...
+        //
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
@@ -1295,14 +1205,14 @@ public class BaseStep extends Thread implements VariableSpace
         }
 
         return new RowMetaAndData(rowMeta, rowData);
-    }
+	}
 
-    private synchronized int findInputRowSetNumber(String from, int fromcopy, String to, int tocopy)
+	private synchronized int findInputRowSetNumber(String from, int fromcopy, String to, int tocopy)
     {
         int i;
         for (i = 0; i < inputRowSets.size(); i++)
         {
-            RowSet rs = (RowSet) inputRowSets.get(i);
+            RowSet rs = inputRowSets.get(i);
             if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
                     && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return i;
         }
@@ -1314,7 +1224,7 @@ public class BaseStep extends Thread implements VariableSpace
         int i;
         for (i = 0; i < outputRowSets.size(); i++)
         {
-            RowSet rs = (RowSet) outputRowSets.get(i);
+            RowSet rs = outputRowSets.get(i);
             if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
                     && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return i;
         }
@@ -1332,7 +1242,7 @@ public class BaseStep extends Thread implements VariableSpace
         {
             for (int i = 0; i < outputRowSets.size(); i++)
             {
-                RowSet rs = (RowSet) outputRowSets.get(i);
+                RowSet rs = outputRowSets.get(i);
                 rs.setDone();
             }
             if (errorRowSet!=null) errorRowSet.setDone();
@@ -1357,8 +1267,8 @@ public class BaseStep extends Thread implements VariableSpace
         int nrInput = transMeta.findNrPrevSteps(stepMeta, true);
         int nrOutput = transMeta.findNrNextSteps(stepMeta);
 
-        inputRowSets = Collections.synchronizedList( new ArrayList<RowSet>() ); // new RowSet[nrinput];
-        outputRowSets = Collections.synchronizedList( new ArrayList<RowSet>() ); // new RowSet[nroutput+out_copies];
+        inputRowSets = new ArrayList<RowSet>();
+        outputRowSets = new ArrayList<RowSet>();
         errorRowSet = null;
         prevSteps = new StepMeta[nrInput];
         nextSteps = new StepMeta[nrOutput];
@@ -1537,6 +1447,16 @@ public class BaseStep extends Thread implements VariableSpace
                 }
             }
         }
+        
+	    // now trim the size of the rowsets
+	    inputRowSets.trimToSize();
+	    outputRowSets.trimToSize();
+	    
+	    outputRowSetsSize = outputRowSets.size();
+	    inputRowSetsSize = inputRowSets.size();
+	    rowListenersSize = rowListeners.size();
+	    if(inputRowSetsSize > 0) inRowSet = inputRowSets.get(0);
+	    if(outputRowSetsSize > 0) outRowSet = outputRowSets.get(0);
 
         logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
     }
@@ -1582,12 +1502,9 @@ public class BaseStep extends Thread implements VariableSpace
     public boolean outputIsDone()
     {
         int nrstopped = 0;
-        RowSet rs;
-        int i;
 
-        for (i = 0; i < outputRowSets.size(); i++)
+        for (RowSet rs : outputRowSets)
         {
-            rs = (RowSet) outputRowSets.get(i);
             if (rs.isDone()) nrstopped++;
         }
         return nrstopped >= outputRowSets.size();
@@ -1595,15 +1512,23 @@ public class BaseStep extends Thread implements VariableSpace
 
     public void stopAll()
     {
-        stopped = true;
+        stopped.set(true);
         trans.stopAll();
     }
 
     public boolean isStopped()
     {
-        return stopped;
+        return stopped.get();
     }
+    
+	public void setStopped(boolean stopped) {
+		this.stopped.set(stopped);
+	}
 
+	public void setStopped(AtomicBoolean stopped) {
+		this.stopped = stopped;
+	}
+	
     public boolean isInitialising()
     {
         return init;
@@ -1761,7 +1686,7 @@ public class BaseStep extends Thread implements VariableSpace
         int i;
         for (i = 0; i < outputRowSets.size(); i++)
         {
-            size += ((RowSet) outputRowSets.get(i)).size();
+            size += outputRowSets.get(i).size();
         }
 
         return size;
@@ -1773,7 +1698,7 @@ public class BaseStep extends Thread implements VariableSpace
         int i;
         for (i = 0; i < inputRowSets.size(); i++)
         {
-            size += ((RowSet) inputRowSets.get(i)).size();
+            size += inputRowSets.get(i).size();
         }
 
         return size;
@@ -1840,7 +1765,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param inputRowSets The inputRowSets to set.
      */
-    public void setInputRowSets(List<RowSet> inputRowSets)
+    public void setInputRowSets(ArrayList<RowSet> inputRowSets)
     {
         this.inputRowSets = inputRowSets;
     }
@@ -1856,7 +1781,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param outputRowSets The outputRowSets to set.
      */
-    public void setOutputRowSets(List<RowSet> outputRowSets)
+    public void setOutputRowSets(ArrayList<RowSet> outputRowSets)
     {
         this.outputRowSets = outputRowSets;
     }
@@ -2192,5 +2117,7 @@ public class BaseStep extends Thread implements VariableSpace
   public String getTypeId() {
     return this.getStepID();
   }
+
+
   
 }

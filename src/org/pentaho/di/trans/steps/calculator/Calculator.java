@@ -184,11 +184,7 @@ public class Calculator extends BaseStep implements StepInterface
     private Object[] calcFields(RowMetaInterface inputRowMeta, Object[] r) throws KettleValueException
     {
         // First copy the input data to the new result...
-        Object[] calcData = new Object[data.calcRowMeta.size()];
-        for (int i=0;i<inputRowMeta.size();i++)
-        {
-            calcData[i] = r[i];
-        }
+        Object[] calcData = RowDataUtil.resizeArray(r, data.calcRowMeta.size());
 
         for (int i=0, index=inputRowMeta.size()+i;i<meta.getCalculation().length;i++, index++)
         {
