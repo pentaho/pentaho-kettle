@@ -1,7 +1,7 @@
 <kettle-config>
 
 	<!--  This adds classes annotated with the @Step annotation as a Kettle step -->
-	<config id="step-annotation-config">
+	<config id="steps-annotation-config">
 		<config-class>
 			org.pentaho.di.core.config.AnnotatedStepsConfigManager
 		</config-class>
