@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -78,15 +77,27 @@ public class BaseStep extends Thread implements VariableSpace
     
     static
     {
-    	try
+    	//TODO: Move this out of this class
+    	synchronized(BaseStep.class)
     	{
-    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getLoader("steps-config");
-    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
-    		steps = csteps.toArray(new StepPluginMeta[csteps.size()]);
-    	}
-    	catch(KettleConfigException e)
-    	{
-    		throw new RuntimeException(e.getMessage());
+    		try
+	    	{
+	    		//annotated classes first
+	    		ConfigManager<?> stepsAnntCfg = KettleConfig.getInstance().getManager("step-annotation-config");
+	    		Collection<StepPluginMeta> mainSteps = stepsAnntCfg.loadAs(StepPluginMeta.class);
+	    		System.out.println(mainSteps.iterator().next().getTooltipDesc());
+	    		ConfigManager<?> stepsCfg = KettleConfig.getInstance().getManager("steps-xml-config");
+	    		Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
+	    		
+	    		mainSteps.addAll(csteps);
+	    		
+	    		steps = mainSteps.toArray(new StepPluginMeta[mainSteps.size()]);
+	    	}
+	    	catch(KettleConfigException e)
+	    	{
+	    		e.printStackTrace();
+	    		throw new RuntimeException(e.getMessage());
+	    	}
     	}
     }
     
