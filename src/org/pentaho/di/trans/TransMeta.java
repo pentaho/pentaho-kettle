@@ -1901,10 +1901,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
-        /*
-         * 
-         * TODO: re-enable repository support
-         * 
         try
         {
             long dbids[] = rep.getDatabaseIDs();
@@ -1931,7 +1927,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         {
             throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
         }
-        */
     }
 
     /**
@@ -3000,9 +2995,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     
     public void readSharedObjects(Repository rep) throws KettleException
     {
-        /*
-         * TODO: re-enable this code.
-
     	if ( rep != null )
     	{
             sharedObjectsFile = rep.getTransAttributeString(getId(), 0, "SHARED_FILE");
@@ -3010,17 +3002,14 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
-        String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+        String soFile = environmentSubstitute(sharedObjectsFile);
         SharedObjects sharedObjects = new SharedObjects(soFile); 
-        Map objectsMap = sharedObjects.getObjectsMap();
-        Collection objects = objectsMap.values();
         
         // First read the databases...
         // We read databases & slaves first because there might be dependencies that need to be resolved.
         //
-        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        for (SharedObjectInterface object : sharedObjects.getObjectsMap().values())
         {
-            Object object = iter.next();
             if (object instanceof DatabaseMeta)
             {
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
@@ -3055,7 +3044,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             readSlaves(rep, true);
             readClusters(rep, true);
         }
-    */
     }
 
 
