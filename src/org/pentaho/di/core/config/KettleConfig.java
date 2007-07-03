@@ -56,37 +56,6 @@ public class KettleConfig
 		}
 	}
 
-	public static void main(String... args) throws Exception
-	{
-
-		Collection<ConfigManager<?>> configs = KettleConfig.getInstance().getManagers();
-		for (ConfigManager config:configs)
-		{
-			Collection c = config.load();
-			System.out.println(c);
-		}
-
-		/*
-		try
-		{
-			ApplicationContext context = new ClassPathXmlApplicationContext(
-			"classpath:cs/ucsd/bioinfo/config/context.xml");
-			
-			ConfigManager<?> stepsCfg = KettleConfig.getInstance().getLoader("steps-config");
-			Collection<StepPluginMeta> csteps = stepsCfg.loadAs(StepPluginMeta.class);
-			Class c = Class.forName("org.pentaho.di.trans.step.BaseStep");
-			Field field = c.getField("steps");
-			boolean isStatic = (field.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
-			field.set(isStatic?null:new Object(), csteps.toArray(new StepPluginMeta[csteps.size()]));
-			System.out.println(BaseStep.steps.length);
-
-		} catch (KettleConfigException e)
-		{
-			throw new RuntimeException(e.getMessage());
-		}*/
-
-	}
-
 	public static KettleConfig getInstance()
 
 	{
