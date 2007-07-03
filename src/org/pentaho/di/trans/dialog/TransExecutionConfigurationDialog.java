@@ -1,7 +1,11 @@
 package org.pentaho.di.trans.dialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -21,9 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dialog.ErrorDialog;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
@@ -388,22 +390,17 @@ public class TransExecutionConfigurationDialog extends Dialog
     private void getVariablesData()
     {
         wVariables.clearAll(false);
-        for (int i=0;i<configuration.getVariables().size();i++)
+        List<String> variableNames = new ArrayList<String>( configuration.getVariables().keySet() );
+        Collections.sort(variableNames);
+        
+        for (int i=0;i<variableNames.size();i++)
         {
-            ValueMetaInterface valueMeta = configuration.getVariables().getValueMeta(i);
-            Object valueData = configuration.getVariables().getData()[i];
-            
+        	String variableName = variableNames.get(i);
+        	String variableValue = configuration.getVariables().get(variableName);
+        	
             TableItem tableItem = new TableItem(wVariables.table, SWT.NONE);
-            tableItem.setText(1, valueMeta.getName());
-            try
-            {
-                tableItem.setText(2, Const.NVL(valueMeta.getString(valueData), ""));;
-            }
-            catch (KettleValueException e)
-            {
-            }
-            
-            
+            tableItem.setText(1, variableName);
+            tableItem.setText(2, Const.NVL(variableValue, ""));;
         }
         wVariables.removeEmptyRows();
         wVariables.setRowNums();
@@ -413,20 +410,18 @@ public class TransExecutionConfigurationDialog extends Dialog
     private void getArgumentsData()
     {
         wArguments.clearAll(false);
-        for (int i=0;i<configuration.getArguments().size();i++)
+        
+        List<String> argumentNames = new ArrayList<String>( configuration.getArguments().keySet() );
+        Collections.sort(argumentNames);
+        
+        for (int i=0;i<argumentNames.size();i++)
         {
-            ValueMetaInterface valueMeta = configuration.getVariables().getValueMeta(i);
-            Object valueData = configuration.getVariables().getData()[i];
-           
+        	String argumentName = argumentNames.get(i);
+        	String argumentValue = configuration.getArguments().get(argumentName);
+        	
             TableItem tableItem = new TableItem(wArguments.table, SWT.NONE);
-            tableItem.setText(1, valueMeta.getName());
-            try
-            {
-                tableItem.setText(2, Const.NVL(valueMeta.getString(valueData), ""));;
-            }
-            catch (KettleValueException e)
-            {
-            }
+            tableItem.setText(1, Const.NVL(argumentName, ""));
+            tableItem.setText(2, Const.NVL(argumentValue, ""));
         }
         wArguments.removeEmptyRows();
         wArguments.setRowNums();
@@ -591,7 +586,7 @@ public class TransExecutionConfigurationDialog extends Dialog
     
     private void getInfoVariables()
     {
-        RowMetaAndData row = new RowMetaAndData();
+        Map<String,String> map = new HashMap<String, String>();
         for (int i=0;i<wVariables.nrNonEmpty();i++)
         {
             TableItem tableItem = wVariables.getNonEmpty(i);
@@ -600,16 +595,15 @@ public class TransExecutionConfigurationDialog extends Dialog
             
             if (!Const.isEmpty(varName))
             {
-                ValueMeta valueMeta = new ValueMeta(varName, ValueMetaInterface.TYPE_STRING);
-                row.addValue(valueMeta, varValue);
+                map.put(varName, varValue);
             }
         }
-        configuration.setVariables(row);
+        configuration.setVariables(map);
     }
     
     private void getInfoArguments()
     {
-        RowMetaAndData row = new RowMetaAndData();
+    	Map<String,String> map = new HashMap<String, String>();
         for (int i=0;i<wArguments.nrNonEmpty();i++)
         {
             TableItem tableItem = wArguments.getNonEmpty(i);
@@ -618,11 +612,10 @@ public class TransExecutionConfigurationDialog extends Dialog
             
             if (!Const.isEmpty(varName))
             {
-                ValueMeta value = new ValueMeta(varName, ValueMetaInterface.TYPE_STRING);
-                row.addValue(value, varValue);
+                map.put(varName, varValue);
             }
         }
-        configuration.setArguments(row);
+        configuration.setArguments(map);
     }
 
     

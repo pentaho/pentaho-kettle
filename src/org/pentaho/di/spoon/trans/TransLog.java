@@ -19,8 +19,10 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -48,16 +50,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.core.dialog.EnterStringsDialog;
 import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
@@ -480,7 +478,7 @@ public class TransLog extends Composite implements TabItemInterface
 
 						trans = new Trans((VariableSpace)transMeta, spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 						trans.setReplayDate(executionConfiguration.getReplayDate());
-
+						trans.injectVariables(executionConfiguration.getVariables());
 						trans.setMonitored(true);
 						log.logBasic(toString(), Messages.getString("SpoonLog.Log.TransformationOpened")); //$NON-NLS-1$
 					}
@@ -493,10 +491,10 @@ public class TransLog extends Composite implements TabItemInterface
 					readLog();
 					if (trans != null)
 					{
-						RowMetaAndData arguments = executionConfiguration.getArguments();
+						Map<String,String> arguments = executionConfiguration.getArguments();
                         final String args[];
 						if (arguments != null) args = convertArguments(arguments); else args = null;
-                        setVariables(trans, executionConfiguration);
+                        setVariables(executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
@@ -611,37 +609,22 @@ public class TransLog extends Composite implements TabItemInterface
         trans.startThreads();
     }
 
-    /**
-     * Set the variables defined in the row values
-     * @param variables row of values with the name containing the name of the variable and the string the variable value.
-     */
-    private void setVariables(VariableSpace space, RowMetaAndData variables)
+    private void setVariables(TransExecutionConfiguration executionConfiguration)
     {
-        for (int i=0;i<variables.size();i++)
-        {
-            try
-            {
-                space.setVariable(variables.getValueMeta(i).getName(), variables.getString(i, ""));
-            }
-            catch (KettleValueException e)
-            {
-            }
-        }
-    }    
-    
-    private void setVariables(VariableSpace space, TransExecutionConfiguration executionConfiguration)
-    {
-        RowMetaAndData variables = executionConfiguration.getVariables();
-        setVariables(space, variables);
+        Map<String, String> variables = executionConfiguration.getVariables();
+        transMeta.injectVariables(variables);
     }
 
+    /*
     public RowMetaAndData getArguments(TransMeta transMeta)
 	{
 		// OK, see if we need to ask for some arguments first...
 		//
-		RowMetaAndData arguments = transMeta.getUsedArguments(spoon.getArguments());
+		Map<String,String> arguments = transMeta.getUsedArguments(spoon.getArguments());
 		if (arguments.size() > 0)
 		{
+			
+			
 			EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, arguments);
             esd.setReadOnly(false);
 			if (esd.open() == null)
@@ -655,6 +638,7 @@ public class TransLog extends Composite implements TabItemInterface
 		}
 		return arguments;
 	}
+	*/
 
 	public void checkErrors()
 	{
@@ -826,12 +810,12 @@ public class TransLog extends Composite implements TabItemInterface
                 log.setLogLevel(executionConfiguration.getLogLevel());
     			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
                 String[] args=null;
-				RowMetaAndData arguments = executionConfiguration.getArguments();
+				Map<String,String> arguments = executionConfiguration.getArguments();
 				if (arguments != null)
 				{
 					args = convertArguments(arguments);
                 }
-                setVariables(trans, executionConfiguration);
+                setVariables(executionConfiguration);
 
 				// SB: don't set it to the first tabfolder
                 // spoon.tabfolder.setSelection(1);
@@ -863,26 +847,16 @@ public class TransLog extends Composite implements TabItemInterface
         }
 	}
 
-	private String[] convertArguments(RowMetaAndData arguments)
+	private String[] convertArguments(Map<String, String> arguments)
 	{
-		String args[] = new String[10];
+		String[] argumentNames = arguments.keySet().toArray(new String[arguments.size()]);
+		Arrays.sort(argumentNames);
+		
+		String args[] = new String[argumentNames.length];
 		for (int i = 0; i < args.length; i++)
 		{
-			for (int v = 0; v < arguments.size(); v++)
-			{
-				ValueMetaInterface valueMeta = arguments.getValueMeta(v);
-				if (valueMeta.getName().equalsIgnoreCase("Argument " + (i + 1))) //$NON-NLS-1$
-				{
-					try
-                    {
-                        args[i] = arguments.getString(v, "");
-                    }
-                    catch (KettleValueException e)
-                    {
-                        args[i] = ""; // should never occur
-                    }
-				}
-			}
+			String argumentName = argumentNames[i];
+			args[i] = arguments.get(argumentName);
 		}
 		return args;
 	}

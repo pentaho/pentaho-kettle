@@ -15,6 +15,7 @@
 
 package org.pentaho.di.trans.steps.systemdata;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +23,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -417,14 +416,10 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
      *         Put up to 10 values in the row for the possible 10 arguments.
      *         The name of the value is "1" through "10" for the 10 possible arguments.
      */
-    public RowMetaAndData getUsedArguments()
+    public Map<String, String> getUsedArguments()
     {
-        RowMetaInterface rowMeta = new RowMeta();
-        Object[] rowData = new Object[10];
-        
-        // Put 10 values in the row for the possible 10 arguments.
-        // Set the type to ValueMetaInterface.TYPE_NONE if it's not used!
-        //
+    	Map<String, String> stepArgs = new HashMap<String, String>();
+    	
         for (int argNr=0;argNr<10;argNr++)
         {
             boolean found = false;
@@ -434,12 +429,11 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
             }
             if (found)
             {
-                rowMeta.addValueMeta( new ValueMeta(""+(argNr+1), ValueMetaInterface.TYPE_STRING) );
-                rowData[argNr] = null;
+            	stepArgs.put(""+(argNr+1), "");
             }
         }
         
-        return new RowMetaAndData(rowMeta, rowData);
+        return stepArgs;
     }
 
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

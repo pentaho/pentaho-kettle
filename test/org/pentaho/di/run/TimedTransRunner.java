@@ -147,6 +147,7 @@ public class TimedTransRunner
         if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
 
         newTransMeta = new TransMeta(filename);
+        newTransMeta.setVariable("NR_OF_ROWS", Long.toString(records));
         if (printDescription) printNewTransDescription();
 
         // Replace the TARGET database connection settings with the one provided

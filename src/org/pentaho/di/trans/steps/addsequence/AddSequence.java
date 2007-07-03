@@ -55,32 +55,27 @@ public class AddSequence extends BaseStep implements StepInterface
 	{
 		Object next = null;
 		
-		if (meta.isDatabaseUsed())
-		{
-			try
-			{
+		if (meta.isCounterUsed()) {
+			synchronized (data.counter) {
+				long prev = data.counter.getCounter();
+				
+				long nval = prev + meta.getIncrementBy();
+				if (meta.getIncrementBy() > 0 && meta.getMaxValue() > meta.getStartAt() && nval > meta.getMaxValue())
+					nval = meta.getStartAt();
+				if (meta.getIncrementBy() < 0 && meta.getMaxValue() < meta.getStartAt() && nval < meta.getMaxValue())
+					nval = meta.getStartAt();
+				data.counter.setCounter(nval);
+	
+				next = prev;
+			}
+		} else if (meta.isDatabaseUsed()) {
+			try {
 				next = data.getDb().getNextSequenceValue(meta.getSchemaName(), meta.getSequenceName(), meta.getValuename());
+			} catch (KettleDatabaseException dbe) {
+				throw new KettleStepException(Messages.getString(
+						"AddSequence.Exception.ErrorReadingSequence", meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			catch(KettleDatabaseException dbe)
-			{
-				throw new KettleStepException(Messages.getString("AddSequence.Exception.ErrorReadingSequence",meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-		else
-		if (meta.isCounterUsed())
-		{
-			Long prev = (Long)getTransMeta().getCounters().get(data.getLookup()).getCounter();
-			
-			//System.out.println("Found prev value: "+prev.longValue()+", increment_by = "+info.increment_by+", max_value = "+info.max_value);
-			long nval = prev.longValue() + meta.getIncrementBy();
-			if (meta.getIncrementBy()>0 && meta.getMaxValue()>meta.getStartAt() && nval>meta.getMaxValue()) nval=meta.getStartAt();
-			if (meta.getIncrementBy()<0 && meta.getMaxValue()<meta.getStartAt() && nval<meta.getMaxValue()) nval=meta.getStartAt();
-			getTransMeta().getCounters().put(data.getLookup(), new Counter(nval)); 
-
-			next = prev;
-		}
-		else
-		{
+		} else {
 			// This should never happen, but if it does, don't continue!!!
 			throw new KettleStepException(Messages.getString("AddSequence.Exception.NoSpecifiedMethod")); //$NON-NLS-1$
 		}
@@ -179,7 +174,8 @@ public class AddSequence extends BaseStep implements StepInterface
 				if (getTransMeta().getCounters()!=null)
 				{
 					Hashtable<String,Counter> counters = getTransMeta().getCounters();
-					counters.put(data.getLookup(), new Counter(meta.getStartAt()));
+					data.counter = new Counter(meta.getStartAt());
+					counters.put(data.getLookup(), data.counter);
 					return true;
 				}
 				else

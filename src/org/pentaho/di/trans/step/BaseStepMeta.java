@@ -16,8 +16,8 @@
 
 package org.pentaho.di.trans.step;
 import java.util.List;
+import java.util.Map;
 
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -217,9 +217,9 @@ public class BaseStepMeta implements Cloneable
      * 
      * @return A row of argument values. (name and optionally a default value)
      */
-    public RowMetaAndData getUsedArguments()
+    public Map<String,String> getUsedArguments()
     {
-        return new RowMetaAndData();
+        return null;
     }
 
     /**

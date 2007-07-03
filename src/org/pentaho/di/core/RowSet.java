@@ -69,7 +69,7 @@ public class RowSet
 
     public synchronized boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
-    	return putRowWait(rowMeta, rowData, 1, TimeUnit.SECONDS);
+    	return putRowWait(rowMeta, rowData, 1, TimeUnit.MILLISECONDS);
     }
     
     public boolean putRowImmediate(RowMetaInterface rowMeta, Object[] rowData){
@@ -103,10 +103,10 @@ public class RowSet
     }
     
     
-    // default getRow with wait time = 10s
+    // default getRow with wait time = 1ms
     //
     public Object[] getRow(){
-    	return getRowWait(1, TimeUnit.SECONDS);
+    	return getRowWait(1, TimeUnit.MILLISECONDS);
     }
     
     

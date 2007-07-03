@@ -50,6 +50,7 @@ import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -2530,7 +2531,7 @@ public class Database implements VariableSpace
 		try
 		{
 			int nrcols=rowInfo.size();
-			Object[] data = new Object[nrcols];
+			Object[] data = RowDataUtil.allocateRowData(nrcols);
             
 			if (rs.next())
 			{

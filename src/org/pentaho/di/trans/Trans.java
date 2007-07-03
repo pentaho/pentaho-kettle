@@ -36,10 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -1882,12 +1879,9 @@ public class Trans implements VariableSpace
                 if (executionConfiguration.isClusterPosting())
                 {
                     TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-                    RowMetaAndData variables = transConfiguration.getTransExecutionConfiguration().getVariables();
-                    variables.getRowMeta().addValueMeta(new ValueMeta(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, ValueMetaInterface.TYPE_STRING));
-                    variables.getRowMeta().addValueMeta(new ValueMeta(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, ValueMetaInterface.TYPE_STRING));
-                    Object[] data = RowDataUtil.addRowData(variables.getData(), new Object[] { Integer.toString(i), Integer.toString(slaves.length), });
-                    variables.setData(data);
-                    
+                    Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
+                    variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                     String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

@@ -125,7 +125,7 @@ public class ResolverUtil<T>
 		this.classloader = classloader;
 	}
 
-	public void findImplementations(Class parent, String... packageNames)
+	public void findImplementations(Class<?> parent, String... packageNames)
 	{
 		if (packageNames == null)
 			return;

@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.SetNextRule;
@@ -105,6 +104,7 @@ public class KettleConfig
 
 		digester.addRule(KETTLE_CONFIG, new SetNextRule("")
 		{
+			@SuppressWarnings("unchecked")
 			public void end(String nameSpace, String name) throws Exception
 			{
 				TempConfig cfg = (TempConfig) digester.peek();
@@ -125,7 +125,7 @@ public class KettleConfig
 		return digester;
 	}
 
-	private <E extends AccessibleObject> void inject(E[] elems, TempConfig cfg, ConfigManager parms)
+	private <E extends AccessibleObject> void inject(E[] elems, TempConfig cfg, ConfigManager<?> parms)
 			throws IllegalAccessException, InvocationTargetException
 	{
 		for (AccessibleObject elem : elems)

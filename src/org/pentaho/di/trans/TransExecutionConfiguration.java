@@ -1,19 +1,15 @@
 package org.pentaho.di.trans;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -36,8 +32,8 @@ public class TransExecutionConfiguration implements Cloneable
     private boolean     clusterStarting;
     private boolean     clusterShowingTransformation;
     
-    private RowMetaAndData arguments;
-    private RowMetaAndData variables;
+    private Map<String, String> arguments;
+    private Map<String, String> variables;
     
     private String[] previewSteps;
     private int[]    previewSizes;
@@ -52,8 +48,8 @@ public class TransExecutionConfiguration implements Cloneable
         clusterStarting = true;
         clusterShowingTransformation = false;
         
-        arguments = new RowMetaAndData();
-        variables = new RowMetaAndData();
+        arguments = new HashMap<String, String>();
+        variables = new HashMap<String, String>();
         
         previewSteps = new String[0];
         previewSizes = new int[0];
@@ -76,7 +72,7 @@ public class TransExecutionConfiguration implements Cloneable
     /**
      * @return the arguments
      */
-    public RowMetaAndData getArguments()
+    public Map<String, String> getArguments()
     {
         return arguments;
     }
@@ -84,7 +80,7 @@ public class TransExecutionConfiguration implements Cloneable
     /**
      * @param arguments the arguments to set
      */
-    public void setArguments(RowMetaAndData arguments)
+    public void setArguments(Map<String, String> arguments)
     {
         this.arguments = arguments;
     }
@@ -156,7 +152,7 @@ public class TransExecutionConfiguration implements Cloneable
     /**
      * @return the variables
      */
-    public RowMetaAndData getVariables()
+    public Map<String, String> getVariables()
     {
         return variables;
     }
@@ -164,7 +160,7 @@ public class TransExecutionConfiguration implements Cloneable
     /**
      * @param variables the variables to set
      */
-    public void setVariables(RowMetaAndData variables)
+    public void setVariables(Map<String, String> variables)
     {
         this.variables = variables;
     }
@@ -263,21 +259,18 @@ public class TransExecutionConfiguration implements Cloneable
         List<String> vars = transMeta.getUsedVariables();
         if (vars!=null && vars.size()>0)
         {
-            RowMetaInterface rowMeta = new RowMeta();
-            List<String> data = new ArrayList<String>();
-            
+        	HashMap<String, String> newVariables = new HashMap<String, String>();
+        	
             for (int i=0;i<vars.size();i++) 
             {
                 String varname = (String)vars.get(i);
                 if (!varname.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
                 {
-                    ValueMetaInterface varval = new ValueMeta(varname, ValueMetaInterface.TYPE_STRING);
-                    rowMeta.addValueMeta( varval );
-                    data.add(sp.getProperty(varname, ""));
+                	newVariables.put(varname, Const.NVL(variables.get(varname), sp.getProperty(varname, "")));
                 }
             }
             
-            variables = new RowMetaAndData(rowMeta, data.toArray(new String[data.size()]));
+            variables = newVariables;
         }
     }
     
@@ -483,31 +476,19 @@ public class TransExecutionConfiguration implements Cloneable
     
     public String[] getArgumentStrings()
     {
-        if (arguments==null || arguments.getRowMeta()==null || arguments.getData()==null) return null;
+        if (arguments==null || arguments.size()==0) return null;
         
-        RowMetaInterface rowMeta = arguments.getRowMeta();
+        String[] argNames = arguments.keySet().toArray(new String[arguments.size()]);
+        Arrays.sort(argNames);
         
-        String args[] = new String[10];
-        for (int i = 0; i < args.length; i++)
-        {
-            for (int v = 0; v < rowMeta.size(); v++)
-            {
-                ValueMetaInterface value = rowMeta.getValueMeta(v);
-                if (value.getName().equalsIgnoreCase("Argument " + (i + 1))) //$NON-NLS-1$
-                {
-                    try
-                    {
-                        args[i] = rowMeta.getString(arguments.getData(), i);
-                    }
-                    catch (KettleValueException e)
-                    {
-                        LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-                        args[i] = null;
-                    }
-                }
-            }
+        String[] values = new String[argNames.length];
+        for (int i=0;i<argNames.length;i++) {
+        	if (argNames[i].equalsIgnoreCase("Argument "+(i+1))) {
+        		values[i] = arguments.get(argNames[i]);
+        	}
         }
-        return args;
+        
+        return values;
     }
 
 }

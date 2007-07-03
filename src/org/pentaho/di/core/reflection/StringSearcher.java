@@ -27,7 +27,7 @@ public class StringSearcher
             
             if ( (field.getModifiers()&Modifier.FINAL ) > 0) processThisOne=false;
             if ( (field.getModifiers()&Modifier.STATIC) > 0) processThisOne=false;
-            if ( field.toString().indexOf("be.ibridge.kettle")<0 ) processThisOne=false; // Stay in this code-base.
+            if ( field.toString().indexOf("org.pentaho.di")<0 ) processThisOne=false; // Stay in this code-base.
             
             if (processThisOne)
             {

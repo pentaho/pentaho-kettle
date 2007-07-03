@@ -21,7 +21,6 @@ import java.util.Map;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -211,11 +210,11 @@ public interface StepMetaInterface
      * Implement this to notify the GUI that a window has to be displayed BEFORE launching a transformation.
      * You can also use this to specify certain Environment variable values.
      * 
-     * @return A row of argument values. (name and optionally a default value)
+     * @return A Map of argument values. (name and optionally a default value)
      *         Put 10 values in the row for the possible 10 arguments.
      *         Set the type to ValueMetaInterface.TYPE_NONE if it's not used!
      */
-    public RowMetaAndData getUsedArguments();
+    public Map<String, String> getUsedArguments();
     
     /**
      * The natural way of data flow in a transformation is source-to-target.

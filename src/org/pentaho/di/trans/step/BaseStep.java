@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.core.Const;
@@ -103,63 +102,6 @@ public class BaseStep extends Thread implements VariableSpace
     
    /* public static final StepPluginMeta[] steps =
       {
-        new StepPluginMeta(RowGeneratorMeta.class, "RowGenerator", Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), Messages.getString("BaseStep.TypeTooltipDesc.GenerateRows"), "GEN.png", CATEGORY_INPUT),
-        new StepPluginMeta(DummyTransMeta.class, "Dummy", Messages.getString("BaseStep.TypeLongDesc.Dummy"), Messages.getString("BaseStep.TypeTooltipDesc.Dummy", Const.CR), "DUM.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(TableInputMeta.class, "TableInput", Messages.getString("BaseStep.TypeLongDesc.TableInput"), Messages.getString("BaseStep.TypeTooltipDesc.TableInput"), "TIP.png", CATEGORY_INPUT),
-        new StepPluginMeta(SocketReaderMeta.class, "SocketReader", Messages.getString("BaseStep.TypeLongDesc.SocketReader"), Messages.getString("BaseStep.TypeTooltipDesc.SocketReader"), "SKR.png", CATEGORY_INLINE),
-        new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages.getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_INLINE),
-        new StepPluginMeta(SelectValuesMeta.class, "SelectValues", Messages.getString("BaseStep.TypeLongDesc.SelectValues"), Messages.getString("BaseStep.TypeTooltipDesc.SelectValues", Const.CR), "SEL.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages.getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
-        new StepPluginMeta(CalculatorMeta.class, "Calculator", Messages.getString("BaseStep.TypeLongDesc.Caculator"), Messages.getString("BaseStep.TypeTooltipDesc.Calculator"), "CLC.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(ConstantMeta.class, "Constant", Messages.getString("BaseStep.TypeLongDesc.AddConstants"), Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), "CST.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages.getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(AddSequenceMeta.class, "Sequence", Messages.getString("BaseStep.TypeLongDesc.AddSequence"), Messages.getString("BaseStep.TypeTooltipDesc.Addsequence"), "SEQ.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(TableOutputMeta.class, "TableOutput", Messages.getString("BaseStep.TypeLongDesc.Output"), Messages.getString("BaseStep.TypeTooltipDesc.TableOutput"), "TOP.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(SortRowsMeta.class, "SortRows", Messages.getString("BaseStep.TypeLongDesc.SortRows"), Messages.getString("BaseStep.TypeTooltipDesc.Sortrows"), "SRT.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages.getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),
-        new StepPluginMeta(InjectorMeta.class, "Injector", Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages.getString("BaseStep.TypeTooltipDesc.Injector"), "INJ.png", CATEGORY_INLINE),
-        new StepPluginMeta(FilterRowsMeta.class, "FilterRows", Messages.getString("BaseStep.TypeLongDesc.FilterRows"), Messages.getString("BaseStep.TypeTooltipDesc.FilterRows"), "FLT.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages.getString("BaseStep.TypeTooltipDesc.TextOutputFile"), "TFO.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(SystemDataMeta.class, "SystemInfo", Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), Messages.getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), "SYS.png", CATEGORY_INPUT),
-        new StepPluginMeta(StreamLookupMeta.class, "StreamLookup", Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"), "SLU.png", CATEGORY_LOOKUP),
-        new StepPluginMeta(UniqueRowsMeta.class, "Unique", Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows", Const.CR, Const.CR), "UNQ.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(DatabaseLookupMeta.class, "DBLookup", Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), "DLU.png", CATEGORY_LOOKUP),
-        new StepPluginMeta(DimensionLookupMeta.class, "DimensionLookup", Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate", Const.CR), "DIM.png", CATEGORY_DATA_WAREHOUSE),
-        new StepPluginMeta(ExcelInputMeta.class, "ExcelInput", Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), "XLI.png", CATEGORY_INPUT),
-        new StepPluginMeta(CombinationLookupMeta.class, "CombinationLookup", Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate", Const.CR, Const.CR), "CMB.png", CATEGORY_DATA_WAREHOUSE),
-        new StepPluginMeta(ScriptValuesMetaMod.class, new String[] { "ScriptValueMod", "ScriptValue", }, Messages.getString("BaseStep.TypeLongDesc.JavaScriptMod"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValueMod"), "SCR_mod.png", CATEGORY_SCRIPTING),
-        // new StepPluginMeta(ScriptValuesMeta.class, "ScriptValue", Messages.getString("BaseStep.TypeLongDesc.JavaScript"), Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), "SCR.png", CATEGORY_SCRIPTING),
-        new StepPluginMeta(JoinRowsMeta.class, "JoinRows", Messages.getString("BaseStep.TypeLongDesc.JoinRows"), Messages.getString("BaseStep.TypeTooltipDesc.JoinRows", Const.CR), "JRW.png", CATEGORY_JOINS),
-        new StepPluginMeta(UpdateMeta.class, "Update", Messages.getString("BaseStep.TypeLongDesc.Update"), Messages.getString("BaseStep.TypeTooltipDesc.Update"), "UPD.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(InsertUpdateMeta.class, "InsertUpdate", Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), Messages.getString("BaseStep.TypeTooltipDesc.InsertOrUpdate"), "INU.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(DeleteMeta.class, "Delete", Messages.getString("BaseStep.TypeLongDesc.Delete"), Messages.getString("BaseStep.TypeTooltipDesc.Delete"), "Delete.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(MappingInputMeta.class, "MappingInput", Messages.getString("BaseStep.TypeLongDesc.MappingInput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), "MPI.png", CATEGORY_MAPPING),
-        new StepPluginMeta(MappingMeta.class, "Mapping", Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), "MAP.png", CATEGORY_MAPPING),
-        new StepPluginMeta(MappingOutputMeta.class, "MappingOutput", Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), "MPO.png", CATEGORY_MAPPING),
-        new StepPluginMeta(SetVariableMeta.class, "SetVariable", Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), "SVA.png", CATEGORY_JOB),
-        new StepPluginMeta(GetVariableMeta.class, "GetVariable", Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.GetVariable"), "GVA.png", CATEGORY_JOB),
-        new StepPluginMeta(NullIfMeta.class, "NullIf", Messages.getString("BaseStep.TypeLongDesc.NullIf"), Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), "NUI.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(ExecSQLMeta.class, "ExecSQL", Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), "SQL.png", CATEGORY_SCRIPTING),
-        new StepPluginMeta(RowsFromResultMeta.class, "RowsFromResult", Messages.getString("BaseStep.TypeLongDesc.GetRows"), Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), "FCH.png", CATEGORY_JOB),
-        new StepPluginMeta(RowsToResultMeta.class, "RowsToResult", Messages.getString("BaseStep.TypeLongDesc.CopyRows"), Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult", Const.CR), "TCH.png", CATEGORY_JOB),
-        new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages.getString("BaseStep.TypeTooltipDesc.BlockingStep"), "BLK.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages.getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
-        new StepPluginMeta(MergeRowsMeta.class, "MergeRows", Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages.getString("BaseStep.TypeTooltipDesc.MergeRows"), "MRG.png", CATEGORY_JOINS),
-        new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), "GFN.png", CATEGORY_INPUT),
-        new StepPluginMeta(FilesFromResultMeta.class, "FilesFromResult", Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), "FFR.png", CATEGORY_JOB),
-        new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), "FTR.png", CATEGORY_JOB),
-        new StepPluginMeta(GroupByMeta.class, "GroupBy", Messages.getString("BaseStep.TypeLongDesc.GroupBy"), Messages.getString("BaseStep.TypeTooltipDesc.Groupby", Const.CR, Const.CR), "GRP.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), "MJOIN.png", CATEGORY_JOINS),
-        new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
-        new StepPluginMeta(XMLInputMeta.class, "XMLInput", Messages.getString("BaseStep.TypeLongDesc.XMLInput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), "XIN.png", CATEGORY_INPUT),
-        new StepPluginMeta(XMLInputSaxMeta.class, "XMLInputSax", Messages.getString("BaseStep.TypeLongDesc.XMLInputSax"), Messages.getString("BaseStep.TypeTooltipDesc.XMLInputSax"), "XIS.png", CATEGORY_INPUT),
-        new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), "XOU.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), "SMG.png", CATEGORY_JOINS),
-        new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), "XLO.png", CATEGORY_OUTPUT),
-        new StepPluginMeta(DBProcMeta.class, "DBProc", Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), "PRC.png", CATEGORY_LOOKUP),        
-        
-      
-            
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
@@ -193,16 +135,16 @@ public class BaseStep extends Thread implements VariableSpace
         StepCategory.DEPRECATED.getName(),
     };
 
-    private static final int             MIN_PRIORITY            = 1;
-    private static final int             LOW_PRIORITY            = 3;
-    private static final int             NORMAL_PRIORITY         = 5;
-    private static final int             HIGH_PRIORITY           = 7;
-    private static final int             MAX_PRIORITY            = 10;
-
-    public static final String[]         statusDesc              = { Messages.getString("BaseStep.status.Empty"),
-            Messages.getString("BaseStep.status.Init"), Messages.getString("BaseStep.status.Running"), Messages.getString("BaseStep.status.Idle"),
-            Messages.getString("BaseStep.status.Finished"), Messages.getString("BaseStep.status.Stopped"),
-            Messages.getString("BaseStep.status.Disposed"), Messages.getString("BaseStep.status.Halted"), };
+    public static final String[] statusDesc = { 
+    		Messages.getString("BaseStep.status.Empty"),
+            Messages.getString("BaseStep.status.Init"), 
+            Messages.getString("BaseStep.status.Running"), 
+            Messages.getString("BaseStep.status.Idle"),
+            Messages.getString("BaseStep.status.Finished"), 
+            Messages.getString("BaseStep.status.Stopped"),
+            Messages.getString("BaseStep.status.Disposed"), 
+            Messages.getString("BaseStep.status.Halted"), 
+    	};
 
     private TransMeta                    transMeta;
 
@@ -214,28 +156,34 @@ public class BaseStep extends Thread implements VariableSpace
 
     private Trans                        trans;
 
-    public List<Object[]>                     previewBuffer;
+    public List<Object[]>                previewBuffer;
 
     public int                           previewSize;
 
     /**  nr of lines read from previous step(s) */
     public long                          linesRead;
+    
     /** nr of lines written to next step(s) */
     public long                          linesWritten;
+    
     /** nr of lines read from file or database */
     public long                          linesInput;
+    
     /** nr of lines written to file or database */
     public long                          linesOutput;
+    
     /** nr of updates in a database table or file */
     public long                          linesUpdated;
+    
     /** nr of lines skipped */
     public long                          linesSkipped;
+    
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
     public long                          linesRejected;
+
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
-
-
     private long                         nrGetSleeps;
+
     /** total sleep time in ns cause by a full output buffer (next step is slow) */
     private long                         nrPutSleeps;
 
@@ -349,20 +297,20 @@ public class BaseStep extends Thread implements VariableSpace
     private RowMetaInterface errorRowMeta = null;
     private RowMetaInterface previewRowMeta;
 
-    private int putTimeOut; //s
-	private int getTimeOut; //s
-	private int singleWaitTime; //ms
-	private int maxPutWaitCount; 
-	private int maxGetWaitCount; 
-	private int count;
-	private TimeUnit timeUnit;
-	private int outputRowSetsSize;
-	private int inputRowSetsSize;
-	
-	private int rowListenersSize;
+    // private int putTimeOut; //s
+	// private int getTimeOut; //s
+	// private int singleWaitTime; //ms
+	// private int maxPutWaitCount; 
+	// private int maxGetWaitCount; 
+	// private int count;
+	// private TimeUnit timeUnit;
+	// private int outputRowSetsSize;
+	// private int inputRowSetsSize;
+    
 	private boolean checkTransRunning;
-	private RowSet inRowSet;
-	private RowSet outRowSet;
+	
+	// private RowSet inRowSet;
+	// private RowSet outRowSet;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -444,13 +392,13 @@ public class BaseStep extends Thread implements VariableSpace
         partitionTargets = new Hashtable<String,RowSet>();
 
         // tuning parameters
-	    putTimeOut = 10; //s
-	    getTimeOut = 500; //s
-	    timeUnit = TimeUnit.MILLISECONDS;
+	    // putTimeOut = 10; //s
+	    // getTimeOut = 500; //s
+	    // timeUnit = TimeUnit.MILLISECONDS;
 	    // the smaller singleWaitTime, the faster the program run but cost CPU
-	    singleWaitTime = 1; //ms
-	    maxPutWaitCount = putTimeOut*1000/singleWaitTime; 
-	    maxGetWaitCount = getTimeOut*1000/singleWaitTime; 
+	    // singleWaitTime = 1; //ms
+	    // maxPutWaitCount = putTimeOut*1000/singleWaitTime; 
+	    // maxGetWaitCount = getTimeOut*1000/singleWaitTime; 
 	    
 	    //worker = Executors.newFixedThreadPool(10);
 	    checkTransRunning = false;
@@ -685,7 +633,7 @@ public class BaseStep extends Thread implements VariableSpace
             }
         }
 
-	    if (outputRowSetsSize == 0)
+	    if (outputRowSets.size() == 0)
 	    {
 	        // No more output rowsets!
 	        return; // we're done here!
@@ -715,7 +663,7 @@ public class BaseStep extends Thread implements VariableSpace
                 
                 // Loop until we find room in the target rowset
                 //
-                while (!rs.putRow(rowMeta, row) && !isStopped());
+                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
                 linesWritten++;
 
                 // Now determine the next output rowset!
@@ -737,7 +685,7 @@ public class BaseStep extends Thread implements VariableSpace
                     {
                         // Loop until we find room in the target rowset
                         //
-                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped());
+                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) nrPutSleeps++;
                     }
                     catch (KettleValueException e)
                     {
@@ -747,7 +695,7 @@ public class BaseStep extends Thread implements VariableSpace
 
                 // set row in first output rowset
                 RowSet rs = outputRowSets.get(0);
-                while (!rs.putRow(rowMeta, row) && !isStopped());
+                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
                 linesWritten++;
             }
         }
@@ -828,7 +776,7 @@ public class BaseStep extends Thread implements VariableSpace
                 // Put the row forward to the next step according to the partition rule.
                 RowSet rs = partitionTargets.get(targetPartition);
                 
-                while (!rs.putRow(rowMeta, row) && !isStopped());
+                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
                 linesWritten++;
             }
             break;
@@ -839,7 +787,7 @@ public class BaseStep extends Thread implements VariableSpace
                 for (int r = 0; r < outputRowSets.size(); r++)
                 {
                     RowSet rowSet = outputRowSets.get(r);
-                    while (!rowSet.putRow(rowMeta, row) && !isStopped());
+                    while (!rowSet.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
                 }
             }
             break;
@@ -925,7 +873,7 @@ public class BaseStep extends Thread implements VariableSpace
 
         // Don't distribute or anything, only go to this rowset!
         //
-        while (!rs.putRow(rowMeta, row) && !isStopped());
+        while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
         linesWritten++;
     }
 
@@ -960,7 +908,7 @@ public class BaseStep extends Thread implements VariableSpace
         linesRejected++;
 
         if (errorRowSet!=null) {
-        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped());
+        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) nrPutSleeps++;
         	linesRejected++;
         }
 
@@ -1039,7 +987,7 @@ public class BaseStep extends Thread implements VariableSpace
 	    }
 
 	    // If everything is finished, we can stop immediately!
-	    if (inputRowSetsSize == 0)
+	    if (inputRowSets.size() == 0)
 	    {
 	        return null;
 	    }
@@ -1460,14 +1408,8 @@ public class BaseStep extends Thread implements VariableSpace
         }
         
 	    // now trim the size of the rowsets
-	    inputRowSets.trimToSize();
-	    outputRowSets.trimToSize();
-	    
-	    outputRowSetsSize = outputRowSets.size();
-	    inputRowSetsSize = inputRowSets.size();
-	    rowListenersSize = rowListeners.size();
-	    if(inputRowSetsSize > 0) inRowSet = inputRowSets.get(0);
-	    if(outputRowSetsSize > 0) outRowSet = outputRowSets.get(0);
+	    // inputRowSets.trimToSize();
+	    // outputRowSets.trimToSize();
 
         logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
     }
@@ -1671,24 +1613,6 @@ public class BaseStep extends Thread implements VariableSpace
     public Thread getThread()
     {
         return this;
-    }
-
-    private int calcPutPriority(RowSet rs)
-    {
-        if (rs.size() > transMeta.getSizeRowset() * 0.95) return MIN_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.75) return LOW_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.50) return NORMAL_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.25) return HIGH_PRIORITY;
-        return MAX_PRIORITY;
-    }
-
-    private int calcGetPriority(RowSet rs)
-    {
-        if (rs.size() > transMeta.getSizeRowset() * 0.95) return MAX_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.75) return HIGH_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.50) return NORMAL_PRIORITY;
-        if (rs.size() > transMeta.getSizeRowset() * 0.25) return LOW_PRIORITY;
-        return MIN_PRIORITY;
     }
 
     public int rowsetOutputSize()

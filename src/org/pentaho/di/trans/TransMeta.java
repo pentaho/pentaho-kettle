@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -4949,22 +4950,17 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      * @param arguments
      * @return A row with the used arguments in it.
      */
-    public RowMetaAndData getUsedArguments(String[] arguments)
+    public Map<String, String> getUsedArguments(String[] arguments)
     {
-        RowMetaInterface argsMeta = new RowMeta(); // Always at least return an empty row, not null!
+    	Map<String, String> transArgs = new HashMap<String, String>();
+    	
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMetaInterface smi = getStep(i).getStepMetaInterface();
-            RowMetaAndData rmad = smi.getUsedArguments(); // Get the command line arguments that this step uses.
-            if (rmad != null)
+            Map<String, String> stepArgs = smi.getUsedArguments(); // Get the command line arguments that this step uses.
+            if (stepArgs != null)
             {
-                RowMetaInterface row = rmad.getRowMeta();
-                for (int x = 0; x < row.size(); x++)
-                {
-                    ValueMetaInterface value = row.getValueMeta(x);
-                    String argname = value.getName();
-                    if (argsMeta.indexOfValue(argname) < 0) argsMeta.addValueMeta(value);
-                }
+            	transArgs.putAll(stepArgs);
             }
         }
 
@@ -4973,26 +4969,26 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
         // Set the default values on it...
         // Also change the name to "Argument 1" .. "Argument 10"
-        Object[] data = new Object[argsMeta.size()];
-        for (int i = 0; i < argsMeta.size(); i++)
+        //
+        for (String argument : transArgs.keySet()) 
         {
-            ValueMetaInterface arg = argsMeta.getValueMeta(i);
-            int argNr = Const.toInt(arg.getName(), -1);
+        	String value = "";
+        	int argNr = Const.toInt(argument, -1);
             if (arguments!=null && argNr > 0 && argNr <= arguments.length)
             {
-                data[i] = arguments[argNr-1]; // all Strings.
+            	value = Const.NVL(arguments[argNr-1], "");
             }
-            if (data[i]==null) // try the saved option...
+            if (value.length()==0) // try the saved option...
             {
                 if (argNr > 0 && argNr <= saved.length && saved[argNr] != null)
                 {
-                    data[i] = saved[argNr-1];
+                    value = saved[argNr-1];
                 }
             }
-            arg.setName("Argument " + arg.getName()); //$NON-NLS-1$
+            transArgs.put(argument, value);
         }
-
-        return new RowMetaAndData(argsMeta, data);
+        
+        return transArgs;
     }
 
     /**

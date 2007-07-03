@@ -909,7 +909,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
         RowMetaAndData allVars = new RowMetaAndData();
         
-        Enumeration en = sp.keys();
+        Enumeration<?> en = sp.keys();
         while ( en.hasMoreElements())
         {
         	String key = (String)en.nextElement();
@@ -7861,9 +7861,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 if (post)
                 {
                     TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-                    RowMetaAndData variables = transConfiguration.getTransExecutionConfiguration().getVariables();
-                    variables.addValue(new ValueMeta(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, ValueMetaInterface.TYPE_STRING), Integer.toString(i));
-                    variables.addValue(new ValueMeta(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, ValueMetaInterface.TYPE_STRING), Integer.toString(slaves.length));
+                    Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
+                    variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                     String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))

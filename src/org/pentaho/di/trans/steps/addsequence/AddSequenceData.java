@@ -16,6 +16,7 @@
 
 package org.pentaho.di.trans.steps.addsequence;
 
+import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -32,6 +33,7 @@ public class AddSequenceData extends BaseStepData implements StepDataInterface
 	private Database  db;
 	private String lookup;
     public RowMetaInterface outputRowMeta;
+	public Counter counter;
 	
 	/**
 	 * 
