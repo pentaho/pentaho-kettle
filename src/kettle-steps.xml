@@ -203,7 +203,7 @@
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StreamLookup")
 		</description>
-		<class-name>org.pentaho.di.trans.steps.streamlookup.StreamLookup</class-name>
+		<class-name>org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta</class-name>
 		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Streamlookup")
