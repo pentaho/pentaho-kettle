@@ -15,13 +15,7 @@
 
 package org.pentaho.di.trans.steps.rowgenerator;
 
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-
-import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -31,22 +25,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class RowGeneratorData extends BaseStepData implements StepDataInterface
 {
-	public NumberFormat nf;
-	public DecimalFormat df;
-	public DecimalFormatSymbols dfs;
-	public SimpleDateFormat daf;
-	public DateFormatSymbols dafs;
-    public RowMetaAndData constants;
+    public RowMetaInterface outputRowMeta;
+	public Object[]         outputRowData;
+	
     public long rowLimit;
-    
+	
 	public RowGeneratorData()
 	{
 		super();
-
-		nf   = NumberFormat.getInstance();
-		df   = (DecimalFormat)nf;
-		dfs  = new DecimalFormatSymbols();
-		daf  = new SimpleDateFormat();
-		dafs = new DateFormatSymbols();
 	}
 }

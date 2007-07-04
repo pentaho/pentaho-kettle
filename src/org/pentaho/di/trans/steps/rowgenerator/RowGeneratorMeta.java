@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.steps.rowgenerator;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,14 +24,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -338,19 +338,16 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<fieldName.length;i++)
-		{
-			if (fieldName[i]!=null && fieldName[i].length()!=0)
-			{
-				int type=ValueMeta.getType(fieldType[i]);
-				if (type==ValueMetaInterface.TYPE_NONE) type=ValueMetaInterface.TYPE_STRING;
-				ValueMetaInterface v=new ValueMeta(fieldName[i], type);
-				v.setLength(fieldLength[i]);
-                v.setPrecision(fieldPrecision[i]);
-				v.setOrigin(name);
-				row.addValueMeta(v);
+		List<CheckResult> remarks = new ArrayList<CheckResult>();
+		RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks);
+		if (remarks.size()>0) {
+			StringBuffer stringRemarks = new StringBuffer();
+			for (CheckResult remark : remarks) {
+				stringRemarks.append(remark.toString()).append(Const.CR);
 			}
+			throw new KettleStepException(stringRemarks.toString());
 		}
+		row.mergeRowMeta(rowMetaAndData.getRowMeta());
 	}
 	
 	public String getXML()
@@ -487,11 +484,6 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
-        
-        // Check the constants...
-        RowGeneratorData data = new RowGeneratorData();
-        RowGeneratorMeta meta = (RowGeneratorMeta) stepMeta.getStepMetaInterface();
-        RowGenerator.buildRow(meta, data, remarks);
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

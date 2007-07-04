@@ -659,6 +659,7 @@ public class BaseStep extends Thread implements VariableSpace
             {
                 // Copy the row to the "next" output rowset.
                 // We keep the next one in out_handling
+            	//
                 RowSet rs = outputRowSets.get(out_handling);
                 
                 // Loop until we find room in the target rowset
@@ -668,6 +669,7 @@ public class BaseStep extends Thread implements VariableSpace
 
                 // Now determine the next output rowset!
                 // Only if we have more then one output...
+                //
                 if (outputRowSets.size() > 1)
                 {
                     out_handling++;
@@ -686,6 +688,7 @@ public class BaseStep extends Thread implements VariableSpace
                         // Loop until we find room in the target rowset
                         //
                         while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) nrPutSleeps++;
+                        linesWritten++;
                     }
                     catch (KettleValueException e)
                     {

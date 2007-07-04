@@ -348,8 +348,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         logConnection = null;
 
         sizeRowset     = Const.ROWS_IN_ROWSET;
-        sleepTimeEmpty = Const.SLEEP_EMPTY_NANOS;
-        sleepTimeFull  = Const.SLEEP_FULL_NANOS;
+        sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
+        sleepTimeFull  = Const.TIMEOUT_PUT_MILLIS;
 
         maxDateConnection = null;
         maxDateTable = null;
@@ -2952,8 +2952,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
            
             String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$
             sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
-            sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS); //$NON-NLS-1$
-            sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.SLEEP_FULL_NANOS); //$NON-NLS-1$
+            sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.TIMEOUT_GET_MILLIS); //$NON-NLS-1$
+            sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.TIMEOUT_PUT_MILLIS); //$NON-NLS-1$
             usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "unique_connections") ); //$NON-NLS-1$
 
             feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
@@ -4996,7 +4996,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public int getSleepTimeEmpty()
     {
-        return Const.SLEEP_EMPTY_NANOS;
+        return Const.TIMEOUT_GET_MILLIS;
     }
 
     /**
@@ -5004,7 +5004,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      */
     public int getSleepTimeFull()
     {
-        return Const.SLEEP_FULL_NANOS;
+        return Const.TIMEOUT_PUT_MILLIS;
     }
 
     /**

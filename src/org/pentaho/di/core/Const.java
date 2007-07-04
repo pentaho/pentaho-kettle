@@ -60,12 +60,12 @@ public class Const
 	/**
 	 * Sleep time waiting when buffer is empty
 	 */
-	public static final int SLEEP_EMPTY_NANOS = 1;
+	public static final int TIMEOUT_GET_MILLIS = 100;
 
 	/**
 	 * Sleep time waiting when buffer is full
 	 */
-	public static final int SLEEP_FULL_NANOS = 1; // luxury problem!
+	public static final int TIMEOUT_PUT_MILLIS = 100; // luxury problem!
 
 	/**
 	 * print update every ... lines
