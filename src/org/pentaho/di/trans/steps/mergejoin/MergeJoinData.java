@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.List;
 
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -39,6 +40,9 @@ public class MergeJoinData extends BaseStepData implements StepDataInterface
     public boolean one_optional, two_optional;
     public int[] keyNrs1;
     public int[] keyNrs2;
+	
+    public RowSet oneRowSet;
+	public RowSet twoRowSet;
     
 	/**
 	 * Default initializer

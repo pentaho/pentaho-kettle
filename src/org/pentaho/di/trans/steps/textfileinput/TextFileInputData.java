@@ -23,6 +23,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayList;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -91,6 +92,8 @@ public class TextFileInputData extends BaseStepData implements
     public int fileType;
 
     public RowMetaInterface convertRowMeta;
+
+	public RowSet rowSet;
     
 	/**
 	 * 

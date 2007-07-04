@@ -79,6 +79,14 @@ public class FilterRows extends BaseStep implements StepInterface
         {
             data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
             meta.getFields(getInputRowMeta(), getStepname(), null, null, this);
+            
+            // Cache the position of the RowSet for the output.
+            //
+            if (meta.chosesTargetSteps())
+            {
+            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendTrueStepname(), 0);
+            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), meta.getSendFalseStepname(), 0);
+            }
         }
 
 		keep=keepRow(getInputRowMeta(), r); // Keep this row?
@@ -94,12 +102,12 @@ public class FilterRows extends BaseStep implements StepInterface
 		    if (keep)
 		    {
 		        //System.out.println("Sending row to true  :"+info.getSendTrueStepname()+" : "+r);
-		        putRowTo(data.outputRowMeta, r, meta.getSendTrueStepname());
+		        putRowTo(data.outputRowMeta, r, data.trueRowSet);
 		    }
 		    else
 		    {
 		        //System.out.println("Sending row to false :"+info.getSendTrueStepname()+" : "+r);
-		        putRowTo(data.outputRowMeta, r, meta.getSendFalseStepname());
+		        putRowTo(data.outputRowMeta, r, data.trueRowSet);
 		    }
 		}
 		

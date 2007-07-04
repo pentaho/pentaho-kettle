@@ -34,7 +34,7 @@ import jxl.WorkbookSettings;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
@@ -323,12 +323,13 @@ public class ExcelInput extends BaseStep implements StepInterface
                 data.files.getFiles().clear();
                 
                 int idx = -1;
-                RowMetaAndData fileRow = getRowFrom(meta.getAcceptingStepName());
+                RowSet rowSet = findInputRowSet(meta.getAcceptingStepName());
+                Object[] fileRow = getRowFrom(rowSet);
                 while (fileRow!=null)
                 {
                     if (idx<0)
                     {
-                        idx = fileRow.getRowMeta().indexOfValue(meta.getAcceptingField());
+                        idx = rowSet.getRowMeta().indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
                             logError("The filename field ["+meta.getAcceptingField()+"] could not be found in the input rows.");
@@ -337,7 +338,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                             return false;
                         }
                     }
-                    String fileValue = fileRow.getRowMeta().getString(fileRow.getData(), idx);
+                    String fileValue = rowSet.getRowMeta().getString(fileRow, idx);
                     try
                     {
                         data.files.addFile(KettleVFS.getFileObject(fileValue));
@@ -348,7 +349,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                     }
                     
                     // Grab another row
-                    fileRow = getRowFrom(meta.getAcceptingStepName());
+                    fileRow = getRowFrom(rowSet);
                 }
                 
             }

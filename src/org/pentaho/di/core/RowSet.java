@@ -91,17 +91,14 @@ public class RowSet
     	}
     	catch (InterruptedException e)
 	    {
-    		e.printStackTrace();
     		return false;
 	    }
     	catch (NullPointerException e)
 	    {
-    		e.printStackTrace();
     		return false;
 	    }    	
     	
     }
-    
     
     // default getRow with wait time = 1ms
     //
@@ -147,7 +144,6 @@ public class RowSet
     		return queArray.take();
     	}
     	catch(InterruptedException e){
-    		e.printStackTrace();
     		return null;
     	}
     }

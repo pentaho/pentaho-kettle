@@ -798,37 +798,14 @@ public class BaseStep extends Thread implements VariableSpace
     }
 
     /**
-     * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
-     * Otherwise it's the same as the other one.
-     *
-     * @param row the row to send to the destination step
-     * @param to the name of the step to send the row to
-     */
-    public synchronized void putRowTo(RowMetaInterface rowMeta, Object[] row, String to) throws KettleStepException
-    {
-        output_rowset_nr = findOutputRowSetNumber(stepname, getCopy(), to, 0);
-        if (output_rowset_nr < 0)
-        {
-            //
-            // No rowset found: normally it can't happen:
-            // we deleted the rowset because it was
-            // finished
-            //
-            throw new KettleStepException(Messages.getString("BaseStep.Exception.UnableToFindRowset", to)); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
-        putRowTo(rowMeta, row, output_rowset_nr);
-    }
-
-    /**
-     * putRow is used to copy a row, to the alternate rowset(s) This should get priority over everything else!
-     * (synchronized) If distribute is true, a a row is copied only once to a single output rowset!
-     *
-     * @param row The row to put to the destination rowsets.
-     * @param output_rowset_nr the number of the rowset to put the row to.
+     * putRowTo is used to put a row in a certain specific RowSet. 
+     * 
+     * @param rowMeta The row meta-data to put to the destination RowSet.
+     * @param row the data to put in the RowSet
+     * @param rowSet the RoWset to put the row into.
      * @throws KettleStepException In case something unexepected goes wrong
      */
-    public synchronized void putRowTo(RowMetaInterface rowMeta, Object[] row, int output_rowset_nr) throws KettleStepException
+    public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
     {
         if (previewSize > 0 && previewBuffer.size() < previewSize)
         {
@@ -880,7 +857,7 @@ public class BaseStep extends Thread implements VariableSpace
         linesWritten++;
     }
 
-    public synchronized void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
+    public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes)
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
 
@@ -945,7 +922,7 @@ public class BaseStep extends Thread implements VariableSpace
         }
     }
 
-    private synchronized RowSet currentInputStream()
+    private RowSet currentInputStream()
     {
         return inputRowSets.get(in_handling);
     }
@@ -953,7 +930,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * Find the next not-finished input-stream... in_handling says which one...
      */
-    private synchronized void nextInputStream()
+    private void nextInputStream()
     {
         int streams = inputRowSets.size();
 
@@ -970,7 +947,7 @@ public class BaseStep extends Thread implements VariableSpace
      * In case of getRow, we receive data from previous steps through the input rowset. In case we split the stream, we
      * have to copy the data to the alternate splits: rowsets 1 through n.
      */
-    public synchronized Object[] getRow() throws KettleException
+    public Object[] getRow() throws KettleException
     {
 	    if (stopped.get())
 	    {
@@ -1037,7 +1014,7 @@ public class BaseStep extends Thread implements VariableSpace
         return row;
     }
 
-    protected synchronized void safeModeChecking(RowMetaInterface row) throws KettleRowException
+    protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
     {
         // String saveDebug=debug;
         // debug="Safe mode checking";
@@ -1093,52 +1070,14 @@ public class BaseStep extends Thread implements VariableSpace
         }
     }
     
-    /**
-     * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
-     * Otherwise it's the same as the other one.
-     * The difference to getRowFrom is we only get the data, not the RowMeta.
-     * We use this now and can optimize later on (now internally the RowMeta is there).
-     */
-    public Object[] getRowDataFrom(String from) throws KettleRowException
-    {
-    	RowMetaAndData rmd=getRowFrom(from);
-    	if (rmd!=null) {
-    		return rmd.getData();
-    	} else {
-    		return null;
-    	}
-    }
-
-    /**
-     * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
-     * Otherwise it's the same as the other one.
-     */
-    public RowMetaAndData getRowFrom(String from) throws KettleRowException
-    {
-        output_rowset_nr = findInputRowSetNumber(from, 0, stepname, 0);
+    public Object[] getRowFrom(RowSet rowSet) {
         
-        if (output_rowset_nr < 0) 
+        Object[] rowData = rowSet.getRow();
+        while (rowData==null && !rowSet.isDone() && !stopped.get())
         {
-            // No rowset found: normally it can't happen: we deleted the rowset because it was finished
-        	throw new KettleRowException("Couldn't find step with name '" + from + "' to read from"); 
+        	rowData=rowSet.getRow();
         }
-
-        return getRowFrom(output_rowset_nr);
-    }
-    
-    public RowMetaAndData getRowFrom(int input_rowset_nr)
-    {
-        RowSet in = inputRowSets.get(input_rowset_nr);
-        return getRowFrom(in);
-    }
-
-    public RowMetaAndData getRowFrom(RowSet rowSet) {
-        
-        Object[] row = rowSet.getRow();
-        while (row==null && !rowSet.isDone() && !stopped.get())
-        {
-        	row=rowSet.getRow();
-        }
+        linesRead++;
 
         if (stopped.get())
         {
@@ -1147,57 +1086,56 @@ public class BaseStep extends Thread implements VariableSpace
             return null;
         }
 
-        if (row==null && rowSet.isDone())
+        if (rowData==null && rowSet.isDone())
         {
             inputRowSets.remove(rowSet);
             return null;
         }
-
-        Object[] rowData = rowSet.getRow(); // Get this row!
-        RowMetaInterface rowMeta = rowSet.getRowMeta();
-        
-        linesRead++;
 
         // call all rowlisteners...
         //
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(rowMeta, rowData);
+            rowListener.rowWrittenEvent(rowSet.getRowMeta(), rowData);
         }
 
-        return new RowMetaAndData(rowMeta, rowData);
+        return rowData;
 	}
-
-	private synchronized int findInputRowSetNumber(String from, int fromcopy, String to, int tocopy)
-    {
-        int i;
-        for (i = 0; i < inputRowSets.size(); i++)
-        {
-            RowSet rs = inputRowSets.get(i);
-            if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
-                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return i;
-        }
-        return -1;
+    
+    public RowSet findInputRowSet(String sourceStep) {
+    	return findInputRowSet(sourceStep, 0, getStepname(), getCopy());
     }
 
-    private synchronized int findOutputRowSetNumber(String from, int fromcopy, String to, int tocopy)
+	public RowSet findInputRowSet(String from, int fromcopy, String to, int tocopy)
     {
-        int i;
-        for (i = 0; i < outputRowSets.size(); i++)
+        for (RowSet rs : inputRowSets)
         {
-            RowSet rs = outputRowSets.get(i);
             if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
-                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return i;
+                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
         }
-        return -1;
+        return null;
+    }
+	
+	public RowSet findOutputRowSet(String targetStep) {
+		return findOutputRowSet(getStepname(), getCopy(), targetStep, 0);
+	}
+
+    public RowSet findOutputRowSet(String from, int fromcopy, String to, int tocopy)
+    {
+        for (RowSet rs : outputRowSets)
+        {
+            if (rs.getOriginStepName().equalsIgnoreCase(from) && rs.getDestinationStepName().equalsIgnoreCase(to)
+                    && rs.getOriginStepCopy() == fromcopy && rs.getDestinationStepCopy() == tocopy) return rs;
+        }
+        return null;
     }
 
     //
     // We have to tell the next step we're finished with
     // writing to output rowset(s)!
     //
-    public synchronized void setOutputDone()
+    public void setOutputDone()
     {
         if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.OutputDone", String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
         synchronized(outputRowSets)

@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -135,28 +136,31 @@ public class StreamLookup extends BaseStep implements StepInterface
         int[] valueNrs = new int[meta.getValue().length];
         boolean firstRun = true;
         
-		RowMetaAndData r=getRowFrom(meta.getLookupFromStep().getName()); // rows are originating from "lookup_from"
-		while (r!=null)
+        // Which row set do we read from?
+        //
+        RowSet rowSet = findInputRowSet(meta.getLookupFromStep().getName());
+        Object[] rowData=getRowFrom(rowSet); // rows are originating from "lookup_from"
+		while (rowData!=null)
 		{
-            if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.ReadLookupRow")+r.toString()); //$NON-NLS-1$
+            if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.ReadLookupRow")+rowData.toString()); //$NON-NLS-1$
 
             if (firstRun)
             {
                 firstRun=false;
                 
-                data.infoMeta = (RowMetaInterface)r.getRowMeta().clone();
+                data.infoMeta = (RowMetaInterface)rowSet.getRowMeta().clone();
                 data.keyMeta = new RowMeta();
                 data.valueMeta = new RowMeta();
             
                 // Look up the keys in the source rows
                 for (int i=0;i<meta.getKeylookup().length;i++)
                 {
-                    keyNrs[i] = r.getRowMeta().indexOfValue(meta.getKeylookup()[i]);
+                    keyNrs[i] = rowSet.getRowMeta().indexOfValue(meta.getKeylookup()[i]);
                     if (keyNrs[i]<0)
                     {
                         throw new KettleStepException(Messages.getString("StreamLookup.Exception.UnableToFindField",meta.getKeylookup()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                     }
-                    data.keyMeta.addValueMeta( r.getRowMeta().getValueMeta( keyNrs[i] ));
+                    data.keyMeta.addValueMeta( rowSet.getRowMeta().getValueMeta( keyNrs[i] ));
                 }
             
                 // Save the data types of the keys to optionally convert input rows later on...
@@ -167,30 +171,30 @@ public class StreamLookup extends BaseStep implements StepInterface
 			
     			for (int v=0;v<meta.getValue().length;v++)
     			{
-    			    valueNrs[v] = r.getRowMeta().indexOfValue( meta.getValue()[v] );
+    			    valueNrs[v] = rowSet.getRowMeta().indexOfValue( meta.getValue()[v] );
                     if (valueNrs[v]<0)
     				{
                         throw new KettleStepException(Messages.getString("StreamLookup.Exception.UnableToFindField",meta.getValue()[v])); //$NON-NLS-1$ //$NON-NLS-2$
     				}
-                    data.valueMeta.addValueMeta( r.getRowMeta().getValueMeta(valueNrs[v]) );
+                    data.valueMeta.addValueMeta( rowSet.getRowMeta().getValueMeta(valueNrs[v]) );
     			}
             }
             
             Object[] keyData = new Object[keyNrs.length];
             for (int i=0;i<keyNrs.length;i++)
             {
-                keyData[i] = r.getData()[ keyNrs[i] ];
+                keyData[i] = rowData[ keyNrs[i] ];
             }
 
             Object[] valueData = new Object[valueNrs.length];
             for (int i=0;i<valueNrs.length;i++)
             {
-                valueData[i] = r.getData()[ valueNrs[i] ];
+                valueData[i] = rowData[ valueNrs[i] ];
             }
 
             addToCache(data.keyMeta, keyData, data.valueMeta, valueData);
 			
-			r=getRowFrom(meta.getLookupFromStep().getName());
+			rowData=getRowFrom(rowSet);
 		}
 		
 		return true;

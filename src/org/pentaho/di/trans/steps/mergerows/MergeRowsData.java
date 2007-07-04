@@ -16,7 +16,7 @@
 
 package org.pentaho.di.trans.steps.mergerows;
 
-import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -31,12 +31,12 @@ public class MergeRowsData extends BaseStepData implements StepDataInterface
 {
     public RowMetaInterface outputRowMeta;
     
-    public RowMetaAndData one, two;
+    public Object[] one, two;
     public int[] keyNrs;
     public int[] valueNrs;
-    
-    public boolean keyAsc[];
-    public boolean valueAsc[];
+
+	public RowSet oneRowSet;
+	public RowSet twoRowSet;
     
 	/**
 	 * 

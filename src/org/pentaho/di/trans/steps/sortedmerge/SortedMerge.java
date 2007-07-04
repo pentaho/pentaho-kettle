@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -75,13 +74,13 @@ public class SortedMerge extends BaseStep implements StepInterface
         		
         		RowSet rowSet = inputRowSets.get(i);
         		if (!rowSet.isDone()) {
-	                RowMetaAndData row = getRowFrom(i);
+	                Object[] row = getRowFrom(rowSet);
 	                if (row!=null) {
 	                	// Add this row to the sortedBuffer...
 	                	// Which is not yet sorted, we'll get to that later.
 	                	//
-	                	data.sortedBuffer.add( new RowSetRow(rowSet, row.getRowMeta(), row.getData()) );
-	                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) row.getRowMeta().clone();
+	                	data.sortedBuffer.add( new RowSetRow(rowSet, rowSet.getRowMeta(), row) );
+	                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) rowSet.getRowMeta().clone();
 	                	
 	                    // What fields do we compare on and in what order?
 	                    
@@ -139,12 +138,12 @@ public class SortedMerge extends BaseStep implements StepInterface
         // We read another row from the row set where the smallest row came from.
         // That we we exhaust all row sets.
         //
-        RowMetaAndData extraRow = getRowFrom(smallestRow.getRowSet());
+        Object[] extraRow = getRowFrom(smallestRow.getRowSet());
         
         // Add it to the sorted buffer in the right position...
         //
         if (extraRow!=null) {
-        	RowSetRow add = new RowSetRow(smallestRow.getRowSet(), extraRow.getRowMeta(), extraRow.getData());
+        	RowSetRow add = new RowSetRow(smallestRow.getRowSet(), smallestRow.getRowSet().getRowMeta(), extraRow);
         	int index = Collections.binarySearch(data.sortedBuffer, add, data.comparator);
         	if (index<0) {
         		data.sortedBuffer.add(-index-1, add);

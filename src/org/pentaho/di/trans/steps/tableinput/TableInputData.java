@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.tableinput;
 
 import java.sql.ResultSet;
 
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -35,6 +36,7 @@ public class TableInputData extends BaseStepData implements StepDataInterface
 	public ResultSet rs;
 	public String    lookupStep;
     public RowMetaInterface rowMeta;
+	public RowSet rowSet;
 	
 	public TableInputData()
 	{

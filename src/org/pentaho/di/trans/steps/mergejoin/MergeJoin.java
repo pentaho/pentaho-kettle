@@ -18,7 +18,6 @@ package org.pentaho.di.trans.steps.mergejoin;
 import java.util.ArrayList;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -73,11 +72,15 @@ public class MergeJoin extends BaseStep implements StepInterface
         {
             first = false;
             
-            RowMetaAndData rmdOne=getRowFrom(meta.getStepName1());
-            if (rmdOne!=null) 
+            // Find the RowSet to read from
+            //
+            data.oneRowSet = findInputRowSet(meta.getStepName1());
+            data.twoRowSet = findInputRowSet(meta.getStepName2());
+            
+            data.one=getRowFrom(data.oneRowSet);
+            if (data.one!=null) 
             {
-            	data.one=rmdOne.getData();
-                data.oneMeta=rmdOne.getRowMeta();
+                data.oneMeta=data.oneRowSet.getRowMeta();
             }
             else
             {
@@ -85,11 +88,10 @@ public class MergeJoin extends BaseStep implements StepInterface
             	data.oneMeta=new RowMeta();
             }
             
-            RowMetaAndData rmdTwo=getRowFrom(meta.getStepName2());
-            if (rmdTwo!=null) 
+            data.two=getRowFrom(data.twoRowSet);
+            if (data.two!=null) 
             {
-            	data.two=rmdTwo.getData();
-                data.twoMeta=rmdTwo.getRowMeta();
+                data.twoMeta=data.twoRowSet.getRowMeta();
             }
             else
             {
@@ -203,8 +205,8 @@ public class MergeJoin extends BaseStep implements StepInterface
         	 *   Else
         	 *     Just push the combined rowset to output
         	 */ 
-        	data.one_next = getRowDataFrom(meta.getStepName1());
-        	data.two_next = getRowDataFrom(meta.getStepName2());
+        	data.one_next = getRowFrom(data.oneRowSet);
+        	data.two_next = getRowFrom(data.twoRowSet);
         	int compare1 = (data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1);
         	int compare2 = (data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2);
         	if (compare1 == 0 || compare2 == 0) // Duplicate keys
@@ -223,7 +225,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             		data.ones.add(data.one_next);
 	            	for (;;)
 	            	{
-	                	data.one_next = getRowDataFrom(meta.getStepName1());
+	                	data.one_next = getRowFrom(data.oneRowSet);
 	                	if (0 != ((data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1)))
 	                		break;
 	                	data.ones.add(data.one_next);
@@ -235,7 +237,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             		data.twos.add(data.two_next);
 	            	for (;;)
 	            	{
-	                	data.two_next = getRowDataFrom(meta.getStepName2());
+	                	data.two_next = getRowFrom(data.twoRowSet);
 	                	if (0 != ((data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2)))
 	                		break;
 	                	data.twos.add(data.two_next);
@@ -275,7 +277,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		if (data.two != null)
         		{
 	        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
-	        		data.two = getRowDataFrom(meta.getStepName2());
+	        		data.two = getRowFrom(data.twoRowSet);
         		}
         		else if (data.two_optional == false)
         		{
@@ -293,7 +295,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * get the next row from 1st stream
         			 */
 	        		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
-	        		data.one = getRowDataFrom(meta.getStepName1());
+	        		data.one = getRowFrom(data.oneRowSet);
         		}
         	}
         	else if (data.two == null && data.two_optional == true)
@@ -305,7 +307,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * and push it forward
         		 */
         		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
-        		data.one = getRowDataFrom(meta.getStepName1());
+        		data.one = getRowFrom(data.oneRowSet);
         	}
         	else if (data.two != null)
         	{
@@ -313,7 +315,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * We are doing an inner or left outer join, so throw this row away
         		 * from the 2nd stream
         		 */
-        		data.two = getRowDataFrom(meta.getStepName2());
+        		data.two = getRowFrom(data.twoRowSet);
         	}
         	break;
         case -1:
@@ -332,7 +334,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		if (data.one != null)
         		{
         			putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one, data.oneMeta.size(), data.two_dummy));
-	        		data.one = getRowDataFrom(meta.getStepName1());
+	        		data.one = getRowFrom(data.oneRowSet);
         		}
         		else if (data.one_optional == false)
         		{
@@ -350,7 +352,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         			 * get the next row from the 2nd stream
         			 */
         			putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
-	        		data.two = getRowDataFrom(meta.getStepName2());
+	        		data.two = getRowFrom(data.twoRowSet);
         		}
         	}
         	else if (data.one == null && data.one_optional == true)
@@ -362,7 +364,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * and push it forward
         		 */
         		putRow(data.outputRowMeta, RowDataUtil.addRowData(data.one_dummy, data.oneMeta.size(), data.two));
-        		data.two = getRowDataFrom(meta.getStepName2());
+        		data.two = getRowFrom(data.twoRowSet);
         	}
         	else if (data.one != null)
         	{
@@ -371,14 +373,14 @@ public class MergeJoin extends BaseStep implements StepInterface
         		 * in the first stream is of no use to us - throw it away and get the
         		 * next row
         		 */
-        		data.one = getRowDataFrom(meta.getStepName1());
+        		data.one = getRowFrom(data.oneRowSet);
         	}
         	break;
         default:
         	logDebug("We shouldn't be here!!");
         	// Make sure we do not go into an infinite loop by continuing to read data
-        	data.one = getRowDataFrom(meta.getStepName1());
-    	    data.two = getRowDataFrom(meta.getStepName2());
+        	data.one = getRowFrom(data.oneRowSet);
+    	    data.two = getRowFrom(data.twoRowSet);
     	    break;
         }
         if (checkFeedback(linesRead)) logBasic(Messages.getString("MergeJoin.LineNumber")+linesRead); //$NON-NLS-1$

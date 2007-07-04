@@ -27,7 +27,6 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -988,12 +987,13 @@ public class TextFileInput extends BaseStep implements StepInterface
                 data.files.getFiles().clear();
                 
                 int idx = -1;
-                RowMetaAndData fileRow = getRowFrom(meta.getAcceptingStepName());
+                data.rowSet = findInputRowSet(meta.getAcceptingStepName());
+                Object[] fileRow = getRowFrom(data.rowSet);
                 while (fileRow!=null)
                 {
                     if (idx<0)
                     {
-                        idx = fileRow.getRowMeta().indexOfValue(meta.getAcceptingField());
+                        idx = data.rowSet.getRowMeta().indexOfValue(meta.getAcceptingField());
                         if (idx<0)
                         {
                             logError(Messages.getString("TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
@@ -1002,7 +1002,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                             return false;
                         }
                     }
-                    String fileValue = fileRow.getRowMeta().getString(fileRow.getData(), idx);
+                    String fileValue = data.rowSet.getRowMeta().getString(fileRow, idx);
                     try
                     {
                         FileObject fileObject = KettleVFS.getFileObject(fileValue);
@@ -1014,7 +1014,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     }
                     
                     // Grab another row
-                    fileRow = getRowFrom(meta.getAcceptingStepName());
+                    fileRow = getRowFrom(data.rowSet);
                 }
                 
                 if (data.files.nrOfFiles()==0)

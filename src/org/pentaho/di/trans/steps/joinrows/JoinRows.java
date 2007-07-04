@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -155,15 +154,11 @@ public class JoinRows extends BaseStep implements StepInterface
 		if (filenr==0)
 		{
 			// Rowset 0:
-            RowMetaAndData row = getRowFrom(0); 
-            if (row!=null)
+			RowSet rowSet = getInputRowSets().get(0);
+            rowData = getRowFrom(rowSet); 
+            if (rowData!=null)
             {
-    			rowData = row.getData();
-                data.fileRowMeta[0] = row.getRowMeta();
-            }
-            else
-            {
-                rowData = null;
+                data.fileRowMeta[0] = rowSet.getRowMeta();
             }
 			
 			if (log.isRowLevel()) logRowlevel(Messages.getString("JoinRows.Log.ReadRowFromStream")+(rowData==null?"<null>":rowData.toString())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -307,20 +302,20 @@ public class JoinRows extends BaseStep implements StepInterface
 			}
 
 	    	// Read a line from the appropriate rowset...
-			String fromStep = data.rs[data.filenr].getOriginStepName();
-	    	RowMetaAndData r = getRowFrom(fromStep);
-	    	if (r!=null) // We read a row from one of the input streams...
+			RowSet rowSet = data.rs[data.filenr];
+	    	Object[] rowData = getRowFrom(rowSet);
+	    	if (rowData!=null) // We read a row from one of the input streams...
 	    	{
                 if (data.fileRowMeta[data.filenr]==null)
 	    		{
 		    		// The first row is used as meta-data, clone it for safety
-                    data.fileRowMeta[data.filenr] = (RowMetaInterface) r.getRowMeta().clone();
+                    data.fileRowMeta[data.filenr] = (RowMetaInterface) rowSet.getRowMeta().clone();
 	    		}
 
-                data.fileRowMeta[data.filenr].writeData(data.dataOutputStream[data.filenr], r.getData());
+                data.fileRowMeta[data.filenr].writeData(data.dataOutputStream[data.filenr], rowData);
 	    		data.size[data.filenr]++;
 
-	    		if (log.isRowLevel()) logRowlevel(r.toString());
+	    		if (log.isRowLevel()) logRowlevel(rowData.toString());
 	    		
 	    		//
 	    		// Perhaps we want to cache this data??
@@ -330,7 +325,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	    			if (data.cache[data.filenr]==null) data.cache[data.filenr]=new ArrayList<Object[]>();
 	    			
 	    			// Add this row to the cache!
-	    			data.cache[data.filenr].add(r.getData());
+	    			data.cache[data.filenr].add(rowData);
 	    		}
 	    		else
 	    		{

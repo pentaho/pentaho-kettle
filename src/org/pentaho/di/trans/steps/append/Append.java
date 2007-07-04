@@ -16,7 +16,6 @@
 package org.pentaho.di.trans.steps.append;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,10 +47,10 @@ public class Append extends BaseStep implements StepInterface
 		meta=(AppendMeta)smi;
 		data=(AppendData)sdi;
 		
-    	RowMetaAndData input = null;
+    	Object[] input = null;
     	if ( data.processHead )
     	{
-		    input = getRowFrom(meta.getHeadStepName());
+		    input = getRowFrom(data.headRowSet);
 		    
 		    if ( input == null )
 		    {
@@ -59,21 +58,31 @@ public class Append extends BaseStep implements StepInterface
 	        	data.processHead = false;
 	        	data.processTail = true;
 		    }
+		    else 
+		    {
+		    	if (data.outputRowMeta==null) {
+		    		data.outputRowMeta = data.headRowSet.getRowMeta();
+		    	}
+		    }
+		    	
     	}
     	
     	if ( data.processTail )
     	{
-    		input = getRowFrom(meta.getTailStepName());
+    		input = getRowFrom(data.tailRowSet);
 		    if ( input == null )
 		    {
 	            setOutputDone();
 	            return false;
 		    }
+	    	if (data.outputRowMeta==null) {
+	    		data.outputRowMeta = data.headRowSet.getRowMeta();
+	    	}
     	}
 
     	if ( input != null )
     	{
-            putRow(input.getRowMeta(), input.getData());
+            putRow(data.outputRowMeta, input);
     	}
 
         if (checkFeedback(linesRead)) logBasic(Messages.getString("AppendRows.LineNumber")+linesRead); //$NON-NLS-1$
@@ -99,6 +108,8 @@ public class Append extends BaseStep implements StepInterface
             }
             else
             {
+            	data.headRowSet = findInputRowSet(meta.getHeadStepName());
+            	data.tailRowSet = findInputRowSet(meta.getTailStepName());
                 return true;
             }            
         }
