@@ -23,9 +23,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaAndData;
-import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
@@ -63,31 +61,33 @@ public class XMLInput extends BaseStep implements StepInterface
 		if (first) // we just got started
 		{
 			first = false;
-			RowMetaInterface irow = getInputRowMeta();
-			data.outputRowMeta = irow != null ? (RowMetaInterface)irow.clone() : new RowMeta();
+			data.outputRowMeta = new RowMeta();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			// For String to <type> conversions, we allocate a conversion meta data row as well...
+			//
+			data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
+			for (int i=0;i<data.convertRowMeta.size();i++) {
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+			}
 		}
 
-		Object[] row = getRowFromXML();
-		if (row == null)
+		Object[] outputRowData = getRowFromXML();
+		if (outputRowData == null)
 		{
 			setOutputDone(); // signal end to receiver(s)
 			return false; // This is the end of this step.
 		}
 
 		if (log.isRowLevel())
-			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
+			logRowlevel(Messages.getString("XMLInput.Log.ReadRow", outputRowData.toString()));
 
 		linesInput++;
 
-		putRow(data.outputRowMeta, row);
+		putRow(data.outputRowMeta, outputRowData);
 
-		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) // limit
-		// has
-		// been
-		// reached:
-		// stop
-		// now.
+		// limit has been reached, stop now.
+		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) 
 		{
 			setOutputDone();
 			return false;
@@ -98,14 +98,9 @@ public class XMLInput extends BaseStep implements StepInterface
 
 	private Object[] getRowFromXML() throws KettleValueException
 	{
-		while (data.itemPosition >= data.itemCount || data.file == null) // finished
-		// reading
-		// the
-		// file,
-		// read
-		// the
-		// next
-		// file!
+		// finished reading the file, read the next file
+
+		while (data.itemPosition >= data.itemCount || data.file == null) 
 		{
 			data.file = null;
 			if (!openNextFile())
@@ -114,7 +109,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			}
 		}
 
-		Object[] row = buildEmptyRow();
+		Object[] outputRowData = buildEmptyRow();
 
 		// Get the item in the XML file...
 
@@ -138,6 +133,8 @@ public class XMLInput extends BaseStep implements StepInterface
 
 			XMLInputField xmlInputField = meta.getInputFields()[i];
 
+			// This value will contain the value we're looking for...
+			//
 			String value = null;
 
 			for (int p = 0; (value == null) && node != null && p < xmlInputField.getFieldPosition().length; p++)
@@ -205,20 +202,20 @@ public class XMLInput extends BaseStep implements StepInterface
 
 			}
 
-			// OK, we have the string...
-			ValueMetaAndData v = new ValueMetaAndData(data.outputRowMeta.getValueMeta(i).getName(), value);
-
+			// OK, we have grabbed the string called value
+			// Trim it, convert it, ...
+			
 			// DO Trimming!
 			switch (xmlInputField.getTrimType())
 			{
 			case XMLInputField.TYPE_TRIM_LEFT:
-				v.setValueData(Const.ltrim(v.getValueData().toString()));
+				value = Const.ltrim(value);
 				break;
 			case XMLInputField.TYPE_TRIM_RIGHT:
-				v.setValueData(Const.rtrim(v.getValueData().toString()));
+				value = Const.rtrim(value);
 				break;
 			case XMLInputField.TYPE_TRIM_BOTH:
-				v.setValueData(v.getValueData().toString().trim());
+				value = Const.trim(value);
 				break;
 			default:
 				break;
@@ -227,129 +224,46 @@ public class XMLInput extends BaseStep implements StepInterface
 			// System.out.println("after trim, field #"+i+" : "+v);
 
 			// DO CONVERSIONS...
-			Object val = v.getValueData();
-			String sval = val != null ? val.toString() : "";
-			switch (xmlInputField.getType())
-			{
-			case ValueMeta.TYPE_STRING:
-				// System.out.println("Convert value to String :"+v);
-				break;
-			case ValueMeta.TYPE_NUMBER:
-				// System.out.println("Convert value to Number :"+v);
-				if (xmlInputField.getFormat() != null && xmlInputField.getFormat().length() > 0)
-				{
-					if (xmlInputField.getDecimalSymbol() != null
-							&& xmlInputField.getDecimalSymbol().length() > 0)
-					{
-						if (xmlInputField.getGroupSymbol() != null
-								&& xmlInputField.getGroupSymbol().length() > 0)
-						{
-							if (xmlInputField.getCurrencySymbol() != null
-									&& xmlInputField.getCurrencySymbol().length() > 0)
-							{
-								double dval = StringUtil.str2num(xmlInputField.getFormat(), xmlInputField
-										.getDecimalSymbol(), xmlInputField.getGroupSymbol(), xmlInputField
-										.getCurrencySymbol(), sval);
-								v.setValueData(new Double(dval));
-							} else
-							{
-								v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(),
-										xmlInputField.getDecimalSymbol(), xmlInputField.getGroupSymbol(),
-										null, sval)));
-							}
-						} else
-						{
-							v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(),
-									xmlInputField.getDecimalSymbol(), null, null, sval)));
-						}
-					} else
-					{
-						v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(), null, null,
-								null, sval))); // just a format mask
-					}
-				} else
-				{
-					v.setValueData(new Double(StringUtil.str2num(null, null, null, null, null)));
-				}
-				v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-				break;
-			case ValueMeta.TYPE_INTEGER:
-				// System.out.println("Convert value to integer :"+v);
-				v.setValueData(v.getValueData());
-				v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-				break;
-			case ValueMeta.TYPE_BIGNUMBER:
-				// System.out.println("Convert value to BigNumber :"+v);
-				v.setValueData(v.getValueData());
-				v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-				break;
-			case ValueMeta.TYPE_DATE:
-				// System.out.println("Convert value to Date :"+v);
-
-				if (xmlInputField.getFormat() != null && xmlInputField.getFormat().length() > 0)
-				{
-
-					v.setValueData(StringUtil.str2dat(xmlInputField.getFormat(), null, sval));
-					v.getValueMeta().setType(ValueMeta.TYPE_DATE);
-					v.getValueMeta().setLength(-1, -1);
-				} else
-				{
-					v.setValueData(v.getValueData());
-				}
-				break;
-			case ValueMeta.TYPE_BOOLEAN:
-				v.setValueData(v.getValueData());
-				break;
-			default:
-				break;
-			}
+			//
+			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
+			outputRowData[i] = targetValueMeta.convertData(sourceValueMeta, value);
 
 			// Do we need to repeat this field if it is null?
 			if (meta.getInputFields()[i].isRepeated())
 			{
-				if (v.getValueMeta().isNull(v.getValueData()) && data.previousRow != null)
+				if (data.previousRow!=null && Const.isEmpty(value))
 				{
-					v.setValueData(data.previousRow[i]);
+					outputRowData[i] = data.previousRow[i];
 				}
 			}
-			
-			//problem was here... Can we please add some type safety to kettle?
-			row[i]=v; //v.getValueData();
-			
-			
 		} // End of loop over fields...
 
+		int outputIndex = meta.getInputFields().length;
+		
 		// See if we need to add the filename to the row...
-		if (meta.includeFilename() && meta.getFilenameField() != null && meta.getFilenameField().length() > 0)
-		{
-			ValueMetaAndData fn = new ValueMetaAndData(meta.getFilenameField(), KettleVFS
-					.getFilename(data.file));
-			row = RowDataUtil.addValueData(row, fn.getValueMeta());
+		if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
+			outputRowData[outputIndex++] = KettleVFS.getFilename(data.file);
 		}
 
 		// See if we need to add the row number to the row...
-		if (meta.includeRowNumber() && meta.getRowNumberField() != null
-				&& meta.getRowNumberField().length() > 0)
-		{
-			ValueMetaAndData fn = new ValueMetaAndData(meta.getRowNumberField(), new Long(data.rownr));
-			row = RowDataUtil.addValueData(row, fn.getValueMeta());
+		if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField())) {
+			outputRowData[outputIndex++] = new Long(data.rownr);
 		}
 
 		RowMetaInterface irow = getInputRowMeta();
 		
-		data.previousRow = irow==null?row:(Object[])irow.cloneRow(row); // copy it to make
-		// sure the next
-		// step doesn't
-		// change it in
-		// between...
+		data.previousRow = irow==null?outputRowData:(Object[])irow.cloneRow(outputRowData); // copy it to make
+		// surely the next step doesn't change it in between...
 		data.rownr++;
 
 		// Throw away the information in the item?
 		NodeList nodeList = itemNode.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++)
+		for (int i = 0; i < nodeList.getLength(); i++) {
 			itemNode.removeChild(nodeList.item(i));
+		}
 
-		return row;
+		return outputRowData;
 	}
 
 	/**
@@ -359,7 +273,7 @@ public class XMLInput extends BaseStep implements StepInterface
 	 */
 	private Object[] buildEmptyRow()
 	{
-		return new Object[meta.getInputFields().length];
+		return RowDataUtil.allocateRowData(data.outputRowMeta.size());
 	}
 
 	private boolean openNextFile()

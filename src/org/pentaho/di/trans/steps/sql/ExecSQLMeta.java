@@ -23,6 +23,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -30,7 +31,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -269,13 +269,10 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-
-		Object[] add = ExecSQL.getResultRow(new Result(), getUpdateField(), getInsertField(), getDeleteField(),
+		RowMetaAndData add = ExecSQL.getResultRow(new Result(), getUpdateField(), getInsertField(), getDeleteField(),
 				getReadField());
 		
-		for (int i=0;i<add.length;i++)
-			r.addValueMeta(((ValueMetaAndData)add[i]).getValueMeta());
-
+		r.mergeRowMeta(add.getRowMeta());
 	}
 
 	public String getXML()

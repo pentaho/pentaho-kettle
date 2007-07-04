@@ -22,7 +22,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -51,19 +50,23 @@ public class DBProc extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private Object[] runProc(Object[] row) throws KettleException
+	private Object[] runProc(RowMetaInterface rowMeta, Object[] rowData) throws KettleException
 	{
-		int addIndex;
-		RowMetaAndData add;
-
-        if (first)
+		if (first)
 		{
+        	first=false;
+        	
+			// get the RowMeta for the output 
+        	// 
+			data.outputMeta = (RowMetaInterface) getInputRowMeta().clone();
+			meta.getFields(data.outputMeta, getStepname(), null, null, this);
+        	
 			data.argnrs=new int[meta.getArgument().length];
 			for (int i=0;i<meta.getArgument().length;i++)
 			{
 				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT //$NON-NLS-1$
 				{
-					data.argnrs[i]=data.previousMeta.indexOfValue(meta.getArgument()[i]);
+					data.argnrs[i]=rowMeta.indexOfValue(meta.getArgument()[i]);
 					if (data.argnrs[i]<0)
 					{
 						logError(Messages.getString("DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -75,38 +78,39 @@ public class DBProc extends BaseStep implements StepInterface
 					data.argnrs[i]=-1;
 				}
 			}
+			
 			data.db.setProcLookup(meta.getProcedure(), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
 			                      meta.getResultName(), meta.getResultType());
-			first=false;
 		}
 
-		data.db.setProcValues(data.previousMeta, row, data.argnrs, meta.getArgumentDirection(), !Const.isEmpty(meta.getResultName())); 
+		Object[] outputRowData = RowDataUtil.resizeArray(rowData, data.outputMeta.size());
+		int outputIndex = rowMeta.size();
 
-		add=data.db.callProcedure(meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType());
+		data.db.setProcValues(rowMeta, rowData, data.argnrs, meta.getArgumentDirection(), !Const.isEmpty(meta.getResultName())); 
 
+		RowMetaAndData add=data.db.callProcedure(meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType());
+		int addIndex = 0;
+		
 		// Function return?
 		if (!Const.isEmpty(meta.getResultName())) {
-			row=RowDataUtil.addValueData(row, add.getData()[0]); //first is the function return
-			addIndex=1;
-		} else {
-			addIndex=0;
-		}
+			outputRowData[outputIndex++]=add.getData()[addIndex++]; //first is the function return
+		} 
+		
         // We are only expecting the OUT and INOUT arguments here.
         // The INOUT values need to replace the value with the same name in the row.
         //
 		for (int i = 0; i < data.argnrs.length; i++) {
 			if (meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) {
 				// add
-				row=RowDataUtil.addValueData(row, add.getData()[addIndex]); 
-				addIndex++;
+				outputRowData[outputIndex++] = add.getData()[addIndex++]; 
 			} else if (meta.getArgumentDirection()[i].equalsIgnoreCase("INOUT")) {
 				// replace
-				row[data.argnrs[i]]=add.getData()[addIndex];
+				outputRowData[data.argnrs[i]]=add.getData()[addIndex];
 				addIndex++;
 			}
 			// IN not taken
 		}
-		return row;
+		return outputRowData;
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -117,30 +121,21 @@ public class DBProc extends BaseStep implements StepInterface
 		boolean sendToErrorRow=false;
 		String errorMessage = null;
 
+		// A procedure/function could also have no input at all
+		// However, we would still need to know how many times it gets executed.
+		// In short: the procedure gets executed once for every input row.
+		//
 		Object[] r=getRow();       // Get row from input rowset & set row busy!
-		//TODO: a procedure/function could also have no input at all
 		if (r==null)  // no more input to be expected...
 		{
 			setOutputDone();
 			return false;
 		}
 		
-        if (first)
-		{
-			// get the RowMeta
-			data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
-			data.addOutMeta = new RowMeta();
-			meta.getFields(data.addOutMeta, getStepname(), null);
-        	//assemble the outputMeta
-        	data.outputMeta=(RowMetaInterface)data.previousMeta.clone();
-        	data.outputMeta.addRowMeta(data.addOutMeta);
-			// do not reset first, needed in runProc();
-		}
-		    
 		try
 		{
-			r=runProc(r); // add new values to the row in rowset[0].
-			putRow(data.outputMeta, r);  // copy row to output rowset(s);
+			Object[] outputRowData = runProc(getInputRowMeta(), r); // add new values to the row in rowset[0].
+			putRow(data.outputMeta, outputRowData);  // copy row to output rowset(s);
 				
             if (checkFeedback(linesRead)) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
 		}

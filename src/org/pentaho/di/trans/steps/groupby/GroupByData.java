@@ -35,7 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class GroupByData extends BaseStepData implements StepDataInterface
 {
 	public Object previous[];
-	public RowMetaInterface previousMeta;
 	
 	public Object  agg[];
 	public RowMetaInterface aggMeta;
@@ -63,6 +62,10 @@ public class GroupByData extends BaseStepData implements StepDataInterface
     public Object groupResult[];
 
     public boolean hasOutput;
+    
+    
+    public RowMetaInterface inputRowMeta;
+    public RowMetaInterface outputRowMeta;
     
 	/**
 	 * 

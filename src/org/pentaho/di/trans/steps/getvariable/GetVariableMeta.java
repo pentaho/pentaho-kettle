@@ -157,11 +157,8 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-        RowMetaInterface row=null;
-
         // Determine the maximum length...
-        // TODO: is this always correct, if we would get other data (between 2 runs)
-        //       we would change the metadata.
+        // 
         int length = -1;
 		for (int i=0;i<fieldName.length;i++)
 		{
@@ -172,7 +169,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
             }
 		}
         
-		row=new RowMeta();
+		RowMetaInterface row=new RowMeta();
 		for (int i=0;i<fieldName.length;i++)
 		{
 			ValueMetaInterface v = new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
@@ -181,7 +178,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
             row.addValueMeta(v);
 		}
 
-        inputRowMeta.addRowMeta(row);
+        inputRowMeta.mergeRowMeta(row);
     }
 
 	public String getXML()

@@ -215,7 +215,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException(Messages.getString("StepMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+			throw new KettleXMLException(Messages.getString("StepMeta.Exception.UnableToLoadStepInfo")+e.toString(), e); //$NON-NLS-1$
 		}
 	}
     

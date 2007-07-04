@@ -30,9 +30,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class DBProcData extends BaseStepData implements StepDataInterface
 {
 	public int argnrs[];
-	public RowMetaInterface previousMeta;
+
 	public RowMetaInterface outputMeta;
-	public RowMetaInterface addOutMeta;
 	public Database db;
     
 	/**

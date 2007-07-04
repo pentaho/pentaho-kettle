@@ -25,11 +25,12 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -258,13 +259,10 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         resultType = ValueMetaInterface.TYPE_NUMBER;
         autoCommit = true;
     }
-
-    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info)
-    {
-        if (r == null) r = new RowMeta(); // give back values
-
-        int i;
-        
+    
+    @Override
+    public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException {
+    	
         if (!Const.isEmpty(resultName))
         {
         	ValueMetaInterface v = new ValueMeta(resultName, resultType);
@@ -272,7 +270,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
             r.addValueMeta(v);
         }
         
-        for (i = 0; i < argument.length; i++)
+        for (int i = 0; i < argument.length; i++)
         {
             if (argumentDirection[i].equalsIgnoreCase("OUT")) //$NON-NLS-1$ //$NON-NLS-2$
             {

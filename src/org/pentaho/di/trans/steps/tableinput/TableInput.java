@@ -60,8 +60,8 @@ public class TableInput extends BaseStep implements StepInterface
         RowMetaAndData rmad = getRowFrom(meta.getLookupStepname()); // rows are originating from "lookup_from"
         while (rmad!=null)
         {
+            parametersData = RowDataUtil.addRowData(parametersData, parametersMeta.size(), rmad.getData());
             parametersMeta.addRowMeta(rmad.getRowMeta());
-            parametersData = RowDataUtil.addRowData(parametersData, rmad.getData());
             
             rmad = getRowFrom(meta.getLookupStepname()); // take all input rows if needed!
         }

@@ -174,11 +174,11 @@ public interface RowMetaInterface extends Cloneable
     public void addRowMeta(RowMetaInterface rowMeta);
     
     /**
-     * Merge the values of row r to this Row metadata.
-     * Merge means: only the values that are not yet in the row are added
-     * (comparing on the value name).
+     * Merge the values of row r to this Row.
+     * The values that are not yet in the row are added unchanged.
+     * The values that are in the row are renamed to name[2], name[3], etc.
      *
-     * @param r The row metadata to be merged with this row metadata
+     * @param r The row to be merged with this row
      */
     public void mergeRowMeta(RowMetaInterface r);
 
@@ -258,6 +258,18 @@ public interface RowMetaInterface extends Cloneable
      * @throws KettleValueException
      */
     public int compare(Object[] rowData1, Object[] rowData2, int fieldnrs[]) throws KettleValueException;
+
+    /**
+     * Compare 2 rows with each other for equality using certain values in the rows and
+     * also considering the case sensitivity flag.
+
+     * @param rowData1 The first row of data
+     * @param rowData2 The second row of data
+     * @param fieldnrs the fields to compare on (in that order)
+     * @return true if the rows are considered equal, false if they are not.
+     * @throws KettleValueException
+     */
+    public boolean equals(Object[] rowData1, Object[] rowData2, int fieldnrs[]) throws KettleValueException;
 
     /**
      * Compare 2 rows with each other using certain values in the rows and

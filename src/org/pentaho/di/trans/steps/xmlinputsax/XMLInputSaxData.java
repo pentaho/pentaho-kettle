@@ -80,6 +80,8 @@ public class XMLInputSaxData extends BaseStepData implements StepDataInterface
 
 	public long rownr;
 
+	public RowMetaInterface convertRowMeta;
+
 	/**
 	 * 
 	 */

@@ -250,7 +250,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			add=new Object[meta.getValue().length];
 		} 
 		
-        return RowDataUtil.addRowData(row, add);
+        return RowDataUtil.addRowData(row, rowMeta.size(), add);
 	}
 	
     private void addToCache(RowMetaInterface keyMeta, Object[] keyData, RowMetaInterface valueMeta, Object[] valueData) throws KettleValueException

@@ -15,11 +15,12 @@
 
 package org.pentaho.di.trans.steps.xmlinputsax;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -53,26 +54,35 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		Object[] row = getRowFromXML();
-		if (row.length == 0)
+		if (first)
+		{
+			first=false;
+			
+			data.outputRowMeta = new RowMeta();
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			// For String to <type> conversions, we allocate a conversion meta data row as well...
+			//
+			data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
+			for (int i=0;i<data.convertRowMeta.size();i++) {
+				data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
+			}
+		}
+
+		Object[] outputRowData = getRowFromXML();
+		if (outputRowData==null)
 		{
 			setOutputDone(); // signal end to receiver(s)
 			return false; // This is the end of this step.
 		}
 
-		if (log.isRowLevel())
-			logRowlevel("Read row: " + row.toString());
-		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		putRow(data.outputRowMeta, row);
+		if (log.isRowLevel()) logRowlevel("Read row: " + data.outputRowMeta.getString(outputRowData));
+		
+		putRow(data.outputRowMeta, outputRowData);
 
-		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) // limit
-																		// has
-																		// been
-																		// reached:
-																		// stop
-																		// now.
-		{
+		// limit has been reached: stop now.
+		//
+		if (meta.getRowLimit() > 0 && data.rownr >= meta.getRowLimit()) {
 			setOutputDone();
 			return false;
 		}
@@ -82,13 +92,11 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 	private Object[] getRowFromXML() throws KettleValueException
 	{
-		Object[] row = new Object[0];
-
-		if (data.document == null) // finished reading the file, read the next
-									// file!
-		{
+		// finished reading the file, read the next file!
+		//
+		if (data.document == null) {
 			data.filename = null;
-		} else if (!data.document.hasNext())
+		}  else if (!data.document.hasNext())
 		{
 			data.filename = null;
 		}
@@ -102,38 +110,29 @@ public class XMLInputSax extends BaseStep implements StepInterface
 			}
 		}
 
-		row = data.document.getNext();
+		Object[] outputRowData = data.document.getNext();
+		int outputIndex = meta.getInputFields().length;
 
 		// Node itemNode = XMLHandler.getSubNodeByNr(data.section,
 		// data.itemElement, data.itemPosition);
 		// data.itemPosition++;
 
 		// See if we need to add the filename to the row...
-		if (meta.includeFilename() && meta.getFilenameField() != null && meta.getFilenameField().length() > 0)
+		//
+		if (meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()))
 		{
-			ValueMetaAndData fn = new ValueMetaAndData(meta.getFilenameField(), data.filename);
-			row = RowDataUtil.addValueData(row, fn);
+			outputRowData[outputIndex++] = data.filename;
 		}
 
 		// See if we need to add the row number to the row...
-		if (meta.includeRowNumber() && meta.getRowNumberField() != null
-				&& meta.getRowNumberField().length() > 0)
+		if (meta.includeRowNumber() && !Const.isEmpty(meta.getRowNumberField()))
 		{
-			ValueMetaAndData fn = new ValueMetaAndData(meta.getRowNumberField(), new Long(data.rownr));
-			row = RowDataUtil.addValueData(row, fn);
+			outputRowData[outputIndex] = new Long(data.rownr);
 		}
 
-		System.arraycopy(row, 0, data.previousRow, 0, row.length); // copy it
-																	// to make
-																	// sure the
-																	// next step
-																	// doesn't
-																	// change it
-																	// in
-																	// between...
 		data.rownr++;
 
-		return row;
+		return outputRowData;
 	}
 
 	private boolean openNextFile()

@@ -11,10 +11,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.StringUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -82,7 +81,6 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	 */
 	public XMLInputSaxDataRetriever(String sourceFile, XMLInputSaxMeta meta, XMLInputSaxData data)
 	{
-
 		this.meta = meta;
 
 		this.data = data;
@@ -179,17 +177,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 	{
 
 		XMLInputSaxField fields[] = meta.getInputFields();
-		Object[] row = new Object[fields.length];
-		for (int i = 0; i < fields.length; i++)
-		{
-			XMLInputSaxField field = fields[i];
-
-			ValueMetaInterface mvalue = new ValueMeta(field.getName(), field.getType());
-			mvalue.setLength(field.getLength(), field.getPrecision());
-
-			row[i] = new ValueMetaAndData(mvalue, null);
-		}
-
+		Object[] row = RowDataUtil.allocateRowData(fields.length);
 		return row;
 	}
 
@@ -227,7 +215,6 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 			_counter--;
 			rootFound = false;
 			rowSet.add( row );
-			// System.out.println(row.toString());
 			this.row = null;
 			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
 		} else
@@ -262,8 +249,7 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 						String att2 = el.getAttributeValue();
 						if (att1.equals(att2))
 						{
-							_pathToRootElement.add(new XMLInputSaxFieldPosition(qName, el.getAttribute(), el
-									.getAttributeValue()));
+							_pathToRootElement.add(new XMLInputSaxFieldPosition(qName, el.getAttribute(), el.getAttributeValue()));
 							if (counter == pathToRootElement.size() - 1)
 							{
 								int i = 0;
@@ -342,13 +328,9 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 
 			if (this.fieldToFill >= 0)
 			{
-				ValueMetaAndData v = (ValueMetaAndData) row[fieldToFill];
-				if (tempVal != "")
+				if (tempVal==null)
 				{
-					v.setValueData(tempVal);
-				} else
-				{
-					v.setValueData("");
+					tempVal = "";
 				}
 
 				XMLInputSaxField xmlInputField = (XMLInputSaxField) fields.get(fieldToFill);
@@ -356,105 +338,30 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 				switch (xmlInputField.getTrimType())
 				{
 				case XMLInputSaxField.TYPE_TRIM_LEFT:
-					v.setValueData(Const.ltrim(v.getValueData().toString()));
+					tempVal = Const.ltrim(tempVal);
 					break;
 				case XMLInputSaxField.TYPE_TRIM_RIGHT:
-					v.setValueData(Const.rtrim(v.getValueData().toString()));
+					tempVal = Const.rtrim(tempVal);
 					break;
 				case XMLInputSaxField.TYPE_TRIM_BOTH:
-					v.setValueData(v.getValueData().toString().trim());
+					tempVal = Const.trim(tempVal);
 					break;
 				default:
 					break;
 				}
-
-				// System.out.println("after trim, field #"+i+" : "+v);
 
 				// DO CONVERSIONS...
-				switch (xmlInputField.getType())
-				{
-				case ValueMeta.TYPE_STRING:
-					// System.out.println("Convert value to String :"+v);
-					break;
-				case ValueMeta.TYPE_NUMBER:
-					// System.out.println("Convert value to Number :"+v);
-					if (xmlInputField.getFormat() != null && xmlInputField.getFormat().length() > 0)
-					{
-						if (xmlInputField.getDecimalSymbol() != null
-								&& xmlInputField.getDecimalSymbol().length() > 0)
-						{
-							if (xmlInputField.getGroupSymbol() != null
-									&& xmlInputField.getGroupSymbol().length() > 0)
-							{
-								if (xmlInputField.getCurrencySymbol() != null
-										&& xmlInputField.getCurrencySymbol().length() > 0)
-								{
-									v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(),
-											xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol(),
-											xmlInputField.getCurrencySymbol(), v.getValueData().toString())));
-								} else
-								{
-									v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(),
-											xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol(),
-											null, v.getValueData().toString())));
-								}
-							} else
-							{
-								v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(),
-										xmlInputField.getGroupSymbol(), null, null, v.getValueData()
-												.toString())));
-							}
-						} else
-						{
-							v.setValueData(new Double(StringUtil.str2num(xmlInputField.getFormat(), null,
-									null, null, v.getValueData().toString()))); // just
-							// a
-							// format
-							// mask
-						}
-					} else
-					{
-						v.setValueData(new Double(StringUtil.str2num(null, null, null, null, v.getValueData()
-								.toString())));
-					}
-					v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-					break;
-				case ValueMeta.TYPE_INTEGER:
-					// System.out.println("Convert value to integer :"+v);
-					//v.setValue(v.getInteger());
-					v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-					break;
-				case ValueMeta.TYPE_BIGNUMBER:
-					// System.out.println("Convert value to BigNumber :"+v);
-					//v.setValue(v.getBigNumber());
-					v.getValueMeta().setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
-					break;
-				case ValueMeta.TYPE_DATE:
-					// System.out.println("Convert value to Date :"+v);
-
-					if (xmlInputField.getFormat() != null && xmlInputField.getFormat().length() > 0)
-					{
-						v.setValueData(StringUtil.str2dat(xmlInputField.getFormat(),null,v.getValueData().toString()));
-					} else
-					{
-						//is this necessary?
-						//v.setValue(v.getDate());
-					}
-					break;
-				case ValueMeta.TYPE_BOOLEAN:
-					//v.setValue(v.getBoolean());
-					break;
-				default:
-					break;
-				}
+				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(fieldToFill);
+				ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(fieldToFill);
+				row[fieldToFill] = targetValueMeta.convertData(sourceValueMeta, tempVal);
 
 				// Do we need to repeat this field if it is null?
 				if (xmlInputField.isRepeated())
 				{
-					if (v.getValueData()==null && data.previousRow != null)
+					if (row[fieldToFill]==null && data.previousRow != null)
 					{
-						ValueMetaAndData previous = (ValueMetaAndData)data.previousRow[fieldToFill];
-						v.setValueData(previous.getValueData());
+						Object previous = data.previousRow[fieldToFill];
+						row[fieldToFill] = previous;
 					}
 				}
 			}

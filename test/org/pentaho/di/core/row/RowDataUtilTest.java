@@ -102,6 +102,7 @@ public class RowDataUtilTest extends TestCase
     	// each other
     	Object newArr1[] = RowDataUtil.addRowData(
     			                     new Object[] {},
+    			                     0,
     			                     new Object[] {new Long(1L), new Long(2L), new Long(3L)});    	
     	assertTrue(newArr1.length == arr.length);
     	assertTrue(arrayCompare(newArr1, 0, arr, 0, newArr1.length));
@@ -109,18 +110,21 @@ public class RowDataUtilTest extends TestCase
     	
     	Object newArr2[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L), new Long(2L), new Long(3L)},
+                                     3,
                                      new Object[] {});    	
         assertTrue(newArr2.length == arr.length);
         assertTrue(arrayCompare(newArr2, 0, arr, 0, newArr2.length));
 
     	Object newArr3[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L)},
+                                     1,
                                      new Object[] {new Long(2L), new Long(3L)});    	
         assertTrue(newArr3.length == arr.length);
         assertTrue(arrayCompare(newArr3, 0, arr, 0, newArr3.length));
 
     	Object newArr4[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L), new Long(2L)},
+                                     2,
                                      new Object[] {new Long(3L)});    	
         assertTrue(newArr4.length == arr.length);
         assertTrue(arrayCompare(newArr4, 0, arr, 0, newArr4.length));        
@@ -132,12 +136,12 @@ public class RowDataUtilTest extends TestCase
     	Object arr2[] = new Object[] { new Long(1L), new Long(2L) };
     	
     	Object newArr1[] = RowDataUtil.addValueData(
-    			                     new Object[] {}, new Long(1L));    	
+    			                     new Object[] {}, 0, new Long(1L));    	
     	assertTrue(newArr1.length == arr1.length);
     	assertTrue(arrayCompare(newArr1, 0, arr1, 0, newArr1.length));    	
 
     	Object newArr2[] = RowDataUtil.addValueData(
-                new Object[] {new Long(1L)}, new Long(2L));    	
+                new Object[] {new Long(1L)}, 1, new Long(2L));    	
         assertTrue(newArr2.length == arr2.length);
         assertTrue(arrayCompare(newArr2, 0, arr2, 0, newArr2.length));    	    	
     }    

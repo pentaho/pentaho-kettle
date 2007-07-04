@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -39,43 +40,39 @@ public class ExecSQL extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 
-	public static final Object[] getResultRow(Result result, String upd, String ins, String del, String read)
+	public static final RowMetaAndData getResultRow(Result result, String upd, String ins, String del, String read)
 	{
-		Object[] row = new Object[4];
+		RowMetaAndData resultRow = new RowMetaAndData();
 
 		if (upd != null && upd.length() > 0)
 		{
-			ValueMetaInterface meta = new ValueMeta(upd);
-			ValueMetaAndData rowsUpdated = new ValueMetaAndData(meta, new Long(result.getNrLinesUpdated()));
+			ValueMeta meta = new ValueMeta(upd, ValueMetaInterface.TYPE_INTEGER);
 			meta.setLength(9);
-			row[0] = rowsUpdated;
+			resultRow.addValue(meta, new Long(result.getNrLinesUpdated()));
 		}
 
 		if (ins != null && ins.length() > 0)
 		{
-			ValueMetaInterface meta = new ValueMeta(ins);
-			ValueMetaAndData rowsInserted = new ValueMetaAndData(meta,new Long(result.getNrLinesOutput()));
+			ValueMeta meta = new ValueMeta(ins, ValueMetaInterface.TYPE_INTEGER);
 			meta.setLength(9);
-			row[1] = rowsInserted;
+			resultRow.addValue(meta, new Long(result.getNrLinesOutput()));
 		}
 
 		if (del != null && del.length() > 0)
 		{
-			ValueMetaInterface meta = new ValueMeta(del);
-			ValueMetaAndData rowsDeleted = new ValueMetaAndData(meta, new Long(result.getNrLinesDeleted()));
+			ValueMeta meta = new ValueMeta(del, ValueMetaInterface.TYPE_INTEGER);
 			meta.setLength(9);
-			row[2] = rowsDeleted;
+			resultRow.addValue(meta, new Long(result.getNrLinesDeleted()));
 		}
 
 		if (read != null && read.length() > 0)
 		{
-			ValueMetaInterface meta = new ValueMeta(read);
-			ValueMetaAndData rowsRead = new ValueMetaAndData(meta, new Long(result.getNrLinesRead()));
+			ValueMeta meta = new ValueMeta(read, ValueMetaInterface.TYPE_INTEGER);
 			meta.setLength(9);
-			row[3] = rowsRead;
+			resultRow.addValue(meta, new Long(result.getNrLinesRead()));
 		}
 
-		return row;
+		return resultRow;
 	}
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -83,21 +80,15 @@ public class ExecSQL extends BaseStep implements StepInterface
 		meta = (ExecSQLMeta) smi;
 		data = (ExecSQLData) sdi;
 
-		Object[] row = null;
-		data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
-		meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-		
-		
 		if (!meta.isExecutedEachInputRow())
 		{
-			row = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta
-					.getDeleteField(), meta.getReadField());
-			putRow(data.outputRowMeta,row);
+			RowMetaAndData resultRow = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
+			putRow(resultRow.getRowMeta(), resultRow.getData());
 			setOutputDone(); // Stop processing, this is all we do!
 			return false;
 		}
 
-		row = getRow();
+		Object[] row = getRow();
 		if (row == null) // no more input to be expected...
 		{
 			setOutputDone();
@@ -105,10 +96,13 @@ public class ExecSQL extends BaseStep implements StepInterface
 		}
 
 		StringBuffer sql = new StringBuffer(meta.getSql());
-
+		
 		if (first) // we just got started
 		{
 			first = false;
+			
+			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
 			// Find the indexes of the arguments
 			data.argumentIndexes = new int[meta.getArguments().length];
@@ -118,8 +112,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 				if (data.argumentIndexes[i] < 0)
 				{
 					logError(Messages.getString("ExecSQL.Log.ErrorFindingField") + meta.getArguments()[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(Messages.getString(
-							"ExecSQL.Exception.CouldNotFindField", meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new KettleStepException(Messages.getString("ExecSQL.Exception.CouldNotFindField", meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 
@@ -153,15 +146,13 @@ public class ExecSQL extends BaseStep implements StepInterface
 			logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + sql); //$NON-NLS-1$
 		data.result = data.db.execStatements(sql.toString());
 
-		Object[] add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta
-				.getDeleteField(), meta.getReadField());
+		RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
 		
-		row = RowDataUtil.addRowData(add,row);
+		row = RowDataUtil.addRowData(row, getInputRowMeta().size(), add.getData());
 
-		if (!data.db.isAutoCommit())
+		if (!data.db.isAutoCommit()) {
 			data.db.commit();
-		
-		
+		}
 		
 		putRow(data.outputRowMeta,row); // send it out!
 

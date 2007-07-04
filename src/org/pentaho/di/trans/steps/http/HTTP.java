@@ -52,7 +52,7 @@ public class HTTP extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private Object[] execHttp(RowMetaInterface outputRowMeta, Object[] row) throws KettleException
+	private Object[] execHttp(RowMetaInterface rowMeta, Object[] row) throws KettleException
 	{
         if (first)
 		{
@@ -61,7 +61,7 @@ public class HTTP extends BaseStep implements StepInterface
 			
 			for (int i=0;i<meta.getArgumentField().length;i++)
 			{
-				data.argnrs[i]=outputRowMeta.indexOfValue(meta.getArgumentField()[i]);
+				data.argnrs[i]=rowMeta.indexOfValue(meta.getArgumentField()[i]);
 				if (data.argnrs[i]<0)
 				{
 					logError(Messages.getString("HTTP.Log.ErrorFindingField")+meta.getArgumentField()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -70,12 +70,12 @@ public class HTTP extends BaseStep implements StepInterface
 			}
 		}
 
-        return callHttpService(outputRowMeta, row);
+        return callHttpService(rowMeta, row);
 	}
 	
-	private Object[] callHttpService(RowMetaInterface outputRowMeta, Object[] row) throws KettleException
+	private Object[] callHttpService(RowMetaInterface rowMeta, Object[] rowData) throws KettleException
     {
-        String url = determineUrl(outputRowMeta, row);
+        String url = determineUrl(rowMeta, rowData);
         try
         {
             logDetailed("Connecting to : ["+url+"]");
@@ -92,7 +92,7 @@ public class HTTP extends BaseStep implements StepInterface
                 int result = httpclient.executeMethod(method);
                 
                 // The status code
-                log.logDebug(toString(), "Response status code: " + result);
+                if (log.isDebug()) log.logDebug(toString(), "Response status code: " + result);
                 
                 // the response
                 InputStream inputStream = method.getResponseBodyAsStream();
@@ -102,11 +102,9 @@ public class HTTP extends BaseStep implements StepInterface
                 inputStream.close();
                 
                 String body = bodyBuffer.toString();
-                log.logDebug(toString(), "Response body: "+body);
+                if (log.isDebug()) log.logDebug(toString(), "Response body: "+body);
                 
-                Object[] outputRow = RowDataUtil.addValueData(row, body);
-                
-                return outputRow;
+                return RowDataUtil.addValueData(rowData, rowMeta.size(), body);
             }
             finally
             {
@@ -168,8 +166,8 @@ public class HTTP extends BaseStep implements StepInterface
 		    
 		try
 		{
-			execHttp(data.outputRowMeta, r); // add new values to the row
-			putRow(data.outputRowMeta, r);  // copy row to output rowset(s);
+			Object[] outputRowData = execHttp(getInputRowMeta(), r); // add new values to the row
+			putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 				
             if (checkFeedback(linesRead)) logBasic(Messages.getString("HTTP.LineNumber")+linesRead); //$NON-NLS-1$
 		}

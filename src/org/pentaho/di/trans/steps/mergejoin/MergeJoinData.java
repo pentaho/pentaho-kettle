@@ -32,7 +32,7 @@ public class MergeJoinData extends BaseStepData implements StepDataInterface
 {
 	public Object[] one, two;
 	public RowMetaInterface oneMeta, twoMeta;
-	public RowMetaInterface oneTwoMeta; //just for speed: oneMeta+twoMeta
+	public RowMetaInterface outputRowMeta; //just for speed: oneMeta+twoMeta
 	public Object[] one_dummy, two_dummy;
     public List<Object[]> ones, twos;
     public Object[] one_next, two_next;

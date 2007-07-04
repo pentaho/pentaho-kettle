@@ -114,8 +114,8 @@ public class RowMetaAndData implements Cloneable
 
     public void addValue(ValueMeta valueMeta, Object valueData)
     {
+        data = RowDataUtil.addValueData(data, rowMeta.size(), valueData);
         rowMeta.addValueMeta(valueMeta);
-        data = RowDataUtil.addValueData(data, valueData);
     }
     
     public void addValue(String valueName, int valueType, Object valueData)

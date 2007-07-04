@@ -14,6 +14,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RowListener;
 
+import be.ibridge.kettle.core.KettleVariables;
+
 public class TimedTransRunner
 {
     private String filename;
@@ -90,6 +92,8 @@ public class TimedTransRunner
     {
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
+        KettleVariables.getInstance().setVariable("NR_OF_ROWS", Long.toString(records));
+        
         oldTransMeta = new be.ibridge.kettle.trans.TransMeta(filename);
         if (printDescription) printOldTransDescription();
         
@@ -158,7 +162,6 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(newTransMeta);
-        trans.setVariable("NR_OF_ROWS", Long.toString(records));
         trans.prepareExecution(null);
         
         if (!Const.isEmpty(newRowListenerStep))

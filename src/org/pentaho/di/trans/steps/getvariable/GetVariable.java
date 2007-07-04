@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.getvariable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -61,7 +62,7 @@ public class GetVariable extends BaseStep implements StepInterface
 		}
 		else
 		{
-			rowData=new Object[0];
+			rowData=RowDataUtil.allocateRowData(0);
 			linesRead++;
 		}
 		
@@ -69,9 +70,17 @@ public class GetVariable extends BaseStep implements StepInterface
 		if (first && rowData!=null)
 		{
 			first=false;
+			
             
-            // Make output metadata
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            // Make output meta data
+			//
+			if (data.readsRows) {
+				data.inputRowMeta = getInputRowMeta();
+			}
+			else {
+				data.inputRowMeta = new RowMeta();
+			}
+            data.outputRowMeta = (RowMetaInterface)data.inputRowMeta.clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 		}
 		
@@ -89,7 +98,7 @@ public class GetVariable extends BaseStep implements StepInterface
             extraData[i] = newValue;
         }
         
-        rowData = RowDataUtil.addRowData(rowData, extraData);
+        rowData = RowDataUtil.addRowData(rowData, data.inputRowMeta.size(), extraData);
         
         putRow(data.outputRowMeta, rowData);		     
 					

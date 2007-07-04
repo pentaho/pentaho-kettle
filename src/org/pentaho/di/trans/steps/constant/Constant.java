@@ -197,11 +197,11 @@ public class Constant extends BaseStep implements StepInterface
             data.outputMeta = (RowMetaInterface)getInputRowMeta().clone();
         	
         	RowMetaInterface constants = data.constants.getRowMeta();        	
-        	data.outputMeta.addRowMeta(constants);
+        	data.outputMeta.mergeRowMeta(constants);
         }
           
         // Add the constant data to the end of the row.
-        r = RowDataUtil.addRowData(r, data.constants.getData());
+        r = RowDataUtil.addRowData(r, getInputRowMeta().size(), data.constants.getData());
                 
         putRow(data.outputMeta, r);
 

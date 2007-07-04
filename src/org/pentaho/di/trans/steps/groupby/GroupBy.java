@@ -68,14 +68,6 @@ public class GroupBy extends BaseStep implements StepInterface
         data=(GroupByData)sdi;
         
         Object[] r=getRow();    // get row!
-        
-		if (first)
-		{
-			// get the RowMeta
-			data.previousMeta = (RowMetaInterface) getInputRowMeta().clone();
-			//do not set first=false, below is another part that uses first
-		}
-		
 		if (r==null)  // no more input to be expected...
 		{
             if (meta.passAllRows())  // ALL ROWS
@@ -88,12 +80,13 @@ public class GroupBy extends BaseStep implements StepInterface
                 data.groupResult = getAggregateResult();
 
                 Object[] row = getRowFromBuffer();
-                RowMetaInterface rowMeta=(RowMetaInterface)data.previousMeta.clone();
+                int size = data.inputRowMeta.size();
+                
                 long lineNr=0;
                 while (row!=null)
                 {
-                	row=RowDataUtil.addRowData(row, data.groupResult);
-                	rowMeta.addRowMeta(data.aggMeta); // aggRowMeta is Meta for groupResult
+                	row=RowDataUtil.addRowData(row, size, data.groupResult);
+                	size+=data.groupResult.length;
                     lineNr++;
                     
                     if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
@@ -101,11 +94,11 @@ public class GroupBy extends BaseStep implements StepInterface
                     	Object lineNrValue= new Long(lineNr);
                     	ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
                     	lineNrValueMeta.setLength(9);
-                    	row=RowDataUtil.addValueData(row, lineNrValue);
-                    	rowMeta.addValueMeta(lineNrValueMeta);
+                    	row=RowDataUtil.addValueData(row, size, lineNrValue);
+                    	size++;
                     }
                     
-                    putRow(rowMeta, row);
+                    putRow(data.outputRowMeta, row);
                     row = getRowFromBuffer();
                 }
                 closeInput();
@@ -125,15 +118,24 @@ public class GroupBy extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		//System.out.println("r = "+r);
-		
-		if (first)
+        if (first)
 		{
+        	first=false;
+        	
+        	// What is the output looking like?
+        	// 
+        	data.inputRowMeta = getInputRowMeta();
+        	data.outputRowMeta = (RowMetaInterface) data.inputRowMeta.clone();
+        	meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+        	
+        	// Do all the work we can beforehand
+        	// Calculate indexes, loop up fields, etc.
+        	//
 			data.counts     = new long[meta.getSubjectField().length];
 			data.subjectnrs = new int[meta.getSubjectField().length];
 			for (int i=0;i<meta.getSubjectField().length;i++)
 			{
-				data.subjectnrs[i] = data.previousMeta.indexOfValue(meta.getSubjectField()[i]);
+				data.subjectnrs[i] = getInputRowMeta().indexOfValue(meta.getSubjectField()[i]);
 				if (data.subjectnrs[i]<0)
 				{
 					logError(Messages.getString("GroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -146,7 +148,7 @@ public class GroupBy extends BaseStep implements StepInterface
 			data.groupnrs = new int[meta.getGroupField().length];
 			for (int i=0;i<meta.getGroupField().length;i++)
 			{
-				data.groupnrs[i] = data.previousMeta.indexOfValue(meta.getGroupField()[i]);
+				data.groupnrs[i] = getInputRowMeta().indexOfValue(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
 					logError(Messages.getString("GroupBy.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -155,17 +157,15 @@ public class GroupBy extends BaseStep implements StepInterface
 					return false;
 				}				
 			}
-			initGroupMeta(data.previousMeta);
+			initGroupMeta(getInputRowMeta());
 
-			data.previous=data.previousMeta.cloneRow(r); // copy the row to previous
-			newAggregate(r);         // Create a new group aggregate (init)
+			data.previous = getInputRowMeta().cloneRow(r); // copy the row to previous
+			newAggregate(r);                               // Create a new group aggregate (init)
 
 			// for speed: groupMeta+aggMeta
 			data.groupAggMeta=new RowMeta();
 			data.groupAggMeta.addRowMeta(data.groupMeta);
 			data.groupAggMeta.addRowMeta(data.aggMeta);
-
-			first=false;
 		}
 		else
 		{
@@ -199,24 +199,25 @@ public class GroupBy extends BaseStep implements StepInterface
                 // System.out.println("dump rows from the buffer");
 
                 Object[] row = getRowFromBuffer();
-                RowMetaInterface rowMeta=(RowMetaInterface)data.previousMeta.clone();
+                int size = data.inputRowMeta.size();
+                
                 long lineNr=0;
                 while (row!=null)
                 {
-                	row=RowDataUtil.addRowData(row, data.groupResult);
-                	rowMeta.addRowMeta(data.aggMeta); // aggRowMeta is Meta for groupResult
-                    lineNr++;
+                	row=RowDataUtil.addRowData(row, size, data.groupResult);
+                	size+=data.groupResult.length;
+                	
+                	lineNr++;
                     
                     if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
                     {
                     	Object lineNrValue= new Long(lineNr);
                     	ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
                     	lineNrValueMeta.setLength(9);
-                    	row=RowDataUtil.addValueData(row, lineNrValue);
-                    	rowMeta.addValueMeta(lineNrValueMeta);
-
+                    	row=RowDataUtil.addValueData(row, size, lineNrValue);
+                    	size++;
                     }
-                    putRow(rowMeta, row);
+                    putRow(data.outputRowMeta, row);
                     row = getRowFromBuffer();
                 }
                 closeInput();
@@ -229,7 +230,7 @@ public class GroupBy extends BaseStep implements StepInterface
             newAggregate(r);       // Create a new group aggregate (init)
 		}
 
-		data.previous=data.previousMeta.cloneRow(r);
+		data.previous=data.inputRowMeta.cloneRow(r);
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("GroupBy.LineNumber")+linesRead); //$NON-NLS-1$
 			
@@ -239,15 +240,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Is the row r of the same group as previous?
 	private boolean sameGroup(Object[] previous, Object[] r) throws KettleValueException
 	{
-		for (int i=0;i<data.groupnrs.length;i++)
-		{
-			Object prev = previous[data.groupnrs[i]];
-			Object curr = r[data.groupnrs[i]];
-			
-			if (data.previousMeta.getValueMeta(data.groupnrs[i]).compare(prev, curr)!=0) return false;  //TODO JB can we use this "equals"?
-		}
-		
-		return true;
+		return data.inputRowMeta.compare(previous, r, data.groupnrs) == 0;
 	}
 	
 	// Calculate the aggregates in the row...
@@ -256,7 +249,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		for (int i=0;i<data.subjectnrs.length;i++)
 		{
 			Object subj = r[data.subjectnrs[i]];
-			ValueMetaInterface subjMeta=data.previousMeta.getValueMeta(data.subjectnrs[i]);
+			ValueMetaInterface subjMeta=data.inputRowMeta.getValueMeta(data.subjectnrs[i]);
 			Object value = data.agg[i];
 			ValueMetaInterface valueMeta=data.aggMeta.getValueMeta(i);
 			
@@ -320,7 +313,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		for (int i=0;i<data.subjectnrs.length;i++)
 		{
 			Object subj = r[data.subjectnrs[i]];
-			ValueMetaInterface subjMeta=data.previousMeta.getValueMeta(data.subjectnrs[i]);
+			ValueMetaInterface subjMeta=data.inputRowMeta.getValueMeta(data.subjectnrs[i]);
 			Object v=null;
 			ValueMetaInterface vMeta=null;
 			switch(meta.getAggregateType()[i])
@@ -364,13 +357,13 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	private Object[] buildResult(Object[] r) throws KettleValueException
 	{
-		Object[] result = new Object[data.groupnrs.length];
+		Object[] result = RowDataUtil.allocateRowData(data.groupnrs.length);
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
 			result[i]=r[data.groupnrs[i]]; 
 		}
 		
-		result=RowDataUtil.addRowData(result, getAggregateResult());
+		result=RowDataUtil.addRowData(result, data.groupnrs.length, getAggregateResult());
         
 		return result;
 	}
@@ -438,7 +431,7 @@ public class GroupBy extends BaseStep implements StepInterface
             }
             // OK, save the oldest rows to disk!
             Object[] oldest = (Object[]) data.bufferList.get(0);
-            data.previousMeta.writeData(data.dos, oldest);
+            data.inputRowMeta.writeData(data.dos, oldest);
             data.bufferList.remove(0);
             data.rowsOnFile++;
         }
@@ -464,7 +457,7 @@ public class GroupBy extends BaseStep implements StepInterface
             }
             
             // Read one row from the file!
-            Object[] row=data.previousMeta.readData(data.dis);
+            Object[] row=data.inputRowMeta.readData(data.dis);
             data.rowsOnFile--;
             
             return row;

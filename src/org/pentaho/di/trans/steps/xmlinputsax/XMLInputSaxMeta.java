@@ -421,15 +421,21 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{		
-		int i;
-		for (i=0;i<inputFields.length;i++)
+		for (int i=0;i<inputFields.length;i++)
 		{
 		    XMLInputSaxField field = inputFields[i];
 		    
 			int type=field.getType();
 			if (type==ValueMeta.TYPE_NONE) type=ValueMeta.TYPE_STRING;
+			
 			ValueMeta v=new ValueMeta(field.getName(), type);
-			v.setLength(field.getLength(), field.getPrecision());
+			v.setLength(field.getLength());
+			v.setPrecision(field.getPrecision());
+			v.setConversionMask(field.getFormat());
+			v.setGroupingSymbol(field.getGroupSymbol());
+			v.setDecimalSymbol(field.getDecimalSymbol());
+			v.setCurrencySymbol(field.getCurrencySymbol());
+			
 			v.setOrigin(name);
 			row.addValueMeta(v);
 		}

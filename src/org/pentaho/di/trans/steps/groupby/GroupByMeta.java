@@ -334,7 +334,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		allocate( sizegroup, nrfields );
 	}
 
-	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
 		// Loop over the aggregate names.
 		// Keep the fields to group over and the aggregates
@@ -392,7 +392,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				if (value_type != ValueMetaInterface.TYPE_NONE)
 				{
 					ValueMetaInterface v = new ValueMeta(value_name, value_type);
-					v.setOrigin(name);
+					v.setOrigin(origin);
                     v.setLength(length, precision);
                     r.addValueMeta(v);
 				}
@@ -406,7 +406,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             {
             	ValueMetaInterface lineNr = new ValueMeta(lineNrInGroupField, ValueMetaInterface.TYPE_INTEGER);
                 lineNr.setLength(9);
-                lineNr.setOrigin(name);
+                lineNr.setOrigin(origin);
                 r.addValueMeta(lineNr);
             }
         }

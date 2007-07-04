@@ -274,7 +274,7 @@ public class TableOutput extends BaseStep implements StepInterface
         // We need to add a key
         if (generatedKey!=null)
         {
-            outputRowData = RowDataUtil.addValueData(outputRowData, generatedKey);
+            outputRowData = RowDataUtil.addValueData(outputRowData, rowMeta.size(), generatedKey);
         }
 		
         if (data.batchMode)
