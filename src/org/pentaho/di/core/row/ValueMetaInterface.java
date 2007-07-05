@@ -47,10 +47,13 @@ public interface ValueMetaInterface extends Cloneable
     
     
     /** The storage type is the same as the indicated value type */
-    public static final int STORAGE_TYPE_NORMAL = 0; 
+    public static final int STORAGE_TYPE_NORMAL        =  0; 
     
+    /** The storage type is binary: read from text but not yet converted to the requested target data type, for lazy conversions. */
+    public static final int STORAGE_TYPE_BINARY_STRING =  1; 
+
     /** The storage type is indexed.  This means that the value is a simple integer index referencing the values in getIndex() */
-    public static final int STORAGE_TYPE_INDEXED = 2; 
+    public static final int STORAGE_TYPE_INDEXED       =  2; 
     
     
     
@@ -187,6 +190,9 @@ public interface ValueMetaInterface extends Cloneable
     /** Convert the supplied data to a String */
     public String getString(Object object) throws KettleValueException;
 
+    /** convert the supplied data to a binary string representation (for writing text) */
+    public byte[] getBinaryString(Object object) throws KettleValueException;
+    
     /** Convert the supplied data to a Number */
     public Double getNumber(Object object) throws KettleValueException;
 
@@ -343,4 +349,16 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion problem 
      */
     public Value createOriginalValue(Object data) throws KettleValueException;
+    
+	/**
+	 * @return the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
+	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
+	 */
+	public ValueMetaInterface getStorageMetadata();
+	
+	/**
+	 * @param storageMetadata the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
+	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
+	 */
+	public void setStorageMetadata(ValueMetaInterface storageMetadata);
 }

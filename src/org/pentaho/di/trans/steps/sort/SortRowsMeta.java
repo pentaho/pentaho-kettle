@@ -63,7 +63,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     private String  prefix;
 
     /** The sort size: number of rows sorted and kept in memory */
-    private int     sortSize;
+    private String  sortSize;
 
     /** The sort size: number of rows sorted and kept in memory */
     private boolean onlyPassingUniqueRows;
@@ -177,7 +177,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         {
             directory = XMLHandler.getTagValue(stepnode, "directory");
             prefix = XMLHandler.getTagValue(stepnode, "prefix");
-            sortSize = Const.toInt(XMLHandler.getTagValue(stepnode, "sort_size"), Const.SORT_SIZE);
+            sortSize = XMLHandler.getTagValue(stepnode, "sort_size");
+            if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
             compressFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compress"));
             onlyPassingUniqueRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "unique_rows") );
 
@@ -208,7 +209,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         directory = "%%java.io.tmpdir%%";
         prefix = "out";
-        sortSize = Const.SORT_SIZE;
+        sortSize = Integer.toString(Const.SORT_SIZE);
         compressFiles = false;
         onlyPassingUniqueRows = false;
 
@@ -251,9 +252,17 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         {
             directory = rep.getStepAttributeString(id_step, "directory");
             prefix = rep.getStepAttributeString(id_step, "prefix");
-            sortSize = (int) rep.getStepAttributeInteger(id_step, "sort_size");
+            int sortSizeInt = (int) rep.getStepAttributeInteger(id_step, "sort_size");
+            if (sortSizeInt>0) {
+            	sortSize = Integer.toString(sortSizeInt); // For backward compatibility
+            }
+            else {
+            	sortSize = rep.getStepAttributeString(id_step, "sort_size");
+            }
+            if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
+            
             compressFiles = rep.getStepAttributeBoolean(id_step, "compress");
-            if (sortSize == 0) sortSize = Const.SORT_SIZE;
+            
             onlyPassingUniqueRows = rep.getStepAttributeBoolean(id_step, "unique_rows");
 
             int nrfields = rep.countNrStepAttributes(id_step, "field_name");
@@ -418,7 +427,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the sortSize.
      */
-    public int getSortSize()
+    public String getSortSize()
     {
         return sortSize;
     }
@@ -426,7 +435,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param sortSize The sortSize to set.
      */
-    public void setSortSize(int sortSize)
+    public void setSortSize(String sortSize)
     {
         this.sortSize = sortSize;
     }

@@ -78,7 +78,7 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		
 		// time to write to disk: buffer is full!
-		if ( data.buffer.size()==meta.getSortSize()     // Buffer is full: sort & dump to disk 
+		if ( data.buffer.size()==data.sortSize     // Buffer is full: sort & dump to disk 
 		   || (data.files.size()>0 && r==null && data.buffer.size()>0) // No more records: join from disk 
 		   )
 		{
@@ -397,13 +397,14 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-            data.buffer = new ArrayList<Object[]>(meta.getSortSize());
+			data.sortSize = Integer.parseInt(environmentSubstitute(meta.getSortSize()));
+            data.buffer = new ArrayList<Object[]>(data.sortSize);
 
 		    // Add init code here.
             
-            if (meta.getSortSize()>0)
+            if (data.sortSize>0)
             {
-                data.rowbuffer=new ArrayList<Object[]>(meta.getSortSize());
+                data.rowbuffer=new ArrayList<Object[]>(data.sortSize);
             }
             else
             {

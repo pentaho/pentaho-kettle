@@ -186,7 +186,7 @@ public class SortRowsTest extends TestCase
         //
         String sortRowsStepname = "sort rows step";            
         SortRowsMeta srm = new SortRowsMeta();
-        srm.setSortSize(MAX_COUNT/10);
+        srm.setSortSize(Integer.toString(MAX_COUNT/10));
         String [] sortFields = { "KEY1", "KEY2" };
         boolean [] ascendingFields = { true, true };
         srm.setFieldName(sortFields);
@@ -271,7 +271,7 @@ public class SortRowsTest extends TestCase
         //
         String sortRowsStepname = "sort rows step";            
         SortRowsMeta srm = new SortRowsMeta();
-        srm.setSortSize(MAX_COUNT/10);
+        srm.setSortSize(Integer.toString(MAX_COUNT/10));
         String [] sortFields = { "KEY1", "KEY2" };
         boolean [] ascendingFields = { false, false };
         srm.setFieldName(sortFields);

@@ -48,6 +48,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	public int     fieldnrs[];      // the corresponding field numbers;
     public FileObject fil;
     public RowMetaInterface outputRowMeta;
+	public int sortSize;
 
 	/**
 	 * 

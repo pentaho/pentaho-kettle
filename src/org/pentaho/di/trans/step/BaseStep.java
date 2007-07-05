@@ -102,6 +102,7 @@ public class BaseStep extends Thread implements VariableSpace
     
    /* public static final StepPluginMeta[] steps =
       {
+      TODO: port these classes
             new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), "VMP.png", CATEGORY_TRANSFORM),                        
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
@@ -195,7 +196,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     private StepMeta                     prevSteps[];
 
-    private int                          in_handling, out_handling;
+    private int                          currentInputRowSetNr, currentOutputRowSetNr;
 
     public List<BaseStep>                thr;
 
@@ -308,6 +309,14 @@ public class BaseStep extends Thread implements VariableSpace
 	// private int inputRowSetsSize;
     
 	private boolean checkTransRunning;
+
+	private int slaveNr;
+
+	private int clusterSize;
+
+	private int uniqueStepNrAcrossSlaves;
+
+	private int uniqueStepCountAcrossSlaves;
 	
 	// private RowSet inRowSet;
 	// private RowSet outRowSet;
@@ -410,6 +419,28 @@ public class BaseStep extends Thread implements VariableSpace
     {
         sdi.setStatus(StepDataInterface.STATUS_INIT);
 
+        String slaveNr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
+        String clusterSize = getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
+        if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize))
+        {
+            this.slaveNr = Integer.parseInt(slaveNr);
+            this.clusterSize = Integer.parseInt(clusterSize);
+            
+            logDetailed("Running on slave server #"+slaveNr+"/"+clusterSize+"."); 
+        }
+        else
+        {
+            this.slaveNr = 0;
+            this.clusterSize = 0;
+        }
+
+        // Set a unique step number across all slave servers
+        //
+        //   slaveNr * nrCopies + copyNr
+        //
+        this.uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
+        this.uniqueStepCountAcrossSlaves = this.clusterSize==0 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
+        
         return true;
     }
 
@@ -660,7 +691,7 @@ public class BaseStep extends Thread implements VariableSpace
                 // Copy the row to the "next" output rowset.
                 // We keep the next one in out_handling
             	//
-                RowSet rs = outputRowSets.get(out_handling);
+                RowSet rs = outputRowSets.get(currentOutputRowSetNr);
                 
                 // Loop until we find room in the target rowset
                 //
@@ -672,8 +703,8 @@ public class BaseStep extends Thread implements VariableSpace
                 //
                 if (outputRowSets.size() > 1)
                 {
-                    out_handling++;
-                    if (out_handling >= outputRowSets.size()) out_handling = 0;
+                    currentOutputRowSetNr++;
+                    if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
                 }
             }
             else
@@ -924,7 +955,7 @@ public class BaseStep extends Thread implements VariableSpace
 
     private RowSet currentInputStream()
     {
-        return inputRowSets.get(in_handling);
+        return inputRowSets.get(currentInputRowSetNr);
     }
 
     /**
@@ -932,15 +963,19 @@ public class BaseStep extends Thread implements VariableSpace
      */
     private void nextInputStream()
     {
-        int streams = inputRowSets.size();
-
-        // No more streams left: exit!
-        if (streams == 0) return;
-
-        // If we have some left: take the next!
-        in_handling++;
-        if (in_handling >= inputRowSets.size()) in_handling = 0;
-        // logDebug("nextInputStream advanced to in_handling="+in_handling);
+    	synchronized(inputRowSets) {
+	        int streams = inputRowSets.size();
+	
+	        // No more streams left: exit!
+	        if (streams == 0) return;
+	
+	        // Just the one rowSet (common case)
+	        if (streams == 1) currentInputRowSetNr = 0;
+	        
+	        // If we have some left: take the next!
+	        currentInputRowSetNr++;
+	        if (currentInputRowSetNr >= inputRowSets.size()) currentInputRowSetNr = 0;
+    	}
     }
 
     /**
@@ -988,6 +1023,8 @@ public class BaseStep extends Thread implements VariableSpace
             return null;
         }
 
+        if (row==null) return null;
+        
         // Also set the metadata on the first occurence.
         if (inputRowMeta==null) inputRowMeta=in.getRowMeta();
         
@@ -1173,7 +1210,7 @@ public class BaseStep extends Thread implements VariableSpace
         prevSteps = new StepMeta[nrInput];
         nextSteps = new StepMeta[nrOutput];
 
-        in_handling = 0; // we start with input[0];
+        currentInputRowSetNr = 0; // we start with input[0];
 
         logDetailed(Messages.getString("BaseStep.Log.StepInfo", String.valueOf(nrInput), String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -1993,6 +2030,35 @@ public class BaseStep extends Thread implements VariableSpace
   public String getTypeId() {
     return this.getStepID();
   }
+
+	/**
+	 * @return the unique slave number in the cluster
+	 */
+	public int getSlaveNr() {
+		return slaveNr;
+	}
+
+	/**
+	 * @return the cluster size
+	 */
+	public int getClusterSize() {
+		return clusterSize;
+	}
+
+	/**
+	 * @return a unique step number across all slave servers: slaveNr * nrCopies + copyNr
+	 */
+	public int getUniqueStepNrAcrossSlaves() {
+		return uniqueStepNrAcrossSlaves;
+	}
+
+	/**
+	 * @return the number of unique steps across all slave servers
+	 */
+	public int getUniqueStepCountAcrossSlaves() {
+		return uniqueStepCountAcrossSlaves;
+	}
+
 
 
   

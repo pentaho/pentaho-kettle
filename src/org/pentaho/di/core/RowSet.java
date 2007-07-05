@@ -67,7 +67,7 @@ public class RowSet
       destinationStepCopy = new AtomicInteger(0);
     }
 
-    public synchronized boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
+    public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
     	return putRowWait(rowMeta, rowData, Const.TIMEOUT_PUT_MILLIS, TimeUnit.MILLISECONDS);
     }
@@ -151,7 +151,7 @@ public class RowSet
     /**
      * @return Set indication that there is no more input
      */
-    public  void setDone()
+    public void setDone()
     {
     	done.set(true);
     	    	
@@ -187,7 +187,7 @@ public class RowSet
     /**
      * @return Returns the destinationStepName.
      */
-    public synchronized String getDestinationStepName()
+    public String getDestinationStepName()
     {
         return destinationStepName;
     }

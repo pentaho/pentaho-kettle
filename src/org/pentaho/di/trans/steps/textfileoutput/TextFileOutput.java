@@ -19,7 +19,7 @@ package org.pentaho.di.trans.steps.textfileoutput;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -168,14 +168,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
                     {
-						data.writer.write(meta.getSeparator().toCharArray());
+						data.writer.write(data.binarySeparator);
                     }
 					ValueMetaInterface v=rowMeta.getValueMeta(i);
                     Object valueData = r[i];
                     
 					writeField(v, valueData);
 				}
-                data.writer.write(meta.getNewline().toCharArray());
+                data.writer.write(data.binaryNewline);
 			}
 			else
 			{
@@ -185,13 +185,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
-						data.writer.write(meta.getSeparator().toCharArray());
+						data.writer.write(data.binarySeparator);
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
 					Object valueData = r[i];
 					writeField(v, valueData);
 				}
-                data.writer.write(meta.getNewline().toCharArray());
+                data.writer.write(data.binaryNewline);
 			}
 
             linesOutput++;
@@ -205,17 +205,37 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 	}
 
-    private String formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
+    private byte[] formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
     {
-        return v.getString(valueData);
+        return v.getBinaryString(valueData);
+    }
+    
+    private byte[] getBinaryString(String string) throws KettleStepException {
+    	try {
+    		if (data.hasEncoding) {
+        		return string.getBytes(meta.getEncoding());
+    		}
+    		else {
+        		return string.getBytes();
+    		}
+    	}
+    	catch(Exception e) {
+    		throw new KettleStepException(e);
+    	}
     }
     
     private void writeField(ValueMetaInterface v, Object valueData) throws KettleStepException
     {
         try
         {
-            String str = meta.isFastDump() ? valueData.toString() : formatField(v, valueData);
-            if (str!=null) data.writer.write(str.toCharArray());
+        	byte[] str;
+        	if (meta.isFastDump()) {
+        		str = getBinaryString(valueData.toString());
+        	}
+        	else {
+        		str = formatField(v, valueData);
+        	}
+    		if (str!=null) data.writer.write(str);
         }
         catch(Exception e)
         {
@@ -233,7 +253,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			{
 				if (sLine.trim().length()>0)
 				{
-					data.writer.write(sLine.toCharArray());
+					data.writer.write(getBinaryString(sLine));
 					linesOutput++;
 				}
 			}
@@ -279,7 +299,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     }
 				}
 				header+=meta.getNewline();
-                data.writer.write(header.toCharArray());
+                data.writer.write(getBinaryString(header));
 			}
 			else
 			if (r!=null)  // Just put all field names in the header/footer
@@ -287,7 +307,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<r.size();i++)
 				{
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
-						data.writer.write(meta.getSeparator().toCharArray());
+						data.writer.write(data.binarySeparator);
 					ValueMetaInterface v = r.getValueMeta(i);
 					
                     // Header-value contains the name of the value
@@ -295,19 +315,19 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
                     if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
                     {
-                        data.writer.write(meta.getEnclosure().toCharArray());
+                        data.writer.write(data.binaryEnclosure);
                     }
-                    data.writer.write(header_value.getName().toCharArray());
+                    data.writer.write(getBinaryString(header_value.getName()));
                     if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
                     {
-                        data.writer.write(meta.getEnclosure().toCharArray());
+                        data.writer.write(data.binaryEnclosure);
                     }
 				}
-                data.writer.write(meta.getNewline().toCharArray());
+                data.writer.write(data.binaryNewline);
 			}
 			else
 			{
-                data.writer.write(("no rows selected"+Const.CR).toCharArray());
+                data.writer.write(getBinaryString("no rows selected"+Const.CR));
 			}
 		}
 		catch(Exception e)
@@ -355,7 +375,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             	logDetailed("Starting: " + cmdstr);
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
-            	data.writer = new OutputStreamWriter(data.cmdProc.getOutputStream());
+            	data.writer = data.cmdProc.getOutputStream();
             	StreamLogger stdoutLogger = new StreamLogger( data.cmdProc.getInputStream(), "(stdout)" );
             	StreamLogger stderrLogger = new StreamLogger( data.cmdProc.getErrorStream(), "(stderr)" );
             	new Thread(stdoutLogger).start();
@@ -409,12 +429,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	            if (!Const.isEmpty(meta.getEncoding()))
 	            {
 	                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
-	                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), meta.getEncoding());
+	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	            else
 	            {
 	                log.logBasic(toString(), "Opening output stream in default encoding");
-	                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
+	                data.writer = new BufferedOutputStream(outputStream, 5000);
 	            }
 	
 	            logDetailed("Opened new file with name ["+filename+"]");
@@ -496,6 +516,30 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			
 			if (openNewFile())
 			{
+				try {
+					data.hasEncoding = !Const.isEmpty(meta.getEncoding());
+					data.binarySeparator = new byte[] {};
+					data.binaryEnclosure = new byte[] {};
+					data.binaryNewline   = new byte[] {};
+					
+					if (data.hasEncoding) {
+						if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes(meta.getEncoding());
+						if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes(meta.getEncoding());
+						if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes(meta.getEncoding());
+					}
+					else {
+						if (!Const.isEmpty(meta.getSeparator())) data.binarySeparator= meta.getSeparator().getBytes();
+						if (!Const.isEmpty(meta.getEnclosure())) data.binaryEnclosure = meta.getEnclosure().getBytes();
+						if (!Const.isEmpty(meta.getNewline()))   data.binaryNewline   = meta.getNewline().getBytes();
+					}
+					
+					
+				} catch (UnsupportedEncodingException e) {
+					logError("Encoding problem: "+e.toString());
+					logError(Const.getStackTracker(e));
+					return false;
+				}
+				
 				return true;
 			}
 			else

@@ -70,7 +70,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	private FormData     fdlPrefix, fdPrefix;
 
     private Label        wlSortSize;
-    private Text         wSortSize;
+    private TextVar      wSortSize;
     private FormData     fdlSortSize, fdSortSize;
 
     private Label        wlCompress;
@@ -221,7 +221,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdlSortSize.right= new FormAttachment(middle, -margin);
         fdlSortSize.top  = new FormAttachment(wPrefix, margin*2);
         wlSortSize.setLayoutData(fdlSortSize);
-        wSortSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wSortSize=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wSortSize);
         wSortSize.addModifyListener(lsMod);
         fdSortSize=new FormData();
@@ -367,7 +367,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
-		wSortSize.setText(""+input.getSortSize());
+		wSortSize.setText(Const.NVL(input.getSortSize(), ""));
 		wCompress.setSelection(input.getCompress());
 		wUniqueRows.setSelection(input.isOnlyPassingUniqueRows());
         
@@ -400,7 +400,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		// copy info to SortRowsMeta class (input)
 		input.setPrefix( wPrefix.getText() );
 		input.setDirectory( wSortDir.getText() );
-        input.setSortSize( Const.toInt( wSortSize.getText(), Const.SORT_SIZE ) );
+        input.setSortSize( wSortSize.getText() );
         log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
         input.setCompress(wCompress.getSelection());
         input.setOnlyPassingUniqueRows(wUniqueRows.getSelection());

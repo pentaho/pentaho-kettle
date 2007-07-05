@@ -17,7 +17,6 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -50,7 +49,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	public ZipOutputStream zip;
 	public GZIPOutputStream gzip;
     
-    public OutputStreamWriter writer;
+    public OutputStream writer;
 
     public DecimalFormat        defaultDecimalFormat;
     public DecimalFormatSymbols defaultDecimalFormatSymbols;
@@ -63,6 +62,12 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
     public OutputStream fos;
 
     public RowMetaInterface outputRowMeta;
+
+	public byte[] binarySeparator;
+	public byte[] binaryEnclosure;
+	public byte[] binaryNewline;
+
+	public boolean hasEncoding;
 
     /**
 	 * 
