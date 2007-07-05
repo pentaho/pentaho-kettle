@@ -190,7 +190,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
         // change the case insensitive flag too
-        for (int i=0;i<row.size();i++)
+        for (int i=0;i<compareFields.length;i++)
         {
             int idx = row.indexOfValue(compareFields[i]);
             if (idx>=0)
