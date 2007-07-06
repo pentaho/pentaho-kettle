@@ -124,7 +124,8 @@ public class FixedInput extends BaseStep implements StepInterface
 			for (int i=0;i<meta.getFieldNames().length;i++) {
 				
 				int fieldWidth = meta.getFieldWidth()[i];
-				if (data.endBuffer+meta.getFieldWidth()[i]>=data.bufferSize) {
+				data.endBuffer = data.startBuffer+fieldWidth; 
+				if (data.endBuffer>=data.bufferSize) {
 					// Oops, we need to read more data...
 					// Better resize this before we read other things in it...
 					//
@@ -137,12 +138,12 @@ public class FixedInput extends BaseStep implements StepInterface
 				}
 
 				// The field is just start-end...
-				if (data.endBuffer+fieldWidth>=data.bufferSize) {
+				if (data.endBuffer>=data.bufferSize) {
 					// still a problem?
 					// We hit an EOF and are trying to read beyond the EOF...
 					// Just take what's left for the current field.
 					//
-					fieldWidth=data.bufferSize-data.endBuffer;
+					fieldWidth=data.endBuffer-data.bufferSize;
 					if (fieldWidth<0) fieldWidth=0;
 				}
 				byte[] field = new byte[fieldWidth];
@@ -167,7 +168,6 @@ public class FixedInput extends BaseStep implements StepInterface
 				
 				// OK, onto the next field...
 				// 
-				data.endBuffer+=meta.getFieldWidth()[i];
 				data.startBuffer=data.endBuffer;
 			}
 			

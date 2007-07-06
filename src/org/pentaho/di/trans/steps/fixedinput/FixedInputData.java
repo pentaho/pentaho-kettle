@@ -53,6 +53,7 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 	public int totalNumberOfSteps;
 	public long fileSize;
 	public long rowsToRead;
+	private int loadPoint;
 			
 	/**
 	 * 
@@ -71,7 +72,14 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 		// It's (endBuffer-startBuffer)+size !!
 		// That way we can at least read one full block of data using NIO
 		//
-		bufferSize = endBuffer-startBuffer;
+		if (bufferSize==0) {
+			bufferSize=0;
+			loadPoint=0;
+		}
+		else {
+			bufferSize=bufferSize-startBuffer; // 50.000 - 49.996 = 4
+			loadPoint=bufferSize; // 4
+		}
 		int newSize = bufferSize+preferredBufferSize;
 		byte[] newByteBuffer = new byte[newSize];
 		
@@ -85,12 +93,12 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 		
 		// Adjust start and end point of data in the byte buffer
 		//
+		endBuffer -= startBuffer;
 		startBuffer = 0;
-		endBuffer = bufferSize;
 	}
 
 	public void readBufferFromFile() throws IOException {
-		bb.position(endBuffer);
+		bb.position(0);
 		int n = fc.read( bb );
 		if( n == -1) {
 			stopReading=true;
@@ -98,12 +106,12 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 		else {
 			// adjust the highest used position...
 			//
-			bufferSize = endBuffer+n; 
+			bufferSize += n; 
 			
 			// Store the data in our byte array
 			//
-			bb.position(endBuffer);
-			bb.get( byteBuffer, endBuffer, n);
+			bb.position(0);
+			bb.get( byteBuffer, loadPoint, n);
 		} 
 	}
 

@@ -979,7 +979,7 @@ public class BaseStep extends Thread implements VariableSpace
 	    
 	    // Have all threads started?
 	    // Are we running yet?  If not, wait a bit until all threads have been started.
-	    if (this.checkTransRunning == false){
+	    if (this.checkTransRunning == false) {
 	    	while (!trans.isRunning() && !stopped.get())
 	        {
 	            try { Thread.sleep(1); } catch (InterruptedException e) { }
@@ -995,41 +995,22 @@ public class BaseStep extends Thread implements VariableSpace
 
         // What's the current input stream?
         RowSet in = currentInputStream();
-        Object[] row = in.getRow();
+        Object[] row = getRowFrom(in);
         
-        while (!in.isDone() && row==null && !stopped.get())
-        {
-        	row = in.getRow();
-        }
-        
-        if (stopped.get())
-        {
-            if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
-            stopAll();
-            return null;
-        }
-
         if (row==null) return null;
         
-        // Also set the metadata on the first occurence.
+        // Also set the meta data on the first occurrence.
+        //
         if (inputRowMeta==null) inputRowMeta=in.getRowMeta();
-        
-        linesRead++;
-
-        // Notify all rowlisteners...
-        for (int i = 0; i < rowListeners.size(); i++)
-        {
-            RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowReadEvent(inputRowMeta, row);
-        }
 
         nextInputStream(); // Look for the next input stream to get row from.
 
         // OK, before we return the row, let's see if we need to check on mixing row compositions...
+        // 
         if (safeModeEnabled)
         {
-            // safeModeChecking(row); TODO: re-enable safemode checking
-        } // Extra checking
+            safeModeChecking(inputRowMeta); // Extra checking 
+        } 
 
         // Check the rejection rates etc. as well.
         verifyRejectionRates();
@@ -1100,11 +1081,10 @@ public class BaseStep extends Thread implements VariableSpace
         {
         	rowData=rowSet.getRow();
         }
-        linesRead++;
 
         if (stopped.get())
         {
-            logError(Messages.getString("BaseStep.Log.SleepInterupted3", rowSet.getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$
+            if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
             stopAll();
             return null;
         }
@@ -1114,6 +1094,8 @@ public class BaseStep extends Thread implements VariableSpace
             inputRowSets.remove(rowSet);
             return null;
         }
+
+        linesRead++;
 
         // call all rowlisteners...
         //
