@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Sort CSV file (110k) write back</name>
-    <description>Sort CSV file on name and firstname, buffer110k rows, write back to CSV</description>
+    <name>Lazy sort CSV file</name>
+    <description>Lazy sort CSV file on name and firstname</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -10,7 +10,7 @@
     <log>
       <read/>
       <write/>
-      <input>Text file input</input>
+      <input/>
       <output/>
       <update/>
       <rejected/>
@@ -31,7 +31,7 @@
     <sleep_time_full>1</sleep_time_full>
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
-    <feedback_size>5000</feedback_size>
+    <feedback_size>20000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>
@@ -55,7 +55,134 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Text file input</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>CSV file input</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>CSV file input</name>
+    <type>CsvInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <filename>${Internal.Transformation.Filename.Directory}&#47;..&#47;textfileinput&#47;customers-random-100k.txt</filename>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <header>Y</header>
+    <buffer_size>500000</buffer_size>
+    <lazy_conversion>Y</lazy_conversion>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>Integer</type>
+        <format>#</format>
+        <currency/>
+        <decimal>,</decimal>
+        <group>.</group>
+        <length>7</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>name</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>30</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>firstname</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>40</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>zip</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>10</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>city</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>40</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>birthdate</name>
+        <type>Date</type>
+        <format>yyyy&#47;MM&#47;dd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>street</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>40</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>housenr</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>20</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>stateCode</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>10</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>state</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>40</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+     <cluster_schema/>
+    <GUI>
+      <xloc>182</xloc>
+      <yloc>124</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
   <step>
     <name>Sort rows</name>
     <type>SortRows</type>
@@ -69,7 +196,7 @@
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
-      <sort_size>110000</sort_size>
+      <sort_size>5000</sort_size>
       <compress>N</compress>
       <unique_rows>N</unique_rows>
     <fields>
@@ -84,226 +211,8 @@
       </fields>
      <cluster_schema/>
     <GUI>
-      <xloc>279</xloc>
-      <yloc>65</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Text file input</name>
-    <type>TextFileInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>3</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <accept_filenames>N</accept_filenames>
-    <accept_field/>
-    <accept_stepname/>
-    <separator>;</separator>
-    <enclosure>&quot;</enclosure>
-    <enclosure_breaks>N</enclosure_breaks>
-    <escapechar/>
-    <header>Y</header>
-    <nr_headerlines>1</nr_headerlines>
-    <footer>N</footer>
-    <nr_footerlines>1</nr_footerlines>
-    <line_wrapped>N</line_wrapped>
-    <nr_wraps>1</nr_wraps>
-    <layout_paged>N</layout_paged>
-    <nr_lines_per_page>80</nr_lines_per_page>
-    <nr_lines_doc_header>0</nr_lines_doc_header>
-    <noempty>Y</noempty>
-    <include>N</include>
-    <include_field/>
-    <rownum>N</rownum>
-    <rownumByFile>N</rownumByFile>
-    <rownum_field/>
-    <format>DOS</format>
-    <encoding/>
-    <file>
-      <name>${Internal.Transformation.Filename.Directory}&#47;..&#47;textfileinput&#47;customers-random-100k.txt</name>
-      <filemask/>
-      <file_required>Y</file_required>
-      <type>CSV</type>
-      <compression>None</compression>
-    </file>
-    <filters>
-    </filters>
-    <fields>
-      <field>
-        <name>id</name>
-        <type>Integer</type>
-        <format/>
-        <currency>€</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>4</length>
-        <precision>0</precision>
-        <trim_type>left</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>name</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>9</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>firstname</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>13</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>zip</name>
-        <type>Integer</type>
-        <format/>
-        <currency>€</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>5</length>
-        <precision>0</precision>
-        <trim_type>left</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>city</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>8</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>birthdate</name>
-        <type>Date</type>
-        <format>yyyy&#47;MM&#47;dd</format>
-        <currency>€</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>10</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>street</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>11</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>housenr</name>
-        <type>Integer</type>
-        <format/>
-        <currency>€</currency>
-        <decimal>,</decimal>
-        <group>.</group>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>3</length>
-        <precision>0</precision>
-        <trim_type>left</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>stateCode</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>9</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>state</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>-</nullif>
-        <ifnull/>
-        <position>-1</position>
-        <length>30</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-    </fields>
-    <limit>0</limit>
-    <error_ignored>N</error_ignored>
-    <error_line_skipped>N</error_line_skipped>
-    <error_count_field/>
-    <error_fields_field/>
-    <error_text_field/>
-    <bad_line_files_destination_directory/>
-    <bad_line_files_extension>warning</bad_line_files_extension>
-    <error_line_files_destination_directory/>
-    <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory/>
-    <line_number_files_extension>line</line_number_files_extension>
-    <date_format_lenient>Y</date_format_lenient>
-    <date_format_locale>nl_nl</date_format_locale>
-     <cluster_schema/>
-    <GUI>
-      <xloc>70</xloc>
-      <yloc>65</yloc>
+      <xloc>398</xloc>
+      <yloc>124</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -377,8 +286,8 @@
         </field>
       <field>
         <name>zip</name>
-        <type>Integer</type>
-        <format>0</format>
+        <type>String</type>
+        <format/>
         <currency/>
         <decimal/>
         <group/>
@@ -400,7 +309,7 @@
       <field>
         <name>birthdate</name>
         <type>Date</type>
-        <format>yyyy&#47;MM&#47;dd</format>
+        <format>dd-mmm-yyyy</format>
         <currency/>
         <decimal/>
         <group/>
@@ -421,8 +330,8 @@
         </field>
       <field>
         <name>housenr</name>
-        <type>Integer</type>
-        <format>0</format>
+        <type>String</type>
+        <format/>
         <currency/>
         <decimal/>
         <group/>
@@ -455,8 +364,8 @@
       </fields>
      <cluster_schema/>
     <GUI>
-      <xloc>488</xloc>
-      <yloc>65</yloc>
+      <xloc>614</xloc>
+      <yloc>124</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

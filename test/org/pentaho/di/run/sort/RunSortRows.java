@@ -162,4 +162,21 @@ public class RunSortRows extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void test_SORT_09_LazySortCSVDataNoCompression() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/run/sort/Lazy sort CSV file.ktr",
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                100000
+            );
+        
+        timedTransRunner.init();
+        timedTransRunner.runNewEngine(true);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
 }

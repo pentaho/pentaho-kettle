@@ -56,53 +56,29 @@ import org.w3c.dom.Node;
 		category=StepCategory.INPUT)
 public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String filename = "/tmp/inputfile.txt";
+	private String filename;
 	
-	private boolean headerPresent = true;
-	
-	private String[] fieldNames = new String[] {
-			"id", "name", "firstname", "zip", "city", "birthdate", "street", "housenr", "stateCode", "state",
-		};
-	
-	private int fieldTypes[] = new int[] {
-			ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, 
-			ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_DATE,
-			ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_STRING, 
-			ValueMetaInterface.TYPE_STRING, 
-		};
+	private boolean headerPresent;
 
-	private int fieldLength[] = new int[] {
-			7, 30, 40, 10, 40, -1, 40, 20, 10, 40,
-		};
+	private String delimiter;
+	private String enclosure;
 
-	private int fieldPrecision[] = new int[] {
-			0, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-		};
-
-	private String fieldFormat[] = new String[] {
-			"#", null, null, null, null, "yyyy/MM/dd", null, null, null, null,
-		};
+	private String bufferSize;
 	
-	private String fieldDecimal[] = new String[] {
-			",", null, null, null, null, null, null, null, null, null,
-		};
+	private boolean lazyConversionActive;
+	
+	// TODO: wrap these field* members in a new class...
+	//
+	private String[] fieldNames;
+	private int      fieldTypes[];
+	private int      fieldLength[];
+	private int      fieldPrecision[];
+	private String   fieldFormat[];
+	private String   fieldDecimal[];
+	private String   fieldGrouping[];
+	private String   fieldCurrency[];
 	
 
-	private String fieldGrouping[] = new String[] {
-			".", null, null, null, null, null, null, null, null, null,
-		};
-	
-	private String fieldCurrency[] = new String[] {
-			null, null, null, null, null, null, null, null, null, null,
-		};
-	
-
-	private String delimiter = ";"  ;
-
-	private String bufferSize = "500000";
-	
-	private boolean lazyConversionActive = true;
-	
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -121,6 +97,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void setDefault() {
+		delimiter = ";"  ;
+		enclosure = "\""  ;
+		headerPresent = true;
+		lazyConversionActive=true;
+		bufferSize="50000";
 	}
 	
 	private void readData(Node stepnode) throws KettleXMLException
@@ -129,6 +110,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			filename = XMLHandler.getTagValue(stepnode, "filename");
 			delimiter = XMLHandler.getTagValue(stepnode, "separator");
+			enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
 			headerPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
@@ -175,6 +157,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		retval.append("    " + XMLHandler.addTagValue("filename", filename));
 		retval.append("    " + XMLHandler.addTagValue("separator", delimiter));
+		retval.append("    " + XMLHandler.addTagValue("enclosure", enclosure));
 		retval.append("    " + XMLHandler.addTagValue("header", headerPresent));
 		retval.append("    " + XMLHandler.addTagValue("buffer_size", bufferSize));
 		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
@@ -205,6 +188,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			filename = rep.getStepAttributeString(id_step, "filename");
 			delimiter = rep.getStepAttributeString(id_step, "separator");
+			enclosure = rep.getStepAttributeString(id_step, "enclosure");
 			headerPresent = rep.getStepAttributeBoolean(id_step, "header");
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
@@ -237,6 +221,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename", filename);
 			rep.saveStepAttribute(id_transformation, id_step, "separator", delimiter);
+			rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
@@ -507,6 +492,20 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setHeaderPresent(boolean headerPresent) {
 		this.headerPresent = headerPresent;
+	}
+
+	/**
+	 * @return the enclosure
+	 */
+	public String getEnclosure() {
+		return enclosure;
+	}
+
+	/**
+	 * @param enclosure the enclosure to set
+	 */
+	public void setEnclosure(String enclosure) {
+		this.enclosure = enclosure;
 	}
 
 

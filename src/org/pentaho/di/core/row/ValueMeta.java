@@ -225,12 +225,23 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.storageType = storageType;
     }
-    
-    public boolean isIndexed()
+
+    public boolean isStorageNormal()
+    {
+        return storageType == STORAGE_TYPE_NORMAL;
+    }
+
+    public boolean isStorageIndexed()
     {
         return storageType == STORAGE_TYPE_INDEXED;
     }
-    
+
+    public boolean isStorageBinaryString()
+    {
+        return storageType == STORAGE_TYPE_BINARY_STRING;
+    }
+
+
     /**
      * @return the type
      */
@@ -263,6 +274,7 @@ public class ValueMeta implements ValueMetaInterface
         this.conversionMask = conversionMask;
         dateFormatChanged = true;
         decimalFormatChanged = true;
+        compareStorageAndActualFormat();
     }
     
     /**
@@ -279,6 +291,7 @@ public class ValueMeta implements ValueMetaInterface
     public void setStringEncoding(String encoding)
     {
         this.stringEncoding = encoding;
+        compareStorageAndActualFormat();
     }
     
     /**
@@ -296,6 +309,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.decimalSymbol = decimalSymbol;
         decimalFormatChanged = true;
+        compareStorageAndActualFormat();
     }
 
     /**
@@ -313,6 +327,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         this.groupingSymbol = groupingSymbol;
         decimalFormatChanged = true;
+        compareStorageAndActualFormat();
     }
     
 
@@ -1523,9 +1538,20 @@ public class ValueMeta implements ValueMetaInterface
                     default: throw new KettleFileException("Unable to serialize data type "+getType());
                     }
                     break;
+                    
+                case STORAGE_TYPE_BINARY_STRING:
+                    // Handle binary string content -- only when not NULL
+                	// In this case, we opt not to convert anything at all for speed.
+                	// That way, we can save on CPU power.
+                	// Since the streams can be compressed, volume shouldn't be an issue at all.
+                	//
+                	writeBinaryString(outputStream, (byte[])object);
+                    break;
+                    
                 case STORAGE_TYPE_INDEXED:
                     writeInteger(outputStream, (Integer)object); // just an index 
                     break;
+                    
                 default: throw new KettleFileException("Unknown storage type "+getStorageType());
                 }
             }
@@ -1559,6 +1585,10 @@ public class ValueMeta implements ValueMetaInterface
                 case TYPE_BINARY     : return readBinary(inputStream);
                 default: throw new KettleFileException("Unable to de-serialize data of type "+getType());
                 }
+            
+            case STORAGE_TYPE_BINARY_STRING:
+                return readBinaryString(inputStream);
+                
             case STORAGE_TYPE_INDEXED:
                 return readSmallInteger(inputStream); // just an index: 4-bytes should be enough.
                 
@@ -1586,6 +1616,20 @@ public class ValueMeta implements ValueMetaInterface
             outputStream.write(chars);
         }
     }
+    
+    private void writeBinaryString(DataOutputStream outputStream, byte[] binaryString) throws IOException
+    {
+        // Write the length and then the bytes
+        if (binaryString==null)
+        {
+            outputStream.writeInt(-1);
+        }
+        else
+        {
+            outputStream.writeInt(binaryString.length);
+            outputStream.write(binaryString);
+        }
+    }
 
     private String readString(DataInputStream inputStream) throws IOException
     {
@@ -1608,6 +1652,27 @@ public class ValueMeta implements ValueMetaInterface
         String string = new String(chars, Const.XML_ENCODING);         
         // System.out.println("Read string("+getName()+"), length "+length+": "+string);
         return string;
+    }
+    
+    private byte[] readBinaryString(DataInputStream inputStream) throws IOException
+    {
+        // Read the length and then the bytes
+        int length = inputStream.readInt();
+        if (length<0) 
+        {
+            return null;
+        }
+        if (length>30 || length==0) 
+        {
+            IOException e = new IOException("Unexpected length for ("+getName()+")"+length);
+            // System.out.println(Const.getStackTracker(e));
+            throw e;
+        }
+        
+        byte[] chars = new byte[length];
+        inputStream.readFully(chars);
+
+        return chars;
     }
 
     private void writeBigNumber(DataOutputStream outputStream, BigDecimal number) throws IOException
@@ -1713,32 +1778,50 @@ public class ValueMeta implements ValueMetaInterface
             // Handle storage type
             outputStream.writeInt(storageType);
             
-            if (storageType==STORAGE_TYPE_INDEXED)
-            {
-                // Save the indexed strings...
-                if (index==null)
-                {
-                    outputStream.writeInt(-1); // null
-                }
-                else
-                {
-                    outputStream.writeInt(index.length);
-                    for (int i=0;i<index.length;i++)
-                    {
-                        switch(type)
-                        {
-                        case TYPE_STRING:    writeString(outputStream, (String)index[i]); break; 
-                        case TYPE_NUMBER:    writeNumber(outputStream, (Double)index[i]); break; 
-                        case TYPE_INTEGER:   writeInteger(outputStream, (Long)index[i]); break; 
-                        case TYPE_DATE:      writeDate(outputStream, (Date)index[i]); break; 
-                        case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
-                        case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
-                        case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
-                        default: throw new KettleFileException("Unable to serialize indexe storage type for data type "+getType());
-                        }
-                    }
-                }
-            }
+            switch(storageType) {
+            case STORAGE_TYPE_INDEXED:
+	            {
+	                // Save the indexed strings...
+	                if (index==null)
+	                {
+	                    outputStream.writeInt(-1); // null
+	                }
+	                else
+	                {
+	                    outputStream.writeInt(index.length);
+	                    for (int i=0;i<index.length;i++)
+	                    {
+	                        switch(type)
+	                        {
+	                        case TYPE_STRING:    writeString(outputStream, (String)index[i]); break; 
+	                        case TYPE_NUMBER:    writeNumber(outputStream, (Double)index[i]); break; 
+	                        case TYPE_INTEGER:   writeInteger(outputStream, (Long)index[i]); break; 
+	                        case TYPE_DATE:      writeDate(outputStream, (Date)index[i]); break; 
+	                        case TYPE_BIGNUMBER: writeBigNumber(outputStream, (BigDecimal)index[i]); break; 
+	                        case TYPE_BOOLEAN:   writeBoolean(outputStream, (Boolean)index[i]); break; 
+	                        case TYPE_BINARY:    writeBinary(outputStream, (byte[])index[i]); break;
+	                        default: throw new KettleFileException("Unable to serialize indexe storage type for data type "+getType());
+	                        }
+	                    }
+	                }
+	            }
+	            break;
+	        
+            case STORAGE_TYPE_BINARY_STRING:
+	            {
+	            	// Save the storage meta data...
+	            	//
+	            	outputStream.writeBoolean(storageMetadata!=null);
+	            	
+	            	if (storageMetadata!=null) {
+	            		storageMetadata.writeMeta(outputStream);
+	            	}
+	            }
+	            break;
+	            
+	       default:
+	    	   break;
+           }
             
             // Handle name-length
             writeString(outputStream, name);  
@@ -1793,32 +1876,46 @@ public class ValueMeta implements ValueMetaInterface
             storageType = inputStream.readInt();
             
             // Read the data in the index
-            if (storageType==STORAGE_TYPE_INDEXED)
-            {
-                int indexSize = inputStream.readInt();
-                if (indexSize<0)
-                {
-                    index=null;
-                }
-                else
-                {
-                    index=new Object[indexSize];
-                    for (int i=0;i<indexSize;i++)
-                    {
-                        switch(type)
-                        {
-                        case TYPE_STRING:    index[i] = readString(inputStream); break; 
-                        case TYPE_NUMBER:    index[i] = readNumber(inputStream); break; 
-                        case TYPE_INTEGER:   index[i] = readInteger(inputStream); break; 
-                        case TYPE_DATE:      index[i] = readDate(inputStream); break; 
-                        case TYPE_BIGNUMBER: index[i] = readBigNumber(inputStream); break; 
-                        case TYPE_BOOLEAN:   index[i] = readBoolean(inputStream); break; 
-                        case TYPE_BINARY:    index[i] = readBinary(inputStream); break;
-                        default: throw new KettleFileException("Unable to de-serialize indexed storage type for data type "+getType());
-                        }
-                    }
-                }
-
+            switch(storageType) {
+            case STORAGE_TYPE_INDEXED:
+	            {
+	                int indexSize = inputStream.readInt();
+	                if (indexSize<0)
+	                {
+	                    index=null;
+	                }
+	                else
+	                {
+	                    index=new Object[indexSize];
+	                    for (int i=0;i<indexSize;i++)
+	                    {
+	                        switch(type)
+	                        {
+	                        case TYPE_STRING:    index[i] = readString(inputStream); break; 
+	                        case TYPE_NUMBER:    index[i] = readNumber(inputStream); break; 
+	                        case TYPE_INTEGER:   index[i] = readInteger(inputStream); break; 
+	                        case TYPE_DATE:      index[i] = readDate(inputStream); break; 
+	                        case TYPE_BIGNUMBER: index[i] = readBigNumber(inputStream); break; 
+	                        case TYPE_BOOLEAN:   index[i] = readBoolean(inputStream); break; 
+	                        case TYPE_BINARY:    index[i] = readBinary(inputStream); break;
+	                        default: throw new KettleFileException("Unable to de-serialize indexed storage type for data type "+getType());
+	                        }
+	                    }
+	                }
+	            }
+	            break;
+	            
+            case STORAGE_TYPE_BINARY_STRING:
+	            {
+	            	// In case we do have storage metadata defined, we read that back in as well..
+	            	if (inputStream.readBoolean()) {
+	            		storageMetadata = new ValueMeta(inputStream);
+	            	}
+	            }
+	            break;
+	            
+	        default:
+	        	break;
             }
             
             // name
@@ -1931,7 +2028,12 @@ public class ValueMeta implements ValueMetaInterface
      */
     public boolean isNull(Object data)
     {
-        return data==null || (isString() && ((String)data).length()==0);
+        if (data==null) return true;
+        if (isString()) {
+        	if (isStorageNormal() && ((String)data).length()==0) return true;
+        	if (isStorageBinaryString() && ((byte[])data).length==0) return true;
+        }
+        return false;
     }
     
     /**
@@ -1956,7 +2058,7 @@ public class ValueMeta implements ValueMetaInterface
         {
         case TYPE_STRING:
             {
-                String one = Const.rtrim(getString(data1));
+            	String one = Const.rtrim(getString(data1));
                 String two = Const.rtrim(getString(data2));
     
                 if (caseInsensitive)
@@ -2170,37 +2272,49 @@ public class ValueMeta implements ValueMetaInterface
 			identicalFormat = true;
 		} 
 		else {
-			if (isDate()) {
-				if (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask())) {
-					identicalFormat = true;
-				}
-				else if (getConversionMask()==null && storageMetadata.getConversionMask()==null) {
-					identicalFormat = true;
-				}
-				else {
-					identicalFormat = false;
-				}
-			}
-			else if (isNumeric()) {
-				if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask()) ||
-						(getConversionMask()==null && storageMetadata.getConversionMask()==null))
-				   ) {
-					if ( (getGroupingSymbol()!=null && getGroupingSymbol().equals(storageMetadata.getGroupingSymbol())) || 
-							(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
-						if ( (getDecimalFormat()!=null && getDecimalFormat().equals(storageMetadata.getDecimalFormat())) || 
-								(getDecimalFormat()==null && storageMetadata.getDecimalFormat()==null) ) {
-							identicalFormat = true;
-						}
-						else {
-							identicalFormat = false;
-						}
-					} 
+			// If there is a string encoding set and it's the same encoding in the binary string, then we don't have to convert
+			// If there are no encodings set, then we're certain we don't have to convert as well.
+			//
+			if (getStringEncoding()!=null && getStringEncoding().equals(storageMetadata.getStringEncoding()) || 
+				getStringEncoding()==null && storageMetadata.getStringEncoding()==null) {
+				
+				// However, perhaps the conversion mask changed since we read the binary string?
+				// The output can be different from the input.  If the mask is different, we need to do conversions.
+				// Otherwise, we can just ignore it...
+				//
+				if (isDate()) {
+					if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask())) ||
+						(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
+						identicalFormat = true;
+					}
 					else {
 						identicalFormat = false;
 					}
 				}
-				else {
-					identicalFormat = false;
+				else if (isNumeric()) {
+					// For the same reasons as above, if the conversion mask, the decimal or the grouping symbol changes
+					// we need to convert from the binary strings to the target data type and then back to a string in the required format.
+					//
+					if ( (getConversionMask()!=null && getConversionMask().equals(storageMetadata.getConversionMask()) ||
+							(getConversionMask()==null && storageMetadata.getConversionMask()==null))
+					   ) {
+						if ( (getGroupingSymbol()!=null && getGroupingSymbol().equals(storageMetadata.getGroupingSymbol())) || 
+								(getConversionMask()==null && storageMetadata.getConversionMask()==null) ) {
+							if ( (getDecimalFormat()!=null && getDecimalFormat().equals(storageMetadata.getDecimalFormat())) || 
+									(getDecimalFormat()==null && storageMetadata.getDecimalFormat()==null) ) {
+								identicalFormat = true;
+							}
+							else {
+								identicalFormat = false;
+							}
+						} 
+						else {
+							identicalFormat = false;
+						}
+					}
+					else {
+						identicalFormat = false;
+					}
 				}
 			}
 		}

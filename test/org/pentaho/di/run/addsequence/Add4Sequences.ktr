@@ -26,12 +26,12 @@
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
     </maxdate>
-    <size_rowset>10000</size_rowset>
+    <size_rowset>100000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
-    <feedback_size>100000</feedback_size>
+    <feedback_size>250000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>

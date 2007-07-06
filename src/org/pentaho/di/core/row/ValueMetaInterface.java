@@ -95,7 +95,9 @@ public interface ValueMetaInterface extends Cloneable
     public Object[] getIndex();
     public void     setIndex(Object[] index);
     
-    public boolean  isIndexed();
+    public boolean isStorageNormal();
+    public boolean  isStorageIndexed();
+    public boolean isStorageBinaryString();
     
     public String   getConversionMask();
     public void     setConversionMask(String conversionMask);

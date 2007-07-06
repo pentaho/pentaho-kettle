@@ -16,10 +16,11 @@
 package org.pentaho.di.trans.steps.csvinput;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -33,6 +34,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import be.ibridge.kettle.core.vfs.KettleVFS;
 
 /**
  * Read a simple CSV file
@@ -124,7 +127,9 @@ public class CsvInput extends BaseStep implements StepInterface
 
 				// OK, at this point we should have data in the byteBuffer and we should be able to scan for the next 
 				// delimiter (;)
-				// So let's look for a delimiter
+				// So let's look for a delimiter.
+				// Also skip over the enclosures ("), it is NOT taking into account escaped enclosures.
+				// Later we can add an option for having escaped or double enclosures in the file. <sigh>
 				//
 				boolean delimiterFound = false;
 				while (!delimiterFound) {
@@ -174,6 +179,29 @@ public class CsvInput extends BaseStep implements StepInterface
 						newLineFound = true;
 						delimiterFound = true;
 					}
+					// Perhaps we need to skip over an enclosed part?
+					// We always expect exactly one enclosure character
+					//
+					else if (data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
+						
+						do {
+							data.endBuffer++;
+	
+							if (data.endBuffer>=data.bufferSize) {
+								// Oops, we need to read more data...
+								// Better resize this before we read other things in it...
+								//
+								data.resizeByteBuffer();
+								
+								// Also read another chunk of data, now that we have the space for it...
+								if (!data.readBufferFromFile()) {
+									// TODO handle EOF properly for EOF in the middle of the row, etc.
+									return null;
+								}
+							}
+						} while (data.byteBuffer[data.endBuffer]==data.enclosure[0]);
+					}
+						
 					else {
 						data.endBuffer++;
 						
@@ -245,16 +273,26 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi)) {
 			try {
-				data.preferredBufferSize = Integer.parseInt(meta.getBufferSize());
-
-				FileInputStream fis = new FileInputStream(meta.getFilename());
+				data.preferredBufferSize = Integer.parseInt(environmentSubstitute(meta.getBufferSize()));
+				data.filename = environmentSubstitute(meta.getFilename());
+				
+				FileObject fileObject = KettleVFS.getFileObject(data.filename);
+				if (!(fileObject instanceof LocalFile)) {
+					// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
+					//
+					logError(Messages.getString("CsvInput.Log.OnlyLocalFilesAreSupported"));
+					return false;
+				}
+				
+				FileInputStream fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
 				data.fc = fis.getChannel();
 				data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				
-				data.delimiter = meta.getDelimiter().getBytes();
+				data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
+				data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
 				
 				return true;
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				logError("Error opening file '"+meta.getFilename()+"' : "+e.toString());
 				logError(Const.getStackTracker(e));
 			}
@@ -266,7 +304,9 @@ public class CsvInput extends BaseStep implements StepInterface
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
 		
 		try {
-			data.fc.close();
+			if (data.fc!=null) {
+				data.fc.close();
+			}
 		} catch (IOException e) {
 			logError("Unable to close file channel for file '"+meta.getFilename()+"' : "+e.toString());
 			logError(Const.getStackTracker(e));

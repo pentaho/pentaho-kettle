@@ -56,6 +56,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private TextVar      wFilename;
 	private TextVar      wDelimiter;
+	private TextVar      wEnclosure;
 	private TextVar      wBufferSize;
 	private Button       wLazyConversion;
 	private Button       wHeaderPresent;
@@ -153,7 +154,26 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdDelimiter.right= new FormAttachment(100, 0);
 		wDelimiter.setLayoutData(fdDelimiter);
 		lastControl = wDelimiter;
-		
+
+		// delimiter
+		Label wlEnclosure = new Label(shell, SWT.RIGHT);
+		wlEnclosure.setText(Messages.getString("CsvInputDialog.Enclosure.Label")); //$NON-NLS-1$
+ 		props.setLook(wlEnclosure);
+		FormData fdlEnclosure = new FormData();
+		fdlEnclosure.top  = new FormAttachment(lastControl, margin);
+		fdlEnclosure.left = new FormAttachment(0, 0);
+		fdlEnclosure.right= new FormAttachment(middle, -margin);
+		wlEnclosure.setLayoutData(fdlEnclosure);
+		wEnclosure=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEnclosure);
+		wEnclosure.addModifyListener(lsMod);
+		FormData fdEnclosure = new FormData();
+		fdEnclosure.top  = new FormAttachment(lastControl, margin);
+		fdEnclosure.left = new FormAttachment(middle, 0);
+		fdEnclosure.right= new FormAttachment(100, 0);
+		wEnclosure.setLayoutData(fdEnclosure);
+		lastControl = wEnclosure;
+
 		// bufferSize
 		//
 		Label wlBufferSize = new Label(shell, SWT.RIGHT);
@@ -287,6 +307,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.setText(stepname);
 		wFilename.setText(Const.NVL(inputMeta.getFilename(), ""));
 		wDelimiter.setText(Const.NVL(inputMeta.getDelimiter(), ""));
+		wEnclosure.setText(Const.NVL(inputMeta.getEnclosure(), ""));
 		wBufferSize.setText(Const.NVL(inputMeta.getBufferSize(), ""));
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
@@ -323,6 +344,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		inputMeta.setFilename(wFilename.getText());
 		inputMeta.setDelimiter(wDelimiter.getText());
+		inputMeta.setEnclosure(wEnclosure.getText());
 		inputMeta.setBufferSize(wBufferSize.getText());
 		inputMeta.setLazyConversionActive(wLazyConversion.getSelection());
 		inputMeta.setHeaderPresent(wHeaderPresent.getSelection());

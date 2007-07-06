@@ -58,21 +58,7 @@ import org.pentaho.di.trans.TransMeta;
 public class BaseStep extends Thread implements VariableSpace
 {
 	private VariableSpace variables = new Variables();
-	
-   /* public static final String CATEGORY_INPUT          = Messages.getString("BaseStep.Category.Input");
-    public static final String CATEGORY_OUTPUT         = Messages.getString("BaseStep.Category.Output");
-    public static final String CATEGORY_TRANSFORM      = Messages.getString("BaseStep.Category.Transform");
-    public static final String CATEGORY_SCRIPTING      = Messages.getString("BaseStep.Category.Scripting");
-    public static final String CATEGORY_LOOKUP         = Messages.getString("BaseStep.Category.Lookup");
-    public static final String CATEGORY_JOINS          = Messages.getString("BaseStep.Category.Joins");
-    public static final String CATEGORY_DATA_WAREHOUSE = Messages.getString("BaseStep.Category.DataWarehouse");
-    public static final String CATEGORY_JOB            = Messages.getString("BaseStep.Category.Job");
-    public static final String CATEGORY_MAPPING        = Messages.getString("BaseStep.Category.Mapping");
-    public static final String CATEGORY_INLINE         = Messages.getString("BaseStep.Category.Inline");
-    public static final String CATEGORY_EXPERIMENTAL   = Messages.getString("BaseStep.Category.Experimental");
-    public static final String CATEGORY_DEPRECATED     = Messages.getString("BaseStep.Category.Deprecated");*/
-
-    
+	    
     public static StepPluginMeta[] steps = null;
     
     static
