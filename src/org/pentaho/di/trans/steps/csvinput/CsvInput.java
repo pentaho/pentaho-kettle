@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -34,8 +35,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-import be.ibridge.kettle.core.vfs.KettleVFS;
 
 /**
  * Read a simple CSV file

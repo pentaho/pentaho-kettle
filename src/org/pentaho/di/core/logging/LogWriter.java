@@ -27,6 +27,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 
@@ -392,6 +393,11 @@ public class LogWriter
 	public void logDebug(String subject, String message)    { println(LOG_LEVEL_DEBUG, subject, message); }
 	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }
 	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
+	public void logError(String subject, String message, Throwable e) { 
+		String stackTrace = Const.getStackTracker(e);
+		println(LOG_LEVEL_ERROR, subject, message); 
+		println(LOG_LEVEL_ERROR, subject, stackTrace); 
+	}
 	
     /**
      *  @deprecated  Please get the file appender yourself and work from there.

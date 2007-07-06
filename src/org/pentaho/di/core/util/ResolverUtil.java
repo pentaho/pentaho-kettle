@@ -12,8 +12,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * This class was copied from Stripes -
@@ -24,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 public class ResolverUtil<T>
 {
 
-	private static final Log log = LogFactory.getLog(ResolverUtil.class);
+	private static final LogWriter log = LogWriter.getInstance();
 
 	public static interface Test
 	{
@@ -178,7 +177,7 @@ public class ResolverUtil<T>
 			urls = loader.getResources(packageName);
 		} catch (IOException ioe)
 		{
-			log.warn("Could not read package: " + packageName, ioe);
+			log.logError(toString(), "Could not read package: " + packageName, ioe);
 			return;
 		}
 		while (urls.hasMoreElements())
@@ -195,7 +194,7 @@ public class ResolverUtil<T>
 				{
 					urlPath = urlPath.substring(0, urlPath.indexOf('!'));
 				}
-				log.info("Scanning for classes in [" + urlPath + "] matching criteria: " + test);
+				log.logDetailed(toString(), "Scanning for classes in [" + urlPath + "] matching criteria: " + test);
 				File file = new File(urlPath);
 				if (file.isDirectory())
 				{
@@ -206,7 +205,7 @@ public class ResolverUtil<T>
 				}
 			} catch (IOException ioe)
 			{
-				log.warn("could not read entries", ioe);
+				log.logError(toString(), "could not read entries", ioe);
 			}
 		}
 	}
@@ -246,7 +245,7 @@ public class ResolverUtil<T>
 			}
 		} catch (IOException ioe)
 		{
-			log.error("Could not search jar file \\\'" + jarfile + "\\\' for classes matching criteria: "
+			log.logError(toString(), "Could not search jar file \\\'" + jarfile + "\\\' for classes matching criteria: "
 					+ test + " due to an IOException", ioe);
 		}
 	}
@@ -258,9 +257,9 @@ public class ResolverUtil<T>
 		{
 			String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
 			ClassLoader loader = getClassLoader();
-			if (log.isDebugEnabled())
+			if (log.isDebug())
 			{
-				log.debug("Checking to see if class " + externalName + " matches criteria [" + test + "]");
+				log.logDebug(toString(), "Checking to see if class " + externalName + " matches criteria [" + test + "]");
 			}
 			Class<?> type = loader.loadClass(externalName);
 
@@ -270,7 +269,7 @@ public class ResolverUtil<T>
 			}
 		} catch (Throwable t)
 		{
-			log.warn("Could not examine class \\\'" + fqn + "\\\' due to a " + t.getClass().getName()
+			log.logDetailed(toString(), "Could not examine class \\\'" + fqn + "\\\' due to a " + t.getClass().getName()
 					+ " with message: " + t.getMessage());
 		}
 	}

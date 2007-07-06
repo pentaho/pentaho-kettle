@@ -105,8 +105,8 @@
 		  	<echo>Compiling Kettle tests...</echo>
 		    <javac srcdir="${test}" 
 		    	   destdir="${testClasses}"
-		    	   target="1.4"
-		    	   source="1.4"
+		    	   target="5"
+		    	   source="5"
 		           deprecation="true"
 		    	>
 
@@ -430,6 +430,17 @@
         </war>
 	</target>
 
+	<!--
+	       ===========================================
+	          runtests : junit performance tests
+	       ============================================
+	  -->
+
+	<target name="runtests" depends="compileTests" description="Execute the run performance tests">
+		<junit>
+			<test name="org.pentaho.di.run.addsequence.RunAddSequence"/>
+		</junit>
+	</target>
 	
 	<!--
 	       ==========================
