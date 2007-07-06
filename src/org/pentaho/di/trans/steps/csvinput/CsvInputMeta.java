@@ -249,6 +249,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		for (int i=0;i<fieldNames.length;i++) {
 			ValueMetaInterface valueMeta = new ValueMeta(fieldNames[i], fieldTypes[i]);
+			valueMeta.setConversionMask(fieldFormat[i]);
 			valueMeta.setLength(fieldLength[i]);
 			valueMeta.setPrecision(fieldPrecision[i]);
 			valueMeta.setConversionMask(fieldFormat[i]);
