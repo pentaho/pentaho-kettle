@@ -437,7 +437,7 @@
 	  -->
 
 	<target name="runtests" depends="compileTests" description="Execute the run performance tests">
-		<junit>
+		<junit printsummary="yes">
 			<test name="org.pentaho.di.run.addsequence.RunAddSequence"/>
 		</junit>
 	</target>

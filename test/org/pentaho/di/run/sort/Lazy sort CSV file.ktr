@@ -196,7 +196,7 @@
            </partitioning>
       <directory>%%java.io.tmpdir%%</directory>
       <prefix>out</prefix>
-      <sort_size>5000</sort_size>
+      <sort_size>150000</sort_size>
       <compress>N</compress>
       <unique_rows>N</unique_rows>
     <fields>

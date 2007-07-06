@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
  
-package org.pentaho.di.trans.steps.csvinput;
+package org.pentaho.di.trans.steps.fixedinput;
 
 import java.util.List;
 import java.util.Map;
@@ -52,25 +52,27 @@ import org.w3c.dom.Node;
  * @version 3.0
  */
 
-@Step(name="CsvInput",image="TFI.png",tooltip="BaseStep.TypeTooltipDesc.CsvInput",description="BaseStep.TypeLongDesc.CsvInput",
+@Step(name="FixedInput",image="TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
 		category=StepCategory.INPUT)
-public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
+public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private String filename;
 	
 	private boolean headerPresent;
 
-	private String delimiter;
-	private String enclosure;
+	private String lineWidth;
 
 	private String bufferSize;
 	
 	private boolean lazyConversionActive;
-	
+
+	private boolean lineFeedPresent;
+
 	// TODO: wrap these field* members in a new class...
 	//
 	private String[] fieldNames;
 	private int      fieldTypes[];
+	private int      fieldWidth[];
 	private int      fieldLength[];
 	private int      fieldPrecision[];
 	private String   fieldFormat[];
@@ -78,8 +80,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	private String   fieldGrouping[];
 	private String   fieldCurrency[];
 	
-
-	public CsvInputMeta()
+	public FixedInputMeta()
 	{
 		super(); // allocate BaseStepMeta
 		allocate(0);
@@ -98,11 +99,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void setDefault() {
-		delimiter = ";"  ;
-		enclosure = "\""  ;
+		lineWidth = "80"  ;
 		headerPresent = true;
 		lazyConversionActive=true;
 		bufferSize="50000";
+		lineFeedPresent=true;
 	}
 	
 	private void readData(Node stepnode) throws KettleXMLException
@@ -110,10 +111,10 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			filename = XMLHandler.getTagValue(stepnode, "filename");
-			delimiter = XMLHandler.getTagValue(stepnode, "separator");
-			enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
+			lineWidth = XMLHandler.getTagValue(stepnode, "line_width");
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
 			headerPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+			lineFeedPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_feed"));
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
@@ -131,6 +132,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 				fieldCurrency[i] = XMLHandler.getTagValue(fnode, "currency");
 				fieldDecimal[i] = XMLHandler.getTagValue(fnode, "decimal");
 				fieldGrouping[i] = XMLHandler.getTagValue(fnode, "group");
+				fieldWidth[i] = Const.toInt(XMLHandler.getTagValue(fnode, "width"), -1);
 				fieldLength[i] = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
 				fieldPrecision[i] = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
 			}
@@ -144,6 +146,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void allocate(int nrFields) {
 		fieldNames = new String[nrFields];
 		fieldTypes = new int[nrFields];
+		fieldWidth = new int[nrFields];
 		fieldLength = new int[nrFields];
 		fieldPrecision = new int[nrFields];
 		fieldFormat = new String[nrFields];
@@ -157,11 +160,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		StringBuffer retval = new StringBuffer();
 
 		retval.append("    " + XMLHandler.addTagValue("filename", filename));
-		retval.append("    " + XMLHandler.addTagValue("separator", delimiter));
-		retval.append("    " + XMLHandler.addTagValue("enclosure", enclosure));
+		retval.append("    " + XMLHandler.addTagValue("line_width", lineWidth));
 		retval.append("    " + XMLHandler.addTagValue("header", headerPresent));
 		retval.append("    " + XMLHandler.addTagValue("buffer_size", bufferSize));
 		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
+		retval.append("    " + XMLHandler.addTagValue("line_feed", lineFeedPresent));
 
 		retval.append("    <fields>" + Const.CR);
 		for (int i = 0; i < fieldNames.length; i++)
@@ -173,6 +176,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        " + XMLHandler.addTagValue("currency", fieldCurrency[i]));
 			retval.append("        " + XMLHandler.addTagValue("decimal", fieldDecimal[i]));
 			retval.append("        " + XMLHandler.addTagValue("group", fieldGrouping[i]));
+			retval.append("        " + XMLHandler.addTagValue("width", fieldWidth[i]));
 			retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i]));
 			retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i]));
 			retval.append("        </field>" + Const.CR);
@@ -188,9 +192,9 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			filename = rep.getStepAttributeString(id_step, "filename");
-			delimiter = rep.getStepAttributeString(id_step, "separator");
-			enclosure = rep.getStepAttributeString(id_step, "enclosure");
+			lineWidth = rep.getStepAttributeString(id_step, "line_width");
 			headerPresent = rep.getStepAttributeBoolean(id_step, "header");
+			lineFeedPresent = rep.getStepAttributeBoolean(id_step, "line_feed");
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
 			
@@ -206,6 +210,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 				fieldCurrency[i] = rep.getStepAttributeString(id_step, i, "field_currency");
 				fieldDecimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal");
 				fieldGrouping[i] = rep.getStepAttributeString(id_step, i, "field_group");
+				fieldWidth[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_width");
 				fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length");
 				fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision");
 			}
@@ -221,11 +226,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename", filename);
-			rep.saveStepAttribute(id_transformation, id_step, "separator", delimiter);
-			rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
+			rep.saveStepAttribute(id_transformation, id_step, "line_width", lineWidth);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
+			rep.saveStepAttribute(id_transformation, id_step, "line_feed", lineFeedPresent);
 
 			for (int i = 0; i < fieldNames.length; i++)
 			{
@@ -235,6 +240,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", fieldCurrency[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDecimal[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldGrouping[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_width", fieldWidth[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
 			}
@@ -276,41 +282,41 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CsvInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CsvInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CsvInputMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CsvInputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
 	{
-		return new CsvInputDialog(shell, info, transMeta, name);
+		return new FixedInputDialog(shell, info, transMeta, name);
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
-		return new CsvInput(stepMeta, stepDataInterface, cnr, tr, trans);
+		return new FixedInput(stepMeta, stepDataInterface, cnr, tr, trans);
 	}
 	
 	public StepDataInterface getStepData()
 	{
-		return new CsvInputData();
+		return new FixedInputData();
 	}
 
 	/**
@@ -325,20 +331,6 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setFieldNames(String[] fieldNames) {
 		this.fieldNames = fieldNames;
-	}
-
-	/**
-	 * @return the delimiter
-	 */
-	public String getDelimiter() {
-		return delimiter;
-	}
-
-	/**
-	 * @param delimiter the delimiter to set
-	 */
-	public void setDelimiter(String delimiter) {
-		this.delimiter = delimiter;
 	}
 
 	/**
@@ -496,17 +488,45 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the enclosure
+	 * @return the lineWidth
 	 */
-	public String getEnclosure() {
-		return enclosure;
+	public String getLineWidth() {
+		return lineWidth;
 	}
 
 	/**
-	 * @param enclosure the enclosure to set
+	 * @return the lineFeedPresent
 	 */
-	public void setEnclosure(String enclosure) {
-		this.enclosure = enclosure;
+	public boolean isLineFeedPresent() {
+		return lineFeedPresent;
+	}
+
+	/**
+	 * @return the fieldWidth
+	 */
+	public int[] getFieldWidth() {
+		return fieldWidth;
+	}
+
+	/**
+	 * @param lineWidth the lineWidth to set
+	 */
+	public void setLineWidth(String lineWidth) {
+		this.lineWidth = lineWidth;
+	}
+
+	/**
+	 * @param lineFeedPresent the lineFeedPresent to set
+	 */
+	public void setLineFeedPresent(boolean lineFeedPresent) {
+		this.lineFeedPresent = lineFeedPresent;
+	}
+
+	/**
+	 * @param fieldWidth the fieldWidth to set
+	 */
+	public void setFieldWidth(int[] fieldWidth) {
+		this.fieldWidth = fieldWidth;
 	}
 
 
