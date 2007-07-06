@@ -49,6 +49,10 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 	public String filename;
 	public int lineWidth;
 	public boolean stopReading;
+	public int stepNumber;
+	public int totalNumberOfSteps;
+	public long fileSize;
+	public long rowsToRead;
 			
 	/**
 	 * 

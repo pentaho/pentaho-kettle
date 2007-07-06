@@ -68,6 +68,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private boolean lineFeedPresent;
 
+	private boolean runningInParallel;
+
 	// TODO: wrap these field* members in a new class...
 	//
 	private String[] fieldNames;
@@ -115,7 +117,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			bufferSize  = XMLHandler.getTagValue(stepnode, "buffer_size");
 			headerPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			lineFeedPresent = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_feed"));
-			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
+			lazyConversionActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "lazy_conversion"));
+			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "parallel"));
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -165,6 +168,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("buffer_size", bufferSize));
 		retval.append("    " + XMLHandler.addTagValue("lazy_conversion", lazyConversionActive));
 		retval.append("    " + XMLHandler.addTagValue("line_feed", lineFeedPresent));
+		retval.append("    " + XMLHandler.addTagValue("parallel", runningInParallel));
 
 		retval.append("    <fields>" + Const.CR);
 		for (int i = 0; i < fieldNames.length; i++)
@@ -197,6 +201,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			lineFeedPresent = rep.getStepAttributeBoolean(id_step, "line_feed");
 			bufferSize = rep.getStepAttributeString(id_step, "buffer_size");
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, "lazy_conversion");
+			runningInParallel = rep.getStepAttributeBoolean(id_step, "parallel");
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -231,6 +236,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "header", headerPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "lazy_conversion", lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, "line_feed", lineFeedPresent);
+			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
 
 			for (int i = 0; i < fieldNames.length; i++)
 			{
@@ -255,6 +261,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		for (int i=0;i<fieldNames.length;i++) {
 			ValueMetaInterface valueMeta = new ValueMeta(fieldNames[i], fieldTypes[i]);
+			valueMeta.setConversionMask(fieldFormat[i]);
 			valueMeta.setLength(fieldLength[i]);
 			valueMeta.setPrecision(fieldPrecision[i]);
 			valueMeta.setConversionMask(fieldFormat[i]);
@@ -527,6 +534,20 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setFieldWidth(int[] fieldWidth) {
 		this.fieldWidth = fieldWidth;
+	}
+
+	/**
+	 * @return the runningInParallel
+	 */
+	public boolean isRunningInParallel() {
+		return runningInParallel;
+	}
+
+	/**
+	 * @param runningInParallel the runningInParallel to set
+	 */
+	public void setRunningInParallel(boolean runningInParallel) {
+		this.runningInParallel = runningInParallel;
 	}
 
 

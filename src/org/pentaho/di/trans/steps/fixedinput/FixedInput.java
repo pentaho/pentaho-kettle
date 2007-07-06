@@ -80,7 +80,16 @@ public class FixedInput extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
         if (checkFeedback(linesInput)) logBasic(Messages.getString("FixedInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
-			
+		
+        // See if we need to call it a day...
+        //
+        if (meta.isRunningInParallel()) {
+        	if (linesInput>=data.rowsToRead) {
+        		setOutputDone();
+        		return false; // We're done.  The rest is for the other steps in the cluster
+        	}
+        }
+        
 		return true;
 	}
 
@@ -188,7 +197,7 @@ public class FixedInput extends BaseStep implements StepInterface
 		{
 			throw new KettleFileException("Exception reading line using NIO: " + e.toString());
 		}
-
+		
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -215,6 +224,27 @@ public class FixedInput extends BaseStep implements StepInterface
 				data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				
 				data.stopReading = false;
+				
+				if (meta.isRunningInParallel()) {
+					data.stepNumber = getUniqueStepNrAcrossSlaves();
+					data.totalNumberOfSteps = getUniqueStepCountAcrossSlaves();
+		            data.fileSize = fileObject.getContent().getSize();
+				}
+				
+				// OK, now we need to skip a number of bytes in case we're doing a parallel read.
+				//
+				if (meta.isRunningInParallel()) {
+					
+	                long nrRows = data.fileSize / data.lineWidth; // 100.000 / 100 = 1000 rows
+	                long rowsToSkip = Math.round( data.stepNumber * nrRows / (double)data.totalNumberOfSteps );  // 0, 333, 667
+	                long nextRowsToSkip = Math.round( (data.stepNumber+1) * nrRows / (double)data.totalNumberOfSteps );  // 333, 667, 1000
+	                data.rowsToRead = nextRowsToSkip - rowsToSkip;
+	                long bytesToSkip = rowsToSkip*data.lineWidth;
+	             
+	                logBasic("Step #"+data.stepNumber+" is skipping "+bytesToSkip+" to position in file, then it's reading "+data.rowsToRead+" rows.");
+
+                    data.fc.position(bytesToSkip);
+				}
 								
 				return true;
 			} catch (IOException e) {
