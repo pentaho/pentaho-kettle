@@ -27,6 +27,7 @@ import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -64,7 +65,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	 */
 	private synchronized Object[] lookupValues(RowMetaInterface inputRowMeta, Object[] row) throws KettleException
 	{
-		Object[] outputRow = new Object[data.outputRowMeta.size()];
+		Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
         
         // copy the original objects...
         for (int i=0;i<inputRowMeta.size();i++)
