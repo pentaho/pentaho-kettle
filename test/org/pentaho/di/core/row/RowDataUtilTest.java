@@ -37,21 +37,14 @@ public class RowDataUtilTest extends TestCase
     	
     	// Make array size bigger
     	Object arr2[] = RowDataUtil.resizeArray(arr1, 7);
-    	assertTrue(arr1 != arr2);                                  // Allocatew new array
-    	assertEquals(7, arr2.length);
+    	assertTrue(arr1 != arr2);                                  // Allocate new array
+    	assertTrue(arr2.length >= 7);
     	assertTrue(arrayCompare(arr1, 0, arr2, 0, arr1.length));   // Elements of arr1 are copied
     	assertTrue(arrayCompare(arr2, arr1.length, nullArr, 0, arr2.length - arr1.length));  // last are null    	
     	
     	// Make array size smaller
-    	try
-    	{
-    		// TODO: This is still open for discussion, currently the 
-    		// implementation will "fail".
-    	    /*Object arr3[] =*/ RowDataUtil.resizeArray(arr1, 3);
-    	    fail("should fail with an exception");
-    	}
-    	catch ( Exception ex )
-    	{ }
+    	Object arr3[] = RowDataUtil.resizeArray(arr1, 3);
+    	assertTrue(arr3 == arr1);
     	
     	// Make array size equal
     	Object arr4[] = RowDataUtil.resizeArray(arr1, arr1.length);
@@ -104,30 +97,30 @@ public class RowDataUtilTest extends TestCase
     			                     new Object[] {},
     			                     0,
     			                     new Object[] {new Long(1L), new Long(2L), new Long(3L)});    	
-    	assertTrue(newArr1.length == arr.length);
-    	assertTrue(arrayCompare(newArr1, 0, arr, 0, newArr1.length));
+    	assertTrue(newArr1.length >= arr.length);
+    	assertTrue(arrayCompare(newArr1, 0, arr, 0, arr.length));
     	
     	
     	Object newArr2[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L), new Long(2L), new Long(3L)},
                                      3,
                                      new Object[] {});    	
-        assertTrue(newArr2.length == arr.length);
-        assertTrue(arrayCompare(newArr2, 0, arr, 0, newArr2.length));
+        assertTrue(newArr2.length >= arr.length);
+        assertTrue(arrayCompare(newArr2, 0, arr, 0, arr.length));
 
     	Object newArr3[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L)},
                                      1,
                                      new Object[] {new Long(2L), new Long(3L)});    	
-        assertTrue(newArr3.length == arr.length);
-        assertTrue(arrayCompare(newArr3, 0, arr, 0, newArr3.length));
+        assertTrue(newArr3.length >= arr.length);
+        assertTrue(arrayCompare(newArr3, 0, arr, 0, arr.length));
 
     	Object newArr4[] = RowDataUtil.addRowData(                                     
                                      new Object[] {new Long(1L), new Long(2L)},
                                      2,
                                      new Object[] {new Long(3L)});    	
-        assertTrue(newArr4.length == arr.length);
-        assertTrue(arrayCompare(newArr4, 0, arr, 0, newArr4.length));        
+        assertTrue(newArr4.length >= arr.length);
+        assertTrue(arrayCompare(newArr4, 0, arr, 0, arr.length));        
     }
     
     public void testAddValueData() throws KettleValueException
@@ -137,13 +130,13 @@ public class RowDataUtilTest extends TestCase
     	
     	Object newArr1[] = RowDataUtil.addValueData(
     			                     new Object[] {}, 0, new Long(1L));    	
-    	assertTrue(newArr1.length == arr1.length);
-    	assertTrue(arrayCompare(newArr1, 0, arr1, 0, newArr1.length));    	
+    	assertTrue(newArr1.length >= arr1.length);
+    	assertTrue(arrayCompare(newArr1, 0, arr1, 0, arr1.length));    	
 
     	Object newArr2[] = RowDataUtil.addValueData(
                 new Object[] {new Long(1L)}, 1, new Long(2L));    	
-        assertTrue(newArr2.length == arr2.length);
-        assertTrue(arrayCompare(newArr2, 0, arr2, 0, newArr2.length));    	    	
+        assertTrue(newArr2.length >= arr2.length);
+        assertTrue(arrayCompare(newArr2, 0, arr2, 0, arr2.length));    	    	
     }    
 
     public void testRemoveItems() throws KettleValueException
