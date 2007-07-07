@@ -674,6 +674,12 @@ public class BaseStep extends Thread implements VariableSpace
                 //
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
+                try {
+					logBasic("Wrote row: "+rowMeta.getString(row));
+				} catch (KettleValueException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                 linesWritten++;
 
                 // Now determine the next output rowset!
@@ -995,7 +1001,18 @@ public class BaseStep extends Thread implements VariableSpace
         RowSet in = currentInputStream();
         Object[] row = getRowFrom(in);
         
-        if (row==null) return null;
+        // This rowSet is perhaps no longer giving back rows?
+        //
+        while (row==null) {
+        	// Try the next input row set(s) until we find a row set that still has rows...
+        	// The getRowFrom() method removes row sets from the input row sets list.
+        	//
+            if (inputRowSets.size()==0) return null; // We're done.
+        	
+        	nextInputStream();
+            in = currentInputStream();
+            row = getRowFrom(in);
+        }
         
         // Also set the meta data on the first occurrence.
         //
@@ -1075,7 +1092,7 @@ public class BaseStep extends Thread implements VariableSpace
     public Object[] getRowFrom(RowSet rowSet) {
         
         Object[] rowData = rowSet.getRow();
-        while (rowData==null && !rowSet.isDone() && !stopped.get())
+        while (!rowSet.isDone() && rowData==null && !stopped.get())
         {
         	rowData=rowSet.getRow();
         }
@@ -1089,10 +1106,22 @@ public class BaseStep extends Thread implements VariableSpace
 
         if (rowData==null && rowSet.isDone())
         {
-            inputRowSets.remove(rowSet);
-            return null;
+        	// Try one more time...
+        	//
+        	rowData = rowSet.getRow();
+        	if (rowData==null) {
+	            inputRowSets.remove(rowSet);
+	            return null;
+        	}
         }
 
+        try {
+			logBasic("Read row: "+rowSet.getRowMeta().getString(rowData));
+		} catch (KettleValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
         linesRead++;
 
         // call all rowlisteners...
