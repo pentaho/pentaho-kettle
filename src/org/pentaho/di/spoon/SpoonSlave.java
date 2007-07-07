@@ -126,7 +126,6 @@ public class SpoonSlave extends Composite implements TabItemInterface
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonSlave.Column.Sleeps"), ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -141,7 +140,6 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
 		colinf[12].setAllignement(SWT.RIGHT);
-        colinf[13].setAllignement(SWT.RIGHT);
 
 		wTree = new Tree(sash, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
