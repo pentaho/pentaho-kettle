@@ -50,7 +50,10 @@ public class ValueMeta implements ValueMetaInterface
     private boolean decimalFormatChanged;
     
     private ValueMetaInterface storageMetadata;
+    private ValueMetaInterface stringMetadata;
     private boolean identicalFormat;
+
+	private ValueMetaInterface nativeMetadata;
     
     public ValueMeta()
     {
@@ -707,22 +710,6 @@ public class ValueMeta implements ValueMetaInterface
     
     private String convertBinaryStringToString(byte[] binary) throws KettleValueException
     {
-    	String string;
-        if (Const.isEmpty(stringEncoding))
-        {
-            string = new String(binary);
-        }
-        else
-        {
-            try
-            {
-                string = new String(binary, stringEncoding);
-            }
-            catch(UnsupportedEncodingException e)
-            {
-                throw new KettleValueException("Unable to convert binary value to String with specified string encoding ["+stringEncoding+"]", e);
-            }
-        }
         // OK, so we have an internal representation of the original object, read from file.
         // Before we release it back, we have to see if we don't have to do a String-<type>-String 
         // conversion with different masks.
@@ -730,10 +717,47 @@ public class ValueMeta implements ValueMetaInterface
         // We verify if this is true or false in advance for performance reasons
         //
         if (identicalFormat) {
+        	String string;
+            if (Const.isEmpty(stringEncoding))
+            {
+                string = new String(binary);
+            }
+            else
+            {
+                try
+                {
+                    string = new String(binary, stringEncoding);
+                }
+                catch(UnsupportedEncodingException e)
+                {
+                    throw new KettleValueException("Unable to convert binary value to String with specified string encoding ["+stringEncoding+"]", e);
+                }
+            }
+
         	return string;
         }
         else {
-        	return (String)storageMetadata.convertData(this, convertData(storageMetadata, string));
+        	// Do 2 conversions in one go.
+        	// 
+        	// First convert from the binary format to the current data type...
+        	//
+        	Object nativeType = convertData(storageMetadata, binary);
+        	
+        	if (nativeMetadata==null) {
+        		nativeMetadata = (ValueMetaInterface) this.clone();
+        		nativeMetadata.setStorageType(STORAGE_TYPE_NORMAL);
+        	}
+        	
+        	// Then convert it back to string in the correct layout...
+        	//
+        	if (stringMetadata==null) {
+        		// storageMetadata thinks it's in binary[] format, so we need to change this somehow.
+        		// We cache this conversion metadata for re-use..
+        		//
+        		stringMetadata = (ValueMetaInterface) storageMetadata.clone();
+        		stringMetadata.setStorageType(STORAGE_TYPE_NORMAL);
+        	}
+        	return (String)stringMetadata.convertData(nativeMetadata, nativeType);
         }
     }
 
@@ -946,7 +970,7 @@ public class ValueMeta implements ValueMetaInterface
             switch(storageType)
             {
             case STORAGE_TYPE_NORMAL:         return new Double( ((Long)object).doubleValue() );
-            case STORAGE_TYPE_BINARY_STRING:  return convertStringToInteger(convertBinaryStringToString((byte[])object)).doubleValue();
+            case STORAGE_TYPE_BINARY_STRING:  return convertStringToNumber(convertBinaryStringToString((byte[])object)).doubleValue();
             case STORAGE_TYPE_INDEXED:        return new Double( ((Long)index[((Integer)object).intValue()]).doubleValue() );
             default: throw new KettleValueException("Unknown storage type "+storageType+" specified.");
             }
@@ -2074,7 +2098,10 @@ public class ValueMeta implements ValueMetaInterface
 
         case TYPE_INTEGER:
             {
-                cmp = Double.compare(getNumber(data1).doubleValue(), getNumber(data2).doubleValue());
+                long compare = getInteger(data1).longValue() - getInteger(data2).longValue();
+                if (compare<0) cmp=-1;
+                else if (compare>0) cmp=1;
+                else cmp=0;
             }
             break;
 
@@ -2086,7 +2113,10 @@ public class ValueMeta implements ValueMetaInterface
 
         case TYPE_DATE:
             {
-                cmp =  Double.compare(getInteger(data1).longValue(), getInteger(data2).longValue());
+            	long compare =  getDate(data1).getTime() - getDate(data2).getTime();
+                if (compare<0) cmp=-1;
+                else if (compare>0) cmp=1;
+                else cmp=0;
             }
             break;
 
