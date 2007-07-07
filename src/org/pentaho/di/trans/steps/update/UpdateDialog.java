@@ -52,6 +52,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
+import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -70,12 +71,12 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData     fdlKey, fdKey;
 
     private Label        wlSchema;
-    private Text         wSchema;
+    private TextVar      wSchema;
     private FormData     fdlSchema, fdSchema;
 
 	private Label        wlTable;
 	private Button       wbTable;
-	private Text         wTable;
+	private TextVar      wTable;
 	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlReturn;
@@ -168,7 +169,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
         fdlSchema.top  = new FormAttachment(wConnection, margin*2);
         wlSchema.setLayoutData(fdlSchema);
 
-        wSchema=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSchema=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchema);
         wSchema.addModifyListener(lsMod);
         fdSchema=new FormData();
@@ -195,7 +196,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdbTable.top  = new FormAttachment(wSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();

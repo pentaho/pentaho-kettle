@@ -198,7 +198,8 @@ public class Update extends BaseStep implements StepInterface
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
+            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), 
+            		                                                                  environmentSubstitute(meta.getTableName()));
                         
             // lookup the values!
             if (log.isDetailed()) logDetailed(Messages.getString("Update.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$

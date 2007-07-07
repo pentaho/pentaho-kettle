@@ -266,7 +266,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
                 }
             }
 
-            data.db.setLookup(meta.getSchemaName(), meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
+            data.db.setLookup(environmentSubstitute(meta.getSchemaName()), 
+            		          environmentSubstitute(meta.getTablename()), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 
             // lookup the values!
             if (log.isRowLevel()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
@@ -313,7 +314,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
             // Determine the types...
             data.keytypes = new int[meta.getTableKeyField().length];
-            String schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTablename());
+            String schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), 
+            		                                                                    environmentSubstitute(meta.getTablename()));
             RowMetaInterface fields = data.db.getTableFields(schemaTable);
             if (fields!=null)
             {

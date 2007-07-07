@@ -185,7 +185,8 @@ public class InsertUpdate extends BaseStep implements StepInterface
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
-            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(meta.getSchemaName(), meta.getTableName());
+            data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), 
+            		                                                                  environmentSubstitute(meta.getTableName()));
             
             // lookup the values!
             if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
@@ -246,7 +247,8 @@ public class InsertUpdate extends BaseStep implements StepInterface
                     throw new KettleStepException("The same column can't be inserted into the target row twice: "+insValue.getName()); // TODO i18n
                 }
             }
-            data.db.prepareInsert(data.insertRowMeta, meta.getSchemaName(), meta.getTableName());
+            data.db.prepareInsert(data.insertRowMeta, environmentSubstitute(meta.getSchemaName()), 
+            		                                  environmentSubstitute(meta.getTableName()));
             
             if (!meta.isUpdateBypassed())
             {
