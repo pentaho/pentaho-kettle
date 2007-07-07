@@ -174,7 +174,6 @@ public class TransLog extends Composite implements TabItemInterface
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Time"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Speed"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-				new ColumnInfo(Messages.getString("SpoonLog.Column.Sleeps"), ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
@@ -189,7 +188,6 @@ public class TransLog extends Composite implements TabItemInterface
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
         colinf[12].setAllignement(SWT.RIGHT);
-		colinf[13].setAllignement(SWT.RIGHT);
 
 		wFields = new TableView(transMeta, sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, true, // readonly!
 				null, // Listener
@@ -614,31 +612,6 @@ public class TransLog extends Composite implements TabItemInterface
         Map<String, String> variables = executionConfiguration.getVariables();
         transMeta.injectVariables(variables);
     }
-
-    /*
-    public RowMetaAndData getArguments(TransMeta transMeta)
-	{
-		// OK, see if we need to ask for some arguments first...
-		//
-		Map<String,String> arguments = transMeta.getUsedArguments(spoon.getArguments());
-		if (arguments.size() > 0)
-		{
-			
-			
-			EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, arguments);
-            esd.setReadOnly(false);
-			if (esd.open() == null)
-			{
-				arguments = null;
-			}
-			else
-			{
-				spoon.props.setLastArguments(Props.convertArguments(arguments));
-			}
-		}
-		return arguments;
-	}
-	*/
 
 	public void checkErrors()
 	{

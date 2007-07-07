@@ -22,7 +22,6 @@ public class StepStatus
     private double seconds;
     private String speed;
     private String priority;
-    private String sleeps;
     
     public StepStatus(BaseStep baseStep)
     {
@@ -52,8 +51,7 @@ public class StepStatus
         this.statusDescription = baseStep.getStatusDescription();
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
         this.speed = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
-        this.priority = baseStep.isAlive() ? "" + baseStep.getPriority() + "/" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        this.sleeps = "" + baseStep.getNrGetSleeps() + "/" + baseStep.getNrPutSleeps(); // $NON-NLS-1$ $NON-NLS-2$  
+        this.priority = baseStep.isAlive() ? "" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
     
     public String getHTMLTableRow()
@@ -72,7 +70,6 @@ public class StepStatus
                     "<th>"+seconds+"</th> " +
                     "<th>"+speed+"</th> " +
                     "<th>"+priority+"</th> " +
-                    "<th>"+sleeps+"</th> " +
                 "</tr>";
     }
 
@@ -92,7 +89,6 @@ public class StepStatus
                     XMLHandler.addTagValue("seconds", seconds, false) +
                     XMLHandler.addTagValue("speed", speed, false) +
                     XMLHandler.addTagValue("priority", priority, false) +
-                    XMLHandler.addTagValue("sleeps", sleeps, false) +
                 "</"+XML_TAG+">";
     }
     
@@ -111,7 +107,6 @@ public class StepStatus
         seconds = Double.parseDouble( XMLHandler.getTagValue(node, "seconds") );
         speed = XMLHandler.getTagValue(node, "speed");
         priority = XMLHandler.getTagValue(node, "priority");
-        sleeps = XMLHandler.getTagValue(node, "sleeps");
     }
     
     public StepStatus fromXML(String xml) throws KettleXMLException
@@ -122,21 +117,22 @@ public class StepStatus
     
     public String[] getSpoonLogFields()
     {
-        String fields[] = new String[15];
-        fields[1] = stepname;
-        fields[2] = Integer.toString(copy);
-        fields[3] = Long.toString(linesRead);
-        fields[4] = Long.toString(linesWritten);
-        fields[5] = Long.toString(linesInput);
-        fields[6] = Long.toString(linesOutput);
-        fields[7] = Long.toString(linesUpdated);
-        fields[8] = Long.toString(linesRejected);
-        fields[9] = Long.toString(errors);
-        fields[10] = statusDescription;
-        fields[11] = Double.toString(seconds);
-        fields[12] = speed;
-        fields[13] = priority;
-        fields[14] = sleeps;
+        String fields[] = new String[] {
+            "", // Row number
+	        stepname,
+	        Integer.toString(copy),
+	        Long.toString(linesRead),
+	        Long.toString(linesWritten),
+	        Long.toString(linesInput),
+	        Long.toString(linesOutput),
+	        Long.toString(linesUpdated),
+	        Long.toString(linesRejected),
+	        Long.toString(errors),
+	        statusDescription,
+	        Double.toString(seconds),
+	        speed,
+	        priority,
+        };
         
         return fields;
     }
@@ -294,22 +290,6 @@ public class StepStatus
     public void setSeconds(double seconds)
     {
         this.seconds = seconds;
-    }
-
-    /**
-     * @return the sleeps
-     */
-    public String getSleeps()
-    {
-        return sleeps;
-    }
-
-    /**
-     * @param sleeps the sleeps to set
-     */
-    public void setSleeps(String sleeps)
-    {
-        this.sleeps = sleeps;
     }
 
     /**

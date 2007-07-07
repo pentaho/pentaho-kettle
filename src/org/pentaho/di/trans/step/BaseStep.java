@@ -168,12 +168,6 @@ public class BaseStep extends Thread implements VariableSpace
     /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
     public long                          linesRejected;
 
-    /** total sleep time in ns caused by an empty input buffer (previous step is slow) */
-    private long                         nrGetSleeps;
-
-    /** total sleep time in ns cause by a full output buffer (next step is slow) */
-    private long                         nrPutSleeps;
-
     private boolean                      distributed;
 
     private long                         errors;
@@ -348,9 +342,6 @@ public class BaseStep extends Thread implements VariableSpace
         linesWritten = 0L;
         linesUpdated = 0L;
         linesSkipped = 0L;
-
-        nrGetSleeps = 0L;
-        nrPutSleeps = 0L;
 
         inputRowSets = null;
         outputRowSets = null;
@@ -681,7 +672,8 @@ public class BaseStep extends Thread implements VariableSpace
                 
                 // Loop until we find room in the target rowset
                 //
-                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
+                while (!rs.putRow(rowMeta, row) && !isStopped()) 
+                	;
                 linesWritten++;
 
                 // Now determine the next output rowset!
@@ -704,7 +696,8 @@ public class BaseStep extends Thread implements VariableSpace
                     {
                         // Loop until we find room in the target rowset
                         //
-                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) nrPutSleeps++;
+                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) 
+                        	;
                         linesWritten++;
                     }
                     catch (KettleValueException e)
@@ -715,7 +708,8 @@ public class BaseStep extends Thread implements VariableSpace
 
                 // set row in first output rowset
                 RowSet rs = outputRowSets.get(0);
-                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
+                while (!rs.putRow(rowMeta, row) && !isStopped()) 
+                	;
                 linesWritten++;
             }
         }
@@ -796,7 +790,8 @@ public class BaseStep extends Thread implements VariableSpace
                 // Put the row forward to the next step according to the partition rule.
                 RowSet rs = partitionTargets.get(targetPartition);
                 
-                while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
+                while (!rs.putRow(rowMeta, row) && !isStopped()) 
+                	;
                 linesWritten++;
             }
             break;
@@ -807,7 +802,8 @@ public class BaseStep extends Thread implements VariableSpace
                 for (int r = 0; r < outputRowSets.size(); r++)
                 {
                     RowSet rowSet = outputRowSets.get(r);
-                    while (!rowSet.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
+                    while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
+                    	;
                 }
             }
             break;
@@ -870,7 +866,8 @@ public class BaseStep extends Thread implements VariableSpace
 
         // Don't distribute or anything, only go to this rowset!
         //
-        while (!rs.putRow(rowMeta, row) && !isStopped()) nrPutSleeps++;
+        while (!rs.putRow(rowMeta, row) && !isStopped()) 
+        	;
         linesWritten++;
     }
 
@@ -905,7 +902,8 @@ public class BaseStep extends Thread implements VariableSpace
         linesRejected++;
 
         if (errorRowSet!=null) {
-        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) nrPutSleeps++;
+        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) 
+        		;
         	linesRejected++;
         }
 
@@ -1706,38 +1704,6 @@ public class BaseStep extends Thread implements VariableSpace
     public Map<String,ResultFile> getResultFiles()
     {
         return resultFiles;
-    }
-
-    /**
-     * @return Returns the total sleep time in ns in case nothing was found in an input buffer for this step.
-     */
-    public long getNrGetSleeps()
-    {
-        return nrGetSleeps;
-    }
-
-    /**
-     * @param nrGetSleeps the total sleep time in ns in case nothing was found in an input buffer for this step.
-     */
-    public void setNrGetSleeps(long nrGetSleeps)
-    {
-        this.nrGetSleeps = nrGetSleeps;
-    }
-
-    /**
-     * @return Returns the total sleep time in ns in case the output buffer was full for this step.
-     */
-    public long getNrPutSleeps()
-    {
-        return nrPutSleeps;
-    }
-
-    /**
-     * @param nrPutSleeps the total sleep time in ns in case the output buffer was full for this step.
-     */
-    public void setNrPutSleeps(long nrPutSleeps)
-    {
-        this.nrPutSleeps = nrPutSleeps;
     }
 
     /**
