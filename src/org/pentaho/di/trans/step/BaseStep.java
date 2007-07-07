@@ -1100,7 +1100,7 @@ public class BaseStep extends Thread implements VariableSpace
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowWrittenEvent(rowSet.getRowMeta(), rowData);
+            rowListener.rowReadEvent(rowSet.getRowMeta(), rowData);
         }
 
         return rowData;
