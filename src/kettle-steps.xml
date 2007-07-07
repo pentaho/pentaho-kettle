@@ -551,17 +551,6 @@
 		</tooltip>
 		<image-uri>XOU.png</image-uri>
 	</step>
-	<step id="SortedMerge">
-		<description>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortedMerge")
-		</description>
-		<class-name>org.pentaho.di.trans.steps.sortedmerge.SortedMergeMeta</class-name>
-		<category>ognl:@org.pentaho.di.trans.step.StepCategory@JOINS.getName()</category>
-		<tooltip>
-			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.SortedMerge")
-		</tooltip>
-		<image-uri>SMG.png</image-uri>
-	</step>
 	<step id="ExcelOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcelOutput")
