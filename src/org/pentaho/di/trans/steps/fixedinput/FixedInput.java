@@ -70,7 +70,7 @@ public class FixedInput extends BaseStep implements StepInterface
 			}
 		}
 		
-		Object[] outputRowData=readOneRow(true);    // get row, set busy!
+		Object[] outputRowData=readOneRow(true);
 		if (outputRowData==null)  // no more input to be expected...
 		{
 			setOutputDone();
@@ -174,20 +174,31 @@ public class FixedInput extends BaseStep implements StepInterface
 			// Now that we have all the data, see if there are any linefeed characters to remove from the buffer...
 			//
 			if (meta.isLineFeedPresent()) {
-				
-				while (data.byteBuffer[data.endBuffer]=='\n' || data.byteBuffer[data.endBuffer]=='\r') {
 
-					data.endBuffer++;
-					if (data.endBuffer>=data.bufferSize) {
-						// Oops, we need to read more data...
-						// Better resize this before we read other things in it...
-						//
-						data.resizeByteBuffer();
-						
-						// Also read another chunk of data, now that we have the space for it...
-						data.readBufferFromFile();
+				data.endBuffer+=2;
+				
+				if (data.endBuffer>=data.bufferSize) {
+					// Oops, we need to read more data...
+					// Better resize this before we read other things in it...
+					//
+					data.resizeByteBuffer();
+					
+					// Also read another chunk of data, now that we have the space for it...
+					data.readBufferFromFile();
+				}
+
+				// CR + Line feed in the worst case.
+				//
+				if (data.byteBuffer[data.startBuffer]=='\n' || data.byteBuffer[data.startBuffer]=='\r') {
+
+					data.startBuffer++;
+
+					if (data.byteBuffer[data.startBuffer]=='\n' || data.byteBuffer[data.startBuffer]=='\r') {
+
+						data.startBuffer++;
 					}
 				}
+				data.endBuffer = data.startBuffer;
 			}
 		
 			linesInput++;
