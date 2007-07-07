@@ -105,12 +105,12 @@ public class RowGeneratorTest extends TestCase
         	Object[] r1 = rm1.getData();
         	Object[] r2 = rm2.getData();
         	
-        	if ( r1.length != r2.length )
+        	if ( rm1.size() != rm2.size() )
         	{
-        		fail("row nr " + idx + "is not equal");
+        		fail("row nr " + idx + " is not equal");
         	}
-        	int fields[] = new int[r1.length];
-        	for ( int ydx = 0; ydx < r1.length; ydx++ )
+        	int fields[] = new int[rm1.size()];
+        	for ( int ydx = 0; ydx < rm1.size(); ydx++ )
         	{
         		fields[ydx] = ydx;
         	}
@@ -157,10 +157,13 @@ public class RowGeneratorTest extends TestCase
         //
         // Do the following specs 3 times.
         //
-        String fieldName[] = { "string", "boolean", "integer" };
-        String type[]      = { "String", "Boolean", "Integer" };
-        String value[]     = { "string_value", "true", "20"   };
-        int    intDummies[] =  { -1, -1, -1 };
+        String fieldName[]   = { "string", "boolean", "integer" };
+        String type[]        = { "String", "Boolean", "Integer" };
+        String value[]       = { "string_value", "true", "20"   };
+        String fieldFormat[] = { "", "", ""  };
+        String group[]       = { "", "", ""  };
+        String decimal[]     = { "", "", ""  };
+        int    intDummies[]  = { -1, -1, -1 };
                 
         rm.setDefault();
         rm.setFieldName(fieldName);
@@ -169,6 +172,9 @@ public class RowGeneratorTest extends TestCase
         rm.setFieldLength(intDummies);
         rm.setFieldPrecision(intDummies);        
         rm.setRowLimit("3");
+        rm.setFieldFormat(fieldFormat);
+        rm.setGroup(group);
+        rm.setDecimal(decimal);
 
         // 
         // Create a dummy step
