@@ -36,6 +36,7 @@ import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -501,6 +502,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							}
 						}
 					}
+					
+					// Add zip filename to output files
+                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+								
 					result.setResult( true );
 				}
 			}
