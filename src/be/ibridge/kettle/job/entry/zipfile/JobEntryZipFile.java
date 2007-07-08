@@ -518,6 +518,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							}
 						}
 					}
+                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 					result.setResult( true );
 				}
 			}
