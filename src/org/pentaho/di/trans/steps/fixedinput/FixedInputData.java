@@ -101,6 +101,7 @@ public class FixedInputData extends BaseStepData implements StepDataInterface
 		bb.position(0);
 		int n = fc.read( bb );
 		if( n == -1) {
+			// Nothing more to be found in the file...
 			stopReading=true;
 		}
 		else {

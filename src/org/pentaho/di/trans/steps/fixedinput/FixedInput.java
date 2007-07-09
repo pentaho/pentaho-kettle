@@ -80,15 +80,6 @@ public class FixedInput extends BaseStep implements StepInterface
 		putRow(data.outputRowMeta, outputRowData);     // copy row to possible alternate rowset(s).
 
         if (checkFeedback(linesInput)) logBasic(Messages.getString("FixedInput.Log.LineNumber", Long.toString(linesInput))); //$NON-NLS-1$
-		
-        // See if we need to call it a day...
-        //
-        if (meta.isRunningInParallel()) {
-        	if (linesInput>=data.rowsToRead) {
-        		setOutputDone();
-        		return false; // We're done.  The rest is for the other steps in the cluster
-        	}
-        }
         
 		return true;
 	}
@@ -103,6 +94,14 @@ public class FixedInput extends BaseStep implements StepInterface
 	private Object[] readOneRow(boolean doConversions) throws KettleException {
 
 		try {
+			
+	        // See if we need to call it a day...
+	        //
+	        if (meta.isRunningInParallel()) {
+	        	if (linesInput>=data.rowsToRead) {
+	        		return null; // We're done.  The rest is for the other steps in the cluster
+	        	}
+	        }
 
 			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 			int outputIndex=0;
@@ -125,7 +124,7 @@ public class FixedInput extends BaseStep implements StepInterface
 				
 				int fieldWidth = meta.getFieldWidth()[i];
 				data.endBuffer = data.startBuffer+fieldWidth; 
-				if (data.endBuffer>=data.bufferSize) {
+				if (data.endBuffer>data.bufferSize) {
 					// Oops, we need to read more data...
 					// Better resize this before we read other things in it...
 					//
@@ -137,8 +136,9 @@ public class FixedInput extends BaseStep implements StepInterface
 					data.readBufferFromFile();
 				}
 
-				// The field is just start-end...
-				if (data.endBuffer>=data.bufferSize) {
+				// re-verify the buffer after we tried to read extra data from file...
+				//
+				if (data.endBuffer>data.bufferSize) {
 					// still a problem?
 					// We hit an EOF and are trying to read beyond the EOF...
 					// Just take what's left for the current field.

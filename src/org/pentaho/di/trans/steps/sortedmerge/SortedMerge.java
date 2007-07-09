@@ -61,49 +61,46 @@ public class SortedMerge extends BaseStep implements StepInterface
      * 
      * @return the next row
      */
-    private synchronized Object[] getRowSorted() throws KettleException
-    {
+    private synchronized Object[] getRowSorted() throws KettleException {
         if (first) {
         	first=false;
         	
         	// Read one row from all rowsets...
+        	// 
         	data.sortedBuffer = new ArrayList<RowSetRow>();
         	data.rowMeta = null;
         	
         	for (int i=0;i<inputRowSets.size() && !isStopped();i++) {
         		
         		RowSet rowSet = inputRowSets.get(i);
-        		if (!rowSet.isDone()) {
-	                Object[] row = getRowFrom(rowSet);
-	                if (row!=null) {
-	                	// Add this row to the sortedBuffer...
-	                	// Which is not yet sorted, we'll get to that later.
-	                	//
-	                	data.sortedBuffer.add( new RowSetRow(rowSet, rowSet.getRowMeta(), row) );
-	                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) rowSet.getRowMeta().clone();
-	                	
-	                    // What fields do we compare on and in what order?
-	                    
-	                    // Better cache the location of the partitioning column
-	                    // First time operation only
-	                    //
-	                    if (data.fieldIndices==null)
-	                    {
-	                        // Get the indexes of the specified sort fields...
-	                        data.fieldIndices = new int[meta.getFieldName().length];
-	                        for (int f=0;f<data.fieldIndices.length;f++)
-	                        {
-	                            data.fieldIndices[f] = data.rowMeta.indexOfValue(meta.getFieldName()[f]);
-	                            if (data.fieldIndices[f]<0)
-	                            {
-	                                throw new KettleStepException("Unable to find fieldname ["+meta.getFieldName()[f]+"] in row : "+data.rowMeta);
-	                            }
-	                            
-	                            data.rowMeta.getValueMeta( data.fieldIndices[f] ).setSortedDescending( !meta.getAscending()[f] );
-	                        }
-	                    }
-
-	                }
+                Object[] row = getRowFrom(rowSet);
+                if (row!=null) {
+                	// Add this row to the sortedBuffer...
+                	// Which is not yet sorted, we'll get to that later.
+                	//
+                	data.sortedBuffer.add( new RowSetRow(rowSet, rowSet.getRowMeta(), row) );
+                	if (data.rowMeta==null) data.rowMeta = (RowMetaInterface) rowSet.getRowMeta().clone();
+                	
+                    // What fields do we compare on and in what order?
+                    
+                    // Better cache the location of the partitioning column
+                    // First time operation only
+                    //
+                    if (data.fieldIndices==null)
+                    {
+                        // Get the indexes of the specified sort fields...
+                        data.fieldIndices = new int[meta.getFieldName().length];
+                        for (int f=0;f<data.fieldIndices.length;f++)
+                        {
+                            data.fieldIndices[f] = data.rowMeta.indexOfValue(meta.getFieldName()[f]);
+                            if (data.fieldIndices[f]<0)
+                            {
+                                throw new KettleStepException("Unable to find fieldname ["+meta.getFieldName()[f]+"] in row : "+data.rowMeta);
+                            }
+                            
+                            data.rowMeta.getValueMeta( data.fieldIndices[f] ).setSortedDescending( !meta.getAscending()[f] );
+                        }
+                    }
                 }
         		
         		data.comparator = new Comparator<RowSetRow>() {
@@ -133,6 +130,7 @@ public class SortedMerge extends BaseStep implements StepInterface
         // The smallest row is the first in our case...
         //
         RowSetRow smallestRow = data.sortedBuffer.get(0);
+        data.sortedBuffer.remove(0);
         Object[] outputRowData = smallestRow.getRowData();
 
         // We read another row from the row set where the smallest row came from.
@@ -143,6 +141,8 @@ public class SortedMerge extends BaseStep implements StepInterface
         // Add it to the sorted buffer in the right position...
         //
         if (extraRow!=null) {
+        	// Add this one to the sortedBuffer
+        	//
         	RowSetRow add = new RowSetRow(smallestRow.getRowSet(), smallestRow.getRowSet().getRowMeta(), extraRow);
         	int index = Collections.binarySearch(data.sortedBuffer, add, data.comparator);
         	if (index<0) {

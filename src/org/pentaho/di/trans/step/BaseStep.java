@@ -674,12 +674,6 @@ public class BaseStep extends Thread implements VariableSpace
                 //
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
-                try {
-					logBasic("Wrote row: "+rowMeta.getString(row));
-				} catch (KettleValueException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
                 linesWritten++;
 
                 // Now determine the next output rowset!
@@ -1114,13 +1108,6 @@ public class BaseStep extends Thread implements VariableSpace
 	            return null;
         	}
         }
-
-        try {
-			logBasic("Read row: "+rowSet.getRowMeta().getString(rowData));
-		} catch (KettleValueException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
         linesRead++;
 
