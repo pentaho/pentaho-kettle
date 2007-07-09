@@ -1113,8 +1113,8 @@ public class TableView extends Composite
                 if (!bg.equals(defaultBackgroundColor))
                 {
                     String colorName = "bg "+bg.toString();
-                    r[0] = colorName;
-                    r[0] = new Long( (bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue()) );
+                    r[1] = colorName;
+                    r[1] = new Long( (bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue()) );
                     // Save it in the used colors map!
                     usedColors.put(colorName, bg);
                 }
