@@ -45,6 +45,9 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -828,4 +831,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       }
       
      }
+    
+    /**
+     * Get a list of all the resource dependencies that the step is depending on.
+     * 
+     * @return a list of all the resource dependencies that the step is depending on
+     */
+    public List<ResourceReference> getResourceDependencies() {
+    	List<ResourceReference> references = new ArrayList<ResourceReference>();
+    	if (!Const.isEmpty(filename)) {
+        	List<ResourceEntry> entries = new ArrayList<ResourceEntry>();
+        	ResourceReference resourceReference = new ResourceReference(this, entries);
+    		entries.add(new ResourceEntry(filename, ResourceType.FILE));
+        	references.add(resourceReference);
+    	}
+    	return references;
+    }
  }
