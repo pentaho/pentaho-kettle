@@ -2284,6 +2284,37 @@ public class ValueMeta implements ValueMetaInterface
        }
        return value;
     }
+    
+    
+    /**
+     * Extracts the primitive data from an old style Value object 
+     * @param value the old style Value object 
+     * @return the value's data, NOT the meta data.
+     * @throws KettleValueException  case there is a data conversion problem
+     */
+    public Object getValueData(Value value) throws KettleValueException
+    {
+       if (value==null || value.isNull()) return null;
+       
+       // So far the old types and the new types map to the same thing.
+       // So we just verify type and value.type
+       //
+       if (type!=value.getType()) {
+    	   throw new KettleValueException("The data type of the supplied Value object ("+value.getTypeDesc()+") and the current value metadata ("+getTypeDesc()+") is not the same");
+       }
+       
+       switch(value.getType())
+       {
+       case Value.VALUE_TYPE_STRING       : return value.getString();
+       case Value.VALUE_TYPE_NUMBER       : return value.getNumber();
+       case Value.VALUE_TYPE_INTEGER      : return value.getInteger();
+       case Value.VALUE_TYPE_DATE         : return value.getDate();
+       case Value.VALUE_TYPE_BOOLEAN      : return value.getBoolean();
+       case Value.VALUE_TYPE_BIGNUMBER    : return value.getBigNumber();
+       case Value.VALUE_TYPE_BINARY       : return value.getBytes();
+       default: throw new KettleValueException("We can't convert original data type "+value.getTypeDesc()+" to a primitive data type");
+       }
+    }
 
 	/**
 	 * @return the storageMetadata

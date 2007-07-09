@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>ScriptValuesMod : test script 1</name>
-    <description>Testing the modified script values step </description>
+    <name>ScriptValuesMod : test script 2</name>
+    <description>Testing the modified script values step without compatibility</description>
     <extended_description/>
     <trans_version/>
     <trans_status>0</trans_status>
@@ -31,7 +31,7 @@
     <sleep_time_full>1</sleep_time_full>
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
-    <feedback_size>5000</feedback_size>
+    <feedback_size>50000</feedback_size>
     <using_thread_priorities>N</using_thread_priorities>
     <shared_objects_file/>
     <dependencies>
@@ -200,13 +200,13 @@
            <schema_name/>
            </partitioning>
     <script/>
-    <compatible>Y</compatible>
+    <compatible>N</compatible>
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
         <jsScript_script>&#47;&#47;Script here
 
 var fullname = firstname + &quot; &quot; + name;
-var id2 = id.getInteger() + 1;
+var id2 = id + 1;
 
 var seq;
 
@@ -219,9 +219,8 @@ else
   seq ++;
 }
 
-var strDate = birthdate.getString();
-
-name.substr(0,5)</jsScript_script>
+var strDate =date2str( birthdate, &quot;yyyy&#47;MM&#47;dd&quot; )
+</jsScript_script>
       </jsScript>    </jsScripts>    <fields>      <field>        <name>id2</name>
         <rename>id2</rename>
         <type>Integer</type>

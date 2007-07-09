@@ -23,7 +23,7 @@ public class RunScriptValuesMod extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                500000
             );
         timedTransRunner.init();
         timedTransRunner.runOldEngine(true);
@@ -32,6 +32,22 @@ public class RunScriptValuesMod extends TestCase
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_SCRIPT_VALUES_MOD_02_CSV() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/run/scriptvalues_mod/ScriptValuesMod2.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                500000
+            );
+        timedTransRunner.init();
+        timedTransRunner.runNewEngine(true);
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);

@@ -36,6 +36,7 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -48,11 +49,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 
 /**
- * Executes a javascript on the values in the input stream. 
+ * Executes a JavaScript on the values in the input stream. 
  * Selected calculated values can then be put on the output stream.
  * 
  * @author Matt
- * @since 5-apr-2003
+ * @since 5-April-2003
  *
  */
 public class ScriptValuesMod extends BaseStep implements StepInterface {
@@ -86,8 +87,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 	
 	private void determineUsedFields(RowMetaInterface row){
 		int nr=0;
-		// Count the occurences of the values.
+		// Count the occurrences of the values.
 		// Perhaps we find values in comments, but we take no risk!
+		//
 		for (int i=0;i<row.size();i++){
 			String valname = row.getValueMeta(i).getName().toUpperCase();
 			if (strTransformScript.toUpperCase().indexOf(valname)>=0){
@@ -97,9 +99,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 		
 		// Allocate fields_used
 		data.fields_used = new int[nr];
+		data.values_used = new Value[nr];
+		
 		nr = 0;
-		// Count the occurences of the values.
+		// Count the occurrences of the values.
 		// Perhaps we find values in comments, but we take no risk!
+		//
 		for (int i=0;i<row.size();i++){
 			// Values are case-insensitive in JavaScript.
 			//
@@ -114,17 +119,19 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValuesMod.Log.UsingValuesFromInputStream",String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private synchronized Object[] addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException
+	private Object[] addValues(RowMetaInterface rowMeta, Object[] row) throws KettleValueException
     {
         if (first)
         {
             first = false;
 
             // What is the output row looking like?
+            //
             data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
             // Determine the indexes of the fields used!
+            //
             determineUsedFields(rowMeta);
 
             data.cx = Context.enter();
@@ -148,32 +155,30 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
             try
             {
-                // add these now (they will be readded later) to make compilation succeed
+                // add these now (they will be re-added later) to make compilation succeed
+            	//
                 Scriptable jsrow = Context.toObject(row, data.scope);
                 data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
 
                 for (int i = 0; i < data.fields_used.length; i++)
                 {
-                    /*
-                     * INCOMPATIBLE...
-                     * 
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
+                	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
                     Object valueData = row[data.fields_used[i]];
-                    // Value val = valueMeta.createOriginalValue(valueData); // TODO: make backward compatibility mode
-
-                    Scriptable jsarg = Context.toObject(valueData, data.scope);
-                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
-                     */
                     
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
-                    Object valueData = row[data.fields_used[i]];
-                    Value val = valueMeta.createOriginalValue(valueData);
-
-                    Scriptable jsarg = Context.toObject(val, data.scope);
-                    data.scope.put(val.getName(), data.scope, jsarg);
+                	if (meta.isCompatible()) {
+	                    data.values_used[i] = valueMeta.createOriginalValue(valueData);
+	
+	                    Scriptable jsarg = Context.toObject(data.values_used[i], data.scope);
+	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
+                	}
+                	else {
+                		Scriptable jsarg = Context.toObject(valueData, data.scope);
+	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
+                	}
                 }
 
                 // Modification for Additional Script parsing
+                //
                 try
                 {
                     if (meta.getAddClasses() != null)
@@ -251,19 +256,9 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         }
 
         // Filling the defined TranVars with the Values from the Row
-        // for (int i=0;i<data.fields_used.length;i++){
-        // Value val = row.getValue(data.fields_used[i]);
-        // tranVars[i].setValue(val);
-        // }
+        // 
+        Object[] outputRow = RowDataUtil.resizeArray(row, rowMeta.size());
         
-        Object[] outputRow = new Object[data.outputRowMeta.size()];
-        
-        // First copy the previous rows...
-        for (int i=0;i<rowMeta.size();i++)
-        {
-            outputRow[i]=row[i];
-        }
-
         // Keep an index...
         int outputIndex = rowMeta.size();
         
@@ -277,22 +272,19 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
                 for (int i = 0; i < data.fields_used.length; i++)
                 {
-                    /* 
-                     * IMCOMPATIBLE
-                     * 
                     ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
                     Object valueData = row[data.fields_used[i]];
                     
-                    Scriptable jsarg = Context.toObject(valueData, data.scope);
-                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
-                    */
-                    
-                    ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
-                    Object valueData = row[data.fields_used[i]];
-                    Value val = valueMeta.createOriginalValue(valueData);
-
-                    Scriptable jsarg = Context.toObject(val, data.scope);
-                    data.scope.put(val.getName(), data.scope, jsarg);
+                    if (meta.isCompatible()) {
+	                    data.values_used[i] = valueMeta.createOriginalValue(valueData);
+	
+	                    Scriptable jsarg = Context.toObject(data.values_used[i], data.scope);
+	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
+                    }
+                    else {
+	                    Scriptable jsarg = Context.toObject(valueData, data.scope);
+	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
+                    }
                 }
             }
             catch (Exception e)
@@ -338,6 +330,18 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                     outputRow[outputIndex]= getValueFromJScript(result, i);
                     outputIndex++;
                 }
+                
+                // Also modify the "in-place" value changes:
+                // -->  the field.trim() type of changes...
+                // As such we overwrite all the used fields again.
+                //
+                if (meta.isCompatible()) {
+	                for (int i = 0 ; i < data.values_used.length ; i++) {
+	                	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
+	                	outputRow[data.fields_used[i]] = valueMeta.getValueData(data.values_used[i]);
+	                }
+                }
+                
             }
             else
             {

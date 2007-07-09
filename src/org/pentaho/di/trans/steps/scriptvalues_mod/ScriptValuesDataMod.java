@@ -28,6 +28,7 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -45,6 +46,7 @@ public class ScriptValuesDataMod extends BaseStepData implements StepDataInterfa
 	public Script script;
 	
 	public int fields_used[];
+	public Value values_used[];
     
     public RowMetaInterface outputRowMeta;
 	

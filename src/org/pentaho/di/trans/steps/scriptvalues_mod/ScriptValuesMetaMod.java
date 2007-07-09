@@ -82,8 +82,11 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private int     length[];
 	private int     precision[];
 	
+	private boolean compatible;
+	
 	public ScriptValuesMetaMod(){
 		super(); // allocate BaseStepMeta
+		compatible=true;
 		try{
 			parseXmlForAdditionalClasses();
 		}catch(Exception e){};
@@ -241,6 +244,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			int i, nrfields, nrscripts;
 			
 			script     = XMLHandler.getTagValue(stepnode, "script"); 
+			String strCompatible = XMLHandler.getTagValue(stepnode, "compatible");
+			if (strCompatible==null) {
+				compatible=true;
+			}
+			else {
+				compatible = "Y".equalsIgnoreCase(strCompatible);
+			}
 			
 			Node scripts = XMLHandler.getSubNode(stepnode, "jsScripts");
 			nrscripts = XMLHandler.countNodes(scripts, "jsScript");
@@ -300,6 +310,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			length   [i] = -1;
 			precision[i] = -1;
 		}
+		
+		compatible=true;
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
@@ -330,6 +342,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         StringBuffer retval = new StringBuffer(300);
 		
 		retval.append("    ").append(XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("compatible", compatible)); //$NON-NLS-1$ //$NON-NLS-2$
         
 
 		retval.append("    <jsScripts>"); 
@@ -363,6 +376,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
+			compatible = rep.getStepAttributeBoolean(id_step, 0, "compatible", true); //$NON-NLS-1$
 
             int nrScripts = rep.countNrStepAttributes(id_step, "jsScript_name"); //$NON-NLS-1$
             jsScripts = new ScriptValuesScript[nrScripts];
@@ -397,6 +411,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         try
         {
             rep.saveStepAttribute(id_transformation, id_step, "script", script); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "compatible", compatible); //$NON-NLS-1$
 
             for (int i = 0; i < jsScripts.length; i++)
             {
@@ -830,5 +845,19 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	
 	public ScriptValuesAddClasses[] getAddClasses(){
 		return additionalClasses;
+	}
+
+	/**
+	 * @return the compatible
+	 */
+	public boolean isCompatible() {
+		return compatible;
+	}
+
+	/**
+	 * @param compatible the compatible to set
+	 */
+	public void setCompatible(boolean compatible) {
+		this.compatible = compatible;
 	}
 }

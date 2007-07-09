@@ -25,6 +25,7 @@
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
@@ -187,6 +188,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	private ScriptValuesMetaMod input;
 	private ScriptValuesHelp scVHelp;
 	private ScriptValuesHighlight lineStyler = new ScriptValuesHighlight();
+	private Button wCompatible;
 	
 	/**
 	 * Dummy class used for test().
@@ -441,6 +443,22 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		fdlPosition.right = new FormAttachment(30, 0);
 		fdlPosition.top   = new FormAttachment(folder, margin);
 		wlPosition.setLayoutData(fdlPosition);
+		
+		Label wlCompatible = new Label(wTop, SWT.NONE);
+		wlCompatible.setText(Messages.getString("ScriptValuesDialogMod.Compatible.Label")); //$NON-NLS-1$
+		props.setLook(wlCompatible);
+		FormData fdlCompatible = new FormData();
+		fdlCompatible.left  = new FormAttachment(wTree, margin);
+		fdlCompatible.right = new FormAttachment(middle, 0);
+		fdlCompatible.top   = new FormAttachment(wlPosition, margin);
+		wlCompatible.setLayoutData(fdlCompatible);
+		wCompatible = new Button(wTop, SWT.CHECK);
+		props.setLook(wCompatible);
+		FormData fdCompatible = new FormData();
+		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
+		fdCompatible.top   = new FormAttachment(wlPosition, margin);
+		wCompatible.setLayoutData(fdCompatible);
+		
 		
 		wlHelpLabel = new Text(wTop, SWT.V_SCROLL |   SWT.LEFT);
 		wlHelpLabel.setEditable(false);
@@ -838,6 +856,8 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	 */ 
 	public void getData()
 	{
+		wCompatible.setSelection(input.isCompatible());
+		
 		for (int i=0;i<input.getName().length;i++)
 		{
 			if (input.getName()[i]!=null && input.getName()[i].length()>0)
@@ -901,6 +921,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
+		
 		boolean bInputOK = false;
 		
 		// Check if Active Script has set, otherwise Ask
@@ -924,7 +945,8 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		if(bInputOK){
 
 			//StyledTextComp wScript = getStyledTextComp();
-			//input.setScript( wScript.getText() );
+			
+			input.setCompatible( wCompatible.getSelection() );
 			int nrfields = wFields.nrNonEmpty();
 			input.allocate(nrfields);
 			for (int i=0;i<nrfields;i++){
@@ -967,44 +989,6 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 			dispose();
 		}
 	}
-	
-    /*
-	private void get()
-	{
-		try
-		{
-			StyledTextComp wScript = getStyledTextComp();
-			String script = wScript.getText();
-			script+=Const.CR;
-	
-			Row r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
-			{
-				for (int i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					
-					switch(v.getType())
-					{
-					case ValueMetaInterface.TYPE_STRING : script+=v.getName()+".getString()"; break; //$NON-NLS-1$
-					case ValueMetaInterface.TYPE_NUMBER : script+=v.getName()+".getNumber()"; break; //$NON-NLS-1$
-					case ValueMetaInterface.TYPE_INTEGER: script+=v.getName()+".getInteger()"; break; //$NON-NLS-1$
-					case ValueMetaInterface.TYPE_DATE   : script+=v.getName()+".getDate()"; break; //$NON-NLS-1$
-					case ValueMetaInterface.TYPE_BOOLEAN: script+=v.getName()+".getBool()"; break; //$NON-NLS-1$
-					default: script+=v.getName(); break;
-					}
-					script+=";"+Const.CR; //$NON-NLS-1$
-				}
-				wScript.setText(script);
-			}
-		}
-		catch(KettleException ke)
-		{
-			//new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-    */
 	
 	public boolean test()
 	{
@@ -1087,16 +1071,27 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 				    for (int i=0;i<row.size();i++)
 				    {
                         ValueMetaInterface valueMeta = row.getValueMeta(i);
-	  				    // Value val = meta.createOriginalValue(null);
-                        Object valueData = null;
+	  				    Object valueData = null;
                         
 					    // Set date and string values to something to simulate real thing
+                        //
 					    if (valueMeta.isDate()) valueData = new Date();
 					    if (valueMeta.isString()) valueData = "test value test value test value test value test value test value test value test value test value test value"; //$NON-NLS-1$
-                        if (valueMeta.isNumeric()) valueData = new Double(0.0);
+                        if (valueMeta.isInteger()) valueData = new Long(0L);
+                        if (valueMeta.isNumber()) valueData = new Double(0.0);
+                        if (valueMeta.isBigNumber()) valueData = new BigDecimal(0.0);
+                        if (valueMeta.isBoolean()) valueData = new Boolean(true);
+                        if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
                         
-					    Scriptable jsarg = Context.toObject(valueData, jsscope);
-					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                        if (wCompatible.getSelection()) {
+                        	Value value = valueMeta.createOriginalValue(valueData);
+                        	Scriptable jsarg = Context.toObject(value, jsscope);
+    					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                        }
+                        else {
+                        	Scriptable jsarg = Context.toObject(valueData, jsscope);
+    					    jsscope.put(valueMeta.getName(), jsscope, jsarg);
+                        }
 				    }
 				    // Add support for Value class (new Value())
 				    Scriptable jsval = Context.toObject(Value.class, jsscope);

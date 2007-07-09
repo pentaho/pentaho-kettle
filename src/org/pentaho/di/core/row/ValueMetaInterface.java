@@ -367,6 +367,14 @@ public interface ValueMetaInterface extends Cloneable
      */
     public Value createOriginalValue(Object data) throws KettleValueException;
     
+    /**
+     * Extracts the primitive data from an old style Value object 
+     * @param value the old style Value object 
+     * @return the value's data, NOT the meta data.
+     * @throws KettleValueException  case there is a data conversion problem
+     */
+    public Object getValueData(Value value) throws KettleValueException;
+    
 	/**
 	 * @return the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
 	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
