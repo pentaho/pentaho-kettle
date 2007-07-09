@@ -997,7 +997,7 @@ public class BaseStep extends Thread implements VariableSpace
         
         // This rowSet is perhaps no longer giving back rows?
         //
-        while (row==null) {
+        while (row==null && !stopped.get()) {
         	// Try the next input row set(s) until we find a row set that still has rows...
         	// The getRowFrom() method removes row sets from the input row sets list.
         	//
