@@ -95,11 +95,11 @@
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10</limit>
+    <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
     <GUI>
-      <xloc>48</xloc>
-      <yloc>49</yloc>
+      <xloc>138</xloc>
+      <yloc>70</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -150,11 +150,11 @@
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10</limit>
+    <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
     <GUI>
-      <xloc>48</xloc>
-      <yloc>136</yloc>
+      <xloc>138</xloc>
+      <yloc>161</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -205,11 +205,11 @@
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10</limit>
+    <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
     <GUI>
-      <xloc>51</xloc>
-      <yloc>231</yloc>
+      <xloc>138</xloc>
+      <yloc>252</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -237,8 +237,8 @@
       </fields>
      <cluster_schema/>
     <GUI>
-      <xloc>206</xloc>
-      <yloc>126</yloc>
+      <xloc>398</xloc>
+      <yloc>161</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
