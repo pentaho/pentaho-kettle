@@ -33,6 +33,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -267,16 +270,29 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		// See if we have input streams leading to this step!
-		if (input.length>0)
+		if (Const.isEmpty(filename))
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FixedInputMeta.CheckResult.NoFilenameSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FixedInputMeta.CheckResult.FilenameSpecified"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
+	}
+	
+	@Override
+	public List<ResourceReference> getResourceDependencies() {
+		 List<ResourceReference> references = super.getResourceDependencies();
+		 
+		 if (!Const.isEmpty(filename)) {
+			 // Add the filename to the references, including a reference to this step meta data.
+			 //
+			 ResourceReference reference = new ResourceReference(this);
+			 reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
+		 }
+		 return references;
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
@@ -405,8 +421,5 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setFieldDefinition(FixedFileInputField[] fieldDefinition) {
 		this.fieldDefinition = fieldDefinition;
 	}
-
-
-
 
 }
