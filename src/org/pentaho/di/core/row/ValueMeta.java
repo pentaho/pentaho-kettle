@@ -27,6 +27,7 @@ public class ValueMeta implements ValueMetaInterface
     private int      length;
     private int      precision;
     private int      type;
+    private int      trimType;
     private int      storageType;
     private String   origin;
     private String   comments;
@@ -1865,6 +1866,7 @@ public class ValueMeta implements ValueMetaInterface
             writeString(outputStream, decimalSymbol);
             writeString(outputStream, groupingSymbol);
             writeString(outputStream, currencySymbol);
+            outputStream.writeInt(trimType);
             
             // Case sensitivity of compare
             outputStream.writeBoolean(caseInsensitive);  
@@ -1880,6 +1882,7 @@ public class ValueMeta implements ValueMetaInterface
             
             // date format locale?
             writeString(outputStream, dateFormatLocale!=null ? dateFormatLocale.toString() : null);
+            
         }
         catch(IOException e)
         {
@@ -1961,6 +1964,7 @@ public class ValueMeta implements ValueMetaInterface
             decimalSymbol=readString(inputStream);
             groupingSymbol=readString(inputStream);
             currencySymbol=readString(inputStream);
+            trimType=inputStream.readInt();
             
             // Case sensitivity
             caseInsensitive = inputStream.readBoolean();
@@ -2348,6 +2352,20 @@ public class ValueMeta implements ValueMetaInterface
 				}
 			}
 		}
+	}
+
+	/**
+	 * @return the trimType
+	 */
+	public int getTrimType() {
+		return trimType;
+	}
+
+	/**
+	 * @param trimType the trimType to set
+	 */
+	public void setTrimType(int trimType) {
+		this.trimType = trimType;
 	}
 
 

@@ -68,6 +68,18 @@ public interface ValueMetaInterface extends Cloneable
     
     
     
+    /** Indicating that the string content should NOT be trimmed if conversion is to occur to another data type */
+    public static final int TRIM_TYPE_NONE  = 0;
+    
+    /** Indicating that the string content should be LEFT trimmed if conversion is to occur to another data type */
+    public static final int TRIM_TYPE_LEFT  = 1;
+    
+    /** Indicating that the string content should be RIGHT trimmed if conversion is to occur to another data type */
+    public static final int TRIM_TYPE_RIGHT = 2;
+
+    /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type */
+    public static final int TRIM_TYPE_BOTH  = 3;
+    
 
     public String   getName();
     public void     setName(String name);
@@ -92,6 +104,9 @@ public interface ValueMetaInterface extends Cloneable
     public int      getStorageType();
     public void     setStorageType(int storageType);
     
+    public int      getTrimType();
+    public void     setTrimType(int trimType);
+
     public Object[] getIndex();
     public void     setIndex(Object[] index);
     
