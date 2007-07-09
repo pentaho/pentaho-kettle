@@ -9,15 +9,13 @@ import org.pentaho.di.run.TimedTransRunner;
 
 public class RunSortedMerge extends TestCase
 {
-    public void test_SORTED_MERGE_00()
-    {
+    public void test_SORTED_MERGE_00() {
         System.out.println();
         System.out.println("SORTED MERGE");
         System.out.println("==================");
     }
     
-    public void test_SORTED_MERGE_01_SIMPLE() throws Exception
-    {
+    public void test_SORTED_MERGE_01_SIMPLE() throws Exception {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
                 "test/org/pentaho/di/run/sortedmerge/SortedMergeSimple.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
