@@ -1,5 +1,6 @@
 package org.pentaho.di.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ResourceReference {
@@ -14,6 +15,11 @@ public class ResourceReference {
 		super();
 		this.referenceHolder = referenceHolder;
 		this.entries = entries;
+	}
+
+	public ResourceReference(Object referenceHolder) {
+		this.referenceHolder = referenceHolder;
+		this.entries = new ArrayList<ResourceEntry>();
 	}
 
 	/**
