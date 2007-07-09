@@ -65,6 +65,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.spoon.Spoon;
@@ -100,15 +101,15 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     protected String            filename;
 
-    public List<JobEntryInterface>            jobentries;
+    public List<JobEntryInterface>     jobentries;
 
-    public List<JobEntryCopy>            jobcopies;
+    public List<JobEntryCopy>          jobcopies;
 
     public List<JobHopMeta>            jobhops;
 
-    public List<NotePadMeta>            notes;
+    public List<NotePadMeta>           notes;
 
-    public List<DatabaseMeta>            databases;
+    public List<DatabaseMeta>          databases;
 
     protected RepositoryDirectory directory;
 
@@ -2577,4 +2578,13 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
       return ji!=null;
   }
 
+  public List<ResourceReference> getResourceDependencies() {
+  	List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
+  
+  	for (int i=0;i<jobentries.size();i++) {
+  		resourceReferences.addAll( jobentries.get(i).getResourceDependencies() );
+  	}
+  	
+  	return resourceReferences;
+  }
 }

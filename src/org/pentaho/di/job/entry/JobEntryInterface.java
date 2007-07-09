@@ -55,6 +55,7 @@ import org.pentaho.di.job.entries.xsdvalidator.JobEntryXSDValidator;
 import org.pentaho.di.job.entries.xslt.JobEntryXSLT;
 import org.pentaho.di.job.entries.zipfile.JobEntryZipFile;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
 
@@ -332,4 +333,10 @@ public interface JobEntryInterface
      */
     public void check(List<CheckResult> remarks, JobMeta jobMeta);
     
+    /**
+     * Get a list of all the resource dependencies that the step is depending on.
+     * 
+     * @return a list of all the resource dependencies that the step is depending on
+     */
+    public List<ResourceReference> getResourceDependencies();
 }

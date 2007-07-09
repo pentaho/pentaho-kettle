@@ -31,6 +31,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
 
@@ -430,7 +431,15 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * @param jobMeta JobMeta information letting threading back to the JobMeta possible
    */
 	public void check(List<CheckResult> remarks, JobMeta jobMeta) {
-    
-  }
-  
+		
+	}
+	
+    /**
+     * Get a list of all the resource dependencies that the step is depending on.
+     * 
+     * @return a list of all the resource dependencies that the step is depending on
+     */
+    public List<ResourceReference> getResourceDependencies() {
+    	return new ArrayList<ResourceReference>(); // default: return an empty resource dependency list.
+    }
 }

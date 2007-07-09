@@ -36,6 +36,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.StepLoader;
@@ -780,4 +781,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     	return STRING_ID_MAPPING_OUTPUT.equals(stepid);
     }
 
+    /**
+     * Get a list of all the resource dependencies that the step is depending on.
+     * 
+     * @return a list of all the resource dependencies that the step is depending on
+     */
+    public List<ResourceReference> getResourceDependencies() {
+    	return stepMetaInterface.getResourceDependencies();
+    }
 }

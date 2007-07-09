@@ -75,6 +75,7 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.spoon.Spoon;
@@ -5698,5 +5699,15 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			}
 			return stepMeta;
 		}
+    }
+    
+    public List<ResourceReference> getResourceDependencies() {
+    	List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
+    
+    	for (int i=0;i<steps.size();i++) {
+    		resourceReferences.addAll( steps.get(i).getResourceDependencies() );
+    	}
+    	
+    	return resourceReferences;
     }
 }

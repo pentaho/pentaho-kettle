@@ -15,6 +15,7 @@
  
 
 package org.pentaho.di.trans.step;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +28,13 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
 
 
 /*
- * Created on 19-jun-2003
+ * Created on 19-June-2003
  *
  */
 
@@ -118,7 +120,7 @@ public class BaseStepMeta implements Cloneable
 	}
     
     /**
-     * @param infoSteps The infostep(s) to set
+     * @param infoSteps The info step(s) to set
      */
     public void setInfoSteps(StepMeta[] infoSteps)
     {
@@ -230,7 +232,7 @@ public class BaseStepMeta implements Cloneable
      * The Table Output step in this case will output the fields in the target table using this method. 
      * 
      * This default implementation returns an empty row meaning that no fields are required for this step to operate.
-     * @return the required fields for this steps metadata.
+     * @return the required fields for this steps meta data.
      * @throws KettleException in case the required fields can't be determined
      */
     public RowMetaInterface getRequiredFields() throws KettleException
@@ -249,7 +251,7 @@ public class BaseStepMeta implements Cloneable
     }
     
     /**
-     * @return the libraries that this step or plugin uses.
+     * @return the libraries that this step or plug-in uses.
      */
     public String[] getUsedLibraries()
     {
@@ -272,4 +274,14 @@ public class BaseStepMeta implements Cloneable
     {
         return false;
     }
+    
+    /**
+     * Get a list of all the resource dependencies that the step is depending on.
+     * 
+     * @return a list of all the resource dependencies that the step is depending on
+     */
+    public List<ResourceReference> getResourceDependencies() {
+    	return new ArrayList<ResourceReference>();
+    }
+    
 }
