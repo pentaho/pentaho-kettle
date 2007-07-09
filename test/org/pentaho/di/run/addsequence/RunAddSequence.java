@@ -9,13 +9,6 @@ import org.pentaho.di.run.TimedTransRunner;
 
 public class RunAddSequence extends TestCase
 {
-    public void test_ADD_SEQUENCE_00()
-    {
-        System.out.println();
-        System.out.println("ADD SEQUENCE");
-        System.out.println("==================");
-    }
-    
     public void test_ADD_SEQUENCE_01_AddToEmptyRow() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
