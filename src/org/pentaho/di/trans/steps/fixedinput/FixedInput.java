@@ -120,9 +120,11 @@ public class FixedInput extends BaseStep implements StepInterface
 				return null;
 			}
 			
-			for (int i=0;i<meta.getFieldNames().length;i++) {
+			for (int i=0;i<meta.getFieldDefinition().length;i++) {
 				
-				int fieldWidth = meta.getFieldWidth()[i];
+				FixedFileInputField fieldDefinition = meta.getFieldDefinition()[i];
+				
+				int fieldWidth = fieldDefinition.getWidth();
 				data.endBuffer = data.startBuffer+fieldWidth; 
 				if (data.endBuffer>data.bufferSize) {
 					// Oops, we need to read more data...

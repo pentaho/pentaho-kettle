@@ -344,18 +344,20 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
 
-		for (int i=0;i<inputMeta.getFieldNames().length;i++) {
+		for (int i=0;i<inputMeta.getFieldDefinition().length;i++) {
 			TableItem item = new TableItem(wFields.table, SWT.NONE);
 			int colnr=1;
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldNames()[i], ""));
-			item.setText(colnr++, ValueMeta.getTypeDesc(inputMeta.getFieldTypes()[i]));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldFormat()[i], ""));
-			item.setText(colnr++, inputMeta.getFieldWidth()[i]>=0?Integer.toString(inputMeta.getFieldWidth()[i]):"") ;
-			item.setText(colnr++, inputMeta.getFieldLength()[i]>=0?Integer.toString(inputMeta.getFieldLength()[i]):"") ;
-			item.setText(colnr++, inputMeta.getFieldPrecision()[i]>=0?Integer.toString(inputMeta.getFieldPrecision()[i]):"") ;
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldCurrency()[i], ""));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldDecimal()[i], ""));
-			item.setText(colnr++, Const.NVL(inputMeta.getFieldGrouping()[i], ""));
+			FixedFileInputField field = inputMeta.getFieldDefinition()[i];
+			
+			item.setText(colnr++, Const.NVL(field.getName(), ""));
+			item.setText(colnr++, ValueMeta.getTypeDesc(field.getType()));
+			item.setText(colnr++, Const.NVL(field.getFormat(), ""));
+			item.setText(colnr++, field.getWidth()>=0?Integer.toString(field.getWidth()):"") ;
+			item.setText(colnr++, field.getLength()>=0?Integer.toString(field.getLength()):"") ;
+			item.setText(colnr++, field.getPrecision()>=0?Integer.toString(field.getPrecision()):"") ;
+			item.setText(colnr++, Const.NVL(field.getCurrency(), ""));
+			item.setText(colnr++, Const.NVL(field.getDecimal(), ""));
+			item.setText(colnr++, Const.NVL(field.getGrouping(), ""));
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -395,15 +397,18 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (int i=0;i<wFields.nrNonEmpty();i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			int colnr=1;
-			fixedInputMeta.getFieldNames()[i] = item.getText(colnr++);
-			fixedInputMeta.getFieldTypes()[i] = ValueMeta.getType( item.getText(colnr++) );
-			fixedInputMeta.getFieldFormat()[i] = item.getText(colnr++);
-			fixedInputMeta.getFieldWidth()[i] = Const.toInt(item.getText(colnr++), -1);
-			fixedInputMeta.getFieldLength()[i] = Const.toInt(item.getText(colnr++), -1);
-			fixedInputMeta.getFieldPrecision()[i] = Const.toInt(item.getText(colnr++), -1);
-			fixedInputMeta.getFieldCurrency()[i] = item.getText(colnr++);
-			fixedInputMeta.getFieldDecimal()[i] = item.getText(colnr++);
-			fixedInputMeta.getFieldGrouping()[i] = item.getText(colnr++);
+			
+			FixedFileInputField field = new FixedFileInputField();
+			
+			field.setName( item.getText(colnr++) );
+			field.setType( ValueMeta.getType( item.getText(colnr++) ) );
+			field.setFormat( item.getText(colnr++) );
+			field.setWidth( Const.toInt(item.getText(colnr++), -1) );
+			field.setLength( Const.toInt(item.getText(colnr++), -1) );
+			field.setPrecision( Const.toInt(item.getText(colnr++), -1) );
+			field.setCurrency( item.getText(colnr++) );
+			field.setDecimal( item.getText(colnr++) );
+			field.setGrouping( item.getText(colnr++) );
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();

@@ -70,17 +70,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private boolean runningInParallel;
 
-	// TODO: wrap these field* members in a new class...
-	//
-	private String[] fieldNames;
-	private int      fieldTypes[];
-	private int      fieldWidth[];
-	private int      fieldLength[];
-	private int      fieldPrecision[];
-	private String   fieldFormat[];
-	private String   fieldDecimal[];
-	private String   fieldGrouping[];
-	private String   fieldCurrency[];
+	private FixedFileInputField fieldDefinition[];
+
 	
 	public FixedInputMeta()
 	{
@@ -128,16 +119,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i = 0; i < nrfields; i++)
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-
-				fieldNames[i] = XMLHandler.getTagValue(fnode, "name");
-				fieldTypes[i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type"));
-				fieldFormat[i] = XMLHandler.getTagValue(fnode, "format");
-				fieldCurrency[i] = XMLHandler.getTagValue(fnode, "currency");
-				fieldDecimal[i] = XMLHandler.getTagValue(fnode, "decimal");
-				fieldGrouping[i] = XMLHandler.getTagValue(fnode, "group");
-				fieldWidth[i] = Const.toInt(XMLHandler.getTagValue(fnode, "width"), -1);
-				fieldLength[i] = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
-				fieldPrecision[i] = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
+				fieldDefinition[i] = new FixedFileInputField(fnode);
 			}
 		}
 		catch (Exception e)
@@ -147,15 +129,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	public void allocate(int nrFields) {
-		fieldNames = new String[nrFields];
-		fieldTypes = new int[nrFields];
-		fieldWidth = new int[nrFields];
-		fieldLength = new int[nrFields];
-		fieldPrecision = new int[nrFields];
-		fieldFormat = new String[nrFields];
-		fieldDecimal = new String[nrFields];
-		fieldGrouping = new String[nrFields];
-		fieldCurrency = new String[nrFields];
+		fieldDefinition = new FixedFileInputField[nrFields];
 	}
 
 	public String getXML()
@@ -171,19 +145,9 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("parallel", runningInParallel));
 
 		retval.append("    <fields>" + Const.CR);
-		for (int i = 0; i < fieldNames.length; i++)
+		for (int i = 0; i < fieldDefinition.length; i++)
 		{
-			retval.append("      <field>" + Const.CR);
-			retval.append("        " + XMLHandler.addTagValue("name", fieldNames[i]));
-			retval.append("        " + XMLHandler.addTagValue("type", ValueMeta.getTypeDesc(fieldTypes[i])));
-			retval.append("        " + XMLHandler.addTagValue("format", fieldFormat[i]));
-			retval.append("        " + XMLHandler.addTagValue("currency", fieldCurrency[i]));
-			retval.append("        " + XMLHandler.addTagValue("decimal", fieldDecimal[i]));
-			retval.append("        " + XMLHandler.addTagValue("group", fieldGrouping[i]));
-			retval.append("        " + XMLHandler.addTagValue("width", fieldWidth[i]));
-			retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i]));
-			retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i]));
-			retval.append("        </field>" + Const.CR);
+			retval.append(fieldDefinition[i].getXML());
 		}
 		retval.append("      </fields>" + Const.CR);
 
@@ -209,15 +173,17 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i = 0; i < nrfields; i++)
 			{
-				fieldNames[i] = rep.getStepAttributeString(id_step, i, "field_name");
-				fieldTypes[i] = ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type"));
-				fieldFormat[i] = rep.getStepAttributeString(id_step, i, "field_format");
-				fieldCurrency[i] = rep.getStepAttributeString(id_step, i, "field_currency");
-				fieldDecimal[i] = rep.getStepAttributeString(id_step, i, "field_decimal");
-				fieldGrouping[i] = rep.getStepAttributeString(id_step, i, "field_group");
-				fieldWidth[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_width");
-				fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length");
-				fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision");
+				FixedFileInputField field = new FixedFileInputField();
+				
+				field.setName( rep.getStepAttributeString(id_step, i, "field_name") );
+				field.setType( ValueMeta.getType(rep.getStepAttributeString(id_step, i, "field_type")) );
+				field.setFormat( rep.getStepAttributeString(id_step, i, "field_format") );
+				field.setCurrency( rep.getStepAttributeString(id_step, i, "field_currency") );
+				field.setDecimal( rep.getStepAttributeString(id_step, i, "field_decimal") );
+				field.setGrouping( rep.getStepAttributeString(id_step, i, "field_group") );
+				field.setWidth( (int) rep.getStepAttributeInteger(id_step, i, "field_width") );
+				field.setLength(  (int) rep.getStepAttributeInteger(id_step, i, "field_length") );
+				field.setPrecision( (int) rep.getStepAttributeInteger(id_step, i, "field_precision") );
 			}
 		}
 		catch (Exception e)
@@ -238,17 +204,17 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "line_feed", lineFeedPresent);
 			rep.saveStepAttribute(id_transformation, id_step, "parallel", runningInParallel);
 
-			for (int i = 0; i < fieldNames.length; i++)
+			for (int i = 0; i < fieldDefinition.length; i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldNames[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(fieldTypes[i]));
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldFormat[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", fieldCurrency[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDecimal[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldGrouping[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_width", fieldWidth[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldDefinition[i].getName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc(fieldDefinition[i].getType()));
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format", fieldDefinition[i].getFormat());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", fieldDefinition[i].getCurrency());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", fieldDefinition[i].getDecimal());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_group", fieldDefinition[i].getGrouping());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_width", fieldDefinition[i].getWidth());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldDefinition[i].getLength());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldDefinition[i].getPrecision());
 			}
 		}
 		catch (Exception e)
@@ -259,15 +225,17 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		for (int i=0;i<fieldNames.length;i++) {
-			ValueMetaInterface valueMeta = new ValueMeta(fieldNames[i], fieldTypes[i]);
-			valueMeta.setConversionMask(fieldFormat[i]);
-			valueMeta.setLength(fieldLength[i]);
-			valueMeta.setPrecision(fieldPrecision[i]);
-			valueMeta.setConversionMask(fieldFormat[i]);
-			valueMeta.setDecimalSymbol(fieldDecimal[i]);
-			valueMeta.setGroupingSymbol(fieldGrouping[i]);
-			valueMeta.setCurrencySymbol(fieldCurrency[i]);
+		for (int i=0;i<fieldDefinition.length;i++) {
+			FixedFileInputField field = fieldDefinition[i];
+			
+			ValueMetaInterface valueMeta = new ValueMeta(field.getName(), field.getType());
+			valueMeta.setConversionMask(field.getFormat());
+			valueMeta.setLength(field.getLength());
+			valueMeta.setPrecision(field.getPrecision());
+			valueMeta.setConversionMask(field.getFormat());
+			valueMeta.setDecimalSymbol(field.getDecimal());
+			valueMeta.setGroupingSymbol(field.getGrouping());
+			valueMeta.setCurrencySymbol(field.getCurrency());
 			if (lazyConversionActive) valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
 			
 			// In case we want to convert Strings...
@@ -327,20 +295,6 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the fieldNames
-	 */
-	public String[] getFieldNames() {
-		return fieldNames;
-	}
-
-	/**
-	 * @param fieldNames the fieldNames to set
-	 */
-	public void setFieldNames(String[] fieldNames) {
-		this.fieldNames = fieldNames;
-	}
-
-	/**
 	 * @return the filename
 	 */
 	public String getFilename() {
@@ -383,104 +337,6 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the fieldTypes
-	 */
-	public int[] getFieldTypes() {
-		return fieldTypes;
-	}
-
-	/**
-	 * @return the fieldFormat
-	 */
-	public String[] getFieldFormat() {
-		return fieldFormat;
-	}
-
-	/**
-	 * @param fieldTypes the fieldTypes to set
-	 */
-	public void setFieldTypes(int[] fieldTypes) {
-		this.fieldTypes = fieldTypes;
-	}
-
-	/**
-	 * @param fieldFormat the fieldFormat to set
-	 */
-	public void setFieldFormat(String[] fieldFormat) {
-		this.fieldFormat = fieldFormat;
-	}
-
-	/**
-	 * @return the fieldDecimal
-	 */
-	public String[] getFieldDecimal() {
-		return fieldDecimal;
-	}
-
-	/**
-	 * @return the fieldGrouping
-	 */
-	public String[] getFieldGrouping() {
-		return fieldGrouping;
-	}
-
-	/**
-	 * @return the fieldCurrency
-	 */
-	public String[] getFieldCurrency() {
-		return fieldCurrency;
-	}
-
-	/**
-	 * @param fieldDecimal the fieldDecimal to set
-	 */
-	public void setFieldDecimal(String[] fieldDecimal) {
-		this.fieldDecimal = fieldDecimal;
-	}
-
-	/**
-	 * @param fieldGrouping the fieldGrouping to set
-	 */
-	public void setFieldGrouping(String[] fieldGrouping) {
-		this.fieldGrouping = fieldGrouping;
-	}
-
-	/**
-	 * @param fieldCurrency the fieldCurrency to set
-	 */
-	public void setFieldCurrency(String[] fieldCurrency) {
-		this.fieldCurrency = fieldCurrency;
-	}
-
-	/**
-	 * @return the fieldLength
-	 */
-	public int[] getFieldLength() {
-		return fieldLength;
-	}
-
-	/**
-	 * @return the fieldPrecision
-	 */
-	public int[] getFieldPrecision() {
-		return fieldPrecision;
-	}
-
-	/**
-	 * @param fieldLength the fieldLength to set
-	 */
-	public void setFieldLength(int[] fieldLength) {
-		this.fieldLength = fieldLength;
-	}
-
-	/**
-	 * @param fieldPrecision the fieldPrecision to set
-	 */
-	public void setFieldPrecision(int[] fieldPrecision) {
-		this.fieldPrecision = fieldPrecision;
-	}
-
-	/**
 	 * @return the headerPresent
 	 */
 	public boolean isHeaderPresent() {
@@ -509,13 +365,6 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return the fieldWidth
-	 */
-	public int[] getFieldWidth() {
-		return fieldWidth;
-	}
-
-	/**
 	 * @param lineWidth the lineWidth to set
 	 */
 	public void setLineWidth(String lineWidth) {
@@ -527,13 +376,6 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setLineFeedPresent(boolean lineFeedPresent) {
 		this.lineFeedPresent = lineFeedPresent;
-	}
-
-	/**
-	 * @param fieldWidth the fieldWidth to set
-	 */
-	public void setFieldWidth(int[] fieldWidth) {
-		this.fieldWidth = fieldWidth;
 	}
 
 	/**
@@ -549,6 +391,22 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setRunningInParallel(boolean runningInParallel) {
 		this.runningInParallel = runningInParallel;
 	}
+
+	/**
+	 * @return the fieldDefinition
+	 */
+	public FixedFileInputField[] getFieldDefinition() {
+		return fieldDefinition;
+	}
+
+	/**
+	 * @param fieldDefinition the fieldDefinition to set
+	 */
+	public void setFieldDefinition(FixedFileInputField[] fieldDefinition) {
+		this.fieldDefinition = fieldDefinition;
+	}
+
+
 
 
 }
