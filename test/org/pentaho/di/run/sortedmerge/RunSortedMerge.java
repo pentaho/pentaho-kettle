@@ -23,7 +23,7 @@ public class RunSortedMerge extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                1000
+                1000000
             );
         timedTransRunner.runOldAndNew();
         
