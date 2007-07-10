@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Shell;
@@ -556,14 +555,15 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     LogWriter log = LogWriter.getInstance();
 
     // required
-    if (StringUtils.isBlank(serverName)) {
+    if (Const.isEmpty(serverName)) {
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.ServerNameIsBlank"), this)); //$NON-NLS-1$
     }
-    if (StringUtils.isBlank(targetDirectory)) {
+    if (Const.isEmpty(targetDirectory)) {
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.TargetDirIsBlank"), this)); //$NON-NLS-1$
-    } else {
+    } 
+    else {
       String realTargetDir = environmentSubstitute(targetDirectory);
       FileObject targetDirObject;
       try {
@@ -572,13 +572,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString(
               "JobEntryFTP.CheckResult.TargetDirDoesNotExist", targetDirectory), this)); //$NON-NLS-1$
         }
-      } catch (IOException e) {
+      } 
+      catch (IOException e) {
         log.logError(toString(), e.getMessage());
         remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages
             .getString("JobEntryFTP.CheckResult.CannotCheckTargetDirExistence"), this)); //$NON-NLS-1$
       }
     }
-    if (StringUtils.isBlank(userName)) {
+    if (Const.isEmpty(userName)) {
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.UsernameIsBlank"), this)); //$NON-NLS-1$
     }
@@ -604,6 +605,5 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         "JobEntryFTP.CheckResult.Remove", String.valueOf(remove)), this)); //$NON-NLS-1$
     remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
-
   }
 }
