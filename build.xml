@@ -454,11 +454,8 @@
 			
 			<formatter type="xml"/>
 			
-			<!---
-		  	  <test todir="${junit}" name="org.pentaho.di.run.tableoutput.RunTableOutput" haltonerror="false" />
-			  <test todir="${junit}" name="org.pentaho.di.run.abort.RunAbort" haltonerror="false" />
-			-->
-			
+		  	<test todir="${junit}" name="org.pentaho.di.run.tableoutput.RunTableOutput" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.abort.RunAbort" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To10" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To05" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence4To00" haltonerror="false" />
@@ -468,33 +465,31 @@
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To10" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To05" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.run.addsequence.RunAddSequence1To00" haltonerror="false" />
-			<!--
-				<test todir="${junit}" name="org.pentaho.di.run.calculator.RunCalculator" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.constant.RunConstant" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.filterrows.RunFilterRows" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.rowgenerator.RunRowGenerator" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.selectvalues.RunSelectValues" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.sortrows.RunSortRows" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.streamlookup.RunStreamLookup" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.systemdata.RunSystemData" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.tableinput.RunTableInput" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.textfileinput.RunTextFileInput" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.textfileoutput.RunTextFileOutput" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.uniquerows.RunUniqueRows" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.databaselookup.RunDatabaseLookup" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.dimensionlookup.RunDimensionLookup" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.excelinput.RunExcelInput" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.exceloutput.RunCombinationLookup" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.joinrows.RunJoinRows" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.update.RunUpdate" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.insertupdate.RunInsertUpdate" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.delete.RunDelete" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.getfilenames.RunGetFileNames" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.groupby.RunGroupBy" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.mergejoin.RunMergeJoin" haltonerror="false" />
-				<test todir="${junit}" name="org.pentaho.di.run.sortedmerge.RunSortedMerge" haltonerror="false" />
-			-->
+			<test todir="${junit}" name="org.pentaho.di.run.calculator.RunCalculator" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.constant.RunConstant" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.filterrows.RunFilterRows" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.rowgenerator.RunRowGenerator" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.selectvalues.RunSelectValues" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.sortrows.RunSortRows" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.streamlookup.RunStreamLookup" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.systemdata.RunSystemData" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.tableinput.RunTableInput" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.textfileinput.RunTextFileInput" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.textfileoutput.RunTextFileOutput" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.uniquerows.RunUniqueRows" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.databaselookup.RunDatabaseLookup" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.dimensionlookup.RunDimensionLookup" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.excelinput.RunExcelInput" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.exceloutput.RunCombinationLookup" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.scriptvalues_mod.RunScriptValuesMod" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.joinrows.RunJoinRows" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.update.RunUpdate" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.insertupdate.RunInsertUpdate" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.delete.RunDelete" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.getfilenames.RunGetFileNames" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.groupby.RunGroupBy" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.mergejoin.RunMergeJoin" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.run.sortedmerge.RunSortedMerge" haltonerror="false" />
 			
 		</junit>
 	</target>
