@@ -18,6 +18,7 @@ package org.pentaho.di.job.entries.delay;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,20 +42,20 @@ import org.w3c.dom.Node;
  * @since 21-02-2007
  */
 public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryInterface {
-  static private String DEFAULT_MAXIMUM_TIMEOUT = "0";
+  static private String DEFAULT_MAXIMUM_TIMEOUT = "0"; //$NON-NLS-1$
 
   private String maximumTimeout; // maximum timeout in seconds
 
-  public int scaletime;
+  public int scaleTime;
 
   public JobEntryDelay(String n) {
-    super(n, "");
+    super(n, ""); //$NON-NLS-1$
     setID(-1L);
     setType(JobEntryInterface.TYPE_JOBENTRY_DELAY);
   }
 
   public JobEntryDelay() {
-    this("");
+    this(""); //$NON-NLS-1$
   }
 
   public JobEntryDelay(JobEntryBase jeb) {
@@ -70,8 +71,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     StringBuffer retval = new StringBuffer(200);
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("maximumTimeout", maximumTimeout));
-    retval.append("      ").append(XMLHandler.addTagValue("scaletime", scaletime));
+    retval.append("      ").append(XMLHandler.addTagValue("maximumTimeout", maximumTimeout)); //$NON-NLS-1$//$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("scaletime", scaleTime)); //$NON-NLS-1$ //$NON-NLS-2$
 
     return retval.toString();
   }
@@ -79,10 +80,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      maximumTimeout = XMLHandler.getTagValue(entrynode, "maximumTimeout");
-      scaletime = Integer.parseInt(XMLHandler.getTagValue(entrynode, "scaletime"));
+      maximumTimeout = XMLHandler.getTagValue(entrynode, "maximumTimeout"); //$NON-NLS-1$
+      scaleTime = Integer.parseInt(XMLHandler.getTagValue(entrynode, "scaletime")); //$NON-NLS-1$
     } catch (Exception e) {
-      throw new KettleXMLException("Unable to load job entry of type 'delay' from XML node", e);
+      throw new KettleXMLException(Messages.getString("JobEntryDelay.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
     }
   }
 
@@ -90,10 +91,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       super.loadRep(rep, id_jobentry, databases);
 
-      maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximumTimeout");
-      scaletime = (int) rep.getJobEntryAttributeInteger(id_jobentry, "scaletime");
+      maximumTimeout = rep.getJobEntryAttributeString(id_jobentry, "maximumTimeout"); //$NON-NLS-1$
+      scaleTime = (int) rep.getJobEntryAttributeInteger(id_jobentry, "scaletime"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to load job entry of type 'delay' from the repository with id_jobentry="
+      throw new KettleException(Messages.getString("JobEntryDelay.UnableToLoadFromRepo.Label") //$NON-NLS-1$
           + id_jobentry, dbe);
     }
   }
@@ -105,10 +106,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       super.saveRep(rep, id_job);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "maximumTimeout", maximumTimeout);
-      rep.saveJobEntryAttribute(id_job, getID(), "scaletime", scaletime);
+      rep.saveJobEntryAttribute(id_job, getID(), "maximumTimeout", maximumTimeout); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "scaletime", scaleTime); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'delay' to the repository for id_job=" + id_job, dbe);
+      throw new KettleException(Messages.getString("JobEntryDelay.UnableToSaveToRepo.Label") + id_job, dbe); //$NON-NLS-1$
     }
   }
 
@@ -126,19 +127,19 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     String Waitscale;
 
     // Scale time
-    if (scaletime == 0) {
+    if (scaleTime == 0) {
       // Second
       Multiple = 1000;
-      Waitscale = Messages.getString("JobEval.SScaleTime.Label");
+      Waitscale = Messages.getString("JobEntryDelay.SScaleTime.Label"); //$NON-NLS-1$
 
-    } else if (scaletime == 1) {
+    } else if (scaleTime == 1) {
       // Minute
       Multiple = 60000;
-      Waitscale = Messages.getString("JobEval.MnScaleTime.Label");
+      Waitscale = Messages.getString("JobEntryDelay.MnScaleTime.Label"); //$NON-NLS-1$
     } else {
       // Hour
       Multiple = 3600000;
-      Waitscale = Messages.getString("JobEval.HrScaleTime.Label");
+      Waitscale = Messages.getString("JobEntryDelay.HrScaleTime.Label"); //$NON-NLS-1$
     }
     try {
       // starttime (in seconds ,Minutes or Hours)
@@ -147,8 +148,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       long iMaximumTimeout = Const.toInt(getMaximumTimeout(), Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
 
       if (log.isDetailed()) {
-        log.logDetailed(toString(), Messages.getString("JobEval.LetsWaitFor.Label") + iMaximumTimeout + " " + Waitscale
-            + "...");
+        log.logDetailed(toString(), Messages.getString("JobEntryDelay.LetsWaitFor.Label", String //$NON-NLS-1$
+            .valueOf(iMaximumTimeout), String.valueOf(Waitscale)));
       }
 
       boolean continueLoop = true;
@@ -157,8 +158,8 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       //
       if (iMaximumTimeout < 0) {
         iMaximumTimeout = Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0);
-        log.logBasic(toString(), Messages.getString("JobEval.MaximunTimeReseted.Label") + iMaximumTimeout + " "
-            + Waitscale);
+        log.logBasic(toString(), Messages.getString(
+            "JobEntryDelay.MaximumTimeReset.Label", String.valueOf(iMaximumTimeout), String.valueOf(Waitscale))); //$NON-NLS-1$
       }
 
       // TODO don't contineously loop, but sleeping would be better.
@@ -170,7 +171,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
         if ((iMaximumTimeout > 0) && (now >= (timeStart + iMaximumTimeout))) {
           // We have reached the time limit
           if (log.isDetailed()) {
-            log.logDetailed(toString(), Messages.getString("JobEval.WaitTimeIsElapsed.Label"));
+            log.logDetailed(toString(), Messages.getString("JobEntryDelay.WaitTimeIsElapsed.Label")); //$NON-NLS-1$
           }
           continueLoop = false;
           result.setResult(true);
@@ -179,7 +180,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     } catch (Exception e) {
       // We get an exception
       result.setResult(false);
-      log.logError(toString(), "Error  : " + e.getMessage());
+      log.logError(toString(), "Error  : " + e.getMessage()); //$NON-NLS-1$
     }
 
     return result;
@@ -210,5 +211,13 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void setMaximumTimeout(String s) {
     maximumTimeout = s;
+  }
+
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryDelay.CheckRemark.MaximumTimeout", maximumTimeout), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryDelay.CheckRemark.ScaleTime", //$NON-NLS-1$
+        String.valueOf(scaleTime)), this));
+
   }
 }

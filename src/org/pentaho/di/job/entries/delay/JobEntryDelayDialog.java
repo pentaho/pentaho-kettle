@@ -226,7 +226,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 		wName.selectAll();
 		if (jobEntry.getMaximumTimeout()!= null) wMaximumTimeout.setText( jobEntry.getMaximumTimeout() );
 
-		wScaleTime.select(jobEntry.scaletime );
+		wScaleTime.select(jobEntry.scaleTime );
 	}
 
 	private void cancel()
@@ -240,7 +240,7 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 	{
 		jobEntry.setName(wName.getText());
 		jobEntry.setMaximumTimeout(wMaximumTimeout.getText());
-		jobEntry.scaletime = wScaleTime.getSelectionIndex();
+		jobEntry.scaleTime = wScaleTime.getSelectionIndex();
 		dispose();
 	}
 

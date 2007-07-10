@@ -18,6 +18,7 @@ package org.pentaho.di.job.entries.abort;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -40,16 +41,16 @@ import org.w3c.dom.Node;
  * @since 12-02-2007
  */
 public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private String messageabort;
+  private String messageAbort;
 
   public JobEntryAbort(String n, String scr) {
-    super(n, "");
-    messageabort = null;
+    super(n, ""); //$NON-NLS-1$
+    messageAbort = null;
     setType(JobEntryInterface.TYPE_JOBENTRY_ABORT);
   }
 
   public JobEntryAbort() {
-    this("", "");
+    this("", ""); //$NON-NLS-1$//$NON-NLS-2$
   }
 
   public JobEntryAbort(JobEntryBase jeb) {
@@ -65,7 +66,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     StringBuffer retval = new StringBuffer();
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("message", messageabort));
+    retval.append("      ").append(XMLHandler.addTagValue("message", messageAbort)); //$NON-NLS-1$//$NON-NLS-2$
 
     return retval.toString();
   }
@@ -73,19 +74,19 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      messageabort = XMLHandler.getTagValue(entrynode, "message");
+      messageAbort = XMLHandler.getTagValue(entrynode, "message"); //$NON-NLS-1$
     } catch (Exception e) {
-      throw new KettleXMLException("Unable to load job entry of type 'Abort' from XML node", e);
+      throw new KettleXMLException(Messages.getString("JobEntryAbort.UnableToLoadFromXml.Label"), e); //$NON-NLS-1$
     }
   }
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
     try {
       super.loadRep(rep, id_jobentry, databases);
-      messageabort = rep.getJobEntryAttributeString(id_jobentry, "message");
+      messageAbort = rep.getJobEntryAttributeString(id_jobentry, "message"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to load job entry of type 'Abort' from the repository with id_jobentry="
-          + id_jobentry, dbe);
+      throw new KettleException(Messages.getString(
+          "JobEntryAbort.UnableToLoadFromRepo.Label", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -94,10 +95,11 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   public void saveRep(Repository rep, long id_job) throws KettleException {
     try {
       super.saveRep(rep, id_job);
-      rep.saveJobEntryAttribute(id_job, getID(), "message", messageabort);
+      rep.saveJobEntryAttribute(id_job, getID(), "message", messageAbort); //$NON-NLS-1$
 
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'Abort' to the repository for id_job=" + id_job, dbe);
+      throw new KettleException(
+          Messages.getString("JobEntryAbort.UnableToSaveToRepo.Label", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -109,7 +111,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       // Return False
       if (RealMessageabort == null) {
-        Returnmessage = Messages.getString("JobEntryAbort.Meta.CheckResult.Label");
+        Returnmessage = Messages.getString("JobEntryAbort.Meta.CheckResult.Label"); //$NON-NLS-1$
       } else {
         Returnmessage = RealMessageabort;
 
@@ -119,7 +121,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
       return false;
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), Messages.getString("JobEntryAbort.Meta.CheckResult.CoundntExecute") + e.toString());
+      log.logError(toString(), Messages.getString("JobEntryAbort.Meta.CheckResult.CouldNotExecute") + e.toString()); //$NON-NLS-1$
       return false;
     }
   }
@@ -156,10 +158,15 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void setMessageabort(String messageabort) {
-    this.messageabort = messageabort;
+    this.messageAbort = messageabort;
   }
 
   public String getMessageabort() {
-    return messageabort;
+    return messageAbort;
+  }
+
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryAbort.CheckRemark.MessageAbort", messageAbort), this)); //$NON-NLS-1$
   }
 }
