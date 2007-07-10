@@ -887,8 +887,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 
                 if (!Const.isEmpty(string))
                 {
-                	// TODO: no idea yet what to do with this.
-                    // kettleVariables.setVariable(valueMeta.getName(), string);
+                    System.setProperty(valueMeta.getName(), string);
                 }
             }
         }
