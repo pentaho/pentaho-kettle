@@ -13,7 +13,7 @@
 	<!-- Configured via Job annotation
 		<job id="TRANS">
 		<type>
-			ognl:@org.pentaho.di.job.JobEntryType@TRANSFORMATION
+			ognl:@org.pentaho.di.job.JobEntryType@TRANS
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.trans.JobEntryTrans
