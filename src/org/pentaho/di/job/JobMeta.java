@@ -65,6 +65,9 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceExportInterface;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
@@ -81,7 +84,10 @@ import org.w3c.dom.Node;
  * @since 11-08-2003
  * 
  */
-public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, HasDatabasesInterface, ChangedFlagInterface, VariableSpace, EngineMetaInterface
+public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface, 
+								HasDatabasesInterface, ChangedFlagInterface, 
+								VariableSpace, EngineMetaInterface,
+								ResourceExportInterface
 {
     public static final String  XML_TAG              = "job"; //$NON-NLS-1$
 
@@ -311,8 +317,16 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         try
         {
-            Object retval = super.clone();
-            return retval;
+            JobMeta jobMeta = (JobMeta) super.clone();
+            jobMeta.clear();
+            
+            for (JobEntryInterface entry : jobentries) jobMeta.jobentries.add((JobEntryInterface)entry.clone());
+            for (JobEntryCopy entry : jobcopies) jobMeta.jobcopies.add((JobEntryCopy)entry.clone_deep());
+            for (JobHopMeta entry : jobhops) jobMeta.jobhops.add((JobHopMeta)entry.clone());
+            for (NotePadMeta entry : notes) jobMeta.notes.add((NotePadMeta)entry.clone());
+            for (DatabaseMeta entry : databases) jobMeta.databases.add((DatabaseMeta)entry.clone());
+
+            return jobMeta;
         }
         catch (CloneNotSupportedException e)
         {
@@ -2587,4 +2601,35 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
   	
   	return resourceReferences;
   }
+  
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
+		
+		String filename = namingInterface.nameResource(getName(), this.filename, "xml");
+		ResourceDefinition definition = definitions.get(filename);
+		if (definition==null) {
+			// If we do this once, it will be plenty :-)
+			//
+			JobMeta jobMeta = (JobMeta) this.clone();
+			
+			// Add used resources, modify transMeta accordingly
+			// Go through the list of steps, etc.
+			// These critters change the steps in the cloned TransMeta 
+			// At the end we make a new XML version of it in "exported" format...
+			
+			// loop over steps, databases will be exported to XML anyway. 
+			//
+			for (JobEntryInterface jobEntry: jobMeta.jobentries) {
+				jobEntry.exportResources(jobMeta, definitions, namingInterface);
+			}
+			
+			// At the end, add ourselves to the map...
+			//
+			String transMetaContent = jobMeta.getXML();
+			
+			definition = new ResourceDefinition(filename, transMetaContent);
+		}
+		
+		return filename;
+	}
+
 }

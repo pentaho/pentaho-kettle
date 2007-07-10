@@ -28,7 +28,6 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
@@ -287,7 +286,7 @@ public class BaseStepMeta implements Cloneable
     	return new ArrayList<ResourceReference>();
     }
     
-    public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space) {
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
     	return null;
     }
     

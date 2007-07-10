@@ -724,12 +724,31 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	@Override
-	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space) {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 		
-		// TODO: try to load the transformation from repository or file.
+		// Try to load the transformation from repository or file.
 		// Modify this recursively too...
 		// 
-		return null; 
+		if (!Const.isEmpty(fileName)) {
+			// NOTE: there is no need to clone this step because the caller is responsible for this.
+			//
+			// First load the mapping metadata...
+			//
+			TransMeta mappingTransMeta = loadMappingMeta(fileName, null, null, null, space);
+			
+			String newFilename = resourceNamingInterface.nameResource(mappingTransMeta.getName(), fileName, "xml");
+			mappingTransMeta.setFilename(newFilename);
+
+			fileName = newFilename; // replace it BEFORE XML generation occurs! 
+
+			String xml = mappingTransMeta.getXML();
+			definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+			
+			return newFilename;
+		}
+		else {
+			return null;
+		}
 	}
 
 }

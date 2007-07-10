@@ -32,6 +32,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
@@ -451,6 +453,10 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     public List<ResourceReference> getResourceDependencies() 
     {
     	return new ArrayList<ResourceReference>(); // default: return an empty resource dependency list.
+    }
+    
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
+  	  return null;
     }
 
 	public String getConfigId()

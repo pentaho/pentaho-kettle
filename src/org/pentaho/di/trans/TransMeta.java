@@ -5738,7 +5738,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     	return resourceReferences;
     }
     
-	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "xml");
 		ResourceDefinition definition = definitions.get(filename);
 		if (definition==null) {
@@ -5746,7 +5746,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			//
 			TransMeta transMeta = (TransMeta) this.clone();
 			
-			// TODO: Add used resources, modify transMeta accordingly
+			// Change the filename, calling this sets internal variables inside of the transformation.
+			//
+			transMeta.setFilename(filename);
+			
+			// Add used resources, modify transMeta accordingly
 			// Go through the list of steps, etc.
 			// These critters change the steps in the cloned TransMeta 
 			// At the end we make a new XML version of it in "exported" format...
@@ -5754,7 +5758,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			// loop over steps, databases will be exported to XML anyway. 
 			//
 			for (StepMeta stepMeta : transMeta.getSteps()) {
-				stepMeta.exportResources(definitions, resourceNamingInterface);
+				stepMeta.exportResources(space, definitions, resourceNamingInterface);
 			}
 			
 			// At the end, add ourselves to the map...

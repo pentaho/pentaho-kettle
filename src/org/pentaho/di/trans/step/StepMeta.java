@@ -33,6 +33,7 @@ import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
@@ -793,13 +794,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     	return stepMetaInterface.getResourceDependencies();
     }
 
-	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) {
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 
 		// The step calls out to the StepMetaInterface...
 		// These can in turn add anything to the map in terms of resources, etc.
 		// Even reference files, etc.  For now it's just XML probably...
 		//
-		return stepMetaInterface.exportResources(definitions, resourceNamingInterface, null, null);
+		return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface);
 	}
 
 }

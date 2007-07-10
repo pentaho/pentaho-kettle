@@ -259,10 +259,8 @@ public interface StepMetaInterface
      * 
      * @param definitions
      * @param resourceNamingInterface
-     * @param rep
-     * @param space
      * @return
      */
-    public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space);
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException ;
 
 }

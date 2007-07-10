@@ -15,6 +15,7 @@
  
 package org.pentaho.di.job.entry;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
@@ -23,10 +24,13 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
@@ -116,4 +120,17 @@ public interface JobEntryInterface
      * @return a list of all the resource dependencies that the step is depending on
      */
     public List<ResourceReference> getResourceDependencies();
+
+	/**
+	 * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.
+	 * The supplied resource naming interface allows the object to name appropriately without worrying about those parts of the implementation specific details.
+	 *  
+	 * @param space The variable space to resolve (environment) variables with.
+	 * @param definitions The map containing the filenames and content
+	 * @param resourceNamingInterface The resource naming interface allows the object to name appropriately
+	 * @return The filename for this object. (also contained in the definitions map)
+	 * @throws KettleException in case something goes wrong during the export
+	 */
+	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException;
+
 }

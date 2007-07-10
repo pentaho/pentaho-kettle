@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
@@ -33,6 +34,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -43,6 +45,8 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.w3c.dom.Node;
 
@@ -648,4 +652,36 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     {
         return new JobEntryJobDialog(shell,this,rep, jobMeta);
     }
+    
+    /**
+     * We're going to load the transformation meta data referenced here.
+     * Then we're going to give it a new filename, modify that filename in this entries.
+     * The parent caller will have made a copy of it, so it should be OK to do so.
+     */
+    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
+		// Try to load the transformation from repository or file.
+		// Modify this recursively too...
+		// 
+		if (!Const.isEmpty(filename)) {
+			// AGAIN: there is no need to clone this job entry because the caller is responsible for this.
+			//
+			// First load the job meta data...
+			//
+			JobMeta jobMeta = getJobMeta(null);
+			
+			String newFilename = namingInterface.nameResource(jobMeta.getName(), this.filename, "xml");
+			jobMeta.setFilename(newFilename);
+			
+			filename = newFilename; // Replace if BEFORE XML generation occurs.
+			
+			String xml = jobMeta.getXML();
+			definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+			
+			return newFilename;
+		}
+		else {
+			return null;
+		}
+    }
+ 
 }
