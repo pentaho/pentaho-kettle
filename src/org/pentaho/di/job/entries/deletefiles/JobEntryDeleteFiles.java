@@ -23,6 +23,7 @@ import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -61,7 +62,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public String filemasks[];
 
   public JobEntryDeleteFiles(String n) {
-    super(n, "");
+    super(n, ""); //$NON-NLS-1$
     ignoreErrors = false;
     argFromPrevious = false;
     arguments = null;
@@ -72,7 +73,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   public JobEntryDeleteFiles() {
-    this("");
+    this(""); //$NON-NLS-1$
   }
 
   public JobEntryDeleteFiles(JobEntryBase jeb) {
@@ -88,21 +89,21 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     StringBuffer retval = new StringBuffer(300);
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("ignore_errors", ignoreErrors));
-    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-    retval.append("      ").append(XMLHandler.addTagValue("delete_folder", deleteFolder));
-    retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders));
+    retval.append("      ").append(XMLHandler.addTagValue("ignore_errors", ignoreErrors)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("delete_folder", deleteFolder)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", includeSubfolders)); //$NON-NLS-1$ //$NON-NLS-2$
 
-    retval.append("      <fields>").append(Const.CR);
+    retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
     if (arguments != null) {
       for (int i = 0; i < arguments.length; i++) {
-        retval.append("        <field>").append(Const.CR);
-        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i]));
-        retval.append("          ").append(XMLHandler.addTagValue("filemask", filemasks[i]));
-        retval.append("        </field>").append(Const.CR);
+        retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+        retval.append("          ").append(XMLHandler.addTagValue("name", arguments[i])); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("          ").append(XMLHandler.addTagValue("filemask", filemasks[i])); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
       }
     }
-    retval.append("      </fields>").append(Const.CR);
+    retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
     return retval.toString();
   }
@@ -110,51 +111,51 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      ignoreErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "ignore_errors"));
-      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous"));
-      deleteFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "delete_folder"));
-      includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders"));
+      ignoreErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "ignore_errors")); //$NON-NLS-1$ //$NON-NLS-2$
+      argFromPrevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "arg_from_previous")); //$NON-NLS-1$ //$NON-NLS-2$
+      deleteFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "delete_folder")); //$NON-NLS-1$ //$NON-NLS-2$
+      includeSubfolders = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_subfolders")); //$NON-NLS-1$ //$NON-NLS-2$
 
-      Node fields = XMLHandler.getSubNode(entrynode, "fields");
+      Node fields = XMLHandler.getSubNode(entrynode, "fields"); //$NON-NLS-1$
 
       // How many field arguments?
-      int nrFields = XMLHandler.countNodes(fields, "field");
+      int nrFields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
       arguments = new String[nrFields];
       filemasks = new String[nrFields];
 
       // Read them all...
       for (int i = 0; i < nrFields; i++) {
-        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+        Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 
-        arguments[i] = XMLHandler.getTagValue(fnode, "name");
-        filemasks[i] = XMLHandler.getTagValue(fnode, "filemask");
+        arguments[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+        filemasks[i] = XMLHandler.getTagValue(fnode, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException("Unable to load job entry of type 'delete files' from XML node", xe);
+      throw new KettleXMLException(Messages.getString("JobEntryDeleteFiles.UnableToLoadFromXml"), xe); //$NON-NLS-1$
     }
   }
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
     try {
       super.loadRep(rep, id_jobentry, databases);
-      ignoreErrors = rep.getJobEntryAttributeBoolean(id_jobentry, "ignore_errors");
-      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-      deleteFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "delete_folder");
-      includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders");
+      ignoreErrors = rep.getJobEntryAttributeBoolean(id_jobentry, "ignore_errors"); //$NON-NLS-1$
+      argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous"); //$NON-NLS-1$
+      deleteFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "delete_folder"); //$NON-NLS-1$
+      includeSubfolders = rep.getJobEntryAttributeBoolean(id_jobentry, "include_subfolders"); //$NON-NLS-1$
 
       // How many arguments?
-      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name");
+      int argnr = rep.countNrJobEntryAttributes(id_jobentry, "name"); //$NON-NLS-1$
       arguments = new String[argnr];
       filemasks = new String[argnr];
 
       // Read them all...
       for (int a = 0; a < argnr; a++) {
-        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name");
-        filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask");
+        arguments[a] = rep.getJobEntryAttributeString(id_jobentry, a, "name"); //$NON-NLS-1$
+        filemasks[a] = rep.getJobEntryAttributeString(id_jobentry, a, "filemask"); //$NON-NLS-1$
       }
     } catch (KettleException dbe) {
-      throw new KettleException("Unable to load job entry of type 'delete files' from the repository for id_jobentry="
-          + id_jobentry, dbe);
+      throw new KettleException(Messages.getString(
+          "JobEntryDeleteFiles.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -162,21 +163,21 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     try {
       super.saveRep(rep, id_job);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "ignore_errors", ignoreErrors);
-      rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-      rep.saveJobEntryAttribute(id_job, getID(), "delete_folder", deleteFolder);
-      rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders);
+      rep.saveJobEntryAttribute(id_job, getID(), "ignore_errors", ignoreErrors); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "delete_folder", deleteFolder); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "include_subfolders", includeSubfolders); //$NON-NLS-1$
 
       // save the arguments...
       if (arguments != null) {
         for (int i = 0; i < arguments.length; i++) {
-          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]);
-          rep.saveJobEntryAttribute(id_job, getID(), i, "filemask", filemasks[i]);
+          rep.saveJobEntryAttribute(id_job, getID(), i, "name", arguments[i]); //$NON-NLS-1$
+          rep.saveJobEntryAttribute(id_job, getID(), i, "filemask", filemasks[i]); //$NON-NLS-1$
         }
       }
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'delete files' to the repository for id_job="
-          + id_job, dbe);
+      throw new KettleException(
+          Messages.getString("JobEntryDeleteFiles.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -195,13 +196,14 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     rcode = true;
 
     if (argFromPrevious) {
-      log.logDetailed(toString(), "Found " + (rows != null ? rows.size() : 0) + " previous result rows");
+      log.logDetailed(toString(), Messages.getString(
+          "JobEntryDeleteFiles.FoundPreviousRows", String.valueOf((rows != null ? rows.size() : 0)))); //$NON-NLS-1$
     }
 
     if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
     {
       for (int iteration = 0; iteration < rows.size(); iteration++) {
-        resultRow = (RowMetaAndData) rows.get(iteration);
+        resultRow = rows.get(iteration);
         args = new String[resultRow.size()];
         fmasks = new String[resultRow.size()];
 
@@ -210,26 +212,30 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
         if (rcode) {
           // ok we can process this file/folder
-          log.logDetailed(toString(), "Processing row [" + args[iteration] + "]..wildcard [" + fmasks[iteration]
-              + "] ?");
+          log.logDetailed(toString(), Messages.getString(
+              "JobEntryDeleteFiles.ProcessingRow", args[iteration], fmasks[iteration])); //$NON-NLS-1$
 
           if (!ProcessFile(args[iteration], fmasks[iteration])) {
             rcode = false;
           }
         } else {
-          log.logDetailed(toString(), "Ignoring row [" + args[iteration] + "]..wildcard [" + fmasks[iteration] + "] ?");
+          log.logDetailed(toString(), Messages.getString(
+              "JobEntryDeleteFiles.IgnoringRow", args[iteration], fmasks[iteration])); //$NON-NLS-1$
         }
       }
     } else if (arguments != null) {
       for (int i = 0; i < arguments.length; i++) {
         if (rcode) {
           // ok we can process this file/folder
-          log.logDetailed(toString(), "Processing argument [" + arguments[i] + "].. wildcard [" + filemasks[i] + "] ?");
+          log.logDetailed(toString(), Messages.getString(
+              "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i])); //$NON-NLS-1$
           if (!ProcessFile(arguments[i], filemasks[i])) {
             rcode = false;
           }
         } else {
-          log.logDetailed(toString(), "Ignoring argument [" + arguments[i] + "].. wildcard [" + filemasks[i] + "] ?");
+          log
+              .logDetailed(toString(), Messages
+                  .getString("JobEntryDeleteFiles.IgnoringArg", arguments[i], filemasks[i])); //$NON-NLS-1$
         }
 
       }
@@ -238,6 +244,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       result.setResult(false);
       result.setNrErrors(1);
     }
+    //  String realFilefoldername = environmentSubstitute(filename);
+    //  String realwilcard = environmentSubstitute(wildcard);
 
     result.setResult(rcode);
 
@@ -267,31 +275,32 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         if (filefolder.getType() == FileType.FOLDER) {
           // It's a folder
           if (log.isDetailed())
-            log.logDetailed(toString(), "Processing folder [" + realFilefoldername + "]");
+            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFolder", realFilefoldername)); //$NON-NLS-1$
           // Delete Files
           int Nr = filefolder.delete(new TextFileSelector(realwilcard));
 
           if (log.isDetailed())
-            log.logDetailed(toString(), "Total deleted subfolders/files = " + Nr);
+            log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.TotalDeleted", String.valueOf(Nr))); //$NON-NLS-1$
           rcode = true;
         } else {
           // It's a file
-          log.logDetailed(toString(), "Processing file [" + realFilefoldername + "]");
+          log.logDetailed(toString(), Messages.getString("JobEntryDeleteFiles.ProcessingFile", realFilefoldername)); //$NON-NLS-1$
           boolean deleted = filefolder.delete();
           if (!deleted) {
-            log.logError(toString(), "Could not delete file [" + realFilefoldername + "].");
+            log.logError(toString(), Messages.getString("JobEntryDeleteFiles.CouldNotDeleteFile", realFilefoldername)); //$NON-NLS-1$
           } else {
-            log.logBasic(toString(), "File [" + filename + "] deleted!");
+            log.logBasic(toString(), Messages.getString("JobEntryDeleteFiles.FileDeleted", filename)); //$NON-NLS-1$
             rcode = true;
           }
         }
       } else {
         // File already deleted, no reason to try to delete it
-        log.logBasic(toString(), "File or folder [" + realFilefoldername + "] already deleted.");
+        log.logBasic(toString(), Messages.getString("JobEntryDeleteFiles.FileAlreadyDeleted", realFilefoldername)); //$NON-NLS-1$
         rcode = true;
       }
     } catch (IOException e) {
-      log.logError(toString(), "Could not process [" + realFilefoldername + "], exception: " + e.getMessage());
+      log.logError(toString(), Messages.getString(
+          "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage())); //$NON-NLS-1$
     } finally {
       if (filefolder != null) {
         try {
@@ -334,7 +343,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           rcode = false;
         }
       } catch (Exception e) {
-        log.logError(toString(), "Error exception: " + e.getMessage());
+        log.logError(toString(), Messages.getString("JobEntryDeleteFiles.GeneralException", e.getMessage())); //$NON-NLS-1$
       }
       return rcode;
     }
@@ -368,4 +377,63 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   public boolean evaluates() {
     return true;
   }
+
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    LogWriter log = LogWriter.getInstance();
+    for (int i = 0; i < arguments.length; i++) {
+      FileObject fileObject = null;
+      String filename = environmentSubstitute(arguments[i]);
+      try {
+        fileObject = KettleVFS.getFileObject(filename);
+        if (null != fileObject && fileObject.exists()) {
+          // folder
+          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+              "JobEntryDeleteFiles.CheckResult.Exists", filename), this)); //$NON-NLS-1$
+          if (fileObject.getType() == FileType.FOLDER) {
+            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+                "JobEntryDeleteFiles.CheckResult.IsFolder", filename), this)); //$NON-NLS-1$
+            String wildcard = environmentSubstitute(filemasks[i]);
+            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+                "JobEntryDeleteFiles.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
+          }
+        } else {
+          // already deleted
+          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+              "JobEntryDeleteFiles.FileAlreadyDeleted", filename), this)); //$NON-NLS-1$
+        }
+      } catch (IOException e) {
+        log.logError(toString(), e.getMessage());
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
+            "JobEntryDeleteFiles.CouldNotProcess", filename, e.getMessage()), this)); //$NON-NLS-1$
+      }
+
+    }
+  }
+
+  //      try {
+  //        fileObject = KettleVFS.getFileObject(realFileName);
+  //        if (fileObject != null) {
+  //          if (!fileObject.exists()) {
+  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
+  //                "JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
+  //          } else if (!fileObject.exists()) {
+  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+  //                "JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
+  //          } else {
+  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+  //                "JobEntryDeleteFile.CheckResult.File_Exists", realFileName), this)); //$NON-NLS-1$
+  //          }
+  //          try {
+  //            fileObject.close(); // Just being cautious
+  //          } catch (IOException ignored) {
+  //          }
+  //        } else {
+  //          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
+  //              "JobEntryDeleteFile.CheckResult.Could_Not_Convert_File", filename), this)); //$NON-NLS-1$
+  //        }
+  //      } catch (IOException ex) {
+  //        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
+  //            "JobEntryDeleteFile.ERROR_0008_CheckResult.File_IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
+  //      }
+
 }
