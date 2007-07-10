@@ -415,8 +415,12 @@ public class BaseStep extends Thread implements VariableSpace
         //
         //   slaveNr * nrCopies + copyNr
         //
-        this.uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
-        this.uniqueStepCountAcrossSlaves = this.clusterSize==0 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
+        uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
+        uniqueStepCountAcrossSlaves = this.clusterSize==0 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
+        if (uniqueStepCountAcrossSlaves==0) uniqueStepCountAcrossSlaves = 1;
+        
+        setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString(uniqueStepNrAcrossSlaves));
+        setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString(uniqueStepCountAcrossSlaves));
         
         return true;
     }

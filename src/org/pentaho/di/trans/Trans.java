@@ -2001,6 +2001,7 @@ public class Trans implements VariableSpace
         // Here we don't undefine the job specific parameters, as it may come in handy.
         // A transformation can be called from a job and may inherit the job internal variables
         // but the other around can't.
+        
     }    
     
 	public void copyVariablesFrom(VariableSpace space) 

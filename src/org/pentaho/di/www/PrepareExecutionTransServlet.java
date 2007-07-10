@@ -75,6 +75,7 @@ public class PrepareExecutionTransServlet extends HttpServlet
                 trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
                 trans.setReplayDate(executionConfiguration.getReplayDate());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+                trans.injectVariables(executionConfiguration.getVariables());
                 
                 // Log to a String
                 Log4jStringAppender appender = LogWriter.createStringAppender();
