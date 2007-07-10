@@ -410,30 +410,4 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     }
   }
 
-  //      try {
-  //        fileObject = KettleVFS.getFileObject(realFileName);
-  //        if (fileObject != null) {
-  //          if (!fileObject.exists()) {
-  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
-  //                "JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
-  //          } else if (!fileObject.exists()) {
-  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
-  //                "JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
-  //          } else {
-  //            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
-  //                "JobEntryDeleteFile.CheckResult.File_Exists", realFileName), this)); //$NON-NLS-1$
-  //          }
-  //          try {
-  //            fileObject.close(); // Just being cautious
-  //          } catch (IOException ignored) {
-  //          }
-  //        } else {
-  //          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
-  //              "JobEntryDeleteFile.CheckResult.Could_Not_Convert_File", filename), this)); //$NON-NLS-1$
-  //        }
-  //      } catch (IOException ex) {
-  //        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
-  //            "JobEntryDeleteFile.ERROR_0008_CheckResult.File_IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
-  //      }
-
 }
