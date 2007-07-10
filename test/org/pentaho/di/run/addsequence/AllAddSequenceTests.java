@@ -1,7 +1,5 @@
 package org.pentaho.di.run.addsequence;
 
-import org.pentaho.di.run.tableoutput.RunTableOutput;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

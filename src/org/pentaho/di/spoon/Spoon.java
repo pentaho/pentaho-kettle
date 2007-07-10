@@ -7377,8 +7377,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             setArguments(args.toArray(new String[args.size()]));
             start();
     	} catch (Throwable t) {
-    		t.printStackTrace();
-    		log.logError("Fatal error", t.getMessage());
+    		log.logError(toString(), "Fatal error : "+t.toString());
+    		log.logError(toString(), Const.getStackTracker(t));
     	}
     }
     

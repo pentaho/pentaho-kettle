@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" name="org.pentaho.di.run.addsequence.RunAddSequence2To00" tests="1" time="12.5">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc."></property>
+    <property name="keystorePassword" value="/home/matt/workspace/Kettle trunk/abcd1234"></property>
+    <property name="start.TODAY" value="July 10 2007"></property>
+    <property name="sun.java.launcher" value="SUN_STANDARD"></property>
+    <property name="webstart" value="/home/matt/workspace/Kettle trunk/webstart"></property>
+    <property name="sun.management.compiler" value="HotSpot Server Compiler"></property>
+    <property name="lib" value="/home/matt/workspace/Kettle trunk/lib"></property>
+    <property name="os.name" value="Linux"></property>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/rt.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/i18n.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/jsse.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/jce.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/charsets.jar:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/classes"></property>
+    <property name="TODAY" value="July 10 2007"></property>
+    <property name="libswt" value="/home/matt/workspace/Kettle trunk/libswt"></property>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."></property>
+    <property name="ant.home" value="/usr/share/ant"></property>
+    <property name="java.runtime.version" value="1.5.0_11-b03"></property>
+    <property name="start.DSTAMP" value="20070710"></property>
+    <property name="user.name" value="matt"></property>
+    <property name="api" value="/home/matt/workspace/Kettle trunk/docs/api"></property>
+    <property name="testClasses" value="/home/matt/workspace/Kettle trunk/testClasses"></property>
+    <property name="user.language" value="nl"></property>
+    <property name="build" value="/home/matt/workspace/Kettle trunk/build"></property>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/i386"></property>
+    <property name="ant.project.name" value="Kettle"></property>
+    <property name="DSTAMP" value="20070710"></property>
+    <property name="java.version" value="1.5.0_11"></property>
+    <property name="classes" value="/home/matt/workspace/Kettle trunk/classes"></property>
+    <property name="version" value="3.0.0-M1"></property>
+    <property name="user.timezone" value=""></property>
+    <property name="bin" value="/home/matt/workspace/Kettle trunk/bin"></property>
+    <property name="sun.arch.data.model" value="32"></property>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/endorsed"></property>
+    <property name="sun.cpu.isalist" value=""></property>
+    <property name="cr" value="
+"></property>
+    <property name="sun.jnu.encoding" value="UTF-8"></property>
+    <property name="file.encoding.pkg" value="sun.io"></property>
+    <property name="file.separator" value="/"></property>
+    <property name="java.specification.name" value="Java Platform API Specification"></property>
+    <property name="web" value="/home/matt/workspace/Kettle trunk/web"></property>
+    <property name="java.class.version" value="49.0"></property>
+    <property name="src" value="/home/matt/workspace/Kettle trunk/src"></property>
+    <property name="libext" value="/home/matt/workspace/Kettle trunk/libext"></property>
+    <property name="homepage" value="/home/matt/workspace/Kettle trunk/homepage"></property>
+    <property name="user.country" value="BE"></property>
+    <property name="ant.file.Kettle" value="/home/matt/workspace/Kettle trunk/build.xml"></property>
+    <property name="java.home" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre"></property>
+    <property name="java.vm.info" value="mixed mode"></property>
+    <property name="ant.file" value="/home/matt/workspace/Kettle trunk/build.xml"></property>
+    <property name="os.version" value="2.6.20-16-generic"></property>
+    <property name="extra" value="/home/matt/workspace/Kettle trunk/extra"></property>
+    <property name="path.separator" value=":"></property>
+    <property name="java.vm.version" value="1.5.0_11-b03"></property>
+    <property name="ui" value="/home/matt/workspace/Kettle trunk/ui"></property>
+    <property name="docs" value="/home/matt/workspace/Kettle trunk/docs"></property>
+    <property name="ant.library.dir" value="/usr/share/ant/lib"></property>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"></property>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"></property>
+    <property name="user.home" value="/home/matt"></property>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."></property>
+    <property name="test" value="/home/matt/workspace/Kettle trunk/test"></property>
+    <property name="keystore" value="/home/matt/workspace/Kettle trunk/keystore"></property>
+    <property name="java.library.path" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/i386/server:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/i386:/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/../lib/i386"></property>
+    <property name="java.vendor.url" value="http://java.sun.com/"></property>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."></property>
+    <property name="pwd" value="/home/matt/workspace/Kettle trunk/pwd"></property>
+    <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition"></property>
+    <property name="samples" value="/home/matt/workspace/Kettle trunk/samples"></property>
+    <property name="java.class.path" value="/home/matt/workspace/Kettle trunk/lib/kettle3.jar:/home/matt/workspace/Kettle trunk/test/libext/kettle.jar:/home/matt/workspace/Kettle trunk/testClasses:/home/matt/workspace/Kettle trunk/libext/edtftpj-1.5.4.jar:/home/matt/workspace/Kettle trunk/libext/jackcess-1.1.5.jar:/home/matt/workspace/Kettle trunk/libext/jakarta-oro-2.0.8.jar:/home/matt/workspace/Kettle trunk/libext/javadbf.jar:/home/matt/workspace/Kettle trunk/libext/jaxp-api.jar:/home/matt/workspace/Kettle trunk/libext/jaxp-ri.jar:/home/matt/workspace/Kettle trunk/libext/js.jar:/home/matt/workspace/Kettle trunk/libext/jsch-0.1.24.jar:/home/matt/workspace/Kettle trunk/libext/jug-lgpl-2.0.0.jar:/home/matt/workspace/Kettle trunk/libext/jxl.jar:/home/matt/workspace/Kettle trunk/libext/ldapjdk.jar:/home/matt/workspace/Kettle trunk/libext/log4j-1.2.8.jar:/home/matt/workspace/Kettle trunk/libext/mail.jar:/home/matt/workspace/Kettle trunk/libext/ognl-2.6.9.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/CacheDB.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/SQLBaseJDBC.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/db2jcc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/db2jcc_license_cu.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/derby.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/derbyclient.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/h2.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/hsqldb.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/ifxjdbc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/iijdbc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/interclient.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/jaybird-full-2.1.0.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/jconn2.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/jt400.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/jtds-1.2.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/mysql-connector-java-3.1.14-bin.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/nzjdbc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/ojdbc14.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/orai18n.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/postgresql-8.1-407.jdbc3.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/rdbthin.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/sapdbc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/sqlitejdbc-v032-nested.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/unijdbc.jar:/home/matt/workspace/Kettle trunk/libext/JDBC/xdbjdbc.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-beanutils.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-codec-1.3.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-collections-3.1.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-dbcp-1.2.1.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-digester-1.8.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-fileupload-1.0.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-httpclient-3.0.1.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-lang-2.2.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-logging-1.1.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-net-1.4.1.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-pool-1.3.jar:/home/matt/workspace/Kettle trunk/libext/commons/commons-vfs-1.0.jar:/home/matt/workspace/Kettle trunk/libext/pentaho/jcommon-1.0.8.jar:/home/matt/workspace/Kettle trunk/libext/pentaho/libformula-0.1.3.jar:/home/matt/workspace/Kettle trunk/libext/pentaho/pentaho-1.2.0.jar:/home/matt/workspace/Kettle trunk/libext/pentaho/pentaho-vfs-browser.jar:/home/matt/workspace/Kettle trunk/libext/web/activation.jar:/home/matt/workspace/Kettle trunk/libext/web/jetty-6.1.2rc1.jar:/home/matt/workspace/Kettle trunk/libext/web/jetty-util-6.1.2rc1.jar:/home/matt/workspace/Kettle trunk/libext/web/servlet-api-2.5-6.0.2.jar:/home/matt/workspace/Kettle trunk/libext/web/simple-jndi-0.11.1.jar:/home/matt/workspace/Kettle trunk/libext/webservices/jsr173_api.jar:/home/matt/workspace/Kettle trunk/libext/webservices/qname.jar:/home/matt/workspace/Kettle trunk/libext/webservices/wsdl4j.jar:/home/matt/workspace/Kettle trunk/libext/webservices/wstx-asl-3.2.0.jar:/home/matt/workspace/Kettle trunk/libswt/commands.jar:/home/matt/workspace/Kettle trunk/libswt/common.jar:/home/matt/workspace/Kettle trunk/libswt/jface.jar:/home/matt/workspace/Kettle trunk/libswt/runtime.jar:/home/matt/workspace/Kettle trunk/libswt/win32/swt.jar:/usr/share/ant/lib/junit.jar:/usr/share/ant/lib/ant-launcher.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar"></property>
+    <property name="start.TSTAMP" value="0118"></property>
+    <property name="ant.version" value="Apache Ant version 1.6.5 compiled on July 5 2006"></property>
+    <property name="TSTAMP" value="0118"></property>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+    <property name="java.vm.specification.version" value="1.0"></property>
+    <property name="sun.os.patch.level" value="unknown"></property>
+    <property name="sun.cpu.endian" value="little"></property>
+    <property name="java.io.tmpdir" value="/tmp"></property>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"></property>
+    <property name="plugins" value="/home/matt/workspace/Kettle trunk/plugins"></property>
+    <property name="distrib" value="/home/matt/workspace/Kettle trunk/distrib"></property>
+    <property name="os.arch" value="i386"></property>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"></property>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-1.5.0-sun-1.5.0.11/jre/lib/ext"></property>
+    <property name="user.dir" value="/home/matt/workspace/Kettle trunk"></property>
+    <property name="line.separator" value="
+"></property>
+    <property name="java.vm.name" value="Java HotSpot(TM) Server VM"></property>
+    <property name="basedir" value="/home/matt/workspace/Kettle trunk"></property>
+    <property name="ant.java.version" value="1.5"></property>
+    <property name="sourcezipfile" value="/home/matt/workspace/Kettle trunk/Kettle-src-3.0.0-M1.zip"></property>
+    <property name="file.encoding" value="UTF-8"></property>
+    <property name="tips" value="/home/matt/workspace/Kettle trunk/docs/tips"></property>
+    <property name="java.specification.version" value="1.5"></property>
+    <property name="testlibext" value="/home/matt/workspace/Kettle trunk/test/libext"></property>
+    <property name="junit" value="/home/matt/workspace/Kettle trunk/junit"></property>
+  </properties>
+  <testcase classname="org.pentaho.di.run.addsequence.RunAddSequence2To00" name="test_ADD_SEQUENCE_04_Add2ToEmptyRow" time="12.469"></testcase>
+  <system-out><![CDATA[
+Transformation name         : Add 2 sequences
+Transformation description  : Tests adding 2 sequences to an empty row.
+-----------------------------------------------------------------------------------------------------
+V2 results, rows: 1.000.000,   runtime: 4,14s,   speed: 241.371 rows/s
+V3 results, rows: 1.000.000,   runtime: 3,63s,   speed: 275.558 rows/s
+V3 / V2 = x1,14
+]]></system-out>
+  <system-err><![CDATA[2007/07/10 01:19:52:345 CEST [INFO] DefaultFileReplicator - Using "/tmp/vfs_cache" as temporary files store.
+]]></system-err>
+</testsuite>

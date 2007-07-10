@@ -1,6 +1,7 @@
 package org.pentaho.di.core.vfs;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +14,9 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.trans.steps.fixedinput.Messages;
 
 public class KettleVFS
 {
@@ -179,5 +182,23 @@ public class KettleVFS
             }
         };
     }
+
+    /**
+     * Get a FileInputStream for a local file.  Local files can be read with NIO.
+     * 
+     * @param fileObject
+     * @return a FileInputStream
+     * @throws IOException
+     */
+	public static FileInputStream getFileInputStream(FileObject fileObject) throws IOException {
+		
+		if (!(fileObject instanceof LocalFile)) {
+			// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
+			//
+			throw new IOException(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
+		}
+				
+		return (FileInputStream)((LocalFile)fileObject).getInputStream();
+	}
 
 }

@@ -814,11 +814,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
             first = false;
             
-            // Create the output row metadata
+            // Create the output row meta-data
+            //
             data.outputRowMeta = new RowMeta();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this); // get the metadata populated.  Simple and easy.
             
-            // Create convertor metadata objects that will contain Date & Number formatters
+            // Create convert meta-data objects that will contain Date & Number formatters
             //
             data.convertRowMeta = (RowMetaInterface)data.outputRowMeta.clone();
             for (int i=0;i<data.convertRowMeta.size();i++) data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);
@@ -826,6 +827,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (meta.isAcceptingFilenames())
             {
                 // Read the files from the specified input stream...
+            	//
                 data.files.getFiles().clear();
                 
                 int idx = -1;

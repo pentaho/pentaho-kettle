@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -225,16 +224,16 @@ public class FixedInput extends BaseStep implements StepInterface
 				data.filename = environmentSubstitute(meta.getFilename());
 				
 				FileObject fileObject = KettleVFS.getFileObject(data.filename);
-				if (!(fileObject instanceof LocalFile)) {
-					// We can only use NIO on local files at the moment, so that's what we limit ourselves to.
-					//
-					logError(Messages.getString("FixedInput.Log.OnlyLocalFilesAreSupported"));
+				try
+				{
+					FileInputStream fileInputStream = KettleVFS.getFileInputStream(fileObject);
+					data.fc = fileInputStream.getChannel();
+					data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
+				}
+				catch(IOException e) {
+					logError(e.toString());
 					return false;
 				}
-				
-				FileInputStream fis = (FileInputStream)((LocalFile)fileObject).getInputStream();
-				data.fc = fis.getChannel();
-				data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				
 				data.stopReading = false;
 				

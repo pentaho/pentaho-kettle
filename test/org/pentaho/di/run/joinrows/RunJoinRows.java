@@ -23,7 +23,7 @@ public class RunJoinRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                1000
+                10000
             );
         timedTransRunner.runOldAndNew();
         
@@ -41,7 +41,7 @@ public class RunJoinRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                1000
+                10000
             );
         timedTransRunner.runOldAndNew();
         

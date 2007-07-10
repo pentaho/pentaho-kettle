@@ -20,6 +20,13 @@
 
 package org.pentaho.di.trans.steps.fixedinput;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -42,8 +49,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.dialog.EnterNumberDialog;
 import org.pentaho.di.core.dialog.EnterTextDialog;
+import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.widget.ColumnInfo;
 import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
@@ -54,6 +65,7 @@ import org.pentaho.di.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+
 
 
 public class FixedInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -69,6 +81,9 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	private TableView    wFields;
 
 	private Button wRunningInParallel;
+	
+	private List<FixedFileInputField> fields;
+    
 	
 	public FixedInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -264,10 +279,12 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wPreview=new Button(shell, SWT.PUSH);
 		wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+		wGet=new Button(shell, SWT.PUSH);
+		wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wPreview, wGet, wCancel }, margin, null);
 
 
 		// Fields
@@ -300,13 +317,15 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         wFields.setLayoutData(fdFields);
         
 		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();      } };
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();   } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();       } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { getFixed(); } };
+		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();  } };
 		
 		wCancel.addListener (SWT.Selection, lsCancel );
 		wOK.addListener     (SWT.Selection, lsOK     );
 		wPreview.addListener(SWT.Selection, lsPreview);
+		wGet.addListener    (SWT.Selection, lsGet    );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -409,6 +428,8 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 			field.setCurrency( item.getText(colnr++) );
 			field.setDecimal( item.getText(colnr++) );
 			field.setGrouping( item.getText(colnr++) );
+
+			fixedInputMeta.getFieldDefinition()[i] = field;
 		}
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
@@ -420,7 +441,9 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 	// Preview the data
     private void preview()
     {
-        // Create the XML input step
+    	// execute a complete preview transformation in the background.
+    	// This is how we do it...
+    	//
         FixedInputMeta oneMeta = new FixedInputMeta();
         getInfo(oneMeta);
         
@@ -452,4 +475,129 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
         }
     }
 
+	private void getFixed()
+	{
+		final FixedInputMeta info = new FixedInputMeta();
+		getInfo(info);
+		
+		Shell sh = new Shell(shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+
+        try
+        {
+    		List<String> rows = getFirst(info, 50);
+    		fields = new ArrayList<FixedFileInputField>();
+    		fields.addAll( Arrays.asList(info.getFieldDefinition()) );
+    		
+    		final FixedFileImportWizardPage1 page1 = new FixedFileImportWizardPage1("1", props, rows, fields);
+    		page1.createControl(sh);
+    		final FixedFileImportWizardPage2 page2 = new FixedFileImportWizardPage2("2", props, rows, fields);
+    		page2.createControl(sh);
+    
+    		Wizard wizard = new Wizard() 
+    		{
+    			public boolean performFinish() 
+    			{
+    				wFields.clearAll(false);
+    				
+    				for (int i=0;i<fields.size();i++)
+    				{
+    					FixedFileInputField field = fields.get(i);
+    					if (field.getWidth()>0)
+    					{
+    						TableItem item = new TableItem(wFields.table, SWT.NONE);
+    						item.setText( 1,   field.getName());
+    						item.setText( 2,""+ValueMeta.getTypeDesc(field.getType()) );
+    						item.setText( 3,""+field.getFormat());
+    						item.setText( 4,""+field.getWidth());
+    						item.setText( 5,""+field.getLength());
+    						item.setText( 6,""+field.getPrecision());
+    						item.setText( 7,""+field.getCurrency());
+    						item.setText( 8,""+field.getDecimal());
+    						item.setText( 9,""+field.getGrouping());
+    					}
+    					
+    				}
+    				int size = wFields.table.getItemCount(); 
+    				if (size==0)
+    				{
+    					new TableItem(wFields.table, SWT.NONE);
+    				}
+    
+    				wFields.removeEmptyRows();				
+    				wFields.setRowNums();
+    				wFields.optWidth(true);
+    				
+    				inputMeta.setChanged();
+    				
+    				return true;
+    			}
+    		};
+    				
+    		wizard.addPage(page1);
+    		wizard.addPage(page2);
+    				
+    		WizardDialog wd = new WizardDialog(shell, wizard);
+    		wd.setMinimumPageSize(700,375);
+    		wd.open();
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, Messages.getString("FixedInputDialog.ErrorShowingFixedWizard.DialogTitle"), Messages.getString("FixedInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
+        }
+	}
+
+	// Grab the first x lines from the given file...
+	//
+	private List<String> getFirst(FixedInputMeta meta, int limit) throws IOException, KettleValueException {
+
+		List<String> lines = new ArrayList<String>();
+		
+        FixedInputMeta oneMeta = new FixedInputMeta();
+        getInfo(oneMeta);
+        
+        // Add a single field with the width of the line...
+        //
+        int lineWidth = Integer.parseInt(oneMeta.getLineWidth());
+        if (lineWidth<=0) {
+        	throw new IOException("The width of a line can not be 0 or less.");
+        }
+        
+        oneMeta.allocate(1);
+        
+        FixedFileInputField field = new FixedFileInputField();
+        field.setName("Field1");
+        field.setType(ValueMetaInterface.TYPE_STRING);
+        field.setWidth(lineWidth);
+        oneMeta.getFieldDefinition()[0] = field;
+        
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+        
+        TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { limit } );
+        progressDialog.open();
+
+        Trans trans = progressDialog.getTrans();
+        String loggingText = progressDialog.getLoggingText();
+
+        if (!progressDialog.isCancelled())
+        {
+            if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+            {
+            	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+            			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+            	etd.setReadOnly();
+            	etd.open();
+            }
+        }
+        
+        // The rows are in the transformation...
+        //
+        RowMetaInterface previewRowsMeta = progressDialog.getPreviewRowsMeta(wStepname.getText());
+        List<Object[]> previewRowsData = progressDialog.getPreviewRows(wStepname.getText());
+        for (int i=0;i<previewRowsData.size();i++) {
+        	String line = previewRowsMeta.getString(previewRowsData.get(i), 0);
+        	lines.add(line);
+        }
+        
+        return lines;
+	}
 }
