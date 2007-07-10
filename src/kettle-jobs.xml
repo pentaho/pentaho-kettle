@@ -11,9 +11,9 @@
 	</job>
 	
 	<!-- Configured via Job annotation
-		<job id="TRANS">
+		<job id="TRANSFORMATION">
 		<type>
-			ognl:@org.pentaho.di.job.JobEntryType@TRANS
+			ognl:@org.pentaho.di.job.JobEntryType@TRANSFORMATION
 		</type>
 		<class-name>
 			org.pentaho.di.job.entries.trans.JobEntryTrans
