@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  *
  */
 
-public class TransDependency implements XMLInterface
+public class TransDependency implements XMLInterface, Cloneable
 {
 	public static final String XML_TAG = "dependency";
     
@@ -79,6 +79,11 @@ public class TransDependency implements XMLInterface
 		{
 			throw new KettleXMLException(Messages.getString("TransDependency.Exception.UnableToLoadTransformation"), e); //$NON-NLS-1$
 		}
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public void setID(long id)

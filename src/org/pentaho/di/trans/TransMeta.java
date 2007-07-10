@@ -75,6 +75,9 @@ import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceExportInterface;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
@@ -96,7 +99,7 @@ import org.w3c.dom.Node;
  * @since 20-jun-2003
  * @author Matt
  */
-public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface
+public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, Cloneable, ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface
 {
     public static final String XML_TAG = "transformation";
         
@@ -117,6 +120,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     private List<SlaveServer>        slaveServers;
     
     private List<ClusterSchema>      clusterSchemas;
+
+    private List<PartitionSchema>    partitionSchemas;
 
     private RepositoryDirectory directory;
 
@@ -194,8 +199,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     private List<RowMetaAndData> resultRows;
     private List<ResultFile>     resultFiles;            
         
-    private List<PartitionSchema> partitionSchemas;
-
     private boolean             usingUniqueConnections;
     
     private boolean             feedbackShown;
@@ -297,6 +300,30 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     		return false;
     	
         return compare(this, (TransMeta)obj)==0;
+    }
+    
+    @Override
+    public Object clone() {
+    	
+    	try {
+			TransMeta transMeta = (TransMeta) super.clone();
+			transMeta.clear();
+			
+			for (DatabaseMeta db : databases) transMeta.addDatabase((DatabaseMeta)db.clone());
+			for (StepMeta step : steps) transMeta.addStep((StepMeta) step.clone());
+			for (TransHopMeta hop : hops) transMeta.addTransHop((TransHopMeta) hop.clone());
+			for (NotePadMeta note : notes) transMeta.addNote((NotePadMeta)note.clone());
+			for (TransDependency dep : dependencies) transMeta.addDependency((TransDependency)dep.clone());
+			for (SlaveServer slave : slaveServers) transMeta.getSlaveServers().add((SlaveServer)slave.clone());
+			for (ClusterSchema schema : clusterSchemas) transMeta.getClusterSchemas().add((ClusterSchema)schema.clone());
+			for (PartitionSchema schema : partitionSchemas) transMeta.getPartitionSchemas().add((PartitionSchema)schema.clone());
+			
+			return transMeta;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
     }
 
     /**
@@ -5710,4 +5737,34 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     	
     	return resourceReferences;
     }
+    
+	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) {
+		
+		String filename = resourceNamingInterface.nameResource(getName(), "xml");
+		ResourceDefinition definition = definitions.get(filename);
+		if (definition==null) {
+			// If we do this once, it will be plenty :-)
+			//
+			TransMeta transMeta = (TransMeta) this.clone();
+			
+			// TODO: Add used resources, modify transMeta accordingly
+			// Go through the list of steps, etc.
+			// These critters change the steps in the cloned TransMeta 
+			// At the end we make a new XML version of it in "exported" format...
+			
+			// loop over steps, databases will be exported to XML anyway. 
+			//
+			for (StepMeta stepMeta : transMeta.getSteps()) {
+				stepMeta.exportResources(definitions, resourceNamingInterface);
+			}
+			
+			// At the end, add ourselves to the map...
+			//
+			String transMetaContent = transMeta.getXML();
+			
+			definition = new ResourceDefinition(filename, transMetaContent);
+		}
+		
+		return filename;
+	}
 }

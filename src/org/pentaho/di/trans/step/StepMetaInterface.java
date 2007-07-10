@@ -30,6 +30,8 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -252,4 +254,15 @@ public interface StepMetaInterface
      * @return a list of all the resource dependencies that the step is depending on
      */
     public List<ResourceReference> getResourceDependencies();
+    
+    /**
+     * 
+     * @param definitions
+     * @param resourceNamingInterface
+     * @param rep
+     * @param space
+     * @return
+     */
+    public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space);
+
 }

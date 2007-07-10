@@ -34,6 +34,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -720,4 +722,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	public void setMappingParameters(MappingParameters mappingParameters) {
 		this.mappingParameters = mappingParameters;
 	}
+	
+	@Override
+	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space) {
+		
+		// TODO: try to load the transformation from repository or file.
+		// Modify this recursively too...
+		// 
+		return null; 
+	}
+
 }

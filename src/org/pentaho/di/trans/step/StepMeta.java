@@ -36,6 +36,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceExportInterface;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -53,7 +56,7 @@ import org.w3c.dom.Node;
  * @author Matt
  *
  */
-public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, CheckResultSourceInterface
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface
 {
 	public static final String XML_TAG = "step";
 
@@ -789,4 +792,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     public List<ResourceReference> getResourceDependencies() {
     	return stepMetaInterface.getResourceDependencies();
     }
+
+	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) {
+
+		// The step calls out to the StepMetaInterface...
+		// These can in turn add anything to the map in terms of resources, etc.
+		// Even reference files, etc.  For now it's just XML probably...
+		//
+		return stepMetaInterface.exportResources(definitions, resourceNamingInterface, null, null);
+	}
+
 }

@@ -28,6 +28,9 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
@@ -282,6 +285,10 @@ public class BaseStepMeta implements Cloneable
      */
     public List<ResourceReference> getResourceDependencies() {
     	return new ArrayList<ResourceReference>();
+    }
+    
+    public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository rep, VariableSpace space) {
+    	return null;
     }
     
 }

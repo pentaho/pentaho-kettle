@@ -282,19 +282,6 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	@Override
-	public List<ResourceReference> getResourceDependencies() {
-		 List<ResourceReference> references = super.getResourceDependencies();
-		 
-		 if (!Const.isEmpty(filename)) {
-			 // Add the filename to the references, including a reference to this step meta data.
-			 //
-			 ResourceReference reference = new ResourceReference(this);
-			 reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
-		 }
-		 return references;
-	}
-	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
 	{
 		return new FixedInputDialog(shell, info, transMeta, name);
@@ -421,5 +408,17 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setFieldDefinition(FixedFileInputField[] fieldDefinition) {
 		this.fieldDefinition = fieldDefinition;
 	}
-
+	
+	@Override
+	public List<ResourceReference> getResourceDependencies() {
+		 List<ResourceReference> references = super.getResourceDependencies();
+		 
+		 if (!Const.isEmpty(filename)) {
+			 // Add the filename to the references, including a reference to this step meta data.
+			 //
+			 ResourceReference reference = new ResourceReference(this);
+			 reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
+		 }
+		 return references;
+	}
 }
