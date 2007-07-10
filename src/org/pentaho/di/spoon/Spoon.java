@@ -869,27 +869,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         esd.setReadOnly(false); 
         if (esd.open()!=null)
         {
-            for (int i=0;i<variables.getRowMeta().size();i++)
-            {
-                ValueMetaInterface valueMeta = variables.getRowMeta().getValueMeta(i);
-                Object valueData = variables.getData()[i];
-                
-                String string;
-                try
-                {
-                    string = valueMeta.getString(valueData);
-                }
-                catch (KettleValueException e)
-                {
-                    // can be ignored, we only work with strings
-                    string = null;
-                }
-                
-                if (!Const.isEmpty(string))
-                {
-                    System.setProperty(valueMeta.getName(), string);
-                }
-            }
+        	// here was code to put the values in another place.
         }
     }
     
@@ -906,18 +886,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             sp.put(keys[i], space.getVariable(keys[i]));
         }
 
-        RowMetaAndData allVars = new RowMetaAndData();
+        //RowMetaAndData allVars = new RowMetaAndData();
         
-        Enumeration<?> en = sp.keys();
-        while ( en.hasMoreElements())
-        {
-        	String key = (String)en.nextElement();
-            String value = (String)sp.get(key);
-            allVars.addValue(new ValueMeta(key, ValueMetaInterface.TYPE_STRING), value);
-        }
+        //Enumeration<?> en = sp.keys();
+        //while ( en.hasMoreElements())
+        //{
+        // 	String key = (String)en.nextElement();
+        //  String value = (String)sp.get(key);
+        //  allVars.addValue(new ValueMeta(key, ValueMetaInterface.TYPE_STRING), value);
+        //}
         
         // Now ask the use for more info on these!
-        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, allVars);
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
         esd.setTitle(Messages.getString("Spoon.Dialog.ShowVariables.Title"));
         esd.setMessage(Messages.getString("Spoon.Dialog.ShowVariables.Message"));
         esd.setReadOnly(true); 
