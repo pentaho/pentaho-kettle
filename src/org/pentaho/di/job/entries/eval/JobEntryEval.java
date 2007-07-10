@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -12,8 +12,9 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.eval;
+
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
@@ -35,222 +36,186 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-
-
 /**
  * Job entry type to evaluate the result of a previous job entry.
  * It uses a piece of javascript to do this.
- * 
+ *
  * @author Matt
  * @since 5-11-2003
  */
-public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInterface
-{
-	private String script;
+public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInterface {
+  private String script;
 
-	public JobEntryEval(String n, String scr)
-	{
-		super(n, "");
-		script=scr;
-		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_EVALUATION);
-	}
+  public JobEntryEval(String n, String scr) {
+    super(n, "");
+    script = scr;
+    setID(-1L);
+    setType(JobEntryInterface.TYPE_JOBENTRY_EVALUATION);
+  }
 
-	public JobEntryEval()
-	{
-		this("", "");
-	}
-	
-	public JobEntryEval(JobEntryBase jeb)
-	{
-		super(jeb);
-	}
-    
-    public Object clone()
-    {
-        JobEntryEval je = (JobEntryEval) super.clone();
-        return je;
+  public JobEntryEval() {
+    this("", "");
+  }
+
+  public JobEntryEval(JobEntryBase jeb) {
+    super(jeb);
+  }
+
+  public Object clone() {
+    JobEntryEval je = (JobEntryEval) super.clone();
+    return je;
+  }
+
+  public String getXML() {
+    StringBuffer retval = new StringBuffer();
+
+    retval.append(super.getXML());
+    retval.append("      ").append(XMLHandler.addTagValue("script", script));
+
+    return retval.toString();
+  }
+
+  public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
+    try {
+      super.loadXML(entrynode, databases);
+      script = XMLHandler.getTagValue(entrynode, "script");
+    } catch (Exception e) {
+      throw new KettleXMLException("Unable to load job entry of type 'evaluation' from XML node", e);
     }
-	
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer();
-	
-		retval.append(super.getXML());
-		retval.append("      ").append(XMLHandler.addTagValue("script",      script));
+  }
 
-		return retval.toString();
-	}
-	
-	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
-		throws KettleXMLException
-	{
-		try
-		{
-			super.loadXML(entrynode, databases);
-			script = XMLHandler.getTagValue(entrynode, "script");
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException("Unable to load job entry of type 'evaluation' from XML node", e);
-		}
-	}
+  public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
+    try {
+      super.loadRep(rep, id_jobentry, databases);
 
-	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
-		throws KettleException
-	{
-		try
-		{
-			super.loadRep(rep, id_jobentry, databases);
-
-			script = rep.getJobEntryAttributeString(id_jobentry, "script");
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to load job entry of type 'evaluation' from the repository with id_jobentry="+id_jobentry, dbe);
-		}
-	}
-	
-	// Save the attributes of this job entry
-	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
-	{
-		try
-		{
-			super.saveRep(rep, id_job);
-			
-			rep.saveJobEntryAttribute(id_job, getID(), "script", script);
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save job entry of type 'evaluation' to the repository for id_job="+id_job, dbe);
-		}
-	}
-
-	public void setScript(String s)
-	{
-		script = s;
-	}
-	
-	public String getScript()
-	{
-		return script;
-	}
-
-	/**
-	 * Evaluate the result of the execution of previous job entry.
-	 * @param result The result to evaulate.
-	 * @return The boolean result of the evaluation script.
-	 */
-	public boolean evaluate(Result result)
-	{
-		LogWriter log = LogWriter.getInstance();
-		Context cx;
-		Scriptable scope;
-		String debug="start";
-		
-		cx = Context.enter();
-
-		debug="try";
-		try
-		{
-			scope = cx.initStandardObjects(null);
-			
-			debug="Long";
-			Long errors          = new Long(result.getNrErrors());
-			Long lines_input     = new Long(result.getNrLinesInput());
-			Long lines_output    = new Long(result.getNrLinesOutput());
-			Long lines_updated   = new Long(result.getNrLinesUpdated());
-            Long lines_rejected  = new Long(result.getNrLinesRejected());
-			Long lines_read      = new Long(result.getNrLinesRead());
-			Long lines_written   = new Long(result.getNrLinesWritten());
-			Long exit_status     = new Long(result.getExitStatus());
-			Long files_retrieved = new Long(result.getNrFilesRetrieved());
-			Long nr              = new Long(result.getEntryNr());
-			
-			debug="scope.put";
-			scope.put("errors", scope, errors);
-			scope.put("lines_input", scope, lines_input);
-			scope.put("lines_output", scope, lines_output);
-			scope.put("lines_updated", scope, lines_updated);
-            scope.put("lines_rejected", scope, lines_rejected);
-			scope.put("lines_read", scope, lines_read);
-			scope.put("lines_written", scope, lines_written);
-			scope.put("files_retrieved", scope, files_retrieved);
-			scope.put("exit_status", scope, exit_status);
-			scope.put("nr", scope, nr);
-            scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows()));
-            
-			Object array[] = null;
-			if (result.getRows()!=null)
-			{
-				array=result.getRows().toArray(); 
-			}
-			
-			scope.put("rows", scope, array);
-	
-			try
-			{
-				debug="cx.evaluateString()";
-				Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null);
-				debug="toBoolean";
-				boolean retval = Context.toBoolean(res);
-				// System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
-				result.setNrErrors(0);
-
-				return retval;
-			}
-			catch(Exception e)
-			{
-				result.setNrErrors(1);
-				log.logError(toString(), "Couldn't compile javascript: "+e.toString());
-				return false;
-			}
-		}
-		catch(Exception e)
-		{
-			result.setNrErrors(1);
-			log.logError(toString(), "Error evaluating expression in ["+debug+"] : "+e.toString());
-			return false;
-		}
-		finally 
-		{
-			Context.exit();
-		}
-	}
-	
-	/**
-	 * Execute this job entry and return the result.
-	 * In this case it means, just set the result boolean in the Result class.
-	 * @param prev_result The result of the previous execution
-	 * @return The Result of the execution.
-	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
-	{
-		prev_result.setResult( evaluate(prev_result) );
-		
-		return prev_result;
-	}
-	
-	public boolean resetErrorsBeforeExecution()
-	{
-		// we should be able to evaluate the errors in
-		// the previous jobentry.
-	    return false;
-	}
-	
-	public boolean evaluates()
-	{
-		return true;
-	}
-	
-	public boolean isUnconditional()
-	{
-		return false;
-	}
-    
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryEvalDialog(shell,this);
+      script = rep.getJobEntryAttributeString(id_jobentry, "script");
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException("Unable to load job entry of type 'evaluation' from the repository with id_jobentry="
+          + id_jobentry, dbe);
     }
+  }
+
+  // Save the attributes of this job entry
+  //
+  public void saveRep(Repository rep, long id_job) throws KettleException {
+    try {
+      super.saveRep(rep, id_job);
+
+      rep.saveJobEntryAttribute(id_job, getID(), "script", script);
+    } catch (KettleDatabaseException dbe) {
+      throw new KettleException("Unable to save job entry of type 'evaluation' to the repository for id_job=" + id_job,
+          dbe);
+    }
+  }
+
+  public void setScript(String s) {
+    script = s;
+  }
+
+  public String getScript() {
+    return script;
+  }
+
+  /**
+   * Evaluate the result of the execution of previous job entry.
+   * @param result The result to evaulate.
+   * @return The boolean result of the evaluation script.
+   */
+  public boolean evaluate(Result result) {
+    LogWriter log = LogWriter.getInstance();
+    Context cx;
+    Scriptable scope;
+    String debug = "start";
+
+    cx = Context.enter();
+
+    debug = "try";
+    try {
+      scope = cx.initStandardObjects(null);
+
+      debug = "Long";
+      Long errors = new Long(result.getNrErrors());
+      Long lines_input = new Long(result.getNrLinesInput());
+      Long lines_output = new Long(result.getNrLinesOutput());
+      Long lines_updated = new Long(result.getNrLinesUpdated());
+      Long lines_rejected = new Long(result.getNrLinesRejected());
+      Long lines_read = new Long(result.getNrLinesRead());
+      Long lines_written = new Long(result.getNrLinesWritten());
+      Long exit_status = new Long(result.getExitStatus());
+      Long files_retrieved = new Long(result.getNrFilesRetrieved());
+      Long nr = new Long(result.getEntryNr());
+
+      debug = "scope.put";
+      scope.put("errors", scope, errors);
+      scope.put("lines_input", scope, lines_input);
+      scope.put("lines_output", scope, lines_output);
+      scope.put("lines_updated", scope, lines_updated);
+      scope.put("lines_rejected", scope, lines_rejected);
+      scope.put("lines_read", scope, lines_read);
+      scope.put("lines_written", scope, lines_written);
+      scope.put("files_retrieved", scope, files_retrieved);
+      scope.put("exit_status", scope, exit_status);
+      scope.put("nr", scope, nr);
+      scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows()));
+
+      Object array[] = null;
+      if (result.getRows() != null) {
+        array = result.getRows().toArray();
+      }
+
+      scope.put("rows", scope, array);
+
+      try {
+        debug = "cx.evaluateString()";
+        Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null);
+        debug = "toBoolean";
+        boolean retval = Context.toBoolean(res);
+        // System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
+        result.setNrErrors(0);
+
+        return retval;
+      } catch (Exception e) {
+        result.setNrErrors(1);
+        log.logError(toString(), "Couldn't compile javascript: " + e.toString());
+        return false;
+      }
+    } catch (Exception e) {
+      result.setNrErrors(1);
+      log.logError(toString(), "Error evaluating expression in [" + debug + "] : " + e.toString());
+      return false;
+    } finally {
+      Context.exit();
+    }
+  }
+
+  /**
+   * Execute this job entry and return the result.
+   * In this case it means, just set the result boolean in the Result class.
+   * @param prev_result The result of the previous execution
+   * @return The Result of the execution.
+   */
+  public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) {
+    prev_result.setResult(evaluate(prev_result));
+
+    return prev_result;
+  }
+
+  public boolean resetErrorsBeforeExecution() {
+    // we should be able to evaluate the errors in
+    // the previous jobentry.
+    return false;
+  }
+
+  public boolean evaluates() {
+    return true;
+  }
+
+  public boolean isUnconditional() {
+    return false;
+  }
+
+  public JobEntryDialogInterface getDialog(Shell shell, JobEntryInterface jei, JobMeta jobMeta, String jobName,
+      Repository rep) {
+    return new JobEntryEvalDialog(shell, this);
+  }
 }
