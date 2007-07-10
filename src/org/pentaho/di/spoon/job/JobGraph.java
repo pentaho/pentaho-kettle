@@ -74,6 +74,7 @@ import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -693,7 +694,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
                                 }
                                 redraw();
                                 spoon.refreshTree();
-                                log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType()));
+                                log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getEntry()));
                             } 
                             else
                             {
@@ -1130,16 +1131,16 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				item.setEnabled( sels == 2 );
 
 				item = menu.getMenuItemById( "job-graph-entry-launch" ); //$NON-NLS-1$
-				switch(jobEntry.getType())
+				switch(jobEntry.getJobEntryType())
 				{
-				case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
+				case TRANSFORMATION:
 					{
 						item.setEnabled(true);
 						item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
 						menu.addMenuListener( "job-graph-entry-launch", this, "openTransformation" ); //$NON-NLS-1$ //$NON-NLS-2$
 						break;
 					}
-				case JobEntryInterface.TYPE_JOBENTRY_JOB:
+				case JOB:
 					{
 						item.setEnabled(true);
 						item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchChef"));
@@ -1463,7 +1464,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	
 	public void launchStuff(JobEntryCopy jobentry)
 	{
-		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_JOB)
+		if (jobentry.getJobEntryType()==JobEntryType.JOB)
 		{
 			final JobEntryJob entry = (JobEntryJob)jobentry.getEntry();
 			if ( ( entry!=null && entry.getFilename()!=null && spoon.rep==null) ||
@@ -1474,7 +1475,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 		}
 		else
-		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION)
+		if (jobentry.getJobEntryType()==JobEntryType.TRANSFORMATION)
 		{
 			final JobEntryTrans entry = (JobEntryTrans)jobentry.getEntry();
 			if ( ( entry!=null && entry.getFilename()!=null && spoon.rep==null) ||
@@ -1715,14 +1716,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		Image im=null;
 		if (je==null) return null;
 		
-		switch (je.getType()) 
+		switch (je.getJobEntryType()) 
 		{
-		case JobEntryInterface.TYPE_JOBENTRY_SPECIAL        :
+		case SPECIAL        :
 			if (je.isStart()) im = GUIResource.getInstance().getImageStart();
 			if (je.isDummy()) im = GUIResource.getInstance().getImageDummy();
 			break;
 		default:
-            im = (Image)GUIResource.getInstance().getImagesJobentries().get(je.getTypeDesc());
+            im = (Image)GUIResource.getInstance().getImagesJobentries().get(je.getEntry().getConfigId());
 		}
 		return im;
 	}
