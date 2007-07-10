@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
@@ -557,7 +558,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		}
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -597,11 +598,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 
@@ -609,19 +610,19 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						if ( r.indexOfValue(technicalKeyField)<0)
 						{
 							error_message=Messages.getString("CombinationLookupMeta.CheckResult.TechnicalKeyNotFound",technicalKeyField)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
 							error_message=Messages.getString("CombinationLookupMeta.CheckResult.TechnicalKeyFound",technicalKeyField)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta);
 						}
 						remarks.add(cr);
 					}
 					else
 					{
 						error_message=Messages.getString("CombinationLookupMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
 				}
@@ -649,18 +650,18 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					}
 					if (error_found)
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFoundInInputStream"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFoundInInputStream"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
 					error_message=Messages.getString("CombinationLookupMeta.CheckResult.CouldNotReadFields")+Const.CR; //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 
@@ -670,7 +671,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     				if ( Const.isEmpty(sequenceFrom) )
     				{
 						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorNoSequenceName") + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
     				}
     				else
@@ -680,13 +681,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					    if (db.checkSequenceExists(sequenceFrom))
 					    {
 						    error_message = Messages.getString("CombinationLookupMeta.CheckResult.ReadingSequenceOK",sequenceFrom); //$NON-NLS-1$ //$NON-NLS-2$
-					 	    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
+					 	    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepMeta);
 						    remarks.add(cr);
 					    }
 					    else
 					    {
 						    error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorReadingSequence")+sequenceFrom+"!"; //$NON-NLS-1$ //$NON-NLS-2$
-						    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						    remarks.add(cr);
 					    }
     				}
@@ -700,7 +701,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					       CREATION_METHOD_TABLEMAX.equals(techKeyCreation)) )
 					{
 						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorTechKeyCreation")+ ": " + techKeyCreation +"!"; //$NON-NLS-1$ //$NON-NLS-2$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
 
@@ -709,7 +710,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			catch(KettleException e)
 			{
 				error_message = Messages.getString("CombinationLookupMeta.CheckResult.ErrorOccurred")+e.getMessage(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -720,19 +721,19 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		else
 		{
 			error_message = Messages.getString("CombinationLookupMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CombinationLookupMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("CombinationLookupMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

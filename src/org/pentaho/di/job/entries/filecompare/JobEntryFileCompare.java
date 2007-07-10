@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -280,16 +281,16 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
 		return filename2;
 	}
   
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     if (filename1 != null) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_Filename_1_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_Filename_1_Defined"), this)); //$NON-NLS-1$
     } else {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_Filename_1_Not_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_Filename_1_Not_Defined"), this)); //$NON-NLS-1$
     }
     if (filename2 != null) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_Filename_2_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_Filename_2_Defined"), this)); //$NON-NLS-1$
     } else {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_Filename_2_Not_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_Filename_2_Not_Defined"), this)); //$NON-NLS-1$
     }
     //
     // If either one is null, don't bother continuing...
@@ -302,30 +303,30 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
       try {
         file1 = KettleVFS.getFileObject(realFilename1);
         if (file1.exists()) {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_File_Exists", realFilename1), this)); //$NON-NLS-1$ 
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_File_Exists", realFilename1), this)); //$NON-NLS-1$ 
         } else {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_File_Does_Not_Exist", realFilename1), this));         //$NON-NLS-1$
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_File_Does_Not_Exist", realFilename1), this));         //$NON-NLS-1$
         }
         try {
           // Not sure if close() here is actually required - just being cautious
           file1.close();
         } catch (IOException ignored) {}
       } catch (IOException ex) {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.ERROR_0008_File_IOError", realFilename1), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.ERROR_0008_File_IOError", realFilename1), this)); //$NON-NLS-1$
       }
       try {
         file2 = KettleVFS.getFileObject(realFilename2);
         if (file2.exists()) {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_File_Exists", realFilename2), this)); //$NON-NLS-1$
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileCompare.CheckResult_File_Exists", realFilename2), this)); //$NON-NLS-1$
         } else {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_File_Does_Not_Exist", realFilename2), this));         //$NON-NLS-1$ 
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.CheckResult_File_Does_Not_Exist", realFilename2), this));         //$NON-NLS-1$ 
         }
         try {
           // Not sure if close() here is actually required - just being cautious
           file2.close();
         } catch (IOException ignored) {}
       } catch (IOException ex) {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.ERROR_0008_File_IOError", realFilename2), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileCompare.ERROR_0008_File_IOError", realFilename2), this)); //$NON-NLS-1$
       }
     }
   }

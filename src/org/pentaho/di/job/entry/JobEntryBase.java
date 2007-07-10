@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
@@ -441,7 +441,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
      * @param remarks CheckResults from checking the job entry
      * @param jobMeta JobMeta information letting threading back to the JobMeta possible
      */
-    public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
 
 	}
 

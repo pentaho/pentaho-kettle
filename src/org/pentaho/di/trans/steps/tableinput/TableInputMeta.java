@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -326,13 +327,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		if (databaseMeta!=null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Connection exists", stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
 			remarks.add(cr);
 
 			Database db = new Database(databaseMeta);
@@ -342,23 +343,23 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Connection to database OK", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection to database OK", stepMeta);
 				remarks.add(cr);
 
 				if (sql!=null && sql.length()!=0)
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "SQL statement is entered", stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "SQL statement is entered", stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "SQL statement is missing.", stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "SQL statement is missing.", stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "An error occurred: "+e.getMessage(), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "An error occurred: "+e.getMessage(), stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -368,7 +369,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta);
 			remarks.add(cr);
 		}
 		
@@ -382,12 +383,12 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			if (found)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Previous step to read info from ["+getLookupStepname()+"] is found.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Previous step to read info from ["+getLookupStepname()+"] is found.", stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Previous step to read info from ["+getLookupStepname()+"] is not found.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Previous step to read info from ["+getLookupStepname()+"] is not found.", stepMeta);
 				remarks.add(cr);
 			}
 			
@@ -412,18 +413,18 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if(count == info.size())
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is expecting and receiving "+info.size()+" fields of input from the previous step.", stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "This step is expecting and receiving "+info.size()+" fields of input from the previous step.", stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is receiving "+info.size()+" but not the expected "+count+" fields of input from the previous step.", stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "This step is receiving "+info.size()+" but not the expected "+count+" fields of input from the previous step.", stepMeta);
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Input step name is not recognized!", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Input step name is not recognized!", stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -431,12 +432,12 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (input.length>0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Step is not expecting info from input steps.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Step is not expecting info from input steps.", stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "No input expected, no input provided.", stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "No input expected, no input provided.", stepMeta);
 				remarks.add(cr);
 			}
 			

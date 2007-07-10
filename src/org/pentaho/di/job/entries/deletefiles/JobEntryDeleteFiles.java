@@ -24,6 +24,7 @@ import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -379,7 +380,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return true;
   }
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     LogWriter log = LogWriter.getInstance();
     for (int i = 0; i < arguments.length; i++) {
       FileObject fileObject = null;
@@ -388,23 +389,23 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         fileObject = KettleVFS.getFileObject(filename);
         if (null != fileObject && fileObject.exists()) {
           // folder
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
               "JobEntryDeleteFiles.CheckResult.Exists", filename), this)); //$NON-NLS-1$
           if (fileObject.getType() == FileType.FOLDER) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
                 "JobEntryDeleteFiles.CheckResult.IsFolder", filename), this)); //$NON-NLS-1$
             String wildcard = environmentSubstitute(filemasks[i]);
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
                 "JobEntryDeleteFiles.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
           }
         } else {
           // already deleted
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
               "JobEntryDeleteFiles.FileAlreadyDeleted", filename), this)); //$NON-NLS-1$
         }
       } catch (IOException e) {
         log.logError(toString(), e.getMessage());
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString(
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString(
             "JobEntryDeleteFiles.CouldNotProcess", filename, e.getMessage()), this)); //$NON-NLS-1$
       }
 

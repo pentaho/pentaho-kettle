@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -214,10 +215,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
     maximumTimeout = s;
   }
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryDelay.CheckRemark.MaximumTimeout", maximumTimeout), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryDelay.CheckRemark.ScaleTime", //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryDelay.CheckRemark.ScaleTime", //$NON-NLS-1$
         String.valueOf(scaleTime)), this));
 
   }

@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -221,17 +222,17 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     return new JobEntryEvalDialog(shell, this);
   }
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) 
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) 
   {
     if (Const.isEmpty(script)) 
     {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryEval.CheckResult.ScriptIsBlank"), this)); //$NON-NLS-1$
       return;
     }
     // show the first characters of the script
     String substr = script.substring(0, Math.min(75, script.length()));
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryEval.CheckResult.ScriptExcerpt", substr), this)); //$NON-NLS-1$
   }
 }

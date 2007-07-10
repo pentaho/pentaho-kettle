@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -414,17 +415,17 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ConstantMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ConstantMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ConstantMeta.CheckResult.NoFields"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ConstantMeta.CheckResult.NoFields"), stepMeta);
 			remarks.add(cr);
 		}
         

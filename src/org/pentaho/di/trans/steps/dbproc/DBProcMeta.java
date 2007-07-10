@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -403,7 +404,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResult> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
         String error_message = ""; //$NON-NLS-1$
@@ -447,44 +448,44 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
                     }
                     if (error_found)
                     {
-                        cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+                        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                     }
                     else
                     {
-                        cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.AllArgumentsOK"), stepMeta); //$NON-NLS-1$
+                        cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.AllArgumentsOK"), stepMeta); //$NON-NLS-1$
                     }
                     remarks.add(cr);
                 }
                 else
                 {
                     error_message = Messages.getString("DBProcMeta.CheckResult.CouldNotReadFields") + Const.CR; //$NON-NLS-1$
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                     remarks.add(cr);
                 }
             }
             catch (KettleException e)
             {
                 error_message = Messages.getString("DBProcMeta.CheckResult.ErrorOccurred") + e.getMessage(); //$NON-NLS-1$
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
             error_message = Messages.getString("DBProcMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DBProcMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("DBProcMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,7 +56,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		data=(RowGeneratorData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResult> remarks)
+    public static final RowMetaAndData buildRow(RowGeneratorMeta meta, List<CheckResultInterface> remarks)
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = RowDataUtil.allocateRowData(meta.getFieldName().length);
@@ -85,7 +86,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                     if ( valueMeta.getType() == ValueMetaInterface.TYPE_NONE )
                     {
                         String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));                    
+                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));                    
                     }
                 }
                 else
@@ -100,32 +101,32 @@ public class RowGenerator extends BaseStep implements StepInterface
                 		case ValueMetaInterface.TYPE_NUMBER:
 	                		{
 	                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Number", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
 	                		}
                             break;
                 		case ValueMetaInterface.TYPE_DATE:
 	                		{
 	                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Date", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
 	                		}
                             break;
                 		case ValueMetaInterface.TYPE_INTEGER:
 	                		{
 	                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Integer", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
 	                		}
 	                		break;
                         case ValueMetaInterface.TYPE_BIGNUMBER:
 	                        {
 	                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.BigNumber", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
 	                        }
 	                        break;
                         default:
                         	// Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
 	                        {
 	                            String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
-	                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
 	                        }
                         	break;
                 		}
@@ -187,7 +188,7 @@ public class RowGenerator extends BaseStep implements StepInterface
             }
             
             // Create a row (constants) with all the values in it...
-            List<CheckResult> remarks = new ArrayList<CheckResult>(); // stores the errors...
+            List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>(); // stores the errors...
             RowMetaAndData outputRow = buildRow(meta, remarks);
             if (remarks.size()>0) 
             { 

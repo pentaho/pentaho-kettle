@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -355,7 +356,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
         return list.toArray(new String[list.size()]);
     }
 
-    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
         /*
          * @todo Need to check for the following:
@@ -363,7 +364,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
          *   2) Number of input streams must be two (for now at least)
          *   3) The field names of input streams must be unique
          */ 
-        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MergeJoinMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
+        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("MergeJoinMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
         remarks.add(cr);
 	}
 	

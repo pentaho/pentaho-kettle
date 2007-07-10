@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -238,7 +239,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();
@@ -246,13 +247,13 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (Const.isEmpty(variableString[i]))
 			{
-				CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i]), stepMeta);
+				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("GetVariableMeta.CheckResult.VariableNotSpecified", fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size()==nrRemarks)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("GetVariableMeta.CheckResult.AllVariablesSpecified"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("GetVariableMeta.CheckResult.AllVariablesSpecified"), stepMeta);
 			remarks.add(cr);
 		}
 	}

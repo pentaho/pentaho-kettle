@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -237,31 +238,31 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 		return true;
 	}
   
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     if (filename == null) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.No_Filename_Is_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.No_Filename_Is_Defined"), this)); //$NON-NLS-1$
     } else {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
       String realFileName = environmentSubstitute(getFilename());
       FileObject fileObject = null;
       try {
         fileObject = KettleVFS.getFileObject(realFileName);
         if (fileObject != null) {
           if (!fileObject.exists() && isFailIfFileNotExists()) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName), this)); //$NON-NLS-1$
           } else if (!fileObject.exists() ) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName ), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.File_Does_Not_Exist", realFileName ), this)); //$NON-NLS-1$
           } else {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.File_Exists", realFileName), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryDeleteFile.CheckResult.File_Exists", realFileName), this)); //$NON-NLS-1$
           }
           try {
             fileObject.close(); // Just being cautious
           } catch (IOException ignored) {}
         } else {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.Could_Not_Convert_File", filename), this)); //$NON-NLS-1$
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.CheckResult.Could_Not_Convert_File", filename), this)); //$NON-NLS-1$
         }
       } catch (IOException ex) {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.ERROR_0008_CheckResult.File_IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryDeleteFile.ERROR_0008_CheckResult.File_IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
       }
     }
     

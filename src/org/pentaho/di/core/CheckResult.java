@@ -23,25 +23,8 @@ package org.pentaho.di.core;
  * @since 11-01-04
  * 
  */
-public class CheckResult
+public class CheckResult implements CheckResultInterface
 {
-    public static final int TYPE_RESULT_NONE = 0;
-
-    public static final int TYPE_RESULT_OK = 1;
-
-    public static final int TYPE_RESULT_COMMENT = 2;
-
-    public static final int TYPE_RESULT_WARNING = 3;
-
-    public static final int TYPE_RESULT_ERROR = 4;
-
-    public static final String typeDesc[] = {
-                                             "",
-                                             Messages.getString("CheckResult.OK"),
-                                             Messages.getString("CheckResult.Remark"),
-                                             Messages.getString("CheckResult.Warning"),
-                                             Messages.getString("CheckResult.Error")
-                                             };
 
     private int type;
 
@@ -55,7 +38,7 @@ public class CheckResult
 
     public CheckResult()
     {
-        this(TYPE_RESULT_NONE, "", null);
+        this(CheckResultInterface.TYPE_RESULT_NONE, "", null); //$NON-NLS-1$
     }
 
     public CheckResult(int t, String s, CheckResultSourceInterface sourceMeta)
@@ -79,7 +62,7 @@ public class CheckResult
 
     public String getTypeDesc()
     {
-        return typeDesc[type];
+        return CheckResultInterface.typeDesc[type];
     }
 
     public String getText()
@@ -95,10 +78,10 @@ public class CheckResult
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
-        sb.append(typeDesc[type]).append(": ").append(text);
+        sb.append(CheckResultInterface.typeDesc[type]).append(": ").append(text); //$NON-NLS-1$
 
         if (sourceMeta != null)
-            sb.append(" (").append(sourceMeta.getName()).append(")");
+            sb.append(" (").append(sourceMeta.getName()).append(")");  //$NON-NLS-1$ //$NON-NLS-2$
 
         return sb.toString();
     }
@@ -118,4 +101,13 @@ public class CheckResult
     {
         this.errorCode = errorCode;
     }
+    public void setText(String value) {
+      this.text = value;
+    }
+
+    public void setType(int value) {
+      this.type = value;
+    }
+
+
 }

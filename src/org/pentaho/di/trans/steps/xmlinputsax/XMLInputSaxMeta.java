@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -646,31 +647,31 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 		return files;
 	}
 	
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepinfo);
 			remarks.add(cr);
 		}
 		
 		String files[] = getFiles(transMeta);
 		if (files==null || files.length==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading "+files.length+" files.", stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "This step is reading "+files.length+" files.", stepinfo);
 			remarks.add(cr);
 		}
 	}

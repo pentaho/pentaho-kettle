@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
-import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -63,7 +63,7 @@ public class CheckResultDialog extends Dialog
 	private static final String STRING_HIDE_REMARKS = Messages.getString("CheckResultDialog.Remarks.Label");
 	private static final String STRING_SHOW_REMARKS = Messages.getString("CheckResultDialog.WarningsErrors.Label");
 
-	private List<CheckResult> remarks;
+	private List<CheckResultInterface> remarks;
 		
 	private Label        wlFields;
 	private TableView    wFields;
@@ -84,7 +84,7 @@ public class CheckResultDialog extends Dialog
 	private TransMeta transMeta;
 	
 
-	public CheckResultDialog(TransMeta transMeta, Shell parent, int style, List<CheckResult> rem)
+	public CheckResultDialog(TransMeta transMeta, Shell parent, int style, List<CheckResultInterface> rem)
 	{
 			super(parent, style);
 			remarks=rem;
@@ -218,8 +218,8 @@ public class CheckResultDialog extends Dialog
 		
 		for (int i=0;i<remarks.size();i++)
 		{
-			CheckResult cr = (CheckResult)remarks.get(i);
-			if (show_successful_results || cr.getType()!=CheckResult.TYPE_RESULT_OK)
+      CheckResultInterface cr = (CheckResultInterface)remarks.get(i);
+			if (show_successful_results || cr.getType()!=CheckResultInterface.TYPE_RESULT_OK)
 			{
 				TableItem ti = new TableItem(wFields.table, SWT.NONE); 
 				// MB - Support both JobEntry and Step Checking
@@ -233,10 +233,10 @@ public class CheckResultDialog extends Dialog
 				Color col = ti.getBackground();
 				switch(cr.getType())
 				{
-					case CheckResult.TYPE_RESULT_OK:      col=green;  break;
-					case CheckResult.TYPE_RESULT_ERROR:   col=red;    break;
-					case CheckResult.TYPE_RESULT_WARNING: col=yellow; break;
-					case CheckResult.TYPE_RESULT_COMMENT: 
+					case CheckResultInterface.TYPE_RESULT_OK:      col=green;  break;
+					case CheckResultInterface.TYPE_RESULT_ERROR:   col=red;    break;
+					case CheckResultInterface.TYPE_RESULT_WARNING: col=yellow; break;
+					case CheckResultInterface.TYPE_RESULT_COMMENT: 
 					default:break;
 				}
 				ti.setBackground(col);

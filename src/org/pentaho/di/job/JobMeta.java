@@ -29,7 +29,7 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -2535,7 +2535,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
    * @param only_selected true if you only want to check the selected jobs
    * @param monitor Progress monitor (not presently in use)
 	 */
-  public void checkJobEntries(List<CheckResult> remarks, boolean only_selected, IProgressMonitor monitor) {
+  public void checkJobEntries(List<CheckResultInterface> remarks, boolean only_selected, IProgressMonitor monitor) {
     remarks.clear(); // Empty remarks
     if (monitor != null) monitor.beginTask(Messages.getString("JobMeta.Monitor.VerifyingThisJobEntryTask.Title"), jobcopies.size() + 2); //$NON-NLS-1$
     boolean stop_checking = false;

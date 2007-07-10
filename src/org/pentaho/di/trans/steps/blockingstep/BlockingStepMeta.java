@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -69,7 +70,7 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
 	 */
 	public static final int CACHE_SIZE = 5000;	
 		   
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
         
@@ -83,39 +84,39 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
             {
                 if (f.isDirectory())
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory),
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory),
                             stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory",
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory",
                             realDirectory), stepMeta);
                     remarks.add(cr);
                 }
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory),
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory),
                         stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length>0) 
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         } 
         else 
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("BlockingStepMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

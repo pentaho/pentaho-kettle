@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -166,7 +167,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     /**
      * A list of remarks on the current Transformation...
      */
-    private List<CheckResult> remarks;
+    private List<CheckResultInterface> remarks;
     
     /**
      * A list of impacts of the current transformation on the used databases.
@@ -245,7 +246,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         clearSettings();
         
         
-        remarks = new ArrayList<CheckResult>();
+        remarks = new ArrayList<CheckResultInterface>();
         impact  = new ArrayList<DatabaseImpact>();
         impactFinished = false;
 
@@ -2201,12 +2202,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         return transMeta.hasChanged();
     }
 
-    public List<CheckResult> getRemarks()
+    public List<CheckResultInterface> getRemarks()
     {
         return remarks;
     }
 
-    public void setRemarks(List<CheckResult> remarks)
+    public void setRemarks(List<CheckResultInterface> remarks)
     {
         this.remarks = remarks;
     }

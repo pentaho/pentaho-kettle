@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,7 +56,7 @@ public class Constant extends BaseStep implements StepInterface
 		data=(ConstantData)stepDataInterface;
 	}
 	
-    public static final RowMetaAndData buildRow(ConstantMeta meta, ConstantData data, List<CheckResult> remarks)
+    public static final RowMetaAndData buildRow(ConstantMeta meta, ConstantData data, List<CheckResultInterface> remarks)
     {
         RowMetaInterface rowMeta=new RowMeta();
         Object[] rowData = new Object[meta.getFieldName().length];
@@ -78,7 +79,7 @@ public class Constant extends BaseStep implements StepInterface
                     if ( value.getType() == ValueMetaInterface.TYPE_NONE )
                     {
                         String message = Messages.getString("Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));                    
+                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));                    
                     }
                 }
                 else
@@ -105,7 +106,7 @@ public class Constant extends BaseStep implements StepInterface
                         catch(Exception e)
                         {
                             String message = Messages.getString("Constant.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e.toString() );
-                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
                         
@@ -127,7 +128,7 @@ public class Constant extends BaseStep implements StepInterface
                         catch(Exception e)
                         {
                             String message = Messages.getString("Constant.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
-                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
                         
@@ -139,7 +140,7 @@ public class Constant extends BaseStep implements StepInterface
                         catch(Exception e)
                         {
                             String message = Messages.getString("Constant.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e.toString() );
-                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
     
@@ -151,7 +152,7 @@ public class Constant extends BaseStep implements StepInterface
                         catch(Exception e)
                         {
                             String message = Messages.getString("Constant.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e.toString() );
-                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
                         
@@ -165,7 +166,7 @@ public class Constant extends BaseStep implements StepInterface
                         
                     default:
                         String message = Messages.getString("Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue);
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
                     }
                 }
                 // Now add value to the row!
@@ -225,7 +226,7 @@ public class Constant extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
             // Create a row (constants) with all the values in it...
-            List<CheckResult> remarks = new ArrayList<CheckResult>(); // stores the errors...
+            List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>(); // stores the errors...
             data.constants = buildRow(meta, data, remarks);           
 		    if (remarks.size()==0) 
             { 
@@ -235,7 +236,7 @@ public class Constant extends BaseStep implements StepInterface
             {
                 for (int i=0;i<remarks.size();i++)
                 {
-                    CheckResult cr = remarks.get(i);
+                    CheckResultInterface cr = remarks.get(i);
                     log.logError(getStepname(), cr.getText());
                 }
             }

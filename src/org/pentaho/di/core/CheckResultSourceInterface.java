@@ -23,8 +23,21 @@
  * 6/25/07
  */
 public interface CheckResultSourceInterface {
+  /**
+   * @return The name of the source generating the CheckResult
+   */
   public String getName();
+  /**
+   * @return The description of the source generating the CheckResult
+   */
   public String getDescription();
+  /**
+   * @return The ID of the source generating the CheckResult
+   */
   public long getID();
+  /**
+   * @return The Type ID of the source generating the CheckResult. The Type ID
+   * is the system-defined type identifier (like TRANS or SORT).
+   */
   public String getTypeId();
 }

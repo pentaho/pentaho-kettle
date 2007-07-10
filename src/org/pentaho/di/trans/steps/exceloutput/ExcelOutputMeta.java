@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -752,14 +753,14 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -778,12 +779,12 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			if (error_found) 
 			{
 				error_message= Messages.getString("ExcelOutputMeta.CheckResult.FieldsNotFound", error_message);
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -791,16 +792,16 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ExcelOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("ExcelOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("ExcelOutputMeta.CheckResult.FilesNotChecked"), stepMeta);
 		remarks.add(cr);
 	}
 

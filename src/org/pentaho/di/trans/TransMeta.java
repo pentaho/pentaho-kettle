@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
@@ -4177,7 +4178,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
      * @param only_selected Check only the selected steps.
      * @param monitor The progress monitor to use, null if not used
      */
-    public void checkSteps(List<CheckResult> remarks, boolean only_selected, IProgressMonitor monitor)
+    public void checkSteps(List<CheckResultInterface> remarks, boolean only_selected, IProgressMonitor monitor)
     {
         try
         {
@@ -4224,7 +4225,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     catch (KettleStepException kse)
                     {
                         info = null;
-                        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",""+stepMeta , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
+                        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",""+stepMeta , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
                         remarks.add(cr);
                     }
                 }
@@ -4237,7 +4238,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 }
                 catch (KettleStepException kse)
                 {
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""+stepMeta
+                    CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""+stepMeta
                             , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
                     // This is a severe error: stop checking...
@@ -4292,7 +4293,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                                 if (prevName.equalsIgnoreCase(sortedNames[x]))
                                 {
                                     // Give a warning!!
-                                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR,
+                                    CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR,
                                             Messages.getString("TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description", prevName ), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
                                     remarks.add(cr);
                                 }
@@ -4305,14 +4306,14 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     }
                     else
                     {
-                        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description") + stepMeta.getName(), //$NON-NLS-1$
+                        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description") + stepMeta.getName(), //$NON-NLS-1$
                                 stepMeta);
                         remarks.add(cr);
                     }
                 }
                 else
                 {
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description"), stepMeta); //$NON-NLS-1$
+                    CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description"), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
                 }
                 
@@ -4323,7 +4324,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 }
                 catch(KettleRowException e)
                 {
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, e.getMessage(), stepMeta);
+                    CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, e.getMessage(), stepMeta);
                     remarks.add(cr);
                 }
                 
@@ -4346,7 +4347,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     try
                     {
                         logdb.connect();
-                        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description"), //$NON-NLS-1$
+                        CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description"), //$NON-NLS-1$
                                 null);
                         remarks.add(cr);
 
@@ -4354,19 +4355,19 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                         {
                             if (logdb.checkTableExists(getLogTable()))
                             {
-                                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", getLogTable() ), null); //$NON-NLS-1$ //$NON-NLS-2$
+                                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", getLogTable() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
                                 RowMetaInterface fields = Database.getTransLogrecordFields(isBatchIdUsed(), isLogfieldUsed());
                                 String sql = logdb.getDDL(getLogTable(), fields);
                                 if (sql == null || sql.length() == 0)
                                 {
-                                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description"), null); //$NON-NLS-1$
+                                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description"), null); //$NON-NLS-1$
                                     remarks.add(cr);
                                 }
                                 else
                                 {
-                                    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description") + Const.CR + sql, //$NON-NLS-1$
+                                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description") + Const.CR + sql, //$NON-NLS-1$
                                             null);
                                     remarks.add(cr);
                                 }
@@ -4374,13 +4375,13 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                             }
                             else
                             {
-                                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description"), null); //$NON-NLS-1$
+                                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description"), null); //$NON-NLS-1$
                                 remarks.add(cr);
                             }
                         }
                         else
                         {
-                            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description"), null); //$NON-NLS-1$
+                            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description"), null); //$NON-NLS-1$
                             remarks.add(cr);
                         }
                     }
@@ -4403,13 +4404,13 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 for(ValueMetaInterface v:values.keySet())
                 {
                     String message = values.get(v);
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description",v.getName() , message ,v.getOrigin() ), findStep(v.getOrigin())); //$NON-NLS-1$
+                    CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description",v.getName() , message ,v.getOrigin() ), findStep(v.getOrigin())); //$NON-NLS-1$
                     remarks.add(cr);
                 }
             }
             else
             {
-                CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
+                CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
                         Messages.getString("TransMeta.CheckResult.TypeResultOK.Description"), null); //$NON-NLS-1$
                 remarks.add(cr);
             }

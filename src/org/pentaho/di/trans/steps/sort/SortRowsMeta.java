@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -320,13 +321,13 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         
     }
 
-    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
     {
         CheckResult cr;
 
         if (prev != null && prev.size() > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size()),
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size()),
                     stepMeta);
             remarks.add(cr);
 
@@ -347,19 +348,19 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 error_message = Messages.getString("SortRowsMeta.CheckResult.SortKeysNotFound", error_message);
 
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
                 remarks.add(cr);
             }
             else
             {
                 if (fieldName.length > 0)
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.AllSortKeysFound"), stepMeta);
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.AllSortKeysFound"), stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoSortKeysEntered"), stepMeta);
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoSortKeysEntered"), stepMeta);
                     remarks.add(cr);
                 }
             }
@@ -372,39 +373,39 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 if (f.isDirectory())
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory),
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory),
                             stepMeta);
                     remarks.add(cr);
                 }
                 else
                 {
-                    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory",
+                    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory",
                             realDirectory), stepMeta);
                     remarks.add(cr);
                 }
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory),
+                cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory),
                         stepMeta);
                 remarks.add(cr);
             }
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.ExpectedInputOk"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.ExpectedInputOk"), stepMeta);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExpectedInputError"), stepMeta);
+            cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExpectedInputError"), stepMeta);
             remarks.add(cr);
         }
     }

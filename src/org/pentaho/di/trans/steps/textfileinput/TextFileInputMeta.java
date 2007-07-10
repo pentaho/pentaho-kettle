@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -1258,7 +1259,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
     
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
@@ -1267,18 +1268,18 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if ( !isAcceptingFilenames() )
 			{					
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.NoInputError"), stepinfo);
+			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.NoInputError"), stepinfo);
 			    remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.AcceptFilenamesOk"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.AcceptFilenamesOk"), stepinfo);
 			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.NoInputOk"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.NoInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 
@@ -1287,13 +1288,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if ( ! isAcceptingFilenames() )
 			{
-			    cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
+			    cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
 			    remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesOk", "" + textFileList.nrOfFiles()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesOk", "" + textFileList.nrOfFiles()), stepinfo);
 			remarks.add(cr);
 		}
 	}

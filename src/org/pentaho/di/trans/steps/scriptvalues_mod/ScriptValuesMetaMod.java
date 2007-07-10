@@ -39,6 +39,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -436,7 +437,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     }
 
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		boolean error_found=false;
 		String error_message = ""; //$NON-NLS-1$
@@ -476,7 +477,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 		
 		if (prev!=null && strActiveScript.length()>0)		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 
 			// Adding the existing Scripts to the Context
@@ -496,7 +497,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
                 }
 			}catch(Exception e){
 				error_message = ("Couldn't add JavaClasses to Context! Error:");
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			
@@ -506,7 +507,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				((ScriptableObject)jsscope).defineFunctionProperties(ScriptValuesAddedFunctions.jsFunctionList, ScriptValuesAddedFunctions.class, ScriptableObject.DONTENUM);
 			} catch (Exception ex) {
 				error_message="Couldn't add Default Functions! Error:"+Const.CR+ex.toString();
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			};
 
@@ -518,7 +519,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				jsscope.put("CONTINUE_TRANSFORMATION", jsscope, new Integer(ScriptValuesMod.CONTINUE_TRANSFORMATION));
 			} catch (Exception ex) {
 				error_message="Couldn't add Transformation Constants! Error:"+Const.CR+ex.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			};
 
@@ -544,7 +545,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$			
 			} catch(Exception ev){
 				error_message="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			
@@ -553,26 +554,26 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				if(strActiveStartScript != null && strActiveStartScript.length()>0){
 					/* Object startScript =*/ jscx.evaluateString(jsscope, strActiveStartScript, "trans_Start", 1, null);
 					error_message = "Found Start Script. "+ strActiveStartScriptName+" Processing OK";
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
 					remarks.add(cr);
 				}
 			}catch(Exception e){
 				error_message="Couldn't process Start Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);				
 			};
 			
 			try{
 				jsscript=jscx.compileString(strActiveScript, "script", 1, null); //$NON-NLS-1$
 				
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK"), stepinfo); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK"), stepinfo); //$NON-NLS-1$
 				remarks.add(cr);
 
 				try{
 					
 					jsscript.exec(jscx, jsscope);
 
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ScriptCompiledOK2"), stepinfo); //$NON-NLS-1$
 					remarks.add(cr);
 					
 					if (name.length>0){
@@ -580,23 +581,23 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 												
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, message.toString(), stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message.toString(), stepinfo);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, message.toString(), stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, message.toString(), stepinfo);
 						}
 						remarks.add(cr);
 					}
 				}catch(JavaScriptException jse){
 					Context.exit();
 					error_message=Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript")+Const.CR+jse.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}catch(Exception e){
 					Context.exit();
 					error_message=Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotExecuteScript2")+Const.CR+e.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}
 				
@@ -605,33 +606,33 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 					if(strActiveEndScript != null && strActiveEndScript.length()>0){
 						/* Object endScript = */ jscx.evaluateString(jsscope, strActiveEndScript, "trans_End", 1, null);
 						error_message = "Found End Script. "+ strActiveEndScriptName+" Processing OK";
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, error_message, stepinfo); //$NON-NLS-1$
 						remarks.add(cr);
 					}
 				}catch(Exception e){
 					error_message="Couldn't process End Script! Error:"+Const.CR+e.toString(); //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);				
 				};
 			}catch(Exception e){
 				Context.exit();
 				error_message = Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotCompileScript")+Const.CR+e.toString(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 		}else{
 			Context.exit();
 			error_message = Messages.getString("ScriptValuesMetaMod.CheckResult.CouldNotGetFieldsFromPreviousStep"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0){
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("ScriptValuesMetaMod.CheckResult.ConnectedStepOK2"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}else{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ScriptValuesMetaMod.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("ScriptValuesMetaMod.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

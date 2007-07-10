@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.Result;
@@ -358,13 +359,13 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 
 		if (databaseMeta != null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
 					.getString("ExecSQLMeta.CheckResult.ConnectionExists"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 
@@ -376,24 +377,24 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
 						.getString("ExecSQLMeta.CheckResult.DBConnectionOK"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 
 				if (sql != null && sql.length() != 0)
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
 							.getString("ExecSQLMeta.CheckResult.SQLStatementEntered"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				} else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
 							.getString("ExecSQLMeta.CheckResult.SQLStatementMissing"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				}
 			} catch (KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
 						.getString("ExecSQLMeta.CheckResult.ErrorOccurred") + e.getMessage(), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} finally
@@ -402,7 +403,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		} else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
 					.getString("ExecSQLMeta.CheckResult.ConnectionNeeded"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
@@ -412,12 +413,12 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (input.length > 0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
 						.getString("ExecSQLMeta.CheckResult.StepReceivingInfoOK"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
 						.getString("ExecSQLMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
@@ -425,12 +426,12 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (input.length > 0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
 						.getString("ExecSQLMeta.CheckResult.SQLOnlyExecutedOnce"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			} else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages
 						.getString("ExecSQLMeta.CheckResult.InputReceivedOKForSQLOnlyExecuteOnce"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}

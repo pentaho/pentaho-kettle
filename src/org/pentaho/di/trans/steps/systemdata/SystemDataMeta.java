@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -388,7 +389,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		// See if we have input streams leading to this step!
 		int nrRemarks = remarks.size();
@@ -396,13 +397,13 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (fieldType[i]<=TYPE_SYSTEM_INFO_NONE)
 			{
-				CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i]), stepMeta);
+				CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i]), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		if (remarks.size()==nrRemarks)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.AllTypesSpecified"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.AllTypesSpecified"), stepMeta);
 			remarks.add(cr);
 		}
 	}

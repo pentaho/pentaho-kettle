@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -112,7 +112,7 @@ public interface JobEntryInterface
      * @param remarks List of CheckResult objects indicating check status
      * @param jobMeta JobMeta
      */
-    public void check(List<CheckResult> remarks, JobMeta jobMeta);
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta);
     
     /**
      * Get a list of all the resource dependencies that the step is depending on.

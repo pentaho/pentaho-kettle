@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
@@ -488,7 +489,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		// Default: nothing changes to rowMeta
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -503,7 +504,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 				if (!Const.isEmpty(tableName))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.TableNameOK"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -517,7 +518,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					RowMetaInterface r = db.getTableFields(schemaTable);
 					if (r!=null)
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.TableExists"), stepMeta); //$NON-NLS-1$
 						remarks.add(cr);
 
 						// How about the fields to insert/dateMask in the table?
@@ -543,18 +544,18 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 					}
 					else
 					{
 						error_message=Messages.getString("OraBulkLoaderMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
 				}
@@ -562,7 +563,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 				// Look up fields in the input stream <prev>
 				if (prev!=null && prev.size()>0)
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.StepReceivingDatas",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 					remarks.add(cr);
 
 					boolean first=true;
@@ -585,25 +586,25 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					if (error_found)
  					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.AllFieldsFoundInInput"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
 					error_message=Messages.getString("OraBulkLoaderMeta.CheckResult.MissingFieldsInInput3")+Const.CR; //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
 				error_message = Messages.getString("OraBulkLoaderMeta.CheckResult.DatabaseErrorOccurred")+e.getMessage(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -614,19 +615,19 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		else
 		{
 			error_message = Messages.getString("OraBulkLoaderMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("OraBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("OraBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("OraBulkLoaderMeta.CheckResult.NoInputError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

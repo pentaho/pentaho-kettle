@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.cluster.ClusterSchema;
-import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
@@ -624,7 +624,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		return location;
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		stepMetaInterface.check(remarks, transMeta, this, prev, input, output, info);
 	}

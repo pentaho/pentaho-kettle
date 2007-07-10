@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -191,25 +192,25 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         return new JobEntryFileExistsDialog(shell,this,jobMeta);
     }
     
-    public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
       if (filename != null) {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
         String realFilename = getRealFilename();
         try {
           FileObject file = KettleVFS.getFileObject(realFilename);
           if (file.exists() && file.isReadable()) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.File_Exists", realFilename), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.File_Exists", realFilename), this)); //$NON-NLS-1$
           } else {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("JobEntryFileExists.CheckResult.File_Does_Not_Exist", realFilename), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("JobEntryFileExists.CheckResult.File_Does_Not_Exist", realFilename), this)); //$NON-NLS-1$
           }
           try {
             file.close(); // Paranoia
           } catch (IOException ignored) {}
         } catch (IOException ex) {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Received_IO_Error", filename), this)); //$NON-NLS-1$
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Received_IO_Error", filename), this)); //$NON-NLS-1$
         }
       } else {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Name_Not_Defined"), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Name_Not_Defined"), this)); //$NON-NLS-1$
       }
     }
       

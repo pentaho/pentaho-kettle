@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
@@ -629,7 +630,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		String error_message = ""; //$NON-NLS-1$
@@ -674,11 +675,11 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable"), stepinfo); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllLookupFieldsFoundInTable"), stepinfo); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 						
@@ -702,11 +703,11 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 						}
 						if (error_found)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable"), stepinfo); //$NON-NLS-1$
+							cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllReturnFieldsFoundInTable"), stepinfo); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 
@@ -714,7 +715,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					else
 					{
 						error_message=Messages.getString("DatabaseLookupMeta.Check.CouldNotReadTableInfo"); //$NON-NLS-1$
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 						remarks.add(cr);
 					}
 				}
@@ -742,25 +743,25 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					}
 					if (error_found)
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllFieldsFoundInInput"), stepinfo); //$NON-NLS-1$
+						cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.AllFieldsFoundInInput"), stepinfo); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
 					error_message=Messages.getString("DatabaseLookupMeta.Check.CouldNotReadFromPreviousSteps")+Const.CR; //$NON-NLS-1$
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+					cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleDatabaseException dbe)
 			{
 				error_message = Messages.getString("DatabaseLookupMeta.Check.DatabaseErrorWhileChecking")+dbe.getMessage(); //$NON-NLS-1$
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			finally
@@ -771,19 +772,19 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		else
 		{
 			error_message = Messages.getString("DatabaseLookupMeta.Check.MissingConnectionError"); //$NON-NLS-1$
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("DatabaseLookupMeta.Check.StepIsReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

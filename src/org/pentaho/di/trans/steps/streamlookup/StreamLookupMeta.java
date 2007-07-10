@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -499,13 +500,13 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			String  error_message=""; //$NON-NLS-1$
@@ -526,24 +527,24 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				error_message=Messages.getString("StreamLookupMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.CouldNotFindFieldsFromPreviousSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 
 		if (info!=null && info.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingLookupData",info.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			String  error_message=""; //$NON-NLS-1$
@@ -563,12 +564,12 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				error_message=Messages.getString("StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 
@@ -586,42 +587,42 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				error_message=Messages.getString("StreamLookupMeta.CheckResult.FieldsNotFoundInLookupStream2")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); //$NON-NLS-1$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.AllFieldsFoundInTheLookupStream2"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.FieldsNotFoundFromInLookupSep"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		
 		// See if the source step is filled in!
 		if (lookupFromStep==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.SourceStepNotSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.SourceStepNotSelected"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.SourceStepIsSelected"), stepMeta); //$NON-NLS-1$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.SourceStepIsSelected"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 			
 			// See if the step exists!
 			//
 			if (info!=null)
 			{	
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.SourceStepExist",lookupFromStep+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.SourceStepExist",lookupFromStep+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.SourceStepDoesNotExist",lookupFromStep+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.SourceStepDoesNotExist",lookupFromStep+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);
 			}
 		}
@@ -629,12 +630,12 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>=2)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("StreamLookupMeta.CheckResult.StepReceivingInfoFromInputSteps",input.length+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("StreamLookupMeta.CheckResult.NeedAtLeast2InputStreams",Const.CR,Const.CR), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			remarks.add(cr);
 		}
 	}

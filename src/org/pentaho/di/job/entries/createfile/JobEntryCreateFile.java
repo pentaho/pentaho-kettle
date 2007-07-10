@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -224,31 +225,31 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 		this.failIfFileExists = failIfFileExists;
 	}
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     if (filename == null) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsNotDefined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsNotDefined"), this)); //$NON-NLS-1$
     } else {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsDefined"), this)); //$NON-NLS-1$
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FilenameIsDefined"), this)); //$NON-NLS-1$
       String realFileName = environmentSubstitute(getFilename());
       FileObject fileObject = null;
       try {
         fileObject = KettleVFS.getFileObject(realFileName);
         if (fileObject != null) {
           if (fileObject.exists() && isFailIfFileExists()) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.FileExists", realFileName), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.FileExists", realFileName), this)); //$NON-NLS-1$
           } else if (fileObject.exists() ) {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FileExists", realFileName), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FileExists", realFileName), this)); //$NON-NLS-1$
           } else {
-            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FileDoesNotExist", realFileName), this)); //$NON-NLS-1$
+            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryCreateFile.CheckRemark.FileDoesNotExist", realFileName), this)); //$NON-NLS-1$
           }
           try {
             fileObject.close(); // Just being paranoid
           } catch (IOException ignored) {}
         } else {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("JobEntryCreateFile.CheckRemark.CouldNotConvertToRealFile", filename), this)); //$NON-NLS-1$
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("JobEntryCreateFile.CheckRemark.CouldNotConvertToRealFile", filename), this)); //$NON-NLS-1$
         }
       } catch (IOException ex) {
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryCreateFile.CheckRemark.IOException", realFileName, ex.getMessage()), this)); //$NON-NLS-1$
       }
     }
     

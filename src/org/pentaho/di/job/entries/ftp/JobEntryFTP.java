@@ -26,6 +26,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -552,16 +553,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     this.activeConnection = passive;
   }
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     LogWriter log = LogWriter.getInstance();
 
     // required
     if (Const.isEmpty(serverName)) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.ServerNameIsBlank"), this)); //$NON-NLS-1$
     }
     if (Const.isEmpty(targetDirectory)) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.TargetDirIsBlank"), this)); //$NON-NLS-1$
     } 
     else {
@@ -570,41 +571,41 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       try {
         targetDirObject = KettleVFS.getFileObject(realTargetDir);
         if (!targetDirObject.exists()) {
-          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString(
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString(
               "JobEntryFTP.CheckResult.TargetDirDoesNotExist", targetDirectory), this)); //$NON-NLS-1$
         }
       } 
       catch (IOException e) {
         log.logError(toString(), e.getMessage());
-        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages
+        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages
             .getString("JobEntryFTP.CheckResult.CannotCheckTargetDirExistence"), this)); //$NON-NLS-1$
       }
     }
     if (Const.isEmpty(userName)) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.UsernameIsBlank"), this)); //$NON-NLS-1$
     }
     if (null == password) {
-      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryFTP.CheckResult.PasswordIsNull"), this)); //$NON-NLS-1$
     }
 
     // optional
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.ActiveConnection", String.valueOf(activeConnection)), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Timeout", String.valueOf(timeout)), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Encoding", controlEncoding), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.BinaryMode", String.valueOf(binaryMode)), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.FtpDir", ftpDirectory), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.OnlyGetNew", String.valueOf(onlyGettingNewFiles)), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Remove", String.valueOf(remove)), this)); //$NON-NLS-1$
-    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
   }
 }

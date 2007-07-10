@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -950,14 +951,14 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	}
 
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -976,12 +977,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			if (error_found) 
 			{
 				error_message= Messages.getString("TextFileOutputMeta.CheckResult.FieldsNotFound", error_message);
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
 				remarks.add(cr);
 			}
 		}
@@ -989,16 +990,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
+		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
 		remarks.add(cr);
 	}
 

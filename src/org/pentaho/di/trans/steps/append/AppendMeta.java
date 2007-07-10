@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -242,23 +243,23 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info)
+    public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info)
 	{
 		CheckResult cr;
 		
 		if (getHeadStepName()!=null && getTailStepName()!=null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsOK"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsOK"), stepMeta);
 			remarks.add(cr);
 		}
 		else if (getHeadStepName()==null && getTailStepName()==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("MergeRowsMeta.CheckResult.SourceStepsMissing"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("MergeRowsMeta.CheckResult.OneSourceStepMissing"), stepMeta);
 			remarks.add(cr);
 		}
 	}

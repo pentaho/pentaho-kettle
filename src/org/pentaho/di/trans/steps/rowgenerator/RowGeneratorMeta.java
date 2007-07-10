@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.RowMetaAndData;
@@ -338,11 +339,11 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		List<CheckResult> remarks = new ArrayList<CheckResult>();
+		List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
 		RowMetaAndData rowMetaAndData = RowGenerator.buildRow(this, remarks);
 		if (remarks.size()>0) {
 			StringBuffer stringRemarks = new StringBuffer();
-			for (CheckResult remark : remarks) {
+			for (CheckResultInterface remark : remarks) {
 				stringRemarks.append(remark.toString()).append(Const.CR);
 			}
 			throw new KettleStepException(stringRemarks.toString());
@@ -447,28 +448,28 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void check(List<CheckResult> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("owGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("owGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
 			remarks.add(cr);
 			
             String strLimit = transMeta.environmentSubstitute(rowLimit);
 			if (Const.toLong(strLimit, -1L)<=0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.WillReturnRows", strLimit), stepMeta);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.WillReturnRows", strLimit), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -476,12 +477,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RowGeneratorMeta.CheckResult.NoInputError"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("RowGeneratorMeta.CheckResult.NoInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputOk"), stepMeta);
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 	}
