@@ -17,9 +17,11 @@ package org.pentaho.di.job.entries.eval;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -47,14 +49,14 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   private String script;
 
   public JobEntryEval(String n, String scr) {
-    super(n, "");
+    super(n, ""); //$NON-NLS-1$
     script = scr;
     setID(-1L);
     setType(JobEntryInterface.TYPE_JOBENTRY_EVALUATION);
   }
 
   public JobEntryEval() {
-    this("", "");
+    this("", ""); //$NON-NLS-1$ //$NON-NLS-2$
   }
 
   public JobEntryEval(JobEntryBase jeb) {
@@ -70,7 +72,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     StringBuffer retval = new StringBuffer();
 
     retval.append(super.getXML());
-    retval.append("      ").append(XMLHandler.addTagValue("script", script));
+    retval.append("      ").append(XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
 
     return retval.toString();
   }
@@ -78,9 +80,9 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      script = XMLHandler.getTagValue(entrynode, "script");
+      script = XMLHandler.getTagValue(entrynode, "script"); //$NON-NLS-1$
     } catch (Exception e) {
-      throw new KettleXMLException("Unable to load job entry of type 'evaluation' from XML node", e);
+      throw new KettleXMLException(Messages.getString("JobEntryEval.UnableToLoadFromXml"), e); //$NON-NLS-1$
     }
   }
 
@@ -88,10 +90,10 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     try {
       super.loadRep(rep, id_jobentry, databases);
 
-      script = rep.getJobEntryAttributeString(id_jobentry, "script");
+      script = rep.getJobEntryAttributeString(id_jobentry, "script"); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to load job entry of type 'evaluation' from the repository with id_jobentry="
-          + id_jobentry, dbe);
+      throw new KettleException(
+          Messages.getString("JobEntryEval.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -101,9 +103,9 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     try {
       super.saveRep(rep, id_job);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "script", script);
+      rep.saveJobEntryAttribute(id_job, getID(), "script", script); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'evaluation' to the repository for id_job=" + id_job,
+      throw new KettleException(Messages.getString("JobEntryEval.UnableToSaveToRepo", String.valueOf(id_job)), //$NON-NLS-1$
           dbe);
     }
   }
@@ -125,15 +127,15 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     LogWriter log = LogWriter.getInstance();
     Context cx;
     Scriptable scope;
-    String debug = "start";
+    String debug = "start"; //$NON-NLS-1$
 
     cx = Context.enter();
 
-    debug = "try";
+    debug = "try"; //$NON-NLS-1$
     try {
       scope = cx.initStandardObjects(null);
 
-      debug = "Long";
+      debug = "Long"; //$NON-NLS-1$
       Long errors = new Long(result.getNrErrors());
       Long lines_input = new Long(result.getNrLinesInput());
       Long lines_output = new Long(result.getNrLinesOutput());
@@ -145,30 +147,30 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
       Long files_retrieved = new Long(result.getNrFilesRetrieved());
       Long nr = new Long(result.getEntryNr());
 
-      debug = "scope.put";
-      scope.put("errors", scope, errors);
-      scope.put("lines_input", scope, lines_input);
-      scope.put("lines_output", scope, lines_output);
-      scope.put("lines_updated", scope, lines_updated);
-      scope.put("lines_rejected", scope, lines_rejected);
-      scope.put("lines_read", scope, lines_read);
-      scope.put("lines_written", scope, lines_written);
-      scope.put("files_retrieved", scope, files_retrieved);
-      scope.put("exit_status", scope, exit_status);
-      scope.put("nr", scope, nr);
-      scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows()));
+      debug = "scope.put"; //$NON-NLS-1$
+      scope.put("errors", scope, errors); //$NON-NLS-1$
+      scope.put("lines_input", scope, lines_input); //$NON-NLS-1$
+      scope.put("lines_output", scope, lines_output); //$NON-NLS-1$
+      scope.put("lines_updated", scope, lines_updated); //$NON-NLS-1$
+      scope.put("lines_rejected", scope, lines_rejected); //$NON-NLS-1$
+      scope.put("lines_read", scope, lines_read); //$NON-NLS-1$
+      scope.put("lines_written", scope, lines_written); //$NON-NLS-1$
+      scope.put("files_retrieved", scope, files_retrieved); //$NON-NLS-1$
+      scope.put("exit_status", scope, exit_status); //$NON-NLS-1$
+      scope.put("nr", scope, nr); //$NON-NLS-1$
+      scope.put("is_windows", scope, Boolean.valueOf(Const.isWindows())); //$NON-NLS-1$
 
       Object array[] = null;
       if (result.getRows() != null) {
         array = result.getRows().toArray();
       }
 
-      scope.put("rows", scope, array);
+      scope.put("rows", scope, array); //$NON-NLS-1$
 
       try {
-        debug = "cx.evaluateString()";
-        Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null);
-        debug = "toBoolean";
+        debug = "cx.evaluateString()"; //$NON-NLS-1$
+        Object res = cx.evaluateString(scope, this.script, "<cmd>", 1, null); //$NON-NLS-1$
+        debug = "toBoolean"; //$NON-NLS-1$
         boolean retval = Context.toBoolean(res);
         // System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
         result.setNrErrors(0);
@@ -176,12 +178,12 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
         return retval;
       } catch (Exception e) {
         result.setNrErrors(1);
-        log.logError(toString(), "Couldn't compile javascript: " + e.toString());
+        log.logError(toString(), Messages.getString("JobEntryEval.CouldNotCompile", e.toString())); //$NON-NLS-1$
         return false;
       }
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), "Error evaluating expression in [" + debug + "] : " + e.toString());
+      log.logError(toString(), Messages.getString("JobEntryEval.ErrorEvaluating", debug, e.toString())); //$NON-NLS-1$
       return false;
     } finally {
       Context.exit();
@@ -217,5 +219,18 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
   public JobEntryDialogInterface getDialog(Shell shell, JobEntryInterface jei, JobMeta jobMeta, String jobName,
       Repository rep) {
     return new JobEntryEvalDialog(shell, this);
+  }
+
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    if (StringUtils.isBlank(script)) {
+      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+          .getString("JobEntryEval.CheckResult.ScriptIsBlank"), this)); //$NON-NLS-1$
+      return;
+    }
+    // show the first characters of the script
+    String substr = script.substring(0, Math.min(75, script.length()));
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryEval.CheckResult.ScriptExcerpt", substr), this)); //$NON-NLS-1$
+
   }
 }
