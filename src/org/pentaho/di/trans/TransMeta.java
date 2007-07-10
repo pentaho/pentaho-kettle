@@ -5739,8 +5739,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
     
 	public String exportResources(Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) {
-		
-		String filename = resourceNamingInterface.nameResource(getName(), "xml");
+		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "xml");
 		ResourceDefinition definition = definitions.get(filename);
 		if (definition==null) {
 			// If we do this once, it will be plenty :-)
