@@ -149,6 +149,7 @@ import org.pentaho.di.core.widget.TreeMemory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPlugin;
@@ -4919,7 +4920,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                         }
                         else
                         {
-                            Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getTypeDesc());
+                            Image image = GUIResource.getInstance().getImagesJobentriesSmall().get(jobEntry.getEntry().getID());
                             tiJobEntry.setImage(image);
                         }
                     }
@@ -8601,11 +8602,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
 
     
-    public JobEntryTrans newJobEntry(JobMeta jobMeta, int type)
+    public JobEntryTrans newJobEntry(JobMeta jobMeta, JobEntryType type)
     {
         JobEntryTrans je = new JobEntryTrans();
-        je.setType(type);
-        String basename = JobEntryInterface.typeDesc[type]; 
+        je.setJobEntryType(type);
+        String basename = type.getDescription(); 
         int nr = jobMeta.generateJobEntryNameNr(basename);
         je.setName(basename+" "+nr); //$NON-NLS-1$
 
