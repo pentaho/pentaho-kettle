@@ -138,6 +138,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
             for (int i=0;meta.getFieldStream()!=null && i<meta.getFieldStream().length;i++)
             {
                 data.fieldnrs[i]=getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
+                if ((data.fieldnrs[i] < 0)) 
+                {
+                  throw new KettleStepException(Messages.getString("DimensionLookup.Exception.KeyFieldNotFound", meta.getFieldStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                }
             }
 
             if (meta.getDateField()!=null && meta.getDateField().length()>0)
