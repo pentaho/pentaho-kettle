@@ -17,7 +17,6 @@ package org.pentaho.di.job.entries.eval;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -221,8 +220,10 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     return new JobEntryEvalDialog(shell, this);
   }
 
-  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
-    if (StringUtils.isBlank(script)) {
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) 
+  {
+    if (Const.isEmpty(script)) 
+    {
       remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
           .getString("JobEntryEval.CheckResult.ScriptIsBlank"), this)); //$NON-NLS-1$
       return;
@@ -231,6 +232,5 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     String substr = script.substring(0, Math.min(75, script.length()));
     remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
         "JobEntryEval.CheckResult.ScriptExcerpt", substr), this)); //$NON-NLS-1$
-
   }
 }
