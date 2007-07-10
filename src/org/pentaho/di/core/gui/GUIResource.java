@@ -24,8 +24,8 @@ import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.ImageUtil;
 import org.pentaho.di.job.JobEntryLoader;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobPlugin;
-import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 
@@ -432,9 +432,9 @@ public class GUIResource
         JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
         for (int i = 0; i < plugins.length; i++)
         {
-            try
+            try 
             {
-                if (jobEntryLoader.getJobEntryClass(plugins[i]).getType()==JobEntryInterface.TYPE_JOBENTRY_SPECIAL) continue;
+                if (jobEntryLoader.getJobEntryClass(plugins[i]).getJobEntryType()==JobEntryType.SPECIAL) continue;
             }
             catch(KettleStepLoaderException e)
             {
