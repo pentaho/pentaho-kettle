@@ -456,6 +456,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             {
                 LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+realFilename+"] : "+e.toString());
                 LogWriter.getInstance().logError("Loading Mapping from XML", Const.getStackTracker(e));
+                throw new KettleException(e);
             }
         }
         else
@@ -737,7 +738,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			//
 			TransMeta mappingTransMeta = loadMappingMeta(fileName, null, null, null, space);
 			
-			String newFilename = resourceNamingInterface.nameResource(mappingTransMeta.getName(), fileName, "xml");
+			String newFilename = resourceNamingInterface.nameResource(mappingTransMeta.getName(), fileName, "ktr");
 			mappingTransMeta.setFilename(newFilename);
 
 			fileName = newFilename; // replace it BEFORE XML generation occurs! 

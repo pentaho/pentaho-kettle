@@ -2604,7 +2604,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
   
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
 		
-		String filename = namingInterface.nameResource(getName(), this.filename, "xml");
+		String filename = namingInterface.nameResource(getName(), this.filename, "kjb");
 		ResourceDefinition definition = definitions.get(filename);
 		if (definition==null) {
 			// If we do this once, it will be plenty :-)
@@ -2618,8 +2618,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 			
 			// loop over steps, databases will be exported to XML anyway. 
 			//
-			for (JobEntryInterface jobEntry: jobMeta.jobentries) {
-				jobEntry.exportResources(jobMeta, definitions, namingInterface);
+			for (JobEntryCopy jobEntry: jobMeta.jobcopies) {
+				jobEntry.getEntry().exportResources(jobMeta, definitions, namingInterface);
 			}
 			
 			// At the end, add ourselves to the map...
@@ -2627,6 +2627,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 			String transMetaContent = jobMeta.getXML();
 			
 			definition = new ResourceDefinition(filename, transMetaContent);
+			definitions.put(filename, definition);
 		}
 		
 		return filename;

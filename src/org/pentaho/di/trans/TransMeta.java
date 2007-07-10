@@ -5740,16 +5740,13 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
     
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
-		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "xml");
+		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "ktr");
 		ResourceDefinition definition = definitions.get(filename);
 		if (definition==null) {
 			// If we do this once, it will be plenty :-)
 			//
 			TransMeta transMeta = (TransMeta) this.clone();
-			
-			// Change the filename, calling this sets internal variables inside of the transformation.
-			//
-			transMeta.setFilename(filename);
+			// transMeta.copyVariablesFrom(space);
 			
 			// Add used resources, modify transMeta accordingly
 			// Go through the list of steps, etc.
@@ -5761,7 +5758,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			for (StepMeta stepMeta : transMeta.getSteps()) {
 				stepMeta.exportResources(space, definitions, resourceNamingInterface);
 			}
-			
+
+			// Change the filename, calling this sets internal variables inside of the transformation.
+			//
+			transMeta.setFilename(filename);
+
 			// At the end, add ourselves to the map...
 			//
 			String transMetaContent = transMeta.getXML();

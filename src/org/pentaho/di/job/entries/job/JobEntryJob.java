@@ -669,7 +669,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			//
 			JobMeta jobMeta = getJobMeta(null);
 			
-			String newFilename = namingInterface.nameResource(jobMeta.getName(), this.filename, "xml");
+			String newFilename = namingInterface.nameResource(jobMeta.getName(), this.filename, "kjb");
 			jobMeta.setFilename(newFilename);
 			
 			filename = newFilename; // Replace if BEFORE XML generation occurs.
