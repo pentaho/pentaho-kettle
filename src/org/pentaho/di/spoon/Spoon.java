@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -128,7 +127,6 @@ import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -7946,8 +7944,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         executionConfiguration.setExecutingRemotely(remote);
         executionConfiguration.setExecutingClustered(cluster);
         
+        Object data[] = variables.getData();
+        String fields[] = variables.getRowMeta().getFieldNames();
+        Map<String, String> variableMap = new HashMap<String, String>();
+        for ( int idx = 0; idx < fields.length; idx++ )
+        {
+            variableMap.put(fields[idx], data[idx].toString());
+        }          
+        
         executionConfiguration.getUsedVariables(transMeta);
         executionConfiguration.getUsedArguments(transMeta, arguments);
+        executionConfiguration.setVariables(variableMap);
         executionConfiguration.setReplayDate(replayDate);
         executionConfiguration.setLocalPreviewing(preview);
         
