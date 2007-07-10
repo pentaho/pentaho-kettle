@@ -30,6 +30,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -65,7 +66,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 		successOnTimeout = false;
 		fileSizeCheck    = false;
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_WAIT_FOR_FILE);
+		setJobEntryType(JobEntryType.WAIT_FOR_FILE);
 	}
 
 	public JobEntryWaitForFile()

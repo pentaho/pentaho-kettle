@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -55,7 +56,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		tablename=null;
 		connection=null;
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_TABLE_EXISTS);
+		setJobEntryType(JobEntryType.TABLE_EXISTS);
 	}
 
 	public JobEntryTableExists()

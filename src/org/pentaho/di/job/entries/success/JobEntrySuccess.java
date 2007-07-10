@@ -23,6 +23,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -44,7 +45,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 	public JobEntrySuccess(String n, String scr)
 	{
 		super(n, "");
-		setType(JobEntryInterface.TYPE_JOBENTRY_SUCCESS);
+		setJobEntryType(JobEntryType.SUCCESS);
 	}
 
 	public JobEntrySuccess()

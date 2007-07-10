@@ -42,6 +42,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -73,7 +74,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		outputfilename=null;
 		iffileexists=1;
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_XSLT);
+		setJobEntryType(JobEntryType.XSLT);
 	}
 
 	public JobEntryXSLT()

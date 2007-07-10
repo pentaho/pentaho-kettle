@@ -55,6 +55,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -103,7 +104,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 	public JobEntryMail(String n)
 	{
 		super(n, "");
-		setType(JobEntryInterface.TYPE_JOBENTRY_MAIL);
+		setJobEntryType(JobEntryType.MAIL);
 		allocate(0);
 	}
 

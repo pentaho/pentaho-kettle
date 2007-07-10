@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -55,7 +56,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		super(n, "");
 		bodymessage=null;
 		titremessage=null;
-		setType(JobEntryInterface.TYPE_JOBENTRY_MSGBOX_INFO);
+		setJobEntryType(JobEntryType.MSGBOX_INFO);
 	}
 
 	public JobEntryMsgBoxInfo()

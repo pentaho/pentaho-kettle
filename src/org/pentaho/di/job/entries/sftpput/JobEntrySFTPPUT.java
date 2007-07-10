@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -65,7 +66,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		serverName=null;
         serverPort="22";
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_SFTPPUT);
+		setJobEntryType(JobEntryType.SFTPPUT);
 	}
 
 	public JobEntrySFTPPUT()

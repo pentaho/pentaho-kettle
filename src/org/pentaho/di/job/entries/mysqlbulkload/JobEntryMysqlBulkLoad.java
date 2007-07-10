@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -77,7 +78,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		localinfile=true;
 		connection=null;
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_MYSQL_BULK_LOAD);
+		setJobEntryType(JobEntryType.MYSQL_BULK_LOAD);
 	}
 
 	public JobEntryMysqlBulkLoad()

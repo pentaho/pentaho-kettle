@@ -37,6 +37,7 @@ import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -68,7 +69,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public JobEntryShell(String name)
 	{
 		super(name, "");
-		setType(JobEntryInterface.TYPE_JOBENTRY_SHELL);
+		setJobEntryType(JobEntryType.SHELL);
 	}
 
 	public JobEntryShell()
@@ -80,7 +81,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public JobEntryShell(JobEntryBase jeb)
 	{
 		super(jeb);
-		setType(JobEntryInterface.TYPE_JOBENTRY_SHELL);
+		setJobEntryType(JobEntryType.SHELL);
 	}
     
     public Object clone()

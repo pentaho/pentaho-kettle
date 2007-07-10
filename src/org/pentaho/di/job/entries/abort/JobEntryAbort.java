@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -46,7 +47,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   public JobEntryAbort(String n, String scr) {
     super(n, ""); //$NON-NLS-1$
     messageAbort = null;
-    setType(JobEntryInterface.TYPE_JOBENTRY_ABORT);
+    setJobEntryType(JobEntryType.ABORT);
   }
 
   public JobEntryAbort() {

@@ -38,6 +38,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -98,7 +99,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     super(n, ""); //$NON-NLS-1$
     serverName = null;
     setID(-1L);
-    setType(JobEntryInterface.TYPE_JOBENTRY_FTP);
+    setJobEntryType(JobEntryType.FTP);
     setControlEncoding(DEFAULT_CONTROL_ENCODING);
   }
 

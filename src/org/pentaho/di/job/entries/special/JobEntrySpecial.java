@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -75,7 +76,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		super(name, "");
 		this.start = start;
 		this.dummy = dummy;
-		setType(JobEntryInterface.TYPE_JOBENTRY_SPECIAL);
+		setJobEntryType(JobEntryType.SPECIAL);
 	}
 	
 	public JobEntrySpecial(JobEntryBase jeb)

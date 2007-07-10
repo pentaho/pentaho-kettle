@@ -32,6 +32,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -60,7 +61,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
      	filename1=null;
      	filename2=null;
 		setID(-1L);
-		setType(JobEntryInterface.TYPE_JOBENTRY_FILE_COMPARE);
+		setJobEntryType(JobEntryType.FILE_COMPARE);
 	}
 
 	public JobEntryFileCompare()

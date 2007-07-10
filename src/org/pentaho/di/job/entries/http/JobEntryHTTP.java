@@ -47,6 +47,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -94,7 +95,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         super(n, "");
         url = null;
         setID(-1L);
-        setType(JobEntryInterface.TYPE_JOBENTRY_HTTP);
+        setJobEntryType(JobEntryType.HTTP);
     }
 
     public JobEntryHTTP()
