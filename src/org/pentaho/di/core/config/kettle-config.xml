@@ -22,7 +22,31 @@
 			value="org/pentaho/di/core/config/steps-rules.xml" />
 		<property name="setNext" value="steps/step" />
 	</config>
+	
+	<!--  This reads the jobs from the XML File defined below (configURL) We can use the same classes and rules; they are very similar-->
+	<config id="jobs-xml-config">
+		<config-class>
+			org.pentaho.di.core.config.DigesterConfigManager
+		</config-class>
 
+		<!-- Properties are automatically injected into fields/methods of the above class annotated with @Inject -->
+		<property name="configURL" value="kettle-jobs.xml" />
+		<property name="rulesURL"
+			value="org/pentaho/di/core/config/jobs-rules.xml" />
+		<property name="setNext" value="jobs/job" />
+	</config>
+	
+	<!--  This adds classes annotated with the @Job annotation as a Kettle job -->
+	<config id="jobs-annotation-config">
+		<config-class>
+			org.pentaho.di.core.config.AnnotatedJobConfigManager
+		</config-class>
+		<!-- the packages to scan for the annotation.  Even though this is not required, it is advisable to enter a value here to
+		avoid full classpath scanning.  Different packages can be separated by commas. Lastly, the scan IS RECURSIVE. -->
+		<property name="packages" value="org.pentaho.di.job.entries" />
+	</config>
+	
+	
 
 
 	<!--  THIS IS JUST TO SHOW HOW WE COULD HAVE A CONFIGURATION MANAGER IMPLEMENTED AS A DATABASE REPOSITORY.

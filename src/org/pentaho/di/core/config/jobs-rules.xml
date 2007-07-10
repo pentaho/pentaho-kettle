@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<digester-rules>
+  <pattern value="jobs/job">
+    <object-create-rule classname="org.pentaho.di.job.JobPluginMeta"/>
+    <set-properties-rule attrname="id"/>
+    <call-method-rule methodname="set" paramcount="2"  pattern="type"/>
+    <object-param-rule type="org.pentaho.di.job.JobEntryType" paramnumber="0" value="type" param="type" pattern="type"/>
+    <call-param-rule paramnumber="1" pattern="type"/>
+    <call-method-rule methodname="set" paramcount="2"  pattern="tooltip"/>
+    <object-param-rule type="java.lang.String" paramnumber="0" value="tooltipDesc" param="tooltipDesc" pattern="tooltip"/>
+    <call-param-rule paramnumber="1" pattern="tooltip"/>
+    <bean-property-setter-rule pattern="image-uri" propertyname="imageFileName"/>
+    <bean-property-setter-rule pattern="class-name" propertyname="className"/>
+     
+  </pattern>
+</digester-rules>

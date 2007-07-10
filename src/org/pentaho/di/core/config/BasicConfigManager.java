@@ -32,6 +32,10 @@ public abstract class BasicConfigManager<T> implements ConfigManager<T>
 	public <E> Collection<E> loadAs(Class<? extends E> type) throws KettleConfigException
 	{
 		Collection<T> coll = load();
+		
+		if (coll.size()==0)
+			return (Collection<E>)coll;
+		
 		for (T obj:coll)
 		{
 			if (obj.getClass().isAssignableFrom(type))
