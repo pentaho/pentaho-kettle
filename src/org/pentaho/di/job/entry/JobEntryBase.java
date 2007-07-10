@@ -425,21 +425,22 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 		variables.injectVariables(prop);
 	}
 
-  /**
-   * Support for overrides not having to put in a check method
-   * @param remarks CheckResults from checking the job entry
-   * @param jobMeta JobMeta information letting threading back to the JobMeta possible
-   */
-	 // public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    /**
+     * Support for overrides not having to put in a check method
+     * @param remarks CheckResults from checking the job entry
+     * @param jobMeta JobMeta information letting threading back to the JobMeta possible
+     */
+    public void check(List<CheckResult> remarks, JobMeta jobMeta) {
 
-	 // }
+	}
 
     /**
      * Get a list of all the resource dependencies that the step is depending on.
      *
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies() {
+    public List<ResourceReference> getResourceDependencies() 
+    {
     	return new ArrayList<ResourceReference>(); // default: return an empty resource dependency list.
     }
 }
