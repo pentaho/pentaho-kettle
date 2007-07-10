@@ -39,6 +39,7 @@
 	  <property name="junit"				location="junit"/>
 
 	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
+	  <property name="dist.dir"				value="."/>
 		  
 	  <target name="init" description="create timestamp and directories">
     	<echo>Init...</echo>
@@ -53,6 +54,9 @@
 		<mkdir dir="${api}"/>
 		<mkdir dir="${webstart}"/>
 		<mkdir dir="${junit}"/>
+	  	
+	  	<!-- used by the nightly build. we can build zips directly to this location -->
+	  	<mkdir dir="${dist.dir}"/>
 	  </target>
 
 	  <!--
@@ -310,7 +314,7 @@
 		
 	  <target name="zip" depends="distrib" description="generate the Kettle-${version}.zip file">
 	  	<echo>Generating the Kettle distribution package Kettle-${version}.zip ...</echo>
-	  	<jar jarfile="Kettle-${version}.zip" 
+	  	<jar jarfile="${dist.dir}/Kettle-${version}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -325,7 +329,7 @@
 		
 	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}.zip file">
 	  	<echo>Generating the Kettle source packge zip file (Kettle-src-${version}.zip) ...</echo>
-	  	<jar jarfile="Kettle-src-${version}.zip" 
+	  	<jar jarfile="${dist.dir}/Kettle-src-${version}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
@@ -523,5 +527,8 @@
 	  </target>
 
 	  <target name="clean" depends="cleandirs"/>
+	
+	
+	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip" />
 
 </project>
