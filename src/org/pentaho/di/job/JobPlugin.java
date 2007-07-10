@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -15,116 +15,138 @@
 
 package org.pentaho.di.job;
 
-
 /**
- * Contains the description of a job-entry of a job-entry plugin, what jars to load, the icon, etc.
- *  
+ * Contains the description of a job-entry of a job-entry plugin, what jars to
+ * load, the icon, etc.
+ * 
  * @since 2005-may-09
  * @author Matt
- *
+ * 
  */
 public class JobPlugin
 {
-    public static final int TYPE_ALL    = 0;
+	public static final int TYPE_ALL = 0;
 
-    public static final int TYPE_NATIVE = 1;
+	public static final int TYPE_NATIVE = 1;
 
-    public static final int TYPE_PLUGIN = 2;
+	public static final int TYPE_PLUGIN = 2;
 
-    private int             type;
+	private int type;
 
-    private String          id;
+	private String id;
 
-    private String          description;
+	private JobEntryType jobType;
+	
+	private String description;
 
-    private String          tooltip;
+	private String tooltip;
 
-    private String          directory;
+	private String directory;
 
-    private String          jarfiles[];
+	private String jarfiles[];
 
-    private String          icon_filename;
+	private String icon_filename;
 
-    private String          classname;
-    
-    public JobPlugin(int type, String id, String description, String tooltip, String directory, String jarfiles[], String icon_filename,
-            String classname)
-    {
-        this.type = type;
-        this.id = id;
-        this.description = description;
-        this.tooltip = tooltip;
-        this.directory = directory;
-        this.jarfiles = jarfiles;
-        this.icon_filename = icon_filename;
-        this.classname = classname;
-    }
+	private String classname;
 
-    public int getType()
-    {
-        return type;
-    }
+	public JobPlugin(int type, String id, JobEntryType jobType, String tooltip, String directory,
+			String jarfiles[], String icon_filename, String classname)
+	{
+		this.type = type;
+		this.id = id;
+		this.jobType = jobType;
+		this.description = jobType.getDescription();
+		this.tooltip = tooltip;
+		this.directory = directory;
+		this.jarfiles = jarfiles;
+		this.icon_filename = icon_filename;
+		this.classname = classname;
+	}
+	
+	public JobPlugin(int type, String id, String description, String tooltip, String directory,
+			String jarfiles[], String icon_filename, String classname)
+	{
+		this.type = type;
+		this.id = id;
+		this.jobType = null;
+		this.description = description;
+		this.tooltip = tooltip;
+		this.directory = directory;
+		this.jarfiles = jarfiles;
+		this.icon_filename = icon_filename;
+		this.classname = classname;
+	}
 
-    public boolean isNative()
-    {
-        return type == TYPE_NATIVE;
-    }
+	public int getType()
+	{
+		return type;
+	}
 
-    public boolean isPlugin()
-    {
-        return type == TYPE_PLUGIN;
-    }
+	public boolean isNative()
+	{
+		return type == TYPE_NATIVE;
+	}
 
-    /**
-     * @return The ID (code String) of the job or job-plugin.
-     */
-    public String getID()
-    {
-        return id;
-    }
+	public boolean isPlugin()
+	{
+		return type == TYPE_PLUGIN;
+	}
 
-    public String getDescription()
-    {
-        return description;
-    }
+	/**
+	 * @return The ID (code String) of the job or job-plugin.
+	 */
+	public String getID()
+	{
+		return id;
+	}
 
-    public String getTooltip()
-    {
-        return tooltip;
-    }
+	public String getDescription()
+	{
+		return description;
+	}
 
-    public String getDirectory()
-    {
-        return directory;
-    }
+	public JobEntryType getJobType()
+	{
+		return jobType;
+	}
 
-    public String[] getJarfiles()
-    {
-        return jarfiles;
-    }
+	public String getTooltip()
+	{
+		return tooltip;
+	}
 
-    public String getIconFilename()
-    {
-        return icon_filename;
-    }
+	public String getDirectory()
+	{
+		return directory;
+	}
 
-    public void setIconFilename(String filename)
-    {
-        icon_filename = filename;
-    }
+	public String[] getJarfiles()
+	{
+		return jarfiles;
+	}
 
-    public String getClassname()
-    {
-        return classname;
-    }
+	public String getIconFilename()
+	{
+		return icon_filename;
+	}
 
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
+	public void setIconFilename(String filename)
+	{
+		icon_filename = filename;
+	}
 
-    public boolean equals(Object obj)
-    {
-        return getID().equals(((JobPlugin) obj).getID());
-    }
+	public String getClassname()
+	{
+		return classname;
+	}
+
+	public int hashCode()
+	{
+		return id.hashCode();
+	}
+
+	public boolean equals(Object obj)
+	{
+		return getID().equals(((JobPlugin) obj).getID());
+	}
 }
