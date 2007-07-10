@@ -16,14 +16,17 @@
 package org.pentaho.di.job.entries.ftp;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -85,15 +88,15 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   /**
    * Implicit encoding used before PDI v2.4.1
    */
-  static private String LEGACY_CONTROL_ENCODING = "US-ASCII";
+  static private String LEGACY_CONTROL_ENCODING = "US-ASCII"; //$NON-NLS-1$
 
   /**
    * Default encoding when making a new ftp job entry instance.
    */
-  static private String DEFAULT_CONTROL_ENCODING = "ISO-8859-1";
+  static private String DEFAULT_CONTROL_ENCODING = "ISO-8859-1"; //$NON-NLS-1$
 
   public JobEntryFTP(String n) {
-    super(n, "");
+    super(n, ""); //$NON-NLS-1$
     serverName = null;
     setID(-1L);
     setType(JobEntryInterface.TYPE_JOBENTRY_FTP);
@@ -101,7 +104,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   public JobEntryFTP() {
-    this("");
+    this(""); //$NON-NLS-1$
   }
 
   public JobEntryFTP(JobEntryBase jeb) {
@@ -118,19 +121,19 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     retval.append(super.getXML());
 
-    retval.append("      ").append(XMLHandler.addTagValue("servername", serverName));
-    retval.append("      ").append(XMLHandler.addTagValue("username", userName));
-    retval.append("      ").append(
-        XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword())));
-    retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
-    retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
-    retval.append("      ").append(XMLHandler.addTagValue("wildcard", wildcard));
-    retval.append("      ").append(XMLHandler.addTagValue("binary", binaryMode));
-    retval.append("      ").append(XMLHandler.addTagValue("timeout", timeout));
-    retval.append("      ").append(XMLHandler.addTagValue("remove", remove));
-    retval.append("      ").append(XMLHandler.addTagValue("only_new", onlyGettingNewFiles));
-    retval.append("      ").append(XMLHandler.addTagValue("active", activeConnection));
-    retval.append("      ").append(XMLHandler.addTagValue("control_encoding", controlEncoding));
+    retval.append("      ").append(XMLHandler.addTagValue("servername", serverName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("username", userName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append( //$NON-NLS-1$
+        XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword()))); //$NON-NLS-1$
+    retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("wildcard", wildcard)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("binary", binaryMode)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("timeout", timeout)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("remove", remove)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("only_new", onlyGettingNewFiles)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("active", activeConnection)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("control_encoding", controlEncoding)); //$NON-NLS-1$ //$NON-NLS-2$
 
     return retval.toString();
   }
@@ -138,51 +141,51 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException {
     try {
       super.loadXML(entrynode, databases);
-      serverName = XMLHandler.getTagValue(entrynode, "servername");
-      userName = XMLHandler.getTagValue(entrynode, "username");
-      password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
-      ftpDirectory = XMLHandler.getTagValue(entrynode, "ftpdirectory");
-      targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
-      wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
-      binaryMode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "binary"));
-      timeout = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
-      remove = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "remove"));
-      onlyGettingNewFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "only_new"));
-      activeConnection = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "active"));
-      controlEncoding = XMLHandler.getTagValue(entrynode, "control_encoding");
+      serverName = XMLHandler.getTagValue(entrynode, "servername"); //$NON-NLS-1$
+      userName = XMLHandler.getTagValue(entrynode, "username"); //$NON-NLS-1$
+      password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password")); //$NON-NLS-1$
+      ftpDirectory = XMLHandler.getTagValue(entrynode, "ftpdirectory"); //$NON-NLS-1$
+      targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory"); //$NON-NLS-1$
+      wildcard = XMLHandler.getTagValue(entrynode, "wildcard"); //$NON-NLS-1$
+      binaryMode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "binary")); //$NON-NLS-1$ //$NON-NLS-2$
+      timeout = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000); //$NON-NLS-1$
+      remove = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "remove")); //$NON-NLS-1$ //$NON-NLS-2$
+      onlyGettingNewFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "only_new")); //$NON-NLS-1$ //$NON-NLS-2$
+      activeConnection = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "active")); //$NON-NLS-1$ //$NON-NLS-2$
+      controlEncoding = XMLHandler.getTagValue(entrynode, "control_encoding"); //$NON-NLS-1$
       if (controlEncoding == null) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
         // put in the the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
     } catch (KettleXMLException xe) {
-      throw new KettleXMLException("Unable to load job entry of type 'ftp' from XML node", xe);
+      throw new KettleXMLException(Messages.getString("JobEntryFTP.UnableToLoadFromXml"), xe); //$NON-NLS-1$
     }
   }
 
   public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases) throws KettleException {
     try {
       super.loadRep(rep, id_jobentry, databases);
-      serverName = rep.getJobEntryAttributeString(id_jobentry, "servername");
-      userName = rep.getJobEntryAttributeString(id_jobentry, "username");
-      password = rep.getJobEntryAttributeString(id_jobentry, "password");
-      ftpDirectory = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
-      targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
-      wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
-      binaryMode = rep.getJobEntryAttributeBoolean(id_jobentry, "binary");
-      timeout = (int) rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
-      remove = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
-      onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
-      activeConnection = rep.getJobEntryAttributeBoolean(id_jobentry, "active");
-      controlEncoding = rep.getJobEntryAttributeString(id_jobentry, "control_encoding");
+      serverName = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
+      userName = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
+      password = rep.getJobEntryAttributeString(id_jobentry, "password"); //$NON-NLS-1$
+      ftpDirectory = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory"); //$NON-NLS-1$
+      targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory"); //$NON-NLS-1$
+      wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard"); //$NON-NLS-1$
+      binaryMode = rep.getJobEntryAttributeBoolean(id_jobentry, "binary"); //$NON-NLS-1$
+      timeout = (int) rep.getJobEntryAttributeInteger(id_jobentry, "timeout"); //$NON-NLS-1$
+      remove = rep.getJobEntryAttributeBoolean(id_jobentry, "remove"); //$NON-NLS-1$
+      onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new"); //$NON-NLS-1$
+      activeConnection = rep.getJobEntryAttributeBoolean(id_jobentry, "active"); //$NON-NLS-1$
+      controlEncoding = rep.getJobEntryAttributeString(id_jobentry, "control_encoding"); //$NON-NLS-1$
       if (controlEncoding == null) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
         // put in the the encoding used before v 2.4.0
         controlEncoding = LEGACY_CONTROL_ENCODING;
       }
     } catch (KettleException dbe) {
-      throw new KettleException("Unable to load job entry of type 'ftp' from the repository for id_jobentry="
-          + id_jobentry, dbe);
+      throw new KettleException(
+          Messages.getString("JobEntryFTP.UnableToLoadFromRepo", String.valueOf(id_jobentry)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -190,20 +193,20 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     try {
       super.saveRep(rep, id_job);
 
-      rep.saveJobEntryAttribute(id_job, getID(), "servername", serverName);
-      rep.saveJobEntryAttribute(id_job, getID(), "username", userName);
-      rep.saveJobEntryAttribute(id_job, getID(), "password", password);
-      rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory", ftpDirectory);
-      rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
-      rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard);
-      rep.saveJobEntryAttribute(id_job, getID(), "binary", binaryMode);
-      rep.saveJobEntryAttribute(id_job, getID(), "timeout", timeout);
-      rep.saveJobEntryAttribute(id_job, getID(), "remove", remove);
-      rep.saveJobEntryAttribute(id_job, getID(), "only_new", onlyGettingNewFiles);
-      rep.saveJobEntryAttribute(id_job, getID(), "active", activeConnection);
-      rep.saveJobEntryAttribute(id_job, getID(), "control_encoding", controlEncoding);
+      rep.saveJobEntryAttribute(id_job, getID(), "servername", serverName); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "username", userName); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "password", password); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory", ftpDirectory); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "binary", binaryMode); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "timeout", timeout); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "remove", remove); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "only_new", onlyGettingNewFiles); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "active", activeConnection); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "control_encoding", controlEncoding); //$NON-NLS-1$
     } catch (KettleDatabaseException dbe) {
-      throw new KettleException("Unable to save job entry of type 'ftp' to the repository for id_job=" + id_job, dbe);
+      throw new KettleException(Messages.getString("JobEntryFTP.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
   }
 
@@ -370,13 +373,13 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) {
     LogWriter log = LogWriter.getInstance();
 
-    log4j.info("Started FTP job to " + serverName);
+    log4j.info(Messages.getString("JobEntryFTP.Started", serverName)); //$NON-NLS-1$
 
     Result result = previousResult;
     result.setResult(false);
     long filesRetrieved = 0;
 
-    log.logDetailed(toString(), "Start of FTP job entry");
+    log.logDetailed(toString(), Messages.getString("JobEntryFTP.Start")); //$NON-NLS-1$
 
     FTPClient ftpclient = null;
 
@@ -386,23 +389,23 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       String realServername = environmentSubstitute(serverName);
       ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
 
-      log.logDetailed(toString(), "Opened FTP connection to server [" + realServername + "]");
+      log.logDetailed(toString(), Messages.getString("JobEntryFTP.OpenedConnection", realServername)); //$NON-NLS-1$
 
       // set activeConnection connectmode ...
       if (activeConnection) {
         ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
-        log.logDetailed(toString(), "set active ftp connection mode");
+        log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetActive")); //$NON-NLS-1$
       } else {
         ftpclient.setConnectMode(FTPConnectMode.PASV);
-        log.logDetailed(toString(), "set passive ftp connection mode");
+        log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetPassive")); //$NON-NLS-1$
       }
 
       // Set the timeout
       ftpclient.setTimeout(timeout);
-      log.logDetailed(toString(), "set timeout to " + timeout);
+      log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetTimeout", String.valueOf(timeout))); //$NON-NLS-1$
 
       ftpclient.setControlEncoding(controlEncoding);
-      log.logDetailed(toString(), "set control encoding to " + controlEncoding);
+      log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetEncoding", controlEncoding)); //$NON-NLS-1$
 
       // login to ftp host ...
       ftpclient.connect();
@@ -410,26 +413,26 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       String realPassword = environmentSubstitute(password);
       ftpclient.login(realUsername, realPassword);
       //  Remove password from logging, you don't know where it ends up.
-      log.logDetailed(toString(), "logged in with user " + realUsername);
+      log.logDetailed(toString(), Messages.getString("JobEntryFTP.LoggedIn", realUsername)); //$NON-NLS-1$
 
       // move to spool dir ...
       if (!Const.isEmpty(ftpDirectory)) {
         String realFtpDirectory = environmentSubstitute(ftpDirectory);
         ftpclient.chdir(realFtpDirectory);
-        log.logDetailed(toString(), "Changed to directory [" + realFtpDirectory + "]");
+        log.logDetailed(toString(), Messages.getString("JobEntryFTP.ChangedDir", realFtpDirectory)); //$NON-NLS-1$
       }
 
       // Get all the files in the current directory...
       String[] filelist = ftpclient.dir();
-      log.logDetailed(toString(), "Found " + filelist.length + " files in the remote ftp directory");
+      log.logDetailed(toString(), Messages.getString("JobEntryFTP.FoundNFiles", String.valueOf(filelist.length))); //$NON-NLS-1$
 
       // set transfertype ...
       if (binaryMode) {
         ftpclient.setType(FTPTransferType.BINARY);
-        log.logDetailed(toString(), "set binary transfer mode");
+        log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetBinary")); //$NON-NLS-1$
       } else {
         ftpclient.setType(FTPTransferType.ASCII);
-        log.logDetailed(toString(), "set ASCII transfer mode");
+        log.logDetailed(toString(), Messages.getString("JobEntryFTP.SetAscii")); //$NON-NLS-1$
       }
 
       // Some FTP servers return a message saying no files found as a string in the filenlist
@@ -459,8 +462,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
         }
 
         if (getIt) {
-          log.logDebug(toString(), "Getting file [" + filelist[i] + "] to directory ["
-              + environmentSubstitute(targetDirectory) + "]");
+          log.logDebug(toString(), Messages.getString(
+              "JobEntryFTP.GettingFile", filelist[i], environmentSubstitute(targetDirectory))); //$NON-NLS-1$
           String targetFilename = getTargetFilename(filelist[i]);
           FileObject targetFile = KettleVFS.getFileObject(targetFilename);
 
@@ -471,16 +474,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             // Add to the result files...
             ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(),
                 toString());
-            resultFile.setComment("Downloaded from ftp server " + serverName);
+            resultFile.setComment(Messages.getString("JobEntryFTP.Downloaded", serverName)); //$NON-NLS-1$
             result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
-            log.logDetailed(toString(), "Got file [" + filelist[i] + "]");
+            log.logDetailed(toString(), Messages.getString("JobEntryFTP.GotFile", filelist[i])); //$NON-NLS-1$
           }
 
           // Delete the file if this is needed!
           if (remove) {
             ftpclient.delete(filelist[i]);
-            log.logDetailed(toString(), "deleted file [" + filelist[i] + "]");
+            log.logDetailed(toString(), Messages.getString("JobEntryFTP.DeletedFile", filelist[i])); //$NON-NLS-1$
           }
         }
       }
@@ -489,14 +492,14 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       result.setNrFilesRetrieved(filesRetrieved);
     } catch (Exception e) {
       result.setNrErrors(1);
-      log.logError(toString(), "Error getting files from FTP : " + e.getMessage());
+      log.logError(toString(), Messages.getString("JobEntryFTP.ErrorGetting", e.getMessage())); //$NON-NLS-1$
       log.logError(toString(), Const.getStackTracker(e));
     } finally {
       if (ftpclient != null && ftpclient.connected()) {
         try {
           ftpclient.quit();
         } catch (Exception e) {
-          log.logError(toString(), "Error quiting FTP connection: " + e.getMessage());
+          log.logError(toString(), Messages.getString("JobEntryFTP.ErrorQuitting", e.getMessage())); //$NON-NLS-1$
         }
       }
     }
@@ -547,5 +550,60 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
    */
   public void setActiveConnection(boolean passive) {
     this.activeConnection = passive;
+  }
+
+  public void check(List<CheckResult> remarks, JobMeta jobMeta) {
+    LogWriter log = LogWriter.getInstance();
+
+    // required
+    if (StringUtils.isBlank(serverName)) {
+      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+          .getString("JobEntryFTP.CheckResult.ServerNameIsBlank"), this)); //$NON-NLS-1$
+    }
+    if (StringUtils.isBlank(targetDirectory)) {
+      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+          .getString("JobEntryFTP.CheckResult.TargetDirIsBlank"), this)); //$NON-NLS-1$
+    } else {
+      String realTargetDir = environmentSubstitute(targetDirectory);
+      FileObject targetDirObject;
+      try {
+        targetDirObject = KettleVFS.getFileObject(realTargetDir);
+        if (!targetDirObject.exists()) {
+          remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString(
+              "JobEntryFTP.CheckResult.TargetDirDoesNotExist", targetDirectory), this)); //$NON-NLS-1$
+        }
+      } catch (IOException e) {
+        log.logError(toString(), e.getMessage());
+        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages
+            .getString("JobEntryFTP.CheckResult.CannotCheckTargetDirExistence"), this)); //$NON-NLS-1$
+      }
+    }
+    if (StringUtils.isBlank(userName)) {
+      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+          .getString("JobEntryFTP.CheckResult.UsernameIsBlank"), this)); //$NON-NLS-1$
+    }
+    if (null == password) {
+      remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages
+          .getString("JobEntryFTP.CheckResult.PasswordIsNull"), this)); //$NON-NLS-1$
+    }
+
+    // optional
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.ActiveConnection", String.valueOf(activeConnection)), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.Timeout", String.valueOf(timeout)), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.Encoding", controlEncoding), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.BinaryMode", String.valueOf(binaryMode)), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.FtpDir", ftpDirectory), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.OnlyGetNew", String.valueOf(onlyGettingNewFiles)), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.Remove", String.valueOf(remove)), this)); //$NON-NLS-1$
+    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString(
+        "JobEntryFTP.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
+
   }
 }
