@@ -3,6 +3,7 @@ package org.pentaho.di.job.entries.empty;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -17,7 +18,7 @@ import org.w3c.dom.Node;
 
 public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface
 {
-	
+
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		return null;
@@ -34,5 +35,9 @@ public class JobEntryEmpty extends JobEntryBase implements JobEntryInterface
 	{
 
 	}
+
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+
+  }
 
 }
