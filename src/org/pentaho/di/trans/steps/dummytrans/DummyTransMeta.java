@@ -18,7 +18,6 @@ package org.pentaho.di.trans.steps.dummytrans;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
@@ -33,7 +32,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -115,11 +113,6 @@ public class DummyTransMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
-	{
-		return new DummyTransDialog(shell, info, transMeta, name);
-	}
-
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
 		return new DummyTrans(stepMeta, stepDataInterface, cnr, tr, trans);

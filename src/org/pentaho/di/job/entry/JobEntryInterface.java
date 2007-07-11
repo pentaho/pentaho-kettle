@@ -17,7 +17,6 @@ package org.pentaho.di.job.entry;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.SQLStatement;
@@ -93,7 +92,11 @@ public interface JobEntryInterface
     
     public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException;
     
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep);
+    /**
+     * Get the name of the class that implements the dialog for this job entry
+     * JobEntryBase provides a default
+     */
+    public String getDialogClassName();
     
     public String getFilename();
     public String getRealFilename();

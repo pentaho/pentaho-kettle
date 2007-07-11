@@ -27,7 +27,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs.FileObject;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -38,9 +37,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -271,10 +268,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 	{
 		return true;
 	}
-
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryXSDValidatorDialog(shell,this,jobMeta);
-    }
 
 	public void setxmlFilename(String filename)
 	{

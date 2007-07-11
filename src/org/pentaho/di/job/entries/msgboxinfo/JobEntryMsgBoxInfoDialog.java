@@ -31,7 +31,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -44,8 +43,10 @@ import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
 
@@ -56,7 +57,7 @@ import org.pentaho.di.trans.steps.textfileinput.VariableButtonListenerFactory;
  * @author Matt
  * @since 19-06-2003
  */
-public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private Label wlName;
 
@@ -78,12 +79,8 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 
     private Shell shell;
 
-    private Props props;
-
     private SelectionAdapter lsDef;
     
-    private JobMeta jobMeta;
-
     private boolean changed;
 
 	//TitleMessage
@@ -93,13 +90,10 @@ public class JobEntryMsgBoxInfoDialog extends Dialog implements JobEntryDialogIn
 
 	private FormData fdlTitleMessage, fdTitleMessage;
 
-    public JobEntryMsgBoxInfoDialog(Shell parent, JobEntryMsgBoxInfo jobEntry, JobMeta jobMeta)
+    public JobEntryMsgBoxInfoDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
-        super(parent, SWT.NONE);
-        props = Props.getInstance();
-        this.jobEntry = jobEntry;
-        this.jobMeta = jobMeta;
-
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryMsgBoxInfo) jobEntryInt;
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("MsgBoxInfo.Name.Default"));
     }

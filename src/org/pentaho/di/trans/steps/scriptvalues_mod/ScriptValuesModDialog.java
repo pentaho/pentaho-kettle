@@ -109,7 +109,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 
-public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogInterface
+public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private ModifyListener lsMod;
 	private SashForm     wSash;
@@ -308,7 +308,7 @@ public class ScriptValuesDialogMod extends BaseStepDialog implements StepDialogI
 		}	
 	}
 	
-	public ScriptValuesDialogMod(Shell parent, Object in, TransMeta transMeta, String sname){
+	public ScriptValuesModDialog(Shell parent, Object in, TransMeta transMeta, String sname){
 
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(ScriptValuesMetaMod)in;

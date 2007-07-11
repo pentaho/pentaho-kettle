@@ -16,7 +16,6 @@
 package org.pentaho.di.job.entries.success;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -24,9 +23,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -154,8 +151,4 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
 		return false;
 	}
     
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntrySuccessDialog(shell,this);
-    }
-	
 }

@@ -39,7 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 24-jan-2005
  *
  */
-public class ScriptValuesDataMod extends BaseStepData implements StepDataInterface
+public class ScriptValuesModData extends BaseStepData implements StepDataInterface
 {
 	public Context cx;
 	public Scriptable scope;
@@ -53,7 +53,7 @@ public class ScriptValuesDataMod extends BaseStepData implements StepDataInterfa
 	/**
 	 * 
 	 */
-	public ScriptValuesDataMod()
+	public ScriptValuesModData()
 	{
 		super();
 		cx=null;

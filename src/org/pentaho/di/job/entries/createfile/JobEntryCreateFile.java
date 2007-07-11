@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
@@ -34,7 +33,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -213,10 +211,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 		return true;
 	}
     
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryCreateFileDialog(shell,this,jobMeta);
-    }
-
 	public boolean isFailIfFileExists() {
 		return failIfFileExists;
 	}

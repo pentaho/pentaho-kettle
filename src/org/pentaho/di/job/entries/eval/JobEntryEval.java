@@ -17,7 +17,6 @@ package org.pentaho.di.job.entries.eval;
 
 import java.util.List;
 
-import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.pentaho.di.core.CheckResult;
@@ -34,7 +33,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -215,11 +213,6 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
 
   public boolean isUnconditional() {
     return false;
-  }
-
-  public JobEntryDialogInterface getDialog(Shell shell, JobEntryInterface jei, JobMeta jobMeta, String jobName,
-      Repository rep) {
-    return new JobEntryEvalDialog(shell, this);
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) 

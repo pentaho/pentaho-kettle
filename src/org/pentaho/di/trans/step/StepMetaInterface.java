@@ -18,7 +18,6 @@ package org.pentaho.di.trans.step;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
@@ -152,15 +151,12 @@ public interface StepMetaInterface
      */
     public boolean excludeFromRowLayoutVerification();
 	
-	/**
-	 * We know which dialog to open...
-	 * @param shell The shell to open the dialog on
-	 * @param meta The step info
-	 * @param transMeta The transformation meta-data 
-	 * @param stepname The name of the step
-	 */
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface meta, TransMeta transMeta, String stepname);
-
+    /**
+     * Get the name of the class that implements the dialog for this job entry
+     * JobEntryBase provides a default
+     */
+    public String getDialogClassName();
+    
 	/**
 	 * Get the executing step, needed by Trans to launch a step.
 	 * @param stepMeta The step info

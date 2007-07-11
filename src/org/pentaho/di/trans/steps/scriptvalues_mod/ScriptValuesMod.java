@@ -58,7 +58,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class ScriptValuesMod extends BaseStep implements StepInterface {
 	private ScriptValuesMetaMod meta;
-	private ScriptValuesDataMod data;
+	private ScriptValuesModData data;
 		
 	public final static int SKIP_TRANSFORMATION = 1;
 	public final static int ABORT_TRANSFORMATION = -1;
@@ -628,7 +628,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException{
 		
 		meta=(ScriptValuesMetaMod)smi;
-		data=(ScriptValuesDataMod)sdi;
+		data=(ScriptValuesModData)sdi;
 		
 		Object[] r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)
@@ -680,7 +680,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi){
 		meta=(ScriptValuesMetaMod)smi;
-		data=(ScriptValuesDataMod)sdi;
+		data=(ScriptValuesModData)sdi;
 
 		if (super.init(smi, sdi)){
 		    

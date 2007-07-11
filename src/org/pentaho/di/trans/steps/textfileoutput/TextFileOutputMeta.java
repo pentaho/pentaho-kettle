@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -38,7 +37,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -1001,11 +999,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		
 		cr = new CheckResult(CheckResultInterface.TYPE_RESULT_COMMENT, Messages.getString("TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
 		remarks.add(cr);
-	}
-
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
-	{
-		return new TextFileOutputDialog(shell, info, transMeta, name);
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)

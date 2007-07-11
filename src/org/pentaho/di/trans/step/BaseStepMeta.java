@@ -290,4 +290,28 @@ public class BaseStepMeta implements Cloneable
     	return null;
     }
     
+
+	/**
+	 * This returns the expected name for the dialog that edits a job entry.
+	 * The expected name is in the org.pentaho.di.ui tree and has a class name
+	 * that is the name of the job entry with 'Dialog' added to the end.
+	 * 
+	 * e.g. if the job entry is org.pentaho.di.job.entries.zipfile.JobEntryZipFile
+	 * the dialog would be org.pentaho.di.ui.job.entries.zipfile.JobEntryZipFileDialog
+	 * 
+	 * If the dialog class for a job entry does not match this pattern it should
+	 * override this method and return the appropriate class name
+	 * 
+	 * @return full class name of the dialog
+	 */
+    public String getDialogClassName() 
+    {
+    	String className = getClass().getCanonicalName();
+//    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
+    	if( className.endsWith("Meta") ) {
+    		className = className.substring(0, className.length()-4 );
+    	}
+    	className += "Dialog";
+    	return className;
+    }
 }

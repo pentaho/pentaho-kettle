@@ -34,23 +34,24 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.widget.LabelText;
 import org.pentaho.di.core.widget.LabelTextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
+
 
 
 /**
@@ -60,7 +61,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @author Matt
  * @since 19-06-2003
  */
-public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private LabelText wName;
 
@@ -126,8 +127,6 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 
     private Shell shell;
 
-    private Props props;
-
     private SelectionAdapter lsDef;
     
     private Label        wlControlEncoding;
@@ -136,8 +135,6 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
     
     private FormData     fdlControlEncoding, fdControlEncoding;
     
-    private JobMeta jobMeta;
-
     private boolean changed;        
     
     // These should not be translated, they are required to exist on all
@@ -159,15 +156,15 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
     //    encodings = (String [])charsetSet.toArray(new String[0]);
     // }
 
-    public JobEntryFTPDialog(Shell parent, JobEntryFTP jobEntry, JobMeta jobMeta)
-    {
-        super(parent, SWT.NONE);
-        props = Props.getInstance();
-        this.jobEntry = jobEntry;
 
+    public JobEntryFTPDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
+    {
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryFTP) jobEntryInt;
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("JobFTP.Name.Default"));
     }
+
 
     public JobEntryInterface open()
     {

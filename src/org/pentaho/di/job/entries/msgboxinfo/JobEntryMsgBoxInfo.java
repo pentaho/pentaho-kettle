@@ -30,9 +30,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -207,10 +205,6 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	{
 		return false;
 	}
-    
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryMsgBoxInfoDialog(shell,this, jobMeta);
-    }
     
 	public String getRealTitleMessage()
 	{

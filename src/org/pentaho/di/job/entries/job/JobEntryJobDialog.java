@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -44,7 +43,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
@@ -53,6 +51,7 @@ import org.pentaho.di.core.widget.TableView;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -66,7 +65,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @author Matt
  * @since 19-06-2003
  */
-public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private static final String[] FILE_FILTERNAMES = new String[] {
                                                                    Messages
@@ -176,22 +175,15 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
     private boolean backupChanged;
 
-    private Props props;
-
     private Display display;
 
     private Repository repository;
-    
-    private JobMeta jobMeta;
 
-    public JobEntryJobDialog(Shell parent, JobEntryJob jobEntry, Repository repository, JobMeta jobMeta)
+    public JobEntryJobDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
-        super(parent, SWT.NONE);
-        this.props = Props.getInstance();
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryJob) jobEntryInt;
         this.log = LogWriter.getInstance();
-        this.jobEntry = jobEntry;
-        this.repository = repository;
-        this.jobMeta = jobMeta;
     }
 
     public JobEntryInterface open()

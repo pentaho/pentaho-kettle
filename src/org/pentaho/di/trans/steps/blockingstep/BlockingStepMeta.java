@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -36,7 +35,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -125,11 +123,6 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
 	{
 		// Default: no values are added to the row in the step
 	}
-
-    
-    public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String stepname) {
-        return new BlockingStepDialog(shell, info, transMeta, stepname);
-    }
 
     public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans) {
         return new BlockingStep(stepMeta, stepDataInterface, copyNr, transMeta, trans);

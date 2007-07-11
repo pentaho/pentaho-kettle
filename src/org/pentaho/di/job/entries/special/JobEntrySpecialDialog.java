@@ -1,5 +1,6 @@
 package org.pentaho.di.job.entries.special;
 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -15,7 +16,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -23,16 +23,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.WindowProperty;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
 
-public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private final static String NOSCHEDULING = Messages.getString("JobSpecial.Type.NoScheduling");
 
@@ -56,8 +58,6 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 
     private boolean backupChanged;
 
-    private Props props;
-
     private Display display;
 
     private Button wRepeat;
@@ -74,11 +74,11 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 
     private Spinner wDayOfMonth;
 
-    public JobEntrySpecialDialog(Shell parent, JobEntrySpecial jobEntry)
+
+    public JobEntrySpecialDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
-        super(parent, SWT.NONE);
-        props = Props.getInstance();
-        this.jobEntry = jobEntry;
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntrySpecial) jobEntryInt;
     }
 
     public JobEntryInterface open()

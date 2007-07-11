@@ -20,7 +20,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -28,13 +27,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.LabelTextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @author Samatar Hassan
  * @since  21-02-2007
  */
-public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
 	private Label        wlName;
 	private Text         wName;
@@ -62,24 +62,18 @@ public class JobEntryDelayDialog extends Dialog implements JobEntryDialogInterfa
 
 	private JobEntryDelay jobEntry;
 	private Shell      	  shell;
-	private Props         props;
 
 	private SelectionAdapter lsDef;
 	
-	private JobMeta jobMeta;
-
 	private boolean changed;
 
-	public JobEntryDelayDialog(Shell parent, JobEntryDelay jobEntry, JobMeta jobMeta)
-	{
-		super(parent, SWT.NONE);
-		props=Props.getInstance();
-		this.jobEntry=jobEntry;
-		this.jobMeta=jobMeta;
-
+    public JobEntryDelayDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
+    {
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryDelay) jobEntryInt;
 		if (this.jobEntry.getName() == null)
 			this.jobEntry.setName(Messages.getString("JobEval.Title"));
-	}
+    }
 
 	public JobEntryInterface open()
 	{

@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -41,7 +40,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -648,11 +646,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         this.execPerRow = runEveryResultRow;
     }
 
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
-    {
-        return new JobEntryJobDialog(shell,this,rep, jobMeta);
-    }
-    
     /**
      * We're going to load the transformation meta data referenced here.
      * Then we're going to give it a new filename, modify that filename in this entries.

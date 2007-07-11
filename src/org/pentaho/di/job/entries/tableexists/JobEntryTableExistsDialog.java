@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -40,15 +39,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.core.gui.WindowProperty;
 import org.pentaho.di.core.widget.TextVar;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.dialog.JobDialog;
+import org.pentaho.di.ui.job.entry.JobEntryDialog; 
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
 
 
@@ -59,7 +59,7 @@ import org.pentaho.di.trans.step.BaseStepDialog;
  * @author Matt
  * @since 19-06-2003
  */
-public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogInterface
+public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
     private Label wlName;
 
@@ -87,23 +87,16 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
     private JobEntryTableExists jobEntry;
 
-    private JobMeta jobMeta;
-
     private Shell shell;
-
-    private Props props;
 
     private SelectionAdapter lsDef;
 
     private boolean changed;
 
-    public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists jobEntry, JobMeta jobMeta)
+    public JobEntryTableExistsDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
-        super(parent, SWT.NONE);
-        props = Props.getInstance();
-        this.jobEntry = jobEntry;
-        this.jobMeta = jobMeta;
-
+        super(parent, jobEntryInt, rep, jobMeta);
+        jobEntry = (JobEntryTableExists) jobEntryInt;
         if (this.jobEntry.getName() == null)
             this.jobEntry.setName(Messages.getString("JobTableExists.Name.Default"));
     }

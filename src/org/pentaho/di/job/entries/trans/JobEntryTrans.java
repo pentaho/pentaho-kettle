@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -45,7 +44,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -803,10 +801,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         this.directoryPath = directoryPath;
     }
     
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
-        return new JobEntryTransDialog(shell,this,rep,jobMeta);
-    }
-
     /**
      * @return the clustering
      */

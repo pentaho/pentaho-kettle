@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -2970,10 +2971,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
             // Before we do anything, let's store the situation the way it was...
             StepMeta before = (StepMeta) stepMeta.clone();
-            StepMetaInterface stepint = stepMeta.getStepMetaInterface();
-            StepDialogInterface dialog = stepint.getDialog(shell, stepMeta.getStepMetaInterface(), transMeta, name);
-            dialog.setRepository(rep);
-            String stepname = dialog.open();
+            StepDialogInterface dialog = getStepEntryDialog( stepMeta.getStepMetaInterface(), transMeta, name );
+            String stepname = null;
+            if( dialog != null ) {
+                dialog.setRepository(rep);
+                stepname = dialog.open();
+            }
 
             if (stepname != null)
             {
@@ -5041,8 +5044,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 
                 if (openit)
                 {
-                    StepDialogInterface dialog = info.getDialog(shell, info, transMeta, name);
-                    name = dialog.open();
+                    StepDialogInterface dialog = this.getStepEntryDialog(info, transMeta, name);
+                    if( dialog != null ) {
+                        name = dialog.open();
+                    }
                 }
                 inf=new StepMeta(stepPlugin.getID()[0], name, info);
     
@@ -8484,6 +8489,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 int nr = jobMeta.generateJobEntryNameNr(basename);
                 String entry_name = basename+" "+nr; //$NON-NLS-1$
                 
+                
                 // Generate the appropriate class...
                 JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
                 jei.setName(entry_name);
@@ -8510,8 +8516,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 
                 if (openit)
                 {
-                    JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
-                    if (d.open()!=null)
+                	JobEntryDialogInterface d = getJobEntryDialog( jei, jobMeta );
+                    if (d != null && d.open()!=null)
                     {
                         JobEntryCopy jge = new JobEntryCopy();
                         jge.setEntry(jei);
@@ -8552,6 +8558,40 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             return null;
         }
     }
+    
+    public JobEntryDialogInterface getJobEntryDialog( JobEntryInterface jei, JobMeta jobMeta ) {
+
+    	String dialogClassName = jei.getDialogClassName();
+        try {
+            Class dialogClass;
+            Class[] paramClasses = new Class[] { Shell.class, JobEntryInterface.class, Repository.class, JobMeta.class };
+            Object[] paramArgs = new Object[] { shell, jei, rep, jobMeta };
+            Constructor dialogConstructor;
+            dialogClass = Class.forName(dialogClassName);
+            dialogConstructor = dialogClass.getConstructor(paramClasses);
+            return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
+        } catch (Throwable t) {
+        	log.logError( "Could not create dialog for "+dialogClassName , t.getMessage() );
+        }
+        return null;
+    }
+
+    public StepDialogInterface getStepEntryDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) {
+
+    	String dialogClassName = stepMeta.getDialogClassName();
+        try {
+            Class dialogClass;
+            Class[] paramClasses = new Class[] { Shell.class, Object.class, TransMeta.class, String.class };
+            Object[] paramArgs = new Object[] { shell, stepMeta, transMeta, stepName };
+            Constructor dialogConstructor;
+            dialogClass = Class.forName(dialogClassName);
+            dialogConstructor = dialogClass.getConstructor(paramClasses);
+            return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
+        } catch (Throwable t) {
+        	log.logError( "Could not create dialog for "+dialogClassName , t.getMessage() );
+        }
+        return null;
+    }
 
     public void editJobEntry(JobMeta jobMeta, JobEntryCopy je)
     {
@@ -8570,7 +8610,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 if (special.isDummy()) return;
             }
             
-            JobEntryDialogInterface d = jei.getDialog(shell, jei, jobMeta,je.getName(),rep); 
+        	JobEntryDialogInterface d = getJobEntryDialog( jei, jobMeta );
             if (d!=null)
             {
                 if (d.open()!=null)

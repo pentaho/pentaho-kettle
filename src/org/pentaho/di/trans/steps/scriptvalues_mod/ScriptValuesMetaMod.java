@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Script;
@@ -56,7 +55,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -789,11 +787,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		return error_found;
 	}
 
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
-	{
-		return new ScriptValuesDialogMod(shell, info, transMeta, name);
-	}
-
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{
 		return new ScriptValuesMod(stepMeta, stepDataInterface, cnr, transMeta, trans);
@@ -801,7 +794,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
 	public StepDataInterface getStepData()
 	{
-		return new ScriptValuesDataMod();
+		return new ScriptValuesModData();
 	}
 	
 	
@@ -861,4 +854,10 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	public void setCompatible(boolean compatible) {
 		this.compatible = compatible;
 	}
+	
+    public String getDialogClassName() 
+    {
+    	return "org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDialog";
+    }
+    
 }
