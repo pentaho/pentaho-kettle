@@ -155,9 +155,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private Image imageActiveEndScript=null;
 
 	
-	private static CTabFolder 	folder;
-	private static Menu 		cMenu;
-	private static Menu 		tMenu;
+	private CTabFolder 	folder;
+	private Menu 		cMenu;
+	private Menu 		tMenu;
 	
 	// Suport for Rename Tree
 	private TreeItem [] lastItem;
