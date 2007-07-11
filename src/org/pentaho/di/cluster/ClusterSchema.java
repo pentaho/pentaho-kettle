@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
  */
 public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace
 {
-    public static final String XML_TAG = "clusterschema";
+    public static final String XML_TAG = "clusterschema"; //$NON-NLS-1$
     
     /** the name of the cluster schema */
     private String name;
@@ -55,10 +55,10 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         id=-1L;
         slaveServers = new ArrayList<SlaveServer>();
-        socketsBufferSize = "2000";
-        socketsFlushInterval = "5000";
+        socketsBufferSize = "2000"; //$NON-NLS-1$
+        socketsFlushInterval = "5000"; //$NON-NLS-1$
         socketsCompressed = true;
-        basePort = "40000";
+        basePort = "40000"; //$NON-NLS-1$
     }
     
     /**
@@ -116,22 +116,22 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         StringBuffer xml = new StringBuffer();
         
-        xml.append("        <"+XML_TAG+">"+Const.CR);
+        xml.append("        <"+XML_TAG+">"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         
-        xml.append("          "+XMLHandler.addTagValue("name", name));
-        xml.append("          "+XMLHandler.addTagValue("base_port", basePort));
-        xml.append("          "+XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize));
-        xml.append("          "+XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval));
-        xml.append("          "+XMLHandler.addTagValue("sockets_compressed", socketsCompressed));
+        xml.append("          "+XMLHandler.addTagValue("name", name)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          "+XMLHandler.addTagValue("base_port", basePort)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          "+XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          "+XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval)); //$NON-NLS-1$ //$NON-NLS-2$
+        xml.append("          "+XMLHandler.addTagValue("sockets_compressed", socketsCompressed)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        xml.append("          <slaveservers>"+Const.CR);
+        xml.append("          <slaveservers>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = slaveServers.get(i);
-            xml.append("            "+XMLHandler.addTagValue("name", slaveServer.getName()));
+            xml.append("            "+XMLHandler.addTagValue("name", slaveServer.getName())); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        xml.append("          </slaveservers>"+Const.CR);
-        xml.append("        </"+XML_TAG+">"+Const.CR);
+        xml.append("          </slaveservers>"+Const.CR); //$NON-NLS-1$
+        xml.append("        </"+XML_TAG+">"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
         return xml.toString();
     }
     
@@ -139,17 +139,17 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         this();
         
-        name = XMLHandler.getTagValue(clusterSchemaNode, "name");
-        basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port");
-        socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size");
-        socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval");
-        socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") );
+        name = XMLHandler.getTagValue(clusterSchemaNode, "name"); //$NON-NLS-1$
+        basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port"); //$NON-NLS-1$
+        socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size"); //$NON-NLS-1$
+        socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval"); //$NON-NLS-1$
+        socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") ); //$NON-NLS-1$ //$NON-NLS-2$
         
-        Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers");
-        int nrSlaves = XMLHandler.countNodes(slavesNode, "name");
+        Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers"); //$NON-NLS-1$
+        int nrSlaves = XMLHandler.countNodes(slavesNode, "name"); //$NON-NLS-1$
         for (int i=0;i<nrSlaves;i++)
         {
-            Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i);
+            Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i); //$NON-NLS-1$
             String serverName = XMLHandler.getNodeValue(serverNode);
             SlaveServer slaveServer = SlaveServer.findSlaveServer(referenceSlaveServers, serverName);
             if (slaveServer!=null) 
@@ -204,11 +204,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         
         RowMetaAndData row = rep.getClusterSchema(id_cluster_schema);
         
-        name = row.getString("NAME", null);
-        basePort = row.getString("BASE_PORT", null);
-        socketsBufferSize = row.getString("SOCKETS_BUFFER_SIZE", null);
-        socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null);
-        socketsCompressed = row.getBoolean("SOCKETS_COMPRESSED", true);
+        name = row.getString("NAME", null); //$NON-NLS-1$
+        basePort = row.getString("BASE_PORT", null); //$NON-NLS-1$
+        socketsBufferSize = row.getString("SOCKETS_BUFFER_SIZE", null); //$NON-NLS-1$
+        socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null); //$NON-NLS-1$
+        socketsCompressed = row.getBoolean("SOCKETS_COMPRESSED", true); //$NON-NLS-1$
         
         long[] pids = rep.getSlaveIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
@@ -309,9 +309,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         }
         if (slaveServers.size()>0)
         {
-            throw new KettleException("No master server defined in cluster schema ["+name+"]");
+            throw new KettleException(Messages.getString("ClusterSchema.NoMasterServerDefined", name)); //$NON-NLS-1$
         }
-        throw new KettleException("No slave server(s) defined in cluster schema ["+name+"]");
+        throw new KettleException(Messages.getString("ClusterSchema.NoSlaveServerDefined", name)); //$NON-NLS-1$
     }
     
     /**
