@@ -112,17 +112,17 @@ public class ClusterSchemaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(Messages.getString("ClusterSchemaDialog.Shell.Title"));
+		shell.setText(Messages.getString("ClusterSchemaDialog.Shell.Title")); //$NON-NLS-1$
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
 		
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("ClusterSchemaDialog.USER_BUTTON_OK")); //$NON-NLS-1$
 
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("ClusterSchemaDialog.USER_BUTTON_CANCEL")); //$NON-NLS-1$
 
 		Button[] buttons = new Button[] { wOK, wCancel };
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
@@ -132,7 +132,7 @@ public class ClusterSchemaDialog extends Dialog
         // What's the schema name??
         Label wlName = new Label(shell, SWT.RIGHT); 
         props.setLook(wlName);
-        wlName.setText(Messages.getString("ClusterSchemaDialog.Schema.Label"));
+        wlName.setText(Messages.getString("ClusterSchemaDialog.Schema.Label")); //$NON-NLS-1$
         FormData fdlName = new FormData();
         fdlName.top   = new FormAttachment(0, 0);
         fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -151,7 +151,7 @@ public class ClusterSchemaDialog extends Dialog
         // What's the base port??
         Label wlPort = new Label(shell, SWT.RIGHT); 
         props.setLook(wlPort);
-        wlPort.setText(Messages.getString("ClusterSchemaDialog.Port.Label"));
+        wlPort.setText(Messages.getString("ClusterSchemaDialog.Port.Label")); //$NON-NLS-1$
         FormData fdlPort = new FormData();
         fdlPort.top   = new FormAttachment(wName, margin);
         fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -171,7 +171,7 @@ public class ClusterSchemaDialog extends Dialog
         // What are the sockets buffer sizes??
         Label wlBufferSize = new Label(shell, SWT.RIGHT); 
         props.setLook(wlBufferSize);
-        wlBufferSize.setText(Messages.getString("ClusterSchemaDialog.SocketBufferSize.Label"));
+        wlBufferSize.setText(Messages.getString("ClusterSchemaDialog.SocketBufferSize.Label")); //$NON-NLS-1$
         FormData fdlBufferSize = new FormData();
         fdlBufferSize.top   = new FormAttachment(wPort, margin);
         fdlBufferSize.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -190,7 +190,7 @@ public class ClusterSchemaDialog extends Dialog
         // What are the sockets buffer sizes??
         Label wlFlushInterval = new Label(shell, SWT.RIGHT); 
         props.setLook(wlFlushInterval);
-        wlFlushInterval.setText(Messages.getString("ClusterSchemaDialog.SocketFlushRows.Label"));  
+        wlFlushInterval.setText(Messages.getString("ClusterSchemaDialog.SocketFlushRows.Label"));   //$NON-NLS-1$
         FormData fdlFlushInterval = new FormData();
         fdlFlushInterval.top   = new FormAttachment(wBufferSize, margin);
         fdlFlushInterval.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -209,7 +209,7 @@ public class ClusterSchemaDialog extends Dialog
         // What are the sockets buffer sizes??
         Label wlCompressed = new Label(shell, SWT.RIGHT); 
         props.setLook(wlCompressed);
-        wlCompressed.setText(Messages.getString("ClusterSchemaDialog.SocketDataCompressed.Label"));
+        wlCompressed.setText(Messages.getString("ClusterSchemaDialog.SocketDataCompressed.Label")); //$NON-NLS-1$
         FormData fdlCompressed = new FormData();
         fdlCompressed.top   = new FormAttachment(wFlushInterval, margin);
         fdlCompressed.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -227,7 +227,7 @@ public class ClusterSchemaDialog extends Dialog
         
         // Schema servers:
         Label wlServers = new Label(shell, SWT.RIGHT);
-        wlServers.setText(Messages.getString("ClusterSchemaDialog.SlaveServers.Label"));
+        wlServers.setText(Messages.getString("ClusterSchemaDialog.SlaveServers.Label")); //$NON-NLS-1$
         props.setLook(wlServers);
         FormData fdlServers=new FormData();
         fdlServers.left = new FormAttachment(0, 0);
@@ -237,7 +237,7 @@ public class ClusterSchemaDialog extends Dialog
         
         // Some buttons to manage...
         wSelect = new Button(shell, SWT.PUSH);
-        wSelect.setText(Messages.getString("ClusterSchemaDialog.SelectSlaveServers.Label"));
+        wSelect.setText(Messages.getString("ClusterSchemaDialog.SelectSlaveServers.Label")); //$NON-NLS-1$
         props.setLook(wSelect);
         FormData fdSelect=new FormData();
         fdSelect.right= new FormAttachment(100, 0);
@@ -308,8 +308,8 @@ public class ClusterSchemaDialog extends Dialog
         String[] names = SlaveServer.getSlaveServerNames(slaveServers);
         int idx[] = Const.indexsOfFoundStrings(wServers.getItems(0), names);
         
-        EnterSelectionDialog dialog = new EnterSelectionDialog(shell, names, Messages.getString("ClusterSchemaDialog.SelectServers.Label"), 
-						Messages.getString("ClusterSchemaDialog.SelectServersCluster.Label"));
+        EnterSelectionDialog dialog = new EnterSelectionDialog(shell, names, Messages.getString("ClusterSchemaDialog.SelectServers.Label"),  //$NON-NLS-1$
+						Messages.getString("ClusterSchemaDialog.SelectServersCluster.Label")); //$NON-NLS-1$
         dialog.setSelectedNrs(idx);
         dialog.setMulti(true);
         if (dialog.open()!=null)
@@ -334,10 +334,10 @@ public class ClusterSchemaDialog extends Dialog
     
     public void getData()
 	{
-		wName.setText( Const.NVL(clusterSchema.getName(), "") );
-		wPort.setText( Const.NVL(clusterSchema.getBasePort(), ""));
-        wBufferSize.setText( Const.NVL(clusterSchema.getSocketsBufferSize(), ""));
-        wFlushInterval.setText( Const.NVL(clusterSchema.getSocketsFlushInterval(), ""));
+		wName.setText( Const.NVL(clusterSchema.getName(), "") ); //$NON-NLS-1$
+		wPort.setText( Const.NVL(clusterSchema.getBasePort(), "")); //$NON-NLS-1$
+        wBufferSize.setText( Const.NVL(clusterSchema.getSocketsBufferSize(), "")); //$NON-NLS-1$
+        wFlushInterval.setText( Const.NVL(clusterSchema.getSocketsFlushInterval(), "")); //$NON-NLS-1$
         wCompressed.setSelection( clusterSchema.isSocketsCompressed());
         
         refreshSlaveServers();
@@ -348,14 +348,14 @@ public class ClusterSchemaDialog extends Dialog
 	private void refreshSlaveServers()
     {
         wServers.clearAll(false);
-        List<SlaveServer> slaveServers = clusterSchema.getSlaveServers();
-        for (int i=0;i<slaveServers.size();i++)
+        List<SlaveServer> slServers = clusterSchema.getSlaveServers();
+        for (int i=0;i<slServers.size();i++)
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);
-            SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
-            item.setText(1, Const.NVL(slaveServer.getName(), ""));
-            item.setText(2, Const.NVL(slaveServer.toString(), ""));
-            item.setText(3, slaveServer.isMaster()?"Y":"N");
+            SlaveServer slaveServer = slServers.get(i);
+            item.setText(1, Const.NVL(slaveServer.getName(), "")); //$NON-NLS-1$
+            item.setText(2, Const.NVL(slaveServer.toString(), "")); //$NON-NLS-1$
+            item.setText(3, slaveServer.isMaster()?"Y":"N"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         wServers.removeEmptyRows();
         wServers.setRowNums();
