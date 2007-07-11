@@ -28,11 +28,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
@@ -51,7 +46,6 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
@@ -59,6 +53,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
@@ -82,8 +77,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.spoon.Spoon;
-import org.pentaho.di.trans.dialog.TransDialog;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -2712,24 +2705,20 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                         boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
                         if (askOverwrite)
                         {
-                            // That means that we have a Display variable set in Props...
-                            if (props.getDisplay()!=null)
-                            {
-                                Shell shell = props.getDisplay().getActiveShell();
-                                
-                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                    "Warning",  
-                                    null,
-                                    "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
-                                    MessageDialog.WARNING,
-                                    new String[] { "Yes", "No" },//"Yes", "No" 
-                                    1,
-                                    "Please, don't show this warning anymore.",
-                                    !props.askAboutReplacingDatabaseConnections()
-                               );
-                               int idx = md.open();
-                               props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
-                               overwrite = ((idx&0xFF)==0); // Yes means: overwrite
+                        	if( SpoonFactory.getInstance() != null ) {
+                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle("Warning",  
+                        						null,
+                        						"Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
+                        						Const.WARNING,
+                        						new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
+                             						   Messages.getString("System.Button.No") },//$NON-NLS-1$
+                        						1,
+                        						"Please, don't show this warning anymore.",
+                        						!props.askAboutReplacingDatabaseConnections() );
+                        		int idx = ((Integer)res[0]).intValue();
+                        		boolean toggleState = ((Boolean)res[1]).booleanValue();
+                                props.setAskAboutReplacingDatabaseConnections(!toggleState);
+                                overwrite = ((idx&0xFF)==0); // Yes means: overwrite
                             }
                         }
     
@@ -3512,48 +3501,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
         }
         return null;
-    }
-
-    /**
-     * Select all the steps in a certain (screen) rectangle
-     *
-     * @param rect The selection area as a rectangle
-     */
-    public void selectInRect(Rectangle rect)
-    {
-    	if ( rect.height < 0 || rect.width < 0 )
-    	{
-    		Rectangle rectified = new Rectangle(rect.x, rect.y, rect.width,
-    				                            rect.height);
-    		
-    		// Only for people not dragging from left top to right bottom
-    		if ( rectified.height < 0 )
-    		{
-    		    rectified.y = rectified.y + rectified.height;
-    		    rectified.height = -rectified.height;
-    		}
-    		if ( rectified.width < 0 )
-    		{
-    		    rectified.x = rectified.x + rectified.width;
-    		    rectified.width = -rectified.width;
-    		}    		
-    		rect = rectified;
-    	}
-    	
-        for (int i = 0; i < nrSteps(); i++)
-        {
-            StepMeta stepMeta = getStep(i);
-            Point a = stepMeta.getLocation();
-            if (rect.contains(a.x, a.y)) stepMeta.setSelected(true);
-        }
-
-        for (int i = 0; i < nrNotes(); i++)
-        {
-            NotePadMeta ni = getNote(i);
-            Point a = ni.getLocation();
-            Point b = new Point(a.x + ni.width, a.y + ni.height);
-            if (rect.contains(a.x, a.y) && rect.contains(b.x, b.y)) ni.setSelected(true);
-        }
     }
 
     /**
@@ -5635,44 +5582,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 		variables.injectVariables(prop);		
 	}        
 
-    public boolean editProperties(Spoon spoon, Repository rep)
-    {
-        
-        TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, this, rep);
-        TransMeta ti = tid.open();
-        
-        // In this case, load shared objects
-        //
-        if (tid.isSharedObjectsFileChanged())
-        {
-            try
-            {
-                readSharedObjects(rep);
-            }
-            catch(Exception e)
-            {
-                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(this)), e);
-            }
-        }
-        
-        if (tid.isSharedObjectsFileChanged() || ti!=null)
-        {
-            try
-            {
-                readSharedObjects(rep);
-            }
-            catch(KettleException e)
-            {
-                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(this)), e);
-            }                                
-            spoon.refreshTree();
-            spoon.renameTabs(); // cheap operation, might as will do it anyway
-        }
-        
-        spoon.setShellText();
-        return ti!=null;
-    }
-    
     public StepMeta findMappingInputStep(String stepname) throws KettleStepException {
 		if (!Const.isEmpty(stepname)) {
 			StepMeta stepMeta = findStep(stepname); // TODO verify that it's a mapping input!!
