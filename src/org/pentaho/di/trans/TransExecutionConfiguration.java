@@ -1,6 +1,8 @@
 package org.pentaho.di.trans;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -387,14 +389,37 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("cluster_prepare", clusterPreparing));
         xml.append("    ").append(XMLHandler.addTagValue("cluster_start", clusterStarting));
         xml.append("    ").append(XMLHandler.addTagValue("cluster_show_trans", clusterShowingTransformation));
-        
-        /*
-         * TODO: re-enable Value serialisation to XML.
-         *  --> Add XML (de-)serialisation to RowMetaAndData, make it compatible to Row
-         *   
-        xml.append("    <arguments>").append(arguments.getXML()).append("</arguments>").append(Const.CR);
-        xml.append("    <variables>").append(variables.getXML()).append("</variables>").append(Const.CR);
-        */
+
+        // Serialize the variables...
+        //
+        xml.append("    <variables>").append(Const.CR);
+        List<String> variableNames = new ArrayList<String>(variables.keySet());
+        Collections.sort(variableNames);
+        for (String name : variableNames) {
+        	String value = variables.get(name);
+        	xml.append("    <variable>");
+        	xml.append(XMLHandler.addTagValue("name", name, false));
+        	xml.append(XMLHandler.addTagValue("value", value, false));
+        	xml.append("</variable>").append(Const.CR);
+        }
+        xml.append("    </variables>").append(Const.CR);
+
+        // Serialize the variables...
+        //
+        xml.append("    <arguments>").append(Const.CR);
+        List<String> argumentNames = new ArrayList<String>(arguments.keySet());
+        Collections.sort(argumentNames);
+        for (String name : argumentNames) {
+        	String value = arguments.get(name);
+        	xml.append("    <argument>");
+        	xml.append(XMLHandler.addTagValue("name", name, false));
+        	xml.append(XMLHandler.addTagValue("value", value, false));
+        	xml.append("</argument>").append(Const.CR);
+        }
+        xml.append("    </arguments>").append(Const.CR);
+
+        // The requested preview sizes for the selected steps...
+        //
         xml.append("    <preview>").append(Const.CR);
         if (previewSteps!=null && previewSizes!=null)
         {
@@ -418,6 +443,8 @@ public class TransExecutionConfiguration implements Cloneable
     
     public TransExecutionConfiguration(Node trecNode)
     {
+    	this();
+    	
         executingLocally = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_local"));
         localPreviewing = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "local_preview"));
 
@@ -434,23 +461,34 @@ public class TransExecutionConfiguration implements Cloneable
         clusterStarting = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_start"));
         clusterShowingTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_show_trans"));
 
-        /*
-         * TODO: re-enable XML value (de-) serialization of RowMetaData same as Row 
-        Node argsNode = XMLHandler.getSubNode(trecNode, "arguments");
-        Node argsRowNode = XMLHandler.getSubNode(argsNode, Row.XML_TAG);
-        if (argsRowNode!=null)
-        {
-            arguments = new Row(argsRowNode);
-        }
-        
+        // Read the variables...
+        //
         Node varsNode = XMLHandler.getSubNode(trecNode, "variables");
-        Node varsRowNode = XMLHandler.getSubNode(varsNode, Row.XML_TAG);
-        if (varsRowNode!=null)
-        {
-            variables = new Row(varsRowNode);
+        int nrVariables = XMLHandler.countNodes(varsNode, "variable");
+        for (int i=0;i<nrVariables;i++) {
+        	Node argNode = XMLHandler.getSubNodeByNr(varsNode, "variable", i);
+        	String name = XMLHandler.getTagValue(argNode, "name");
+        	String value = XMLHandler.getTagValue(argNode, "value");
+        	if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
+        		variables.put(name, value);
+        	}
         }
-        */
         
+        // Read the arguments...
+        //
+        Node argsNode = XMLHandler.getSubNode(trecNode, "arguments");
+        int nrArguments = XMLHandler.countNodes(argsNode, "argument");
+        for (int i=0;i<nrArguments;i++) {
+        	Node argNode = XMLHandler.getSubNodeByNr(argsNode, "argument", i);
+        	String name = XMLHandler.getTagValue(argNode, "name");
+        	String value = XMLHandler.getTagValue(argNode, "value");
+        	if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
+        		arguments.put(name, value);
+        	}
+        }
+        
+        // Read the preview sizes for the selected steps as well...
+        //
         Node previewNode = XMLHandler.getSubNode(trecNode, "preview");
         if (previewSteps!=null && previewSizes!=null)
         {

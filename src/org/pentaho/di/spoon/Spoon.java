@@ -7902,10 +7902,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 }
                 
                 // Now add monitors for the master and all the slave servers
-                addSpoonSlave(masterServer);
-                for (int i=0;i<slaves.length;i++)
-                {
-                    addSpoonSlave(slaves[i]);
+                //
+                if (masterServer!=null) {
+	                addSpoonSlave(masterServer);
+	                for (int i=0;i<slaves.length;i++)
+	                {
+	                    addSpoonSlave(slaves[i]);
+	                }
                 }
             }
         }
@@ -8568,10 +8571,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     	String dialogClassName = jei.getDialogClassName();
         try {
-            Class dialogClass;
-            Class[] paramClasses = new Class[] { Shell.class, JobEntryInterface.class, Repository.class, JobMeta.class };
+            Class<?> dialogClass;
+            Class<?>[] paramClasses = new Class[] { Shell.class, JobEntryInterface.class, Repository.class, JobMeta.class };
             Object[] paramArgs = new Object[] { shell, jei, rep, jobMeta };
-            Constructor dialogConstructor;
+            Constructor<?> dialogConstructor;
             dialogClass = Class.forName(dialogClassName);
             dialogConstructor = dialogClass.getConstructor(paramClasses);
             return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
@@ -8585,10 +8588,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     	String dialogClassName = stepMeta.getDialogClassName();
         try {
-            Class dialogClass;
-            Class[] paramClasses = new Class[] { Shell.class, Object.class, TransMeta.class, String.class };
+            Class<?> dialogClass;
+            Class<?>[] paramClasses = new Class[] { Shell.class, Object.class, TransMeta.class, String.class };
             Object[] paramArgs = new Object[] { shell, stepMeta, transMeta, stepName };
-            Constructor dialogConstructor;
+            Constructor<?> dialogConstructor;
             dialogClass = Class.forName(dialogClassName);
             dialogConstructor = dialogClass.getConstructor(paramClasses);
             return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);

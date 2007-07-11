@@ -593,13 +593,13 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wTabFolder.setLayoutData(fdTabFolder);
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("XMLInputSaxDialog.System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
 		wPreview = new Button(shell, SWT.PUSH);
 		wPreview.setText(STRING_PREVIEW_ROWS);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("XMLInputSaxDialog.System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 

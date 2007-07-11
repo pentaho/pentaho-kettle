@@ -114,10 +114,10 @@ public class SlaveServerDialog extends Dialog
 		
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(Messages.getString("SlaveServerDialog.USER_BUTTON_OK")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(Messages.getString("SlaveServerDialog.USER_BUTTON_CANCEL")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		Button[] buttons = new Button[] { wOK, wCancel };
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
