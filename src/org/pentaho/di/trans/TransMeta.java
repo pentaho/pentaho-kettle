@@ -2674,7 +2674,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             try
             {
                 sharedObjectsFile = XMLHandler.getTagValue(transnode, "info", "shared_objects_file"); //$NON-NLS-1$ //$NON-NLS-2$
-                // readSharedObjects(rep);
+                readSharedObjects(rep);
             }
             catch(Exception e)
             {
@@ -5648,7 +5648,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     	return resourceReferences;
     }
     
-	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
+	public String exportResources(VariableSpace space,  Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 		String filename = resourceNamingInterface.nameResource(getName(), getDirectory().getPath(), "ktr");
 		ResourceDefinition definition = definitions.get(filename);
 		if (definition==null) {
