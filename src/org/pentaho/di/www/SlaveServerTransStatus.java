@@ -86,7 +86,8 @@ public class SlaveServerTransStatus
         // This is a Base64 encoded GZIP compressed stream of data.
         try
         {
-            byte[] bytes = Base64.decodeBase64(loggingString64.getBytes());
+            byte[] bytes = new byte[] {};
+            if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
             if (bytes.length>0)
             {
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

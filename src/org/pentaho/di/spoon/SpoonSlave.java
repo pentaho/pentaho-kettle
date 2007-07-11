@@ -280,7 +280,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         {
             TreeItem treeItem = ti[0];
             String[] path = Const.getTreeStrings(treeItem);
-            if (path.length==1) // transformation name
+            if (path.length>=1) // transformation name
             {
                 String transName = path[0];
                 SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
@@ -398,6 +398,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         {
             slaveServerStatus = new SlaveServerStatus("Error contacting server");
             slaveServerStatus.setErrorDescription(Const.getStackTracker(e));
+            wText.setText(slaveServerStatus.getErrorDescription());
         }
         
         for (int i = 0; i < slaveServerStatus.getTransStatusList().size(); i++)

@@ -7769,8 +7769,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             String xml = new TransConfiguration(transMeta, executionConfiguration).getXML();
             String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH+"/?xml=Y");
             WebResult webResult = WebResult.fromXMLString(reply);
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            {
+            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
                 throw new KettleException("There was an error posting the transformation on the remote server: "+Const.CR+webResult.getMessage());
             }
             

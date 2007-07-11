@@ -602,25 +602,25 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public SlaveServerStatus getStatus() throws Exception
     {
-        String xml = execService(GetStatusServlet.CONTEXT_PATH+"?xml=Y"); //$NON-NLS-1$
+        String xml = execService(GetStatusServlet.CONTEXT_PATH+"/?xml=Y"); //$NON-NLS-1$
         return SlaveServerStatus.fromXML(xml);
     }
 
     public SlaveServerTransStatus getTransStatus(String transName) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public WebResult stopTransformation(String transName) throws Exception
     {
-        String xml = execService(StopTransServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(StopTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startTransformation(String transName) throws Exception
     {
-        String xml = execService(StartTransServlet.CONTEXT_PATH+"?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
+        String xml = execService(StartTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y");  //$NON-NLS-1$ //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 

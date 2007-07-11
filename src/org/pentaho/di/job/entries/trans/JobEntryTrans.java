@@ -567,7 +567,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         }
                         
                         // Check the master too
-                        if (allFinished && errors==0)
+                        if (allFinished && errors==0 && master!=null && master.nrSteps()>0)
                         {
                             try
                             {
