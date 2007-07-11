@@ -72,6 +72,7 @@ import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.dialog.StepFieldsDialog;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
@@ -81,6 +82,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.spoon.Messages;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
@@ -92,6 +94,7 @@ import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.dialog.TransDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.xul.menu.XulMenu;
@@ -426,7 +429,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                         selrect.height = real.y - selrect.y;
 
                         transMeta.unselectAll();
-                        transMeta.selectInRect(selrect);
+                        selectInRect(transMeta,selrect);
                         selrect = null;
                         redraw();
                     }
@@ -912,6 +915,49 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         setBackground(GUIResource.getInstance().getColorBackground());
     }
     
+    /**
+     * Select all the steps in a certain (screen) rectangle
+     *
+     * @param rect The selection area as a rectangle
+     */
+    public void selectInRect(TransMeta transMeta, Rectangle rect)
+    {
+    	if ( rect.height < 0 || rect.width < 0 )
+    	{
+    		Rectangle rectified = new Rectangle(rect.x, rect.y, rect.width,
+    				                            rect.height);
+    		
+    		// Only for people not dragging from left top to right bottom
+    		if ( rectified.height < 0 )
+    		{
+    		    rectified.y = rectified.y + rectified.height;
+    		    rectified.height = -rectified.height;
+    		}
+    		if ( rectified.width < 0 )
+    		{
+    		    rectified.x = rectified.x + rectified.width;
+    		    rectified.width = -rectified.width;
+    		}    		
+    		rect = rectified;
+    	}
+    	
+        for (int i = 0; i < transMeta.nrSteps(); i++)
+        {
+            StepMeta stepMeta = transMeta.getStep(i);
+            Point a = stepMeta.getLocation();
+            if (rect.contains(a.x, a.y)) stepMeta.setSelected(true);
+        }
+
+        for (int i = 0; i < transMeta.nrNotes(); i++)
+        {
+            NotePadMeta ni = transMeta.getNote(i);
+            Point a = ni.getLocation();
+            Point b = new Point(a.x + ni.width, a.y + ni.height);
+            if (rect.contains(a.x, a.y) && rect.contains(b.x, b.y)) ni.setSelected(true);
+        }
+    }
+
+
     private void addKeyListener(Control control)
     {
         KeyAdapter keyAdapter = new KeyAdapter()
@@ -1486,7 +1532,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void settings()
     {
-        transMeta.editProperties(spoon, spoon.getRepository());
+        editProperties( transMeta, spoon, spoon.getRepository());
     }
 
     public void newStep( String description )
@@ -2238,4 +2284,43 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
         return lastMove;
     }
+    
+    public static boolean editProperties(TransMeta transMeta, Spoon spoon, Repository rep)
+    {
+        
+        TransDialog tid = new TransDialog(spoon.getShell(), SWT.NONE, transMeta, rep);
+        TransMeta ti = tid.open();
+        
+        // In this case, load shared objects
+        //
+        if (tid.isSharedObjectsFileChanged())
+        {
+            try
+            {
+            	transMeta.readSharedObjects(rep);
+            }
+            catch(Exception e)
+            {
+                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
+            }
+        }
+        
+        if (tid.isSharedObjectsFileChanged() || ti!=null)
+        {
+            try
+            {
+                transMeta.readSharedObjects(rep);
+            }
+            catch(KettleException e)
+            {
+                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
+            }                                
+            spoon.refreshTree();
+            spoon.renameTabs(); // cheap operation, might as will do it anyway
+        }
+        
+        spoon.setShellText();
+        return ti!=null;
+    }
+
 }

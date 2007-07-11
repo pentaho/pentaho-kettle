@@ -480,6 +480,9 @@ public class Const
     /** The default maximum for the nr of lines in the GUI logs */
     public static final int MAX_NR_LOG_LINES = 5000;
 
+    /** UI-agnostic flag for warnings */
+    public static final int WARNING = 1;
+    
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding

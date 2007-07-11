@@ -77,10 +77,13 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.Messages;
+import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
 import org.pentaho.di.spoon.TabMapEntry;
@@ -366,7 +369,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					selrect.height = real.y - selrect.y;
 
 					jobMeta.unselectAll();
-					jobMeta.selectInRect(selrect);
+					selectInRect(jobMeta,selrect);
 					selrect = null;
 					redraw();
 				}
@@ -802,6 +805,18 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 
 		setBackground(GUIResource.getInstance().getColorBackground());
 	}
+
+    public void selectInRect(JobMeta jobMeta, Rectangle rect)
+    {
+        int i;
+        for (i = 0; i < jobMeta.nrJobEntries(); i++)
+        {
+            JobEntryCopy je = jobMeta.getJobEntry(i);
+            Point p = je.getLocation();
+            if (((p.x >= rect.x && p.x <= rect.x + rect.width) || (p.x >= rect.x + rect.width && p.x <= rect.x))
+                    && ((p.y >= rect.y && p.y <= rect.y + rect.height) || (p.y >= rect.y + rect.height && p.y <= rect.y))) je.setSelected(true);
+        }
+    }
 
     public void redraw()
     {
@@ -1301,7 +1316,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	}
 
 	public void editJobProperties() {
-        jobMeta.editProperties(spoon, spoon.getRepository());
+        editProperties(jobMeta, spoon, spoon.getRepository());
 	}
 	
 	public void pasteNote() {
@@ -2235,4 +2250,34 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title"));
         return mb.open();
     }   
+    
+    public static boolean editProperties(JobMeta jobMeta, Spoon spoon, Repository rep)
+    {
+        JobDialog jd = new JobDialog(spoon.getShell(), SWT.NONE, jobMeta, rep);
+        JobMeta ji = jd.open();
+        
+        // In this case, load shared objects
+        //
+        if (jd.isSharedObjectsFileChanged())
+        {
+            try
+            {
+                jobMeta.readSharedObjects(rep);
+            }
+            catch(Exception e)
+            {
+                new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeJobGraphTabName(jobMeta)), e);
+            }
+        }
+        
+        if (jd.isSharedObjectsFileChanged() || ji!=null)
+        {
+      	  spoon.refreshTree();
+      	  spoon.renameTabs(); // cheap operation, might as will do it anyway
+        }
+        
+        spoon.setShellText();
+        return ji!=null;
+    }
+
 }

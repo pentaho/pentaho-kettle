@@ -24,11 +24,6 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
@@ -41,12 +36,12 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.dialog.ErrorDialog;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
@@ -59,7 +54,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
-import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -71,7 +65,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -154,8 +147,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     // Remember the size and position of the different windows...
     public boolean              max[]                = new boolean[1];
-
-    public Rectangle            size[]               = new Rectangle[1];
 
     public String               created_user, modifiedUser;
 
@@ -739,17 +730,22 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                         // That means that we have a Display variable set in Props...
                         if (props.getDisplay() != null)
                         {
-                            Shell shell = props.getDisplay().getActiveShell();
+                        	if( SpoonFactory.getInstance() != null ) {
+                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle("Warning",  
+                        						null,
+                        						Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()),
+                        						Const.WARNING,
+                        						new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
+                                    						   Messages.getString("System.Button.No") },//$NON-NLS-1$
+                        						1,
+                        						Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
+                        						!props.askAboutReplacingDatabaseConnections() );
+                        		int idx = ((Integer)res[0]).intValue();
+                        		boolean toggleState = ((Boolean)res[1]).booleanValue();
+                                props.setAskAboutReplacingDatabaseConnections(!toggleState);
+                                overwrite = ((idx&0xFF)==0); // Yes means: overwrite
+                        	}
 
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Warning", null, 
-                                    Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName())  //$NON-NLS-1$ //$NON-NLS-2$
-                                    , MessageDialog.WARNING, 
-                                    new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
-                                                   Messages.getString("System.Button.No") },//$NON-NLS-1$
-                                    1, Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"), !props.askAboutReplacingDatabaseConnections()); //$NON-NLS-1$
-                            int idx = md.open();
-                            props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
-                            overwrite = ((idx & 0xFF) == 0); // Yes means: overwrite
                         }
                     }
 
@@ -1718,18 +1714,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         }
     }
 
-    public void selectInRect(Rectangle rect)
-    {
-        int i;
-        for (i = 0; i < nrJobEntries(); i++)
-        {
-            JobEntryCopy je = getJobEntry(i);
-            Point p = je.getLocation();
-            if (((p.x >= rect.x && p.x <= rect.x + rect.width) || (p.x >= rect.x + rect.width && p.x <= rect.x))
-                    && ((p.y >= rect.y && p.y <= rect.y + rect.height) || (p.y >= rect.y + rect.height && p.y <= rect.y))) je.setSelected(true);
-        }
-    }
-
     public int getMaxUndo()
     {
         return max_undo;
@@ -2563,35 +2547,6 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     }
   }
   
-  public boolean editProperties(Spoon spoon, Repository rep)
-  {
-      JobDialog jd = new JobDialog(spoon.getShell(), SWT.NONE, this, rep);
-      JobMeta ji = jd.open();
-      
-      // In this case, load shared objects
-      //
-      if (jd.isSharedObjectsFileChanged())
-      {
-          try
-          {
-              readSharedObjects(rep);
-          }
-          catch(Exception e)
-          {
-              new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeJobGraphTabName(this)), e);
-          }
-      }
-      
-      if (jd.isSharedObjectsFileChanged() || ji!=null)
-      {
-    	  spoon.refreshTree();
-    	  spoon.renameTabs(); // cheap operation, might as will do it anyway
-      }
-      
-      spoon.setShellText();
-      return ji!=null;
-  }
-
   public List<ResourceReference> getResourceDependencies() {
   	List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
   

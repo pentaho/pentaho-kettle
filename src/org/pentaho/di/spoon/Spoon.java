@@ -1163,7 +1163,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
     
     public void editTransformationProperties() {
-    		getActiveTransformation().editProperties(this, rep); 
+    		TransGraph.editProperties(getActiveTransformation(), this, rep); 
     }
     
     public void executeJob() {
@@ -2344,7 +2344,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
     
     public void editTransformationPropertiesPopup() {
-    		((TransMeta)selectionObject).editProperties(this, rep);
+    		TransGraph.editProperties((TransMeta)selectionObject, this, rep);
     }
     
     public void addTransLog() {
@@ -2361,10 +2361,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     public void editJobProperties( String id ) {
     		if( "job-settings".equals( id ) ) {
-    			getActiveJob().editProperties(this, rep);
+    			JobGraph.editProperties(getActiveJob(), this, rep);
     		}
     		else if( "job-inst-settings".equals( id ) ) {
-    			( (JobMeta)selectionObject).editProperties(this, rep);	
+    			JobGraph.editProperties( (JobMeta)selectionObject, this, rep);	
     		}
     }
 
@@ -2676,8 +2676,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         else
         {
-            if (selection instanceof TransMeta) ((TransMeta)selection).editProperties(this, rep);
-            if (selection instanceof JobMeta) ((JobMeta)selection).editProperties(this, rep);
+            if (selection instanceof TransMeta) TransGraph.editProperties((TransMeta)selection,this, rep);
+            if (selection instanceof JobMeta) JobGraph.editProperties((JobMeta)selection, this, rep);
             if (selection instanceof StepPlugin) newStep(getActiveTransformation());
             if (selection instanceof DatabaseMeta) editConnection((DatabaseMeta) selection);
             if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
@@ -4197,7 +4197,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     mb.open();
                 }
                 ask=false;
-                answer = meta.editProperties(this, rep);
+                if( meta instanceof TransMeta ) {
+                	answer = TransGraph.editProperties((TransMeta) meta, this, rep);
+                }
+                if( meta instanceof JobMeta ) {
+                	answer = JobGraph.editProperties((JobMeta) meta, this, rep);
+                }
             }
             
             if (answer && !Const.isEmpty(meta.getName()))
@@ -4307,7 +4312,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     mb.open();
                 }
                 ask=false;
-                answer = jobMeta.editProperties(this, rep);
+                answer = JobGraph.editProperties(jobMeta, this, rep);
             }
             
             if (answer && jobMeta.getName()!=null && jobMeta.getName().length()>0)
@@ -9155,4 +9160,39 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public void addMenuListener( String id, Object listener, String methodName ) {
     		menuListeners.add( new Object[] { id, listener, methodName } );
     }
+    
+    /**
+     * Generic popup with a toggle option
+     * @param dialogTitle
+     * @param image
+     * @param message
+     * @param dialogImageType
+     * @param buttonLabels
+     * @param defaultIndex
+     * @param toggleMessage
+     * @param toggleState
+     * @return
+     */
+    public Object[] messageDialogWithToggle( String dialogTitle, Image image, String message, int dialogImageType, String buttonLabels[], int defaultIndex, String toggleMessage, boolean toggleState ) 
+    {
+    	int imageType = 0;
+    	switch( dialogImageType ) {
+    	case Const.WARNING: imageType =  MessageDialog.WARNING; break;
+    	}
+
+    	MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                dialogTitle,  
+                image,
+                message,
+                imageType,
+                buttonLabels,
+                defaultIndex,
+                toggleMessage, 
+                toggleState
+           );
+           int idx = md.open();
+           return new Object[] { new Integer(idx), new Boolean(md.getToggleState()) };
+    }
+
+
 }

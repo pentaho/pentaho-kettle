@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.spoon.Spoon;
 
 public interface EngineMetaInterface {
 
@@ -47,8 +46,6 @@ public interface EngineMetaInterface {
     public String getModifiedUser( );
     
     public RepositoryDirectory getDirectory();
-    
-    public boolean editProperties(Spoon spoon, Repository rep);
     
     public boolean showReplaceWarning(Repository rep);
     
