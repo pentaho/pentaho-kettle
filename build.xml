@@ -529,6 +529,6 @@
 	  <target name="clean" depends="cleandirs"/>
 	
 	
-	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip" />
+	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, runtests" />
 
 </project>
