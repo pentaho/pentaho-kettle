@@ -278,17 +278,7 @@ public class BaseStep extends Thread implements VariableSpace
     private RowMetaInterface errorRowMeta = null;
     private RowMetaInterface previewRowMeta;
 
-    // private int putTimeOut; //s
-	// private int getTimeOut; //s
-	// private int singleWaitTime; //ms
-	// private int maxPutWaitCount; 
-	// private int maxGetWaitCount; 
-	// private int count;
-	// private TimeUnit timeUnit;
-	// private int outputRowSetsSize;
-	// private int inputRowSetsSize;
-    
-	private boolean checkTransRunning;
+    private boolean checkTransRunning;
 
 	private int slaveNr;
 
@@ -297,9 +287,13 @@ public class BaseStep extends Thread implements VariableSpace
 	private int uniqueStepNrAcrossSlaves;
 
 	private int uniqueStepCountAcrossSlaves;
+
+	// OK, we need to explain to this running step that we expect input from remote steps.
+	// This only happens when the previous step "repartitions". (previous step has different
+	// partitioning method than this one)
+	//
+	// So here we go, let's create a List of 
 	
-	// private RowSet inRowSet;
-	// private RowSet outRowSet;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own

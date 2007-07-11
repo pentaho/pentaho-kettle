@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 
@@ -424,7 +425,7 @@ public class RowMeta implements RowMetaInterface
         }
         catch (IOException e)
         {
-            throw new KettleFileException("Unable to read nr of metadata values", e);
+            throw new KettleFileException("Unable to read nr of metadata values: "+e.toString(), e);
         }
         for (int i=0;i<nr;i++)
         {
@@ -432,7 +433,7 @@ public class RowMeta implements RowMetaInterface
         }
     }
 
-    public Object[] readData(DataInputStream inputStream) throws KettleFileException
+    public Object[] readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException
     {
         Object[] data = new Object[size()];
         for (int i=0;i<size();i++)

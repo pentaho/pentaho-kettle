@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 
@@ -320,8 +321,9 @@ public interface ValueMetaInterface extends Cloneable
      * @param inputStream the input stream to read from 
      * @return a new data object
      * @throws KettleFileException in case a I/O error occurs
+     * @throws KettleEOFException When we have read all the data there is to read
      */
-    public Object readData(DataInputStream inputStream) throws KettleFileException;
+    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException;
     
     /**
      * Compare 2 values of the same data type

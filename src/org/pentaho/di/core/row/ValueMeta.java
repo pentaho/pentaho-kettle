@@ -2,6 +2,7 @@ package org.pentaho.di.core.row;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.Locale;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 
@@ -1588,7 +1590,7 @@ public class ValueMeta implements ValueMetaInterface
         
     }
     
-    public Object readData(DataInputStream inputStream) throws KettleFileException
+    public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException
     {
         try
         {
@@ -1619,6 +1621,10 @@ public class ValueMeta implements ValueMetaInterface
                 
             default: throw new KettleFileException("Unknown storage type "+getStorageType());
             }
+        }
+        catch(EOFException e)
+        {
+        	throw new KettleEOFException(e);
         }
         catch(IOException e)
         {
@@ -1890,7 +1896,7 @@ public class ValueMeta implements ValueMetaInterface
         }
     }
     
-    public ValueMeta(DataInputStream inputStream) throws KettleFileException
+    public ValueMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException
     {
         this();
         
@@ -1987,6 +1993,10 @@ public class ValueMeta implements ValueMetaInterface
             {
                 dateFormatLocale = new Locale(strDateFormatLocale);
             }
+        }
+        catch(EOFException e)
+        {
+        	throw new KettleEOFException(e);
         }
         catch(IOException e)
         {
