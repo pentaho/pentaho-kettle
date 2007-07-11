@@ -175,7 +175,7 @@
 	
 	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
 	  	<echo>Generating the Kettle javadoc zip file ...</echo>
-	  	<jar jarfile="Kettle-javadoc-${version}.zip" 
+	  	<jar jarfile="${dist.dir}/Kettle-javadoc-${version}.zip" 
 	    	 basedir="${api}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
