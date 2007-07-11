@@ -188,7 +188,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 						data.writer.write(data.binarySeparator);
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
-					Object valueData = r[i];
+					Object valueData = r[data.fieldnrs[i]];
 					writeField(v, valueData);
 				}
                 data.writer.write(data.binaryNewline);
