@@ -587,12 +587,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     {
         String key = makeTransGraphTabName(transMeta);
 
-        if (transformationMap.get(key)==null)
+        TransMeta xform = (TransMeta) transformationMap.get(key);
+        if (xform==null)
         {
             transformationMap.put(key, transMeta);
         }
         else
         {
+            //if ((null == transMeta.getFilename()) || !transMeta.getFilename().equals(xform.getFilename())) {
             ShowMessageDialog dialog = new ShowMessageDialog(shell, SWT.OK | SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
             dialog.setTimeOut(6);
             dialog.open();
@@ -602,6 +604,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); // Sorry!
             mb.open();
             */
+            //}
         }
         
         return key;
@@ -7103,10 +7106,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     userinfo = null;
                     repositoryMeta  = null;
                 } else {
+                	String repName = repositoryMeta.getName();
                     RepositoriesMeta repsinfo = new RepositoriesMeta(log);
                     if (repsinfo.readData())
                     {
-                        repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+                        repositoryMeta = repsinfo.findRepository(repName);
                         if (repositoryMeta!=null)
                         {
                             // Define and connect to the repository...
