@@ -19,6 +19,7 @@ package org.pentaho.di.core.logging;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
@@ -355,10 +356,16 @@ public class LogWriter
 		println(lvl, "General", msg);
 	}
 	
-	public void println(int lvl, String subj, String msg)
+	public void println(int lvl, String subj, String msg, Object... args)
 	{
+		// do cheapest filtering checks first
+		if (level==LOG_LEVEL_NOTHING) return;  // Nothing, not even errors...
+		if (level<lvl) return; // not for our eyes.
+		
         String subject = subj;
         if (subject==null) subject="Kettle";
+        
+        msg = (args.length <= 0) ? msg : MessageFormat.format(msg, args);
         
 		// Are the message filtered?
 		if (filter!=null && filter.length()>0)
@@ -368,11 +375,7 @@ public class LogWriter
                 return; // "filter" not found in row: don't show!
             }
         }
-		    
-		if (level==LOG_LEVEL_NOTHING) return;  // Nothing, not even errors...
-		if (level<lvl) return; // not for our eyes.
-		
-        
+		        
         // Where did this come from???
         Logger logger = Logger.getLogger(subject);
         
@@ -387,12 +390,12 @@ public class LogWriter
         }
 	}
 	
-	public void logMinimal(String subject, String message)  { println(LOG_LEVEL_MINIMAL, subject, message) ; }
-    public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
-	public void logDetailed(String subject, String message) { println(LOG_LEVEL_DETAILED, subject, message); }
-	public void logDebug(String subject, String message)    { println(LOG_LEVEL_DEBUG, subject, message); }
-	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }
-	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
+	public void logMinimal(String subject, String message, Object... args)  { println(LOG_LEVEL_MINIMAL, subject, message, args) ; }
+    public void logBasic(String subject, String message, Object... args)    { println(LOG_LEVEL_BASIC, subject, message, args) ; }
+	public void logDetailed(String subject, String message, Object... args) { println(LOG_LEVEL_DETAILED, subject, message, args); }
+	public void logDebug(String subject, String message, Object... args)    { println(LOG_LEVEL_DEBUG, subject, message, args); }
+	public void logRowlevel(String subject, String message, Object... args) { println(LOG_LEVEL_ROWLEVEL, subject, message, args); }
+	public void logError(String subject, String message, Object... args)    { println(LOG_LEVEL_ERROR, subject, message, args); }
 	public void logError(String subject, String message, Throwable e) { 
 		String stackTrace = Const.getStackTracker(e);
 		println(LOG_LEVEL_ERROR, subject, message); 
