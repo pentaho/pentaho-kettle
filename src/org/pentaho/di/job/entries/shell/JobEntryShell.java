@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -31,7 +33,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -106,6 +107,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
+			// THIS IS A VERY BAD WAY OF READING/SAVING AS IT MAKES
+			// THE XML "DUBIOUS". DON'T REUSE IT.
 			retval.append("      ").append(XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 
@@ -133,6 +136,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			arguments = new String[argnr];
 			
 			// Read them all...
+			// THIS IS A VERY BAD WAY OF READING/SAVING AS IT MAKES
+			// THE XML "DUBIOUS". DON'T REUSE IT.
 			for (int a=0;a<argnr;a++) arguments[a]=XMLHandler.getTagValue(entrynode, "argument"+a);
 		}
 		catch(KettleException e)
@@ -151,14 +156,14 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			setFileName( rep.getJobEntryAttributeString(id_jobentry, "file_name")  );
 			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+            execPerRow      = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
 			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+			addDate    = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+			addTime    = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
+			logfile    = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+			logext     = rep.getJobEntryAttributeString(id_jobentry, "logext");
+			loglevel   = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
 	
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -395,9 +400,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         try
         {
             // What's the exact command?
-            String cmd[] = null;
             String base[] = null;
-            
+            List<String> cmds = new ArrayList<String>();            
             
             log.logBasic(toString(), "Running on platform : "+Const.getOS());
             
@@ -423,8 +427,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             // Construct the arguments...
             if (argFromPrevious && cmdRows!=null)
             {
-                List<String> cmds = new ArrayList<String>();
-                
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);
     
@@ -462,13 +464,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 			cmds.add(optionallyQuoteField(r.getString(j, null), "\""));
                 		}
                 	}
-                }
-                cmd = (String[]) cmds.toArray(new String[cmds.size()]);                
+                }                
             }
             else if (args!=null)
-            {            	
-                List<String> cmds = new ArrayList<String>();
-    
+            {            	    
                 // Add the base command...
                 for (int i=0;i<base.length;i++) cmds.add(base[i]);
                 
@@ -498,27 +497,31 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                         cmds.add(args[i]);
                     }
                 }
-                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
             }
             
-            if (log.isBasic())
+            StringBuffer command = new StringBuffer();
+                
+            Iterator it = cmds.iterator();
+            boolean first = true;                
+            while ( it.hasNext() )
             {
-                StringBuffer command = new StringBuffer();
-                for (int i=0;i<cmd.length;i++)
-                {
-                    if (i>0) command.append(' ');
-                    command.append(cmd[i]);
-                }
-                log.logBasic(toString(), "Executing command : "+command.toString());
+                if ( ! first ) 
+                 	command.append(' ');
+                else
+                  	first = false;
+                command.append((String)it.next());
             }
+            log.logBasic(toString(), "Executing command : "+command.toString());
              
-            // Launch the script!
-            log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
-
             // Build the environment variable list...
-            Runtime runtime = java.lang.Runtime.getRuntime();
-            Process proc = runtime.exec(cmd,  
-                    EnvUtil.getEnvironmentVariablesForRuntimeExec());
+            ProcessBuilder procBuilder = new ProcessBuilder(cmds);
+            Map<String,String> env = procBuilder.environment();
+            String[] variables = listVariables();
+            for ( int i = 0; i < variables.length; i++ )
+            {
+            	env.put(variables[i], getVariable(variables[i]));
+            }
+            Process proc = procBuilder.start();
             
             // any error message?
             StreamLogger errorLogger = new
@@ -533,7 +536,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             new Thread(outputLogger).start();
                                     
             proc.waitFor();
-            log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
+            log.logDetailed(toString(), "Command " + command.toString() + " has finished");
             
             // What's the exit status?
             result.setExitStatus( proc.exitValue() );
@@ -593,6 +596,5 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public boolean isUnconditional()
 	{
 		return true;
-	}
-    
+	}    
 }
