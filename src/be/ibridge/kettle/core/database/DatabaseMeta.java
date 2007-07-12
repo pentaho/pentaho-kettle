@@ -1595,7 +1595,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
         else
         {
-            if (hasSpacesInField(field) || hasSpecialCharInField(field) || hasDotInField(field))
+            if (databaseInterface.isQuoteAllFields() ||
+                hasSpacesInField(field) || 
+                hasSpecialCharInField(field) || 
+                hasDotInField(field))
             {
                 return getStartQuote()+field+getEndQuote();
             }
@@ -2194,6 +2197,22 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     public void setStreamingResults(boolean useStreaming)
     {
         databaseInterface.setStreamingResults(useStreaming);
+    }
+
+    /**
+     * @return true if all fields should always be quoted in db
+     */
+    public boolean isQuoteAllFields()
+    {
+        return databaseInterface.isQuoteAllFields();
+    }
+
+    /**
+     * @param quoteAllFields true if all fields in DB should be quoted.
+     */
+    public void setQuoteAllFields(boolean quoteAllFields)
+    {
+        databaseInterface.setQuoteAllFields(quoteAllFields);
     }
 
     /**
