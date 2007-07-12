@@ -20,7 +20,7 @@ public class JobFileListener implements FileListener {
             spoon.addMenuLast();
             if (!importfile) jobMeta.clearChanged();
             jobMeta.setFilename(fname);
-            spoon.addJobGraph(jobMeta);
+            spoon.delegates.jobs.addJobGraph(jobMeta);
             
             spoon.refreshTree();
             spoon.refreshHistory();
