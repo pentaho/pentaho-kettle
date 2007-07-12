@@ -88,9 +88,9 @@ public class DatabaseDialog extends Dialog
 
     private CTabFolder     wTabFolder;
 
-    private CTabItem       wDbTab, wPoolTab, wOracleTab, wIfxTab, wMySQLTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab, wClusterTab;
+    private CTabItem       wDbTab, wPoolTab, wOracleTab, wIfxTab, wMySQLTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab, wClusterTab, wAdvancedTab;
 
-    private Composite      wDbComp, wPoolComp, wOracleComp, wIfxComp, wMySQLComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp, wClusterComp;
+    private Composite      wDbComp, wPoolComp, wOracleComp, wIfxComp, wMySQLComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp, wClusterComp, wAdvancedComp;
 
     private Shell          shell;
 
@@ -172,6 +172,12 @@ public class DatabaseDialog extends Dialog
     private int            margin;
 
     private long           database_id;
+
+    // Advanced
+    private Label          wlQuoteAllFields;
+
+    private Button         wQuoteAllFields;
+ 
 
     /**
      * @deprecated Use the simple version without <i>style</i>, <i>log</i> and <i>props</i> parameters
@@ -271,7 +277,8 @@ public class DatabaseDialog extends Dialog
         addOptionsTab();
         addSQLTab();
         addClusterTab();
-
+        addAdvancedTab();
+        
         FormData fdTabFolder = new FormData();
         fdTabFolder.left = new FormAttachment(0, 0);
         fdTabFolder.top = new FormAttachment(0, margin);
@@ -1250,6 +1257,52 @@ public class DatabaseDialog extends Dialog
         wClusterTab.setControl(wClusterComp);
     }
 
+    
+    private void addAdvancedTab()
+    {
+        // ////////////////////////
+        // START OF ADVANCED TAB///
+        // /
+        wAdvancedTab = new CTabItem(wTabFolder, SWT.NONE);
+        wAdvancedTab.setText(Messages.getString("DatabaseDialog.AdvancedTab.title")); //$NON-NLS-1$
+
+        FormLayout AdvancedLayout = new FormLayout();
+        AdvancedLayout.marginWidth = Const.FORM_MARGIN;
+        AdvancedLayout.marginHeight = Const.FORM_MARGIN;
+
+        wAdvancedComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wAdvancedComp);
+        wAdvancedComp.setLayout(AdvancedLayout);
+
+        // QuoteAllFields
+        wlQuoteAllFields = new Label(wAdvancedComp, SWT.RIGHT);
+        wlQuoteAllFields.setText(Messages.getString("DatabaseDialog.label.AdvancedQuoteAllFields")); //$NON-NLS-1$
+        props.setLook(wlQuoteAllFields);
+        FormData fdlQuoteAllFields = new FormData();
+        fdlQuoteAllFields.top = new FormAttachment(0, margin);
+        fdlQuoteAllFields.left = new FormAttachment(0, 0);
+        fdlQuoteAllFields.right = new FormAttachment(middle, -margin);
+        wlQuoteAllFields.setLayoutData(fdlQuoteAllFields);
+
+        wQuoteAllFields = new Button(wAdvancedComp, SWT.CHECK);
+        props.setLook(wQuoteAllFields);
+        FormData fdStreamResult = new FormData();
+        fdStreamResult.top = new FormAttachment(0, margin);
+        fdStreamResult.left = new FormAttachment(middle, 0);
+        fdStreamResult.right = new FormAttachment(95, 0);
+        wQuoteAllFields.setLayoutData(fdStreamResult);
+
+        FormData fdAdvancedComp = new FormData();
+        fdAdvancedComp.left = new FormAttachment(0, 0);
+        fdAdvancedComp.top = new FormAttachment(0, 0);
+        fdAdvancedComp.right = new FormAttachment(100, 0);
+        fdAdvancedComp.bottom = new FormAttachment(100, 0);
+        wAdvancedComp.setLayoutData(fdAdvancedComp);
+
+        wAdvancedComp.layout();
+        wAdvancedTab.setControl(wAdvancedComp);
+    }
+    
     private void showOptionsHelpText()
     {
         DatabaseMeta meta = new DatabaseMeta();
@@ -1331,8 +1384,10 @@ public class DatabaseDialog extends Dialog
         wURL.setText(databaseMeta.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, "")); //$NON-NLS-1$
         wDriverClass.setText(databaseMeta.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, "")); //$NON-NLS-1$
 
-        wStreamResult.setSelection( databaseMeta.isStreamingResults() );
-        
+        wStreamResult.setSelection(databaseMeta.isStreamingResults());
+
+        wQuoteAllFields.setSelection(databaseMeta.isQuoteAllFields());
+
         getOptionsData();
         checkPasswordVisible(wPassword.getTextWidget());
 
@@ -1608,6 +1663,9 @@ public class DatabaseDialog extends Dialog
         databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, wSAPLanguage.getText());
         databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
         databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, wSAPClient.getText());
+
+        // Advanced Settings...
+        databaseMeta.setQuoteAllFields(wQuoteAllFields.getSelection());
 
         // Generic settings...
         databaseMeta.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, wURL.getText());

@@ -117,6 +117,10 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
      */
     public static final String ATTRIBUTE_USE_RESULT_STREAMING = "STREAM_RESULTS";
 
+    /**
+     * A flag to determine if we should quote all fields
+     */
+    public static final String ATTRIBUTE_QUOTE_ALL_FIELDS = "QUOTE_ALL_FIELDS";
     
     
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
@@ -159,7 +163,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 	
 	private boolean changed;
     
-    private Properties attributes;
+  private Properties attributes;
 	
 	private long id;
 
@@ -1137,6 +1141,7 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
         return true;
     }
     
+    
     /**
      * @return true if the database is streaming results (normally this is an option just for MySQL).
      */
@@ -1152,6 +1157,23 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
     public void setStreamingResults(boolean useStreaming)
     {
         attributes.setProperty(ATTRIBUTE_USE_RESULT_STREAMING, useStreaming?"Y":"N");
+    }
+
+    /**
+     * @return true if all fields should always be quoted in db
+     */
+    public boolean isQuoteAllFields()
+    {
+        String quoteAllFields = attributes.getProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, "Y"); // DEFAULT TO YES!!
+        return "Y".equalsIgnoreCase(quoteAllFields);
+    }
+    
+    /**
+     * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
+     */
+    public void setQuoteAllFields(boolean quoteAllFields)
+    {
+        attributes.setProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, quoteAllFields?"Y":"N");
     }
 
 	public void copyVariablesFrom(VariableSpace space) 

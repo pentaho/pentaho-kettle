@@ -687,10 +687,20 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database is streaming results (normally this is an option just for MySQL).
      */
     public boolean isStreamingResults();
-    
+   
     /**
      * @param useStreaming true if we want the database to stream results (normally this is an option just for MySQL).
      */
     public void setStreamingResults(boolean useStreaming);
+
+    /**
+     * @return true if all fields should always be quoted in db
+     */
+    public boolean isQuoteAllFields();
+
+    /**
+     * @param quoteAllFields true if all fields in DB should be quoted.
+     */
+    public void setQuoteAllFields(boolean quoteAllFields);
 
 }
