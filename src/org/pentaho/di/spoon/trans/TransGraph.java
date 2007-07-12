@@ -15,7 +15,6 @@
 
 package org.pentaho.di.spoon.trans;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,9 +77,10 @@ import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.gui.XulHelper;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.spoon.Messages;
@@ -101,8 +101,6 @@ import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
 import org.pentaho.xul.swt.menu.MenuChoice;
-import org.pentaho.xul.swt.menu.MenuHelper;
-import org.w3c.dom.Document;
 
 
 /**
@@ -222,18 +220,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         // this.props = Props.getInstance();
 		try {
     		// first get the XML document
-    		File xulFile = new File( "ui/menus.xul" ); //$NON-NLS-1$
-    		if( xulFile.exists() ) {
-    	        XulMessages xulMessages = new XulMessages();
-    			Document doc = XMLHandler.loadXMLFile( xulFile );
-    			List<String> ids = new ArrayList<String>();
-    			ids.add( "trans-graph-hop" );
-    			ids.add( "trans-graph-entry" );
-    			ids.add( "trans-graph-background" );
-    			ids.add( "trans-graph-note" );
-    			
-    			menuMap = MenuHelper.createPopupMenusFromXul( doc, shell, xulMessages, ids );
-    		}
+    			menuMap = XulHelper.createPopupMenus(SpoonInterface.XUL_FILE_MENUS, shell, new XulMessages(),"trans-graph-hop",
+    					"trans-graph-entry" ,"trans-graph-background","trans-graph-note" );
 		} catch (Throwable t ) {
 			// TODO log this
 			t.printStackTrace();
@@ -2316,7 +2304,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 new ErrorDialog(spoon.getShell(), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", spoon.makeTransGraphTabName(transMeta)), e);
             }                                
             spoon.refreshTree();
-            spoon.renameTabs(); // cheap operation, might as will do it anyway
+            spoon.delegates.tabs.renameTabs(); // cheap operation, might as will do it anyway
         }
         
         spoon.setShellText();
