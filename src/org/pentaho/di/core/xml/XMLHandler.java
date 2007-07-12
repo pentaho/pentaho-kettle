@@ -16,9 +16,9 @@
  
 
 package org.pentaho.di.core.xml;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -568,7 +568,7 @@ public class XMLHandler
 	 * @param file The file to load into a document
 	 * @return the Document if all went well, null if an error occured!
 	 */
-	public static final Document loadXMLFile(File file) throws KettleXMLException
+	public static final Document loadXMLFile(URL resource) throws KettleXMLException
 	{
 	    DocumentBuilderFactory dbf;
 		DocumentBuilder db;
@@ -581,9 +581,9 @@ public class XMLHandler
 			db   = dbf.newDocumentBuilder();
 			try
 			{
-				doc  = db.parse(file);
+				doc  = db.parse(resource.openStream());
 			}
-			catch(FileNotFoundException ef)
+			catch(IOException ef)
 			{
 				throw new KettleXMLException(ef);
 			}
@@ -592,7 +592,7 @@ public class XMLHandler
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Error reading information from file", e);
+			throw new KettleXMLException("Error reading information from resource", e);
 		}
 	}
 
@@ -616,7 +616,7 @@ public class XMLHandler
 			{
 				doc  = db.parse(new InputSource(new java.io.StringReader(string)));
 			}
-			catch(FileNotFoundException ef)
+			catch(IOException ef)
 			{
 				throw new KettleXMLException("Error parsing XML", ef);
 			}
