@@ -480,7 +480,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     case SWT.HOME: key = "home"; break; //$NON-NLS-1$
                     default: ;
                     }
-                    
                     if( key == null && ctrl) {
                     		// get the character
                     		if(e.character >= '0' && e.character <= '9' ) {
@@ -490,7 +489,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                         		char c = (char) ('a' + (e.character - 1) );
                         		key = new String( new char[] { c } );
                     		}
-                    } else {
+                    } else 
+                    if( key == null )
+                    {
                 			char c = e.character;
                 			key = new String( new char[] { c } );
                     }
@@ -8599,7 +8600,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             dialogConstructor = dialogClass.getConstructor(paramClasses);
             return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
         } catch (Throwable t) {
-        	log.logError( toString(), "Could not create dialog for "+dialogClassName , t );
+        	// this is temporary code, trying to fix an issue that I cannot reproduce
+        	try {
+            	log.logError( toString(), "Could not create dialog for "+dialogClassName , t );
+        	} catch (Throwable tmp) {
+        		t.printStackTrace();
+        	}
+        	// end of temporary code
         }
         return null;
     }
