@@ -8578,7 +8578,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             dialogConstructor = dialogClass.getConstructor(paramClasses);
             return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
         } catch (Throwable t) {
-        	log.logError( "Could not create dialog for "+dialogClassName , t.getMessage() );
+        	log.logError( toString(), "Could not create dialog for "+dialogClassName , t );
         }
         return null;
     }
@@ -8595,7 +8595,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             dialogConstructor = dialogClass.getConstructor(paramClasses);
             return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
         } catch (Throwable t) {
-        	log.logError( "Could not create dialog for "+dialogClassName , t.getMessage() );
+        	log.logError( toString(), "Could not create dialog for "+dialogClassName , t );
         }
         return null;
     }
