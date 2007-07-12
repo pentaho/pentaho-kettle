@@ -32,7 +32,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
         }
 
         Object object = event.getMessage();
-        if (object instanceof Log4jMessage)
+        if (object != null && object instanceof Log4jMessage)
         {
             Log4jMessage message = (Log4jMessage)object;
 
