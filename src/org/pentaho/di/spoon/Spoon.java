@@ -2084,12 +2084,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                     if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
                     {
                         TransMeta transMeta = findTransformation(path[1]);
-                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
-                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
-                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
-                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
-                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
-                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(path[3], transMeta.findDatabase(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_STEPS)) object = new TreeSelection(path[3], transMeta.findStep(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_HOPS)) object = new TreeSelection(path[3], transMeta.findTransHop(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(path[3], transMeta.findPartitionSchema(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_SLAVES)) object = new TreeSelection(path[3], transMeta.findSlaveServer(path[3]), transMeta);
+                        if (transMeta != null && path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(path[3], transMeta.findClusterSchema(path[3]), transMeta);
                     }
                     if (path[0].equals(STRING_JOBS)) // The name of a job
                     {

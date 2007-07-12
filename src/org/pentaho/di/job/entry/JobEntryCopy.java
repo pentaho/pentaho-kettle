@@ -538,7 +538,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public String toString()
 	{
-		return entry.getName() + "." + getNr();
+		return (entry != null ? entry.getName() : null) + "." + getNr();
 	}
 
 	public String getName()
