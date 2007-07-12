@@ -75,7 +75,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.Messages;
 import org.pentaho.di.job.dialog.JobDialog;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
