@@ -1,4 +1,4 @@
-package org.pentaho.ui;
+package org.pentaho.di.spoon.delegates;
 
 import org.pentaho.di.spoon.Spoon;
 
