@@ -1,19 +1,25 @@
 package org.pentaho.di.trans.step;
 
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.xml.XMLInterface;
+import org.w3c.dom.Node;
 
-public class RemoteStep implements Cloneable {
 
+public class RemoteStep implements Cloneable, XMLInterface {
+
+	public static final String XML_TAG = "remotestep";
+	
 	/** The host name or IP address to read from or to write to */
 	private String hostname;
 	
 	/** The port to read input data from or to write output data to */
-	private int port;
+	private String port;
 
 	/**
 	 * @param hostname
 	 * @param port
 	 */
-	public RemoteStep(String hostname, int port) {
+	public RemoteStep(String hostname, String port) {
 		super();
 		this.hostname = hostname;
 		this.port = port;
@@ -22,6 +28,22 @@ public class RemoteStep implements Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+	
+	public String getXML() {
+		StringBuffer xml = new StringBuffer();
+		xml.append(XMLHandler.openTag(XML_TAG));
+		
+		xml.append(XMLHandler.addTagValue("hostname", hostname, false));
+		xml.append(XMLHandler.addTagValue("port", port, false));
+		
+		xml.append(XMLHandler.closeTag(XML_TAG));
+		return xml.toString();
+	}
+	
+	public RemoteStep(Node node) {
+		hostname = XMLHandler.getTagValue(node, "hostname");
+		port = XMLHandler.getTagValue(node, "port");
 	}
 	
 	@Override
@@ -48,17 +70,17 @@ public class RemoteStep implements Cloneable {
 		this.hostname = hostname;
 	}
 
-	/**
+	/**int
 	 * @return the port
 	 */
-	public int getPort() {
+	public String getPort() {
 		return port;
 	}
 
 	/**
 	 * @param port the port to set
 	 */
-	public void setPort(int port) {
+	public void setPort(String port) {
 		this.port = port;
 	}	
 }
