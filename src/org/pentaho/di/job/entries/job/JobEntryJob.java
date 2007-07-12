@@ -662,13 +662,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			//
 			JobMeta jobMeta = getJobMeta(null);
 			
+			// Also go down into the job and export the files there. (going down recursively)
+			//
 			String newFilename = namingInterface.nameResource(jobMeta.getName(), this.filename, "kjb");
+			
+			// Set the correct filename inside the XML.
+			// Replace if BEFORE XML generation occurs.
+			//
 			jobMeta.setFilename(newFilename);
 			
-			filename = newFilename; // Replace if BEFORE XML generation occurs.
+			// change it in the job entry
+			//
+			filename = newFilename;
 			
-			String xml = jobMeta.getXML();
-			definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+			//
+			// Don't save it, that has already been done a few lines above, in jobMeta.exportResources()
+			// 
+			// String xml = jobMeta.getXML();
+			// definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
 			
 			return newFilename;
 		}
