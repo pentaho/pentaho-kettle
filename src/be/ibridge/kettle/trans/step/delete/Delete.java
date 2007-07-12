@@ -99,7 +99,8 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",lu.toString(),""+row)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		data.dbupd.updateRow();
+		//data.dbupd.updateRow();
+		data.dbupd.updateRow(data.batchMode); //  delete in batch mode
 		linesUpdated++;
 	}
 	
@@ -111,6 +112,17 @@ public class Delete extends BaseStep implements StepInterface
 		Row r=getRow();       // Get row from input rowset & set row busy!
 		if (r==null)  // no more input to be expected...
 		{
+                        // proces batched deletes
+                        try {
+                            data.dbupd.updateFinished(data.batchMode);
+                        } catch(Exception dbe)
+                        {
+                            logError("Unexpected error committing the database connection: "+dbe.toString());
+                            logError(Const.getStackTracker(dbe));
+                            setErrors(1);
+                            stopAll();
+        		}
+                    
 			setOutputDone();
 			return false;
 		}
@@ -141,6 +153,7 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+                        data.batchMode = meta.getCommitSize()>0 && meta.useBatchUpdate();
 			data.dbupd=new Database(meta.getDatabaseMeta());
 			try 
 			{
@@ -171,6 +184,7 @@ public class Delete extends BaseStep implements StepInterface
 
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
+
 		meta=(DeleteMeta)smi;
 		data=(DeleteData)sdi;
 		

@@ -33,6 +33,8 @@ public class DeleteData extends BaseStepData implements StepDataInterface
 
 	public int    keynrs[];         // nr of keylookup -value in row...
 	public int    keynrs2[];        // nr of keylookup2-value in row...
+        /** Use batch mode or not? */
+        public boolean batchMode;
 	
 	/**
 	 * 

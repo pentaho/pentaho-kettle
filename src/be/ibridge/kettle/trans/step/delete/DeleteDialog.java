@@ -83,7 +83,12 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlCommit;
 	private Text         wCommit;
 	private FormData     fdlCommit, fdCommit;
-    
+
+        private Label        wlBatch;
+	private Button       wBatch;
+	private FormData     fdlBatch, fdBatch;
+
+        
 	private DeleteMeta input;
 
 	public DeleteDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -144,6 +149,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
+
         // Schema line...
         wlSchema=new Label(shell, SWT.RIGHT);
         wlSchema.setText(Messages.getString("DeleteDialog.TargetSchema.Label")); //$NON-NLS-1$
@@ -190,6 +196,25 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
+                
+		// UsePart update
+		wlBatch=new Label(shell, SWT.RIGHT);
+		wlBatch.setText(Messages.getString("DeleteDialog.Batch.Label"));
+ 		props.setLook(wlBatch);
+		fdlBatch=new FormData();
+		fdlBatch.left  = new FormAttachment(0, 0);
+		fdlBatch.top   = new FormAttachment(wTable, margin);
+		fdlBatch.right = new FormAttachment(middle, -margin);
+		wlBatch.setLayoutData(fdlBatch);
+		wBatch=new Button(shell, SWT.CHECK);
+ 		props.setLook(wBatch);
+		fdBatch=new FormData();
+		fdBatch.left  = new FormAttachment(middle, 0);
+		fdBatch.top   = new FormAttachment(wTable, margin);
+		fdBatch.right = new FormAttachment(100, 0);
+		wBatch.setLayoutData(fdBatch);
+                
+                
 		// Commit line
 		wlCommit = new Label(shell, SWT.RIGHT);
 		wlCommit.setText(Messages.getString("DeleteDialog.Commit.Label")); //$NON-NLS-1$
@@ -204,7 +229,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wCommit.addModifyListener(lsMod);
 		fdCommit = new FormData();
 		fdCommit.left = new FormAttachment(middle, 0);
-		fdCommit.top = new FormAttachment(wTable, margin);
+		fdCommit.top = new FormAttachment(wBatch, margin);
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
         
@@ -270,7 +295,19 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.addSelectionListener( lsDef );
         wSchema.addSelectionListener( lsDef );
         wTable.addSelectionListener( lsDef );
+
+      		wBatch.addSelectionListener(lsDef);
 		
+		wBatch.addSelectionListener(
+		    new SelectionAdapter()
+	        {
+	            public void widgetSelected(SelectionEvent arg0)
+	            {
+	                setFlags();
+	            }
+	        }
+		);
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -301,6 +338,11 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
     public void setFlags()
     {
+    	boolean useBatch          = wBatch.getSelection() ;
+        wBatch.setSelection(useBatch);
+
+        wlBatch.setEnabled(true);
+        wBatch.setEnabled(true);
     }
 
 	/**
@@ -312,6 +354,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		log.logDebug(toString(), Messages.getString("DeleteDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
+		wBatch.setSelection(input.useBatchUpdate());
         
 		if (input.getKeyStream()!=null)
 		for (i=0;i<input.getKeyStream().length;i++)
@@ -367,6 +410,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
         inf.setSchemaName( wSchema.getText() ); 
 		inf.setTableName( wTable.getText() ); 
 		inf.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
+		inf.setUseBatchUpdate( wBatch.getSelection() );
         
 		stepname = wStepname.getText(); // return value
 	}

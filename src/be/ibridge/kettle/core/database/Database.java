@@ -1715,7 +1715,13 @@ public class Database
 	{
 		insertRow(prepStatementUpdate);	
 	}
-
+	
+	// * appended for batched deletes
+	public void updateRow(boolean batch) throws KettleDatabaseException
+	{
+		insertRow(prepStatementUpdate, batch);
+	}
+	
 	public void insertRow(PreparedStatement ps)
 		throws KettleDatabaseException
 	{
@@ -1850,6 +1856,11 @@ public class Database
         {
             throw new KettleDatabaseException("Unable to clear batch for prepared statement", e);
         }
+    }
+    
+    // * appended for batched deletes
+    public void updateFinished(boolean batch) throws KettleDatabaseException {
+    	insertFinished(prepStatementUpdate,batch);
     }
 
 	public void insertFinished(boolean batch) throws KettleDatabaseException

@@ -76,13 +76,31 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Commit size for inserts/updates */
 	private int    commitSize; 
-    
+
+        private boolean      useBatchUpdate;
+   
 
     public DeleteMeta()
 	{
 		super(); // allocate BaseStepMeta
+		useBatchUpdate=true;
 	}
 	
+    /**
+     * @param useBatchUpdate The useBatchUpdate flag to set.
+     */
+    public void setUseBatchUpdate(boolean useBatchUpdate)
+    {
+        this.useBatchUpdate = useBatchUpdate;
+    }
+    
+    /**
+     * @return Returns the useBatchUpdate flag.
+     */
+    public boolean useBatchUpdate()
+    {
+        return useBatchUpdate;
+    }
 	
 	
     /**
@@ -238,7 +256,9 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			String csize;
 			int nrkeys;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
+			useBatchUpdate= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch"));
+
+                        String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize=Const.toInt(csize, 0);
@@ -302,6 +322,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<keyStream.length;i++)
 		{
 			retval.append("      <key>"+Const.CR); //$NON-NLS-1$
+                        retval.append("    "+XMLHandler.addTagValue("use_batch",     useBatchUpdate));
 			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -321,6 +342,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			databaseMeta = DatabaseMeta.findDatabase( databases, id_connection);
+			useBatchUpdate   =      rep.getStepAttributeBoolean(id_step, "use_batch"); 
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
@@ -353,6 +375,7 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "use_batch",       useBatchUpdate);
 
 			for (int i=0;i<keyStream.length;i++)
 			{
