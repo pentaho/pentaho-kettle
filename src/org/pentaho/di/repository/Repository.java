@@ -411,7 +411,9 @@ public class Repository
 	    stepAttributesBuffer = database.getRows(sql, -1);
 	    stepAttributesRowMeta = database.getReturnRowMeta();
         
-        // Collections.sort(stepAttributesBuffer);  // just to make sure...
+	    // must use java-based sort to ensure compatibility with binary search
+	    // database ordering may or may not be case-insensitive
+        Collections.sort(stepAttributesBuffer, new StepAttributeComparator());  // in case db sort does not match our sort
 	}
 	
 	private synchronized RowMetaAndData searchStepAttributeInBuffer(long id_step, String code, long nr) throws KettleValueException
@@ -419,13 +421,27 @@ public class Repository
 	    int idx = searchStepAttributeIndexInBuffer(id_step, code, nr);
 	    if (idx<0) return null;
 	    
-	    // Get the row and remote it from the list...
+	    // Get the row
         Object[] r = stepAttributesBuffer.get(idx);
+	    // and remove it from the list...
         // stepAttributesBuffer.remove(idx);
 	    
 	    return new RowMetaAndData(stepAttributesRowMeta, r);
 	}
 	
+    private final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
+    
+    private class StepAttributeComparator implements Comparator<Object[]> {
+
+    	public int compare(Object[] r1, Object[] r2) 
+    	{
+    		try {
+    			return stepAttributesRowMeta.compare(r1, r2, KEY_POSITIONS);
+    		} catch (KettleValueException e) {
+    			return 0; // conversion errors
+    		}
+    	}
+    }
 	
 	private synchronized int searchStepAttributeIndexInBuffer(long id_step, String code, long nr) throws KettleValueException
 	{
@@ -435,27 +451,17 @@ public class Repository
         		new Long(nr), // NR
         };
         
-        final int[] keyPositions = new int[] {0, 1, 2};
 
-        int index = Collections.binarySearch(stepAttributesBuffer, key, 
-        		new Comparator<Object[]>() 
-        		{
-					public int compare(Object[] r1, Object[] r2) 
-					{
-						try {
-							return stepAttributesRowMeta.compare(r1, r2, keyPositions);
-						} catch (KettleValueException e) {
-							return 0; // conversion errors
-						}
-					}
-				}
-        	);
+        int index = Collections.binarySearch(stepAttributesBuffer, key, new StepAttributeComparator());
+
         if (index>=stepAttributesBuffer.size() || index<0) return -1;
         // 
         // Check this...  If it is not, we didn't find it!
+        // stepAttributesRowMeta.compare returns 0 when there are conversion issues
+        // so the binarySearch could have 'found' a match when there really isn't one
         Object[] look = stepAttributesBuffer.get(index);
         
-        if (stepAttributesRowMeta.compare(look, key, keyPositions)==0)
+        if (stepAttributesRowMeta.compare(look, key, KEY_POSITIONS)==0)
         {
             return index;
         }
