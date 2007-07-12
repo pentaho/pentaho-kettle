@@ -83,6 +83,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.spoon.AreaOwner;
 import org.pentaho.di.spoon.Messages;
 import org.pentaho.di.spoon.Spoon;
 import org.pentaho.di.spoon.TabItemInterface;
@@ -95,6 +96,7 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.dialog.TransDialog;
+import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.xul.menu.XulMenu;
@@ -185,6 +187,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	protected NotePadMeta ni = null;
 	protected TransHopMeta currentHop;
 	protected StepMeta currentStep;
+	private List<AreaOwner> areaOwners;
 
 	public void setCurrentNote( NotePadMeta ni ) {
 		this.ni = ni;
@@ -216,6 +219,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         this.shell = parent.getShell();
         this.spoon = spoon;
         this.transMeta = transMeta;
+        
+        this.areaOwners = new ArrayList<AreaOwner>();
         
         // this.props = Props.getInstance();
 		try {
@@ -1722,14 +1727,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private void setToolTip(int x, int y)
     {
-    	if (Const.isLinux()) return; // TODO wait for SWT fix that reduces flickering
+    	// if (Const.isLinux()) return; // TODO wait for SWT fix that reduces flickering
     	
         String newTip=null;
         
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
-            
             // Also: set the tooltip!
             if (stepMeta.getDescription() != null)
             {
@@ -1759,7 +1763,33 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             }
             else
             {
-                newTip = null;
+            	// check the area owner list...
+            	StringBuffer tip = new StringBuffer();
+            	for (AreaOwner areaOwner : areaOwners) {
+            		if (areaOwner.contains(x, y)) {
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteInputSteps") ) {
+	            			StepMeta step = (StepMeta) areaOwner.getParent();
+	            			if (tip.length()==0) tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
+	            				tip.append(remoteStep.toString()).append(Const.CR);
+	            			}
+	            			
+	            		}
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteOutputSteps") ) {
+	            			StepMeta step = (StepMeta) areaOwner.getParent();
+	            			if (tip.length()==0) tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
+	            				tip.append(remoteStep.toString()).append(Const.CR);
+	            			}
+	            		}
+            		}
+            	}
+            	if (tip.length()==0) {
+            		newTip = null;
+            	}
+            	else {
+            		newTip = tip.toString();
+            	}
             }
         }
         
@@ -1906,7 +1936,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public Image getTransformationImage(Device device, int x, int y, boolean branded)
     {
-        TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
+        TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect, areaOwners);
         Image img = transPainter.getTransformationImage(device, Props.getInstance().isBrandingActive());
 
         return img;

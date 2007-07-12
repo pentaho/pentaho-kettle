@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.step.BaseStep;
 
 
 
@@ -35,7 +34,7 @@ import org.pentaho.di.trans.step.BaseStep;
  * @since 04-04-2003
  *
  */
-public class RowSet
+public class RowSet implements Comparable<RowSet>
 {
 	public final static int ERR_NO_ERROR        = 0;
     public final static int ERR_ROW_IS_BUSY     = 1;
@@ -48,8 +47,6 @@ public class RowSet
     private AtomicInteger		    originStepCopy;
     private String    			    destinationStepName;
     private AtomicInteger		    destinationStepCopy;
-    private BaseStep 			    threadFrom;
-    private BaseStep 			    threadTo; 
     
     /**
      * Create new non-blocking-queue with maxSize capacity.
@@ -66,6 +63,17 @@ public class RowSet
       originStepCopy = new AtomicInteger(0);
       destinationStepCopy = new AtomicInteger(0);
     }
+    
+    /**
+     * Compares using the target steps and copy, not the source.
+     * That way, re-partitioning is always done in the same way.
+     * 
+     */
+	public int compareTo(RowSet rowSet) {
+		String target = destinationStepName+"."+destinationStepCopy.intValue();
+		String comp = rowSet.getDestinationStepName()+"."+rowSet.getDestinationStepCopy();
+		return target.compareTo(comp);
+	}   
 
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
@@ -244,18 +252,6 @@ public class RowSet
     	destinationStepCopy.set(to_copy);
     }
     
-    /**
-    * This method is used only in Trans.java 
-    * when created RowSet at line 996. Don't need
-    * any synchronization on this method
-    *     
-    */
-    public void setThreadFromTo(BaseStep from, BaseStep to)
-    {
-        threadFrom = from;
-        threadTo   = to;
-    }
-    
     public String toString()
     {
     	StringBuffer str;
@@ -291,31 +287,4 @@ public class RowSet
 		this.rowMeta = rowMeta;
 	}
 
-	/**
-	 * @return the threadFrom
-	 */
-	public BaseStep getThreadFrom() {
-		return threadFrom;
-	}
-
-	/**
-	 * @param threadFrom the threadFrom to set
-	 */
-	public void setThreadFrom(BaseStep threadFrom) {
-		this.threadFrom = threadFrom;
-	}
-
-	/**
-	 * @return the threadTo
-	 */
-	public BaseStep getThreadTo() {
-		return threadTo;
-	}
-
-	/**
-	 * @param threadTo the threadTo to set
-	 */
-	public void setThreadTo(BaseStep threadTo) {
-		this.threadTo = threadTo;
-	}   
 }

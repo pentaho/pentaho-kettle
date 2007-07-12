@@ -16,6 +16,7 @@
 package org.pentaho.di.trans.step;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -90,11 +91,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	// So here we go, let's create List members for the remote input and output step
 	//
 	
-	/** These are the remote input steps to read from */
-	private List<RemoteStep> remoteInputSteps = new ArrayList<RemoteStep>();
+	/** These are the remote input steps to read from, one per host:port combination */
+	private List<RemoteStep> remoteInputSteps;
 
-	/** These are the remote output steps to write to */
-	private List<RemoteStep> remoteOutputSteps = new ArrayList<RemoteStep>();
+	/** These are the remote output steps to write to, one per host:port combination */
+	private List<RemoteStep> remoteOutputSteps;
 	
 	private long id;
 
@@ -132,6 +133,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		description = null;
         stepPartitioningMeta = new StepPartitioningMeta();
         clusterSchema = null; // non selected by default.
+
+        remoteInputSteps = new ArrayList<RemoteStep>();
+        remoteOutputSteps = new ArrayList<RemoteStep>();
 	}
         
 	public StepMeta()
@@ -153,6 +157,26 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         retval.append( stepPartitioningMeta.getXML() );
 		retval.append( stepMetaInterface.getXML() );
         retval.append("     ").append(XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
+        
+        retval.append(" <remotesteps>");
+        // Output the remote input steps
+        List<RemoteStep> inputSteps = new ArrayList<RemoteStep>(remoteInputSteps);
+        Collections.sort(inputSteps); // sort alphabetically, making it easier to compare XML files
+        retval.append("   <input>");
+        for (RemoteStep remoteStep : inputSteps) {
+        	retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
+        }
+        retval.append("   </input>");
+
+        // Output the remote output steps
+        List<RemoteStep> outputSteps = new ArrayList<RemoteStep>(remoteOutputSteps);
+        Collections.sort(outputSteps); // sort alphabetically, making it easier to compare XML files
+        retval.append("   <output>");
+        for (RemoteStep remoteStep : outputSteps) {
+        	retval.append("      ").append(remoteStep.getXML()).append(Const.CR);
+        }
+        retval.append("   </output>");
+        retval.append(" </remotesteps>");
         
 		retval.append("    <GUI>").append(Const.CR); //$NON-NLS-1$
 		retval.append("      <xloc>").append(location.x).append("</xloc>").append(Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -228,6 +252,20 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             
             clusterSchemaName = XMLHandler.getTagValue(stepnode, "cluster_schema"); // resolve to clusterSchema later
 
+            // The remote input and output steps...
+            Node remotestepsNode = XMLHandler.getSubNode(stepnode, "remotesteps");
+            Node inputNode = XMLHandler.getSubNode(remotestepsNode, "input");
+            int nrInput = XMLHandler.countNodes(inputNode, RemoteStep.XML_TAG);
+            for (int i=0;i<nrInput;i++) {
+            	remoteInputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(inputNode, RemoteStep.XML_TAG, i) ) );
+            	
+            }
+            Node outputNode = XMLHandler.getSubNode(remotestepsNode, "output");
+            int nrOutput = XMLHandler.countNodes(outputNode, RemoteStep.XML_TAG);
+            for (int i=0;i<nrOutput;i++) {
+            	remoteOutputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr(outputNode, RemoteStep.XML_TAG, i) ) );
+            }
+            
 			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
@@ -431,6 +469,13 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             this.clusterSchema = null;
         }
         this.clusterSchemaName = stepMeta.clusterSchemaName; // temporary to resolve later.
+
+        // Also replace the remote steps with cloned versions...
+        //
+        this.remoteInputSteps = new ArrayList<RemoteStep>();
+        for (RemoteStep remoteStep : stepMeta.remoteInputSteps) this.remoteInputSteps.add((RemoteStep)remoteStep.clone());
+        this.remoteOutputSteps = new ArrayList<RemoteStep>();
+        for (RemoteStep remoteStep : stepMeta.remoteOutputSteps) this.remoteOutputSteps.add((RemoteStep)remoteStep.clone());
         
         // this.setShared(stepMeta.isShared());
         this.id = stepMeta.getID();
@@ -842,5 +887,6 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	public void setRemoteOutputSteps(List<RemoteStep> remoteOutputSteps) {
 		this.remoteOutputSteps = remoteOutputSteps;
 	}
+
 
 }

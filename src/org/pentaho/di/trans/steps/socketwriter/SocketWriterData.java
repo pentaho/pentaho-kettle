@@ -16,7 +16,6 @@
 
 package org.pentaho.di.trans.steps.socketwriter;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,7 +32,6 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface
 {
     public DataOutputStream outputStream;
     public Socket clientSocket;
-    public DataInputStream inputStream;
     public int flushInterval;
     public ServerSocket serverSocket;
     

@@ -1,5 +1,7 @@
 package org.pentaho.di.spoon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -56,46 +58,51 @@ public class TransPainter
     private Rectangle    selrect;
     private int          linewidth;
     private Map<String, Image> images;
+    
+    private List<AreaOwner> areaOwners;
 
     public TransPainter(TransMeta transMeta)
     {
-        this(transMeta, transMeta.getMaximum(), null, null, null, null, null);
+        this(transMeta, transMeta.getMaximum(), null, null, null, null, null, new ArrayList<AreaOwner>());
     }
 
     public TransPainter(TransMeta transMeta, Point area)
     {
-        this(transMeta, area, null, null, null, null, null);
+        this(transMeta, area, null, null, null, null, null, new ArrayList<AreaOwner>());
     }
 
     public TransPainter(TransMeta transMeta, 
                         Point area, 
                         ScrollBar hori, ScrollBar vert, 
-                        TransHopMeta candidate, Point drop_candidate, Rectangle selrect
+                        TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
+                        List<AreaOwner> areaOwners
                         )
     {
-        this.transMeta     = transMeta;
+        this.transMeta      = transMeta;
         
-        this.background    = GUIResource.getInstance().getColorGraph();
-        this.black         = GUIResource.getInstance().getColorBlack();
-        this.red           = GUIResource.getInstance().getColorRed();
-        this.yellow        = GUIResource.getInstance().getColorYellow();
-        this.orange        = GUIResource.getInstance().getColorOrange();
-        this.green         = GUIResource.getInstance().getColorGreen();
-        this.blue          = GUIResource.getInstance().getColorBlue();
-        this.magenta       = GUIResource.getInstance().getColorMagenta();
-        this.gray          = GUIResource.getInstance().getColorGray();
-        this.lightGray     = GUIResource.getInstance().getColorLightGray();
-        this.darkGray      = GUIResource.getInstance().getColorDarkGray();
+        this.background     = GUIResource.getInstance().getColorGraph();
+        this.black          = GUIResource.getInstance().getColorBlack();
+        this.red            = GUIResource.getInstance().getColorRed();
+        this.yellow         = GUIResource.getInstance().getColorYellow();
+        this.orange         = GUIResource.getInstance().getColorOrange();
+        this.green          = GUIResource.getInstance().getColorGreen();
+        this.blue           = GUIResource.getInstance().getColorBlue();
+        this.magenta        = GUIResource.getInstance().getColorMagenta();
+        this.gray           = GUIResource.getInstance().getColorGray();
+        this.lightGray      = GUIResource.getInstance().getColorLightGray();
+        this.darkGray       = GUIResource.getInstance().getColorDarkGray();
         
-        this.area          = area;
-        this.hori          = hori;
-        this.vert          = vert;
-        this.noteFont      = GUIResource.getInstance().getFontNote();
-        this.graphFont     = GUIResource.getInstance().getFontGraph();
-        this.images        = GUIResource.getInstance().getImagesSteps();
-        this.candidate     = candidate;
-        this.selrect       = selrect;
-        this.drop_candidate= drop_candidate;
+        this.area           = area;
+        this.hori           = hori;
+        this.vert           = vert;
+        this.noteFont       = GUIResource.getInstance().getFontNote();
+        this.graphFont      = GUIResource.getInstance().getFontGraph();
+        this.images         = GUIResource.getInstance().getImagesSteps();
+        this.candidate      = candidate;
+        this.selrect        = selrect;
+        this.drop_candidate = drop_candidate;
+        
+        this.areaOwners     = areaOwners;
         
         props = Props.getInstance();
         iconsize = props.getIconSize(); 
@@ -137,6 +144,8 @@ public class TransPainter
     private void drawTrans(GC gc)
     {
         if (props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
+        
+        areaOwners.clear(); // clear it before we start filling it up again.
         
         shadowsize = props.getShadowSize();
 
@@ -204,29 +213,29 @@ public class TransPainter
         drawHop(gc, hi, false);
     }
 
-    private void drawNote(GC gc, NotePadMeta ni)
+    private void drawNote(GC gc, NotePadMeta notePadMeta)
     {
         int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
-        if (ni.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
+        if (notePadMeta.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
         
         org.eclipse.swt.graphics.Point ext;
-        if (Const.isEmpty(ni.getNote()))
+        if (Const.isEmpty(notePadMeta.getNote()))
         {
             ext = new org.eclipse.swt.graphics.Point(10,10); // Empty note
         }
         else
         {
-            ext = gc.textExtent(ni.getNote(), flags);
+            ext = gc.textExtent(notePadMeta.getNote(), flags);
         }
         Point p = new Point(ext.x, ext.y);
-        Point loc = ni.getLocation();
+        Point loc = notePadMeta.getLocation();
         Point note = real2screen(loc.x, loc.y, offset);
         int margin = Const.NOTE_MARGIN;
         p.x += 2 * margin;
         p.y += 2 * margin;
-        int width = ni.width;
-        int height = ni.height;
+        int width = notePadMeta.width;
+        int height = notePadMeta.height;
         if (p.x > width) width = p.x;
         if (p.y > height) height = p.y;
 
@@ -261,15 +270,19 @@ public class TransPainter
         //gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
         //gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
         gc.setForeground(black);
-        if ( !Const.isEmpty(ni.getNote()) )
+        if ( !Const.isEmpty(notePadMeta.getNote()) )
         {
-            gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
+            gc.drawText(notePadMeta.getNote(), note.x + margin, note.y + margin, flags);
         }
 
-        ni.width = width; // Save for the "mouse" later on...
-        ni.height = height;
+        notePadMeta.width = width; // Save for the "mouse" later on...
+        notePadMeta.height = height;
 
-        if (ni.isSelected()) gc.setLineWidth(1); else gc.setLineWidth(2);
+        if (notePadMeta.isSelected()) gc.setLineWidth(1); else gc.setLineWidth(2);
+        
+        // Add to the list of areas...
+        //
+        areaOwners.add(new AreaOwner(note.x, note.y, width, height, transMeta, notePadMeta));
     }
 
     private void drawHop(GC gc, TransHopMeta hi, boolean is_candidate)
@@ -329,6 +342,55 @@ public class TransPainter
 
         Point screen = real2screen(x, y, offset);
 
+        // First draw an extra indicator for remote input steps...
+        //
+        if (!stepMeta.getRemoteInputSteps().isEmpty()) {
+        	String nrInput = Integer.toString(stepMeta.getRemoteInputSteps().size());
+        	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
+        	textExtent.x+=2; // add a tiny little bit of a margin
+        	textExtent.y+=2;
+        	
+        	// Draw it an icon above the step icon.
+        	// Draw it an icon and a half to the left
+        	//
+        	Point point = new Point(screen.x-iconsize-iconsize/2, screen.y-iconsize);
+        	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
+        	gc.drawText(nrInput, point.x+1, point.y+1);
+        	
+        	// Now we draw an arrow from the cube to the step...
+        	// 
+        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
+         	drawArrow(gc, screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8 );
+         	
+            // Add to the list of areas...
+            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteInputSteps"));
+        }
+
+        // Then draw an extra indicator for remote output steps...
+        //
+        if (!stepMeta.getRemoteOutputSteps().isEmpty()) {
+        	String nrOutput = Integer.toString(stepMeta.getRemoteOutputSteps().size());
+        	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrOutput);
+        	textExtent.x+=2; // add a tiny little bit of a margin
+        	textExtent.y+=2;
+        	
+        	// Draw it an icon above the step icon.
+        	// Draw it an icon and a half to the right
+        	//
+        	Point point = new Point(screen.x+2*iconsize+iconsize/2-textExtent.x, screen.y-iconsize);
+        	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
+        	gc.drawText(nrOutput, point.x+1, point.y+1);
+        	
+        	// Now we draw an arrow from the cube to the step...
+        	// This time, we start at the left side...
+        	// 
+        	gc.drawLine(point.x, point.y+textExtent.y/2, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2);
+         	drawArrow(gc, screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8 );
+
+         	// Add to the list of areas...
+            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteOutputSteps"));
+        }
+        
         String name = stepMeta.getName();
 
         if (stepMeta.isSelected())
@@ -338,6 +400,10 @@ public class TransPainter
         gc.setBackground(red);
         gc.setForeground(black);
         gc.fillRectangle(screen.x, screen.y, iconsize, iconsize);
+        
+        // Add to the list of areas...
+        areaOwners.add(new AreaOwner(screen.x, screen.y, iconsize, iconsize, transMeta, stepMeta));
+        
         String steptype = stepMeta.getStepID();
         Image im = (Image) images.get(steptype);
         if (im != null) // Draw the icon!
@@ -396,6 +462,7 @@ public class TransPainter
             gc.setForeground(black);
             gc.drawText("x" + stepMeta.getCopies(), screen.x - 5, screen.y - 5);
         }
+        
     }
 
     public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
@@ -575,26 +642,28 @@ public class TransPainter
 
         return new int[] { x1, y1, x2, y2 };
     }
-    
+
     private void drawArrow(GC gc, int line[])
     {
-        double theta = Math.toRadians(10); // arrowhead sharpness
+    	double theta = Math.toRadians(10); // arrowhead sharpness
         int size = 30 + (linewidth - 1) * 5; // arrowhead length
 
         Point screen_from = real2screen(line[0], line[1], offset);
         Point screen_to = real2screen(line[2], line[3], offset);
+        
+        drawArrow(gc, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, size, -1);
+    }
 
+    private void drawArrow(GC gc, int x1, int y1, int x2, int y2, double theta, int size, double factor)
+    {
+        
         int mx, my;
-        int x1 = screen_from.x;
-        int y1 = screen_from.y;
-        int x2 = screen_to.x;
-        int y2 = screen_to.y;
         int x3;
         int y3;
         int x4;
         int y4;
         int a, b, dist;
-        double factor, angle;
+        double angle;
 
         gc.drawLine(x1, y1, x2, y2);
 
@@ -608,10 +677,13 @@ public class TransPainter
 
         // determine factor (position of arrow to left side or right side
         // 0-->100%)
-        if (dist >= 2 * iconsize)
-            factor = 1.5;
-        else
-            factor = 1.2;
+        if (factor<0)
+        {
+	        if (dist >= 2 * iconsize)
+	            factor = 1.5;
+	        else
+	            factor = 1.2;
+        }
 
         // in between 2 points
         mx = (int) (x1 + factor * (x2 - x1) / 2);

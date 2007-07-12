@@ -20,10 +20,12 @@
 
 package org.pentaho.di.trans.step;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -184,6 +186,12 @@ public class BaseStep extends Thread implements VariableSpace
 
     /** the rowsets on the output, size() == nr of target steps */
     public ArrayList<RowSet> outputRowSets;
+    
+    /** The remote input steps. */
+    public List<RemoteStep> remoteInputSteps;
+
+    /** The remote output steps. */
+    public List<RemoteStep> remoteOutputSteps;
 
     /** the rowset for the error rows */
     public RowSet errorRowSet;
@@ -286,6 +294,10 @@ public class BaseStep extends Thread implements VariableSpace
 	private int uniqueStepNrAcrossSlaves;
 
 	private int uniqueStepCountAcrossSlaves;
+
+	private boolean remoteOutputStepsInitialized;
+
+	private boolean remoteInputStepsInitialized;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -407,6 +419,54 @@ public class BaseStep extends Thread implements VariableSpace
         
         setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString(uniqueStepNrAcrossSlaves));
         setVariable(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString(uniqueStepCountAcrossSlaves));
+        
+        // Now that these things have been done, we also need to start a number of server sockets.
+        // One for each of the remote output steps that we're going to write to.
+        // 
+        try
+        {
+        	remoteOutputSteps = new ArrayList<RemoteStep>();
+	        for (RemoteStep remoteStep : stepMeta.getRemoteOutputSteps()) {
+	        	// Open a server socket to allow the remote output step to connect.
+	        	//
+	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
+	        	try {
+	        		copy.openServerSocket(this);
+	        	}
+	        	catch(Exception e) {
+	            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
+	            	throw new Exception(e);
+	        	}
+	        	remoteOutputSteps.add(copy);
+	        }
+        }
+        catch(Exception e) {
+	        for (RemoteStep remoteStep : remoteOutputSteps) {
+	        	if (remoteStep.getServerSocket()!=null) {
+					try {
+						remoteStep.getServerSocket().close();
+					} catch (IOException e1) {
+			        	log.logError(toString(), "Unable to close server socket after error during step initialisation", e);
+					} 
+	        	}
+	        }
+        	return false;
+        }
+        
+        // For the remote input steps to read from, we do the same: make a list and initialize what we can...
+        //
+        try
+        {
+        	remoteInputSteps = new ArrayList<RemoteStep>();
+	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
+	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
+	        	remoteInputSteps.add(copy);
+	        }
+        }
+        catch(Exception e) {
+        	log.logError(toString(), "Unable to initialize remote input steps during step initialisation", e);
+        	return false;
+        }
         
         return true;
     }
@@ -630,6 +690,28 @@ public class BaseStep extends Thread implements VariableSpace
                 throw new KettleStepException("Unable to clone row while adding rows to the terminator rows.", e);
             }
         }
+        
+        // Check the remote output sets.  Do we need to initialize open any connections there?
+        //
+        if (!remoteOutputSteps.isEmpty()) {
+        	if (!remoteOutputStepsInitialized) {
+        		
+        		for (RemoteStep remoteStep : remoteOutputSteps) {
+        			try {
+						RowSet rowSet = remoteStep.openWriterSocket(this);
+						outputRowSets.add(rowSet);
+					} catch (IOException e) {
+						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
+					}
+        		}
+        		
+        		// Since we want to have all the row sets ordered in the same way in all the steps in a cluster, 
+        		// we're going to sort the output row sets by the target step in the row set.
+        		Collections.sort(outputRowSets);
+        		
+        		remoteOutputStepsInitialized = true;
+        	}
+        }
 
 	    if (outputRowSets.size() == 0)
 	    {
@@ -806,7 +888,7 @@ public class BaseStep extends Thread implements VariableSpace
      * @param rowMeta The row meta-data to put to the destination RowSet.
      * @param row the data to put in the RowSet
      * @param rowSet the RoWset to put the row into.
-     * @throws KettleStepException In case something unexepected goes wrong
+     * @throws KettleStepException In case something unexpected goes wrong
      */
     public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
     {
@@ -974,8 +1056,27 @@ public class BaseStep extends Thread implements VariableSpace
 	        }
 	    	this.checkTransRunning = true;
 	    }
-
+	    
+	    // See if we need to open sockets to remote input steps...
+	    //
+        if (!remoteInputSteps.isEmpty()) {
+        	if (!remoteInputStepsInitialized) {
+        		// Loop over the remote steps and open client sockets to them 
+        		// 
+        		for (RemoteStep remoteStep : remoteInputSteps) {
+        			try {
+						RowSet rowSet = remoteStep.openReaderSocket(this);
+						inputRowSets.add(rowSet);
+					} catch (Exception e) {
+						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
+					}
+        		}
+        		remoteInputStepsInitialized = true;
+        	}
+        }
+ 
 	    // If everything is finished, we can stop immediately!
+	    //
 	    if (inputRowSets.size() == 0)
 	    {
 	        return null;

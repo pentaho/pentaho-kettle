@@ -446,9 +446,6 @@ public class Trans implements VariableSpace
                 }
             }
         }
-        
-		// Link the threads to the rowsets
-		setThreadsOnRowSets();
 
 		// Now (optionally) write start log record!
 		try
@@ -978,18 +975,6 @@ public class Trans implements VariableSpace
 		}
 
 		return null;
-	}
-
-	public void setThreadsOnRowSets()
-	{
-		int i;
-		for (i=0;i<rowsets.size();i++)
-		{
-			RowSet rs = rowsets.get(i);
-			BaseStep from = getRunThread(rs.getOriginStepName(), rs.getOriginStepCopy());
-			BaseStep to   = getRunThread(rs.getDestinationStepName()  , rs.getDestinationStepCopy()  );
-			rs.setThreadFromTo(from, to);
-		}
 	}
 
 	//

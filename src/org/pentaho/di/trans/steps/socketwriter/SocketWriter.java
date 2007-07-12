@@ -15,12 +15,9 @@
  
 package org.pentaho.di.trans.steps.socketwriter;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
@@ -70,12 +67,10 @@ public class SocketWriter extends BaseStep implements StepInterface
                 if (meta.isCompressed())
                 {
                     data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), bufferSize));
-                    data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), bufferSize));
                 }
                 else
                 {
                     data.outputStream = new DataOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), bufferSize));
-                    data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), bufferSize));
                 }
                 
                 data.flushInterval = Const.toInt( environmentSubstitute(meta.getFlushInterval()), 4000);
@@ -162,7 +157,6 @@ public class SocketWriter extends BaseStep implements StepInterface
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
         try { data.outputStream.close(); } catch(Exception e) {}
-        try { data.inputStream.close();  } catch(Exception e) {}
         try { data.clientSocket.close(); } catch(Exception e) {}
         try { data.serverSocket.close(); } catch(Exception e) {}
         
