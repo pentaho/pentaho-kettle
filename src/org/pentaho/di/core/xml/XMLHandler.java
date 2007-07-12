@@ -16,8 +16,10 @@
  
 
 package org.pentaho.di.core.xml;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -562,7 +564,19 @@ public class XMLHandler
             throw new KettleXMLException("Error reading information from file", e);
         }
     }
-
+    
+    public static final Document loadXMLFile(File resource) throws KettleXMLException
+	{
+    	try
+    	{
+    		return loadXMLFile(resource.toURI().toURL());
+    	}
+    	catch(MalformedURLException e)
+    	{
+    		throw new KettleXMLException(e);
+    	}
+	}
+    
 	/**
 	 * Load a file into an XML document
 	 * @param file The file to load into a document
