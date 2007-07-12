@@ -56,7 +56,7 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
       if (useOriginalPathInTargetName) {
         fixedPath = fixPath(originalFilePath);
       }
-      rtn = fileSystemPrefix != null ? fileSystemPrefix : "" + //$NON-NLS-1$ 
+      rtn = (fileSystemPrefix != null ? fileSystemPrefix : "") + //$NON-NLS-1$ 
           (fixedPath != null ? fixedPath + (fixedPath.endsWith("/") ? "" : "/")  : "") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
           fixFileName(prefix) + 
           (uniqueId != null ? "_" + uniqueId : "") +  //$NON-NLS-1$ //$NON-NLS-2$
