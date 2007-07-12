@@ -3067,8 +3067,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
 
     /**
-     * Gives you an ArrayList of all the steps that are at least used in one active hop. These steps will be used to
+     * Gives you an List of all the steps that are at least used in one active hop. These steps will be used to
      * execute the transformation. The others will not be executed.
+     * Update 3.0 : we also add those steps that are not linked to another hop, but have at least one remote input or output step defined.
      *
      * @param all Set to true if you want to get ALL the steps from the transformation.
      * @return A ArrayList of steps
@@ -3098,6 +3099,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             if (stepMeta.isDrawn() && !isStepUsedInTransHops(stepMeta))
             {
                 st.add(stepMeta);
+            }
+            if (!stepMeta.getRemoteInputSteps().isEmpty() || !stepMeta.getRemoteOutputSteps().isEmpty())
+            {
+            	if (!st.contains(stepMeta)) st.add(stepMeta);
             }
         }
 
@@ -5677,6 +5682,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 			String transMetaContent = transMeta.getXML();
 			
 			definition = new ResourceDefinition(filename, transMetaContent);
+			definitions.put(filename, definition);
 		}
 		
 		return filename;
