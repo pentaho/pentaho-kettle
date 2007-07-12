@@ -865,22 +865,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			//
 			TransMeta transMeta = getTransMeta(null);
 			
-			String newFilename = namingInterface.nameResource(transMeta.getName(), filename, "ktr");
-
 			// Also go down into the transformation and export the files there. (mapping recursively down)
 			//
-			transMeta.exportResources(transMeta, definitions, namingInterface);
+			String newFilename = transMeta.exportResources(transMeta, definitions, namingInterface);
 
 			// Set the correct filename inside the XML.
-			//
+			// Replace if BEFORE XML generation occurs.
 			transMeta.setFilename(newFilename);
 			
 			// change it in the job entry
 			//
-			filename = newFilename; // Replace if BEFORE XML generation occurs.
+			filename = newFilename; 
 
-			String xml = transMeta.getXML();
-			definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+			//
+			// Don't save it, that has already been done a few lines above, in transMeta.exportResources()
+			//
+			// String xml = transMeta.getXML();
+			// definitions.put(newFilename, new ResourceDefinition(newFilename, xml));
+			//
 			
 			
 			return newFilename;
