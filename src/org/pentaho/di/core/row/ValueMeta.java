@@ -1670,12 +1670,6 @@ public class ValueMeta implements ValueMetaInterface
         {
             return null;
         }
-        if (length>30 || length==0) 
-        {
-            IOException e = new IOException("Unexpected length for ("+getName()+")"+length);
-            // System.out.println(Const.getStackTracker(e));
-            throw e;
-        }
         
         byte[] chars = new byte[length];
         inputStream.readFully(chars);
@@ -1692,12 +1686,6 @@ public class ValueMeta implements ValueMetaInterface
         if (length<0) 
         {
             return null;
-        }
-        if (length>30 || length==0) 
-        {
-            IOException e = new IOException("Unexpected length for ("+getName()+")"+length);
-            // System.out.println(Const.getStackTracker(e));
-            throw e;
         }
         
         byte[] chars = new byte[length];
