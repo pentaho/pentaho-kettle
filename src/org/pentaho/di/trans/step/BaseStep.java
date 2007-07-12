@@ -288,13 +288,6 @@ public class BaseStep extends Thread implements VariableSpace
 
 	private int uniqueStepCountAcrossSlaves;
 
-	// OK, we need to explain to this running step that we expect input from remote steps.
-	// This only happens when the previous step "repartitions". (previous step has different
-	// partitioning method than this one)
-	//
-	// So here we go, let's create a List of 
-	
-
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.

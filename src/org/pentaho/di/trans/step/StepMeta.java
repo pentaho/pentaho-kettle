@@ -15,6 +15,7 @@
  
 package org.pentaho.di.trans.step;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,8 +83,19 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     
     private StepErrorMeta stepErrorMeta;
     
-	// private LogWriter log;
-		
+	// OK, we need to explain to this running step that we expect input from remote steps.
+	// This only happens when the previous step "repartitions". (previous step has different
+	// partitioning method than this one)
+	//
+	// So here we go, let's create List members for the remote input and output step
+	//
+	
+	/** These are the remote input steps to read from */
+	private List<RemoteStep> remoteInputSteps = new ArrayList<RemoteStep>();
+
+	/** These are the remote output steps to write to */
+	private List<RemoteStep> remoteOutputSteps = new ArrayList<RemoteStep>();
+	
 	private long id;
 
     
@@ -801,6 +813,34 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		// Even reference files, etc.  For now it's just XML probably...
 		//
 		return stepMetaInterface.exportResources(space, definitions, resourceNamingInterface);
+	}
+
+	/**
+	 * @return the remoteInputSteps
+	 */
+	public List<RemoteStep> getRemoteInputSteps() {
+		return remoteInputSteps;
+	}
+
+	/**
+	 * @param remoteInputSteps the remoteInputSteps to set
+	 */
+	public void setRemoteInputSteps(List<RemoteStep> remoteInputSteps) {
+		this.remoteInputSteps = remoteInputSteps;
+	}
+
+	/**
+	 * @return the remoteOutputSteps
+	 */
+	public List<RemoteStep> getRemoteOutputSteps() {
+		return remoteOutputSteps;
+	}
+
+	/**
+	 * @param remoteOutputSteps the remoteOutputSteps to set
+	 */
+	public void setRemoteOutputSteps(List<RemoteStep> remoteOutputSteps) {
+		this.remoteOutputSteps = remoteOutputSteps;
 	}
 
 }
