@@ -3,13 +3,18 @@
 	<plugin id="PUBLIC_JOBENTRIES_DIR">
 		<location>plugins/jobentries</location>
 	</plugin>
- <!-- 
 	<plugin id="PRIVATE_JOBENTRIES_DIR">
 		<location>
-			ognl:@org.pentaho.di.core.Const@getKettleDirectory()+"/plugins"
+			ognl:@org.pentaho.di.core.Const@getKettleDirectory()+"/plugins/"
 		</location>
 	</plugin>
-
+ <!-- ALL the plugins are loaded based on the entries on this file.  Currently, two types of entries are supported: folder or jar files.
+ 	A plugin folder may contain:
+ 	1- Subfolders with plugin definitions (plugin.xml and relevant class files packaged in a jar file.)
+ 	2- Jar files that represent plugins themselves and follow the same file hierarchy as folder plugins.
+ 	
+ 	Likewise, an entry pointing to a jar file should have the same file organization as a folder-based plugin entry.
+ 	
 	<plugin id="TEST_JAR">
 		<location>jar:file://classes/testplugin.jar</location>
 	</plugin>

@@ -90,7 +90,7 @@ public class PluginLoader
 										addJob(build(childFolder, isAlsoJar));
 									} catch (KettleConfigException e)
 									{
-										log.logError("PluginLoader!!", e.getMessage());
+										log.logError(PLUGIN_LOADER, e.getMessage());
 										continue;
 									}
 								}
@@ -109,7 +109,7 @@ public class PluginLoader
 
 					} else
 					{
-						log.logError(PLUGIN_LOADER, fobj + "cannot be read.");
+						log.logError(PLUGIN_LOADER, fobj + " does not exist.");
 					}
 				} catch (Exception e)
 				{
@@ -140,8 +140,8 @@ public class PluginLoader
 
 			if (xml != null && xml.isReadable())
 			{
-				System.out.println("The plugin xml is for " + parent + " is " + xml + " I can read: "
-						+ xml.isReadable());
+				//System.out.println("The plugin xml is for " + parent + " is " + xml + " I can read: "
+				//		+ xml.isReadable());
 
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
@@ -189,7 +189,7 @@ public class PluginLoader
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4735639
 		// 
 		// We do so by exploding the jar, sort of like deploying it
-		FileObject dest = VFS.getManager().resolveFile(Const.getKettleDirectory());
+		FileObject dest = VFS.getManager().resolveFile(Const.getKettleDirectory()+"/work");
 		dest.createFolder();
 		FileObject destFile = dest.resolveFile(parent.getName().getBaseName());
 		destFile.createFolder();
