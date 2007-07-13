@@ -149,4 +149,9 @@ public class JobPlugin
 	{
 		return getID().equals(((JobPlugin) obj).getID());
 	}
+	
+	public String toString()
+	{
+		return getClass().getName()+": " + id + "(" + (type==TYPE_NATIVE?"NATIVE":"PLUGIN") + ")";
+	}
 }
