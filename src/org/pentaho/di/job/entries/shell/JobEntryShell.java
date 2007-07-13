@@ -15,6 +15,7 @@
  
 package org.pentaho.di.job.entries.shell;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.w3c.dom.Node;
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
 	private String  filename;
+	private String  workDirectory;
 	public  String  arguments[];
 	public  boolean argFromPrevious;
 
@@ -95,6 +97,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append(super.getXML());
 		
 		retval.append("      ").append(XMLHandler.addTagValue("filename",          filename));
+		retval.append("      ").append(XMLHandler.addTagValue("work_directory",    workDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
         retval.append("      ").append(XMLHandler.addTagValue("exec_per_row",      execPerRow));
 		retval.append("      ").append(XMLHandler.addTagValue("set_logfile",       setLogfile));
@@ -121,6 +124,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.loadXML(entrynode, databases);
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
+			setWorkDirectory( XMLHandler.getTagValue(entrynode, "work_directory") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
             setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
@@ -155,6 +159,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			super.loadRep(rep, id_jobentry, databases);
 			
 			setFileName( rep.getJobEntryAttributeString(id_jobentry, "file_name")  );
+			setWorkDirectory( rep.getJobEntryAttributeString(id_jobentry, "work_directory")  );
 			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
             execPerRow      = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
@@ -191,6 +196,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
+			rep.saveJobEntryAttribute(id_job, getID(), "work_directory", workDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
             rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
@@ -220,6 +226,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		super.clear();
 		
 		filename=null;
+		workDirectory=null;
 		arguments=null;
 		argFromPrevious=false;
 		addDate=false;
@@ -235,15 +242,6 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		filename=n;
 	}
 	
-    /**
-     * @deprecated use getFilename() instead
-     * @return the filename
-     */
-    public String getFileName()
-	{
-		return filename;
-	}
-
     public String getFilename()
     {
         return filename;
@@ -253,6 +251,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     {
         return environmentSubstitute(getFilename());
     }
+    
+	public void setWorkDirectory(String n)
+	{
+		workDirectory=n;
+	}
+	
+    public String getWorkDirectory()
+    {
+        return workDirectory;
+    }   
     
 	public String getLogFilename()
 	{
@@ -521,6 +529,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             {
             	env.put(variables[i], getVariable(variables[i]));
             }
+            
+            if ( ! Const.isEmpty(Const.rtrim(getWorkDirectory()))) 
+            {
+            	File file = new File(getWorkDirectory());
+            	procBuilder.directory(file);
+            }
             Process proc = procBuilder.start();
             
             // any error message?
@@ -542,23 +556,23 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             result.setExitStatus( proc.exitValue() );
             if (result.getExitStatus()!=0) 
             {
-                log.logDetailed(toString(), "Exit status of shell ["+environmentSubstitute(getFileName())+"] was "+result.getExitStatus());
+                log.logDetailed(toString(), "Exit status of shell ["+environmentSubstitute(getFilename())+"] was "+result.getExitStatus());
                 result.setNrErrors(1);
             } 
         }
         catch(IOException ioe)
         {
-            log.logError(toString(), "Error running shell ["+environmentSubstitute(getFileName())+"] : "+ioe.toString());
+            log.logError(toString(), "Error running shell ["+environmentSubstitute(getFilename())+"] : "+ioe.toString());
             result.setNrErrors(1);
         }
         catch(InterruptedException ie)
         {
-            log.logError(toString(), "Shell ["+environmentSubstitute(getFileName())+"] was interupted : "+ie.toString());
+            log.logError(toString(), "Shell ["+environmentSubstitute(getFilename())+"] was interupted : "+ie.toString());
             result.setNrErrors(1);
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Unexpected error running shell ["+environmentSubstitute(getFileName())+"] : "+e.toString());
+            log.logError(toString(), "Unexpected error running shell ["+environmentSubstitute(getFilename())+"] : "+e.toString());
             result.setNrErrors(1);
         }
     

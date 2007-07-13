@@ -81,6 +81,12 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
     private FormData fdlFilename, fdbFilename, fdFilename;
 
+    private Label wlWorkDirectory;
+
+    private TextVar wWorkDirectory;
+
+    private FormData fdlWorkDirectory, fdWorkDirectory;    
+    
     private Group wLogging;
 
     private FormData fdLogging;
@@ -210,7 +216,9 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
 
+        ///////////////////////
         // Filename line
+        ///////////////////////
         wlFilename = new Label(shell, SWT.RIGHT);
         wlFilename.setText(Messages.getString("JobShell.Filename.Label"));
         props.setLook(wlFilename);
@@ -236,11 +244,31 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
         fdFilename.right = new FormAttachment(wbFilename, -margin);
         fdFilename.top = new FormAttachment(wName, margin);
         wFilename.setLayoutData(fdFilename);
+        
+        ///////////////////////
+        // Working dir line
+        ///////////////////////
+        wlWorkDirectory = new Label(shell, SWT.RIGHT);
+        wlWorkDirectory.setText(Messages.getString("JobShell.WorkingDirectory.Label"));
+        props.setLook(wlWorkDirectory);
+        fdlWorkDirectory = new FormData();
+        fdlWorkDirectory.left = new FormAttachment(0, 0);
+        fdlWorkDirectory.top = new FormAttachment(wFilename, margin);
+        fdlWorkDirectory.right = new FormAttachment(middle, 0);
+        wlWorkDirectory.setLayoutData(fdlWorkDirectory);
 
-        // logging grouping?
+        wWorkDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wWorkDirectory);
+        wWorkDirectory.addModifyListener(lsMod);
+        fdWorkDirectory = new FormData();
+        fdWorkDirectory.left = new FormAttachment(middle, 0);
+        fdWorkDirectory.right = new FormAttachment(wbFilename, -margin);
+        fdWorkDirectory.top = new FormAttachment(wFilename, margin);
+        wWorkDirectory.setLayoutData(fdWorkDirectory);        
+
         // ////////////////////////
-        // START OF LOGGING GROUP///
-        // /
+        // START OF LOGGING GROUP
+        //
         wLogging = new Group(shell, SWT.SHADOW_NONE);
         props.setLook(wLogging);
         wLogging.setText(Messages.getString("JobShell.LogSettings.Group.Label"));
@@ -385,9 +413,10 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
 
         fdLogging = new FormData();
         fdLogging.left = new FormAttachment(0, margin);
-        fdLogging.top = new FormAttachment(wbFilename, margin);
+        fdLogging.top = new FormAttachment(wWorkDirectory, margin);
         fdLogging.right = new FormAttachment(100, -margin);
         wLogging.setLayoutData(fdLogging);
+        
         // ///////////////////////////////////////////////////////////
         // / END OF LOGGING GROUP
         // ///////////////////////////////////////////////////////////
@@ -601,6 +630,9 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
             wName.setText(jobEntry.getName());
         if (jobEntry.getFilename() != null)
             wFilename.setText(jobEntry.getFilename());
+        if (jobEntry.getWorkDirectory() != null)
+            wWorkDirectory.setText(jobEntry.getWorkDirectory());        
+        
         if (jobEntry.arguments != null)
         {
             for (int i = 0; i < jobEntry.arguments.length; i++)
@@ -640,6 +672,7 @@ public class JobEntryShellDialog extends JobEntryDialog implements JobEntryDialo
     {
         jobEntry.setFileName(wFilename.getText());
         jobEntry.setName(wName.getText());
+        jobEntry.setWorkDirectory(wWorkDirectory.getText());
 
         int nritems = wFields.nrNonEmpty();
         int nr = 0;
