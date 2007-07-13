@@ -55,7 +55,7 @@ public class KettleConfig
 			e.printStackTrace();
 		}
 	}
-
+	
 	
 
 	public static KettleConfig getInstance()

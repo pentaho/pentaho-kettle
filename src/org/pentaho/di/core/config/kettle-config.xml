@@ -46,6 +46,17 @@
 		<property name="packages" value="org.pentaho.di.job.entries" />
 	</config>
 	
+	<!--  This tells PDI/Kettle where to load plugins from -->
+	<config id="plugins-config">
+		<config-class>
+			org.pentaho.di.core.config.DigesterConfigManager
+		</config-class>
+		<property name="configURL" value="kettle-plugins.xml" />
+		<property name="rulesURL"
+			value="org/pentaho/di/core/config/plugin-rules.xml" />
+		<property name="setNext" value="plugins/plugin" />
+	</config>
+	
 	
 
 
