@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -768,11 +769,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		try
 		{
 			// first get the XML document
-			File propertiesFile = new File(XUL_FILE_MENU_PROPERTIES);
-			if (propertiesFile.exists())
-			{
+			URL url = XulHelper.getAndValidate(XUL_FILE_MENU_PROPERTIES);
 				Properties props = new Properties();
-				props.load(new FileInputStream(propertiesFile));
+				props.load(url.openStream());
 				String ids[] = menuBar.getMenuItemIds();
 				for (int i = 0; i < ids.length; i++)
 				{
@@ -802,12 +801,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						menu.addMenuListener((String) info[0], info[1], (String) info[2]);
 					}
 				}
-
-			} else
-			{
-				throw new KettleException(Messages.getString("Spoon.Exception.XULFileNotFound.Message",
-						XUL_FILE_MENU_PROPERTIES));
-			}
 
 			// now apply any overrides
     			for( int i=0; i<menuListeners.size(); i++ ) {
