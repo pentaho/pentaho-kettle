@@ -44,7 +44,7 @@ public class XulHelper
 
 	}
 
-	private static URL getAndValidate(String url) throws KettleException, IOException
+	public static URL getAndValidate(String url) throws KettleException, IOException
 	{
 		File file = new File(url);
 		if (file.exists())
