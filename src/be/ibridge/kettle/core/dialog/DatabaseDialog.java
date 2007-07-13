@@ -1761,6 +1761,19 @@ public class DatabaseDialog extends Dialog
         }
     }
 
+    private static final StringBuffer appendMessage(StringBuffer report, String messageName, String value)
+	{
+		return report.append(Messages.getString(messageName)).append(StringUtil.environmentSubstitute(value)).append(Const.CR);
+	}
+
+	private static final StringBuffer appendConnectionInfo(StringBuffer report, 
+    		String hostName, String portNumber, String dbName) {
+        appendMessage(report, "DatabaseDialog.report.Hostname", hostName); //$NON-NLS-1$
+        appendMessage(report, "DatabaseDialog.report.Port", portNumber); //$NON-NLS-1$
+        appendMessage(report, "DatabaseDialog.report.DatabaseName", dbName); //$NON-NLS-1$
+        return report.append(Const.CR);
+    }
+    
     /**
      * Test the database connection
      */
@@ -1796,10 +1809,7 @@ public class DatabaseDialog extends Dialog
                     {
                         db.disconnect();
                     }
-                    report.append(Messages.getString("DatabaseDialog.report.Hostname") + partitioningInformation[i].getHostname() + Const.CR); //$NON-NLS-1$
-                    report.append(Messages.getString("DatabaseDialog.report.Port") + partitioningInformation[i].getPort() + Const.CR); //$NON-NLS-1$
-                    report.append(Messages.getString("DatabaseDialog.report.DatabaseName") + partitioningInformation[i].getDatabaseName() + Const.CR); //$NON-NLS-1$
-                    report.append(Const.CR);
+                    appendConnectionInfo(report, partitioningInformation[i].getHostname(), partitioningInformation[i].getPort(), partitioningInformation[i].getDatabaseName());
                 }
             }
             else
@@ -1818,10 +1828,8 @@ public class DatabaseDialog extends Dialog
                 {
                     db.disconnect();
                 }
-                report.append(Messages.getString("DatabaseDialog.report.Hostname") + dbinfo.getHostname() + Const.CR); //$NON-NLS-1$
-                report.append(Messages.getString("DatabaseDialog.report.Port") + dbinfo.getDatabasePortNumberString() + Const.CR); //$NON-NLS-1$
-                report.append(Messages.getString("DatabaseDialog.report.DatabaseName") + dbinfo.getDatabaseName() + Const.CR); //$NON-NLS-1$
-                report.append(Const.CR);
+                appendConnectionInfo(report, dbinfo.getHostname(), dbinfo.getDatabasePortNumberString(), dbinfo.getDatabaseName());
+
             }
 
             EnterTextDialog dialog = new EnterTextDialog(
