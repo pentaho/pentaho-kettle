@@ -4942,10 +4942,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					userinfo = null;
 					repositoryMeta = null;
                 } else {
+                   	String repName = repositoryMeta.getName();                	
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+						repositoryMeta = repsinfo.findRepository(repName);
 						if (repositoryMeta != null)
 						{
 							// Define and connect to the repository...
