@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<plugin id="PUBLIC_JOBENTRIES_DIR">
+		<location>plugins/jobentries</location>
+	</plugin>
+ <!-- 
+	<plugin id="PRIVATE_JOBENTRIES_DIR">
+		<location>
+			ognl:@org.pentaho.di.core.Const@getKettleDirectory()+"/plugins"
+		</location>
+	</plugin>
+
+	<plugin id="TEST_JAR">
+		<location>jar:file://classes/testplugin.jar</location>
+	</plugin>
+	-->
+</plugins>

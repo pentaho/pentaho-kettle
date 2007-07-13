@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <steps>
 <!-- I commented this out because this is being loaded using the Step annotation.  Just to test it.
 	<step id="RowGenerator">

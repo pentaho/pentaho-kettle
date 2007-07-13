@@ -1147,6 +1147,7 @@ public class Const
 	{
 		return USER_HOME_DIRECTORY + FILE_SEPARATOR + ".kettle";
 	}
+	
     
     /**
      * Determines the location of the shared objects file
