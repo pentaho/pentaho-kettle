@@ -19,6 +19,7 @@ import java.util.Hashtable;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -115,19 +116,18 @@ public class ValueMapper extends BaseStep implements StepInterface
 
         if (!Const.isEmpty(meta.getTargetField()))
         {
-        	Object[] outputDataWithTargetField=new Object[r.length+1];
-        	// copy the original row
-        	System.arraycopy(r, 0, outputDataWithTargetField, 0, r.length);
+        	// room for the target
+        	r=RowDataUtil.resizeArray(r, data.outputMeta.size());
             // Did we find anything to map to?
             if (!Const.isEmpty(target)) 
             {
-            	outputDataWithTargetField[data.outputMeta.size()-1]=target;
+            	r[data.outputMeta.size()-1]=target;
             }
             else
             {
-            	outputDataWithTargetField[data.outputMeta.size()-1]=null;
+            	r[data.outputMeta.size()-1]=null;
             }
-            putRow(data.outputMeta, outputDataWithTargetField);
+            putRow(data.outputMeta, r);
         }
         else
         {
