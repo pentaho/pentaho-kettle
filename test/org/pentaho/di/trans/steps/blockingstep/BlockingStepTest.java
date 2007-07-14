@@ -124,7 +124,7 @@ public class BlockingStepTest extends TestCase
         	
         	if ( r1.length != r2.length )
         	{
-        		fail("row nr " + idx + "is not equal");
+        		fail("row nr " + idx + " is not equal");
         	}
         	int fields[] = new int[r1.length];
         	for ( int ydx = 0; ydx < r1.length; ydx++ )
@@ -134,10 +134,10 @@ public class BlockingStepTest extends TestCase
             try {
 				if ( rm1.getRowMeta().compare(r1, r2, fields) != 0 )
 				{
-					fail("row nr " + idx + "is not equal");
+					fail("row nr " + idx + " is not equal");
 				}
 			} catch (KettleValueException e) {
-				fail("row nr " + idx + "is not equal");
+				fail("row nr " + idx + " is not equal");
 			}
             	
             idx++;
