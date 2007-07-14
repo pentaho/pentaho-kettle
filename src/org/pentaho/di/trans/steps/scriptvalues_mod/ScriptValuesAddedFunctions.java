@@ -1128,7 +1128,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError("The function call replace is not valid");
 			}
 		}catch(Exception e){
-			throw Context.reportRuntimeError("The function call replace is not valid");
+			throw Context.reportRuntimeError("Function call replace is not valid: " + e.getMessage());
 		}
 	}
 	
