@@ -63,6 +63,10 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
     private Text         wTargetFieldname;
     private FormData     fdlTargetFieldname, fdTargetFieldname;
 
+    private Label        wlNonMatchDefault;
+    private Text         wNonMatchDefault;
+    private FormData     fdlNonMatchDefault, fdNonMatchDefault;
+    
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -156,13 +160,31 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
         fdTargetFieldname.top  = new FormAttachment(wFieldname, margin);
         fdTargetFieldname.right= new FormAttachment(100, 0);
         wTargetFieldname.setLayoutData(fdTargetFieldname);
-
+        
+        // Non match default line
+        wlNonMatchDefault=new Label(shell, SWT.RIGHT);
+        wlNonMatchDefault.setText(Messages.getString("ValueMapperDialog.NonMatchDefault.Label")); //$NON-NLS-1$
+        props.setLook(wlNonMatchDefault);
+        fdlNonMatchDefault=new FormData();
+        fdlNonMatchDefault.left = new FormAttachment(0, 0);
+        fdlNonMatchDefault.right= new FormAttachment(middle, -margin);
+        fdlNonMatchDefault.top  = new FormAttachment(wTargetFieldname, margin);
+        wlNonMatchDefault.setLayoutData(fdlNonMatchDefault);
+        wNonMatchDefault=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wNonMatchDefault);
+        wNonMatchDefault.addModifyListener(lsMod);
+        fdNonMatchDefault=new FormData();
+        fdNonMatchDefault.left = new FormAttachment(middle, 0);
+        fdNonMatchDefault.top  = new FormAttachment(wTargetFieldname, margin);
+        fdNonMatchDefault.right= new FormAttachment(100, 0);
+        wNonMatchDefault.setLayoutData(fdNonMatchDefault);        
+        
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("ValueMapperDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wTargetFieldname, margin);
+		fdlFields.top  = new FormAttachment(wNonMatchDefault, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=2;
@@ -234,6 +256,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 		
         if (input.getFieldToUse()!=null) wFieldname.setText(input.getFieldToUse());
         if (input.getTargetField()!=null) wTargetFieldname.setText(input.getTargetField());
+        if (input.getNonMatchDefault()!=null) wNonMatchDefault.setText(input.getNonMatchDefault());
         
 		for (int i=0;i<input.getSourceValue().length;i++)
 		{
@@ -261,10 +284,10 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
-		//Table table = wFields.table;
 
         input.setFieldToUse(wFieldname.getText());
         input.setTargetField(wTargetFieldname.getText());
+        input.setNonMatchDefault(wNonMatchDefault.getText());
         
 		int count = wFields.nrNonEmpty();
 		input.allocate(count);

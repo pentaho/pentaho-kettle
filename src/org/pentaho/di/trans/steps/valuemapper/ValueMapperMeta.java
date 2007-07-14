@@ -56,6 +56,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 {
     private String fieldToUse;
     private String targetField;
+    private String nonMatchDefault;
     
 	private String sourceValue[];
 	private String targetValue[];
@@ -131,11 +132,12 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            fieldToUse = XMLHandler.getTagValue(stepnode, "field_to_use"); //$NON-NLS-1$
-            targetField = XMLHandler.getTagValue(stepnode, "target_field"); //$NON-NLS-1$
+            fieldToUse      = XMLHandler.getTagValue(stepnode, "field_to_use"); //$NON-NLS-1$
+            targetField     = XMLHandler.getTagValue(stepnode, "target_field"); //$NON-NLS-1$
+            nonMatchDefault = XMLHandler.getTagValue(stepnode, "non_match_default"); //$NON-NLS-1$
             
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			int count= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			int count   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
 			allocate(count);
 					
@@ -143,7 +145,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				sourceValue[i]  = XMLHandler.getTagValue(fnode, "source_value"); //$NON-NLS-1$
+				sourceValue[i] = XMLHandler.getTagValue(fnode, "source_value"); //$NON-NLS-1$
 				targetValue[i] = XMLHandler.getTagValue(fnode, "target_value"); //$NON-NLS-1$
 			}
 		}
@@ -188,29 +190,32 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    "+XMLHandler.addTagValue("field_to_use", fieldToUse)); //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    "+XMLHandler.addTagValue("target_field", targetField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("field_to_use", fieldToUse)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("target_field", targetField)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("non_match_default", nonMatchDefault)); //$NON-NLS-1$ //$NON-NLS-2$
         
-		retval.append("    <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
 		
 		for (int i=0;i<sourceValue.length;i++)
 		{
-			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
-			retval.append("        "+XMLHandler.addTagValue("source_value", sourceValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        "+XMLHandler.addTagValue("target_value", targetValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
+			retval.append("      <field>").append(Const.CR); //$NON-NLS-1$
+			retval.append("        ").append(XMLHandler.addTagValue("source_value", sourceValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        ").append(XMLHandler.addTagValue("target_value", targetValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </fields>").append(Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
-	 public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String,Counter> counters)
+	
+	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String,Counter> counters)
 		throws KettleException
 	{
 		try
 		{
-            fieldToUse = rep.getStepAttributeString(id_step, "field_to_use"); //$NON-NLS-1$
-            targetField = rep.getStepAttributeString(id_step, "target_field"); //$NON-NLS-1$
+            fieldToUse      = rep.getStepAttributeString(id_step, "field_to_use"); //$NON-NLS-1$
+            targetField     = rep.getStepAttributeString(id_step, "target_field"); //$NON-NLS-1$
+            nonMatchDefault = rep.getStepAttributeString(id_step, "non_match_default"); //$NON-NLS-1$
             
 			int nrfields = rep.countNrStepAttributes(id_step, "source_value"); //$NON-NLS-1$
 			
@@ -218,8 +223,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				sourceValue[i] =          rep.getStepAttributeString(id_step, i, "source_value"); //$NON-NLS-1$
-				targetValue[i] = 		rep.getStepAttributeString(id_step, i, "target_value"); //$NON-NLS-1$
+				sourceValue[i] = rep.getStepAttributeString(id_step, i, "source_value"); //$NON-NLS-1$
+				targetValue[i] = rep.getStepAttributeString(id_step, i, "target_value"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -233,8 +238,9 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            rep.saveStepAttribute(id_transformation, id_step, "field_to_use",  fieldToUse); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "target_field",  targetField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "field_to_use",       fieldToUse); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "target_field",       targetField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "non_match_default",  nonMatchDefault); //$NON-NLS-1$
             
 			for (int i=0;i<sourceValue.length;i++)
 			{
@@ -322,4 +328,18 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
         this.targetField = targetField;
     }
 
+    /**
+     * Get the non match default. The string that will be used
+     * to fill in the data when no match is found.
+     * @return
+     */
+	public String getNonMatchDefault() 
+	{
+		return nonMatchDefault;
+	}
+
+	public void setNonMatchDefault(String nonMatchDefault) 
+	{
+		this.nonMatchDefault = nonMatchDefault;
+	}
 }

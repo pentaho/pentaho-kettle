@@ -178,7 +178,7 @@ public class ValueMapperTest extends TestCase
 	}		
 
 	/**
-	 * Create reult data for test case 2.
+	 * Create reult data for test case 3.
 	 */
 	public List<RowMetaAndData> createResultData3()
 	{
@@ -209,6 +209,101 @@ public class ValueMapperTest extends TestCase
 		return list;
 	}		
 
+	/**
+	 * Create reult data for test case 4.
+	 */
+	public List<RowMetaAndData> createResultData4()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface1();
+		
+		Object[] r1 = new Object[] { "abc",  "begin"      };
+		Object[] r2 = new Object[] { "ABC",  "BEG_LONGER" };
+		Object[] r3 = new Object[] { "def",  "test"       };
+		Object[] r4 = new Object[] { "def",  "test"       };
+		Object[] r5 = new Object[] { "ghij", "default"    };
+		Object[] r6 = new Object[] { "zzz",  "default"    };
+		Object[] r7 = new Object[] { "",     null         };
+		Object[] r8 = new Object[] { null,   null         };
+		Object[] r9 = new Object[] { "abc",  "begin"      };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));
+		list.add(new RowMetaAndData(rm, r9));
+		
+		return list;
+	}		
+
+	/**
+	 * Create reult data for test case 5.
+	 */
+	public List<RowMetaAndData> createResultData5()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface();
+		
+		Object[] r1 = new Object[] { "begin"      };
+		Object[] r2 = new Object[] { "BEG_LONGER" };
+		Object[] r3 = new Object[] { "test"       };
+		Object[] r4 = new Object[] { "test"       };
+		Object[] r5 = new Object[] { "default"    };
+		Object[] r6 = new Object[] { "default"    };
+		Object[] r7 = new Object[] { null         };
+		Object[] r8 = new Object[] { null         };
+		Object[] r9 = new Object[] { "begin"      };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));
+		list.add(new RowMetaAndData(rm, r9));
+		
+		return list;
+	}			
+	
+	/**
+	 * Create reult data for test case 6.
+	 */
+	public List<RowMetaAndData> createResultData6()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface();
+		
+		Object[] r1 = new Object[] { "begin"      };
+		Object[] r2 = new Object[] { "BEG_LONGER" };
+		Object[] r3 = new Object[] { "test"       };
+		Object[] r4 = new Object[] { "test"       };
+		Object[] r5 = new Object[] { "default"    };
+		Object[] r6 = new Object[] { "default"    };
+		Object[] r7 = new Object[] { "emptyField" };
+		Object[] r8 = new Object[] { "emptyField" };
+		Object[] r9 = new Object[] { "begin"      };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));
+		list.add(new RowMetaAndData(rm, r9));
+		
+		return list;
+	}			
 	
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -383,7 +478,7 @@ public class ValueMapperTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("valuemappertest1");
+        transMeta.setName("valuemappertest2");
     	
         StepLoader steploader = StepLoader.getInstance();            
 
@@ -496,7 +591,7 @@ public class ValueMapperTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("valuemappertest1");
+        transMeta.setName("valuemappertest3");
     	
         StepLoader steploader = StepLoader.getInstance();            
 
@@ -593,5 +688,350 @@ public class ValueMapperTest extends TestCase
         List<RowMetaAndData> goldenImageRows = createResultData3();
         
         checkRows(goldenImageRows, resultRows);
-    }            
+    }
+    /*----------------- TODO */
+	/**
+	 * Test case for valuemapper step. Injector step to a valuemapper step
+	 * to a dummy step. Rows go in and should be mapped accordingly.
+	 * 
+	 * This test will write the mappings in a new field, using a non
+	 * matching default.
+	 */
+    public void testValueMapper4() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("valuemappertest4");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a dummy step 1
+        //
+        String dummyStepname1 = "dummy step 1";            
+        DummyTransMeta dm1 = new DummyTransMeta();
+
+        String dummyPid1 = steploader.getStepPluginID(dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        transMeta.addStep(dummyStep1);                              
+
+        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
+        transMeta.addTransHop(hi);
+
+        // 
+        // Create a blocking step
+        //
+        String valueMapperName = "valuemapper step";            
+        ValueMapperMeta vm = new ValueMapperMeta();
+        
+        vm.setFieldToUse("field1");
+        vm.setTargetField("new_field");
+        vm.setNonMatchDefault("default");
+        vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
+        vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
+
+        String valueMapperPid = steploader.getStepPluginID(vm);
+        StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
+        transMeta.addStep(valueMapperStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(dummyStep1, valueMapperStep);
+        transMeta.addTransHop(hi2);        
+        
+        // 
+        // Create a dummy step 2
+        //
+        String dummyStepname2 = "dummy step 2";            
+        DummyTransMeta dm2 = new DummyTransMeta();
+
+        String dummyPid2 = steploader.getStepPluginID(dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        transMeta.addStep(dummyStep2);                              
+
+        TransHopMeta hi3 = new TransHopMeta(valueMapperStep, dummyStep2);
+        transMeta.addTransHop(hi3);        
+        
+                
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
+        RowStepCollector dummyRc1 = new RowStepCollector();
+        si.addRowListener(dummyRc1);
+
+        si = trans.getStepInterface(valueMapperName, 0);
+        RowStepCollector valueMapperRc = new RowStepCollector();
+        si.addRowListener(valueMapperRc);
+               
+        si = trans.getStepInterface(dummyStepname2, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        // Compare the results                        
+        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> goldenImageRows = createResultData4();
+        
+        checkRows(goldenImageRows, resultRows);
+    }
+    
+	/**
+	 * Test case for valuemapper step. Injector step to a valuemapper step
+	 * to a dummy step. Rows go in and should be mapped accordingly.
+	 * 
+	 * This test will write the mappings in the same field. Using a non
+	 * matching default.
+	 */
+    public void testValueMapper5() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("valuemappertest5");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a dummy step 1
+        //
+        String dummyStepname1 = "dummy step 1";            
+        DummyTransMeta dm1 = new DummyTransMeta();
+
+        String dummyPid1 = steploader.getStepPluginID(dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        transMeta.addStep(dummyStep1);                              
+
+        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
+        transMeta.addTransHop(hi);
+
+        // 
+        // Create a blocking step
+        //
+        String valueMapperName = "valuemapper step";            
+        ValueMapperMeta vm = new ValueMapperMeta();
+        
+        vm.setFieldToUse("field1");
+        vm.setTargetField("");
+        vm.setNonMatchDefault("default");
+        vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij"});
+        vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", ""});
+
+        String valueMapperPid = steploader.getStepPluginID(vm);
+        StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
+        transMeta.addStep(valueMapperStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(dummyStep1, valueMapperStep);
+        transMeta.addTransHop(hi2);        
+        
+        // 
+        // Create a dummy step 2
+        //
+        String dummyStepname2 = "dummy step 2";            
+        DummyTransMeta dm2 = new DummyTransMeta();
+
+        String dummyPid2 = steploader.getStepPluginID(dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        transMeta.addStep(dummyStep2);                              
+
+        TransHopMeta hi3 = new TransHopMeta(valueMapperStep, dummyStep2);
+        transMeta.addTransHop(hi3);        
+        
+                
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
+        RowStepCollector dummyRc1 = new RowStepCollector();
+        si.addRowListener(dummyRc1);
+
+        si = trans.getStepInterface(valueMapperName, 0);
+        RowStepCollector valueMapperRc = new RowStepCollector();
+        si.addRowListener(valueMapperRc);
+               
+        si = trans.getStepInterface(dummyStepname2, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        // Compare the results                        
+        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> goldenImageRows = createResultData5();
+        
+        checkRows(goldenImageRows, resultRows);
+    }
+    
+	/**
+	 * Test case for valuemapper step. Injector step to a valuemapper step
+	 * to a dummy step. Rows go in and should be mapped accordingly.
+	 * 
+	 * This test will explicitly test the empty field processing. using a non
+	 * matching default.
+	 */
+    public void testValueMapper6() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("valuemappertest6");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a dummy step 1
+        //
+        String dummyStepname1 = "dummy step 1";            
+        DummyTransMeta dm1 = new DummyTransMeta();
+
+        String dummyPid1 = steploader.getStepPluginID(dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        transMeta.addStep(dummyStep1);                              
+
+        TransHopMeta hi = new TransHopMeta(injectorStep, dummyStep1);
+        transMeta.addTransHop(hi);
+
+        // 
+        // Create a blocking step
+        //
+        String valueMapperName = "valuemapper step";            
+        ValueMapperMeta vm = new ValueMapperMeta();
+        
+        vm.setFieldToUse("field1");
+        vm.setTargetField("");
+        vm.setNonMatchDefault("default");
+        vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij", null});
+        vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", "", "emptyField"});
+
+        String valueMapperPid = steploader.getStepPluginID(vm);
+        StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
+        transMeta.addStep(valueMapperStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(dummyStep1, valueMapperStep);
+        transMeta.addTransHop(hi2);        
+        
+        // 
+        // Create a dummy step 2
+        //
+        String dummyStepname2 = "dummy step 2";            
+        DummyTransMeta dm2 = new DummyTransMeta();
+
+        String dummyPid2 = steploader.getStepPluginID(dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        transMeta.addStep(dummyStep2);                              
+
+        TransHopMeta hi3 = new TransHopMeta(valueMapperStep, dummyStep2);
+        transMeta.addTransHop(hi3);        
+        
+                
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
+        RowStepCollector dummyRc1 = new RowStepCollector();
+        si.addRowListener(dummyRc1);
+
+        si = trans.getStepInterface(valueMapperName, 0);
+        RowStepCollector valueMapperRc = new RowStepCollector();
+        si.addRowListener(valueMapperRc);
+               
+        si = trans.getStepInterface(dummyStepname2, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        // Compare the results                        
+        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> goldenImageRows = createResultData6();
+        
+        checkRows(goldenImageRows, resultRows);
+    }                
 }

@@ -40,6 +40,7 @@ public class ValueMapper extends BaseStep implements StepInterface
 {
 	private ValueMapperMeta meta;
 	private ValueMapperData data;
+	private boolean nonMatchActivated = false;
 	
 	public ValueMapper(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -111,6 +112,11 @@ public class ValueMapper extends BaseStep implements StepInterface
             if (!Const.isEmpty(source))
             {
                 target=(String)data.hashtable.get(source);
+                if ( nonMatchActivated && target == null )
+                {
+                	// If we do non matching and we don't have a match
+                	target = meta.getNonMatchDefault();
+                }
             }
         }
 
@@ -156,6 +162,11 @@ public class ValueMapper extends BaseStep implements StepInterface
 		{
 		    data.hashtable = new Hashtable<String,String>();
             data.emptyFieldIndex=-1;
+
+            if ( !Const.isEmpty(meta.getNonMatchDefault()) )
+            {
+            	nonMatchActivated = true;
+            }
             
             // Add all source to target mappings in here...
             for (int i=0;i<meta.getSourceValue().length;i++)
