@@ -72,7 +72,7 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
         super(parent, jobEntryInt, rep, jobMeta);
         jobEntry = (JobEntryDelay) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobEval.Title"));
+			this.jobEntry.setName(Messages.getString("JobEntryDelay.Title"));
     }
 
 	public JobEntryInterface open()
@@ -98,14 +98,14 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobEval.Title"));
+		shell.setText(Messages.getString("JobEntryDelay.Title"));
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Name line
 		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobEval.Name.Label"));
+		wlName.setText(Messages.getString("JobEntryDelay.Name.Label"));
 		props.setLook(wlName);
 		fdlName=new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -122,8 +122,8 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		wName.setLayoutData(fdName);
 
 		// MaximumTimeout line
-		wMaximumTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobEval.MaximumTimeout.Label"), Messages
-			.getString("JobEval.MaximumTimeout.Tooltip"));
+		wMaximumTimeout = new LabelTextVar(jobMeta, shell, Messages.getString("JobEntryDelay.MaximumTimeout.Label"), Messages
+			.getString("JobEntryDelay.MaximumTimeout.Tooltip"));
 		props.setLook(wMaximumTimeout);
 		wMaximumTimeout.addModifyListener(lsMod);
 		fdMaximumTimeout = new FormData();
@@ -152,9 +152,9 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		fdlScaleTime.top = new FormAttachment(wMaximumTimeout, margin);
 		wlScaleTime.setLayoutData(fdlScaleTime);
 		wScaleTime = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		wScaleTime.add(Messages.getString("JobEval.SScaleTime.Label"));
-		wScaleTime.add(Messages.getString("JobEval.MnScaleTime.Label"));
-		wScaleTime.add(Messages.getString("JobEval.HrScaleTime.Label"));
+		wScaleTime.add(Messages.getString("JobEntryDelay.SScaleTime.Label"));
+		wScaleTime.add(Messages.getString("JobEntryDelay.MnScaleTime.Label"));
+		wScaleTime.add(Messages.getString("JobEntryDelay.HrScaleTime.Label"));
 		wScaleTime.select(0); // +1: starts at -1
 
 		props.setLook(wScaleTime);

@@ -26,8 +26,7 @@ public class LabelTextVar extends Composite
     private static final Props props = Props.getInstance();
     
     private Label wLabel;
-    private TextVar wText;
-    private VariableSpace variables;
+    private TextVar wText;   
 
     public LabelTextVar(VariableSpace space, Composite composite, String labelText, String toolTipText)
     {
@@ -53,7 +52,7 @@ public class LabelTextVar extends Composite
         int textFlags = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
         if (flags!=SWT.NONE) textFlags = flags;
         
-        wText = new TextVar(variables, this, textFlags, toolTipText);
+        wText = new TextVar(space, this, textFlags, toolTipText);
         FormData fdText = new FormData();
         fdText.left = new FormAttachment(middle, margin);
         fdText.right= new FormAttachment(100, 0);
