@@ -247,7 +247,7 @@ public class DatabaseDialog extends Dialog
         wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
         wTest = new Button(shell, SWT.PUSH);
-        wTest.setText(Messages.getString("System.button.Test")); //$NON-NLS-1$
+        wTest.setText(Messages.getString("System.Button.Test")); //$NON-NLS-1$
 
         wExp = new Button(shell, SWT.PUSH);
         wExp.setText(Messages.getString("DatabaseDialog.button.Explore")); //$NON-NLS-1$
