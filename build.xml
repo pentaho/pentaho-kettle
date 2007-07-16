@@ -396,7 +396,7 @@
 			<fileset dir="${libswt}/osx" includes="**/*.jnilib"/>
 			<fileset dir="${libswt}/osx" includes="**/java_swt"/>
 		</jar>
-
+		
 	</target>
 
 	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
@@ -451,11 +451,101 @@
 
 	<!--
 	       ===========================================
-	          runtests : junit performance tests
+	          tests : junit core tests
+	       ============================================
+	  -->
+	<target name="tests-core" depends="compileTests" description="Execute the core tests">
+		
+		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+	    	<classpath>
+				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="test/libext/" includes="kettle.jar"/>
+	    		<pathelement path="${testClasses}"/>
+
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			</classpath>
+			
+			<formatter type="xml"/>
+			
+		  	<test todir="${junit}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowDataUtilTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false" />
+			
+		</junit>
+	</target>
+
+	<!--
+	       ===========================================
+	         	tests : junit resource tests
+	       ============================================
+	  -->
+	<target name="tests-resource" depends="compileTests" description="Execute the resource tests">
+		
+		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+	    	<classpath>
+				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="test/libext/" includes="kettle.jar"/>
+	    		<pathelement path="${testClasses}"/>
+
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			</classpath>
+			
+			<formatter type="xml"/>
+			
+		  	<test todir="${junit}" name="org.pentaho.di.resource.ResourceExportTest" haltonerror="false" />
+			
+		</junit>
+	</target>
+
+	<!--
+	       ===========================================
+	         	tests : junit transformation tests
+	       ============================================
+	  -->
+	<target name="tests-trans" depends="compileTests" description="Execute the transformation tests">
+		
+		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+	    	<classpath>
+				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="test/libext/" includes="kettle.jar"/>
+	    		<pathelement path="${testClasses}"/>
+
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			</classpath>
+			
+			<formatter type="xml"/>
+			
+		  	<test todir="${junit}" name="org.pentaho.di.trans.HopTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.RowStepCollector" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
+  			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
+
+		</junit>
+	</target>
+
+	<!--
+	       ===========================================
+	          tests : junit performance tests
 	       ============================================
 	  -->
 
-	<target name="runtests" depends="compileTests" description="Execute the run performance tests">
+	<target name="tests-run" depends="compileTests" description="Execute the run performance tests">
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
@@ -542,6 +632,6 @@
 	  <target name="clean" depends="cleandirs"/>
 	
 	
-	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, runtests" />
+	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, tests-core, tests-resource, tests-trans, tests-run" />
 
 </project>
