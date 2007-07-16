@@ -726,6 +726,7 @@ public class TransDialog extends Dialog
             public void widgetSelected(SelectionEvent e) 
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.shareVariablesWith(transMeta);
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
                 if (cid.open()!=null)
                 {

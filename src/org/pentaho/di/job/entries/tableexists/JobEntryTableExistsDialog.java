@@ -164,12 +164,13 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
             public void widgetSelected(SelectionEvent e)
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.shareVariablesWith(jobMeta);
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
                 if (cid.open() != null)
                 {
                     jobMeta.addDatabase(databaseMeta);
 
-                    // SB: Maybe do the same her as in BaseStepDialog: remove
+                    // SB: Maybe do the same here as in BaseStepDialog: remove
                     // all db connections and add them again.
                     wConnection.add(databaseMeta.getName());
                     wConnection.select(wConnection.getItemCount() - 1);

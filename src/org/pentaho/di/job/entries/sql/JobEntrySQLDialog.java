@@ -184,6 +184,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
             public void widgetSelected(SelectionEvent e)
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta();
+                databaseMeta.shareVariablesWith(jobMeta);
                 DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
                 if (cid.open() != null)
                 {
