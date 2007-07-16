@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -37,6 +38,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepDialog;
+
 
 
 /**
@@ -96,6 +98,14 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 	private FormData fdlAfterZip, fdAfterZip;
 
 	private SelectionAdapter lsDef;
+	
+	private Group wFileResult;
+    private FormData fdFileResult;
+    
+	//  Add File to result
+	private Label        wlAddFileToResult;
+	private Button       wAddFileToResult;
+	private FormData     fdlAddFileToResult, fdAddFileToResult;
 	
 	private boolean changed;
 
@@ -382,13 +392,67 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
 		fdMovetoDirectory.right = new FormAttachment(100, 0);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
+		
+		
+		
+		  // fileresult grouping?
+      // ////////////////////////
+      // START OF LOGGING GROUP///
+      // /
+      wFileResult = new Group(shell, SWT.SHADOW_NONE);
+      props.setLook(wFileResult);
+      wFileResult.setText(Messages.getString("JobZipFiles.FileResult.Group.Label"));
+
+      FormLayout groupLayout = new FormLayout();
+      groupLayout.marginWidth = 10;
+      groupLayout.marginHeight = 10;
+
+      wFileResult.setLayout(groupLayout);
+      
+      
+  	//Add file to result
+		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
+		wlAddFileToResult.setText(Messages.getString("JobZipFiles.AddFileToResult.Label"));
+		props.setLook(wlAddFileToResult);
+		fdlAddFileToResult = new FormData();
+		fdlAddFileToResult.left = new FormAttachment(0, 0);
+		fdlAddFileToResult.top = new FormAttachment(wMovetoDirectory, margin);
+		fdlAddFileToResult.right = new FormAttachment(middle, -margin);
+		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
+		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
+		props.setLook(wAddFileToResult);
+		wAddFileToResult.setToolTipText(Messages.getString("JobZipFiles.AddFileToResult.Tooltip"));
+		fdAddFileToResult = new FormData();
+		fdAddFileToResult.left = new FormAttachment(middle, 0);
+		fdAddFileToResult.top = new FormAttachment(wMovetoDirectory, margin);
+		fdAddFileToResult.right = new FormAttachment(100, 0);
+		wAddFileToResult.setLayoutData(fdAddFileToResult);
+		wAddFileToResult.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+      
+      
+      fdFileResult = new FormData();
+      fdFileResult.left = new FormAttachment(0, margin);
+      fdFileResult.top = new FormAttachment(wMovetoDirectory, margin);
+      fdFileResult.right = new FormAttachment(100, -margin);
+      wFileResult.setLayoutData(fdFileResult);
+      // ///////////////////////////////////////////////////////////
+      // / END OF LOGGING GROUP
+      // ///////////////////////////////////////////////////////////
+
+		
 
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
         
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wMovetoDirectory);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFileResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -478,6 +542,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		{
 			wAfterZip.select(0 ); // NOTHING
 		}
+		
+		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 	}
 
 	private void cancel()
@@ -503,6 +569,8 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		
 		
 		jobEntry.afterzip = wAfterZip.getSelectionIndex();
+		
+		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 	
 		dispose();
 	}
