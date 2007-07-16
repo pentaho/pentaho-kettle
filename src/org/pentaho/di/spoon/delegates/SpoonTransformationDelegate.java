@@ -929,6 +929,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration()
 							.getVariables();
 					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
+					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[i].getName());
 					variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
 					String slaveReply = slaves[i].sendXML(transConfiguration.getXML(),
 							AddTransServlet.CONTEXT_PATH + "/?xml=Y");

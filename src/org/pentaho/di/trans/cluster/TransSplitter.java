@@ -403,7 +403,7 @@ public class TransSplitter
                                 	// MASTER: add remote input steps to the master step.  That way it can receive data over sockets.
                                 	// 
                                 	int port = getPort(previousClusterSchema, slaveServer, referenceStep.getName());
-                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), previousStep.getName()+":"+slaveServer.toString(), target.getName());
+                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), previousStep.getName()+":"+slaveServer.toString(), target.getName(), slaveServer.getName());
                                 	target.getRemoteInputSteps().add(remoteSlaveStep);
                                 	
                                     // SLAVE : add remote output steps to the previous step
@@ -421,7 +421,7 @@ public class TransSplitter
                                         slave.addStep(previous);
                                     }
                                     
-                                    RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), Integer.toString(port), previous.getName(), target.getName()+":"+masterServer.toString());
+                                    RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), Integer.toString(port), previous.getName(), target.getName()+":"+masterServer.toString(), masterServer.getName());
                                     previous.getRemoteOutputSteps().add(remoteMasterStep);
                                     
                                     // TODO: Verify the database partitioning for this step.
@@ -455,7 +455,7 @@ public class TransSplitter
                                     }
                                     
                                     int port = getPort(originalClusterSchema, slaveServer, referenceStep.getName());
-                                    RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), Integer.toString(port), previous.getName(), referenceStep.getName());
+                                    RemoteStep remoteMasterStep = new RemoteStep(masterServer.getHostname(), Integer.toString(port), previous.getName(), referenceStep.getName(), masterServer.getName());
                                     previous.getRemoteOutputSteps().add(remoteMasterStep);
                                 	
                                     // SLAVE : add remote input step to the reference slave step...
@@ -471,7 +471,7 @@ public class TransSplitter
                                         slave.addStep(slaveStep);
                                     }
                                     
-                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), referenceStep.getName(), slaveStep.getName());
+                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), referenceStep.getName(), slaveStep.getName(), slaveServer.getName());
                                     slaveStep.getRemoteInputSteps().add(remoteSlaveStep);
                                 	
                                     // TODO: Verify the database partitioning for this slave step.

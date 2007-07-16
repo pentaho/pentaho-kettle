@@ -1,9 +1,6 @@
 package org.pentaho.di.core.widget;
 
-import org.eclipse.jface.fieldassist.DecoratedField;
-import org.eclipse.jface.fieldassist.FieldDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.fieldassist.TextControlCreator;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -15,11 +12,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
@@ -42,13 +39,15 @@ public class TextVar extends Composite
     
     private static final Props props = Props.getInstance();
 
-    private DecoratedField decoratedField;
+    private ControlDecoration controlDecoration;
 
     private GetCaretPositionInterface getCaretPositionInterface;
 
     private InsertTextInterface insertTextInterface;
     
     private VariableSpace variables;
+    
+    private Text wText;
     
     
     public TextVar(VariableSpace space, Composite composite, int flags)
@@ -87,26 +86,23 @@ public class TextVar extends Composite
         this.setLayout(formLayout);
 
         // add a text field on it...
-        decoratedField = new DecoratedField(this, flags, new TextControlCreator());
-        Text wText = (Text) decoratedField.getControl();
+        wText = new Text(this, flags);
+        
+        controlDecoration = new ControlDecoration(wText, SWT.TOP | SWT.RIGHT);
+        Image image = GUIResource.getInstance().getImageVariable();
+        controlDecoration.setImage( image );
+        controlDecoration.setDescriptionText(Messages.getString("TextVar.tooltip.InsertVariable"));
+        
         props.setLook(wText);
-        Control layoutControl = decoratedField.getLayoutControl();
-        props.setLook(layoutControl);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface, space);
         wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
         
-        // Put some decorations on it...
-        FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
-        registry.registerFieldDecoration("variable.field", Messages.getString("TextVar.tooltip.InsertVariable"), GUIResource.getInstance().getImageVariable());
-        FieldDecoration fieldDecoration = registry.getFieldDecoration("variable.field");
-        decoratedField.addFieldDecoration(fieldDecoration, SWT.TOP | SWT.RIGHT, false);
-        
         FormData fdText = new FormData();
         fdText.top   = new FormAttachment(0, 0);
         fdText.left  = new FormAttachment(0 ,0);
-        fdText.right = new FormAttachment(100, 0);
-        layoutControl.setLayoutData(fdText);
+        fdText.right = new FormAttachment(100, -image.getBounds().width);
+        wText.setLayoutData(fdText);
     }
     
     /**
@@ -189,7 +185,7 @@ public class TextVar extends Composite
      */
     public String getText()
     {
-        return ((Text) decoratedField.getControl()).getText();
+        return wText.getText();
     }
     
     /**
@@ -197,12 +193,12 @@ public class TextVar extends Composite
      */
     public void setText(String text)
     {
-        ((Text) decoratedField.getControl()).setText(text);
+    	wText.setText(text);
     }
     
     public Text getTextWidget()
     {
-        return (Text) decoratedField.getControl();
+        return wText;
     }
  
     /**
@@ -211,67 +207,67 @@ public class TextVar extends Composite
      */
     public void addModifyListener(ModifyListener modifyListener)
     {
-        ((Text)decoratedField.getControl()).addModifyListener(modifyListener);
+    	wText.addModifyListener(modifyListener);
     }
 
     public void addSelectionListener(SelectionAdapter lsDef)
     {
-        ((Text)decoratedField.getControl()).addSelectionListener(lsDef);
+    	wText.addSelectionListener(lsDef);
     }
     
     public void addKeyListener(KeyListener lsKey)
     {
-        ((Text)decoratedField.getControl()).addKeyListener(lsKey);
+    	wText.addKeyListener(lsKey);
     }
     
     public void addFocusListener(FocusListener lsFocus)
     {
-        ((Text)decoratedField.getControl()).addFocusListener(lsFocus);
+    	wText.addFocusListener(lsFocus);
     }
 
     public void setEchoChar(char c)
     {
-        ((Text)decoratedField.getControl()).setEchoChar(c);
+    	wText.setEchoChar(c);
     }
  
     public void setEnabled(boolean flag)
     {
-        ((Text)decoratedField.getControl()).setEnabled(flag);
+    	wText.setEnabled(flag);
     }
     
     public boolean setFocus()
     {
-        return ((Text)decoratedField.getControl()).setFocus();
+        return wText.setFocus();
     }
     
     public void addTraverseListener(TraverseListener tl)
     {
-        ((Text)decoratedField.getControl()).addTraverseListener(tl);
+    	wText.addTraverseListener(tl);
     }
     
     public void setToolTipText(String toolTipText)
     {
         this.toolTipText = toolTipText;
-        ((Text)decoratedField.getControl()).setToolTipText(toolTipText);
+        wText.setToolTipText(toolTipText);
     }
 
     public void setEditable(boolean editable)
     {
-        ((Text)decoratedField.getControl()).setEditable(editable);
+    	wText.setEditable(editable);
     }
 
     public void setSelection(int i)
     {
-        ((Text)decoratedField.getControl()).setSelection(i);
+    	wText.setSelection(i);
     }
 
     public void selectAll()
     {
-        ((Text)decoratedField.getControl()).selectAll();
+    	wText.selectAll();
     }
 
     public void showSelection()
     {
-        ((Text)decoratedField.getControl()).showSelection();
+    	wText.showSelection();
     }
 }

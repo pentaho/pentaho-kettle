@@ -509,7 +509,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             
             StringBuffer command = new StringBuffer();
                 
-            Iterator it = cmds.iterator();
+            Iterator<String> it = cmds.iterator();
             boolean first = true;                
             while ( it.hasNext() )
             {

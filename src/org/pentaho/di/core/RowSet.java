@@ -48,6 +48,8 @@ public class RowSet implements Comparable<RowSet>
     private String    			    destinationStepName;
     private AtomicInteger		    destinationStepCopy;
     
+    private String                  remoteSlaveServerName;
+    
     /**
      * Create new non-blocking-queue with maxSize capacity.
      * @param maxSize
@@ -70,8 +72,9 @@ public class RowSet implements Comparable<RowSet>
      * 
      */
 	public int compareTo(RowSet rowSet) {
-		String target = destinationStepName+"."+destinationStepCopy.intValue();
-		String comp = rowSet.getDestinationStepName()+"."+rowSet.getDestinationStepCopy();
+		String target = remoteSlaveServerName+"."+destinationStepName+"."+destinationStepCopy.intValue();
+		String comp   = rowSet.remoteSlaveServerName+"."+rowSet.destinationStepName+"."+rowSet.destinationStepCopy.intValue();
+		
 		return target.compareTo(comp);
 	}   
 
@@ -285,6 +288,20 @@ public class RowSet implements Comparable<RowSet>
 	 */
 	public void setRowMeta(RowMetaInterface rowMeta) {
 		this.rowMeta = rowMeta;
+	}
+
+	/**
+	 * @return the targetSlaveServer
+	 */
+	public String getRemoteSlaveServerName() {
+		return remoteSlaveServerName;
+	}
+
+	/**
+	 * @param remoteSlaveServerName the remote slave server to set
+	 */
+	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
+		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
 
 }

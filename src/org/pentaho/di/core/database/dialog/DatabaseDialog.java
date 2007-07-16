@@ -177,15 +177,6 @@ public class DatabaseDialog extends Dialog
     private Label          wlQuoteAllFields;
 
     private Button         wQuoteAllFields;
- 
-
-    /**
-     * @deprecated Use the simple version without <i>style</i>, <i>log</i> and <i>props</i> parameters
-     */
-    public DatabaseDialog(Shell parent, int style, LogWriter log, DatabaseMeta databaseMeta, Props props)
-    {
-        this(parent, databaseMeta);
-    }
 
     public DatabaseDialog(Shell parent, DatabaseMeta databaseMeta)
     {

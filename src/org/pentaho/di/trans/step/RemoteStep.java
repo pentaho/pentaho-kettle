@@ -57,16 +57,19 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 	private String targetStep;
 
+	private String targetSlaveServerName;
+
 	/**
 	 * @param hostname
 	 * @param port
 	 */
-	public RemoteStep(String hostname, String port, String sourceStep, String targetStep) {
+	public RemoteStep(String hostname, String port, String sourceStep, String targetStep, String targetSlaveServerName) {
 		super();
 		this.hostname = hostname;
 		this.port = port;
 		this.sourceStep = sourceStep;
 		this.targetStep = targetStep;
+		this.targetSlaveServerName = targetSlaveServerName;
 	}
 	
 	@Override
@@ -182,6 +185,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		// TODO: verify the case with multiple step copies running on the slaves
 		rowSet.setThreadNameFromToCopy(sourceStep, 0, targetStep, 0);  
+		rowSet.setRemoteSlaveServerName(targetSlaveServerName);
 		
 		// Start a thread that will read out the output row set and send the data over the wire...
 		// This will make everything else transparent, copying, distributing, including partitioning, etc.
@@ -316,5 +320,19 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 */
 	public void setTargetStep(String targetStep) {
 		this.targetStep = targetStep;
+	}
+
+	/**
+	 * @return the targetSlaveServerName
+	 */
+	public String getTargetSlaveServerName() {
+		return targetSlaveServerName;
+	}
+
+	/**
+	 * @param targetSlaveServerName the targetSlaveServerName to set
+	 */
+	public void setTargetSlaveServerName(String targetSlaveServerName) {
+		this.targetSlaveServerName = targetSlaveServerName;
 	}
 }
