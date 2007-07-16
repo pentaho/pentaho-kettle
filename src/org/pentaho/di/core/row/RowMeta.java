@@ -103,6 +103,26 @@ public class RowMeta implements RowMetaInterface
     }
     
     /**
+     * Add a metadata value on a certain location in the row.
+     * If a value with the same name already exists, it gets renamed.
+     * Remember to change the data row according to this.
+     *
+     * @param index The index where the metadata value needs to be put in the row
+     * @param meta The metadata value to add to the row
+     */
+    public void addValueMeta(int index, ValueMetaInterface meta)
+    {
+        if (!exists(meta))
+        {
+            valueMetaList.add(index, meta);
+        }
+        else
+        {
+            valueMetaList.add(index, renameValueMetaIfInRow(meta));
+        }
+    }
+
+    /**
      * Get the value metadata on the specified index.
      * @param index The index to get the value metadata from
      * @return The value metadata specified by the index.

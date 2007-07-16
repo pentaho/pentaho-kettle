@@ -30,10 +30,21 @@ public interface RowMetaInterface extends Cloneable
     
     /**
      * Add a metadata value, extends the array if needed.
+     * If a value with the same name already exists, it gets renamed.
      * 
      * @param meta The metadata value to add
      */
     public void addValueMeta(ValueMetaInterface meta);
+
+    /**
+     * Add a metadata value on a certain location in the row.
+     * If a value with the same name already exists, it gets renamed.
+     * Remember to change the data row according to this.
+     *
+     * @param index The index where the metadata value needs to be put in the row
+     * @param meta The metadata value to add to the row
+     */
+    public void addValueMeta(int index, ValueMetaInterface meta);
     
     /**
      * Get the value metadata on the specified index.
