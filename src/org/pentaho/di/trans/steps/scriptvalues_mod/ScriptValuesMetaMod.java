@@ -673,7 +673,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 								res.setNull();
 							}else if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")){
 								// Is it a java Value class ?
-								Value v = (Value)Context.toType(result, Value.class);
+								Value v = (Value)Context.jsToJava(result, Value.class);
 								res.setValue( v.getNumber() );
 							}else{
 								res.setValue( ((Double)result).doubleValue() ); 
@@ -692,7 +692,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 								res.setNull();
 							}else if (classname.equalsIgnoreCase("org.mozilla.javascript.NativeJavaObject")){
 								// Is it a java Value class ?
-								Value v = (Value)Context.toType(result, Value.class);
+								Value v = (Value)Context.jsToJava(result, Value.class);
 								res.setValue( v.getInteger() );
 							}else{
 								res.setValue( Math.round( ((Double)result).doubleValue() ) ); 
@@ -705,13 +705,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 							// Is it a java Value class ?
 							try
 							{
-								Value v = (Value)Context.toType(result, Value.class);
+								Value v = (Value)Context.jsToJava(result, Value.class);
 								res.setValue( v.getString() );
 							}
 							catch(Exception ev)
 							{
 								// A String perhaps?
-								String s = (String)Context.toType(result, String.class);
+								String s = (String)Context.jsToJava(result, String.class);
 								res.setValue( s );
 							}
 						}
@@ -738,12 +738,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 								// Is it a java Date() class ?
 								try
 								{
-									Date dat = (Date)Context.toType(result, java.util.Date.class);
+									Date dat = (Date)Context.jsToJava(result, java.util.Date.class);
 									dbl = dat.getTime();
 								}
 								catch(Exception e) // Nope, try a Value
 								{
-									Value v = (Value)Context.toType(result, Value.class);
+									Value v = (Value)Context.jsToJava(result, Value.class);
 									Date dat = v.getDate();
 									if (dat!=null) dbl = dat.getTime();
 									else res.setNull();

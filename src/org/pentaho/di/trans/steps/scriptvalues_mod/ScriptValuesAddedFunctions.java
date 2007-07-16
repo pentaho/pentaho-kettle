@@ -133,7 +133,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			try{
 				if(isNull(ArgList)) return null;
 				else if(isUndefined(ArgList)) return Context.getUndefinedValue();
-				java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar startDate = Calendar.getInstance();
 				Calendar fisStartDate = Calendar.getInstance();
 				Calendar fisOffsetDate = Calendar.getInstance();
@@ -162,7 +162,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==1){
 			try{
 				Object scmO = actualObject.get("_step_", actualObject);
-				ScriptValuesMod scm = (ScriptValuesMod)Context.toType(scmO, ScriptValuesMod.class);
+				ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
 				String strType = Context.toString(ArgList[0]);
 				
 				if(strType.toLowerCase().equals("i")) return (double)scm.getLinesInput();
@@ -188,7 +188,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(!isNull(ArgList) && !isUndefined(ArgList)){
 						Object scmO = actualObject.get("_step_", actualObject);
-						ScriptValuesMod scm = (ScriptValuesMod)Context.toType(scmO, ScriptValuesMod.class);
+						ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
 						String strMessage = Context.toString(ArgList[0]);
 						scm.logDebug(strMessage);
 					}
@@ -199,7 +199,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(!isNull(ArgList) && !isUndefined(ArgList)){
 						Object scmO = actualObject.get("_step_", actualObject);
-						ScriptValuesMod scm = (ScriptValuesMod)Context.toType(scmO, ScriptValuesMod.class);
+						ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
 			
 						String strType = Context.toString(ArgList[0]);
 						String strMessage = Context.toString(ArgList[1]);
@@ -299,7 +299,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList[0])) return new Double(Double.NaN);
 				else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				else{
-					java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+					java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 					String strType = Context.toString(ArgList[1]);
 					Calendar startDate = Calendar.getInstance(); 
 					startDate.setTime(dIn);
@@ -324,7 +324,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList[0])) return null;
 				else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				else{
-					java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+					java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 					Calendar startDate = Calendar.getInstance(); 
 					startDate.setTime(dIn);
 					if(startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SATURDAY &&startDate.get(Calendar.DAY_OF_WEEK)!= Calendar.SUNDAY) return Boolean.TRUE;
@@ -344,7 +344,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		if(ArgList.length==2){
 			try{
 				Object scmO = actualObject.get("_step_", actualObject);
-				ScriptValuesMod scm = (ScriptValuesMod)Context.toType(scmO, ScriptValuesMod.class);
+				ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
 				String strDBName = Context.toString(ArgList[0]);
 				String strSQL = Context.toString(ArgList[1]);			
 				DatabaseMeta ci = DatabaseMeta.findDatabase(scm.getTransMeta().getDatabases(), strDBName);
@@ -387,8 +387,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList, new int[]{0,1,2})) return new Double(Double.NaN);
 				else if(isUndefined(ArgList, new int[]{0,1,2})) return Context.getUndefinedValue();
 				else{
-					java.util.Date dIn1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
-					java.util.Date dIn2 = (java.util.Date)Context.toType(ArgList[1], java.util.Date.class);
+					java.util.Date dIn1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
+					java.util.Date dIn2 = (java.util.Date)Context.jsToJava(ArgList[1], java.util.Date.class);
 					String strType = Context.toString(ArgList[2]);
 					int iRC=0;
 
@@ -457,7 +457,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			try{
 				if(isNull(ArgList[0])) return null;
 				else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar startDate = Calendar.getInstance(); 
 			    startDate.setTime(dIn);
 			    startDate.add(Calendar.DATE,1);
@@ -478,7 +478,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			try{
 				if(isNull(ArgList, new int[]{0,1,2})) return null;
 				else if(isUndefined(ArgList, new int[]{0,1,2})) return Context.getUndefinedValue();
-				java.util.Date dIn = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				String strType = Context.toString(ArgList[1]);
 				int iValue = (int)Context.toNumber(ArgList[2]);
 				Calendar cal = Calendar.getInstance(); 
@@ -625,7 +625,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			if(ArgList.length==1){
 	    		if(isNull(ArgList[0])) return new Double(Double.NaN);
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar cal=Calendar.getInstance();
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.YEAR));
@@ -642,7 +642,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			if(ArgList.length==1){
 				if(isNull(ArgList[0])) return new Double(Double.NaN);
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar cal=Calendar.getInstance();
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.MONTH));
@@ -660,7 +660,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			if(ArgList.length==1){
 	    		if(isNull(ArgList[0])) return new Double(Double.NaN);
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar cal=Calendar.getInstance();
 			    cal.setTime(dArg1);
 			    int iMonth = cal.get(Calendar.MONTH);
@@ -681,7 +681,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			if(ArgList.length==1){
 	    		if(isNull(ArgList[0])) return new Double(Double.NaN);
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+				java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar cal=Calendar.getInstance();
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.WEEK_OF_YEAR));
@@ -812,7 +812,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(isNull(ArgList)) return null;
 		    		else if(isUndefined(ArgList)) return Context.getUndefinedValue();
-					java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class); 
+					java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class); 
 					if(dArg1.equals(null)) return null;
 					Format dfFormatter = new SimpleDateFormat();
 					oRC = dfFormatter.format(dArg1);
@@ -824,7 +824,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(isNull(ArgList,new int[]{0,1})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1})) return Context.getUndefinedValue();
-					java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class); 
+					java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class); 
 					String sArg2 = Context.toString(ArgList[1]);
 					Format dfFormatter = new SimpleDateFormat(sArg2);
 					oRC = dfFormatter.format(dArg1);
@@ -836,7 +836,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				try{
 					if(isNull(ArgList,new int[]{0,1,2})) return null;
 		    		else if(isUndefined(ArgList,new int[]{0,1,2})) return Context.getUndefinedValue();
-					java.util.Date dArg1 = (java.util.Date)Context.toType(ArgList[0], java.util.Date.class);
+					java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 					Format dfFormatter;
 					String sArg2 = Context.toString(ArgList[1]);
 					String sArg3 = Context.toString(ArgList[2]);
@@ -1089,7 +1089,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			try{
 				if(isNull(ArgList[0])) return null;
 	    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
-				/* java.util.Date d = (java.util.Date)*/ Context.toType(ArgList[0], java.util.Date.class); 
+				/* java.util.Date d = (java.util.Date)*/ Context.jsToJava(ArgList[0], java.util.Date.class); 
 				return Boolean.TRUE;
 			}catch(Exception e){
 				return Boolean.FALSE;

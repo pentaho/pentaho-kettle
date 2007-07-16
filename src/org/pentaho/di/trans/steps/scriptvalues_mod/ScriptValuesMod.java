@@ -475,14 +475,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                             catch (Exception ev)
                             {
                                 // A String perhaps?
-                                String string = (String) Context.toType(result, String.class);
+                                String string = (String) Context.jsToJava(result, String.class);
                                 return string;
                             }
                         }
                         else
                         {
                             // A String perhaps?
-                            String string = (String) Context.toType(result, String.class);
+                            String string = (String) Context.jsToJava(result, String.class);
                             return string;
                         }
 
@@ -505,7 +505,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                                     // Is it a java Date() class ?
                                     try
                                     {
-                                        Date dat = (Date) Context.toType(result, java.util.Date.class);
+                                        Date dat = (Date) Context.jsToJava(result, java.util.Date.class);
                                         dbl = dat.getTime();
                                     }
                                     catch (Exception e)
@@ -530,7 +530,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                                 }
                                 else
                                 {
-                                    String string = (String) Context.toType(result, String.class);
+                                    String string = (String) Context.jsToJava(result, String.class);
                                     dbl = Double.parseDouble(string);
                                 }
                             long lng = Math.round(dbl);
@@ -552,12 +552,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                                 // Is it a BigDecimal class ?
                                 try
                                 {
-                                    BigDecimal bd = (BigDecimal) Context.toType(result, BigDecimal.class);
+                                    BigDecimal bd = (BigDecimal) Context.jsToJava(result, BigDecimal.class);
                                     return bd;
                                 }
                                 catch (Exception e)
                                 {
-                                    String string = (String) Context.toType(result, String.class);
+                                    String string = (String) Context.jsToJava(result, String.class);
                                     return new BigDecimal(string);
                                     /*
                                         Value v = (Value) Context.toType(result, Value.class);
