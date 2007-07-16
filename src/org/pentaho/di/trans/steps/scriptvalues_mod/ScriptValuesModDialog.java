@@ -81,12 +81,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ScriptOrFnNode;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.tools.ToolErrorReporter;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -1716,7 +1718,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     	evn.setOptimizationLevel(-1);
     	evn.setGeneratingSource(true);
     	evn.setGenerateDebugInfo(true);
-    	Parser p = new Parser(evn);
+    	ErrorReporter errorReporter = new ToolErrorReporter(false);
+    	Parser p = new Parser(evn, errorReporter);
     	ScriptOrFnNode tree = p.parse(source, "",0); // IOException
     	//Script result = (Script)compiler.compile(scope, evn, tree, p.getEncodedSource(),false, null);
     	return tree;
