@@ -182,7 +182,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					Repository.class, JobMeta.class };
 			Object[] paramArgs = new Object[] { spoon.getShell(), jei, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
-			dialogClass = Class.forName(dialogClassName);
+			dialogClass = JobEntryLoader.getInstance().loadClass(jei.getDescription(),dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
