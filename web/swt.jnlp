@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8080/kettle" href="swt.jnlp">
+   <information>
+      <title>SWT</title>
+      <vendor>Eclipse Foundation, Inc.</vendor>
+      <offline-allowed/>
+   </information>
+   <offline-allowed/>
+     <security>
+     <all-permissions/>
+  </security>
+
+   <resources>
+  <jar href="libswt/jface.jar"/>
+  <jar href="libswt/runtime.jar"/>
+  <jar href="libswt/common.jar"/>
+  <jar href="libswt/commands.jar"/>
+   </resources>
+   <component-desc/>
+</jnlp>

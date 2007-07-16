@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8080/kettle" href="mail.jnlp">
+   <information>
+      <title>Mail</title>
+      <vendor>Sun Microsystems, Inc.</vendor>
+      <offline-allowed/>
+   </information>
+   <offline-allowed/>
+   <resources>
+      <jar href="libext/mail.jar"/>
+   </resources>
+   <component-desc/>
+</jnlp>

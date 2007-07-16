@@ -352,11 +352,11 @@
     	<echo>Copying resources to webstart...</echo>
 
 		<copy todir="${webstart}/libext">
-			<fileset dir="${libext}" includes="**/*.jar"/>
+			<fileset dir="${libext}" includes="**/*.jar" excludes="mail.jar web/activation.jar"/>
 			</copy>
 
 		<copy todir="${webstart}/libswt">
-			<fileset dir="${libswt}" includes="**/*.jar"/>
+			<fileset dir="${libswt}" includes="**/*.jar" excludes="commands.jar common.jar jface.jar runtime.jar"/>
 		</copy>
 
 		<copy todir="${webstart}/">
@@ -372,7 +372,7 @@
 		</copy>
 
 		<copy todir="${webstart}">
-			<fileset dir="${src}/be/ibridge/kettle/images/" includes="kettle_logo.png"/>
+			<fileset dir="${src}/org/pentaho/di/images/" includes="kettle_logo.png"/>
 		</copy>
 
 		<jar destfile="${webstart}/libswt/win32/libs.jar">
@@ -397,10 +397,6 @@
 			<fileset dir="${libswt}/osx" includes="**/java_swt"/>
 		</jar>
 
-		<jar destfile="${webstart}/libswt/hpux/libs.jar">
-			<fileset dir="${libswt}/hpux" includes="**/*.sl"/>
-		</jar>
-
 	</target>
 
 	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
@@ -417,6 +413,18 @@
     	<signjar keystore="${keystore}" alias="kettle" storepass="${keystorePassword}">
     		<fileset dir="${webstart}" includes="**/*.jar"/>
 	    </signjar>
+    	<!-- for jars that are already signed by other parties, copy the originals back over -->
+
+    	<echo>Copying third-party signed jars</echo>
+    	
+		<copy todir="${webstart}/libext">
+			<fileset dir="${libext}" includes="mail.jar web/activation.jar"/>
+			</copy>
+
+		<copy todir="${webstart}/libswt">
+			<fileset dir="${libswt}" includes="commands.jar common.jar jface.jar runtime.jar"/>
+		</copy>
+    	
     </target> 
 
     <target name="webstart" depends="sign-jars" description="Package WAR">

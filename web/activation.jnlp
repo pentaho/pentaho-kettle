@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8080/kettle" href="activation.jnlp">
+   <information>
+      <title>Activation</title>
+      <vendor>Sun Microsystems, Inc.</vendor>
+      <offline-allowed/>
+   </information>
+   <offline-allowed/>
+   <resources>
+      <jar href="libext/web/activation.jar"/>
+   </resources>
+   <component-desc/>
+</jnlp>
