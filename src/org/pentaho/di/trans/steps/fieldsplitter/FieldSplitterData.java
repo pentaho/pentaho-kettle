@@ -16,12 +16,6 @@
 
 package org.pentaho.di.trans.steps.fieldsplitter;
 
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -37,26 +31,10 @@ public class FieldSplitterData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputMeta;
 	public int fieldnr;
 
-	//TODO check if it can be deleted
-//	public NumberFormat nf;
-//	public DecimalFormat df;
-//	public DecimalFormatSymbols dfs;
-//	public SimpleDateFormat daf;
-//	public DateFormatSymbols dafs;
-		
 
-	/**
-	 * 
-	 */
 	public FieldSplitterData()
 	{
 		super();
-
-//		nf = NumberFormat.getInstance();
-//		df = (DecimalFormat)nf;
-//		dfs=new DecimalFormatSymbols();
-//		daf = new SimpleDateFormat();
-//		dafs= new DateFormatSymbols();
 	}
 
 }

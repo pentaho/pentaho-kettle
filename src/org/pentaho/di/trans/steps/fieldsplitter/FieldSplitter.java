@@ -20,7 +20,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -76,7 +75,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 			// prepare the outputMeta
 			data.outputMeta=(RowMetaInterface) getInputRowMeta().clone();
-			meta.getFields(data.outputMeta, getStepname(), null);
+			meta.getFields(data.outputMeta, getStepname(), null, null, this);
 		}
 		
 		String v=data.previousMeta.getString(r, data.fieldnr);
@@ -86,7 +85,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 		boolean insert = data.fieldnr<data.previousMeta.size();
 		if(insert)
 		{
-			//TODO testen mit verschiedenen Typen
+			//move to the right and make room between
 			System.arraycopy(r, data.fieldnr+1, r, data.fieldnr+meta.getFieldID().length, meta.getFieldID().length);
 		}
 		
@@ -96,75 +95,67 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 		Object value=null;
 		if (use_ids)
 		{
-//			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
-//			// pol all split fields
-//			// Loop over the specified field list
-//			// If we spot the corresponding id[] entry in pol, add the value
-//			//
-//			String pol[] = new String[meta.getField().length];
-//			int prev=0;
-//			int i=0;
-//			while(v.getString()!=null && prev<v.getString().length() && i<pol.length)
-//			{
-//				pol[i]=polNext(v.getString(), meta.getDelimiter(), prev);
-//				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol[i],String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
-//				prev+=pol[i].length()+meta.getDelimiter().length();
-//				i++;
-//			}
-//
-//			// We have to add info.field.length variables!
-//			for (i=0;i<meta.getField().length;i++)
-//			{
-//				// We have a field, search the corresponding pol[] entry.
-//				String split=null;
-//
-//				for (int p=0; p<pol.length && split==null; p++) 
-//				{
-//					// With which line does pol[p] correspond?
-//					if (pol[p]!=null && pol[p].indexOf(meta.getFieldID()[i])>=0) split=pol[p];
-//				}
-//				
-//				// Optionally remove the indicator				
-//				if (split!=null && meta.removeID()[i])
-//				{
-//					StringBuffer sb = new StringBuffer(split);
-//					int idx = sb.indexOf(meta.getFieldID()[i]);
-//					sb.delete(idx, idx+meta.getFieldID()[i].length());
-//					split=sb.toString();
-//				}
-//
-//				if (split==null) split=""; //$NON-NLS-1$
-//				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitInfo")+split); //$NON-NLS-1$
-//
-//				try
-//				{
-//					value = TextFileInput.convertValue
-//					(
-//						split,
-//						meta.getField()[i],
-//						meta.getFieldType()[i],
-//						meta.getFieldFormat()[i],
-//						meta.getFieldLength()[i],
-//						meta.getFieldPrecision()[i],
-//						meta.getFieldGroup()[i],
-//						meta.getFieldDecimal()[i],
-//						meta.getFieldCurrency()[i],
-//						meta.getFieldDefault()[i],
-//						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
-//						TextFileInputMeta.TYPE_TRIM_BOTH,
-//						data.df, data.dfs,
-//						data.daf, data.dafs
-//					);
-//				}
-//				catch(Exception e)
-//				{
-//					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-//					setErrors(1);
-//					stopAll();
-//					return false;
-//				}
-//				if (insert) r.addValue(data.fieldnr+i, value); else r.addValue(value);
-//			}
+			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
+			// pol all split fields
+			// Loop over the specified field list
+			// If we spot the corresponding id[] entry in pol, add the value
+			//
+			String pol[] = new String[meta.getField().length];
+			int prev=0;
+			int i=0;
+			while(v!=null && prev<v.length() && i<pol.length)
+			{
+				pol[i]=polNext(v, meta.getDelimiter(), prev);
+				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol[i],String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
+				prev+=pol[i].length()+meta.getDelimiter().length();
+				i++;
+			}
+
+			// We have to add info.field.length variables!
+			for (i=0;i<meta.getField().length;i++)
+			{
+				// We have a field, search the corresponding pol[] entry.
+				String split=null;
+
+				for (int p=0; p<pol.length && split==null; p++) 
+				{
+					// With which line does pol[p] correspond?
+					if (pol[p]!=null && pol[p].indexOf(meta.getFieldID()[i])>=0) split=pol[p];
+				}
+				
+				// Optionally remove the indicator				
+				if (split!=null && meta.removeID()[i])
+				{
+					StringBuffer sb = new StringBuffer(split);
+					int idx = sb.indexOf(meta.getFieldID()[i]);
+					sb.delete(idx, idx+meta.getFieldID()[i].length());
+					split=sb.toString();
+				}
+
+				if (split==null) split=""; //$NON-NLS-1$
+				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitInfo")+split); //$NON-NLS-1$
+
+				try
+				{
+					value = TextFileInput.convertValue
+					(
+						split,
+						data.outputMeta.getValueMeta(data.fieldnr+i),
+						data.previousMeta.getValueMeta(data.fieldnr),
+						meta.getFieldDefault()[i],
+						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
+						TextFileInputMeta.TYPE_TRIM_BOTH
+					);
+				}
+				catch(Exception e)
+				{
+					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					setErrors(1);
+					stopAll();
+					return false;
+				}
+				r[data.fieldnr+i]=value;
+			}
 		}
 		else
 		{
@@ -181,8 +172,8 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 					value = TextFileInput.convertValue
 					(
 						pol,
-						data.previousMeta.getValueMeta(data.fieldnr),
 						data.outputMeta.getValueMeta(data.fieldnr+i),
+						data.previousMeta.getValueMeta(data.fieldnr),
 						meta.getFieldDefault()[i],
 						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
 						TextFileInputMeta.TYPE_TRIM_BOTH
@@ -196,7 +187,6 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 					return false;
 				}
 				r[data.fieldnr+i]=value;
-				//if (insert) r.addValue(data.fieldnr+i, value); else r.addValue(value);
 			}
 		}
 		
