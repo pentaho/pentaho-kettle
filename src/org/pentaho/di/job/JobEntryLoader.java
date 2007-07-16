@@ -15,6 +15,7 @@
 
 package org.pentaho.di.job;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.pentaho.di.core.config.ConfigManager;
@@ -66,7 +68,6 @@ public class JobEntryLoader
 		return jobEntryLoader;
 	}
 
-
 	public boolean read()
 	{
 		if (readNatives())
@@ -107,7 +108,6 @@ public class JobEntryLoader
 
 	}
 
-	
 	/**
 	 * The 'new' method. Uses plugin loader, which uses VFS to load plugins.
 	 */
@@ -132,6 +132,39 @@ public class JobEntryLoader
 		return getJobEntryClass(jp);
 	}
 
+	public Class<?> loadClass(JobPlugin sp, String className) throws KettleStepLoaderException
+	{
+		try
+		{
+			switch (sp.getType())
+			{
+			case JobPlugin.TYPE_NATIVE:
+
+				return Class.forName(className);
+
+			case JobPlugin.TYPE_PLUGIN:
+				ClassLoader cl = getClassLoader(sp);
+				return cl.loadClass(className);
+			default:
+				throw new KettleStepLoaderException("Unknown plugin type : " + sp.getType());
+			}
+		} catch (Exception e)
+		{
+			throw new KettleStepLoaderException(e);
+		}
+	}
+
+	public Class<?> loadClass(String desc, String className) throws KettleStepLoaderException
+	{
+		try
+		{
+			return loadClass(findJobEntriesWithDescription(desc), className);
+		} catch (Exception e)
+		{
+			throw new KettleStepLoaderException(e);
+		}
+	}
+
 	public JobEntryInterface getJobEntryClass(JobPlugin sp) throws KettleStepLoaderException
 	{
 		if (sp != null)
@@ -148,31 +181,7 @@ public class JobEntryLoader
 					break;
 				case JobPlugin.TYPE_PLUGIN:
 				{
-					String jarfiles[] = sp.getJarfiles();
-					URL urls[] = new URL[jarfiles.length];
-					for (int i = 0; i < jarfiles.length; i++)
-					{
-						//use VFS HERE
-						FileSystemManager mgr = VFS.getManager();
-						FileObject jarfile = mgr.resolveFile(jarfiles[i]);
-						urls[i] = new URL(jarfile.getName().getURI());
-					}
-
-					// Load the class!!
-					// 
-					// First get the class loader: get the one that's the
-					// webstart classloader, not the thread classloader
-					//
-					ClassLoader classLoader = getClass().getClassLoader();
-
-					// Construct a new URLClassLoader based on this one...
-					URLClassLoader ucl = (URLClassLoader) classLoaders.get(sp.getID());
-					if (ucl == null)
-					{
-						ucl = new URLClassLoader(urls, classLoader);
-						classLoaders.put(sp.getID(), ucl); // save for later
-						// use...
-					}
+					ClassLoader ucl = getClassLoader(sp);
 
 					// What's the protection domain of this class?
 					// ProtectionDomain protectionDomain =
@@ -217,6 +226,40 @@ public class JobEntryLoader
 		{
 			throw new KettleStepLoaderException("No valid step/plugin specified (plugin=null).");
 		}
+	}
+
+	private ClassLoader getClassLoader(JobPlugin sp) throws FileSystemException, MalformedURLException
+	{
+		String jarfiles[] = sp.getJarfiles();
+		URL urls[] = new URL[jarfiles.length];
+		for (int i = 0; i < jarfiles.length; i++)
+		{
+			// use VFS HERE
+			FileSystemManager mgr = VFS.getManager();
+			FileObject jarfile = mgr.resolveFile(jarfiles[i]);
+			urls[i] = new URL(jarfile.getName().getURI());
+		}
+
+		// Load the class!!
+		// 
+		// First get the class loader: get the one that's the
+		// webstart classloader, not the thread classloader
+		//
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		// Construct a new URLClassLoader based on this one...
+		URLClassLoader ucl = (URLClassLoader) classLoaders.get(sp.getID());
+		if (ucl == null)
+		{
+			synchronized (classLoaders)
+			{
+				ucl = new URLClassLoader(urls, classLoader);
+
+				classLoaders.put(sp.getID(), ucl); // save for later use...
+			}
+		}
+
+		return ucl;
 	}
 
 	/**
