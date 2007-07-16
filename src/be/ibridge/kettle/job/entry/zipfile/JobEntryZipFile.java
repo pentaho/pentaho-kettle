@@ -71,6 +71,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	private String wildcardexclude;
 	private String sourcedirectory;
 	private String movetodirectory;
+	private boolean addfiletoresult;
 	
 
 	public JobEntryZipFile(String n)
@@ -84,6 +85,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		wildcardexclude=null;
 		sourcedirectory=null;
 		movetodirectory=null;
+		addfiletoresult = false;
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_ZIP_FILE);
 	}
@@ -117,6 +119,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("sourcedirectory",  sourcedirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",  movetodirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("afterzip",  afterzip));
+		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		return retval.toString();
 	}
 	
@@ -135,6 +138,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
 			sourcedirectory = XMLHandler.getTagValue(entrynode, "sourcedirectory");
 			movetodirectory = XMLHandler.getTagValue(entrynode, "movetodirectory");
+			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));	
 
 		}
 		catch(KettleXMLException xe)
@@ -158,6 +162,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
 			sourcedirectory = rep.getJobEntryAttributeString(id_jobentry, "sourcedirectory");
 			movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
+			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 		
 		}
 
@@ -184,6 +189,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcardexclude", wildcardexclude);
 			rep.saveJobEntryAttribute(id_job, getID(), "sourcedirectory", sourcedirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "movetodirectory", movetodirectory);
+			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -239,6 +245,14 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 				else if(ifzipfileexists==2 && Fileexists)
 				{
 					// the zip file exists and user want to do nothing
+					
+					if (addfiletoresult)
+					{
+						// Add file to result files name
+	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					}
+					
 					result.setResult( true );
 
 				}
@@ -519,8 +533,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							}
 						}
 					}
-                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
-                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					
+					
+					if (addfiletoresult)
+					{
+						// Add file to result files name
+	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL , KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
+	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+					}
+					
 					result.setResult( true );
 				}
 			}
@@ -611,4 +632,15 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return wildcardexclude;
 	}
+	public void setAddFileToResult(boolean addfiletoresultin) 
+	{
+		this.addfiletoresult = addfiletoresultin;
+	}
+	
+	public boolean isAddFileToResult() 
+	{
+		return addfiletoresult;
+	}
+
+	
 }
