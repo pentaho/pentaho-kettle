@@ -28,6 +28,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -168,7 +169,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	void getFields(RowMetaInterface r, String name, RowMetaInterface[] info)
+	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
 	{
 		if (getTargetField()!=null && getTargetField().length()>0)
         {
