@@ -671,7 +671,7 @@ public class ValueMeta implements ValueMetaInterface
     
     public static Boolean convertStringToBoolean(String string)
     {
-        return new Boolean( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) );
+        return new Boolean( "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equals(string) );
     }
     
     // BOOLEAN + NUMBER
