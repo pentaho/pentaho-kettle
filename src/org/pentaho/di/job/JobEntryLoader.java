@@ -15,8 +15,6 @@
 
 package org.pentaho.di.job;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -24,19 +22,15 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.pentaho.di.core.Const;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.VFS;
 import org.pentaho.di.core.config.ConfigManager;
 import org.pentaho.di.core.config.KettleConfig;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
-import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.plugins.PluginLoader;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Takes care of loading job-entries or job-entry plugins.
@@ -49,42 +43,29 @@ public class JobEntryLoader
 {
 	private static JobEntryLoader jobEntryLoader = null;
 
-	private String pluginDirectory[];
-
 	private List<JobPlugin> pluginList;
 
 	private Hashtable<String, URLClassLoader> classLoaders;
 
 	private boolean initialized;
 
-	private JobEntryLoader(String plugin_directory[])
+	private JobEntryLoader()
 	{
-		this.pluginDirectory = plugin_directory;
 		pluginList = new ArrayList<JobPlugin>();
 		classLoaders = new Hashtable<String, URLClassLoader>();
 		initialized = false;
 	}
 
-	public static final JobEntryLoader getInstance(String pluginDirectory[])
+	public static final JobEntryLoader getInstance()
 	{
 		if (jobEntryLoader != null)
 			return jobEntryLoader;
 
-		jobEntryLoader = new JobEntryLoader(pluginDirectory);
+		jobEntryLoader = new JobEntryLoader();
 
 		return jobEntryLoader;
 	}
 
-	public static synchronized final JobEntryLoader getInstance()
-	{
-		if (jobEntryLoader != null)
-			return jobEntryLoader;
-
-		jobEntryLoader = new JobEntryLoader(new String[] { Const.PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC,
-				Const.PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE });
-
-		return jobEntryLoader;
-	}
 
 	public boolean read()
 	{
@@ -126,137 +107,23 @@ public class JobEntryLoader
 
 	}
 
+	
 	/**
-	 * OLD METHOD public boolean readNatives() { for (int i=1;i<
-	 * JobEntryInterface.typeCode.length;i++) { String id =
-	 * JobEntryInterface.typeCode[i]; String long_desc =
-	 * JobEntryInterface.typeDesc[i]; String tooltip =
-	 * JobEntryInterface.type_tooltip_desc[i]; String iconfile =
-	 * Const.IMAGE_DIRECTORY + JobEntryInterface.icon_filename[i]; String
-	 * classname = JobEntryInterface.type_classname[i].getName(); String
-	 * directory = null; // Not used String jarfiles[] = null; // Not used
-	 * JobPlugin sp = new JobPlugin(JobPlugin.TYPE_NATIVE, id, long_desc,
-	 * tooltip, directory, jarfiles, iconfile, classname); pluginList.add(sp); //
-	 * System.out.println("Added job entry plugin id="+sp.getID()+",
-	 * description="+sp.getDescription()); }
-	 * 
-	 * return true; }
+	 * The 'new' method. Uses plugin loader, which uses VFS to load plugins.
 	 */
-
 	public boolean readPlugins()
 	{
-		for (int dirNr = 0; dirNr < pluginDirectory.length; dirNr++)
+		try
 		{
-			try
-			{
-				File f = new File(pluginDirectory[dirNr]);
-				if (f.isDirectory() && f.exists())
-				{
-					LogWriter log = LogWriter.getInstance();
-					log.logDetailed("JobEntryLoader", "Looking for plugins in directory: "
-							+ pluginDirectory[dirNr]);
-
-					String dirs[] = f.list();
-					for (int i = 0; i < dirs.length; i++)
-					{
-						String piDir = pluginDirectory[dirNr] + Const.FILE_SEPARATOR + dirs[i];
-
-						File pi = new File(piDir);
-						if (pi.isDirectory()) // Only consider directories
-												// here!
-						{
-							String pixml = pi.toString() + Const.FILE_SEPARATOR + "plugin.xml";
-							File fpixml = new File(pixml);
-
-							if (fpixml.canRead()) // Yep, files exists...
-							{
-								/*
-								 * Now read the xml file containing the jars
-								 * etc.
-								 */
-								try
-								{
-									DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-									DocumentBuilder db = dbf.newDocumentBuilder();
-									Document doc = db.parse(fpixml);
-
-									// Read the details from the XML file:
-									Node plugin = XMLHandler.getSubNode(doc, "plugin");
-
-									String id = XMLHandler.getTagAttribute(plugin, "id");
-									String description = XMLHandler.getTagAttribute(plugin, "description");
-									String iconfile = XMLHandler.getTagAttribute(plugin, "iconfile");
-									String tooltip = XMLHandler.getTagAttribute(plugin, "tooltip");
-									String classname = XMLHandler.getTagAttribute(plugin, "classname");
-
-									// String jarfile =
-									// InfoHandler.getTagAttribute(plugin,
-									// "jarfile");
-
-									// System.out.println("id="+id+",
-									// iconfile="+iconfile+",
-									// classname="+classname);
-
-									Node libsnode = XMLHandler.getSubNode(plugin, "libraries");
-									// System.out.println("libsnode="+Const.CR+libsnode);
-
-									int nrlibs = XMLHandler.countNodes(libsnode, "library");
-									// System.out.println("nrlibs="+nrlibs);
-
-									String jarfiles[] = new String[nrlibs];
-									for (int j = 0; j < nrlibs; j++)
-									{
-										Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j);
-										String jarfile = XMLHandler.getTagAttribute(libnode, "name");
-										jarfiles[j] = pi.toString() + Const.FILE_SEPARATOR + jarfile;
-									}
-
-									String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
-
-									JobPlugin sp = new JobPlugin(JobPlugin.TYPE_PLUGIN, id, description,
-											tooltip, dirs[i], jarfiles, iconFilename, classname);
-
-									/*
-									 * If the job plugin is not yet in the list
-									 * with the specified ID, just add it. If
-									 * the job plugin is already in the list,
-									 * overwrite with the latest version. Note
-									 * that you can overwrite standard steps
-									 * with plugins and standard plugins with
-									 * user plugins in the .kettle directory.
-									 */
-									if (findJobPluginWithID(id) == null)
-									{
-										pluginList.add(sp);
-										// System.out.println("Added job entry
-										// plugin id="+sp.getID()+",
-										// description="+sp.getDescription());
-									} else
-									{
-										int idx = pluginList.indexOf(sp);
-										pluginList.set(idx, sp);
-										// System.out.println("Replaced job
-										// entry plugin id="+sp.getID()+",
-										// description="+sp.getDescription());
-									}
-								} catch (Exception e)
-								{
-									log
-											.logError(toString(), "Error reading plugin XML file: "
-													+ e.toString());
-									log.logError(toString(), Const.getStackTracker(e));
-									return false;
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception e)
-			{
-				System.out.println("Couldn't find directory [" + pluginDirectory[dirNr] + "]");
-			}
+			PluginLoader loader = new PluginLoader();
+			loader.load("plugins-config");
+			pluginList.addAll(loader.doConfig());
+			return true;
+		} catch (KettleConfigException e)
+		{
+			e.printStackTrace();
+			return false;
 		}
-		return true;
 	}
 
 	public JobEntryInterface getJobEntryClass(String desc) throws KettleStepLoaderException
@@ -285,8 +152,10 @@ public class JobEntryLoader
 					URL urls[] = new URL[jarfiles.length];
 					for (int i = 0; i < jarfiles.length; i++)
 					{
-						File jarfile = new File(jarfiles[i]);
-						urls[i] = jarfile.toURI().toURL();
+						//use VFS HERE
+						FileSystemManager mgr = VFS.getManager();
+						FileObject jarfile = mgr.resolveFile(jarfiles[i]);
+						urls[i] = new URL(jarfile.getName().getURI());
 					}
 
 					// Load the class!!
@@ -302,7 +171,7 @@ public class JobEntryLoader
 					{
 						ucl = new URLClassLoader(urls, classLoader);
 						classLoaders.put(sp.getID(), ucl); // save for later
-															// use...
+						// use...
 					}
 
 					// What's the protection domain of this class?
@@ -340,9 +209,6 @@ public class JobEntryLoader
 			} catch (IllegalAccessException e)
 			{
 				throw new KettleStepLoaderException("Illegal access to class", e);
-			} catch (MalformedURLException e)
-			{
-				throw new KettleStepLoaderException("Malformed URL", e);
 			} catch (Throwable e)
 			{
 				throw new KettleStepLoaderException("Unexpected error loading class", e);
