@@ -4,6 +4,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.pentaho.di.core.config.PropertySetter;
 import org.pentaho.di.core.exception.KettleConfigException;
 
+/**
+ * Just a simple bean-style class to mediate plugin configuration.
+ * 
+ * @author Alex Silva
+ *
+ */
 public class PluginConfig
 {
 	private String id;

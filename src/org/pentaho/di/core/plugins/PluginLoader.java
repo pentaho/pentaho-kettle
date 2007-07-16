@@ -24,6 +24,19 @@ import org.pentaho.di.job.JobPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+/**
+ * This class handles all plugin loading steps for Kettle/PDI. It uses the
+ * ConfigManager class to load <code>PluginConfig</code> objects, which
+ * contain all the location from where the plugin should be loaded.
+ * 
+ * Plugins are configured by modifying the kettle-plugins.xml file.
+ * 
+ * @see PluginConfig
+ * @see org.pentaho.di.job.JobEntryLoader
+ * 
+ * @author Alex Silva
+ * 
+ */
 public class PluginLoader
 {
 	private static final String PLUGIN_LOADER = "PluginLoader";
@@ -40,6 +53,14 @@ public class PluginLoader
 		plugins = new HashSet<JobPlugin>();
 	}
 
+	/**
+	 * Loads all plugins identified by the string passed. This method can be
+	 * called multiple times with different managers.
+	 * 
+	 * @param mgr
+	 *            The manager id, as defined in kettle-config.xml.
+	 * @throws KettleConfigException
+	 */
 	public void load(String mgr) throws KettleConfigException
 	{
 		ConfigManager<?> c = KettleConfig.getInstance().getManager(mgr);
@@ -56,7 +77,13 @@ public class PluginLoader
 			plugins.add(job);
 		}
 	}
-
+	
+	/**
+	 * This method does the actual plugin configuration and should be called after load()
+	 * 
+	 * @return a collection containing the <code>JobPlugin</code> objects loaded.
+	 * @throws KettleConfigException
+	 */
 	public Collection<JobPlugin> doConfig() throws KettleConfigException
 	{
 		synchronized (configs)
@@ -71,7 +98,10 @@ public class PluginLoader
 					FileObject fobj = mgr.resolveFile(base, plugin.getLocation());
 					if (fobj.isReadable())
 					{
-						boolean isJar = fobj.getName().getURI().endsWith("jar!/");
+						String name = fobj.getName().getURI();
+						int jindex = name.indexOf(".jar");
+						int nlen = name.length();
+						boolean isJar = jindex == nlen - 4 || jindex == nlen - 6;
 
 						try
 						{
@@ -140,8 +170,9 @@ public class PluginLoader
 
 			if (xml != null && xml.isReadable())
 			{
-				//System.out.println("The plugin xml is for " + parent + " is " + xml + " I can read: "
-				//		+ xml.isReadable());
+				// System.out.println("The plugin xml is for " + parent + " is "
+				// + xml + " I can read: "
+				// + xml.isReadable());
 
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
@@ -161,11 +192,11 @@ public class PluginLoader
 					Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j);
 					String jarfile = XMLHandler.getTagAttribute(libnode, "name");
 					jarfiles[j] = parent.getChild(jarfile).getURL().getFile();
-					//System.out.println("jar files=" + jarfiles[j]);
+					// System.out.println("jar files=" + jarfiles[j]);
 				}
 
 				String iconFilename = parent.getChild(iconfile).getURL().getFile();
-				//System.out.println("iconfile=" + iconFilename);
+				// System.out.println("iconfile=" + iconFilename);
 				JobPlugin sp = new JobPlugin(JobPlugin.TYPE_PLUGIN, id, description, tooltip, parent
 						.getName().getURI(), jarfiles, iconFilename, classname);
 
@@ -179,7 +210,13 @@ public class PluginLoader
 
 		throw new KettleConfigException("Unable to read plugin.xml from " + parent);
 	}
-
+	
+	/**
+	 * "Deploys" the jar file plugin.
+	 * @param parent
+	 * @return
+	 * @throws FileSystemException
+	 */
 	private FileObject explodeJar(FileObject parent) throws FileSystemException
 	{
 		// By Alex, 7/13/07
@@ -189,14 +226,14 @@ public class PluginLoader
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4735639
 		// 
 		// We do so by exploding the jar, sort of like deploying it
-		FileObject dest = VFS.getManager().resolveFile(Const.getKettleDirectory()+"/work");
+		FileObject dest = VFS.getManager().resolveFile(Const.getKettleDirectory() + "/work");
 		dest.createFolder();
 		FileObject destFile = dest.resolveFile(parent.getName().getBaseName());
 		destFile.createFolder();
 		// force VFS to treat it as a jar file explicitly with children,
 		// etc. and copy
-		destFile.copyFrom(!(parent instanceof JarFileObject)?VFS.getManager().resolveFile("jar:" + parent.getName().getURI()):parent,
-				new AllFileSelector());
+		destFile.copyFrom(!(parent instanceof JarFileObject) ? VFS.getManager().resolveFile(
+				"jar:" + parent.getName().getURI()) : parent, new AllFileSelector());
 
 		return destFile;
 	}
