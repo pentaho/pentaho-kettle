@@ -1,6 +1,6 @@
 package org.pentaho.di.trans.steps.denormaliser;
 
-import be.ibridge.kettle.core.value.Value;
+import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * Contains the properties of the target field, conversion mask, type, aggregation method, etc.
@@ -213,7 +213,7 @@ public class DenormaliserTargetField
      */
     public String getTargetTypeDesc()
     {
-        return Value.getTypeDesc(targetType);
+        return ValueMeta.getTypeDesc(targetType);
     }
     
     /**
@@ -222,7 +222,7 @@ public class DenormaliserTargetField
      */
     public void setTargetType(String typeDesc)
     {
-        targetType=Value.getType(typeDesc);
+        targetType=ValueMeta.getType(typeDesc);
     }
     
 
