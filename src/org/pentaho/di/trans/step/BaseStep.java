@@ -1139,17 +1139,7 @@ public class BaseStep extends Thread implements VariableSpace
         if (safeModeEnabled)
         {
             safeModeChecking(inputRowMeta); // Extra checking 
-        }
-        
-        if ( row != null )
-        {
-        	// Notify all rowlisteners...
-        	for (int i = 0; i < rowListeners.size(); i++)
-        	{
-        		RowListener rowListener = (RowListener) rowListeners.get(i);
-        		rowListener.rowReadEvent(inputRowMeta, row);
-        	}
-        }
+        } 
 
         // Check the rejection rates etc. as well.
         verifyRejectionRates();
