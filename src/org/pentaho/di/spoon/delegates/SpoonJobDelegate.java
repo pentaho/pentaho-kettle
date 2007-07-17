@@ -204,7 +204,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					TransMeta.class, String.class };
 			Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, transMeta, stepName };
 			Constructor<?> dialogConstructor;
-			dialogClass = Class.forName(dialogClassName);
+			dialogClass = stepMeta.getClass().getClassLoader().loadClass(dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
