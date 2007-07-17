@@ -409,13 +409,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     }
                     candidate = null;
                     selected_steps = null;
-                    last_button = 0;
                     redraw();
                 }
                 // Did we select a region on the screen? Mark steps in region as
                 // selected
                 //
                 else
+                {
                     if (selrect != null)
                     {
                         selrect.width = real.x - selrect.x;
@@ -429,6 +429,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     // Clicked on an icon?
                     //
                     else
+                    {
                         if (selected_step != null)
                         {
                             if (e.button == 1)
@@ -512,7 +513,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                         }
 
                         // Notes?
-                        else
+                        else 
+                        {
                             if (selected_note != null)
                             {
                                 if (e.button == 1)
@@ -558,6 +560,11 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                                 selected_step = null;
                                 selected_note = null;
                             }
+                        }
+                    }
+                }
+                
+                last_button = 0;
             }
         });
 
@@ -577,8 +584,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 
-                setToolTip(real.x, real.y);
-
+                if (last_button==0) setToolTip(real.x, real.y);
+                
                 // 
                 // First see if the icon we clicked on was selected.
                 // If the icon was not selected, we should unselect all other
@@ -1735,6 +1742,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         if (stepMeta != null) // We clicked on a Step!
         {
             // Also: set the tooltip!
+        	// 
             if (stepMeta.getDescription() != null)
             {
                 String desc = stepMeta.getDescription();
@@ -1769,7 +1777,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             		if (areaOwner.contains(x, y)) {
 	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteInputSteps") ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
-	            			if (tip.length()==0) tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
 	            				tip.append(remoteStep.toString()).append(Const.CR);
 	            			}
@@ -1777,10 +1785,23 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	            		}
 	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteOutputSteps") ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
-	            			if (tip.length()==0) tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
 	            				tip.append(remoteStep.toString()).append(Const.CR);
 	            			}
+	            		}
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("start") ) {
+	            			StepMeta step = (StepMeta) areaOwner.getParent();
+	            			tip.append("Step partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
+	            			if (step.getTargetStepPartitioningMeta()!=null) {
+	            				tip.append(Const.CR).append(Const.CR).append("TARGET: "+step.getTargetStepPartitioningMeta().toString()).append(Const.CR);
+	            			}
+	            		}
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("end") ) {
+	            			StepMeta step = (StepMeta) areaOwner.getParent();
+	            			tip.append("Target partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
+	            			tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
 	            		}
             		}
             	}

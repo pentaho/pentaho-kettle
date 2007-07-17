@@ -75,6 +75,7 @@ public class AddTransServlet extends HttpServlet
             
             // Parse the XML, create a transformation configuration
             //
+            // System.out.println(xml);
             TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
             TransMeta transMeta = transConfiguration.getTransMeta();
             

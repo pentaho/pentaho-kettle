@@ -14,7 +14,7 @@ public interface SpoonInterface {
     public static final String STRING_STEPS           = Messages.getString("Spoon.STRING_STEPS");           // Steps
     public static final String STRING_JOB_ENTRIES     = Messages.getString("Spoon.STRING_JOB_ENTRIES");     // Job entries
     public static final String STRING_HOPS            = Messages.getString("Spoon.STRING_HOPS");            // Hops
-    public static final String STRING_PARTITIONS      = Messages.getString("Spoon.STRING_PARTITIONS");      // Database Partition schemas
+    public static final String STRING_PARTITIONS      = Messages.getString("Spoon.STRING_PARTITIONS");      // Partition schemas
     public static final String STRING_SLAVES          = Messages.getString("Spoon.STRING_SLAVES");          // Slave servers
     public static final String STRING_CLUSTERS        = Messages.getString("Spoon.STRING_CLUSTERS");        // Cluster Schemas
     public static final String STRING_TRANS_BASE      = Messages.getString("Spoon.STRING_BASE");            // Base step types

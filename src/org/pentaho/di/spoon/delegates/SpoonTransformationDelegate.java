@@ -917,27 +917,20 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// Then the slaves...
 			//
 			SlaveServer slaves[] = transSplitter.getSlaveTargets();
-			for (int i = 0; i < slaves.length; i++)
-			{
+			for (int i = 0; i < slaves.length; i++) {
 				TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
 				if (show)
 					addTransGraph(slaveTrans);
-				if (post)
-				{
-					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, spoon
-							.getExecutionConfiguration());
-					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration()
-							.getVariables();
+				if (post) {
+					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, spoon.getExecutionConfiguration());
+					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
 					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
 					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[i].getName());
 					variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-					String slaveReply = slaves[i].sendXML(transConfiguration.getXML(),
-							AddTransServlet.CONTEXT_PATH + "/?xml=Y");
+					String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
 					WebResult webResult = WebResult.fromXMLString(slaveReply);
-					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-					{
-						throw new KettleException("An error occurred sending a slave transformation: "
-								+ webResult.getMessage());
+					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
+						throw new KettleException("An error occurred sending a slave transformation: " + webResult.getMessage());
 					}
 				}
 			}

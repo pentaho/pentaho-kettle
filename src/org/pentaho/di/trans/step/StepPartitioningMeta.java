@@ -30,6 +30,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public StepPartitioningMeta()
     {
         method = PARTITIONING_METHOD_NONE;
+        partitionSchema = new PartitionSchema();
     }
     
     /**
@@ -38,7 +39,6 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      */
     public StepPartitioningMeta(int method, String fieldName, PartitionSchema partitionSchema)
     {
-        super();
         this.method = method;
         this.fieldName = fieldName;
         this.partitionSchema = partitionSchema;
@@ -46,7 +46,26 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     
     public Object clone()
     {
-       return new StepPartitioningMeta(method, fieldName, partitionSchema!=null ? (PartitionSchema) partitionSchema.clone() : null);
+       StepPartitioningMeta stepPartitioningMeta = new StepPartitioningMeta(method, fieldName, partitionSchema!=null ? (PartitionSchema) partitionSchema.clone() : null);
+       stepPartitioningMeta.partitionSchemaName = partitionSchemaName;
+       return stepPartitioningMeta;
+    }
+    
+    /**
+     * @return true if the partition schema names are the same.
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	StepPartitioningMeta meta = (StepPartitioningMeta) obj;
+    	return partitionSchemaName.equalsIgnoreCase(meta.partitionSchemaName);
+    }
+    
+    @Override
+    public String toString() {
+    	switch(method) {
+    	case PARTITIONING_METHOD_MOD : return getMethodDescription()+" : "+fieldName+"@"+partitionSchema.getName();
+    	default: return getMethodDescription();
+    	}
     }
 
     /**
@@ -96,9 +115,14 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     
     public StepPartitioningMeta(Node partitioningMethodNode)
     {
+    	this();
         method = getMethod( XMLHandler.getTagValue(partitioningMethodNode, "method") );
         fieldName = XMLHandler.getTagValue(partitioningMethodNode, "field_name");
         partitionSchemaName = XMLHandler.getTagValue(partitioningMethodNode, "schema_name");
+        
+        if (method!=PARTITIONING_METHOD_NONE && Const.isEmpty(partitionSchemaName)) {
+        	throw new RuntimeException("bohoo!");
+        }
     }
     
     public String getMethodCode()
@@ -162,7 +186,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      * Set the partitioning schema after loading from XML or repository
      * @param partitionSchemas the list of partitioning schemas
      */
-    public void setPartitionSchemaAfterLoading(List<PartitionSchema> partitionSchemas)
+    public void setPartitionSchemaAfterLoading(List<PartitionSchema> partitionSchemas) throws KettleException
     {
         partitionSchema=null; // sorry, not found!
         
@@ -173,6 +197,16 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
             {
                 partitionSchema = schema; // found!
             }
+        }
+        
+        if (method!=PARTITIONING_METHOD_NONE && partitionSchema==null) {
+        	String message = "Unable to set partition schema for name ["+partitionSchemaName+"], method: "+getMethodDescription()+Const.CR;
+            for (int i=0;i<partitionSchemas.size() && partitionSchema==null;i++)
+            {
+                PartitionSchema schema = partitionSchemas.get(i);
+                message+="  --> "+schema.getName()+Const.CR;
+            }
+        	throw new KettleException(message);
         }
     }
 
@@ -192,6 +226,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     
     public StepPartitioningMeta(Repository rep, long id_step) throws KettleException
     {
+    	this();
         partitionSchemaName = rep.getStepAttributeString(id_step, "PARTITIONING_SCHEMA");
         String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");
         method = getMethod(methodCode);

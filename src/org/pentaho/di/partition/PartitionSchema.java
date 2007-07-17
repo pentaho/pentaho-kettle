@@ -1,5 +1,8 @@
 package org.pentaho.di.partition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
@@ -21,21 +24,21 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 
     private String   name;
 
-    private String[] partitionIDs;
+    private List<String> partitionIDs;
     private boolean shared;
     
     private long id;
 
     public PartitionSchema()
     {
-        partitionIDs=new String[] {};
+        partitionIDs=new ArrayList<String>();
     }
     
     /**
      * @param name
      * @param partitionIDs
      */
-    public PartitionSchema(String name, String[] partitionIDs)
+    public PartitionSchema(String name, List<String> partitionIDs)
     {
         this.name = name;
         this.partitionIDs = partitionIDs;
@@ -94,7 +97,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     /**
      * @return the partitionIDs
      */
-    public String[] getPartitionIDs()
+    public List<String> getPartitionIDs()
     {
         return partitionIDs;
     }
@@ -102,7 +105,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     /**
      * @param partitionIDs the partitionIDs to set
      */
-    public void setPartitionIDs(String[] partitionIDs)
+    public void setPartitionIDs(List<String> partitionIDs)
     {
         this.partitionIDs = partitionIDs;
     }
@@ -113,10 +116,10 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         
         xml.append("        <").append(XML_TAG).append(">").append(Const.CR);
         xml.append("          ").append(XMLHandler.addTagValue("name", name));
-        for (int i=0;i<partitionIDs.length;i++)
+        for (int i=0;i<partitionIDs.size();i++)
         {
             xml.append("          <partition>");
-            xml.append("            ").append(XMLHandler.addTagValue("id", partitionIDs[i]));
+            xml.append("            ").append(XMLHandler.addTagValue("id", partitionIDs.get(i)));
             xml.append("          </partition>");
         }
         xml.append("        </").append(XML_TAG).append(">").append(Const.CR);
@@ -128,11 +131,11 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         name = XMLHandler.getTagValue(partitionSchemaNode, "name");
         
         int nrIDs = XMLHandler.countNodes(partitionSchemaNode, "partition");
-        partitionIDs = new String[nrIDs];
+        partitionIDs = new ArrayList<String>();
         for (int i=0;i<nrIDs;i++)
         {
             Node partitionNode = XMLHandler.getSubNodeByNr(partitionSchemaNode, "partition", i);
-            partitionIDs[i] = XMLHandler.getTagValue(partitionNode, "id");
+            partitionIDs.add( XMLHandler.getTagValue(partitionNode, "id") );
         }
     }
 
@@ -158,9 +161,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         
         // Save the cluster-partition relationships
         //
-        for (int i=0;i<partitionIDs.length;i++)
+        for (int i=0;i<partitionIDs.size();i++)
         {
-            rep.insertPartition(getId(), partitionIDs[i]);
+            rep.insertPartition(getId(), partitionIDs.get(i));
         }
         
         // Save a link to the transformation to keep track of the use of this partition schema
@@ -183,10 +186,10 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         name = row.getString("NAME", null);
         
         long[] pids = rep.getPartitionIDs(id_partition_schema);
-        partitionIDs = new String[pids.length];
+        partitionIDs = new ArrayList<String>();
         for (int i=0;i<pids.length;i++)
         {
-            partitionIDs[i] = rep.getPartition(pids[i]).getString("PARTITION_ID", null);
+            partitionIDs.add( rep.getPartition(pids[i]).getString("PARTITION_ID", null) );
         }
     }
 

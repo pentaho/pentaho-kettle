@@ -94,7 +94,11 @@ public class WebServer
         // Add trans
         Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
         addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
-        
+
+        // Step port reservation
+        Context getPort = new Context(contexts, GetStepSocketServlet.CONTEXT_PATH, Context.SESSIONS);
+        getPort.addServlet(new ServletHolder(new GetStepSocketServlet(transformationMap)), "/*");
+
         server.setHandlers(new Handler[] { securityHandler, contexts });
 
         // Start execution

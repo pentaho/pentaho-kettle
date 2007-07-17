@@ -207,7 +207,7 @@ public class FixedInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleFileException("Exception reading line using NIO: " + e.toString());
+			throw new KettleFileException("Exception reading line using NIO: " + e.toString(), e);
 		}
 		
 	}

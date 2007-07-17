@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -434,7 +435,7 @@ public class RowMeta implements RowMetaInterface
 
     }
     
-    public RowMeta(DataInputStream inputStream) throws KettleFileException
+    public RowMeta(DataInputStream inputStream) throws KettleFileException, KettleEOFException
     {
         this();
         
@@ -442,6 +443,10 @@ public class RowMeta implements RowMetaInterface
         try
         {
             nr = inputStream.readInt();
+        }
+        catch (EOFException e) 
+        {
+        	throw new KettleEOFException("End of file while reading the number of metadata values in the row metadata", e);
         }
         catch (IOException e)
         {

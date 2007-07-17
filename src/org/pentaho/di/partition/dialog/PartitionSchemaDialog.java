@@ -221,11 +221,11 @@ public class PartitionSchemaDialog extends Dialog
 	private void refreshPartitions()
     {
         wPartitions.clearAll(false);
-        String[] partitionIDs = partitionSchema.getPartitionIDs();
-        for (int i=0;i<partitionIDs.length;i++)
+        List<String> partitionIDs = partitionSchema.getPartitionIDs();
+        for (int i=0;i<partitionIDs.size();i++)
         {
             TableItem item = new TableItem(wPartitions.table, SWT.NONE);
-            if (partitionIDs[i]!=null) item.setText(1, partitionIDs[i]);
+            item.setText( 1, partitionIDs.get(i) );
         }
         wPartitions.removeEmptyRows();
         wPartitions.setRowNums();
@@ -255,10 +255,10 @@ public class PartitionSchemaDialog extends Dialog
     {
         partitionSchema.setName(wName.getText());
         
-        String parts[] = new String[wPartitions.nrNonEmpty()];
-        for (int i=0;i<parts.length;i++)
+        List<String> parts = new ArrayList<String>();
+        for (int i=0;i<wPartitions.nrNonEmpty();i++)
         {
-            parts[i] = wPartitions.getNonEmpty(i).getText(1);
+            parts.add( wPartitions.getNonEmpty(i).getText(1) );
         }
         partitionSchema.setPartitionIDs(parts);
     }

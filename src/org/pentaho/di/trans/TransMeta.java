@@ -1953,7 +1953,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /**
-     * Read the database partitions in the repository and add them to this transformation if they are not yet present.
+     * Read the partitions in the repository and add them to this transformation if they are not yet present.
      * @param rep The repository to load from.
      * @param overWriteShared if an object with the same name exists, overwrite
      * @throws KettleException 
@@ -2280,12 +2280,6 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 {
                     getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
                 }                
-
-                // Have all partitioned step reference the correct partitioning schema
-                for (int i = 0; i < nrSteps(); i++)
-                {
-                    getStep(i).getStepPartitioningMeta().setPartitionSchemaAfterLoading(partitionSchemas);
-                }
                 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheDependenciesTask.Title")); //$NON-NLS-1$
                 long depids[] = rep.getTransDependencyIDs(getID());
@@ -2458,7 +2452,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
         retval.append("    ").append(XMLHandler.closeTag(XML_TAG_DEPENDENCIES)).append(Const.CR); //$NON-NLS-1$
 
-        // The database partitioning schemas...
+        // The partitioning schemas...
         //
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARTITIONSCHEMAS)).append(Const.CR); //$NON-NLS-1$
         for (int i = 0; i < partitionSchemas.size(); i++)
@@ -2752,9 +2746,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
                 StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
+                
                 // Check if the step exists and if it's a shared step.
                 // If so, then we will keep the shared version, not this one.
                 // The stored XML is only for backup purposes.
+                //
                 StepMeta check = findStep(stepMeta.getName());
                 if (check!=null)
                 {
@@ -2775,6 +2771,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
             
             // Read the error handling code of the steps...
+            //
             Node errorHandlingNode = XMLHandler.getSubNode(transnode, XML_TAG_STEP_ERROR_HANDLING);
             int nrErrorHandlers = XMLHandler.countNodes(errorHandlingNode, StepErrorMeta.XML_TAG);
             for (int i=0;i<nrErrorHandlers;i++)
@@ -2785,6 +2782,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
 
             // Have all StreamValueLookups, etc. reference the correct source steps...
+            //
             for (int i = 0; i < nrSteps(); i++)
             {
                 StepMeta stepMeta = getStep(i);
@@ -2793,6 +2791,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
 
             // Handle Hops
+            //
             Node ordernode = XMLHandler.getSubNode(transnode, XML_TAG_ORDER); //$NON-NLS-1$
             n = XMLHandler.countNodes(ordernode, TransHopMeta.XML_TAG); //$NON-NLS-1$
 
@@ -2812,18 +2811,23 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             Node infonode = XMLHandler.getSubNode(transnode, XML_TAG_INFO); //$NON-NLS-1$
 
             // Name
+            //
             name = XMLHandler.getTagValue(infonode, "name"); //$NON-NLS-1$
 
 			// description
+            //
 			description = XMLHandler.getTagValue(infonode, "description"); 
 
 			// extended description
+			//
 			extended_description = XMLHandler.getTagValue(infonode, "extended_description"); 
 
 			// trans version
+			//
 			trans_version = XMLHandler.getTagValue(infonode, "trans_version"); 
 
 			// trans status
+			//
 			trans_status = Const.toInt(XMLHandler.getTagValue(infonode, "trans_status"),-1); 
 
             /*
@@ -2883,6 +2887,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 // Check if the step exists and if it's a shared step.
                 // If so, then we will keep the shared version, not this one.
                 // The stored XML is only for backup purposes.
+                //
                 PartitionSchema check = findPartitionSchema(partitionSchema.getName());
                 if (check!=null)
                 {
@@ -2906,6 +2911,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                 if (stepPartitioningMeta!=null)
                 {
                     stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
+                }
+                StepPartitioningMeta targetStepPartitioningMeta = getStep(i).getTargetStepPartitioningMeta();
+                if (targetStepPartitioningMeta!=null)
+                {
+                    targetStepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
                 }
             }
 
@@ -3003,7 +3013,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         catch (KettleXMLException xe)
         {
             throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorReadingTransformation"), xe); //$NON-NLS-1$
-        }
+        } catch (KettleException e) {
+        	throw new KettleXMLException(e);
+		}
         finally
         {
         	initializeVariablesFrom(null);
@@ -3301,7 +3313,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
     
     /**
-     * Checks whether or not any of the database partitioning schemas have been changed.
+     * Checks whether or not any of the partitioning schemas have been changed.
      *
      * @return True if the partitioning schemas have been changed.
      */

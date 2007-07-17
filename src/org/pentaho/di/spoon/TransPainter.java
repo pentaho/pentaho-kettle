@@ -345,6 +345,7 @@ public class TransPainter
         // First draw an extra indicator for remote input steps...
         //
         if (!stepMeta.getRemoteInputSteps().isEmpty()) {
+            gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrInput = Integer.toString(stepMeta.getRemoteInputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
         	textExtent.x+=2; // add a tiny little bit of a margin
@@ -360,7 +361,7 @@ public class TransPainter
         	// Now we draw an arrow from the cube to the step...
         	// 
         	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(gc, screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8 );
+         	drawArrow(gc, screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8, null, null );
          	
             // Add to the list of areas...
             areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteInputSteps"));
@@ -369,6 +370,7 @@ public class TransPainter
         // Then draw an extra indicator for remote output steps...
         //
         if (!stepMeta.getRemoteOutputSteps().isEmpty()) {
+            gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrOutput = Integer.toString(stepMeta.getRemoteOutputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrOutput);
         	textExtent.x+=2; // add a tiny little bit of a margin
@@ -385,7 +387,7 @@ public class TransPainter
         	// This time, we start at the left side...
         	// 
         	gc.drawLine(point.x, point.y+textExtent.y/2, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2);
-         	drawArrow(gc, screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8 );
+         	drawArrow(gc, screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
 
          	// Add to the list of areas...
             areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteOutputSteps"));
@@ -419,10 +421,12 @@ public class TransPainter
         if (shadowsize > 0)
         {
             gc.setForeground(lightGray);
+            gc.setFont(GUIResource.getInstance().getFontGraph());
             gc.drawText(name, namePosition.x + shadowsize, namePosition.y + shadowsize, SWT.DRAW_TRANSPARENT);
         }
 
         gc.setForeground(black);
+        gc.setFont(GUIResource.getInstance().getFontGraph());
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
         boolean clustered=false;
@@ -432,19 +436,6 @@ public class TransPainter
         if (stepMeta.isPartitioned() && meta!=null)
         {
             partitioned=true;
-            String message = "P";
-            PartitionSchema schema = meta.getPartitionSchema();
-            if (schema!=null)
-            {
-                if (schema.getPartitionIDs()!=null && schema.getPartitionIDs().length>0)
-                {
-                    message+="x"+schema.getPartitionIDs().length;
-                }
-            }
-            
-            gc.setBackground(background);
-            gc.setForeground(black);
-            gc.drawText(message, screen.x - 5, screen.y - 5);
         }
         if (stepMeta.getClusterSchema()!=null)
         {
@@ -454,7 +445,7 @@ public class TransPainter
             
             gc.setBackground(background);
             gc.setForeground(black);
-            gc.drawText(message, screen.x - 5 + iconsize, screen.y - 5);
+            gc.drawText(message, screen.x + 3 + iconsize, screen.y - 8);
         }
         if (stepMeta.getCopies() > 1  && !partitioned && !clustered)
         {
@@ -486,7 +477,7 @@ public class TransPainter
         
         gc.setForeground(lightGray);
 
-        drawArrow(gc, line);
+        drawArrow(gc, line, null, null);
     }
 
     private void drawLine(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
@@ -570,9 +561,8 @@ public class TransPainter
         gc.setLineStyle(linestyle);
         gc.setLineWidth(activeLinewidth);
         
+        drawArrow(gc, line, null, ts);
         
-        drawArrow(gc, line);
-
         if (hi.split) gc.setLineWidth(linewidth);
 
         gc.setForeground(black);
@@ -643,7 +633,7 @@ public class TransPainter
         return new int[] { x1, y1, x2, y2 };
     }
 
-    private void drawArrow(GC gc, int line[])
+    private void drawArrow(GC gc, int line[], Object startObject, Object endObject)
     {
     	double theta = Math.toRadians(10); // arrowhead sharpness
         int size = 30 + (linewidth - 1) * 5; // arrowhead length
@@ -651,10 +641,10 @@ public class TransPainter
         Point screen_from = real2screen(line[0], line[1], offset);
         Point screen_to = real2screen(line[2], line[3], offset);
         
-        drawArrow(gc, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, size, -1);
+        drawArrow(gc, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, size, -1, startObject, endObject);
     }
 
-    private void drawArrow(GC gc, int x1, int y1, int x2, int y2, double theta, int size, double factor)
+    private void drawArrow(GC gc, int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject)
     {
         
         int mx, my;
@@ -680,9 +670,9 @@ public class TransPainter
         if (factor<0)
         {
 	        if (dist >= 2 * iconsize)
-	            factor = 1.5;
+	             factor = 1.5;
 	        else
-	            factor = 1.2;
+	             factor = 1.2;
         }
 
         // in between 2 points
@@ -708,6 +698,49 @@ public class TransPainter
         gc.setBackground(fore);
         gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
         gc.setBackground(back);
+
+        // Show message at the start/end of the arrow
+        // Only show this message when the length is sufficiently long
+        //
+        if (startObject!=null && startObject instanceof StepMeta) {
+        	String startMessage = null;
+        	StepMeta fs = (StepMeta) startObject;
+            if ( fs.isPartitioned()) {
+            	startMessage = "x"+fs.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().size()+Const.CR+fs.getStepPartitioningMeta().getPartitionSchema().getName();
+            }
+	        if (startMessage!=null && dist >= 2 * iconsize) {
+	        	gc.setFont(GUIResource.getInstance().getFontTiny());
+	        	gc.setForeground(GUIResource.getInstance().getColorRed());
+	        	factor = 0.50;
+	        	mx = (int) (x1 + factor * (x2 - x1) / 2);
+	            my = (int) (y1 + factor * (y2 - y1) / 2);
+	            org.eclipse.swt.graphics.Point textExtent = gc.textExtent(startMessage);
+	            gc.drawText(startMessage, mx-textExtent.x/3, my-textExtent.y/2, true);
+	            gc.setForeground(GUIResource.getInstance().getColorLightGray());
+	            gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
+	            
+	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, fs, "start"));
+	        }
+        }
+        if (endObject!=null && endObject instanceof StepMeta) {
+            String endMessage = null;
+            StepMeta ts = (StepMeta) endObject;
+            if (ts.isPartitioned()) {
+            	endMessage = "x"+ts.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().size()+Const.CR+ts.getStepPartitioningMeta().getPartitionSchema().getName();
+            }
+            if (endMessage!=null && dist >= 2 * iconsize) {
+            	gc.setFont(GUIResource.getInstance().getFontTiny());
+            	gc.setForeground(GUIResource.getInstance().getColorRed());
+            	factor = 1.55;
+            	mx = (int) (x1 + factor * (x2 - x1) / 2);
+                my = (int) (y1 + factor * (y2 - y1) / 2);
+                org.eclipse.swt.graphics.Point textExtent = gc.textExtent(endMessage);
+                gc.drawText(endMessage, mx-textExtent.x/3, my-textExtent.y/2, true);
+                gc.setForeground(GUIResource.getInstance().getColorLightGray());
+                gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
+	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, ts, "end"));
+            }
+        }
     }
 
 }

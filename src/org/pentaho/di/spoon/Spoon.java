@@ -1677,7 +1677,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
     public void newDatabasePartitioningSchema() {
-		newDatabasePartitioningSchema((TransMeta) selectionObjectParent);
+		newPartitioningSchema((TransMeta) selectionObjectParent);
 	}
 
     public void newClusteringSchema() {
@@ -2015,7 +2015,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (selection.equals(JobMeta.class)) newJobFile();
 			if (selection.equals(TransHopMeta.class)) newHop((TransMeta) parent);
 			if (selection.equals(DatabaseMeta.class)) delegates.db.newConnection();
-			if (selection.equals(PartitionSchema.class)) newDatabasePartitioningSchema((TransMeta) parent);
+			if (selection.equals(PartitionSchema.class)) newPartitioningSchema((TransMeta) parent);
 			if (selection.equals(ClusterSchema.class)) newClusteringSchema((TransMeta) parent);
 			if (selection.equals(SlaveServer.class)) newSlaveServer((TransMeta) parent);
 		}
@@ -5459,10 +5459,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 
 	/**
-     * This creates a new database partitioning schema, edits it and adds it to the transformation metadata
+     * This creates a new partitioning schema, edits it and adds it to the transformation metadata
 	 * 
 	 */
-	public void newDatabasePartitioningSchema(TransMeta transMeta)
+	public void newPartitioningSchema(TransMeta transMeta)
 	{
 		PartitionSchema partitionSchema = new PartitionSchema();
 

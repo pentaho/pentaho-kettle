@@ -68,7 +68,7 @@ public class PrintSpool
 		printerdata = pd.open();
 		if (printerdata!=null)
 		{
-			printer.dispose();
+			if (printer!=null) printer.dispose();
 			printer = new Printer(printerdata);
 		}
 		

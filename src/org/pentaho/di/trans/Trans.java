@@ -42,7 +42,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.cluster.TransSplitter;
@@ -102,7 +101,7 @@ public class Trans implements VariableSpace
     private VariableSpace variables = new Variables();
 
 	/**
-	 * An arraylist of all the rowsets
+	 * A list of all the row sets
 	 */
 	private List<RowSet> rowsets;
 
@@ -398,10 +397,10 @@ public class Trans implements VariableSpace
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())
                     {
-                        String[] partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-                        if (partitionIDs!=null && partitionIDs.length>0) 
+                    	List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+                        if (partitionIDs!=null && partitionIDs.size()>0) 
                         {
-                            step.setPartitionID(partitionIDs[c]); // Pass the partition ID to the step
+                            step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID to the step
                         }
                     }
 
@@ -487,10 +486,7 @@ public class Trans implements VariableSpace
             BaseStep baseStep = (BaseStep)sid.step;
 
             baseStep.setPartitioned(stepMeta.isPartitioned());
-            StepPartitioningMeta thisPartitioningMeta = stepMeta.getStepPartitioningMeta(); 
-            PartitionSchema thisSchema = thisPartitioningMeta.getPartitionSchema();
-            String thisFieldName = stepMeta.getStepPartitioningMeta().getFieldName();
-
+            
             // Now let's take a look at the source and target relation
             //
             // If this source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
@@ -498,80 +494,35 @@ public class Trans implements VariableSpace
             // If both steps are partitioned on a different method or schema, we need to re-partition as well.
             // If both steps are not partitioned, we don't need to re-partition
             //
-            int nextPartitioned = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
-            boolean samePartitioned = thisSchema!=null;
-            boolean sameFieldName   = thisFieldName!=null;
-            int nrNext = transMeta.findNrNextSteps(stepMeta);
-            for (int p=0;p<nrNext;p++)
-            {
-                StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
-                StepPartitioningMeta nextPartitioningMeta = nextStep.getStepPartitioningMeta();
-                if (nextStep.isPartitioned()) 
-                {
-                    nextPartitioned = nextStep.getStepPartitioningMeta().getMethod();
-                }
-                else
-                {
-                    // This step is partitioned for a certain schema
-                    // The next one is using a different one.
-                    if (thisSchema!=null && !thisSchema.equals( nextStep.getStepPartitioningMeta().getPartitionSchema() ) )
-                    {
-                        samePartitioned = false;
-                    }
-                    // This partitioning is done on a certain field (MOD).
-                    // The next one is using a different one. (or none)
-                    if (thisFieldName !=null && !thisFieldName.equalsIgnoreCase( nextStep.getStepPartitioningMeta().getFieldName() ) )
-                    {
-                        sameFieldName = false;
-                    }
-                    // The partitioning method is different...
-                    //
-                    if (thisPartitioningMeta!=null && nextPartitioningMeta!=null && thisPartitioningMeta.getMethod()!=nextPartitioningMeta.getMethod())
-                    {
-                        samePartitioned = false;
-                    }
-                }
+            StepPartitioningMeta nextPartitioned = stepMeta.getTargetStepPartitioningMeta();
+            if (nextPartitioned==null) {
+	            int nrNext = transMeta.findNrNextSteps(stepMeta);
+	            for (int p=0;p<nrNext;p++)
+	            {
+	                StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
+	                if (nextStep.isPartitioned()) 
+	                {
+	                    nextPartitioned = nextStep.getStepPartitioningMeta();
+	                }
+	            }
             }
             
+            stepMeta.setTargetStepPartitioningMeta(nextPartitioned);
             baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
             
-            if ( ( !stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE ) || // This one is not partitioned & the next one is
-                 ( stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && !samePartitioned) || // both partitioned, other schema
-                 ( stepMeta.isPartitioned() && nextPartitioned!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && !sameFieldName)  // both partitioned, other field partitioned on
-               )
-            {
-                baseStep.setRepartitioning(nextPartitioned); // in those cases we need to re-partition.
+            if (nextPartitioned!=null) {
+            	baseStep.setRepartitioning(nextPartitioned.getMethod());
             }
 
-            // If the previous step is partitioned and this step is not we have to do a sorted merge
-            // 
-            // The other condition is of-course that the previous step needs to be sorted on the partitioning column.
-            // TODO: make this separate from the partitioning algorithm, keep sorted partitioned data sorted is nice though.
-            // 
-            boolean prevPartitioned = true;
-            int nrPrev = transMeta.findNrPrevSteps(stepMeta);
-            for (int p=0;p<nrPrev;p++)
-            {
-                StepMeta prevStep = transMeta.findPrevStep(stepMeta, p);
-                if (!prevStep.isPartitioned()) prevPartitioned = false;
-            }
-            
-            baseStep.setPartitionMerging(false);
-
-            if (  prevPartitioned && !stepMeta.isPartitioned() )
-            {
-                baseStep.setPartitionMerging(true);
-            }
-            
             // We want to cache the target rowsets for doing the re-partitioning
             // This is needed to speed up things.
             //
             if (stepMeta.isPartitioned())
             {
-                String[] partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-                if (partitionIDs!=null && partitionIDs.length>0)
+            	List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+                if (partitionIDs!=null && partitionIDs.size()>0)
                 {
-                    baseStep.setPartitionID(partitionIDs[sid.copy]);
+                    baseStep.setPartitionID(partitionIDs.get(sid.copy));
                 }
             }
         }
@@ -1825,7 +1776,7 @@ public class Trans implements VariableSpace
         this.running = running;
     }
     
-    public static final TransSplitter executeClustered(TransMeta transMeta, TransExecutionConfiguration executionConfiguration) throws KettleException 
+    public static final TransSplitter executeClustered(TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException 
     {
         try
         {
@@ -1857,26 +1808,54 @@ public class Trans implements VariableSpace
             
             // Then the slaves...
             //
-            SlaveServer slaves[] = transSplitter.getSlaveTargets();
+            final SlaveServer[] slaves = transSplitter.getSlaveTargets();
+            final Thread[]      threads = new Thread[slaves.length];
+            final Throwable[]   errors = new Throwable[slaves.length];
+            
             for (int i=0;i<slaves.length;i++)
             {
-                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+            	final int index = i;
+            	
+                final TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                 if (executionConfiguration.isClusterPosting())
                 {
-                    TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-                    Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
-                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
-                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[i].getName());
-					variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-                    String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
-                    WebResult webResult = WebResult.fromXMLString(slaveReply);
-                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-                    {
-                        throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
-                    }
+                	Runnable runnable = new Runnable() {
+						public void run() {
+							try {
+			                    TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
+			                    Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+			                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(index));
+			                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[index].getName());
+								variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
+			                    String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
+			                    WebResult webResult = WebResult.fromXMLString(slaveReply);
+			                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+			                    {
+			                        throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
+			                    }
+							}
+							catch(Throwable t) {
+								errors[index] = t;
+							}
+						}
+					};
+					threads[i] = new Thread(runnable);
                 }
             }
             
+            // Wait until the slaves report back...
+            // Sending the XML over is the heaviest part
+            // Later we can do the others as well...
+            //
+            for (int i=0;i<threads.length;i++) {
+            	if (threads[i]!=null) {
+            		threads[i].join();
+            		if (errors[i]!=null) throw new KettleException(errors[i]);
+            	}
+            }
+            
+            // 
+            //
             if (executionConfiguration.isClusterPosting())
             {
                 if (executionConfiguration.isClusterPreparing())

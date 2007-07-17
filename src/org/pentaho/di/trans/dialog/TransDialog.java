@@ -1358,10 +1358,10 @@ public class TransDialog extends Dialog
         {
             PartitionSchema partitionSchema = (PartitionSchema)schemas.get(previousSchemaIndex);
             partitionSchema.setName(wSchemaName.getText());
-            String[] ids = new String[wPartitions.nrNonEmpty()];
-            for (int i=0;i<ids.length;i++)
+            java.util.List<String> ids = new ArrayList<String>();
+            for (int i=0;i<wPartitions.nrNonEmpty();i++)
             {
-                ids[i] = wPartitions.getNonEmpty(i).getText(1);
+                ids.add( wPartitions.getNonEmpty(i).getText(1) );
             }
             partitionSchema.setPartitionIDs(ids);
         }
@@ -1378,7 +1378,7 @@ public class TransDialog extends Dialog
         name = askName.open();
         if (name!=null)
         {
-            PartitionSchema schema = new PartitionSchema(name, new String[] {});
+            PartitionSchema schema = new PartitionSchema(name, new ArrayList<String>());
             schemas.add(schema);
             wSchemaList.add(name);
             previousSchemaIndex = schemas.size()-1; 
@@ -1487,12 +1487,12 @@ public class TransDialog extends Dialog
 
             PartitionSchema partitionSchema = (PartitionSchema)schemas.get(wSchemaList.getSelectionIndex());
             wSchemaName.setText(partitionSchema.getName());
-            String[] partitionIDs = partitionSchema.getPartitionIDs();
+            java.util.List<String> partitionIDs = partitionSchema.getPartitionIDs();
             
-            for (int i=0;i<partitionIDs.length;i++)
+            for (int i=0;i<partitionIDs.size();i++)
             {
                 TableItem tableItem = new TableItem(wPartitions.table, SWT.NONE);
-                tableItem.setText(1, partitionIDs[i]);
+                tableItem.setText(1, partitionIDs.get(i));
             }
             wPartitions.removeEmptyRows();
             wPartitions.setRowNums();

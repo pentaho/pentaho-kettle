@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.core.Const;
@@ -256,11 +257,6 @@ public class BaseStep extends Thread implements VariableSpace
     private int                          repartitioning;
 
     /**
-     * True if the step needs to perform a sorted merge on the incoming partitioned data
-     */
-    private boolean                      partitionMerging;
-
-    /**
      * The index of the column to partition or -1 if not known yet (before first row)
      */
     private int                          partitionColumnIndex;
@@ -274,7 +270,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * Cache for the partition IDs
      */
-    private static String[]              partitionIDs;
+    private static List<String> partitionIDs;
 
     /**
      * step partitioning information of the NEXT step
@@ -804,55 +800,29 @@ public class BaseStep extends Thread implements VariableSpace
                 //
                 if (partitionColumnIndex < 0)
                 {
-                    StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
-                    if (nextSteps == null || nextSteps.length == 0) { throw new KettleStepException(
-                            "Re-partitioning is enabled but no next steps could be found: developer error!"); }
-    
-                    // Take the partitioning logic from one of the next steps
-                    nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
-    
-                    // What's the column index of the partitioning fieldname?
+                    nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
+                    System.out.println(stepMeta.getName()+" : next partitioning schema = "+nextStepPartitioningMeta.toString());
+                    
+                    // What's the column index of the partitioning field name?
+                    //
                     partitionColumnIndex = rowMeta.indexOfValue(nextStepPartitioningMeta.getFieldName());
-                    if (partitionColumnIndex < 0) { throw new KettleStepException("Unable to find partitioning field name ["
-                            + nextStepPartitioningMeta.getFieldName() + "] in the output row : " + row); }
+                    if (partitionColumnIndex < 0) { 
+                    	throw new KettleStepException("Unable to find partitioning field name [" + nextStepPartitioningMeta.getFieldName() + "] in the output row..." + rowMeta); 
+                    }
     
                     // Cache the partition IDs as well...
-                    partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+                    partitionIDs = nextStepPartitioningMeta.getPartitionSchema().getPartitionIDs();
     
-                    // OK, we also want to cache the target rowset
+                    // OK, we also want to reach a certain rowset
+                    // In the end it doesn't matter what order the row sets are in...
+                    // AS LONG AS THEY ARE ALWAYS SORTED IN THE SAME WAY...
+                    // To establish this, the output row sets where sorted earlier on the target slave server name and the step
                     //
-                    // We know that we have to partition in N pieces
-                    // We should also have N rowsets to the next step
-                    // This is always the case, wheter the target is partitioned or not.
+                    // We do care however, about the number of output rowsets.
+                    // The number of partitions has to be the same as the number of output rowsets.
                     //
-                    // So what we do is now count the number of rowsets
-                    // And we take the steps copy nr to map.
-                    // It's simple for the time being.
-                    //
-                    // P1 : MOD(field,N)==0
-                    // P2 : MOD(field,N)==1
-                    // ...
-                    // PN : MOD(field,N)==N-1
-                    //
-    
-                    for (int r = 0; r < outputRowSets.size(); r++)
-                    {
-                        RowSet rowSet = outputRowSets.get(r);
-                        if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy() == getCopy())
-                        {
-                            // Find the target step metadata
-                            StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
-    
-                            // What are the target partition ID's
-                            String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-    
-                            // The target partitionID:
-                            String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
-    
-                            // Save the mapping: if we want to know to which rowset belongs to a partition this is the place
-                            // to be.
-                            partitionTargets.put(targetPartitionID, rowSet);
-                        }
+                    if (partitionIDs.size()!=outputRowSets.size()) {
+                    	throw new KettleStepException("The number of partitions ("+partitionIDs.size()+") is not the same as the number of output rowsets ("+outputRowSets.size()+")");
                     }
                 } // End of the one-time init code.
     
@@ -860,16 +830,22 @@ public class BaseStep extends Thread implements VariableSpace
                 int partitionNr;
                 try
                 {
-                    partitionNr = nextStepPartitioningMeta.getPartitionNr(rowMeta.getInteger(row, partitionColumnIndex), partitionIDs.length);
+                    partitionNr = nextStepPartitioningMeta.getPartitionNr(rowMeta.getInteger(row, partitionColumnIndex), partitionIDs.size());
                 }
                 catch (KettleValueException e)
                 {
                     throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
                 }
-                String targetPartition = partitionIDs[partitionNr];
     
                 // Put the row forward to the next step according to the partition rule.
-                RowSet rs = partitionTargets.get(targetPartition);
+                //
+                RowSet rs = outputRowSets.get(partitionNr);
+                
+                if (rs==null) {
+                	logBasic("Target rowset is not available for target partition, partitionNr="+partitionNr);
+                }
+                
+                // logBasic("Putting row to partition #"+partitionNr);
                 
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
@@ -1029,6 +1005,8 @@ public class BaseStep extends Thread implements VariableSpace
     private void nextInputStream()
     {
     	synchronized(inputRowSets) {
+    		blockPointer=0;
+
 	        int streams = inputRowSets.size();
 	
 	        // No more streams left: exit!
@@ -1043,6 +1021,9 @@ public class BaseStep extends Thread implements VariableSpace
     	}
     }
 
+    private static int NR_OF_ROWS_IN_BLOCK = 100;
+    private int blockPointer;
+    
     /**
      * In case of getRow, we receive data from previous steps through the input rowset. In case we split the stream, we
      * have to copy the data to the alternate splits: rowsets 1 through n.
@@ -1091,11 +1072,55 @@ public class BaseStep extends Thread implements VariableSpace
 	        return null;
 	    }
 
+	    // Do we need to switch to the next input stream?
+    	if (blockPointer>=NR_OF_ROWS_IN_BLOCK) {
+    		nextInputStream();
+    	}
+	    
         // What's the current input stream?
         RowSet in = currentInputStream();
-        Object[] row = getRowFrom(in);
         
-        // This rowSet is perhaps no longer giving back rows?
+        // See if this step is receiving partitioned data...
+        // In that case it might be the case that one input row set is receiving all data and
+        // the other rowsets nothing. (repartitioning on the same key would do that)
+        //
+        // We never guaranteed that the input rows would be read one by one alternatively.
+        // So in THIS particular case it is safe to just read 100 rows from one rowset, then switch to another etc.
+        // We can use timeouts to switch from one to another...
+        // 
+        Object[] row=null;
+        
+    	while (row==null && !isStopped()) {
+        	// Get a row from the input in row set ...
+    		// Timeout almost immediately if nothing is there to read.
+    		// We then will switch to the next row set to read from...
+    		//
+        	row = in.getRowWait(1, TimeUnit.MILLISECONDS);
+        	if (row!=null) {
+        		linesRead++;
+        		blockPointer++;
+        	}
+        	else {
+        		// Try once more...
+        		// If row is still empty and the row set is done, we remove the row set from
+        		// the input stream and move on to the next one...
+        		//
+        		if (in.isDone()) {
+        			row = in.getRowWait(1, TimeUnit.MILLISECONDS);
+        			if (row==null) {
+        				inputRowSets.remove(in);
+        				if (inputRowSets.size()==0) return null; // We're completely done.
+        			}
+        			else {
+        				linesRead++;
+        			}
+        		}
+        		nextInputStream();
+            	in = currentInputStream();
+        	}
+    	}
+        
+         // This rowSet is perhaps no longer giving back rows?
         //
         while (row==null && !stopped.get()) {
         	// Try the next input row set(s) until we find a row set that still has rows...
@@ -1111,8 +1136,6 @@ public class BaseStep extends Thread implements VariableSpace
         // Also set the meta data on the first occurrence.
         //
         if (inputRowMeta==null) inputRowMeta=in.getRowMeta();
-
-        nextInputStream(); // Look for the next input stream to get row from.
 
         // OK, before we return the row, let's see if we need to check on mixing row compositions...
         // 
@@ -1466,10 +1489,6 @@ public class BaseStep extends Thread implements VariableSpace
                 }
             }
         }
-        
-	    // now trim the size of the rowsets
-	    // inputRowSets.trimToSize();
-	    // outputRowSets.trimToSize();
 
         logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
     }
@@ -1931,22 +1950,6 @@ public class BaseStep extends Thread implements VariableSpace
     public void setPartitioned(boolean partitioned)
     {
         this.partitioned = partitioned;
-    }
-
-    /**
-     * @return the partitionMerging
-     */
-    public boolean isPartitionMerging()
-    {
-        return partitionMerging;
-    }
-
-    /**
-     * @param partitionMerging the partitionMerging to set
-     */
-    public void setPartitionMerging(boolean partitionMerging)
-    {
-        this.partitionMerging = partitionMerging;
     }
 
     protected boolean checkFeedback(long lines)

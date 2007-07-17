@@ -17,11 +17,15 @@ import org.pentaho.di.trans.TransConfiguration;
  */
 public class TransformationMap
 {
+	public int SERVER_SOCKET_PORT_START = 40000; 
+		
     private Map<String, Trans> transformationMap;
     private Map<String, TransConfiguration> configurationMap;
     private Map<String, Appender> loggingMap;
     
     private String parentThreadName;
+    
+    private Map<String, Integer> serverSocketPorts; 
     
     public TransformationMap(String parentThreadName)
     {
@@ -30,6 +34,8 @@ public class TransformationMap
         transformationMap = new Hashtable<String, Trans>();
         configurationMap  = new Hashtable<String, TransConfiguration>();
         loggingMap        = new Hashtable<String, Appender>();
+        
+        serverSocketPorts = new Hashtable<String, Integer>();
     }
     
     public synchronized void addTransformation(String transformationName, Trans trans, TransConfiguration transConfiguration)
@@ -52,6 +58,13 @@ public class TransformationMap
     {
         transformationMap.remove(transformationName);
         configurationMap.remove(transformationName);
+        
+        // Remove the ports too...
+        for (String key : serverSocketPorts.keySet()) {
+        	if (key.startsWith(transformationName + " - ")) {
+        		serverSocketPorts.remove(key);
+        	}
+        }
     }
     
     public synchronized Appender getAppender(String transformationName)
@@ -97,5 +110,30 @@ public class TransformationMap
     public void setConfigurationMap(Map<String, TransConfiguration> configurationMap)
     {
         this.configurationMap = configurationMap;
+    }
+    
+    private String createServerSocketPortKey(String transformationName, String stepName, String stepCopy)
+    {
+    	return transformationName + " - " + stepName + " - " + stepCopy;
+    }
+    
+    public synchronized int getServerSocketPort(String transformationName, String stepName, String stepCopy) {
+    	String key = createServerSocketPortKey(transformationName, stepName, stepCopy);
+    	Integer port = serverSocketPorts.get(key);
+    	if (port!=null) return port;
+    	
+    	// See if there are used ports on this slave server...
+    	int maxPort = SERVER_SOCKET_PORT_START-1;
+    	for (Integer slaveStepPort : serverSocketPorts.values()) {
+    		if (slaveStepPort>maxPort) maxPort=slaveStepPort;
+    	}
+		// Increment the port..
+		port=maxPort+1;
+    	
+    	// Store in the map
+    	serverSocketPorts.put(key, port);
+    	
+    	// give back the good news too...
+    	return port;
     }
 }

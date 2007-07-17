@@ -79,6 +79,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	private boolean       terminator;
 	
     private StepPartitioningMeta stepPartitioningMeta;
+    private StepPartitioningMeta targetStepPartitioningMeta;
+    
     private ClusterSchema        clusterSchema;
     private String               clusterSchemaName; // temporary to resolve later.
     
@@ -132,6 +134,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		drawstep    = false;
 		description = null;
         stepPartitioningMeta = new StepPartitioningMeta();
+        // targetStepPartitioningMeta = new StepPartitioningMeta();
+        
         clusterSchema = null; // non selected by default.
 
         remoteInputSteps = new ArrayList<RemoteStep>();
@@ -155,7 +159,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		retval.append("    ").append(XMLHandler.addTagValue("copies",      copies) ); //$NON-NLS-1$ //$NON-NLS-2$
         
         retval.append( stepPartitioningMeta.getXML() );
-		retval.append( stepMetaInterface.getXML() );
+        if (targetStepPartitioningMeta!=null) {
+        	retval.append( XMLHandler.openTag("target_step_partitioning")).append(targetStepPartitioningMeta.getXML()).append( XMLHandler.closeTag("target_step_partitioning"));
+        }
+
+        retval.append( stepMetaInterface.getXML() );
         retval.append("     ").append(XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
         
         retval.append(" <remotesteps>");
@@ -247,8 +255,17 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             
             // The partitioning information?
+			//
             Node partNode = XMLHandler.getSubNode(stepnode, "partitioning");
             stepPartitioningMeta = new StepPartitioningMeta(partNode);
+            
+            // Target partitioning information?
+            //
+            Node targetPartNode = XMLHandler.getSubNode(stepnode, "target_step_partitioning");
+            partNode = XMLHandler.getSubNode(targetPartNode, "partitioning");
+            if (partNode!=null) {
+            	targetStepPartitioningMeta = new StepPartitioningMeta(partNode);
+            }
             
             clusterSchemaName = XMLHandler.getTagValue(stepnode, "cluster_schema"); // resolve to clusterSchema later
 
@@ -345,10 +362,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         // If the step is partitioned, that's going to determine the number of copies, nothing else...
         if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
         {
-            String[] partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-            if (partitionIDs!=null && partitionIDs.length>0) // these are the partitions the step can "reach"
+            List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+            if (partitionIDs!=null && partitionIDs.size()>0) // these are the partitions the step can "reach"
             {
-                return partitionIDs.length;
+                return partitionIDs.size();
             }
         }
 
@@ -702,6 +719,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     }
     
     /**
+     * @return true is the step is partitioned
+     */
+    public boolean isTargetPartitioned()
+    {
+        return targetStepPartitioningMeta.isPartitioned();
+    }
+    
+    /**
      * @return the stepPartitioningMeta
      */
     public StepPartitioningMeta getStepPartitioningMeta()
@@ -888,5 +913,24 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		this.remoteOutputSteps = remoteOutputSteps;
 	}
 
+	/**
+	 * @return the targetStepPartitioningMeta
+	 */
+	public StepPartitioningMeta getTargetStepPartitioningMeta() {
+		return targetStepPartitioningMeta;
+	}
+
+	/**
+	 * @param targetStepPartitioningMeta the targetStepPartitioningMeta to set
+	 */
+	public void setTargetStepPartitioningMeta(StepPartitioningMeta targetStepPartitioningMeta) {
+		this.targetStepPartitioningMeta = targetStepPartitioningMeta;
+	}
+
+	public boolean isRepartitioning() {
+		if (!isPartitioned() && isTargetPartitioned()) return true;
+		if (isPartitioned() && isTargetPartitioned() && !stepPartitioningMeta.equals(targetStepPartitioningMeta)) return true;
+		return false;
+	}
 
 }
