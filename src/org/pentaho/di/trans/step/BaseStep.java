@@ -1139,6 +1139,9 @@ public class BaseStep extends Thread implements VariableSpace
         if (safeModeEnabled)
         {
             safeModeChecking(inputRowMeta); // Extra checking 
+            if (row.length<inputRowMeta.size()) {
+            	throw new KettleException("Safe mode check noticed that the length of the row data is smaller ("+row.length+") than the row metadata size ("+inputRowMeta.size()+")");
+            }
         } 
 
         // Check the rejection rates etc. as well.
