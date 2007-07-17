@@ -202,7 +202,7 @@ public class RowGeneratorTest extends TestCase
         trans.waitUntilFinished();   
         
         List<RowMetaAndData> checkList = createData();
-        List<RowMetaAndData> resultRows = rc.getRowsRead();
+        List<RowMetaAndData> resultRows = rc.getRowsWritten();
         checkRows(resultRows, checkList);
     }
 }

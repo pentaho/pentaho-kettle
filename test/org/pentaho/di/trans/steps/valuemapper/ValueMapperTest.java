@@ -458,7 +458,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData1();
         
         checkRows(goldenImageRows, resultRows);
@@ -571,7 +571,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData2();
         
         checkRows(goldenImageRows, resultRows);
@@ -684,7 +684,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData3();
         
         checkRows(goldenImageRows, resultRows);
@@ -799,7 +799,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData4();
         
         checkRows(goldenImageRows, resultRows);
@@ -914,7 +914,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData5();
         
         checkRows(goldenImageRows, resultRows);
@@ -972,8 +972,8 @@ public class ValueMapperTest extends TestCase
         vm.setFieldToUse("field1");
         vm.setTargetField("");
         vm.setNonMatchDefault("default");
-        vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghij", null});
-        vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", "", "emptyField"});
+        vm.setSourceValue(new String[] {"abc", "ABC", "def", "ghijk", null});
+        vm.setTargetValue(new String[] {"begin", "BEG_LONGER", "test", "blah", "emptyField"});
 
         String valueMapperPid = steploader.getStepPluginID(vm);
         StepMeta valueMapperStep = new StepMeta(valueMapperPid, valueMapperName, (StepMetaInterface)vm);
@@ -999,8 +999,8 @@ public class ValueMapperTest extends TestCase
         // Now execute the transformation...
         Trans trans = new Trans(transMeta);
 
-        trans.prepareExecution(null);
-                
+        boolean prepare = trans.prepareExecution(null);
+         assertTrue( prepare );       
         StepInterface si = trans.getStepInterface(dummyStepname1, 0);
         RowStepCollector dummyRc1 = new RowStepCollector();
         si.addRowListener(dummyRc1);
@@ -1029,7 +1029,7 @@ public class ValueMapperTest extends TestCase
         trans.waitUntilFinished();   
         
         // Compare the results                        
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         List<RowMetaAndData> goldenImageRows = createResultData6();
         
         checkRows(goldenImageRows, resultRows);

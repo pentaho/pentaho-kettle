@@ -236,7 +236,7 @@ public class SortRowsTest extends TestCase
  
         trans.waitUntilFinished();   
                                      
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         checkRows(resultRows, true);
     }
     
@@ -321,7 +321,7 @@ public class SortRowsTest extends TestCase
  
         trans.waitUntilFinished();   
                                      
-        List<RowMetaAndData> resultRows = dummyRc.getRowsRead();
+        List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         checkRows(resultRows, false);
     }        
 }

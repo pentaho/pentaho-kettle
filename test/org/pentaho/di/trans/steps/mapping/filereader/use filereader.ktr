@@ -79,7 +79,7 @@
            <schema_name/>
            </partitioning>
     <trans_name>filereader mapping</trans_name>
-    <filename>&#47;home&#47;matt&#47;mapping&#47;filereader&#47;filereader.ktr</filename>
+    <filename>test&#47;org&#47;pentaho&#47;di&#47;trans&#47;steps&#47;mapping&#47;filereader&#47;filereader.ktr</filename>
     <directory_path/>
     <mappings>
       <input>

@@ -205,7 +205,7 @@ public class InjectorTest extends TestCase
 
         trans.waitUntilFinished();   
         
-        List<RowMetaAndData> resultRows = rc.getRowsRead();
+        List<RowMetaAndData> resultRows = rc.getRowsWritten();
         checkRows(resultRows, inputList);
     }
 }

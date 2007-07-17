@@ -229,7 +229,7 @@ public class HopTest extends TestCase
         rp.finished();
         trans.waitUntilFinished();   
         
-        List<RowMetaAndData> resultRows = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows = rc1.getRowsWritten();
         checkRows(resultRows, inputList);
     }
     
@@ -350,10 +350,10 @@ public class HopTest extends TestCase
         // Dummy1 should get 4 rows: 1 3 5 7
         // Dummy2 should get 3 rows: 2 4 6          
         
-        List<RowMetaAndData> resultRows1 = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = rc1.getRowsWritten();
         checkRows(resultRows1, compareList1);
         
-        List<RowMetaAndData> resultRows2 = rc2.getRowsRead();
+        List<RowMetaAndData> resultRows2 = rc2.getRowsWritten();
         checkRows(resultRows2, compareList2);        
     }
     
@@ -475,10 +475,10 @@ public class HopTest extends TestCase
         // Dummy1 should get 4 rows: 1 3 5 7
         // Dummy2 should get 3 rows: 2 4 6          
         
-        List<RowMetaAndData> resultRows1 = rc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = rc1.getRowsWritten();
         checkRows(resultRows1, compareList1);
         
-        List<RowMetaAndData> resultRows2 = rc2.getRowsRead();
+        List<RowMetaAndData> resultRows2 = rc2.getRowsWritten();
         checkRows(resultRows2, compareList2);        
     }        
 }

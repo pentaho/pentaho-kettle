@@ -297,7 +297,7 @@ public class AppendTest extends TestCase
         expectedList.addAll(inputList1);
         expectedList.addAll(inputList2);
         
-        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsRead();
+        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsWritten();
         checkRows(resultRows1, expectedList);
     }    
 }
