@@ -2,6 +2,9 @@
 <transformation>
   <info>
     <name>Kettle Sample - Merge Join</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -9,33 +12,56 @@
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
     <unique_connections>N</unique_connections>
     <feedback_shown>Y</feedback_shown>
     <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
+    </dependencies>
     <partitionschemas>
-      </partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+    </slaveservers>
     <clusterschemas>
-      </clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8080</name>
+          </slaveservers>
+        </clusterschema>
+    </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2006&#47;11&#47;02 16:09:55.093</modified_date>
-    </info>
+  </info>
   <notepads>
     <notepad>
       <note>This is a sample demonstrating the current simplistic implementation of merge join.
@@ -53,11 +79,10 @@ The current implementation does support:
       <yloc>326</yloc>
       <width>654</width>
       <heigth>219</heigth>
-      </notepad>
-    </notepads>
+    </notepad>
+  </notepads>
   <order>
-  <hop> <from>Text file input</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Join</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
-
+  <hop> <from>Text file input</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Join</from><to>Text file output</to><enabled>N</enabled> </hop>  </order>
   <step>
     <name>Merge Join</name>
     <type>MergeJoin</type>
@@ -76,10 +101,10 @@ The current implementation does support:
       <key>pid</key>
     </keys_1>
     <keys_2>
-      <key>pid1</key>
+      <key>pid</key>
     </keys_2>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>344</xloc>
       <yloc>183</yloc>
       <draw>Y</draw>
@@ -117,6 +142,7 @@ The current implementation does support:
     <include>N</include>
     <include_field/>
     <rownum>N</rownum>
+    <rownumByFile>N</rownumByFile>
     <rownum_field/>
     <format>DOS</format>
     <encoding/>
@@ -126,9 +152,9 @@ The current implementation does support:
       <file_required/>
       <type>CSV</type>
       <compression>None</compression>
-      </file>
+    </file>
     <filters>
-      </filters>
+    </filters>
     <fields>
       <field>
         <name>pid</name>
@@ -144,7 +170,7 @@ The current implementation does support:
         <precision>0</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
         <name>value</name>
         <type>String</type>
@@ -159,8 +185,8 @@ The current implementation does support:
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>0</limit>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -176,7 +202,7 @@ The current implementation does support:
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>nl_nl</date_format_locale>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>207</xloc>
       <yloc>122</yloc>
       <draw>Y</draw>
@@ -214,6 +240,7 @@ The current implementation does support:
     <include>N</include>
     <include_field/>
     <rownum>N</rownum>
+    <rownumByFile>N</rownumByFile>
     <rownum_field/>
     <format>DOS</format>
     <encoding/>
@@ -223,12 +250,12 @@ The current implementation does support:
       <file_required/>
       <type>CSV</type>
       <compression>None</compression>
-      </file>
+    </file>
     <filters>
-      </filters>
+    </filters>
     <fields>
       <field>
-        <name>pid1</name>
+        <name>pid</name>
         <type>Integer</type>
         <format/>
         <currency>€</currency>
@@ -241,9 +268,9 @@ The current implementation does support:
         <precision>0</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
+      </field>
       <field>
-        <name>value1</name>
+        <name>value</name>
         <type>String</type>
         <format/>
         <currency/>
@@ -256,8 +283,8 @@ The current implementation does support:
         <precision>-1</precision>
         <trim_type>none</trim_type>
         <repeat>N</repeat>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>0</limit>
     <error_ignored>N</error_ignored>
     <error_line_skipped>N</error_line_skipped>
@@ -273,7 +300,7 @@ The current implementation does support:
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>nl_nl</date_format_locale>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>207</xloc>
       <yloc>261</yloc>
       <draw>Y</draw>
@@ -360,11 +387,13 @@ The current implementation does support:
         </field>
       </fields>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>502</xloc>
       <yloc>183</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
 </transformation>

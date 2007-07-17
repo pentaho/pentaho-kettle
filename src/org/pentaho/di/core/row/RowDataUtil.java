@@ -31,11 +31,11 @@ public class RowDataUtil {
 	 */
 	public static Object[] resizeArray(Object[] objects, int newSize) {
 		
-		if (objects.length >= newSize)
+		if (objects!=null && objects.length >= newSize)
 			return objects;
 
 		Object[] newObjects = new Object[newSize+OVER_ALLOCATE_SIZE];
-		System.arraycopy(objects, 0, newObjects, 0, objects.length);
+		if (objects!=null) System.arraycopy(objects, 0, newObjects, 0, objects.length);
 		return newObjects;
 	}
 

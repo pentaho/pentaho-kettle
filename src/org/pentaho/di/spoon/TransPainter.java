@@ -17,7 +17,6 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;

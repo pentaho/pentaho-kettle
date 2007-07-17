@@ -100,6 +100,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             }
             
             // just for speed: oneMeta+twoMeta
+            //
             data.outputRowMeta=new RowMeta(); 
             data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.oneMeta.clone() );
             data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.twoMeta.clone() );
@@ -207,25 +208,31 @@ public class MergeJoin extends BaseStep implements StepInterface
             	if (compare1 == 0) // First stream has duplicates
             	{
             		data.ones.add(data.one_next);
-	            	for (;;)
+            		boolean done=false;
+	            	while(!done && !isStopped())
 	            	{
 	                	data.one_next = getRowFrom(data.oneRowSet);
-	                	if (0 != ((data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1)))
-	                		break;
+	                	if (0 != ((data.one_next == null) ? -1 : data.oneMeta.compare(data.one, data.one_next, data.keyNrs1, data.keyNrs1))) {
+	                		done=true;
+	                	}
 	                	data.ones.add(data.one_next);
 	            	}
+	            	if (isStopped()) return false;
             	}
             	data.twos.add(data.two);
             	if (compare2 == 0) // Second stream has duplicates
             	{
             		data.twos.add(data.two_next);
-	            	for (;;)
+            		boolean done=false;
+	            	while(!done && !isStopped())
 	            	{
 	                	data.two_next = getRowFrom(data.twoRowSet);
-	                	if (0 != ((data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2)))
-	                		break;
+	                	if (0 != ((data.two_next == null) ? -1 : data.twoMeta.compare(data.two, data.two_next, data.keyNrs2, data.keyNrs2))) {
+	                		done=true;
+	                	}
 	                	data.twos.add(data.two_next);
 	            	}
+	            	if (isStopped()) return false;
             	}
             	for (Object[] one : data.ones)
             	{
