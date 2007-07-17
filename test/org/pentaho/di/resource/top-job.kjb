@@ -40,8 +40,8 @@
     <entry>
       <name>testmapdriver</name>
       <description>Transformation</description>
-      <type>TRANSFORMATION</type>
-      <filename>&#47;home&#47;matt&#47;workspace&#47;Kettle trunk&#47;test&#47;org&#47;pentaho&#47;di&#47;resource&#47;mappingdriver2.ktr</filename>
+      <type>TRANS</type>
+      <filename>test&#47;org&#47;pentaho&#47;di&#47;resource&#47;mappingdriver2.ktr</filename>
       <transname/>
       <directory>&#47;</directory>
       <arg_from_previous>N</arg_from_previous>
