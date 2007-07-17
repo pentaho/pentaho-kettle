@@ -94,9 +94,6 @@ public class BaseStep extends Thread implements VariableSpace
       TODO: port these classes
             new StepPluginMeta(NormaliserMeta.class, "Normaliser", Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"), "NRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises", Const.CR), "UNP.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(FieldSplitterMeta.class, "FieldSplitter", Messages.getString("BaseStep.TypeLongDesc.SplitFields"), Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), "SPL.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(CubeInputMeta.class, "CubeInput", Messages.getString("BaseStep.TypeLongDesc.CubeInput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeinput"), "CIP.png", CATEGORY_INPUT),
-            new StepPluginMeta(CubeOutputMeta.class, "CubeOutput", Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"), "COP.png", CATEGORY_OUTPUT),
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
             new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages.getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
