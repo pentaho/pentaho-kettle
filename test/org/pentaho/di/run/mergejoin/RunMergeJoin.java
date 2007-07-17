@@ -16,10 +16,10 @@ public class RunMergeJoin extends TestCase
         System.out.println("==================");
     }
     
-    public void test_MERGE_JOIN_01_SIMPLE() throws Exception
+    public void test_MERGE_JOIN_01_INNER() throws Exception
     {
         TimedTransRunner timedTransRunner = new TimedTransRunner(
-                "test/org/pentaho/di/run/mergejoin/MergeJoinSimple.ktr", 
+                "test/org/pentaho/di/run/mergejoin/MergeJoinInner.ktr", 
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
@@ -33,4 +33,59 @@ public class RunMergeJoin extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void test_MERGE_JOIN_02_LEFT_OUTER() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/run/mergejoin/MergeJoinLeftOuter.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                1000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
+    public void test_MERGE_JOIN_03_RIGHT_OUTER() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/run/mergejoin/MergeJoinLeftOuter.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                1000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+    
+    public void test_MERGE_JOIN_04_FULL_OUTER() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/run/mergejoin/MergeJoinFullOuter.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                1000
+            );
+        timedTransRunner.runOldAndNew();
+        
+        be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
+        assertTrue(oldResult.getNrErrors()==0);
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
+
 }
