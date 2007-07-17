@@ -1,17 +1,17 @@
 package org.pentaho.di.core.row;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.pentaho.di.core.exception.KettleValueException;
-
 public class RowTest extends TestCase
 {
-    public void testNormalStringConversion() throws KettleValueException
+    public void testNormalStringConversion() throws Exception
     {
-        Object[] rowData1 = new Object[] { "sampleString", new Date(1178535853203L), new Double(9123.00), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(true), };
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+        Object[] rowData1 = new Object[] { "sampleString", fmt.parse("2007/05/07 13:04:13.203"), new Double(9123.00), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(true), };
         RowMetaInterface rowMeta1 = createTestRowMetaNormalStringConversion1();
         
         assertEquals("sampleString", rowMeta1.getString(rowData1, 0));        
@@ -21,7 +21,8 @@ public class RowTest extends TestCase
         assertEquals("123456789012345678.9349", rowMeta1.getString(rowData1, 4));
         assertEquals("Y", rowMeta1.getString(rowData1, 5));
         
-        Object[] rowData2 = new Object[] { null, new Date(1178535853203L), new Double(9123.9), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(false), };
+        fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+        Object[] rowData2 = new Object[] { null, fmt.parse("20070507130413"), new Double(9123.9), new Long(12345), new BigDecimal("123456789012345678.9349"), new Boolean(false), };
         RowMetaInterface rowMeta2 = createTestRowMetaNormalStringConversion2();
         
         assertTrue( rowMeta2.getString(rowData2, 0)==null);        
@@ -32,10 +33,16 @@ public class RowTest extends TestCase
         assertEquals("false", rowMeta2.getString(rowData2, 5));
     }
     
-    public void testIndexedStringConversion() throws KettleValueException
+    public void testIndexedStringConversion() throws Exception
     {
         String colors[] = new String[] { "Green", "Red", "Blue", "Yellow", null, };
-        Date   dates[]  = new Date[]   { new Date(1178535853203L), null, new Date(1178334949349L), new Date(1178384924736L), };
+        
+        // create some timezone friendly dates
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+        Date   dates[]  = new Date[]   { fmt.parse("2007/05/07 13:04:13.203"), 
+        		null, 
+        		fmt.parse("2007/05/05 05:15:49.349"), 
+        		fmt.parse("2007/05/05 19:08:44.736"), };
 
         RowMetaInterface rowMeta = createTestRowMetaIndexedStringConversion1(colors, dates);
 
@@ -67,7 +74,7 @@ public class RowTest extends TestCase
         RowMetaInterface rowMeta = new RowMeta();
 
         // A string object
-        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30);
+        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30, 0);
         rowMeta.addValueMeta(meta1);
         
         ValueMetaInterface meta2 = new ValueMeta("dateValue", ValueMetaInterface.TYPE_DATE);
@@ -79,7 +86,7 @@ public class RowTest extends TestCase
         meta3.setGroupingSymbol(",");
         rowMeta.addValueMeta(meta3);
 
-        ValueMetaInterface meta4 = new ValueMeta("integerValue", ValueMetaInterface.TYPE_INTEGER, 7);
+        ValueMetaInterface meta4 = new ValueMeta("integerValue", ValueMetaInterface.TYPE_INTEGER, 7, 0);
         meta4.setConversionMask("0000000");
         meta4.setDecimalSymbol(".");
         meta4.setGroupingSymbol(",");
@@ -100,7 +107,7 @@ public class RowTest extends TestCase
         RowMetaInterface rowMeta = new RowMeta();
 
         // A string object
-        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30);
+        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30, 0);
         meta1.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
         rowMeta.addValueMeta(meta1);
         
@@ -114,7 +121,7 @@ public class RowTest extends TestCase
         meta3.setGroupingSymbol(".");
         rowMeta.addValueMeta(meta3);
 
-        ValueMetaInterface meta4 = new ValueMeta("integerValue", ValueMetaInterface.TYPE_INTEGER, 7);
+        ValueMetaInterface meta4 = new ValueMeta("integerValue", ValueMetaInterface.TYPE_INTEGER, 7, 0);
         meta4.setConversionMask("0000000");
         meta4.setDecimalSymbol(",");
         meta4.setGroupingSymbol(".");
@@ -124,7 +131,7 @@ public class RowTest extends TestCase
         meta5.setDecimalSymbol(",");
         rowMeta.addValueMeta(meta5);
 
-        ValueMetaInterface meta6 = new ValueMeta("booleanValue", ValueMetaInterface.TYPE_BOOLEAN, 3);
+        ValueMetaInterface meta6 = new ValueMeta("booleanValue", ValueMetaInterface.TYPE_BOOLEAN, 3, 0);
         rowMeta.addValueMeta(meta6);
 
         return rowMeta;
