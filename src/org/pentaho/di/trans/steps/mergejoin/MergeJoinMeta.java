@@ -373,13 +373,11 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
         //
         if (info!=null)
         {
-            boolean found=false;
-            for (int i=0;i<info.length && !found;i++) 
+            for (int i=0;i<info.length;i++) 
             {
                 if (info[i]!=null)
                 {
                     r.mergeRowMeta(info[i]);
-                    found=true;
                 }
             }
         }

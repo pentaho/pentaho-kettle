@@ -101,13 +101,8 @@ public class MergeJoin extends BaseStep implements StepInterface
             
             // just for speed: oneMeta+twoMeta
             data.outputRowMeta=new RowMeta(); 
-            data.outputRowMeta.mergeRowMeta(data.oneMeta);
-            data.outputRowMeta.mergeRowMeta(data.twoMeta);
-
-            if (!isInputLayoutValid(data.oneMeta, data.twoMeta))
-            {
-            	throw new KettleException(Messages.getString("MergeJoin.Exception.InvalidKeyLayoutDetected"));
-            }        
+            data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.oneMeta.clone() );
+            data.outputRowMeta.mergeRowMeta( (RowMetaInterface)data.twoMeta.clone() );
 
             if (data.one!=null)
             {
@@ -147,17 +142,6 @@ public class MergeJoin extends BaseStep implements StepInterface
             // Calculate two_dummy... defaults to null
             //
             data.two_dummy=new Object[data.twoMeta.size()];
-            
-            // Verify that the 2 rows (one and two) all have different field names...
-            for (int i=0;i<data.oneMeta.size();i++)
-            {
-                String dummy = data.oneMeta.getFieldNames()[i];
-                int idx = data.twoMeta.indexOfValue(dummy);
-                if (idx>=0)
-                {
-                    throw new KettleStepException(Messages.getString("MergeJoin.Exception.DuplicateFieldnamesInResult", dummy));
-                }
-            }
         }
 
         if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
