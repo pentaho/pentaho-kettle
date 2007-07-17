@@ -1,6 +1,7 @@
 package org.pentaho.di.spoon.delegates;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -213,11 +214,22 @@ public class SpoonStepsDelegate extends SpoonDelegate
 		Constructor<?> dialogConstructor;
 		try
 		{
-			dialogClass = Class.forName(dialogClassName);
+			dialogClass = stepMeta.getClass().getClassLoader().loadClass(dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Exception e)
 		{
+			// try the old way for compatibility 
+			Method method = null;
+				try {
+					Class sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class, String.class};
+					method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
+					if( method != null ) {
+						return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta, stepName } );
+					}
+				} catch (Throwable t) {
+				}
+
 			throw new KettleException(e);
 		}
 
