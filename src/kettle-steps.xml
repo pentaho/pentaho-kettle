@@ -585,4 +585,15 @@
 		</tooltip>
 		<image-uri>UNP.png</image-uri>
 	</step>   
+	    <step id="Normaliser">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowNormaliser")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.normaliser.NormaliserMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RowNormaliser")
+		</tooltip>
+		<image-uri>NRM.png</image-uri>
+	</step> 
 </steps>
