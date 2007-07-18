@@ -112,7 +112,7 @@ public class DBCache
 			while (keys.hasMoreElements())
 			{
 				DBCacheEntry entry = (DBCacheEntry)keys.nextElement();
-				if (entry.dbname.equalsIgnoreCase(dbname))
+				if (entry.sameDB(dbname))
 				{
 					// Same name: remove it!
 					cache.remove(entry);

@@ -34,8 +34,9 @@ import org.pentaho.di.core.exception.KettleFileException;
  */
 public class DBCacheEntry
 {
-	public String dbname;
-	public String sql;
+	private String dbname;
+	private String sql;
+	private int hashCode;
 	
 	public DBCacheEntry(String dbname, String sql)
 	{
@@ -48,20 +49,38 @@ public class DBCacheEntry
 		this(null, null);
 	}
 
+	public boolean sameDB(String otherDb)
+	{
+		if (dbname == otherDb)
+		{
+			return true; // short-circuit object equivalence, treat nulls as
+                            // equal
+		}
+		if (null != dbname)
+		{
+			return dbname.equalsIgnoreCase(otherDb);
+		}
+		return false;
+	}
+	
 	public int hashCode()
 	{
-		int hashcode = dbname.hashCode() ^ sql.hashCode();
-		 
-		return hashcode;
+		if ((0 >= hashCode) && (null != dbname) && (null != sql)) {
+		     hashCode = dbname.toLowerCase().hashCode() ^ sql.toLowerCase().hashCode();
+		}
+		return hashCode;
 	}
 	
 	public boolean equals(Object o)
 	{
-		DBCacheEntry obj = (DBCacheEntry)o;
+		if ((null != o) && (o instanceof DBCacheEntry)) {
+		    DBCacheEntry obj = (DBCacheEntry)o;
 		
-		boolean retval = dbname.equalsIgnoreCase(obj.dbname) && sql.equalsIgnoreCase(obj.sql); 
+		    boolean retval = dbname.equalsIgnoreCase(obj.dbname) && sql.equalsIgnoreCase(obj.sql); 
 		
-		return retval;
+		    return retval;
+		}
+		return false;
 	}
 	
 	/**
