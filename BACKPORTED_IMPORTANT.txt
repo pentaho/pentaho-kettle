@@ -14,4 +14,3 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - Fix for WaitForFile bug: the old version would check the file once and afterwards would return
   the cached result - Sven B - 2007-Jun-20
 - Change Request - [# 5889] DB Proc: simplify users life with better label for "Result name": Change the label "Result name" to "Result name (function only)"
-and check if OUT or INOUT is used in a function (Message: No OUT or INOUT allowed for a function)
