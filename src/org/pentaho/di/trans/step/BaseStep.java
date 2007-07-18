@@ -1142,6 +1142,15 @@ public class BaseStep extends Thread implements VariableSpace
             	throw new KettleException("Safe mode check noticed that the length of the row data is smaller ("+row.length+") than the row metadata size ("+inputRowMeta.size()+")");
             }
         } 
+        
+        if ( row != null )
+        {
+            for (int i = 0; i < rowListeners.size(); i++)
+            {
+                RowListener rowListener = (RowListener) rowListeners.get(i);
+                rowListener.rowReadEvent(inputRowMeta, row);
+            }
+        }                
 
         // Check the rejection rates etc. as well.
         verifyRejectionRates();
