@@ -18,6 +18,7 @@
 package org.pentaho.di.core.database;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -404,10 +405,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 				setIndexTablespace( r.getString("INDEX_TBS", "") );
                 
                 // Also, load all the properties we can find...
-				long ids[] = rep.getDatabaseAttributeIDs(id_database);
-                for (int i=0;i<ids.length;i++)
+				final Collection<RowMetaAndData> attrs = rep.getDatabaseAttributes();
+                for (RowMetaAndData row : attrs)
                 {
-                    RowMetaAndData row = rep.getDatabaseAttribute(ids[i]);
                     String code = row.getString("CODE", "");
                     String attribute = row.getString("VALUE_STR", "");
                     // System.out.println("Attributes: "+(getAttributes()!=null)+", code: "+(code!=null)+", attribute: "+(attribute!=null));
