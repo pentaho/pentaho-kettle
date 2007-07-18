@@ -78,16 +78,7 @@ public class DBProc extends BaseStep implements StepInterface
 					data.argnrs[i]=-1;
 				}
 			}
-
-        	//check if we have OUT or INOUT when result is given (=function)
-        	if (!Const.isEmpty(meta.getResultName())) { // we have a function
-        		for (int i = 0; i < data.argnrs.length; i++) {
-        			if (meta.getArgumentDirection()[i].equalsIgnoreCase("OUT") || meta.getArgumentDirection()[i].equalsIgnoreCase("INOUT")) {
-        				throw new KettleException(Messages.getString("DBProc.Exception.FunctionHasOutput"));
-        			}
-        		}
-        	}
-        	
+			
 			data.db.setProcLookup(meta.getProcedure(), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
 			                      meta.getResultName(), meta.getResultType());
 		}
