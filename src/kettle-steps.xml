@@ -573,5 +573,16 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CallDBProcedure")
 		</tooltip>
 		<image-uri>PRC.png</image-uri>
-	</step>     
+	</step>   
+		<step id="Denormaliser">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowDenormaliser")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.denormaliser.DenormaliserMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RowsDenormalises")
+		</tooltip>
+		<image-uri>UNP.png</image-uri>
+	</step>   
 </steps>

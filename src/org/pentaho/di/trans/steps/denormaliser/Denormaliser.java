@@ -315,6 +315,10 @@ public class Denormaliser extends BaseStep implements StepInterface
                             prevTargetData = sourceData; // Overwrite the previous
                             break;
                         }
+                        
+                        // Update the result row too
+                        //
+                        data.targetResult[idx] = prevTargetData;
                     }
                 }
             }

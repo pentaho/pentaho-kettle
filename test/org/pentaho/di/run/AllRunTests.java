@@ -17,6 +17,7 @@ import org.pentaho.di.run.combinationlookup.RunCombinationLookup;
 import org.pentaho.di.run.constant.RunConstant;
 import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.delete.RunDelete;
+import org.pentaho.di.run.denormaliser.RunDenormaliser;
 import org.pentaho.di.run.dimensionlookup.RunDimensionLookup;
 import org.pentaho.di.run.excelinput.RunExcelInput;
 import org.pentaho.di.run.exceloutput.RunExcelOutput;
@@ -184,7 +185,7 @@ public class AllRunTests
         suite.addTestSuite(RunMergeJoin.class);
         suite.addTestSuite(RunSortedMerge.class);
         suite.addTestSuite(RunExcelOutput.class);
-       
+        suite.addTestSuite(RunDenormaliser.class);
         
         //$JUnit-END$
         return suite;
