@@ -133,14 +133,24 @@ public class ValueMapper extends BaseStep implements StepInterface
             {
             	r[data.outputMeta.size()-1]=null;
             }
-            putRow(data.outputMeta, r);
         }
         else
         {
             // Don't set the original value to null if we don't have a target.
-            if (!Const.isEmpty(target)) r[data.keynr]=target;
-            putRow(data.outputMeta, r);
+            if (target!=null) 
+            {
+            	if (target.length()>0)
+            	{
+            		r[data.keynr]=target;
+            	}
+                else
+                {
+                	// allow target to be set to null since 3.0
+                	r[data.keynr]=null;
+                }
+            }
         }
+        putRow(data.outputMeta, r);
         
 		return true;
 	}
@@ -182,8 +192,8 @@ public class ValueMapper extends BaseStep implements StepInterface
                 {
                     if (Const.isEmpty(tgt))
                     {
-                        log.logError(toString(), Messages.getString("ValueMapper.RuntimeError.ValueNotSpecified.VALUEMAPPER0002", ""+i)); //$NON-NLS-1$ //$NON-NLS-2$
-                        return false;
+                    	// allow target to be set to null since 3.0
+                    	data.hashtable.put(src, new String());  
                     }
                 }
             }
