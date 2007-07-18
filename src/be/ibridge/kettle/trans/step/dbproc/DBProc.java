@@ -81,6 +81,16 @@ public class DBProc extends BaseStep implements StepInterface
                     data.addnrs.add(new Integer(data.argnrs[i])); // Given the logic above, ONLY the INOUT args have a valid index (meaning >=0)
                 }
             }
+
+        	//check if we have OUT or INOUT when result is given (=function)
+        	if (!Const.isEmpty(meta.getResultName())) { // we have a function
+        		for (i = 0; i < data.argnrs.length; i++) {
+        			if (meta.getArgumentDirection()[i].equalsIgnoreCase("OUT") || meta.getArgumentDirection()[i].equalsIgnoreCase("INOUT")) {
+        				throw new KettleException(Messages.getString("DBProc.Exception.FunctionHasOutput"));
+        			}
+        		}
+        	}
+        	
             data.db.setProcLookup(meta.getProcedure(), meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), 
                                   meta.getResultName(), meta.getResultType());
         }
