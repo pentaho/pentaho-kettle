@@ -2129,6 +2129,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     
+    public static boolean isRepReference(String exactFilename, String exactTransname) {
+		return Const.isEmpty(exactFilename) && !Const.isEmpty(exactTransname);
+    }
+    
     /** Read a transformation with a certain name from a repository
      *
      * @param rep The repository to read from.
@@ -5371,7 +5375,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             SharedObjects sharedObjects = new SharedObjects(soFile);
             
             // Now overwrite the objects in there
-            List<Object> shared = new ArrayList<Object>();
+            List<SharedObjectInterface> shared = new ArrayList<SharedObjectInterface>();
             shared.addAll(databases);
             shared.addAll(steps);
             shared.addAll(partitionSchemas);
@@ -5379,9 +5383,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             shared.addAll(clusterSchemas);
             
             // The databases connections...
-            for (int i=0;i<shared.size();i++)
+            for (SharedObjectInterface sharedObject : shared )
             {
-                SharedObjectInterface sharedObject = (SharedObjectInterface) shared.get(i);
                 if (sharedObject.isShared()) 
                 {
                     sharedObjects.storeObject(sharedObject);

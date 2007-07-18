@@ -863,16 +863,31 @@ public class SpoonJobDelegate extends SpoonDelegate
 	public String addJob(JobMeta jobMeta)
 	{
 		String key = spoon.delegates.tabs.makeJobGraphTabName(jobMeta);
-		if (jobMap.get(key) == null)
+		JobMeta xjob = jobMap.get(key);
+		if (xjob == null)
 		{
 			jobMap.put(key, jobMeta);
 		} else
 		{
+			// found a transformation tab that has the same name, is it the same
+			// as the one we want to load, if not warn the user of the duplicate name
+			boolean same;
+			if (TransMeta.isRepReference(jobMeta.getFilename(), jobMeta.getName()))
+			{
+				// a repository value
+				same = jobMeta.getDirectory().getPath().equals(xjob.getDirectory().getPath());
+			}
+			else {
+				// a file system entry
+				same = jobMeta.getFilename().equals(xjob.getFilename());
+			}
+			//if (!same) {
 			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
 					Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
 							+ Const.CR + Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
 			dialog.setTimeOut(6);
 			dialog.open();
+			//}
 		}
 
 		return key;

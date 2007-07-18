@@ -67,11 +67,25 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 	{
 		String key = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
 
-		if (transformationMap.get(key) == null)
+		TransMeta xform = (TransMeta) transformationMap.get(key);
+		if (xform==null)
 		{
 			transformationMap.put(key, transMeta);
 		} else
 		{
+			// found a transformation tab that has the same name, is it the same
+			// as the one we want to load, if not warn the user of the duplicate name
+			boolean same;
+			if (TransMeta.isRepReference(transMeta.getFilename(), transMeta.getName()))
+			{
+				// a repository value
+				same = transMeta.getDirectory().getPath().equals(xform.getDirectory().getPath());
+			}
+			else {
+				// a file system entry
+				same = transMeta.getFilename().equals(xform.getFilename());
+			}
+			//if (!same) {
 			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
 					Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
 							+ Const.CR + Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
@@ -85,6 +99,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			 * mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); //
 			 * Sorry! mb.open();
 			 */
+			//}
 		}
 
 		return key;
@@ -873,7 +888,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 								.isClusterPreparing(), executionConfiguration.isClusterStarting());
 			}
 		}
-		spoon.setArguments(executionConfiguration.getArgumentStrings());
 	}
 
 	public void splitTrans(TransMeta transMeta, boolean show, boolean post, boolean prepare, boolean start)
