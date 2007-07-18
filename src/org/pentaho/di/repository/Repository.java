@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -2573,6 +2575,21 @@ public class Repository
         return getOneRow("R_DATABASE_ATTRIBUTE", "ID_DATABASE_ATTRIBUTE", id_database_attribute);
     }
 
+    public Collection<RowMetaAndData> getDatabaseAttributes() throws KettleDatabaseException, KettleValueException
+    {
+    	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
+    	List<Object[]> rows = database.getRows("SELECT * FROM " + "R_DATABASE_ATTRIBUTE",0);
+    	for (Object[] row : rows) 
+    	{
+    		RowMetaAndData rowWithMeta = new RowMetaAndData(database.getReturnRowMeta(), row);
+    		long id = rowWithMeta.getInteger("ID_DATABASE_ATTRIBUTE", 0);
+    		if (id >0) {
+    			attrs.add(rowWithMeta);
+    		}
+    	}
+    	return attrs;
+    }
+    
 	public RowMetaAndData getCondition(long id_condition) throws KettleException
 	{
 		return getOneRow("R_CONDITION", "ID_CONDITION", id_condition);
