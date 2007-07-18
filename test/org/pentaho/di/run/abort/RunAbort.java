@@ -1,13 +1,12 @@
 package org.pentaho.di.run.abort;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunAbort extends TestCase
+public class RunAbort extends RunTestCase
 {
     public void test_ABORT_00()
     {
@@ -26,7 +25,7 @@ public class RunAbort extends TestCase
                 AllRunTests.getNewTargetDatabase(),
                 1
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==1);  // abort step must abort in this case
@@ -45,7 +44,7 @@ public class RunAbort extends TestCase
                 AllRunTests.getNewTargetDatabase(),
                 1
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);  // abort step must abort in this case

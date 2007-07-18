@@ -1,14 +1,13 @@
 package org.pentaho.di.run.insertupdate;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunInsertUpdate extends TestCase
+public class RunInsertUpdate extends RunTestCase
 {
     private static void createTableAndIndex() throws Exception
     {
@@ -53,9 +52,9 @@ public class RunInsertUpdate extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);

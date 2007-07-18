@@ -48,14 +48,15 @@ public class TimedTransRunner
         this.records = records;
     }
 
-    public void runOldAndNew() throws Exception
+    public boolean runOldAndNew() throws Exception
     {
         init();
         
-        runOldEngine(true);
-        runNewEngine(false);
+        boolean ok = runOldEngine(true);
+        ok &= runNewEngine(false);
         
         compareResults();
+        return ok;
     }
 
     public void init()
@@ -88,7 +89,7 @@ public class TimedTransRunner
         runOldEngine(true);
     }
     
-    public void runOldEngine(boolean printDescription) throws Exception
+    public boolean runOldEngine(boolean printDescription) throws Exception
     {
         if (be.ibridge.kettle.trans.StepLoader.getInstance().getPluginList().size()==0) be.ibridge.kettle.trans.StepLoader.getInstance().read();
 
@@ -105,7 +106,9 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         be.ibridge.kettle.trans.Trans trans = new be.ibridge.kettle.trans.Trans(be.ibridge.kettle.core.LogWriter.getInstance(), oldTransMeta);
-        trans.prepareExecution(null);
+        if( !trans.prepareExecution(null) ) {
+        	return false;
+        }
         
         if (!Const.isEmpty(oldRowListenerStep))
         {
@@ -130,6 +133,7 @@ public class TimedTransRunner
         oldSpeed = (double)records / (oldRunTime);
         
         printStats("V2 results", records, oldRunTime, oldSpeed);
+        return true;
     }
 
     private static DecimalFormat recordsDF = new DecimalFormat("###,###,##0");
@@ -141,12 +145,12 @@ public class TimedTransRunner
         System.out.println(prefix+", rows: "+recordsDF.format(lines)+",   runtime: "+runtimeDF.format(runTime)+"s,   speed: "+speedDF.format(speed)+" rows/s");
     }
 
-    public void runNewEngine() throws KettleXMLException
+    public boolean runNewEngine() throws KettleXMLException
     {
-        runNewEngine(false);
+        return runNewEngine(false);
     }
 
-    public void runNewEngine(boolean printDescription) throws KettleXMLException
+    public boolean runNewEngine(boolean printDescription) throws KettleXMLException
     {
         if (StepLoader.getInstance().getPluginList().size()==0) StepLoader.getInstance().read();
 
@@ -162,7 +166,9 @@ public class TimedTransRunner
         
         // OK, now run this transFormation.
         Trans trans = new Trans(newTransMeta);
-        trans.prepareExecution(null);
+        if( !trans.prepareExecution(null) ) {
+        	return false;
+        }
         
         if (!Const.isEmpty(newRowListenerStep))
         {
@@ -187,6 +193,8 @@ public class TimedTransRunner
         newSpeed = (double)records / (newRunTime);
         
         printStats("V3 results", records, newRunTime, newSpeed);
+        
+        return true;
     }
     
     private static DecimalFormat factorDF = new DecimalFormat("##0.00");

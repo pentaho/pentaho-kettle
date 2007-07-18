@@ -1,14 +1,13 @@
 package org.pentaho.di.run.dimensionlookup;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunDimensionLookup extends TestCase
+public class RunDimensionLookup extends RunTestCase
 {
     private static void createIndex() throws Exception
     {
@@ -63,9 +62,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -81,9 +80,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                20000
+                (int) (rowCount/5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -99,9 +98,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -117,9 +116,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -135,9 +134,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -153,9 +152,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -171,9 +170,9 @@ public class RunDimensionLookup extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                250000
+                (int) (rowCount*2.5)
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);

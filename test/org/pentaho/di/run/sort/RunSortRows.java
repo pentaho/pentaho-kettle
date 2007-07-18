@@ -1,13 +1,12 @@
 package org.pentaho.di.run.sort;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunSortRows extends TestCase
+public class RunSortRows extends RunTestCase
 {
     private static final int ERROR_LEVEL = LogWriter.LOG_LEVEL_ERROR;
     
@@ -25,9 +24,9 @@ public class RunSortRows extends TestCase
                 ERROR_LEVEL, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -43,9 +42,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -61,9 +60,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -79,9 +78,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -97,9 +96,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -115,9 +114,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -133,9 +132,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -152,9 +151,9 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -170,11 +169,11 @@ public class RunSortRows extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
         
         timedTransRunner.init();
-        timedTransRunner.runNewEngine(true);
+        assertTrue( timedTransRunner.runNewEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);

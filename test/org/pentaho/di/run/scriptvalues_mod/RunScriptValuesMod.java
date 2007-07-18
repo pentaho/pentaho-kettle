@@ -1,13 +1,12 @@
 package org.pentaho.di.run.scriptvalues_mod;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunScriptValuesMod extends TestCase
+public class RunScriptValuesMod extends RunTestCase
 {
     public void test_SCRIPT_VALUES_MOD_00()
     {
@@ -23,11 +22,12 @@ public class RunScriptValuesMod extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                500000
+                rowCount*5
             );
         timedTransRunner.init();
         timedTransRunner.runOldEngine(true);
-        timedTransRunner.runNewEngine(false);
+        boolean ok = timedTransRunner.runNewEngine(true);
+        assertTrue( ok );
         timedTransRunner.compareResults();
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
@@ -44,10 +44,11 @@ public class RunScriptValuesMod extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                500000
+                rowCount*5
             );
         timedTransRunner.init();
-        timedTransRunner.runNewEngine(true);
+        boolean ok = timedTransRunner.runNewEngine(true);
+        assertTrue( ok );
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);

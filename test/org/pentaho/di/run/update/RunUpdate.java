@@ -1,13 +1,12 @@
 package org.pentaho.di.run.update;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunUpdate extends TestCase
+public class RunUpdate extends RunTestCase
 {
     private static void createIndex() throws Exception
     {
@@ -33,9 +32,9 @@ public class RunUpdate extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);
@@ -51,9 +50,9 @@ public class RunUpdate extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
 
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);

@@ -1,13 +1,12 @@
 package org.pentaho.di.run.excelinput;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunExcelInput extends TestCase
+public class RunExcelInput extends RunTestCase
 {
     public void test_EXCEL_INPUT_00()
     {
@@ -23,9 +22,9 @@ public class RunExcelInput extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                10000
+                10000 // this is the number of rows in the spreadsheet
             );
-        timedTransRunner.runOldAndNew();
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);

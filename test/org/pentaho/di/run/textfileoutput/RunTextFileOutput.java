@@ -1,13 +1,12 @@
 package org.pentaho.di.run.textfileoutput;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunTextFileOutput extends TestCase
+public class RunTextFileOutput extends RunTestCase
 {
     public void test_TEXT_FILE_OUTPUT_00()
     {
@@ -23,7 +22,7 @@ public class RunTextFileOutput extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
         
         timedTransRunner.init();
@@ -45,7 +44,7 @@ public class RunTextFileOutput extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
         
         timedTransRunner.init();
@@ -67,7 +66,7 @@ public class RunTextFileOutput extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                100000
+                rowCount
             );
         
         timedTransRunner.init();

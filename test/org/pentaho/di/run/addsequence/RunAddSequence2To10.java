@@ -1,13 +1,12 @@
 package org.pentaho.di.run.addsequence;
 
-import junit.framework.TestCase;
-
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.run.AllRunTests;
+import org.pentaho.di.run.RunTestCase;
 import org.pentaho.di.run.TimedTransRunner;
 
-public class RunAddSequence2To10 extends TestCase
+public class RunAddSequence2To10 extends RunTestCase
 {
     public void test_ADD_SEQUENCE_06_Add2To10() throws Exception
     {
@@ -16,9 +15,9 @@ public class RunAddSequence2To10 extends TestCase
                 LogWriter.LOG_LEVEL_ERROR, 
                 AllRunTests.getOldTargetDatabase(),
                 AllRunTests.getNewTargetDatabase(),
-                1000000
-            );
-        timedTransRunner.runOldAndNew();
+                rowCount*10
+        );
+        assertTrue( timedTransRunner.runOldAndNew() );
         
         be.ibridge.kettle.core.Result oldResult = timedTransRunner.getOldResult();
         assertTrue(oldResult.getNrErrors()==0);

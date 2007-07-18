@@ -26,7 +26,7 @@ public class RunMapping extends TestCase
                 1000
             );
         timedTransRunner.init();
-        timedTransRunner.runNewEngine(true);
+        assertTrue( timedTransRunner.runNewEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
@@ -42,7 +42,7 @@ public class RunMapping extends TestCase
                 1000
             );
         timedTransRunner.init();
-        timedTransRunner.runNewEngine(true);
+        assertTrue( timedTransRunner.runNewEngine(true) );
         
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
