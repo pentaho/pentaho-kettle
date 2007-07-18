@@ -2608,6 +2608,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 						JobMeta jobMeta = progressDialog.open();
 						jobMeta.clearChanged();
 						jobMeta.setFilename(objname);
+						jobMeta.setArguments(arguments);
                         delegates.jobs.addJobGraph(jobMeta);
 						refreshTree();
 						refreshGraph();
