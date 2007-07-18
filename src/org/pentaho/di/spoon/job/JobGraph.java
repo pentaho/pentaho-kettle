@@ -1500,7 +1500,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         }
         
 		// Load from repository?
-		if ( Const.isEmpty(exactFilename) && !Const.isEmpty(exactTransname) )
+		if ( TransMeta.isRepReference(exactFilename, exactTransname) )
 		{
 			try
 			{
