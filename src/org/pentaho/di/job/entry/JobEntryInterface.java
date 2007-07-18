@@ -122,7 +122,7 @@ public interface JobEntryInterface
      * 
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies();
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta);
 
 	/**
 	 * Exports the object to a flat-file system, adding content with filename keys to a set of definitions.

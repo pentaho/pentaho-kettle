@@ -55,9 +55,13 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 
@@ -1086,8 +1090,14 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         this.port = port;
     }
     
-
-    
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      String realServername = environmentSubstitute(server);
+      ResourceReference reference = new ResourceReference(this);
+      reference.getEntries().add( new ResourceEntry(realServername, ResourceType.SERVER));
+      references.add(reference);    
+      return references;
+    }
 
 }   
 

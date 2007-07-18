@@ -1128,7 +1128,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 				item = menu.getMenuItemById( "job-graph-entry-launch" ); //$NON-NLS-1$
 				switch(jobEntry.getJobEntryType())
 				{
-				case TRANSFORMATION:
+				case TRANS:
 					{
 						item.setEnabled(true);
 						item.setText(Messages.getString("JobGraph.PopupMenu.JobEntry.LaunchSpoon"));
@@ -1470,7 +1470,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 			}
 		}
 		else
-		if (jobentry.getJobEntryType()==JobEntryType.TRANSFORMATION)
+		if (jobentry.getJobEntryType()==JobEntryType.TRANS)
 		{
 			final JobEntryTrans entry = (JobEntryTrans)jobentry.getEntry();
 			if ( ( entry!=null && entry.getFilename()!=null && spoon.rep==null) ||

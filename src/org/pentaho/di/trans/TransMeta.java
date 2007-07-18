@@ -5662,7 +5662,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     	List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
     
     	for (int i=0;i<steps.size();i++) {
-    		resourceReferences.addAll( steps.get(i).getResourceDependencies() );
+    		resourceReferences.addAll( steps.get(i).getResourceDependencies(this) );
     	}
     	
     	return resourceReferences;

@@ -44,7 +44,10 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.StepLoader;
 import org.w3c.dom.Node;
 
@@ -646,6 +649,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         this.execPerRow = runEveryResultRow;
     }
 
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      if (!Const.isEmpty(filename)) {
+        String realFileName = getRealFilename();
+        ResourceReference reference = new ResourceReference(this);
+        reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.ACTIONFILE));
+        references.add(reference);
+      }
+      return references;
+    }
+    
     /**
      * We're going to load the transformation meta data referenced here.
      * Then we're going to give it a new filename, modify that filename in this entries.

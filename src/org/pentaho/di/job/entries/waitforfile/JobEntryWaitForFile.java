@@ -30,9 +30,13 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 /**
@@ -374,4 +378,16 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	public void setFileSizeCheck(boolean fileSizeCheck) {
 		this.fileSizeCheck = fileSizeCheck;
 	}
+  
+  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+    if (!Const.isEmpty(filename)) {
+      String realFileName = getRealFilename();
+      ResourceReference reference = new ResourceReference(this);
+      reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.FILE));
+      references.add(reference);
+    }
+    return references;
+  }
+  
 }

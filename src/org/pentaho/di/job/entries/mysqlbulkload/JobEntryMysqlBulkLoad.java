@@ -29,9 +29,13 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 /**
@@ -606,5 +610,26 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		}
 
 		return returnString;
-	}	
+	}
+  
+  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+    ResourceReference reference = null;
+    if (connection != null) {
+      reference = new ResourceReference(this);
+      references.add(reference);
+      reference.getEntries().add( new ResourceEntry(connection.getHostname(), ResourceType.SERVER));
+      reference.getEntries().add( new ResourceEntry(connection.getDatabaseName(), ResourceType.DATABASENAME));
+    }
+    if ( filename != null) {
+      String realFilename = getRealFilename();
+      if (reference == null) {
+        reference = new ResourceReference(this);
+        references.add(reference);
+      }
+      reference.getEntries().add( new ResourceEntry(realFilename, ResourceType.FILE));      
+    }
+    return references;
+  }
+  
 }

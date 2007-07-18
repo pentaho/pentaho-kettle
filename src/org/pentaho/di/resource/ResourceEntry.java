@@ -1,7 +1,7 @@
 package org.pentaho.di.resource;
 
 public class ResourceEntry {
-	public enum ResourceType { FILE, CONNECTION, SERVER, POOL, INTERNAL, OTHER, };
+	public enum ResourceType { FILE, CONNECTION, SERVER, URL, DATABASENAME, ACTIONFILE, OTHER };
 	
 	private String resource;
 	private ResourceType resourcetype;

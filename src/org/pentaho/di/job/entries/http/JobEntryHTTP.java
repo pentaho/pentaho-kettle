@@ -47,9 +47,13 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 
@@ -621,6 +625,15 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     public void setTargetFilenameExtention(String uploadFilenameExtention)
     {
         this.targetFilenameExtention = uploadFilenameExtention;
+    }
+
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      String realUrl = environmentSubstitute(url);
+      ResourceReference reference = new ResourceReference(this);
+      reference.getEntries().add( new ResourceEntry(realUrl, ResourceType.URL));
+      references.add(reference);    
+      return references;
     }
     
 }

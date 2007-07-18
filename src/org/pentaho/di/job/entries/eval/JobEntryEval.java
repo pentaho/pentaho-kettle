@@ -51,7 +51,7 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     super(n, ""); //$NON-NLS-1$
     script = scr;
     setID(-1L);
-    setJobEntryType(JobEntryType.EVALUATION);
+    setJobEntryType(JobEntryType.EVAL);
   }
 
   public JobEntryEval() {

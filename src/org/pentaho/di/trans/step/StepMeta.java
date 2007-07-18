@@ -41,6 +41,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
+import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectBase;
@@ -59,7 +60,8 @@ import org.w3c.dom.Node;
  * @author Matt
  *
  */
-public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface, SharedObjectInterface, 
+                                                          CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface
 {
 	public static final String XML_TAG = "step";
 
@@ -872,8 +874,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
      * 
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies() {
-    	return stepMetaInterface.getResourceDependencies();
+    public List<ResourceReference> getResourceDependencies(TransMeta transMeta) {
+    	return stepMetaInterface.getResourceDependencies(transMeta, this);
     }
 
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {

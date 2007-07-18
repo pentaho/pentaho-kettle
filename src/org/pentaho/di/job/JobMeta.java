@@ -2549,9 +2549,12 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
   
   public List<ResourceReference> getResourceDependencies() {
   	List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
-  
-  	for (int i=0;i<jobentries.size();i++) {
-  		resourceReferences.addAll( jobentries.get(i).getResourceDependencies() );
+    JobEntryCopy copy = null;
+    JobEntryInterface entry = null;
+  	for (int i=0;i<jobcopies.size();i++) {
+      copy = jobcopies.get(i); // get the job entry copy
+      entry = copy.getEntry();
+  		resourceReferences.addAll( entry.getResourceDependencies(this) );
   	}
   	
   	return resourceReferences;

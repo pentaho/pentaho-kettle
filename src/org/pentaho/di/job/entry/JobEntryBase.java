@@ -33,6 +33,7 @@ import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
@@ -45,7 +46,7 @@ import org.w3c.dom.Node;
  * Created on 18-jun-04
  *
  */
-public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface
+public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface
 {
 	private String  name;
 	private String  description;
@@ -197,7 +198,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
 	public boolean isEvaluation()
 	{
-		return getJobEntryType() == JobEntryType.EVALUATION;
+		return getJobEntryType() == JobEntryType.EVAL;
 	}
 
 	public boolean isJob()
@@ -222,7 +223,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
 	public boolean isTransformation()
 	{
-		return getJobEntryType() == JobEntryType.TRANSFORMATION;
+		return getJobEntryType() == JobEntryType.TRANS;
 	}
 
 	public boolean isFTP()
@@ -450,9 +451,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
      *
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies() 
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
     {
-    	return new ArrayList<ResourceReference>(); // default: return an empty resource dependency list.
+    	return new ArrayList<ResourceReference>(5); // default: return an empty resource dependency list. Lower the initial capacity
     }
     
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {

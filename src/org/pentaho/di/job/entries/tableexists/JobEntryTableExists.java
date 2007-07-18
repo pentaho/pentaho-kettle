@@ -27,9 +27,13 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 
@@ -218,4 +222,16 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     {
         return new DatabaseMeta[] { connection, };
     }
+    
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      if (connection != null) {
+        ResourceReference reference = new ResourceReference(this);
+        reference.getEntries().add( new ResourceEntry(connection.getHostname(), ResourceType.SERVER));
+        reference.getEntries().add( new ResourceEntry(connection.getDatabaseName(), ResourceType.DATABASENAME));
+        references.add(reference);
+      }
+      return references;
+    }
+    
 }

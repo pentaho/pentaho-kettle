@@ -247,9 +247,12 @@ public interface StepMetaInterface
     /**
      * Get a list of all the resource dependencies that the step is depending on.
      * 
+     * @param transMeta
+     * @param stepinfo
+     * 
      * @return a list of all the resource dependencies that the step is depending on
      */
-    public List<ResourceReference> getResourceDependencies();
+    public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo);
     
     /**
      * 

@@ -68,7 +68,7 @@ import org.w3c.dom.Node;
  * @since 1-10-2003, rewritten on 18-06-2004
  * 
  */
-@org.pentaho.di.core.annotations.Job(image="TRN.png",id="TRANS",type=JobEntryType.TRANSFORMATION,tooltip="JobEntry.Trans.Tooltip")
+@org.pentaho.di.core.annotations.Job(image="TRN.png",id="TRANS",type=JobEntryType.TRANS,tooltip="JobEntry.Trans.Tooltip")
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
 	private String              transname;
@@ -94,7 +94,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public JobEntryTrans(String name)
 	{
 		super(name, "");
-		setJobEntryType(JobEntryType.TRANSFORMATION);
+		setJobEntryType(JobEntryType.TRANS);
 	}
 
 	public JobEntryTrans()
@@ -833,23 +833,18 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       
      }
     
-    /**
-     * Get a list of all the resource dependencies that the step is depending on.
-     * 
-     * @return a list of all the resource dependencies that the step is depending on
-     */
-    public List<ResourceReference> getResourceDependencies() {
-    	List<ResourceReference> references = new ArrayList<ResourceReference>();
-    	if (!Const.isEmpty(filename)) {
-        	List<ResourceEntry> entries = new ArrayList<ResourceEntry>();
-        	ResourceReference resourceReference = new ResourceReference(this, entries);
-    		entries.add(new ResourceEntry(filename, ResourceType.FILE));
-        	references.add(resourceReference);
-    	}
-    	return references;
+    public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+      List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+      if (!Const.isEmpty(filename)) {
+        String realFileName = getRealFilename();
+        ResourceReference reference = new ResourceReference(this);
+        reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.ACTIONFILE));
+        references.add(reference);
+      }
+      return references;
     }
     
-    /**
+   /**
      * We're going to load the transformation meta data referenced here.
      * Then we're going to give it a new filename, modify that filename in this entries.
      * The parent caller will have made a copy of it, so it should be OK to do so.

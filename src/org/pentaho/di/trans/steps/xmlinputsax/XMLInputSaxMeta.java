@@ -43,6 +43,9 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -763,4 +766,23 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     {
     	return definitionElement.size();
     }
+
+    @Override
+    public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+       List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+       
+       String[] textFiles = getFiles(transMeta);
+       if ( textFiles!=null ) {
+         ResourceReference reference = null;
+         for (int i=0; i<textFiles.length; i++) {
+           if (reference == null) {
+             reference = new ResourceReference(stepInfo);
+             references.add(reference);
+           }
+           reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));
+         }
+       }
+       return references;
+    }
+
 }

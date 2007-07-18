@@ -43,6 +43,9 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 import com.enterprisedt.net.ftp.FTPClient;
@@ -601,4 +604,16 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
     remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
         "JobEntryFTP.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
   }
+
+  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+    if (!Const.isEmpty(serverName)) {
+      String realServername = environmentSubstitute(serverName);
+      ResourceReference reference = new ResourceReference(this);
+      reference.getEntries().add( new ResourceEntry(realServername, ResourceType.SERVER));
+      references.add(reference);
+    }
+    return references;
+  }
+  
 }

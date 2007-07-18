@@ -494,7 +494,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public boolean isTransformation()
 	{
-		return getJobEntryType() == JobEntryType.TRANSFORMATION;
+		return getJobEntryType() == JobEntryType.TRANS;
 	}
 
 	public boolean isJob()
@@ -518,7 +518,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
 	public boolean isEvaluation()
 	{
-		return getJobEntryType() == JobEntryType.EVALUATION;
+		return getJobEntryType() == JobEntryType.EVAL;
 	}
 
 	public boolean isMail()

@@ -33,6 +33,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -505,4 +508,18 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 
+  @Override
+  public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+     List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+     
+     if (!Const.isEmpty(filename)) {
+       // Add the filename to the references, including a reference to this step meta data.
+       //
+       ResourceReference reference = new ResourceReference(stepInfo);
+       reference.getEntries().add( new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
+       references.add(reference);
+     }
+     return references;
+  }
+  
 }

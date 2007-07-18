@@ -40,6 +40,9 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 /**
@@ -375,34 +378,51 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     LogWriter log = LogWriter.getInstance();
-    for (int i = 0; i < arguments.length; i++) {
-      FileObject fileObject = null;
-      String filename = environmentSubstitute(arguments[i]);
-      try {
-        fileObject = KettleVFS.getFileObject(filename);
-        if (null != fileObject && fileObject.exists()) {
-          // folder
-          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-              "JobEntryDeleteFiles.CheckResult.Exists", filename), this)); //$NON-NLS-1$
-          if (fileObject.getType() == FileType.FOLDER) {
+    if (arguments != null) {
+      for (int i = 0; i < arguments.length; i++) {
+        FileObject fileObject = null;
+        String filename = environmentSubstitute(arguments[i]);
+        try {
+          fileObject = KettleVFS.getFileObject(filename);
+          if (null != fileObject && fileObject.exists()) {
+            // folder
             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                "JobEntryDeleteFiles.CheckResult.IsFolder", filename), this)); //$NON-NLS-1$
-            String wildcard = environmentSubstitute(filemasks[i]);
+                "JobEntryDeleteFiles.CheckResult.Exists", filename), this)); //$NON-NLS-1$
+            if (fileObject.getType() == FileType.FOLDER) {
+              remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
+                  "JobEntryDeleteFiles.CheckResult.IsFolder", filename), this)); //$NON-NLS-1$
+              String wildcard = environmentSubstitute(filemasks[i]);
+              remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
+                  "JobEntryDeleteFiles.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
+            }
+          } else {
+            // already deleted
             remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                "JobEntryDeleteFiles.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
+                "JobEntryDeleteFiles.FileAlreadyDeleted", filename), this)); //$NON-NLS-1$
           }
-        } else {
-          // already deleted
-          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-              "JobEntryDeleteFiles.FileAlreadyDeleted", filename), this)); //$NON-NLS-1$
+        } catch (IOException e) {
+          log.logError(toString(), e.getMessage());
+          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString(
+              "JobEntryDeleteFiles.CouldNotProcess", filename, e.getMessage()), this)); //$NON-NLS-1$
         }
-      } catch (IOException e) {
-        log.logError(toString(), e.getMessage());
-        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString(
-            "JobEntryDeleteFiles.CouldNotProcess", filename, e.getMessage()), this)); //$NON-NLS-1$
       }
-
     }
   }
 
+  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+    if (arguments != null) {
+      ResourceReference reference = null;
+      for (int i=0; i<arguments.length; i++) {
+        String filename = environmentSubstitute(arguments[i]);
+        if (reference == null) {
+          reference = new ResourceReference(this);
+          references.add(reference);
+        }
+        reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
+     }
+    }
+    return references;
+  }
+  
 }

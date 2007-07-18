@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -35,6 +36,9 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 
@@ -185,7 +189,18 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	{
 		return true;
 	}
-    
+
+  public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
+    List<ResourceReference> references = super.getResourceDependencies(jobMeta);
+    if (!Const.isEmpty(filename)) {
+      String realFileName = getRealFilename();
+      ResourceReference reference = new ResourceReference(this);
+      reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.FILE));
+      references.add(reference);
+    }
+    return references;
+  }
+  
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
       if (filename != null) {
         remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$

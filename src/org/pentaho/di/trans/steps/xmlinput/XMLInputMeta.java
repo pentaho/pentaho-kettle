@@ -38,6 +38,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -542,12 +545,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	public FileInputList getFiles(VariableSpace space)
 	{
         String required[] = new String[fileName.length];
-        boolean subdirs[] = new boolean[fileName.length];
-        for (int i=0;i<required.length;i++)
-        {
-            required[i]="Y";
-            subdirs[i]=false;
-        }
+        boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
+        for (int i=0;i<required.length; required[i]="Y", i++); //$NON-NLS-1$
         return FileInputList.createFileList(space, fileName, fileMask, required, subdirs);
 
         /*
@@ -674,6 +673,31 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
 
+    @Override
+    public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+       List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+
+       //
+       // Get the file path list from the FileInputList
+       //
+       String required[] = new String[fileName.length];
+       boolean subdirs[] = new boolean[fileName.length]; // boolean arrays are defaulted to false.
+       for (int i=0;i<required.length; required[i]="N", i++); //$NON-NLS-1$
+       String[] textFiles = FileInputList.createFilePathList(transMeta, fileName, fileMask, required, subdirs);
+       
+       if ( textFiles!=null ) {
+         ResourceReference reference = null;
+         for (int i=0; i<textFiles.length; i++) {
+           if (reference == null) {
+             reference = new ResourceReference(stepInfo);
+             references.add(reference);
+           }
+           reference.getEntries().add( new ResourceEntry(textFiles[i], ResourceType.FILE));
+         }
+       }
+       return references;
+    }
+    
     /**
      * @param inputPosition The inputPosition to set.
      */

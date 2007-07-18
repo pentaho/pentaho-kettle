@@ -35,7 +35,10 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -718,6 +721,29 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		this.mappingParameters = mappingParameters;
 	}
 	
+  @Override
+  public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+     List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
+     String realFilename = transMeta.environmentSubstitute(fileName);
+     String realTransname = transMeta.environmentSubstitute(transName);
+     
+     if (!Const.isEmpty(realFilename)) {
+       // Add the filename to the references, including a reference to this step meta data.
+       //
+       ResourceReference reference = new ResourceReference(stepInfo);
+       references.add(reference);
+       reference.getEntries().add( new ResourceEntry(realFilename, ResourceType.ACTIONFILE));
+     } else if (!Const.isEmpty(realTransname)) {
+       // Add the filename to the references, including a reference to this step meta data.
+       //
+       ResourceReference reference = new ResourceReference(stepInfo);
+       references.add(reference);
+       reference.getEntries().add( new ResourceEntry(realTransname, ResourceType.ACTIONFILE));
+       references.add(reference);
+     }
+     return references;
+  }
+  
 	@Override
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface) throws KettleException {
 		

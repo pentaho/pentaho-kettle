@@ -5,7 +5,10 @@ import org.pentaho.di.job.entry.Messages;
 public enum JobEntryType
 {
 	NONE("-"),
-	TRANSFORMATION(Messages.getString("JobEntry.Trans.TypeDesc")),
+  // Commented out next line and reverted to TRANS by MB because currently, saved jobs have
+  // TRANS instead of TRANSFORMATION. This causes getType() in JobEntryCopy to fail.
+	// TRANSFORMATION(Messages.getString("JobEntry.Trans.TypeDesc")),
+  TRANS(Messages.getString("JobEntry.Trans.TypeDesc")),
 	JOB(Messages.getString("JobEntry.Job.TypeDesc")),
 	SHELL(Messages.getString("JobEntry.Shell.TypeDesc")),
 	MAIL(Messages.getString("JobEntry.Mail.TypeDesc")),
@@ -13,7 +16,10 @@ public enum JobEntryType
 	FTP(Messages.getString("JobEntry.FTP.TypeDesc")),
 	TABLE_EXISTS(Messages.getString("JobEntry.TableExists.TypeDesc")),
 	FILE_EXISTS(Messages.getString("JobEntry.FileExists.TypeDesc")),
-	EVALUATION(Messages.getString("JobEntry.Evaluation.TypeDesc")),
+  // Commented out and reverted to EVAL by MB because currently,
+  // saved jobs have EVAL instead of EVALUATION. This causes getType() in JobEntryCopy to fail.
+	// EVALUATION(Messages.getString("JobEntry.Evaluation.TypeDesc")),
+  EVAL(Messages.getString("JobEntry.Evaluation.TypeDesc")),
 	SPECIAL(Messages.getString("JobEntry.Special.TypeDesc")),
     SFTP(Messages.getString("JobEntry.SFTP.TypeDesc")),
     HTTP(Messages.getString("JobEntry.HTTP.TypeDesc")),

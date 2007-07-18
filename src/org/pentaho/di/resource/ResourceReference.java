@@ -4,37 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResourceReference {
-	private Object referenceHolder;
+	private ResourceHolderInterface resourceReferenceHolder;
 	private List<ResourceEntry> entries;
 	
 	/**
 	 * @param referenceHolder
 	 * @param entries
 	 */
-	public ResourceReference(Object referenceHolder, List<ResourceEntry> entries) {
+	public ResourceReference(ResourceHolderInterface resourceReferenceHolder, List<ResourceEntry> entries) {
 		super();
-		this.referenceHolder = referenceHolder;
+		this.resourceReferenceHolder = resourceReferenceHolder;
 		this.entries = entries;
 	}
 
-	public ResourceReference(Object referenceHolder) {
-		this.referenceHolder = referenceHolder;
+	public ResourceReference(ResourceHolderInterface resourceReferenceHolder) {
+		this.resourceReferenceHolder = resourceReferenceHolder;
 		this.entries = new ArrayList<ResourceEntry>();
 	}
 
 	/**
 	 * @return the referenceHolder
 	 */
-	public Object getReferenceHolder() {
-		return referenceHolder;
+	public ResourceHolderInterface getReferenceHolder() {
+		return resourceReferenceHolder;
 	}
 
 	/**
 	 * @param referenceHolder
 	 *            the referenceHolder to set
 	 */
-	public void setReferenceHolder(Object referenceHolder) {
-		this.referenceHolder = referenceHolder;
+	public void setReferenceHolder(ResourceHolderInterface resourceReferenceHolder) {
+		this.resourceReferenceHolder = resourceReferenceHolder;
 	}
 
 	/**

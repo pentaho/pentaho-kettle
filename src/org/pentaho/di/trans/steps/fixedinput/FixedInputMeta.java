@@ -404,14 +404,15 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 	@Override
-	public List<ResourceReference> getResourceDependencies() {
-		 List<ResourceReference> references = super.getResourceDependencies();
+	public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+		 List<ResourceReference> references = super.getResourceDependencies(transMeta, stepInfo);
 		 
 		 if (!Const.isEmpty(filename)) {
 			 // Add the filename to the references, including a reference to this step meta data.
 			 //
-			 ResourceReference reference = new ResourceReference(this);
-			 reference.getEntries().add( new ResourceEntry(filename, ResourceType.FILE));
+			 ResourceReference reference = new ResourceReference(stepInfo);
+			 reference.getEntries().add( new ResourceEntry(transMeta.environmentSubstitute(filename), ResourceType.FILE));
+       references.add(reference);
 		 }
 		 return references;
 	}
