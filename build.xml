@@ -500,6 +500,7 @@
 			<formatter type="xml"/>
 			
 		  	<test todir="${junit}" name="org.pentaho.di.resource.ResourceExportTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.resource.ResourceDependencyTest" haltonerror="false" />
 			
 		</junit>
 	</target>
@@ -551,6 +552,7 @@
 	    	<classpath>
 				<fileset dir="${lib}" includes="kettle3.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
+				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
 
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
