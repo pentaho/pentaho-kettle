@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>ValueMapper</name>
+    <name>ValueMapperDefaultTest</name>
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -46,17 +47,17 @@
   </info>
   <notepads>
     <notepad>
-      <note>with target field</note>
-      <xloc>202</xloc>
-      <yloc>182</yloc>
-      <width>93</width>
+      <note>default test</note>
+      <xloc>185</xloc>
+      <yloc>32</yloc>
+      <width>69</width>
       <heigth>25</heigth>
     </notepad>
     <notepad>
-      <note>without target field</note>
-      <xloc>198</xloc>
-      <yloc>34</yloc>
-      <width>111</width>
+      <note>will  only work from 3.0</note>
+      <xloc>323</xloc>
+      <yloc>26</yloc>
+      <width>133</width>
       <heigth>25</heigth>
     </notepad>
   </notepads>
@@ -83,9 +84,9 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>Value Mapper 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper 2</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3 2</from><to>Value Mapper 2</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows 2 2 2</from><to>Value Mapper 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3 2 2 2</from><to>Value Mapper 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper 2 2 2</from><to>Dummy (do nothing) 2 2 2</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>Dummy (do nothing)</name>
+    <name>Dummy (do nothing) 2 2 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
@@ -97,33 +98,14 @@
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>416</xloc>
-      <yloc>83</yloc>
+      <xloc>385</xloc>
+      <yloc>79</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 2</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>415</xloc>
-      <yloc>228</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Generate Rows</name>
+    <name>Generate Rows 2 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -149,47 +131,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>74</xloc>
-      <yloc>82</yloc>
+      <xloc>51</xloc>
+      <yloc>78</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows 2</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>value1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>v1</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <limit>10</limit>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>73</xloc>
-      <yloc>227</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Generate Rows 3</name>
+    <name>Generate Rows 3 2 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -215,75 +164,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>76</xloc>
-      <yloc>151</yloc>
+      <xloc>51</xloc>
+      <yloc>147</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows 3 2</name>
-    <type>RowGenerator</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>value1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>v2</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <limit>10</limit>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>71</xloc>
-      <yloc>296</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Value Mapper</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <field_to_use>value1</field_to_use>
-    <target_field/>
-    <non_match_default/>
-    <fields>
-      <field>
-        <source_value>v1</source_value>
-        <target_value>v1new</target_value>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>237</xloc>
-      <yloc>82</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Value Mapper 2</name>
+    <name>Value Mapper 2 2 2</name>
     <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
@@ -295,17 +183,17 @@
            </partitioning>
     <field_to_use>value1</field_to_use>
     <target_field>value1new</target_field>
-    <non_match_default/>
+    <non_match_default>default</non_match_default>
     <fields>
       <field>
         <source_value>v1</source_value>
-        <target_value>v1new</target_value>
+        <target_value>non-default</target_value>
       </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>236</xloc>
-      <yloc>227</yloc>
+      <xloc>206</xloc>
+      <yloc>78</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

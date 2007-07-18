@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>ValueMapper</name>
+    <name>ValueMapperTargetNullField</name>
     <description/>
     <extended_description/>
     <trans_version/>
+    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <log>
       <read/>
@@ -46,17 +47,24 @@
   </info>
   <notepads>
     <notepad>
-      <note>with target field</note>
-      <xloc>202</xloc>
-      <yloc>182</yloc>
-      <width>93</width>
+      <note>with target field &#47; set to null</note>
+      <xloc>183</xloc>
+      <yloc>46</yloc>
+      <width>156</width>
       <heigth>25</heigth>
     </notepad>
     <notepad>
-      <note>without target field</note>
-      <xloc>198</xloc>
-      <yloc>34</yloc>
-      <width>111</width>
+      <note>with target field set to null</note>
+      <xloc>185</xloc>
+      <yloc>222</yloc>
+      <width>148</width>
+      <heigth>25</heigth>
+    </notepad>
+    <notepad>
+      <note>without target field &#47; set to null</note>
+      <xloc>185</xloc>
+      <yloc>222</yloc>
+      <width>174</width>
       <heigth>25</heigth>
     </notepad>
   </notepads>
@@ -83,9 +91,9 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Generate Rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2</from><to>Value Mapper 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper 2</from><to>Dummy (do nothing) 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3 2</from><to>Value Mapper 2</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows 2 2</from><to>Value Mapper 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3 2 2</from><to>Value Mapper 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper 2 2</from><to>Value Mapper check for null</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 2 2 2</from><to>Value Mapper 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows 3 2 2 2</from><to>Value Mapper 2 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper 2 2 2</from><to>Value Mapper check for null 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper check for null</from><to>Dummy (do nothing) 2 2</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper check for null 2</from><to>Dummy (do nothing) 2 2 2</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>Dummy (do nothing)</name>
+    <name>Dummy (do nothing) 2 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
@@ -97,14 +105,14 @@
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>416</xloc>
-      <yloc>83</yloc>
+      <xloc>521</xloc>
+      <yloc>91</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Dummy (do nothing) 2</name>
+    <name>Dummy (do nothing) 2 2 2</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
@@ -116,14 +124,14 @@
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>415</xloc>
-      <yloc>228</yloc>
+      <xloc>529</xloc>
+      <yloc>266</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows</name>
+    <name>Generate Rows 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -149,14 +157,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>74</xloc>
-      <yloc>82</yloc>
+      <xloc>62</xloc>
+      <yloc>91</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows 2</name>
+    <name>Generate Rows 2 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -182,14 +190,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>73</xloc>
-      <yloc>227</yloc>
+      <xloc>64</xloc>
+      <yloc>267</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows 3</name>
+    <name>Generate Rows 3 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -215,14 +223,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>76</xloc>
-      <yloc>151</yloc>
+      <xloc>62</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Generate Rows 3 2</name>
+    <name>Generate Rows 3 2 2 2</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -248,42 +256,14 @@
     <limit>10</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>71</xloc>
-      <yloc>296</yloc>
+      <xloc>64</xloc>
+      <yloc>336</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Value Mapper</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-    <field_to_use>value1</field_to_use>
-    <target_field/>
-    <non_match_default/>
-    <fields>
-      <field>
-        <source_value>v1</source_value>
-        <target_value>v1new</target_value>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>237</xloc>
-      <yloc>82</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Value Mapper 2</name>
+    <name>Value Mapper 2 2</name>
     <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
@@ -299,13 +279,97 @@
     <fields>
       <field>
         <source_value>v1</source_value>
-        <target_value>v1new</target_value>
+        <target_value/>
       </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>236</xloc>
-      <yloc>227</yloc>
+      <xloc>217</xloc>
+      <yloc>91</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Value Mapper 2 2 2</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>value1</field_to_use>
+    <target_field/>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>v1</source_value>
+        <target_value/>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>219</xloc>
+      <yloc>267</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Value Mapper check for null</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>value1new</field_to_use>
+    <target_field>value1newnull</target_field>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value/>
+        <target_value>is-null</target_value>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>358</xloc>
+      <yloc>93</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Value Mapper check for null 2</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>value1</field_to_use>
+    <target_field>value1null</target_field>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value/>
+        <target_value>is-null</target_value>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>360</xloc>
+      <yloc>269</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
