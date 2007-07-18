@@ -114,7 +114,7 @@ public class ValueMapperTest extends TestCase
 	}
 	
 	/**
-	 * Create reult data for test case 1.
+	 * Create result data for test case 1.
 	 */
 	public List<RowMetaAndData> createResultData1()
 	{
@@ -146,7 +146,7 @@ public class ValueMapperTest extends TestCase
 	}	
 
 	/**
-	 * Create reult data for test case 2.
+	 * Create result data for test case 2.
 	 */
 	public List<RowMetaAndData> createResultData2()
 	{
@@ -158,7 +158,7 @@ public class ValueMapperTest extends TestCase
 		Object[] r2 = new Object[] { "BEG_LONGER" };
 		Object[] r3 = new Object[] { "test"       };
 		Object[] r4 = new Object[] { "test"       };
-		Object[] r5 = new Object[] { "ghij"       };
+		Object[] r5 = new Object[] { null         };
 		Object[] r6 = new Object[] { "zzz"        };
 		Object[] r7 = new Object[] { null         };
 		Object[] r8 = new Object[] { null         };
@@ -178,7 +178,7 @@ public class ValueMapperTest extends TestCase
 	}		
 
 	/**
-	 * Create reult data for test case 3.
+	 * Create result data for test case 3.
 	 */
 	public List<RowMetaAndData> createResultData3()
 	{
@@ -190,7 +190,7 @@ public class ValueMapperTest extends TestCase
 		Object[] r2 = new Object[] { "BEG_LONGER" };
 		Object[] r3 = new Object[] { "test"       };
 		Object[] r4 = new Object[] { "test"       };
-		Object[] r5 = new Object[] { "ghij"       };
+		Object[] r5 = new Object[] { null         };
 		Object[] r6 = new Object[] { "zzz"        };
 		Object[] r7 = new Object[] { "emptyField" };
 		Object[] r8 = new Object[] { "emptyField" };
@@ -210,7 +210,7 @@ public class ValueMapperTest extends TestCase
 	}		
 
 	/**
-	 * Create reult data for test case 4.
+	 * Create result data for test case 4.
 	 */
 	public List<RowMetaAndData> createResultData4()
 	{
@@ -222,7 +222,7 @@ public class ValueMapperTest extends TestCase
 		Object[] r2 = new Object[] { "ABC",  "BEG_LONGER" };
 		Object[] r3 = new Object[] { "def",  "test"       };
 		Object[] r4 = new Object[] { "def",  "test"       };
-		Object[] r5 = new Object[] { "ghij", "default"    };
+		Object[] r5 = new Object[] { "ghij", null         };
 		Object[] r6 = new Object[] { "zzz",  "default"    };
 		Object[] r7 = new Object[] { "",     null         };
 		Object[] r8 = new Object[] { null,   null         };
@@ -242,7 +242,7 @@ public class ValueMapperTest extends TestCase
 	}		
 
 	/**
-	 * Create reult data for test case 5.
+	 * Create result data for test case 5.
 	 */
 	public List<RowMetaAndData> createResultData5()
 	{
@@ -254,7 +254,7 @@ public class ValueMapperTest extends TestCase
 		Object[] r2 = new Object[] { "BEG_LONGER" };
 		Object[] r3 = new Object[] { "test"       };
 		Object[] r4 = new Object[] { "test"       };
-		Object[] r5 = new Object[] { "default"    };
+		Object[] r5 = new Object[] { null         };
 		Object[] r6 = new Object[] { "default"    };
 		Object[] r7 = new Object[] { null         };
 		Object[] r8 = new Object[] { null         };
@@ -274,7 +274,7 @@ public class ValueMapperTest extends TestCase
 	}			
 	
 	/**
-	 * Create reult data for test case 6.
+	 * Create result data for test case 6.
 	 */
 	public List<RowMetaAndData> createResultData6()
 	{
