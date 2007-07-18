@@ -311,13 +311,13 @@ public class Database implements VariableSpace
 			  if (dataSource != null) {
 				  connection = dataSource.getConnection();
 				  if (connection == null) {
-					  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName); //$NON-NLS-1$
+					  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName); //$NON-NLS-1$
 				  }
 		      } else {
-				  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName); //$NON-NLS-1$
+				  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName); //$NON-NLS-1$
 		      }
 		  } catch (Exception e) {
-			  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName + ": " + e.getMessage()); //$NON-NLS-1$
+			  throw new KettleDatabaseException( "Invalid JNDI connection "+ jndiName + " : " + e.getMessage()); //$NON-NLS-1$
 		  }
 	  }
 
@@ -332,7 +332,7 @@ public class Database implements VariableSpace
 
 		// first see if this is a JNDI connection
 		if( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-			initWithJNDI( databaseMeta.getDatabaseName() );
+			initWithJNDI( environmentSubstitute(databaseMeta.getDatabaseName()) );
 			return;
 		}
 		
