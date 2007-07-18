@@ -169,7 +169,7 @@ public class TextFileCSVImportProgressDialog
                 field.setDecimalSymbol("" + dfs.getDecimalSeparator());
                 field.setGroupSymbol("" + dfs.getGroupingSeparator());
                 field.setNullString("-");
-                field.setTrimType(TextFileInputMeta.TYPE_TRIM_NONE);
+                field.setTrimType(ValueMetaInterface.TRIM_TYPE_NONE);
             }
 
             nrnull[i] = 0;
@@ -255,15 +255,15 @@ public class TextFileCSVImportProgressDialog
                 {
                     String fieldValue = rowMeta.getString(r, i);
 
-                    int trimthis = TextFileInputMeta.TYPE_TRIM_NONE;
+                    int trimthis = ValueMetaInterface.TRIM_TYPE_NONE;
 
                     boolean spacesBefore = Const.nrSpacesBefore(fieldValue) > 0;
                     boolean spacesAfter = Const.nrSpacesAfter(fieldValue) > 0;
 
                     fieldValue = Const.trim(fieldValue);
 
-                    if (spacesBefore) trimthis |= TextFileInputMeta.TYPE_TRIM_LEFT;
-                    if (spacesAfter) trimthis |= TextFileInputMeta.TYPE_TRIM_RIGHT;
+                    if (spacesBefore) trimthis |= ValueMetaInterface.TRIM_TYPE_LEFT;
+                    if (spacesAfter) trimthis |= ValueMetaInterface.TRIM_TYPE_RIGHT;
 
                     if (log.isDebug()) debug = "change trim type[" + i + "]";
                     field.setTrimType(field.getTrimType() | trimthis);

@@ -56,14 +56,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private static final String YES = "Y";
 
-	public final static int TYPE_TRIM_NONE = 0;
-
-	public final static int TYPE_TRIM_LEFT = 1;
-
-	public final static int TYPE_TRIM_RIGHT = 2;
-
-	public final static int TYPE_TRIM_BOTH = 3;
-
 	public final static String trimTypeCode[] = { "none", "left", "right", "both" };
 
 	public final static String trimTypeDesc[] = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"),

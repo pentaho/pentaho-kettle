@@ -352,6 +352,18 @@ public interface ValueMetaInterface extends Cloneable
      * @throws KettleValueException in case there is a data conversion error
      */
     public Object convertData(ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+    /**
+     * Convert the specified string to the data type specified in this object.
+     * @param pol the string to be converted
+     * @param convertMeta the metadata of the object (only string type) to be converted
+     * @param nullif set the object to null if pos equals nullif (IgnoreCase)
+     * @param ifNull set the object to ifNull when pol is empty or null
+     * @param trim_type the trim type to be used (ValueMetaInterface.TRIM_TYPE_XXX)
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException;
     
     /**
      * Calculate the hashcode of the specified data object

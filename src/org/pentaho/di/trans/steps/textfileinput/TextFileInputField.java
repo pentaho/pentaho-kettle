@@ -101,7 +101,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 		this.type           = ValueMetaInterface.TYPE_STRING;
 		this.ignore         = false;
 		this.format         = "";
-		this.trimtype       = TextFileInputMeta.TYPE_TRIM_NONE;
+		this.trimtype       = ValueMetaInterface.TRIM_TYPE_NONE;
 		this.groupSymbol   = "";
 		this.decimalSymbol = "";
 		this.currencySymbol= "";
@@ -343,10 +343,10 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
 			samples[i] = Const.trim(samples[i]);
 		}
 		
-		trimtype=TextFileInputMeta.TYPE_TRIM_NONE;
+		trimtype=ValueMetaInterface.TRIM_TYPE_NONE;
 		
-		if (spaces_before) trimtype|=TextFileInputMeta.TYPE_TRIM_LEFT;
-		if (spaces_after)  trimtype|=TextFileInputMeta.TYPE_TRIM_RIGHT;
+		if (spaces_before) trimtype|=ValueMetaInterface.TRIM_TYPE_LEFT;
+		if (spaces_after)  trimtype|=ValueMetaInterface.TRIM_TYPE_RIGHT;
 	}
 	
 	public void guessType()

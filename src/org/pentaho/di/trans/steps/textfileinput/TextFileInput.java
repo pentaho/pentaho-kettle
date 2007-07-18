@@ -29,7 +29,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.playlist.FilePlayListAll;
@@ -635,14 +634,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 
                 String nullif = fieldnr < nrfields ? f.getNullString() : "";
                 String ifnull = fieldnr < nrfields ? f.getIfNullValue() : "";
-                int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
+                int trim_type = fieldnr < nrfields ? f.getTrimType() : ValueMetaInterface.TRIM_TYPE_NONE;
 
                 if (fieldnr < strings.length)
                 {
                     String pol = strings[fieldnr];
                     try
                     {
-                        value = convertValue(pol, valueMeta, convertMeta, nullif, ifnull, trim_type);
+                        value = valueMeta.convertDataFromString(pol, convertMeta, nullif, ifnull, trim_type);
                     }
                     catch (Exception e)
                     {
@@ -746,64 +745,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         return r;
 
     }
-    
-    public static final Object convertValue( String pol, ValueMetaInterface valueMeta, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException
-    {
-        // null handling and conversion of value to null
-        //
-        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(ifNull))
-        {
-            if (ifNull!=null && ifNull.length()!=0)
-            {
-                pol = ifNull;
-            }
-        }
-        
-        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullif)) 
-        {
-            return null;
-        }
-        
-        // Trimming
-        switch (trim_type)
-        {
-        case TextFileInputMeta.TYPE_TRIM_LEFT:
-            {
-                StringBuffer strpol = new StringBuffer(pol);
-                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-                    strpol.deleteCharAt(0);
-                pol=strpol.toString();
-            }
-            break;
-        case TextFileInputMeta.TYPE_TRIM_RIGHT:
-            {
-                StringBuffer strpol = new StringBuffer(pol);
-                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
-                    strpol.deleteCharAt(strpol.length() - 1);
-                pol=strpol.toString();
-            }
-            break;
-        case TextFileInputMeta.TYPE_TRIM_BOTH:
-            StringBuffer strpol = new StringBuffer(pol);
-            {
-                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-                    strpol.deleteCharAt(0);
-                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
-                    strpol.deleteCharAt(strpol.length() - 1);
-                pol=strpol.toString();
-            }
-            break;
-        default:
-            break;
-        }
-        
-        // On with the regular program...
-        // Simply call the ValueMeta routines to do the conversion
-        // We need to do some effort here: copy all 
-        //
-        return valueMeta.convertData(convertMeta, pol); 
-    }
-                
+                    
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		Object[] r = null;

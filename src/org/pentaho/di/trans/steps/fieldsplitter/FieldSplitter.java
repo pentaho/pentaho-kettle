@@ -20,6 +20,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -27,8 +28,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 
 /**
@@ -137,14 +136,13 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 				try
 				{
-					value = TextFileInput.convertValue
+					value = data.outputMeta.getValueMeta(data.fieldnr+i).convertDataFromString
 					(
 						split,
-						data.outputMeta.getValueMeta(data.fieldnr+i),
 						data.previousMeta.getValueMeta(data.fieldnr),
 						meta.getFieldDefault()[i],
 						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
-						TextFileInputMeta.TYPE_TRIM_BOTH
+						ValueMetaInterface.TRIM_TYPE_BOTH
 					);
 				}
 				catch(Exception e)
@@ -169,14 +167,13 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 				
 				try
 				{
-					value = TextFileInput.convertValue
+					value = data.outputMeta.getValueMeta(data.fieldnr+i).convertDataFromString
 					(
 						pol,
-						data.outputMeta.getValueMeta(data.fieldnr+i),
 						data.previousMeta.getValueMeta(data.fieldnr),
 						meta.getFieldDefault()[i],
 						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
-						TextFileInputMeta.TYPE_TRIM_BOTH
+						ValueMetaInterface.TRIM_TYPE_BOTH
 					);
 				}
 				catch(Exception e)

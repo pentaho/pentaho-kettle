@@ -20,7 +20,6 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
 
-
 public class ValueMeta implements ValueMetaInterface
 {
     public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
@@ -2207,6 +2206,73 @@ public class ValueMeta implements ValueMetaInterface
         default: 
             throw new KettleValueException("I can't convert the specified value to data type : "+getType());
         }
+    }
+
+    /**
+     * Convert the specified string to the data type specified in this object.
+     * @param pol the string to be converted
+     * @param convertMeta the metadata of the object (only string type) to be converted
+     * @param nullif set the object to null if pos equals nullif (IgnoreCase)
+     * @param ifNull set the object to ifNull when pol is empty or null
+     * @param trim_type the trim type to be used (ValueMetaInterface.TRIM_TYPE_XXX)
+     * @return the object in the data type of this value metadata object
+     * @throws KettleValueException in case there is a data conversion error
+     */
+    public Object convertDataFromString(String pol, ValueMetaInterface convertMeta, String nullif, String ifNull, int trim_type) throws KettleValueException
+    {
+        // null handling and conversion of value to null
+        //
+        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(ifNull))
+        {
+            if (ifNull!=null && ifNull.length()!=0)
+            {
+                pol = ifNull;
+            }
+        }
+        
+        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullif)) 
+        {
+            return null;
+        }
+        
+        // Trimming
+        switch (trim_type)
+        {
+        case ValueMetaInterface.TRIM_TYPE_LEFT:
+            {
+                StringBuffer strpol = new StringBuffer(pol);
+                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+                    strpol.deleteCharAt(0);
+                pol=strpol.toString();
+            }
+            break;
+        case ValueMetaInterface.TRIM_TYPE_RIGHT:
+            {
+                StringBuffer strpol = new StringBuffer(pol);
+                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+                    strpol.deleteCharAt(strpol.length() - 1);
+                pol=strpol.toString();
+            }
+            break;
+        case ValueMetaInterface.TRIM_TYPE_BOTH:
+            StringBuffer strpol = new StringBuffer(pol);
+            {
+                while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+                    strpol.deleteCharAt(0);
+                while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+                    strpol.deleteCharAt(strpol.length() - 1);
+                pol=strpol.toString();
+            }
+            break;
+        default:
+            break;
+        }
+        
+        // On with the regular program...
+        // Simply call the ValueMeta routines to do the conversion
+        // We need to do some effort here: copy all 
+        //
+        return convertData(convertMeta, pol); 
     }
     
     /**
