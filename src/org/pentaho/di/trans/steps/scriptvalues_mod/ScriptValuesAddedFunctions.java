@@ -56,10 +56,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
@@ -70,6 +66,8 @@ import org.mozilla.javascript.WrappedException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 
@@ -1135,25 +1133,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// Implementation of the JS AlertBox
 	public static String Alert(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		
-		if(ArgList.length==1){
-			try{
-				Display display = Display.getCurrent();
-				Shell shell;
-				try {
-					shell=display.getActiveShell();
-				} catch(Exception er) {
-					display=new Display();
-					shell=new Shell(display);
-				}
-				MessageBox mb = new MessageBox(shell, SWT.OK  );
-				String strMessage = Context.toString(ArgList[0]);
-				mb.setMessage(strMessage);
-				mb.setText("Alert"); //$NON-NLS-1$
-				mb.open();
-			
-			}catch(Exception e){
-			}
+		SpoonInterface spoon = SpoonFactory.getInstance();
+		if( ArgList.length==1 && spoon != null ) 
+		{
+			String strMessage = Context.toString(ArgList[0]);
+			spoon.messageBox(strMessage, "Alert", false, Const.INFO);
 		}
+		
 		return "";
 	}
 	

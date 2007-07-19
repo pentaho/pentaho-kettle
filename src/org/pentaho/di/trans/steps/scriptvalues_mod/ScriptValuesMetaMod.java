@@ -857,7 +857,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	
     public String getDialogClassName() 
     {
-    	return "org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesModDialog";
+    	return "org.pentaho.di.ui.trans.steps.scriptvalues_mod.ScriptValuesModDialog";
     }
     
 }
