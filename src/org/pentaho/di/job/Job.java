@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -136,7 +137,7 @@ public class Job extends Thread implements VariableSpace
         jobTracker = new JobTracker(jobMeta);
     }
 	
-	public void open(Repository rep, String fname, String jobname, String dirname) throws KettleException
+	public void open(Repository rep, String fname, String jobname, String dirname, OverwritePrompter prompter) throws KettleException
 	{
 		this.rep = rep;
 		if (rep!=null)
@@ -145,7 +146,7 @@ public class Job extends Thread implements VariableSpace
 		}
 		else
 		{
-			jobMeta = new JobMeta(log, fname, rep);
+			jobMeta = new JobMeta(log, fname, rep, prompter);
 		}
         
         if (jobMeta.getName()!=null) setName(jobMeta.getName()+" ("+super.getName()+")");
@@ -855,4 +856,5 @@ public class Job extends Thread implements VariableSpace
 	{
 		variables.injectVariables(prop);		
 	}	    
+
 }

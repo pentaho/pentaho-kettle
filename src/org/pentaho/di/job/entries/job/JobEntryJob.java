@@ -375,7 +375,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             if (fromXMLFile)
             {
                 log.logDetailed(toString(), "Loading job from XML file : ["+environmentSubstitute(filename)+"]");
-                jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep);
+                jobMeta = new JobMeta(logwriter, environmentSubstitute(filename), rep, null);
             }
             
             if (jobMeta==null)
@@ -629,7 +629,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         else
         {
-            return new JobMeta(LogWriter.getInstance(), getFilename(), rep);
+            return new JobMeta(LogWriter.getInstance(), getFilename(), rep, null);
         }
     }
 

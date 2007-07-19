@@ -16,16 +16,14 @@
 package org.pentaho.di.job.entries.msgboxinfo;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.gui.GUIFactory;
+import org.pentaho.di.core.gui.ThreadDialogs;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
@@ -146,26 +144,20 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 			
 		try
 		{
+			// default to ok
+
 			// Try to display MSGBOX
-	
-			Display display = new Display();
-			Shell shell = new Shell(display);
-			MessageBox mb = new MessageBox(shell, SWT.OK |SWT.CANCEL | SWT.ICON_INFORMATION );
-			// Set the Body Message
-			mb.setMessage(getRealBodyMessage()+Const.CR);
-			// Set the title Message
-			mb.setText(getRealTitleMessage());
-			//mb.open();
+			boolean response = true;
+		
+			ThreadDialogs dialogs = GUIFactory.getThreadDialogs();
+        	if( dialogs != null ) {
+        		response = dialogs.threadMessageBox(
+        				getRealBodyMessage()+Const.CR, 
+        				getRealTitleMessage(), true, Const.INFO );
+        	}
+        	
+			return response;
 
-
-			if (mb.open() == SWT.OK)
-					
-				return true;
-			else
-				return false;
-
-			
-					
 		}
 		catch(Exception e)
 		{
@@ -247,7 +239,6 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		
 		titremessage=s;
 	
-	}	
-
+	}
 	
 }

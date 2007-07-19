@@ -40,8 +40,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
@@ -612,7 +612,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param rep The repository to bind againt, null if there is no repository available.
      * @throws KettleXMLException
      */
-    public JobMeta(LogWriter log, String fname, Repository rep) throws KettleXMLException
+    public JobMeta(LogWriter log, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException
     {
         this.log = log;
         try
@@ -627,7 +627,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                 // The jobnode
                 Node jobnode = XMLHandler.getSubNode(doc, XML_TAG);
 
-                loadXML(jobnode, rep);
+                loadXML(jobnode, rep, prompter);
 
                 // Do this at the end
                 setFilename(fname);
@@ -643,14 +643,14 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         }
     }
 
-    public JobMeta(LogWriter log, Node jobnode, Repository rep) throws KettleXMLException
+    public JobMeta(LogWriter log, Node jobnode, Repository rep, OverwritePrompter prompter) throws KettleXMLException
     {
         this.log = log;
 
-        loadXML(jobnode, rep);
+        loadXML(jobnode, rep, prompter);
     }
 
-    public void loadXML(Node jobnode, Repository rep) throws KettleXMLException
+    public void loadXML(Node jobnode, Repository rep, OverwritePrompter prompter ) throws KettleXMLException
     {
         Props props = null;
         if (Props.isInitialized()) props = Props.getInstance();
@@ -725,28 +725,13 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
                 {
                     boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
                     boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-                    if (askOverwrite)
+                    if (askOverwrite && prompter != null)
                     {
-                        // That means that we have a Display variable set in Props...
-                        if (props.getDisplay() != null)
-                        {
-                        	if( SpoonFactory.getInstance() != null ) {
-                        		Object res[] = SpoonFactory.getInstance().messageDialogWithToggle("Warning",  
-                        						null,
-                        						Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName()),
-                        						Const.WARNING,
-                        						new String[] { Messages.getString("System.Button.Yes"), //$NON-NLS-1$ 
-                                    						   Messages.getString("System.Button.No") },//$NON-NLS-1$
-                        						1,
-                        						Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"),
-                        						!props.askAboutReplacingDatabaseConnections() );
-                        		int idx = ((Integer)res[0]).intValue();
-                        		boolean toggleState = ((Boolean)res[1]).booleanValue();
-                                props.setAskAboutReplacingDatabaseConnections(!toggleState);
-                                overwrite = ((idx&0xFF)==0); // Yes means: overwrite
-                        	}
-
-                        }
+                    	
+                    	overwrite = prompter.overwritePrompt(
+                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.Message", dbcon.getName() ), 
+                    			Messages.getString("JobMeta.Dialog.ConnectionExistsOverWrite.DontShowAnyMoreMessage"), 
+                    			Props.STRING_ASK_ABOUT_REPLACING_DATABASES);
                     }
 
                     if (overwrite)

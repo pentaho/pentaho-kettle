@@ -486,8 +486,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     public String getDialogClassName() 
     {
     	String className = getClass().getCanonicalName();
-    	// TODO put this line back in after the re-factor
-//    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
+    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
     	className += "Dialog";
     	return className;
     }
