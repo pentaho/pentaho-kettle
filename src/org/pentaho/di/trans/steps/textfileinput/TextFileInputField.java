@@ -25,7 +25,7 @@ import java.util.Date;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.widget.TextFileInputFieldInterface;
+import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 
 /**
  * Describes a single field in a text file
