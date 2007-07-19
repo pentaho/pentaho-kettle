@@ -16,7 +16,6 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.trans.steps.fixedinput.Messages;
 
 public class KettleVFS
 {

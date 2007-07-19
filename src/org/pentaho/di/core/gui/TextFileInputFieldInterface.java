@@ -1,4 +1,4 @@
-package org.pentaho.di.core.widget;
+package org.pentaho.di.core.gui;
 
 public interface TextFileInputFieldInterface extends Comparable<TextFileInputFieldInterface>
 {
