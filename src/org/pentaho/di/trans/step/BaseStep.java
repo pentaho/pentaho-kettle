@@ -96,7 +96,6 @@ public class BaseStep extends Thread implements VariableSpace
             new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
             new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages.getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
-            new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" }, Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), "FLA.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages.getString("BaseStep.TypeTooltipDesc.AccessOutput"), "ACO.png", CATEGORY_OUTPUT),
             new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages.getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages.getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
@@ -201,8 +200,6 @@ public class BaseStep extends Thread implements VariableSpace
 
     /** the copy number of this thread */
     private int                          stepcopy;
-    /** the output rowset nr, for fixed input channels like Stream Lookup */
-    private int                          output_rowset_nr;
 
     private Date                         start_time, stop_time;
 
@@ -349,7 +346,6 @@ public class BaseStep extends Thread implements VariableSpace
 
         // debug="-"; //$NON-NLS-1$
 
-        output_rowset_nr = -1;
         start_time = null;
         stop_time = null;
 
@@ -885,7 +881,7 @@ public class BaseStep extends Thread implements VariableSpace
             }
         }
 
-        // call all rowlisteners...
+        // call all row listeners...
         //
         for (int i = 0; i < rowListeners.size(); i++)
         {
@@ -906,10 +902,6 @@ public class BaseStep extends Thread implements VariableSpace
             }
         }
 
-        if (outputRowSets.isEmpty()) return; // nothing to do here!
-
-        RowSet rs = outputRowSets.get(output_rowset_nr);
-        
         if (stopped.get())
         {
             if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
@@ -919,7 +911,7 @@ public class BaseStep extends Thread implements VariableSpace
 
         // Don't distribute or anything, only go to this rowset!
         //
-        while (!rs.putRow(rowMeta, row) && !isStopped()) 
+        while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
         	;
         linesWritten++;
     }
