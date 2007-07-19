@@ -17,7 +17,8 @@
 
  <resources>
   <j2se version="1.5+" java-vm-args="-Xmx256M"/>
-  <jar href="lib/kettle3.jar"/>
+  <jar href="lib/kettle-engine-3.0.jar"/>
+  <jar href="lib/kettle-ui-swt-3.0.jar"/>
 
   <jar href="libext/edtftpj-1.5.4.jar"/>     
   <jar href="libext/jaxp-ri.jar"/>    
