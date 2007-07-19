@@ -881,13 +881,13 @@ public class SpoonJobDelegate extends SpoonDelegate
 				// a file system entry
 				same = jobMeta.getFilename().equals(xjob.getFilename());
 			}
-			//if (!same) {
-			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
-					Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
-							+ Const.CR + Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
-			dialog.setTimeOut(6);
-			dialog.open();
-			//}
+			if (!same) {
+				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
+						Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
+								+ Const.CR + Messages.getString("Spoon.Dialog.JobAlreadyLoaded.Message"));
+				dialog.setTimeOut(6);
+				dialog.open();
+			}
 		}
 
 		return key;

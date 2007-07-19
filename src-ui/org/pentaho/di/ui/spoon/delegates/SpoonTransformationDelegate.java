@@ -86,21 +86,21 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				// a file system entry
 				same = transMeta.getFilename().equals(xform.getFilename());
 			}
-			//if (!same) {
-			ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
-					Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
-							+ Const.CR + Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
-			dialog.setTimeOut(6);
-			dialog.open();
-			/*
-			 * MessageBox mb = new MessageBox(shell, SWT.OK |
-			 * SWT.ICON_INFORMATION);
-			 * mb.setMessage("'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message")); //
-			 * Transformation is already loaded
-			 * mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); //
-			 * Sorry! mb.open();
-			 */
-			//}
+			if (!same) {
+				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
+						Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
+								+ Const.CR + Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
+				dialog.setTimeOut(6);
+				dialog.open();
+				/*
+				 * MessageBox mb = new MessageBox(shell, SWT.OK |
+				 * SWT.ICON_INFORMATION);
+				 * mb.setMessage("'"+key+"'"+Const.CR+Const.CR+Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message")); //
+				 * Transformation is already loaded
+				 * mb.setText(Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title")); //
+				 * Sorry! mb.open();
+				 */
+			}
 		}
 
 		return key;

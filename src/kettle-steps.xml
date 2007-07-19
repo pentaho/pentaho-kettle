@@ -596,4 +596,15 @@
 		</tooltip>
 		<image-uri>NRM.png</image-uri>
 	</step> 
+	    <step id="Flattener,Flatterner">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowFalttener")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.flattener.FlattenerMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Rowflattener")
+		</tooltip>
+		<image-uri>FLA.png</image-uri>
+	</step> 
 </steps>
