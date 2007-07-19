@@ -265,7 +265,7 @@ public class Kitchen
                 // Try to load if from file anyway.
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
-					jobMeta = new JobMeta(log, optionFilename.toString(), null);
+					jobMeta = new JobMeta(log, optionFilename.toString(), null, null);
 					job = new Job(log, steploader, null, jobMeta);
 				}
 			}
