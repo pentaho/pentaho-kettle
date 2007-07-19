@@ -37,8 +37,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 
@@ -269,96 +267,6 @@ public class Const
 	public static final String NULL_NONE = "";
 
 	/**
-	 * Default font name for the fixed width font
-	 */
-	public static final String FONT_FIXED_NAME = "Courier";
-
-	/**
-	 * Default font size for the fixed width font
-	 */
-	public static final int FONT_FIXED_SIZE = 9;
-
-	/**
-	 * Default font type for the fixed width font
-	 */
-	public static final int FONT_FIXED_TYPE = SWT.NORMAL;
-
-	/**
-	 * Default icon size
-	 */
-	public static final int ICON_SIZE = 32;
-
-	/**
-	 * Default line width for arrows & around icons
-	 */
-	public static final int LINE_WIDTH = 1;
-
-	/**
-	 * Default grid size to which the graphical views snap.
-	 */
-	public static final int GRID_SIZE = 20;
-
-	/**
-	 * The minimal size of a note on a graphical view (width & height)
-	 */
-	public static final int NOTE_MIN_SIZE = 20;
-
-	/**
-	 * The margin between the text of a note and its border.
-	 */
-	public static final int NOTE_MARGIN = 5;
-
-	/**
-	 * The default red-component of the background color
-	 */
-	public static final int COLOR_BACKGROUND_RED = 255;
-
-	/**
-	 * The default green-component of the background color
-	 */
-	public static final int COLOR_BACKGROUND_GREEN = 255;
-
-	/**
-	 * The default blue-component of the background color
-	 */
-	public static final int COLOR_BACKGROUND_BLUE = 255;
-
-	/**
-	 * The default red-component of the graph background color
-	 */
-	public static final int COLOR_GRAPH_RED = 255;
-
-	/**
-	 * The default green-component of the graph background color
-	 */
-	public static final int COLOR_GRAPH_GREEN = 255;
-
-	/**
-	 * The default blue-component of the graph background color
-	 */
-	public static final int COLOR_GRAPH_BLUE = 255;
-
-	/**
-	 * The default red-component of the tab selected color
-	 */
-	public static final int COLOR_TAB_RED = 200;
-
-	/**
-	 * The default green-component of the tab selected color
-	 */
-	public static final int COLOR_TAB_GREEN = 200;
-
-	/**
-	 * The default blue-component of the tab selected color
-	 */
-	public static final int COLOR_TAB_BLUE = 255;
-
-	/**
-	 * The default undo level for Kettle
-	 */
-	public static final int MAX_UNDO = 100;
-
-	/**
 	 * The base name of the Chef logfile
 	 */
 	public static final String CHEF_LOG_FILE = "chef";
@@ -486,6 +394,22 @@ public class Const
     /** UI-agnostic flag for warnings */
     public static final int WARNING = 1;
     
+    /** UI-agnostic flag for warnings */
+    public static final int ERROR = 2;
+    
+    /** UI-agnostic flag for warnings */
+    public static final int INFO = 3;
+
+	/**
+	 * The margin between the text of a note and its border.
+	 */
+	public static final int NOTE_MARGIN = 5;
+
+	/**
+	 * The default undo level for Kettle
+	 */
+	public static final int MAX_UNDO = 100;
+
     /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
@@ -1014,133 +938,6 @@ public class Const
 		}
 	}
 
-	/**
-	 * Determine the level of where the TreeItem is position in a tree.
-	 * @param ti The TreeItem
-	 * @return The level of the item in the tree
-	 */
-	public static final int getTreeLevel(TreeItem ti)
-	{
-		int level = 0;
-		TreeItem parent = ti.getParentItem();
-		while (parent != null)
-		{
-			level++;
-			parent = parent.getParentItem();
-		}
-
-		return level;
-	}
-
-	/**
-	 * Get an array of strings containing the path from the given TreeItem to the parent.
-	 * @param ti The TreeItem to look at
-	 * @return An array of string describing the path to the TreeItem.
-	 */
-	public static final String[] getTreeStrings(TreeItem ti)
-	{
-		int nrlevels = getTreeLevel(ti) + 1;
-		String retval[] = new String[nrlevels];
-		int level = 0;
-
-		retval[nrlevels - 1] = ti.getText();
-		TreeItem parent = ti.getParentItem();
-		while (parent != null)
-		{
-			level++;
-			retval[nrlevels - level - 1] = parent.getText();
-			parent = parent.getParentItem();
-		}
-
-		return retval;
-	}
-
-	/**
-	 * Return the tree path seperated by Const.FILE_SEPARATOR, starting from a certain depth in the tree.
-	 *
-	 * @param ti The TreeItem to get the path for 
-	 * @param from The depth to start at, use 0 to get the complete tree.
-	 * @return The tree path.
-	 */
-	public static final String getTreePath(TreeItem ti, int from)
-	{
-		String path[] = getTreeStrings(ti);
-
-		if (path == null)
-			return null;
-
-		String retval = "";
-
-		for (int i = from; i < path.length; i++)
-		{
-			if (!path[i].equalsIgnoreCase(Const.FILE_SEPARATOR))
-			{
-				retval += Const.FILE_SEPARATOR + path[i];
-			}
-		}
-
-		return retval;
-	}
-
-	/**
-	 * Flips the TreeItem from expanded to not expanded or vice-versa.
-	 * @param ti The TreeItem to flip.
-	 */
-	public static final void flipExpanded(TreeItem ti)
-	{
-		ti.setExpanded(!ti.getExpanded());
-	}
-
-    public static final TreeItem findTreeItem(TreeItem parent, String name)
-    {
-        return findTreeItem(parent, null, name);
-    }
-    
-	/**
-	 * Finds a TreeItem with a certain label (name) in a (part of a) tree.
-	 * @param parent The TreeItem where we start looking.
-     * @param parentName The name of the parent to match as well (null=not used)
-	 * @param name The name or item label to look for.
-	 * @return The TreeItem if the label was found, null if nothing was found.
-	 */
-	public static final TreeItem findTreeItem(TreeItem parent, String parentName, String name)
-	{
-		return findTreeItem(null, parent, parentName, name);
-	}
-    
-    private static final TreeItem findTreeItem(TreeItem grandParent, TreeItem parent, String parentName, String name)
-    {
-        if (Const.isEmpty(parentName))
-        {
-            if (parent.getText().equalsIgnoreCase(name))
-            {
-                return parent;
-            }
-        }
-        else
-        {
-            if (grandParent!=null && grandParent.getText().equalsIgnoreCase("OTHER"))
-            {
-                System.out.println("Other");
-            }
-            if (grandParent!=null && grandParent.getText().equalsIgnoreCase(parentName) &&
-                parent.getText().equalsIgnoreCase(name))
-            {
-                return parent;
-            }
-        }
-
-        TreeItem ti[] = parent.getItems();
-        for (int i = 0; i < ti.length; i++)
-        {
-            TreeItem child = findTreeItem(parent, ti[i], parentName, name);
-            if (child != null)
-            {
-                return child;
-            }
-        }
-        return null;
-    }
 
 	/**
 	 * Determines the Kettle directory in the user's home directory.
