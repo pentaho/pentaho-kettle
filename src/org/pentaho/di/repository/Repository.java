@@ -1468,7 +1468,7 @@ public class Repository
 
         table.addValue(new ValueMeta("ID_PARTITION", ValueMetaInterface.TYPE_INTEGER), new Long(id));
         table.addValue(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id_partition_schema));
-        table.addValue(new ValueMeta("PARTITION_ID", ValueMetaInterface.TYPE_INTEGER), new Long(partition_id));
+        table.addValue(new ValueMeta("PARTITION_ID", ValueMetaInterface.TYPE_STRING), partition_id);
 
         database.prepareInsert(table.getRowMeta(), "R_PARTITION");
         database.setValuesInsert(table);
