@@ -307,7 +307,7 @@ public class BaseStepMeta implements Cloneable
     public String getDialogClassName() 
     {
     	String className = getClass().getCanonicalName();
-//    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
+    	className = className.replaceFirst("\\.di\\.", ".di.ui.");
     	if( className.endsWith("Meta") ) {
     		className = className.substring(0, className.length()-4 );
     	}
