@@ -41,7 +41,7 @@ public class ResourceDependencyTest extends TestCase {
     StepLoader.getInstance().read();
     JobEntryLoader.getInstance().read();
     // Load the first job metadata
-    JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/processchangelog.kjb", null); //$NON-NLS-1$
+    JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/processchangelog.kjb", null, null); //$NON-NLS-1$
     List<ResourceReference> resourceReferences = jobMeta.getResourceDependencies();
     // printResourceReferences(resourceReferences);
     assertEquals(5, resourceReferences.size());

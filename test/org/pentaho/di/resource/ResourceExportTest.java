@@ -22,7 +22,7 @@ public class ResourceExportTest extends TestCase {
         
         // Load the job metadata
         //
-        JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/top-job.kjb", null);
+        JobMeta jobMeta = new JobMeta(LogWriter.getInstance(), "test/org/pentaho/di/resource/top-job.kjb", null, null);
         
         // This job meta object references a few transformations, another job and a mapping
         // All these need to be exported
@@ -45,5 +45,6 @@ public class ResourceExportTest extends TestCase {
 		}
 		
 		assertEquals(definitions.size(), 3);
+        
 	}
 }
