@@ -5,43 +5,9 @@
 	    </description>
 
 	  <tstamp prefix="start"/>
-
-	  <!-- system properties to use -->
-	  <property name="cr" value="${line.separator}"/> 
-	  <property name="version" value="3.0.0-M1"/>      
-		
-	  <!-- set global properties for this build -->
 	
-	  <property name="src"        			location="src"/> 
-	  <property name="src-ui"        		location="src-ui"/> 
-	  <property name="test"        			location="test"/> 
-	  <property name="classes"        		location="classes"/> 
-	  <property name="classes-ui"        	location="classes-ui"/> 
-	  <property name="testClasses"        	location="testClasses"/> 
-	  <property name="bin"    				location="bin"/>
-	  <property name="build"      			location="build"/>
-	  <property name="lib"        			location="lib"/>
-	  <property name="plugins"        		location="plugins"/>
-	  <property name="ui"        			location="ui"/>
-	  <property name="homepage"        		location="homepage"/>
-	  <property name="samples"        		location="samples"/>
-	  <property name="libext"     	        location="libext"/>
-	  <property name="testlibext"     		location="${test}/libext"/>
-	  <property name="libswt"     			location="libswt"/>
-	  <property name="distrib"				location="distrib"/>
-	  <property name="docs"					location="docs"/>
-	  <property name="api"					location="${docs}/api/"/>
-	  <property name="tips"					location="${docs}/tips/"/>
-	  <property name="web"					location="web"/>
-	  <property name="pwd"					location="pwd"/>
-	  <property name="extra"        		location="extra"/>
-	  <property name="webstart"				location="webstart"/>
-	  <property name="keystore"				location="keystore"/>
-	  <property name="keystorePassword"		location="abcd1234"/>
-	  <property name="junit"				location="junit"/>
-
-	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
-	  <property name="dist.dir"				value="."/>
+	  <!-- set global properties for this build -->
+		<property file="build.properties"/>
 		  
 	  <target name="init" description="create timestamp and directories">
     	<echo>Init...</echo>
@@ -677,6 +643,8 @@
 	  <target name="clean" depends="cleandirs"/>
 	
 	
-	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, tests-core, tests-resource, tests-trans, tests-run" />
+	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
+	 </target>
 
 </project>
