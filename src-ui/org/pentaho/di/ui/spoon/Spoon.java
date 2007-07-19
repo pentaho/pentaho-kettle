@@ -328,6 +328,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private List<Object[]> menuListeners = new ArrayList<Object[]>();
 
+	/**
+	 * This is the main procedure for Spoon.
+	 * 
+     * @param a Arguments are available in the "Get System Info" step.
+	 */
+	public static void main(String[] a) throws KettleException
+	{
+		EnvUtil.environmentInit();
+		ArrayList<String> args = new ArrayList<String>();
+        for (int i=0;i<a.length;i++) args.add(a[i]);
+
+		Display display = new Display();
+		Spoon spoon = new Spoon(display);
+		spoon.run(args);
+
+		// Kill all remaining things in this VM!
+		System.exit(0);
+	}	
+	
     public Spoon(Display d) {
 		this(d, null);
 	}
@@ -5235,25 +5254,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) );
 			log.logError(toString(), Const.getStackTracker(t));
 		}
-	}
-
-	/**
-	 * This is the main procedure for Spoon.
-	 * 
-     * @param a Arguments are available in the "Get System Info" step.
-	 */
-	public static void main(String[] a) throws KettleException
-	{
-		EnvUtil.environmentInit();
-		ArrayList<String> args = new ArrayList<String>();
-        for (int i=0;i<a.length;i++) args.add(a[i]);
-
-		Display display = new Display();
-		Spoon spoon = new Spoon(display);
-		spoon.run(args);
-
-		// Kill all remaining things in this VM!
-		System.exit(0);
 	}
 
     private void loadLastUsedFile(LastUsedFile lastUsedFile, RepositoryMeta repositoryMeta) throws KettleException
