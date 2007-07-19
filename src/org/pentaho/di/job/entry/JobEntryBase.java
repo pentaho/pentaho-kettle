@@ -492,4 +492,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     	return className;
     }
 
+    public String getHolderType() {
+      return "JOBENTRY"; //$NON-NLS-1$
+    }
+    
 }

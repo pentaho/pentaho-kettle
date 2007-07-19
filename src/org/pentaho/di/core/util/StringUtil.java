@@ -29,7 +29,11 @@ public class StringUtil
 	public static final String WINDOWS_OPEN = "%%";
 
 	public static final String WINDOWS_CLOSE = "%%";
+  
+  public static final String CRLF = "\r\n"; //$NON-NLS-1$
 
+  public static final String INDENTCHARS = "                    "; //$NON-NLS-1$
+  
 	private static final Pattern ALL_LETTERS = Pattern.compile("([a-z])");
 
 	/**
@@ -365,4 +369,9 @@ public class StringUtil
 			throw new KettleValueException("TO_DATE Couldn't convert String to Date" + e.toString());
 		}
 	}
+  
+  public static String getIndent(int indentLevel) {
+    return INDENTCHARS.substring(0, indentLevel);
+  }
+  
 }

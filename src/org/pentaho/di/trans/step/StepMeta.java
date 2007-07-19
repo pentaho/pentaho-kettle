@@ -935,4 +935,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		return false;
 	}
 
+  public String getHolderType() {
+    return "STEP"; //$NON-NLS-1$
+  }
+  
 }

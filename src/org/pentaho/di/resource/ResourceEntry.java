@@ -1,5 +1,7 @@
 package org.pentaho.di.resource;
 
+import org.pentaho.di.core.util.StringUtil;
+
 public class ResourceEntry {
 	public enum ResourceType { FILE, CONNECTION, SERVER, URL, DATABASENAME, ACTIONFILE, OTHER };
 	
@@ -44,5 +46,12 @@ public class ResourceEntry {
 		this.resourcetype = resourcetype;
 	}
 	
-	
+	public String toXml(int indentLevel) {
+    StringBuffer buff = new StringBuffer(30);
+    buff.append(StringUtil.getIndent(indentLevel)).append("<Resource type='").append(this.getResourcetype()). //$NON-NLS-1$
+      append("'><![CDATA[").append(this.getResource()).append("]]>").append("</Resource>").append(StringUtil.CRLF);//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    return buff.toString();
+  }
+  
+  
 }

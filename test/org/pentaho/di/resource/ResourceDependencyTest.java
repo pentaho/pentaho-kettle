@@ -47,6 +47,7 @@ public class ResourceDependencyTest extends TestCase {
     assertEquals(5, resourceReferences.size());
     for (int i=0; i<5; i++ ) {
       ResourceReference genRef = resourceReferences.get(i);
+      System.out.println(genRef.toXml());
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
       boolean checkDatabaseStuff = false;
       if (i == 0) {
@@ -91,6 +92,7 @@ public class ResourceDependencyTest extends TestCase {
     // printResourceReferences(resourceReferences);    
     assertEquals(1, resourceReferences.size());
     ResourceReference genRef = resourceReferences.get(0);
+    System.out.println(genRef.toXml());
     ResourceHolderInterface refHolder = genRef.getReferenceHolder();
     List<ResourceEntry> entries = genRef.getEntries();
     assertEquals("TextFileInput", refHolder.getTypeId()); //$NON-NLS-1$

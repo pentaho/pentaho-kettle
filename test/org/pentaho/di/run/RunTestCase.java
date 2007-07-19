@@ -8,5 +8,5 @@ public class RunTestCase extends TestCase {
 	// set this to 100000 for the baseline tests
 	// set it to a small value (e.g. 100) to verify that the performance tests are successful
 	
-	protected final int rowCount = 100000; 
+	protected final int rowCount = 100;
 }
