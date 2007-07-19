@@ -10,7 +10,7 @@ import org.pentaho.di.core.exception.KettleConfigException;
  * @author Alex Silva
  *
  */
-class PluginConfig
+public class PluginConfig
 {
 	private String id;
 
