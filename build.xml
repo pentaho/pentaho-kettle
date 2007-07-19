@@ -660,6 +660,7 @@
 
 	  <target name="cleandirs" description="clean up generated files">
 	    <delete dir="${classes}"/>
+	    <delete dir="${classes-ui}"/>
 	    <delete dir="${lib}"/>
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>
