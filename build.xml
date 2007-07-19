@@ -16,6 +16,7 @@
 	  <property name="src-ui"        		location="src-ui"/> 
 	  <property name="test"        			location="test"/> 
 	  <property name="classes"        		location="classes"/> 
+	  <property name="classes-ui"        	location="classes-ui"/> 
 	  <property name="testClasses"        	location="testClasses"/> 
 	  <property name="bin"    				location="bin"/>
 	  <property name="build"      			location="build"/>
@@ -48,7 +49,7 @@
 	    <tstamp/>
 	    <mkdir dir="${build}"/>
 	    <mkdir dir="${classes}"/>
-	    <mkdir dir="${classes}/ui"/>
+	    <mkdir dir="${classes-ui}/ui"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
@@ -80,15 +81,44 @@
 	    	   fork="true"
 	    	>
 	    	<src path="${src}"/>
-	    	<src path="${src-ui}"/>
 	    	
 	    	<classpath id="cp-kettle">
+				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
+				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+				<fileset dir="${libswt}" 		includes="common.jar"/>
+		  		</classpath>
+	    </javac>
+	  </target>
+	  
+	  <target name="compile-ui" depends="init" description="compile the UI source " >
+	  	<echo>Compiling Kettle UI...</echo>
+	    <javac 
+	    	   destdir="${classes-ui}"
+	    	   target="5"
+	    	   source="5"
+	           deprecation="true"
+	    	   debug="true"
+	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
+	    	   memorymaximumsize="256M"
+	    	   fork="true"
+	    	>
+	    	<src path="${src-ui}"/>
+	    	
+	    	<classpath id="cp-kettle-ui">
+				<fileset dir="${lib}" 			includes="kettle-engine-3.0.jar"/>
 				<fileset dir="${libext}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
 				<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
 				<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
 		  		</classpath>
 	    </javac>
+	    <copy todir="${classes-ui}">
+	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*properties"/>
+	  	    </copy>
+        <!-- embedd the UI definition files in the jar so that webstart will work -->
+	    <copy todir="${classes-ui}/ui">
+	    	<fileset dir="${ui}" includes="**/*.png **/*.xml menus.xul menubar.xul menubar.properties"/>
+	  	    </copy>
 	  </target>
 	  
 		  <!--
@@ -121,7 +151,7 @@
 		    	>
 
 		    	<classpath id="cp-kettle-test">
-		    		<fileset dir="${lib}" 	  		includes="kettle3.jar"/>
+		    		<fileset dir="${lib}" 	  		includes="kettle-engine-3.0.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
 			  	</classpath>
 		    </javac>
@@ -136,17 +166,10 @@
 	  <target name="copy" depends="compile" description="copy images etc to classes directory" >
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
-	    	<fileset dir="${src}" includes="**/*.png **/*.xml **/*properties"/>
-	  	    </copy>
-	    <copy todir="${classes}">
-	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*properties"/>
+	    	<fileset dir="${src}" includes="**/*.xml **/*properties"/>
 	  	    </copy>
 	    <copy todir="${classes}">
 	    	<fileset file="build_version.txt"/>
-	  	    </copy>
-        <!-- embedd the UI definition files in the jar so that webstart will work -->
-	    <copy todir="${classes}/ui">
-	    	<fileset dir="${ui}" includes="**/*.png **/*.xml menus.xul menubar.xul menubar.properties"/>
 	  	    </copy>
 	  	
 	  </target>
@@ -200,9 +223,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle3.jar">
-	  	<echo>Generating the Kettle library kettle3.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle3.jar" 
+	  <target name="kettle" depends="compile, revision, copy" description="generate the kettle library kettle-engine-3.0.jar">
+	  	<echo>Generating the Kettle library kettle-engine-3.0.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-engine-3.0.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/* ../build_version.txt"
 	  	     excludes="**/Thumbs.db **/kettle.jar"
@@ -210,13 +233,24 @@
 	  	
 
 	  </target>	
-	
+
+	  <target name="kettle-ui" depends="compile-ui" description="generate the kettle library kettle-ui-swt-3.0.jar">
+	  	<echo>Generating the Kettle library kettle-ui-swt-3.0.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-ui-swt-3.0.jar" 
+	    	 basedir="${classes-ui}" 
+	    	 includes="**/* ../build_version.txt"
+	  	     excludes="**/Thumbs.db **/kettle.jar"
+	  		/>
+	  	
+
+	  </target>	
+
 	<!--
 	       ==========================
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle, kettle-ui" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -227,7 +261,8 @@
 
 	  		<!-- base lib -->
 	  		<mkdir dir="${distrib}/lib"/>
-	  		<copy todir="${distrib}/lib"  file="${lib}/kettle3.jar"/>
+  			<copy todir="${distrib}/lib"  file="${lib}/kettle-engine-3.0.jar"/>
+  			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt-3.0.jar"/>
 
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
@@ -464,7 +499,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -494,7 +529,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -521,7 +556,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 	    		<pathelement path="${testClasses}"/>
 
@@ -556,7 +591,7 @@
 		
 		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
 	    	<classpath>
-				<fileset dir="${lib}" includes="kettle3.jar"/>
+				<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
 				<fileset dir="test/libext/" includes="kettle.jar"/>
 				<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
 	    		<pathelement path="${testClasses}"/>
