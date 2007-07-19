@@ -1236,8 +1236,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
         {
             logError(Messages.getString("DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
         }
-        
-	    data.db.disconnect();
+        finally 
+        {        
+	        data.db.disconnect();
+        }
 	    
 	    super.dispose(smi, sdi);
 	}

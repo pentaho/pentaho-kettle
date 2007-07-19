@@ -276,8 +276,10 @@ public class Delete extends BaseStep implements StepInterface
             log.logError(toString(), Messages.getString("Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
-        
-		data.db.disconnect();
+        finally 
+        {
+        	data.db.disconnect();
+        }
 
 		super.dispose(smi, sdi);
 	}

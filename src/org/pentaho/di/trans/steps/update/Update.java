@@ -421,10 +421,10 @@ public class Update extends BaseStep implements StepInterface
             log.logError(toString(), Messages.getString("Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
-        
-        
-        
-		data.db.disconnect();
+        finally
+        {
+		    data.db.disconnect();
+        }
 
 		super.dispose(smi, sdi);
 	}

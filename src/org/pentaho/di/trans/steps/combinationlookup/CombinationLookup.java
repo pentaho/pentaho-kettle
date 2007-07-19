@@ -717,8 +717,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
         {
             logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
         }
-
-	    data.db.disconnect();
+        finally 
+        {
+  	        data.db.disconnect();
+        }
 
 	    super.dispose(smi, sdi);
 	}

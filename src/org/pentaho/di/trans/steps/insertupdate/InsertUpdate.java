@@ -457,8 +457,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
             log.logError(toString(), Messages.getString("InsertUpdate.Log.UnableToCommitConnection")+e.toString()); //$NON-NLS-1$
             setErrors(1);
         }
-
-		data.db.disconnect();
+        finally 
+        {
+  		    data.db.disconnect();
+        }
 
 	    super.dispose(smi, sdi);
 	}

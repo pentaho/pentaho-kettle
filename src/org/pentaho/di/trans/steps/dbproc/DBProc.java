@@ -220,7 +220,10 @@ public class DBProc extends BaseStep implements StepInterface
         {
             logError(Messages.getString("DBProc.Log.CommitError")+e.getMessage());
         }
-	    data.db.disconnect();
+        finally
+        {
+	        data.db.disconnect();
+        }
 	    
 	    super.dispose(smi, sdi);
 	}

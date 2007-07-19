@@ -230,7 +230,10 @@ public class TableInput extends BaseStep implements StepInterface
 		    setErrors(1);
 		    stopAll();
 		}
-		data.db.disconnect();
+		finally 
+		{
+		    data.db.disconnect();
+		}
 
 		super.dispose(smi, sdi);
 	}

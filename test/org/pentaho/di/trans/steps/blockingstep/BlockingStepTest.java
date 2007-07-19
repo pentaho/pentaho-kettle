@@ -248,13 +248,13 @@ public class BlockingStepTest extends TestCase
         // blocking step should receive all rows (but only send the 
         // last one through). dummy2 should only get the last row.
         
-        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsWritten();
+        List<RowMetaAndData> resultRows1 = dummyRc1.getRowsRead();
         checkRows(resultRows1, inputList);
         
-        List<RowMetaAndData> resultRows2 = blockingRc.getRowsWritten();
+        List<RowMetaAndData> resultRows2 = blockingRc.getRowsRead();
         checkRows(resultRows2, inputList);
                 
-        List<RowMetaAndData> resultRows3 = dummyRc2.getRowsWritten();
+        List<RowMetaAndData> resultRows3 = dummyRc2.getRowsRead();
         List<RowMetaAndData> lastList = new ArrayList<RowMetaAndData>();
         lastList.add(inputList.get(inputList.size() - 1));
         checkRows(resultRows3, lastList);

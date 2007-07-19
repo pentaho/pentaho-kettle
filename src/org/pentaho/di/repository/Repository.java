@@ -338,13 +338,16 @@ public class Repository
             closeLookupJobEntryAttribute();
             
             if (!database.isAutoCommit()) commit();
-			repinfo.setLock(false);
-			database.disconnect();
+			repinfo.setLock(false);			
 		}
 		catch (KettleException dbe)
 		{
 			log.logError(toString(), "Error disconnecting from database : " + dbe.getMessage());
 			//return false;
+		}
+		finally
+		{
+			database.disconnect();
 		}
 	}
 
