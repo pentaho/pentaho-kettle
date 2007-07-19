@@ -515,7 +515,7 @@ public class GUIResource
 				String filename = plugins[i].getIconFilename();
 				try
 				{
-					image = new Image(display, getClass().getResourceAsStream(filename));
+					image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + filename));
 				} catch (Exception e)
 				{
 					log.logError("Kettle", "Unable to find required job entry image file ["

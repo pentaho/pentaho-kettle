@@ -30,8 +30,8 @@ public class Splash
 	{
 		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 		
-		final Image kettle_image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
-        final Image kettle_icon  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
+		final Image kettle_image = new Image(display, display.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
+        final Image kettle_icon  = new Image(display, display.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
         
         splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
         splash.setImage(kettle_icon);

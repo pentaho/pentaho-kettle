@@ -8,7 +8,7 @@
 			org.pentaho.di.job.entries.empty.JobEntryEmpty
 		</class-name>
 		<tooltip>-</tooltip>
-		<image-uri>/org/pentaho/di/images/BLK.png</image-uri>
+		<image-uri>BLK.png</image-uri>
 	</job>
 	
 	<!-- Configured via Job annotation -->
@@ -22,7 +22,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Trans.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/TRN.png</image-uri>
+		<image-uri>TRN.png</image-uri>
 	</job>
 	<!-- -->
 	
@@ -36,7 +36,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Job.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/JOB.png</image-uri>
+		<image-uri>JOB.png</image-uri>
 	</job>
 	<job id="SHELL">
 		<type>
@@ -48,7 +48,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Shell.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/SHL.png</image-uri>
+		<image-uri>SHL.png</image-uri>
 	</job>
 	<job id="MAIL">
 		<type>
@@ -60,7 +60,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Mail.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/MAIL.png</image-uri>
+		<image-uri>MAIL.png</image-uri>
 	</job>
 	<job id="SQL">
 		<type>
@@ -72,7 +72,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SQL.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/SQL.png</image-uri>
+		<image-uri>SQL.png</image-uri>
 	</job>
 	<job id="FTP">
 		<type>
@@ -84,7 +84,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FTP.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/FTP.png</image-uri>
+		<image-uri>FTP.png</image-uri>
 	</job>
 	<job id="TABLE_EXISTS">
 		<type>
@@ -96,7 +96,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.TableExists.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/TEX.png</image-uri>
+		<image-uri>TEX.png</image-uri>
 	</job>
 	<job id="FILE_EXISTS">
 		<type>
@@ -108,7 +108,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FileExists.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/FEX.png</image-uri>
+		<image-uri>FEX.png</image-uri>
 	</job>
 	<job id="EVAL">
 		<type>
@@ -120,7 +120,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Evaluation.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/RES.png</image-uri>
+		<image-uri>RES.png</image-uri>
 	</job>
 	<job id="SPECIAL">
 		<type>
@@ -132,7 +132,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Special.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/</image-uri>
+		<image-uri></image-uri>
 	</job>
 	<job id="SFTP">
 		<type>
@@ -144,7 +144,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTP.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/SFT.png</image-uri>
+		<image-uri>SFT.png</image-uri>
 	</job>
 	<job id="HTTP">
 		<type>
@@ -156,7 +156,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.HTTP.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/WEB.png</image-uri>
+		<image-uri>WEB.png</image-uri>
 	</job>
 	<job id="CREATE_FILE">
 		<type>
@@ -168,7 +168,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.CreateFile.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/CFJ.png</image-uri>
+		<image-uri>CFJ.png</image-uri>
 	</job>
 	<job id="DELETE_FILE">
 		<type>
@@ -180,7 +180,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteFile.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/DFJ.png</image-uri>
+		<image-uri>DFJ.png</image-uri>
 	</job>
 	<job id="WAIT_FOR_FILE">
 		<type>
@@ -192,7 +192,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WaitForFile.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/WFF.png</image-uri>
+		<image-uri>WFF.png</image-uri>
 	</job>
 	<job id="SFTPPUT">
 		<type>
@@ -204,7 +204,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.SFTPPut.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/SFP.png</image-uri>
+		<image-uri>SFP.png</image-uri>
 	</job>
 	<job id="FILE_COMPARE">
 		<type>
@@ -216,7 +216,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.FileCompare.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/BFC.png</image-uri>
+		<image-uri>BFC.png</image-uri>
 	</job>
 	<job id="MYSQL_BULK_LOAD">
 		<type>
@@ -228,7 +228,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MysqlBulkLoad.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/MBL.png</image-uri>
+		<image-uri>MBL.png</image-uri>
 	</job>
 	<job id="MSGBOX_INFO">
 		<type>
@@ -240,7 +240,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MsgBoxInfo.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/INF.png</image-uri>
+		<image-uri>INF.png</image-uri>
 	</job>
 	<job id="DELAY">
 		<type>
@@ -252,7 +252,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Delay.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/DLT.png</image-uri>
+		<image-uri>DLT.png</image-uri>
 	</job>
 	<job id="ZIP_FILE">
 		<type>
@@ -264,7 +264,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.ZipFile.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/ZIP.png</image-uri>
+		<image-uri>ZIP.png</image-uri>
 	</job>
 	<job id="XSLT">
 		<type>
@@ -276,7 +276,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.XSLT.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/XSLT.png</image-uri>
+		<image-uri>XSLT.png</image-uri>
 	</job>
 	<job id="MYSQL_BULK_FILE">
 		<type>
@@ -288,7 +288,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.MysqlBulkFile.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/MBF.png</image-uri>
+		<image-uri>MBF.png</image-uri>
 	</job>
 	<job id="ABORT">
 		<type>
@@ -300,7 +300,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Abort.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/ABR.png</image-uri>
+		<image-uri>ABR.png</image-uri>
 	</job>
 	<job id="GET_POP">
 		<type>
@@ -312,7 +312,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.GetPOP.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/GETPOP.png</image-uri>
+		<image-uri>GETPOP.png</image-uri>
 	</job>
 	<job id="PING">
 		<type>
@@ -324,7 +324,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Ping.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/PNG.png</image-uri>
+		<image-uri>PNG.png</image-uri>
 	</job>
 	<job id="DELETE_FILES">
 		<type>
@@ -336,7 +336,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.DeleteFiles.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/DFS.png</image-uri>
+		<image-uri>DFS.png</image-uri>
 	</job>
 	<job id="SUCCESS">
 		<type>
@@ -348,7 +348,7 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.Success.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/SUC.png</image-uri>
+		<image-uri>SUC.png</image-uri>
 	</job>
 	<job id="XSD_VALIDATOR">
 		<type>
@@ -360,6 +360,6 @@
 		<tooltip>
 			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.XSDValidator.Tooltip")
 		</tooltip>
-		<image-uri>/org/pentaho/di/images/XSD.png</image-uri>
+		<image-uri>XSD.png</image-uri>
 	</job>
 </jobs>

@@ -329,17 +329,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	private List<Object[]> menuListeners = new ArrayList<Object[]>();
 
     public Spoon(Display d) {
-		this(null, d, null);
+		this(d, null);
 	}
 
-	public Spoon(LogWriter l, Repository rep)
+	public Spoon(Repository rep)
 	{
-		this(l, null, rep);
+		this(null, rep);
 	}
 
-	public Spoon(LogWriter log, Display d, Repository rep)
+	public Spoon(Display d, Repository rep)
 	{
-		this.log = log;
+		this.log = LogWriter.getInstance();
 		this.rep = rep;
 
 		if (d != null)
@@ -5232,7 +5232,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			setArguments(args.toArray(new String[args.size()]));
 			start();
     	} catch (Throwable t) {
-			log.logError(toString(), "Fatal error : " + t.toString());
+			log.logError(toString(), "Fatal error : " + Const.NVL(t.toString(), Const.NVL(t.getMessage(), "Unknown error")) );
 			log.logError(toString(), Const.getStackTracker(t));
 		}
 	}
@@ -5244,7 +5244,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException
 	{
-
 		EnvUtil.environmentInit();
 		ArrayList<String> args = new ArrayList<String>();
         for (int i=0;i<a.length;i++) args.add(a[i]);
