@@ -1,13 +1,9 @@
 package org.pentaho.di.repository;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import org.eclipse.swt.widgets.TreeItem;
-import org.pentaho.di.core.Const;
 
 /**
  * Contains some common object details, extracted from a repository
@@ -16,7 +12,6 @@ import org.pentaho.di.core.Const;
  */
 public class RepositoryObject
 {
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public static final String STRING_OBJECT_TYPE_TRANSFORMATION = "Transformation";
     public static final String STRING_OBJECT_TYPE_JOB =            "Job";
@@ -92,16 +87,6 @@ public class RepositoryObject
     public void setName(String name)
     {
         this.name = name;
-    }
-    
-    
-    public void setTreeItem(TreeItem treeItem)
-    {
-        treeItem.setText(0, Const.NVL(name, ""));
-        treeItem.setText(1, Const.NVL(objectType, ""));
-        treeItem.setText(2, Const.NVL(modifiedUser, ""));
-        treeItem.setText(3, modifiedDate!=null ? simpleDateFormat.format(modifiedDate) : "");
-        treeItem.setText(4, Const.NVL(description, ""));
     }
     
     public static final int compareStrings(String one, String two)
