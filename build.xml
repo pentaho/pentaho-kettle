@@ -49,6 +49,7 @@
 	    <tstamp/>
 	    <mkdir dir="${build}"/>
 	    <mkdir dir="${classes}"/>
+	    <mkdir dir="${classes-ui}"/>
 	    <mkdir dir="${classes-ui}/ui"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
