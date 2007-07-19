@@ -1159,7 +1159,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public boolean isQuoteAllFields()
     {
-        String quoteAllFields = attributes.getProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, "N"); // DEFAULT TO YES!!
+        String quoteAllFields = attributes.getProperty(ATTRIBUTE_QUOTE_ALL_FIELDS, "N"); // DEFAULT TO NO
         return "Y".equalsIgnoreCase(quoteAllFields);
     }
     
