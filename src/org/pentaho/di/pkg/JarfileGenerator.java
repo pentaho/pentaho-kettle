@@ -35,7 +35,7 @@ public class JarfileGenerator
         }
         kar.mkdir();
         
-        String filename = "kettle3.jar";
+        String filename = "kettle-engine-3.0.jar";
         if (!Const.isEmpty(transMeta.getFilename()))
         {
             filename = ValueDataUtil.replace(transMeta.getFilename(), " ", "_").toLowerCase()+".kar";
