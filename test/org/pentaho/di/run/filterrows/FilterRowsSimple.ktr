@@ -46,8 +46,26 @@
           </partition>        </partitionschema>
     </partitionschemas>
     <slaveservers>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
+         <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8083</name><hostname>localhost</hostname><port>8083</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
+        <clusterschema>
+          <name>local schema</name>
+          <base_port>40000</base_port>
+          <sockets_buffer_size>2000</sockets_buffer_size>
+          <sockets_flush_interval>5000</sockets_flush_interval>
+          <sockets_compressed>N</sockets_compressed>
+          <slaveservers>
+            <name>localhost:8080:Master</name>
+            <name>localhost:8081</name>
+            <name>localhost:8080</name>
+          </slaveservers>
+        </clusterschema>
     </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2007&#47;05&#47;11 23:39:27.838</modified_date>
@@ -55,7 +73,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Generate Rows</from><to>Filter rows</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Generate Rows</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>TRUE</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>FALSE</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Filter rows</name>
     <type>FilterRows</type>
@@ -67,8 +85,8 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-<send_true_to/>
-<send_false_to/>
+<send_true_to>TRUE</send_true_to>
+<send_false_to>FALSE</send_false_to>
     <compare>
 <condition>
  <negated>N</negated>
@@ -78,19 +96,19 @@
    <leftvalue>a</leftvalue>
    <function>&gt;</function>
    <rightvalue/>
-   <value><name>constant</name><type>Number</type><text>100.0</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+   <value><name>constant</name><type>Number</type><text>100</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
   <condition>
    <negated>N</negated>
    <operator>AND</operator>
    <leftvalue>e</leftvalue>
    <function>&lt;</function>
    <rightvalue/>
-   <value><name>constant</name><type>Number</type><text>500.0</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
+   <value><name>constant</name><type>Number</type><text>500</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>   </condition>
   </conditions>
  </condition>
     </compare>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>363</xloc>
       <yloc>171</yloc>
       <draw>Y</draw>
@@ -156,9 +174,47 @@
     </fields>
     <limit>${NR_OF_ROWS}</limit>
      <cluster_schema/>
-    <GUI>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>163</xloc>
       <yloc>171</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>TRUE</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>561</xloc>
+      <yloc>135</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>FALSE</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>561</xloc>
+      <yloc>239</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
