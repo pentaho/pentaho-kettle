@@ -59,7 +59,6 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -321,7 +320,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(ScriptValuesMetaMod)in;
 		try{
-			ImageLoader xl = new ImageLoader();
+			//ImageLoader xl = new ImageLoader();
 			imageActiveScript = ImageUtil.getImage(parent.getDisplay(),"faScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"faScript.png"))[0]);
 			imageInactiveScript = ImageUtil.getImage(parent.getDisplay(),"fScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"fScript.png"))[0]);
 			imageActiveStartScript = ImageUtil.getImage(parent.getDisplay(),"sScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"sScript.png"))[0]);
