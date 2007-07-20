@@ -1,6 +1,5 @@
 package org.pentaho.di.ui.core.gui;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
@@ -25,7 +24,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepLoaderException;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.job.JobEntryLoader;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobPlugin;
@@ -33,6 +31,7 @@ import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * This is a singleton class that contains allocated Fonts, Colors, etc. All
