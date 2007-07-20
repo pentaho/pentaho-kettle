@@ -1,0 +1,184 @@
+ /**********************************************************************
+ **                                                                   **
+ **               This code belongs to the KETTLE project.            **
+ **                                                                   **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
+ **                                                                   **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
+ **                                                                   **
+ **********************************************************************/
+ 
+package org.pentaho.di.trans.steps.cubeoutput;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+
+
+/**
+ * Outputs a stream/series of rows to a file, effectively building a sort of (compressed) microcube.
+ * 
+ * @author Matt
+ * @since 4-apr-2003
+ */
+
+public class CubeOutput extends BaseStep implements StepInterface
+{
+	private CubeOutputMeta meta;
+	private CubeOutputData data;
+	
+	public CubeOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	{
+		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+	}
+	
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	{
+		meta=(CubeOutputMeta)smi;
+		data=(CubeOutputData)sdi;
+
+		Object[] r;
+		boolean result=true;
+		
+		r=getRow();       // This also waits for a row to be finished.
+		
+		if (r==null)
+		{
+			setOutputDone();
+            return false;
+		}
+		
+		result=writeRowToFile(r);
+		if (!result)
+		{
+			setErrors(1);
+			stopAll();
+			return false;
+		}
+		
+		putRow(data.outputMeta, r);       // in case we want it to go further...
+		
+        if (checkFeedback(linesOutput)) logBasic(Messages.getString("CubeOutput.Log.LineNumber")+linesOutput); //$NON-NLS-1$
+		
+		return result;
+	}
+
+	private synchronized boolean writeRowToFile(Object[] r)
+	{
+		try
+		{	
+			if (first)
+			{
+				data.outputMeta= (RowMetaInterface) getInputRowMeta().clone();
+				// Write meta-data to the cube file...
+				data.outputMeta.writeMeta(data.dos);
+				first=false;
+			}
+   			// Write data to the cube file...
+			data.outputMeta.writeData(data.dos, r);
+		}
+		catch(Exception e)
+		{
+			logError(Messages.getString("CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
+			return false;
+		}
+
+		linesOutput++;
+		
+		return true;
+	}
+	
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	{
+		meta=(CubeOutputMeta)smi;
+		data=(CubeOutputData)sdi;
+
+		if (super.init(smi, sdi))
+		{
+			try
+			{
+				data.fos=KettleVFS.getOutputStream(environmentSubstitute(meta.getFilename()), false);
+				data.zip=new GZIPOutputStream(data.fos);
+				data.dos=new DataOutputStream(data.zip);
+			
+				return true;
+			}
+			catch(IOException ioe)
+			{
+				logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
+			}
+		}
+		return false;
+	}
+    
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+    {
+        try
+        {
+            if (data.dos!=null) 
+            {
+            	data.dos.close();
+            	data.dos=null;
+            }
+            if (data.zip!=null)
+            {
+				data.zip.close();
+				data.zip=null;
+			}
+            if (data.fos!=null)
+            {
+            	data.fos.close();
+            	data.fos=null;
+            }
+        }
+        catch(IOException e)
+        {
+            logError(Messages.getString("CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
+            setErrors(1);
+            stopAll();
+        }
+
+        super.dispose(smi, sdi);
+    }
+	
+	//
+	// Run is were the action happens!
+	public void run()
+	{
+		try
+		{
+			logBasic(Messages.getString("CubeOutput.Log.StartingToRun")); //$NON-NLS-1$
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Exception e)
+		{
+			logError(Messages.getString("CubeOutput.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(e));
+            setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+		    dispose(meta, data);
+			markStop();
+		    logSummary();
+		}
+	}	
+}
