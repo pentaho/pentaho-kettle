@@ -22,6 +22,7 @@ package be.ibridge.kettle.trans.step.XMLInputSax;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -131,7 +132,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
             
 		    // Is this the last file?
 			data.last_file = ( data.filenr==data.files.length-1);
-			data.filename = data.files[data.filenr];
+			data.filename = StringUtil.environmentSubstitute(data.files[data.filenr]);
 			
 			logBasic("Opening file: "+data.filename);
 			

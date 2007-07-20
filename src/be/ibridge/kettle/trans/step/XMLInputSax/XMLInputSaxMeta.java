@@ -21,12 +21,8 @@
 
 package be.ibridge.kettle.trans.step.XMLInputSax;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -39,7 +35,6 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -50,6 +45,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
@@ -575,73 +571,80 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String[] getFiles()
 	{
-		String files[]=null;
-		
-		// Replace possible environment variables...
-		final String realfile[] = StringUtil.environmentSubstitute(fileName);
-		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
-		
-		ArrayList filelist = new ArrayList();
-		
-		for (int i=0;i<realfile.length;i++)
-		{
-			final String onefile = realfile[i];
-			final String onemask = realmask[i];
-			
-			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
-			{
-				File file = new File(onefile);
-				try
-				{
-					files = file.list(new FilenameFilter() { public boolean accept(File dir, String name)
-							{ return Pattern.matches(onemask, name); } } );
-					
-					for (int j = 0; j < files.length; j++)
-					{
-						if (!onefile.endsWith(Const.FILE_SEPARATOR))
-						{
-							files[j] = onefile+Const.FILE_SEPARATOR+files[j];
-						}
-						else
-						{
-							files[j] = onefile+files[j];
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					files=null;
-				}
-			}
-			else // A normal file...
-			{
-				// Check if it exists...
-				File file = new File(onefile);
-				if (file.exists() && file.isFile() && file.canRead() )
-				{
-					files = new String[] { onefile };
-				}
-				else // File is not accessible to us.
-				{
-					files = null;
-				}
-			}
+        String[] fileRequired = new String[fileName.length];
+        for (int i = 0; i < fileName.length; i++)
+        	fileRequired[i] = "Y";  //####NO I8N
+        //TODO make it selectable, change the behaviour to the other steps (accept filenames etc.)
 
-			// Add to our list...
-			if (files!=null)
-			for (int x=0;x<files.length;x++)
-			{				
-				filelist.add(files[x]);
-			}
-		}
-        
-        // Sort the list: quicksort
-        Collections.sort(filelist);
-
-		// OK, return the list in filelist...
-		files = (String[])filelist.toArray(new String[filelist.size()]);
-
-		return files;
+		return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
+		
+//		String files[]=null;
+//		
+//		// Replace possible environment variables...
+//		final String realfile[] = StringUtil.environmentSubstitute(fileName);
+//		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
+//		
+//		ArrayList filelist = new ArrayList();
+//		
+//		for (int i=0;i<realfile.length;i++)
+//		{
+//			final String onefile = realfile[i];
+//			final String onemask = realmask[i];
+//			
+//			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
+//			{
+//				File file = new File(onefile);
+//				try
+//				{
+//					files = file.list(new FilenameFilter() { public boolean accept(File dir, String name)
+//							{ return Pattern.matches(onemask, name); } } );
+//					
+//					for (int j = 0; j < files.length; j++)
+//					{
+//						if (!onefile.endsWith(Const.FILE_SEPARATOR))
+//						{
+//							files[j] = onefile+Const.FILE_SEPARATOR+files[j];
+//						}
+//						else
+//						{
+//							files[j] = onefile+files[j];
+//						}
+//					}
+//				}
+//				catch(Exception e)
+//				{
+//					files=null;
+//				}
+//			}
+//			else // A normal file...
+//			{
+//				// Check if it exists...
+//				File file = new File(onefile);
+//				if (file.exists() && file.isFile() && file.canRead() )
+//				{
+//					files = new String[] { onefile };
+//				}
+//				else // File is not accessible to us.
+//				{
+//					files = null;
+//				}
+//			}
+//
+//			// Add to our list...
+//			if (files!=null)
+//			for (int x=0;x<files.length;x++)
+//			{				
+//				filelist.add(files[x]);
+//			}
+//		}
+//        
+//        // Sort the list: quicksort
+//        Collections.sort(filelist);
+//
+//		// OK, return the list in filelist...
+//		files = (String[])filelist.toArray(new String[filelist.size()]);
+//
+//		return files;
 	}
 	
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -737,6 +740,26 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
     	return null;
+    }
+
+    public int getDefiningAttributeNormalID(String attributeName)
+    {
+        
+        // look for a normal attribute...
+        for (int i=0;i<inputFields.length;i++)
+        {
+            XMLInputSaxField field = inputFields[i];
+            XMLInputSaxFieldPosition positions[] = field.getFieldPosition();
+            for (int p=0;p<positions.length;p++)
+            {
+                XMLInputSaxFieldPosition position = positions[p];
+                if (position.getType()==XMLInputSaxFieldPosition.XML_ATTRIBUTE && position.getName().equals(attributeName))
+                {
+                    return i;
+                }
+            }
+        }
+    	return -1;
     }
     
     public void setDefiningAttribute(String elementName, String attributeName)

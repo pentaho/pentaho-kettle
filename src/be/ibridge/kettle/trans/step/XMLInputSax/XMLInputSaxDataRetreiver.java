@@ -208,15 +208,17 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
             _pathToRootElement.remove(_counter);
             counter--;
             _counter--;
-            rootFound = false;
-            rowSet.add(row.Clone());
-            // System.out.println(row.toString());
-            this.row = null;
-            this.row = this.emptyRow.Clone();
+            if(rootFound)
+            {
+	            rowSet.add(row.Clone());
+	            this.row = null;
+	            this.row = this.emptyRow.Clone();
+	            rootFound = false;
+            }
         }
         else
         {
-            _pathToRootElement.remove(_counter);
+             _pathToRootElement.remove(_counter);
             _counter--;
         }
     }
@@ -227,10 +229,6 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
         position[_counter+1]+=1;
         _counter++;
         
-        if (qName.equalsIgnoreCase("meetdata"))
-        {
-            System.out.println("qName="+qName);
-        }
         try {
 			if(!rootFound)
 			{
@@ -273,6 +271,21 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
 			        	_pathToRootElement.add(new XMLInputSaxFieldPosition(qName,XMLInputSaxFieldPosition.XML_ELEMENT_POS,position[_counter]+1));
 			            counterUp();
 			        }
+				    //normal attributes in root
+				    if(rootFound && attributes.getLength()>0)
+				    {
+	                    int i=0;
+	                    while(i<attributes.getLength())
+	                    {
+	    			    	int attributeID=meta.getDefiningAttributeNormalID(attributes.getQName(i));
+	    			    	if(attributeID>=0)
+	    			    	{
+	                            Value v=row.getValue(attributeID);
+	                            v.setValue(attributes.getValue(i));
+	    			    	}
+	                        i++;
+	                    }
+				    }
 			    } 
 			    else
 			    {
@@ -312,11 +325,6 @@ public class XMLInputSaxDataRetreiver extends DefaultHandler{
         try {
 			tempVal = new String(ch,start,length);
 			
-            if (tempVal.equals("1"))
-            {
-                System.out.println("tempVal="+tempVal);
-            }
-            
 			if(this.fieldToFill>=0)
 			{
 			    Value v=row.getValue(fieldToFill);
