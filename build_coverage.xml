@@ -159,12 +159,16 @@
 	
 	<target name="zip-reports" depends="coverage">
 		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${deploy.dir}"/>
+		
 		<zip destfile="${dist.dir}/kettle-reports-${current.date}.zip">
 			<zipfileset dir="${reports.dir}" prefix="kettle-tests" />
 			<zipfileset dir="${coverage.dir}" prefix="kettle-coverage" />
 		</zip>
+		
+		<unzip src="${dist.dir}/kettle-reports-${current.date}.zip" dest="${deploy.dir}"/>
 	</target>
 
-	<target name="coverage" depends="instrument-kettle-classes,test,coverage-report,alternate-coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
+	<target name="coverage" depends="clean-all, instrument-kettle-classes,test,coverage-report,alternate-coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
 
 </project>
