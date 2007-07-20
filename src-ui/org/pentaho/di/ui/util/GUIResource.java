@@ -1,6 +1,5 @@
 package org.pentaho.di.ui.util;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
