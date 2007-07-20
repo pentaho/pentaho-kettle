@@ -49,7 +49,6 @@ import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
@@ -58,6 +57,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterValueDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.util.ImageUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -139,7 +140,7 @@ public class ConditionEditor extends Composite
 		// this.props            = pr;
 		this.fields           = inputFields;
 
-		imageAdd = new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));
+		imageAdd = ImageUtil.getImage(composite.getDisplay(),"eq_add.png");//new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));
 		
 		addDisposeListener(
 		    new DisposeListener()

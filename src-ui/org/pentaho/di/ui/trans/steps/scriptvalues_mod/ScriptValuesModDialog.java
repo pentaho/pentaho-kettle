@@ -98,7 +98,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -114,6 +113,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.ImageUtil;
 
 
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface
@@ -321,10 +322,10 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		input=(ScriptValuesMetaMod)in;
 		try{
 			ImageLoader xl = new ImageLoader();
-			imageActiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"faScript.png"))[0]);
-			imageInactiveScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"fScript.png"))[0]);
-			imageActiveStartScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"sScript.png"))[0]);
-			imageActiveEndScript = new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"eScript.png"))[0]);
+			imageActiveScript = ImageUtil.getImage(parent.getDisplay(),"faScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"faScript.png"))[0]);
+			imageInactiveScript = ImageUtil.getImage(parent.getDisplay(),"fScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"fScript.png"))[0]);
+			imageActiveStartScript = ImageUtil.getImage(parent.getDisplay(),"sScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"sScript.png"))[0]);
+			imageActiveEndScript = ImageUtil.getImage(parent.getDisplay(),"eScript.png");//new Image(parent.getDisplay(),xl.load(this.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"eScript.png"))[0]);
 		}catch(Exception e){
 			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
 			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);

@@ -336,8 +336,8 @@ public class GUIResource
 				String filename = steps[i].getIconFilename();
 				try
 				{
-					InputStream stream = getClass().getResourceAsStream(filename);
-					image = new Image(display, stream);
+					//InputStream stream = getClass().getResourceAsStream(filename);
+					image = ImageUtil.getImage(display, filename);//new Image(display, stream);
 				} catch (Exception e)
 				{
 					log.logError("Kettle",
@@ -414,30 +414,22 @@ public class GUIResource
 
 	private void loadCommonImages()
 	{
-		imageHop = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "HOP.png"));
-		imageConnection = new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "CNC.png"));
-		imageKettleLogo = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "logo_kettle_lrg.png"));
-		imageBanner = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "bg_banner.png"));
-		imageBol = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "BOL.png"));
-		imageKettle = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "kettle_logo.png"));
-		imageCredits = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "credits.png"));
-		imageStart = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
-		imageDummy = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "DUM.png"));
-		imageSpoon = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
-		imageChef = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chef.png"));
-		imageSplash = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "kettle_splash.png"));
-		imagePentaho = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
-		imageVariable = new Image(display, getClass().getResourceAsStream(
-				Const.IMAGE_DIRECTORY + "variable.png"));
-		imageEditOptionButton = loadImage(Const.IMAGE_DIRECTORY + "edit_option.png");
-		imageResetOptionButton = loadImage(Const.IMAGE_DIRECTORY + "reset_option.png");
+		imageHop = ImageUtil.getImage(display, "HOP.png");
+		imageConnection = ImageUtil.getImage(display, "CNC.png");
+		imageKettleLogo = ImageUtil.getImage(display, "logo_kettle_lrg.png");
+		imageBanner = ImageUtil.getImage(display, "bg_banner.png"); 
+		imageBol = ImageUtil.getImage(display, "BOL.png");
+		imageKettle = ImageUtil.getImage(display, "kettle_logo.png");
+		imageCredits = ImageUtil.getImage(display, "credits.png");
+		imageStart = ImageUtil.getImage(display, "STR.png");
+		imageDummy = ImageUtil.getImage(display, "DUM.png");
+		imageSpoon = ImageUtil.getImage(display, "spoon32.png");
+		imageChef = ImageUtil.getImage(display, "chef.png");
+		imageSplash = ImageUtil.getImage(display, "kettle_splash.png");
+		imagePentaho = ImageUtil.getImage(display, "PentahoLogo.png");
+		imageVariable = ImageUtil.getImage(display, "variable.png");
+		imageEditOptionButton = ImageUtil.getImage(display, "edit_option.png");
+		imageResetOptionButton = ImageUtil.getImage(display, "reset_option.png");
 
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -450,39 +442,13 @@ public class GUIResource
 
 		// Makes transparent images "on the fly"
 		//
-		imageSpoonGraph = ImageUtil.makeImageTransparent(display, new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png")), new RGB(255, 255, 255));
-		imageJobGraph = ImageUtil.makeImageTransparent(display, new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "chefgraph.png")), new RGB(255, 255, 255));
-		imageLogoSmall = ImageUtil.makeImageTransparent(display, new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_logo_small.png")),
+		imageSpoonGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "spoongraph.png"), new RGB(255, 255, 255));
+		imageJobGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display ,"chefgraph.png"), new RGB(255, 255, 255));
+		imageLogoSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display,"kettle_logo_small.png"),
 				new RGB(255, 255, 255));
-		imageArrow = ImageUtil.makeImageTransparent(display, new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "arrow.png")), new RGB(255, 255, 255));
-		imageBanner = ImageUtil.makeImageTransparent(display, new Image(display, getClass()
-				.getResourceAsStream(Const.IMAGE_DIRECTORY + "bg_banner.png")), new RGB(255, 255, 255));
+		imageArrow = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "arrow.png"), new RGB(255, 255, 255));
+		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "bg_banner.png"), new RGB(255, 255, 255));
 
-	}
-
-	/**
-	 * Loading an image, checking whether it exists before
-	 * 
-	 * @param filename
-	 *            A package-like name to the image as resource. E.g.
-	 *            <code>/be/ibridge/kettle/images/SCR.png</code>
-	 * @return The image or <code>null</code>
-	 */
-	private Image loadImage(String filename)
-	{
-		InputStream is = getClass().getResourceAsStream(filename);
-		if (is != null)
-		{
-			return new Image(display, is);
-		} else
-		{
-			log.logBasic(GUIResource.class.toString(), "Did not find image '" + filename + "'");
-			return null;
-		}
 	}
 
 	/**
@@ -523,7 +489,7 @@ public class GUIResource
 				String filename = plugins[i].getIconFilename();
 				try
 				{
-					image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + filename));
+					image = ImageUtil.getImage(display,filename);//new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + filename));
 				} catch (Exception e)
 				{
 					log.logError("Kettle", "Unable to find required job entry image file ["

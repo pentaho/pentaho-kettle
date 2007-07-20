@@ -90,6 +90,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.util.ImageUtil;
 
 /**
  * Widget to display or modify data, displayed in a Table format.
@@ -2045,7 +2046,8 @@ public class TableView extends Composite
         props.setLook(button, Props.WIDGET_STYLE_TABLE);
         String buttonText = columns[colnr-1].getButtonText(); 
         if (buttonText!=null) button.setText(buttonText);
-        Image image = new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
+        Image image = ImageUtil.getImage(parent.getDisplay(),"edittext.png");
+        		//new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
 		button.setImage(image);
 	
 		SelectionAdapter selAdpt = columns[colnr-1].getSelectionAdapter();
