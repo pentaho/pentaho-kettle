@@ -1,14 +1,13 @@
 package org.pentaho.xul.swt.menu;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.xul.Messages;
 import org.pentaho.xul.swt.toolbar.Toolbar;
 import org.pentaho.xul.swt.toolbar.ToolbarButton;
@@ -34,8 +33,8 @@ public class MenuHelper {
 					String mode = XMLHandler.getTagAttribute( toolbarNode, "mode" ); //$NON-NLS-1$
 				    	toolbar = new Toolbar(shell, id, null);
 				    	if( "full".equals( mode ) ) toolbar.setMode(Toolbar.MODE_FULL);
-				    	if( "icons".equals( mode ) ) toolbar.setMode(Toolbar.MODE_ICONS);
-				    	if( "text".equals( mode ) ) toolbar.setMode(Toolbar.MODE_TEXT);
+				    	else if( "icons".equals( mode ) ) toolbar.setMode(Toolbar.MODE_ICONS);
+				    	else if( "text".equals( mode ) ) toolbar.setMode(Toolbar.MODE_TEXT);
 				    	
 						Node buttonNode = toolbarNode.getFirstChild();
 						while( buttonNode != null ) {
@@ -49,11 +48,9 @@ public class MenuHelper {
 								ToolbarButton button = new ToolbarButton(shell, value, toolbar);
 								button.setHint(hint);
 								button.setText(label);
-								InputStream stream = caller.getClass().getResourceAsStream(imagePath);
-								if( stream != null ) {
-							        final Image image = new Image(shell.getDisplay(), stream); 
-							        button.setImage(image);
-								}
+								
+							    button.setImage(ImageUtil.getImage(shell.getDisplay(),imagePath));
+								
 
 							}
 							else if( "toolbarseparator".equals( buttonNode.getNodeName() ) ) { //$NON-NLS-1$
