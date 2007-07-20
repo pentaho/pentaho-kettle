@@ -84,10 +84,10 @@ public class DummyTrans extends BaseStep implements StepInterface
 			logBasic(Messages.getString("DummyTrans.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("DummyTrans.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("DummyTrans.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

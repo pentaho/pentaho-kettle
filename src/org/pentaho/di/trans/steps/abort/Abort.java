@@ -109,12 +109,12 @@ public class Abort extends BaseStep implements StepInterface {
         try
         {
         	logBasic(Messages.getString("Abort.Log.StartingToRun")); //$NON-NLS-1$ 
-            while (processRow(meta, data) && !isStopped());
+             while (processRow(meta, data) && !isStopped());
         }
-        catch(Exception e)
+        catch(Throwable t)
         {
-        	logError(Messages.getString("Abort.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+        	logError(Messages.getString("Abort.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
             stopAll();
         }

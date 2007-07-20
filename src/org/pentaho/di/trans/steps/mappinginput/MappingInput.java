@@ -140,10 +140,10 @@ public class MappingInput extends BaseStep implements StepInterface
 			logBasic(Messages.getString("MappingInput.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("MappingInput.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("MappingInput.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

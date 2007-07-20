@@ -253,10 +253,10 @@ public class Constant extends BaseStep implements StepInterface
 			logBasic(Messages.getString("Constant.Log.StartToRun"));
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError("Unexpected error in "+" : "+e.toString());
-			logError(Const.getStackTracker(e));
+			logError("Unexpected error in "+" : "+t.toString());
+			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
 		}

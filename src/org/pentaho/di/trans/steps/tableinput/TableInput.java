@@ -301,13 +301,11 @@ public class TableInput extends BaseStep implements StepInterface
 		{
 			logBasic(Messages.getString("TableInput.Log.StartingToRun"));
 			while (!isStopped() && processRow(meta, data) );
-
-
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("TableInput.Log.UnexpectedError")+e.toString());
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("TableInput.Log.UnexpectedError")+t.toString());
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

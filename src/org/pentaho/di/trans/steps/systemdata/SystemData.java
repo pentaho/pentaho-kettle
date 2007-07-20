@@ -344,10 +344,10 @@ public class SystemData extends BaseStep implements StepInterface
 			logBasic("Starting to run...");
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError("Unexpected error : "+e.toString());
-            logError(Const.getStackTracker(e));
+			logError("Unexpected error : "+t.toString());
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

@@ -209,9 +209,9 @@ public class XMLInputSax extends BaseStep implements StepInterface
 			logBasic("Starting to run...");
 			while (processRow(meta, data) && !isStopped())
 				;
-		} catch (Exception e)
+		} catch (Throwable t)
 		{
-			logError("Unexpected error : " + e.toString());
+			logError("Unexpected error : " + t.toString());
 			setErrors(1);
 			stopAll();
 		} finally

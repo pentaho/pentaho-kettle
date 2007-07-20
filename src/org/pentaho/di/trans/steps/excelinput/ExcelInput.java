@@ -699,10 +699,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 			while (processRow(meta, data) && !isStopped())
 				;
 		}
-		catch (Exception e)
+		catch (Throwable t)
 		{
-			logError("Unexpected error : " + e.toString());
-            logError(Const.getStackTracker(e));
+			logError("Unexpected error : " + t.toString());
+            logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
 		}

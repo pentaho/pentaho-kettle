@@ -182,10 +182,10 @@ public class SetVariable extends BaseStep implements StepInterface
 			logBasic(Messages.getString("SetVariable.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("SetVariable.RuntimeError.UnexpectedError.SETVARIABLE0003", e.toString())); //$NON-NLS-1$
-            logError(Const.getStackTracker(e)); //$NON-NLS-1$
+			logError(Messages.getString("SetVariable.RuntimeError.UnexpectedError.SETVARIABLE0003", t.toString())); //$NON-NLS-1$
+            logError(Const.getStackTracker(t)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 		}

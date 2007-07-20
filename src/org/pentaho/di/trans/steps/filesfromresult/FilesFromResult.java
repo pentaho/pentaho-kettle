@@ -35,7 +35,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 2-jun-2003
  */
-
 public class FilesFromResult extends BaseStep implements StepInterface
 {
 	private FilesFromResultMeta meta;
@@ -106,10 +105,11 @@ public class FilesFromResult extends BaseStep implements StepInterface
 			logBasic(Messages.getString("FilesFromResult.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped())
 				;
-		} catch (Exception e)
+		} 
+		catch (Throwable t)
 		{
-			logError(Messages.getString("FilesFromResult.Log.UnexpectedError") + " : " + e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			logError(Const.getStackTracker(e));
+			logError(Messages.getString("FilesFromResult.Log.UnexpectedError") + " : " + t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
 		} finally

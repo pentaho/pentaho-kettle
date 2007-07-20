@@ -26,15 +26,12 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /**
  * Filters input rows base on conditions.
  * 
  * @author Matt
  * @since 16-apr-2003, 07-nov-2004 (rewrite)
  */
-
 public class FilterRows extends BaseStep implements StepInterface
 {
 	private FilterRowsMeta meta;
@@ -147,10 +144,10 @@ public class FilterRows extends BaseStep implements StepInterface
 			logBasic(Messages.getString("FilterRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("FilterRows.Log.UnexpectedErrorIn")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("FilterRows.Log.UnexpectedErrorIn")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

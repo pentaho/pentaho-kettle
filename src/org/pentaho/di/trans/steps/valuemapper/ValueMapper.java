@@ -211,10 +211,10 @@ public class ValueMapper extends BaseStep implements StepInterface
 			logBasic(Messages.getString("ValueMapper.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("ValueMapper.RuntimeError.UnexpectedError.VALUEMAPPER0003", e.toString())); //$NON-NLS-1$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("ValueMapper.RuntimeError.UnexpectedError.VALUEMAPPER0003", t.toString())); //$NON-NLS-1$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

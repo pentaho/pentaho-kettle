@@ -293,10 +293,10 @@ public class Delete extends BaseStep implements StepInterface
 			logBasic(Messages.getString("Delete.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("Delete.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("Delete.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}

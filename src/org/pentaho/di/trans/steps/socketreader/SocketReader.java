@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 01-dec-2006
  */
-
 public class SocketReader extends BaseStep implements StepInterface
 {
 	public static final String STRING_FINISHED = "Finished";
@@ -179,10 +178,10 @@ public class SocketReader extends BaseStep implements StepInterface
 			logBasic(Messages.getString("SocketReader.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("SocketReader.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("SocketReader.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}
