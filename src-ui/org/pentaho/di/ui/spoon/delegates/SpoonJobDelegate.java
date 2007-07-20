@@ -187,6 +187,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
 		{
+			t.printStackTrace();
 			spoon.getLog().logError("Could not create dialog for " + dialogClassName, t.getMessage());
 		}
 		return null;
@@ -232,7 +233,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					return;
 			}
 
-			JobEntryDialogInterface d = spoon.getJobEntryDialog(jei, jobMeta);
+			JobEntryDialogInterface d = getJobEntryDialog(jei, jobMeta);
 			if (d != null)
 			{
 				if (d.open() != null)
