@@ -738,6 +738,26 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface
     	return null;
     }
     
+    public int getDefiningAttributeNormalID(String attributeName)
+    {
+        
+        // look for a normal attribute...
+        for (int i=0;i<inputFields.length;i++)
+        {
+            XMLInputSaxField field = inputFields[i];
+            XMLInputSaxFieldPosition positions[] = field.getFieldPosition();
+            for (int p=0;p<positions.length;p++)
+            {
+                XMLInputSaxFieldPosition position = positions[p];
+                if (position.getType()==XMLInputSaxFieldPosition.XML_ATTRIBUTE && position.getName().equals(attributeName))
+                {
+                    return i;
+                }
+            }
+        }
+    	return -1;
+    }
+    
     public void setDefiningAttribute(String elementName, String attributeName)
     {
     	int index = definitionElement.indexOf(elementName);

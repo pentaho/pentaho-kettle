@@ -213,10 +213,13 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 			_pathToRootElement.remove(_counter);
 			counter--;
 			_counter--;
-			rootFound = false;
-			rowSet.add( row );
-			this.row = null;
-			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
+            if(rootFound)
+            {
+    			rootFound = false;
+    			rowSet.add( row );
+    			this.row = null;
+    			System.arraycopy(emptyRow, 0, this.row, 0, emptyRow.length);
+            }			
 		} else
 		{
 			_pathToRootElement.remove(_counter);
@@ -232,10 +235,6 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		position[_counter + 1] += 1;
 		_counter++;
 
-		if (qName.equalsIgnoreCase("meetdata"))
-		{
-			System.out.println("qName=" + qName);
-		}
 		try
 		{
 			if (!rootFound)
@@ -281,6 +280,21 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 								XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1));
 						counterUp();
 					}
+				    //normal attributes in root
+				    if(rootFound && attributes.getLength()>0)
+				    {
+	                    int i=0;
+	                    while(i<attributes.getLength())
+	                    {
+	    			    	int attributeID=meta.getDefiningAttributeNormalID(attributes.getQName(i));
+	    			    	if(attributeID>=0)
+	    			    	{
+								ValueMetaAndData v = (ValueMetaAndData) row[attributeID];
+								v.setValueData(attributes.getValue(i));
+	    			    	}
+	                        i++;
+	                    }
+				    }
 				} else
 				{
 					_pathToRootElement.add(new XMLInputSaxFieldPosition(qName,
@@ -320,11 +334,6 @@ public class XMLInputSaxDataRetriever extends DefaultHandler
 		try
 		{
 			tempVal = new String(ch, start, length);
-
-			if (tempVal.equals("1"))
-			{
-				System.out.println("tempVal=" + tempVal);
-			}
 
 			if (this.fieldToFill >= 0)
 			{

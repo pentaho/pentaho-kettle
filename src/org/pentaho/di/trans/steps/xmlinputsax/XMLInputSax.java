@@ -147,7 +147,7 @@ public class XMLInputSax extends BaseStep implements StepInterface
 
 			// Is this the last file?
 			data.last_file = (data.filenr == data.files.length - 1);
-			data.filename = data.files[data.filenr];
+			data.filename = environmentSubstitute(data.files[data.filenr]);
 
 			logBasic("Opening file: " + data.filename);
 
