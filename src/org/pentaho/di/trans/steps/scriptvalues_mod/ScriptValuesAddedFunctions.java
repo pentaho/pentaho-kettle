@@ -556,10 +556,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		 String strValueToTrim = Context.toString(ArgList[0]);
 	    		 return strValueToTrim.replaceAll("^\\s+", "");
 	    	 }   
+             else
+             {
+				throw Context.reportRuntimeError("The function call ltrim only requires 1 argument.");
+			 }
 	     }catch(Exception e){
 	    	 throw Context.reportRuntimeError("The function call ltrim is not valid.");
 	     }
-	     return null;
 	 }
 
 	public static String rtrim(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
@@ -569,11 +572,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		 else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
 	    		 String strValueToTrim = Context.toString(ArgList[0]);
 	    		 return strValueToTrim.replaceAll("\\s+$", "");
-	    	 }   
+	    	 }
+             else
+             {
+				throw Context.reportRuntimeError("The function call rtrim only requires 1 argument.");
+			 }	    	 
 	     }catch(Exception e){
 	    	 throw Context.reportRuntimeError("The function call rtrim is not valid.");
 	     }
-	     return null;
 	 }
 	 
 	 public static String lpad(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
@@ -1176,17 +1182,20 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     
     public static String trim(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
         String sRC="";
-        if(ArgList.length==1){
+        if(ArgList.length==1)
+        {
             try{
                 if(isNull(ArgList[0])) return null;
                 else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
                 sRC = Context.toString(ArgList[0]);
                 sRC = Const.trim(sRC);
             }catch(Exception e){
-                throw Context.reportRuntimeError("The function call trim is not valid");
+                throw Context.reportRuntimeError("The function call trim is not valid : " + e.getMessage());
             }
-        }else{
-            throw Context.reportRuntimeError("The function call trim is not valid");
+        }
+        else
+        {
+		    throw Context.reportRuntimeError("The function call trim only requires 1 argument.");
         }
         return sRC;
     }
