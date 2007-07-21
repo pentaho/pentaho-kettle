@@ -92,6 +92,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         };
 	
 	// This is only used for reading, so no concurrency problems.
+	// todo: move in the real variables of the step.
 	private static VariableSpace variables = Variables.getADefaultVariableSpace();
 
 	// Functions to Add
@@ -175,7 +176,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return 0;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call getKettleCount is not valid.");	
+			throw Context.reportRuntimeError("The function call getProcessCount is not valid.");	
 		}
 	}
 	
