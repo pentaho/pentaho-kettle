@@ -14,6 +14,7 @@ import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
+import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
 
@@ -46,6 +47,7 @@ public class AllRegressionTests
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
+        suite.addTestSuite(JavaScriptStringTest.class);        
         
         return suite;
     }
