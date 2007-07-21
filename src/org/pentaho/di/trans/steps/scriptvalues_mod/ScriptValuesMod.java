@@ -257,7 +257,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
         // Filling the defined TranVars with the Values from the Row
         // 
-        Object[] outputRow = RowDataUtil.resizeArray(row, rowMeta.size());
+        Object[] outputRow = RowDataUtil.resizeArray(row, rowMeta.size() + meta.getName().length);
         
         // Keep an index...
         int outputIndex = rowMeta.size();
