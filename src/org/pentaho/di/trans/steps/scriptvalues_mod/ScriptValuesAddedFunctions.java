@@ -558,7 +558,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    	 }   
              else
              {
-				throw Context.reportRuntimeError("The function call ltrim only requires 1 argument.");
+				throw Context.reportRuntimeError("The function call ltrim requires 1 argument.");
 			 }
 	     }catch(Exception e){
 	    	 throw Context.reportRuntimeError("The function call ltrim is not valid.");
@@ -575,7 +575,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    	 }
              else
              {
-				throw Context.reportRuntimeError("The function call rtrim only requires 1 argument.");
+				throw Context.reportRuntimeError("The function call rtrim requires 1 argument.");
 			 }	    	 
 	     }catch(Exception e){
 	    	 throw Context.reportRuntimeError("The function call rtrim is not valid.");
@@ -1195,46 +1195,56 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         }
         else
         {
-		    throw Context.reportRuntimeError("The function call trim only requires 1 argument.");
+		    throw Context.reportRuntimeError("The function call trim requires 1 argument.");
         }
         return sRC;
     }
 
     public static String substr(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
         String sRC="";
-        if(ArgList.length==2) {
-            try{
+        if ( ArgList.length == 2 ) 
+        {
+            try
+            {
                 if(isNull(ArgList[0])) return null;
                 else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
                 sRC = Context.toString(ArgList[0]);
                 int from = (int)Math.round(Context.toNumber(ArgList[1]));
                 sRC = sRC.substring(from);
-            }catch(Exception e){
-                throw Context.reportRuntimeError("The function call substr is not valid");
+            }
+            catch(Exception e)
+            {
+                throw Context.reportRuntimeError("The function call substr is not valid : " + e.getMessage());
             }
         } 
-        else if(ArgList.length==3) {
-            try{
+        else if ( ArgList.length == 3) 
+        {
+            try
+            {
                 if(isNull(ArgList[0])) return null;
                 else if(isUndefined(ArgList[0])) return (String)Context.getUndefinedValue();
                 sRC = Context.toString(ArgList[0]);
                 int from = (int)Math.round(Context.toNumber(ArgList[1]));
                 int to   = (int)Math.round(Context.toNumber(ArgList[2]));
                 sRC = sRC.substring(from, to);
-            }catch(Exception e){
-                throw Context.reportRuntimeError("The function call substr is not valid");
+            }
+            catch(Exception e)
+            {
+                throw Context.reportRuntimeError("The function call substr is not valid : " + e.getMessage());
             }
         } 
-        else {
-            throw Context.reportRuntimeError("The function call substr is not valid");
+        else 
+        {
+			throw Context.reportRuntimeError("The function call substr requires 2 or 3 arguments.");
         }
         return sRC;
     }
 	
-	// Loading additional JS Files inside the JavaScriptCode
+	// Resolve an IP address
 	public static String resolveIP(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext) {
 		String sRC="";
-		if(ArgList.length==2){
+		if(ArgList.length==2)
+		{
 			try{
 				InetAddress addr = InetAddress.getByName(Context.toString(ArgList[0]));
 				if(Context.toString(ArgList[1]).equals("IP")) sRC = addr.getHostName();
@@ -1244,6 +1254,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				sRC="-";
 			}
 		}
+        else {
+			throw Context.reportRuntimeError("The function call resolveIP requires 2 arguments.");
+        }
+
 		return sRC;
 	}
 	
