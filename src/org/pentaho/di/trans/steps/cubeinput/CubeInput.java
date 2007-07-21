@@ -156,10 +156,10 @@ public class CubeInput extends BaseStep implements StepInterface
 			logBasic(Messages.getString("CubeInput.Log.StartingToRun")); //$NON-NLS-1$
 			while (!isStopped() && processRow(meta, data) );
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("CubeInput.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(e));
+			logError(Messages.getString("CubeInput.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
 		}
