@@ -768,7 +768,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					//DecimalFormat formatter = new DecimalFormat();
 					//sRC= formatter.format(sArg1); 
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not apply local format.");
+					throw Context.reportRuntimeError("Could not apply local format : " + e.getMessage());
 				}
 				break;
 			case 2:
@@ -780,7 +780,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					Format dfFormatter = new SimpleDateFormat(sArg2);
 					oRC = dfFormatter.parseObject(sArg1);
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not aply the given format on the string.");
+					throw Context.reportRuntimeError("Could not apply the given format on the string : " + e.getMessage());
 				}
 				break;
 			case 3:
@@ -799,7 +799,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						throw Context.reportRuntimeError("");
 					}
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not aply the local format.");
+					throw Context.reportRuntimeError("Could not apply the local format : " + e.getMessage());
 				}
 				break;				
 			default:
@@ -922,7 +922,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError("sendMail: "+e.toString() );
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call sendMail is not valid");
+			throw Context.reportRuntimeError("The function call sendMail requires 5 arguments.");
 		}
 	}
 
@@ -935,10 +935,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				sRC = Context.toString(ArgList[0]);
 				sRC = sRC.toUpperCase();
 			}catch(Exception e){
-				throw Context.reportRuntimeError("The function call upper is not valid");
+				throw Context.reportRuntimeError("The function call upper is not valid : " + e.getMessage());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call upper is not valid");
+			throw Context.reportRuntimeError("The function call upper requires 1 argument.");
 		}
 		return sRC;
 	}
@@ -952,10 +952,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				sRC = Context.toString(ArgList[0]);
 				sRC = sRC.toLowerCase();
 			}catch(Exception e){
-				throw Context.reportRuntimeError("The function call lower is not valid");
+				throw Context.reportRuntimeError("The function call lower is not valid : " + e.getMessage());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call lower is not valid");
+			throw Context.reportRuntimeError("The function call lower requires 1 argument.");
 		}
 		return sRC;
 	}
@@ -965,7 +965,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		String sRC="";
 		switch(ArgList.length){
 			case 0:
-				throw  Context.reportRuntimeError("Please provide an valid Number to the Function.");
+				throw  Context.reportRuntimeError("The function call num2str requires at least 1 argument.");
 			case 1:
 				try{
 					if(isNull(ArgList[0])) return null;
@@ -975,7 +975,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					DecimalFormat formatter = new DecimalFormat();
 					sRC= formatter.format(sArg1); 
 				}catch(IllegalArgumentException e){
-					throw Context.reportRuntimeError("Could not aply the given format on the number.");
+					throw Context.reportRuntimeError("Could not apply the given format on the number : " + e.getMessage());
 				}
 				break;
 			case 2:
@@ -988,7 +988,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					DecimalFormat formatter = new DecimalFormat(sArg2);
 					sRC= formatter.format(sArg1); 
 				}catch(IllegalArgumentException e){
-					throw Context.reportRuntimeError("Could not aply the given format on the number.");
+					throw Context.reportRuntimeError("Could not apply the given format on the number : " + e.getMessage());
 				}
 				break;
 			case 3:
@@ -1009,7 +1009,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				}
 				break;			
 			default:
-				throw Context.reportRuntimeError("The function call num2str is not valid");
+				throw Context.reportRuntimeError("The function call num2str requires 1, 2, or 3 arguments.");
 		}
 		
 		return sRC;
@@ -1020,7 +1020,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		double dRC=0.00;
 		switch(ArgList.length){
 			case 0:
-				throw  Context.reportRuntimeError("Please provide an valid String to the Function.");
+				throw  Context.reportRuntimeError("The function call str2num requires at least 1 argument.");
 			case 1:
 				try{
 					if(isNull(ArgList[0])) return new Double(Double.NaN);
@@ -1030,7 +1030,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					DecimalFormat formatter = new DecimalFormat();
 					dRC= (formatter.parse(sArg1)).doubleValue(); 
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not convert the given String.");
+					throw Context.reportRuntimeError("Could not convert the given String : " + e.getMessage());
 				}
 				break;
 			case 2:
@@ -1044,7 +1044,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					dRC= (formatter.parse(sArg1)).doubleValue();
 					return new Double(dRC);
 				}catch(Exception e){
-					throw Context.reportRuntimeError("Could not convert the String, with the give Format.");
+					throw Context.reportRuntimeError("Could not convert the String with the given format :" + e.getMessage());
 				}
 				//break;
 			case 3:
@@ -1059,14 +1059,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						DecimalFormat formatter = new DecimalFormat(sArg2, dfs);
 						dRC= (formatter.parse(sArg1)).doubleValue(); 
 						return new Double(dRC);
-						//return actualContext.toType((formatter.parse(sArg1)), Double.class);
 					}
 				}catch(Exception e){
-					throw Context.reportRuntimeError(e.toString());
+					throw Context.reportRuntimeError(e.getMessage());
 				}
 				break;				
 			default:
-				throw Context.reportRuntimeError("The function call str2num is not valid");
+				throw Context.reportRuntimeError("The function call str2num requires 1, 2, or 3 arguments.");
 		}
 		return new Double(dRC);
 	}
@@ -1084,7 +1083,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return Boolean.FALSE;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call isNum is not valid");
+			throw Context.reportRuntimeError("The function call isNum requires 1 argument.");
 		}
 	}
 	
@@ -1100,7 +1099,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return Boolean.FALSE;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call isDate is not valid");
+			throw Context.reportRuntimeError("The function call isDate requires 1 argument.");
 		}
 	}
 	
@@ -1114,10 +1113,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(ArgList.length%2==0)return ArgList[ArgList.length-1]; 
 				else return objToCompare;
 			}else{
-				throw Context.reportRuntimeError("The function call decode is not valid");
+				throw Context.reportRuntimeError("The function call decode requires more than 1 argument.");
 			}
 		}catch(Exception e){
-			throw Context.reportRuntimeError("The function call decode is not valid");
+			throw Context.reportRuntimeError("The function call decode is not valid : " + e.getMessage());
 		}
 	}
 	
@@ -1130,10 +1129,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				for(int i=1;i<ArgList.length-1;i=i+2) objForReplace=objForReplace.replaceAll(Context.toString(ArgList[i]),Context.toString(ArgList[i+1]));
 				return objForReplace;
 			}else{
-				throw Context.reportRuntimeError("The function call replace is not valid");
+				throw Context.reportRuntimeError("The function call replace is not valid (wrong arguments)");
 			}
 		}catch(Exception e){
-			throw Context.reportRuntimeError("Function call replace is not valid: " + e.getMessage());
+			throw Context.reportRuntimeError("Function call replace is not valid : " + e.getMessage());
 		}
 	}
 	
@@ -1162,8 +1161,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			}catch(Exception e){
 				throw Context.reportRuntimeError(e.toString());
 			}
-		}else{
-			throw Context.reportRuntimeError("The function call setEnvironmentVar is not valid");
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call setEnvironmentVar requires 2 arguments.");
 		}
 	}
 	
@@ -1178,6 +1179,10 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				sRC="";
 			}
 		}
+        else
+        {
+		    throw Context.reportRuntimeError("The function call getEnvironmentVar requires 1 argument.");
+        }		
 		return sRC;
 	}
     
