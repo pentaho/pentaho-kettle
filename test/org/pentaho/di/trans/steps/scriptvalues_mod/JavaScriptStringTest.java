@@ -43,7 +43,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Modified Javascript step. Things tested:
- * ltrim(), rtrim(), trim().
+ * ltrim(), rtrim(), trim(), lpad(), rpad(), upper(), lower().
  *
  * @author Sven Boden
  */
@@ -65,7 +65,7 @@ public class JavaScriptStringTest extends TestCase
 		return rm;
 	}
 	
-	public List<RowMetaAndData> createData()
+	public List<RowMetaAndData> createData1()
 	{
 		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
@@ -91,6 +91,34 @@ public class JavaScriptStringTest extends TestCase
 		
 		return list;
 	}
+
+	
+	public List<RowMetaAndData> createData2()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface1();
+		
+		Object[] r1 = new Object[] { null }; 
+		Object[] r2 = new Object[] { "" };
+		Object[] r3 = new Object[] { "    " };
+		Object[] r4 = new Object[] { "TeSt1" };
+		Object[] r5 = new Object[] { "loNgeR st1ing" };
+		Object[] r6 = new Object[] { "SPACES RIGHT    " };
+		Object[] r7 = new Object[] { "   spacEs lEft" };
+		Object[] r8 = new Object[] { "   spaces   " };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));
+		
+		return list;
+	}	
 	
 	
 	/**
@@ -145,7 +173,62 @@ public class JavaScriptStringTest extends TestCase
 		
 		return list;
 	}	
+
+	/**
+	 * Create the meta data for the results (lpad/rpad/upper/lower).
+	 */
+	public RowMetaInterface createRowMetaInterfaceResult2()
+	{
+		RowMetaInterface rm = new RowMeta();
 	
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("string",   ValueMeta.TYPE_STRING),
+			    new ValueMeta("lpadded1", ValueMeta.TYPE_STRING),
+			    new ValueMeta("lpadded2", ValueMeta.TYPE_STRING),
+			    new ValueMeta("rpadded1", ValueMeta.TYPE_STRING),
+			    new ValueMeta("rpadded2", ValueMeta.TYPE_STRING),
+			    new ValueMeta("upperStr", ValueMeta.TYPE_STRING),
+			    new ValueMeta("lowerStr", ValueMeta.TYPE_STRING),
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}	
+	
+	/**
+	 * Create result data for test case 2: lpad/rpad/upper/lower.
+	 */
+	public List<RowMetaAndData> createResultData2()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterfaceResult2();
+		
+		Object[] r1 = new Object[] { null, "xxxxxxxxxx", "         ", "xxxxxxxxxx", "         ", "", "" };
+		Object[] r2 = new Object[] { null, "xxxxxxxxxx", "         ", "xxxxxxxxxx", "         ", "", "" };
+		Object[] r3 = new Object[] { "    ", "xxxxxx    ", "         ", "    xxxxxx", "         ", "    ", "    " };
+		Object[] r4 = new Object[] { "TeSt1", "xxxxxTeSt1", "    TeSt1", "TeSt1xxxxx", "TeSt1    ", "TEST1", "test1" };
+		Object[] r5 = new Object[] { "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "loNgeR st1ing", "LONGER ST1ING", "longer st1ing" };
+		Object[] r6 = new Object[] { "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "SPACES RIGHT    ", "spaces right    " };
+		Object[] r7 = new Object[] { "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   spacEs lEft", "   SPACES LEFT", "   spaces left" };
+		Object[] r8 = new Object[] { "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   spaces   ", "   SPACES   ", "   spaces   " };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		list.add(new RowMetaAndData(rm, r6));
+		list.add(new RowMetaAndData(rm, r7));
+		list.add(new RowMetaAndData(rm, r8));	
+		
+		return list;
+	}	
+		
 	
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -204,7 +287,7 @@ public class JavaScriptStringTest extends TestCase
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("javascripttest1");
+        transMeta.setName("test javascript trim");
     	
         StepLoader steploader = StepLoader.getInstance();            
 
@@ -222,7 +305,7 @@ public class JavaScriptStringTest extends TestCase
         // 
         // Create a javascript step
         //
-        String javaScriptStepname = "blocking step";            
+        String javaScriptStepname = "javascript step";            
         ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
         
         ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
@@ -281,7 +364,7 @@ public class JavaScriptStringTest extends TestCase
         trans.startThreads();
         
         // add rows
-        List<RowMetaAndData> inputList = createData();
+        List<RowMetaAndData> inputList = createData1();
         Iterator<RowMetaAndData> it = inputList.iterator();
         while ( it.hasNext() )
         {
@@ -298,5 +381,117 @@ public class JavaScriptStringTest extends TestCase
                 
         List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
         checkRows(resultRows2, goldenImageRows);
-    }    
+    }
+    
+	/**
+	 * Test case for javascript functionality: lpad(), rpad(), upper(), lower().
+	 */
+    public void testStringsPadCase() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("test javascript pad casing");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);                       
+
+        // 
+        // Create a javascript step
+        //
+        String javaScriptStepname = "javascript step";            
+        ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
+        
+        ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
+        		                                              "script",
+        		                                              "var lpadded1 = lpad(string, \"x\", 10);\n" +
+        		                                              "var lpadded2 = lpad(string, \" \", 9);\n" +
+        		                                              "var rpadded1 = rpad(string, \"x\", 10);\n" +
+        		                                              "var rpadded2 = rpad(string, \" \", 9);\n" +
+        		                                              "var upperStr = upper(string);\n" +
+        		                                              "var lowerStr = lower(string);\n") };
+        svm.setJSScripts(js);
+        svm.setName(new String[] { "lpadded1", "lpadded2", "rpadded1", "rpadded2", "upperStr", "lowerStr" });
+        svm.setRename(new String[] { "", "", "", "", "", "", "" });
+        svm.setType(new int[] { ValueMetaInterface.TYPE_STRING,
+        		                ValueMetaInterface.TYPE_STRING,
+        		                ValueMetaInterface.TYPE_STRING,        		                
+        		                ValueMetaInterface.TYPE_STRING,
+        		                ValueMetaInterface.TYPE_STRING,        		                
+        		                ValueMetaInterface.TYPE_STRING,
+        		                ValueMetaInterface.TYPE_STRING});        
+        svm.setLength(new int[] { -1, -1, -1, -1, -1, -1, -1 });
+        svm.setPrecision(new int[] { -1, -1, -1, -1, -1, -1, -1 });
+        svm.setCompatible(true);
+
+        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        transMeta.addStep(javaScriptStep);            
+
+        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
+        transMeta.addTransHop(hi1);        
+        
+        // 
+        // Create a dummy step 
+        //
+        String dummyStepname = "dummy step";            
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
+        transMeta.addTransHop(hi2);        
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si;
+
+        si = trans.getStepInterface(javaScriptStepname, 0);
+        RowStepCollector javaScriptRc = new RowStepCollector();
+        si.addRowListener(javaScriptRc);
+               
+        si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData2();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        List<RowMetaAndData> goldenImageRows = createResultData2();
+        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
+        checkRows(resultRows1, goldenImageRows);
+                
+        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
+        checkRows(resultRows2, goldenImageRows);
+    }            
 }
