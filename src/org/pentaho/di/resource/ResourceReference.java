@@ -81,8 +81,9 @@ public class ResourceReference {
     addXmlCloseElement(buff, indentLevel, "ComponentResources"); //$NON-NLS-1$
     if (injector != null) {
       addXmlElement(buff, indentLevel, "ComponentProperties"); //$NON-NLS-1$
-      indentLevel--;
+      indentLevel++;
       buff.append(injector.getExtraResourceProperties(resourceReferenceHolder, indentLevel));
+      indentLevel--;
       addXmlCloseElement(buff, indentLevel, "ComponentProperties"); //$NON-NLS-1$
     }
     indentLevel--;
