@@ -82,6 +82,14 @@ public class JobEntryValidatorUtils
   }
 
   /**
+   * Returns a EmailValidator singleton.
+   */
+  public static EmailValidator emailValidator()
+  {
+    return EmailValidator.INSTANCE;
+  }
+
+  /**
    * Gets the <code>levelOnFail</code> type for given <code>validatorName</code>. If that is not found, returns generic
    * <code>levelOnFail</code> type. If that fails, returns <code>CheckResultInterface.TYPE_RESULT_ERROR</code>.
    */
