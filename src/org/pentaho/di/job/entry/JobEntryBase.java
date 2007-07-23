@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -14,6 +14,7 @@
  **********************************************************************/
 
 package org.pentaho.di.job.entry;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
-
 /**
  * Base class for the different types of job-entries...
  *
@@ -48,68 +48,72 @@ import org.w3c.dom.Node;
  */
 public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSourceInterface, ResourceHolderInterface
 {
-	private String  name;
-	private String  description;
-    private String  pluginID = null;
-    
-    /**
-	 * Id as defined in the xml or annotation.
-	 */
-	private String configId;
-	
-	private boolean changed;
-	private JobEntryType type;
-	private long    id;
+  private String name;
 
-	private VariableSpace variables = new Variables();
+  private String description;
 
-	public JobEntryBase()
-	{
-		name=null;
-		description=null;
-	}
+  private String pluginID = null;
 
-	public JobEntryBase(String name, String description)
-	{
-		setName(name);
-		setDescription(description);
-		setID(-1L);
-	}
+  /**
+   * Id as defined in the xml or annotation.
+   */
+  private String configId;
 
-	public JobEntryBase(JobEntryBase jeb)
-	{
-		setName(jeb.getName());
-		setDescription(jeb.getDescription());
-		setJobEntryType(jeb.getJobEntryType());
-		setID(jeb.getID());
-	}
+  private boolean changed;
 
-	public void clear()
-	{
-		name = null;
-		description = null;
-		changed = false;
-	}
+  private JobEntryType type;
 
-	public void setID(long id)
-	{
-		this.id=id;
-	}
+  private long id;
 
-	public long getID()
-	{
-		return id;
-	}
+  private VariableSpace variables = new Variables();
 
-	public void setJobEntryType(JobEntryType type)
-	{
-		this.type = type;
-	}
+  public JobEntryBase()
+  {
+    name = null;
+    description = null;
+  }
 
-    public String getPluginID()
-    {
-        return this.pluginID;
-    }
+  public JobEntryBase(String name, String description)
+  {
+    setName(name);
+    setDescription(description);
+    setID(-1L);
+  }
+
+  public JobEntryBase(JobEntryBase jeb)
+  {
+    setName(jeb.getName());
+    setDescription(jeb.getDescription());
+    setJobEntryType(jeb.getJobEntryType());
+    setID(jeb.getID());
+  }
+
+  public void clear()
+  {
+    name = null;
+    description = null;
+    changed = false;
+  }
+
+  public void setID(long id)
+  {
+    this.id = id;
+  }
+
+  public long getID()
+  {
+    return id;
+  }
+
+  public void setJobEntryType(JobEntryType type)
+  {
+    this.type = type;
+  }
+
+  public String getPluginID()
+  {
+    return this.pluginID;
+  }
 
   /**
    * Support for CheckResultSourceInterface
@@ -119,380 +123,381 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   }
 
   public JobEntryType getJobEntryType()
-	{
-		return type;
-	}
+  {
+    return type;
+  }
 
   public String getTypeCode()
-	{
-		if (this.pluginID != null)
-			return this.pluginID;
-		return type.toString();// JobEntryInterface.typeCode[type];
-	}
+  {
+    if (this.pluginID != null)
+      return this.pluginID;
+    return type.toString();// JobEntryInterface.typeCode[type];
+  }
 
+  public static final String getTypeCode(JobEntryType type)
+  {
+    return type.toString();
+  }
 
-	public static final String getTypeCode(JobEntryType type)
-	{
-		return type.toString();
-	}
+  public String getTypeDesc()
+  {
+    return type.getDescription();
+  }
 
-	public String getTypeDesc()
-	{
-		return type.getDescription();
-	}
+  public static final String getTypeDesc(JobEntryType type)
+  {
+    return type.getDescription();
+  }
 
-	public static final String getTypeDesc(JobEntryType type)
-	{
-		return type.getDescription();
-	}
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public void setPluginID(String pid)
+  {
+    this.pluginID = pid;
+  }
 
-    public void setPluginID(String pid)
-    {
-        this.pluginID = pid;
-    }
+  public String getName()
+  {
+    return name;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public void setDescription(String Description)
+  {
+    this.description = Description;
+  }
 
-	public void setDescription(String Description)
-	{
-		this.description = Description;
-	}
+  public String getDescription()
+  {
+    return description;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public void setChanged()
+  {
+    setChanged(true);
+  }
 
-	public void setChanged()
-	{
-		setChanged(true);
-	}
+  public void setChanged(boolean ch)
+  {
+    changed = ch;
+  }
 
-	public void setChanged(boolean ch)
-	{
-		changed=ch;
-	}
+  public boolean hasChanged()
+  {
+    return changed;
+  }
 
-	public boolean hasChanged()
-	{
-		return changed;
-	}
+  public boolean isStart()
+  {
+    return false;
+  }
 
-	public boolean isStart()
-	{
-		return false;
-	}
+  public boolean isDummy()
+  {
+    return false;
+  }
 
-	public boolean isDummy()
-	{
-		return false;
-	}
-
-	public boolean isEvaluation()
-	{
+  public boolean isEvaluation()
+  {
 		return getJobEntryType() == JobEntryType.EVAL;
-	}
+  }
 
-	public boolean isJob()
-	{
-		return getJobEntryType() == JobEntryType.JOB;
-	}
+  public boolean isJob()
+  {
+    return getJobEntryType() == JobEntryType.JOB;
+  }
 
-	public boolean isMail()
-	{
-		return getJobEntryType() == JobEntryType.MAIL;
-	}
+  public boolean isMail()
+  {
+    return getJobEntryType() == JobEntryType.MAIL;
+  }
 
-	public boolean isShell()
-	{
-		return getJobEntryType() == JobEntryType.MAIL;
-	}
+  public boolean isShell()
+  {
+    return getJobEntryType() == JobEntryType.MAIL;
+  }
 
-	public boolean isSpecial()
-	{
-		return getJobEntryType() == JobEntryType.SPECIAL;
-	}
+  public boolean isSpecial()
+  {
+    return getJobEntryType() == JobEntryType.SPECIAL;
+  }
 
-	public boolean isTransformation()
-	{
+  public boolean isTransformation()
+  {
 		return getJobEntryType() == JobEntryType.TRANS;
-	}
+  }
 
-	public boolean isFTP()
-	{
-		return getJobEntryType() == JobEntryType.FTP;
-	}
+  public boolean isFTP()
+  {
+    return getJobEntryType() == JobEntryType.FTP;
+  }
 
-	public boolean isSFTP()
-	{
-		return getJobEntryType() == JobEntryType.SFTP;
-	}
+  public boolean isSFTP()
+  {
+    return getJobEntryType() == JobEntryType.SFTP;
+  }
 
-	public boolean isHTTP()
-	{
-		return getJobEntryType() == JobEntryType.HTTP;
-	}
+  public boolean isHTTP()
+  {
+    return getJobEntryType() == JobEntryType.HTTP;
+  }
 
+  // Add here for the new types?
 
-    // Add here for the new types?
+  public String getXML()
+  {
+    StringBuffer retval = new StringBuffer();
+    retval.append("      ").append(XMLHandler.addTagValue("name", getName()));
+    retval.append("      ").append(XMLHandler.addTagValue("description", getDescription()));
+    if (type != JobEntryType.NONE)
+      retval.append("      ").append(XMLHandler.addTagValue("type", getTypeCode()));
+    if (pluginID != null)
+      retval.append("      ").append(XMLHandler.addTagValue("type", pluginID));
 
-	public String getXML()
-	{
-        StringBuffer retval = new StringBuffer();
-		retval.append("      ").append(XMLHandler.addTagValue("name",         getName()));
-		retval.append("      ").append(XMLHandler.addTagValue("description",  getDescription()));
-		if (type != JobEntryType.NONE)
-            retval.append("      ").append(XMLHandler.addTagValue("type",     getTypeCode()));
-        if (pluginID != null)
-          retval.append("      ").append(XMLHandler.addTagValue("type",     pluginID));
-
-
-		return retval.toString();
-	}
+    return retval.toString();
+  }
 
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases)
 		throws KettleXMLException
-	{
-		try
-		{
-			setName( XMLHandler.getTagValue(entrynode, "name") );
-			setDescription( XMLHandler.getTagValue(entrynode, "description") );
-			String stype = XMLHandler.getTagValue(entrynode, "type");
-			setJobEntryType(JobEntryCopy.getType(stype));
+  {
+    try
+    {
+      setName(XMLHandler.getTagValue(entrynode, "name"));
+      setDescription(XMLHandler.getTagValue(entrynode, "description"));
+      String stype = XMLHandler.getTagValue(entrynode, "type");
+      setJobEntryType(JobEntryCopy.getType(stype));
 		}
 		catch(Exception e)
-		{
-			throw new KettleXMLException("Unable to load base info for job entry", e);
-		}
-	}
-
-    public void parseRepositoryObjects(Repository rep) throws KettleException
     {
+      throw new KettleXMLException("Unable to load base info for job entry", e);
     }
+  }
+
+  public void parseRepositoryObjects(Repository rep) throws KettleException
+  {
+  }
 
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
-	{
-		try
-		{
-			setID( rep.insertJobEntry(id_job, getName(), getDescription(), getTypeCode()) );
+  {
+    try
+    {
+      setID(rep.insertJobEntry(id_job, getName(), getDescription(), getTypeCode()));
 		}
 		catch(KettleDatabaseException dbe)
-		{
-			throw new KettleException("Unable to save job entry base information to the repository for id_job="+id_job, dbe);
-		}
-	}
+    {
+      throw new KettleException("Unable to save job entry base information to the repository for id_job=" + id_job, dbe);
+    }
+  }
 
 	public void loadRep(Repository rep, long id_jobentry, List<DatabaseMeta> databases)
 		throws KettleException
-	{
-		try
-		{
-			RowMetaAndData r = rep.getJobEntry(id_jobentry);
-			if( r!=null)
-			{
-				setName( r.getString("NAME", null) );
+  {
+    try
+    {
+      RowMetaAndData r = rep.getJobEntry(id_jobentry);
+      if (r != null)
+      {
+        setName(r.getString("NAME", null));
 
-				setDescription( r.getString("DESCRIPTION", null) );
-				int id_jobentry_type = (int) r.getInteger("ID_JOBENTRY_TYPE", 0);
-				RowMetaAndData jetrow = rep.getJobEntryType(id_jobentry_type);
-				if (jetrow!=null)
-				{
-					type = JobEntryCopy.getType( jetrow.getString("CODE", null) );
-				}
-			}
+        setDescription(r.getString("DESCRIPTION", null));
+        int id_jobentry_type = (int) r.getInteger("ID_JOBENTRY_TYPE", 0);
+        RowMetaAndData jetrow = rep.getJobEntryType(id_jobentry_type);
+        if (jetrow != null)
+        {
+          type = JobEntryCopy.getType(jetrow.getString("CODE", null));
+        }
+      }
 		}
 		catch(KettleDatabaseException dbe)
-		{
+    {
 			throw new KettleException("Unable to load base job entry information from the repository for id_jobentry="+id_jobentry, dbe);
-		}
-	}
+    }
+  }
 
-	public Object clone()
-	{
-		JobEntryBase je;
-		try
-		{
-			je = (JobEntryBase)super.clone();
+  public Object clone()
+  {
+    JobEntryBase je;
+    try
+    {
+      je = (JobEntryBase) super.clone();
 		}
 		catch(CloneNotSupportedException cnse)
-		{
-			return null;
-		}
-		return je;
-	}
-
-	public String toString()
-	{
-		return name;
-	}
-
-	/**
-	 * @return true if a reset of the number of errors is required before execution.
-	 */
-	public boolean resetErrorsBeforeExecution()
-	{
-	    return true;
-	}
-
-	/**
-	 * check whether or not this job entry evaluates.
-	 * @return true if the job entry evaluates
-	 */
-	public boolean evaluates()
-	{
-		return false;
-	}
-
-	public boolean isUnconditional()
-	{
-		return true;
-	}
-
-    public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
     {
-        return new ArrayList<SQLStatement>();
+      return null;
     }
+    return je;
+  }
 
-    public String getFilename()
-    {
-        return null;
-    }
+  public String toString()
+  {
+    return name;
+  }
 
-    public String getRealFilename()
-    {
-        return null;
-    }
+  /**
+   * @return true if a reset of the number of errors is required before execution.
+   */
+  public boolean resetErrorsBeforeExecution()
+  {
+    return true;
+  }
 
-    /**
-     * This method returns all the database connections that are used by the job entry.
-     * @return an array of database connections meta-data.
-     *         Return an empty array if no connections are used.
-     */
-    public DatabaseMeta[] getUsedDatabaseConnections()
-    {
+  /**
+   * check whether or not this job entry evaluates.
+   * @return true if the job entry evaluates
+   */
+  public boolean evaluates()
+  {
+    return false;
+  }
+
+  public boolean isUnconditional()
+  {
+    return true;
+  }
+
+  public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
+  {
+    return new ArrayList<SQLStatement>();
+  }
+
+  public String getFilename()
+  {
+    return null;
+  }
+
+  public String getRealFilename()
+  {
+    return null;
+  }
+
+  /**
+   * This method returns all the database connections that are used by the job entry.
+   * @return an array of database connections meta-data.
+   *         Return an empty array if no connections are used.
+   */
+  public DatabaseMeta[] getUsedDatabaseConnections()
+  {
         return new DatabaseMeta[] {};
-    }
+  }
 
-    public void copyVariablesFrom(VariableSpace space)
-    {
-		variables.copyVariablesFrom(space);
-	}
+  public void copyVariablesFrom(VariableSpace space)
+  {
+    variables.copyVariablesFrom(space);
+  }
 
-	public String environmentSubstitute(String aString)
-	{
-		return variables.environmentSubstitute(aString);
-	}
+  public String environmentSubstitute(String aString)
+  {
+    return variables.environmentSubstitute(aString);
+  }
 
-	public String[] environmentSubstitute(String aString[])
-	{
-		return variables.environmentSubstitute(aString);
-	}
+  public String[] environmentSubstitute(String aString[])
+  {
+    return variables.environmentSubstitute(aString);
+  }
 
-	public VariableSpace getParentVariableSpace()
-	{
-		return variables.getParentVariableSpace();
-	}
+  public VariableSpace getParentVariableSpace()
+  {
+    return variables.getParentVariableSpace();
+  }
 
-	public String getVariable(String variableName, String defaultValue)
-	{
-		return variables.getVariable(variableName, defaultValue);
-	}
+  public String getVariable(String variableName, String defaultValue)
+  {
+    return variables.getVariable(variableName, defaultValue);
+  }
 
-	public String getVariable(String variableName)
-	{
-		return variables.getVariable(variableName);
-	}
+  public String getVariable(String variableName)
+  {
+    return variables.getVariable(variableName);
+  }
 
-	public void initializeVariablesFrom(VariableSpace parent)
-	{
-		variables.initializeVariablesFrom(parent);
-	}
+  public void initializeVariablesFrom(VariableSpace parent)
+  {
+    variables.initializeVariablesFrom(parent);
+  }
 
-	public String[] listVariables()
-	{
-		return variables.listVariables();
-	}
+  public String[] listVariables()
+  {
+    return variables.listVariables();
+  }
 
-	public void setVariable(String variableName, String variableValue)
-	{
-		variables.setVariable(variableName, variableValue);
-	}
+  public void setVariable(String variableName, String variableValue)
+  {
+    variables.setVariable(variableName, variableValue);
+  }
 
-	public void shareVariablesWith(VariableSpace space)
-	{
-		variables = space;
-	}
+  public void shareVariablesWith(VariableSpace space)
+  {
+    variables = space;
+  }
 
-	public void injectVariables(Map<String,String> prop)
-	{
-		variables.injectVariables(prop);
-	}
+  public void injectVariables(Map<String, String> prop)
+  {
+    variables.injectVariables(prop);
+  }
 
-    /**
-     * Support for overrides not having to put in a check method
-     * @param remarks CheckResults from checking the job entry
-     * @param jobMeta JobMeta information letting threading back to the JobMeta possible
-     */
+  /**
+   * Support for overrides not having to put in a check method
+   * @param remarks CheckResults from checking the job entry
+   * @param jobMeta JobMeta information letting threading back to the JobMeta possible
+   */
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
 
 	}
 
-    /**
-     * Get a list of all the resource dependencies that the step is depending on.
-     *
-     * @return a list of all the resource dependencies that the step is depending on
-     */
+  /**
+   * Get a list of all the resource dependencies that the step is depending on.
+   *
+   * @return a list of all the resource dependencies that the step is depending on
+   */
     public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
-    {
+  {
     	return new ArrayList<ResourceReference>(5); // default: return an empty resource dependency list. Lower the initial capacity
-    }
-    
+  }
+
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface) throws KettleException {
-  	  return null;
-    }
+    return null;
+  }
 
-	public String getConfigId()
-	{
-		return configId;
-	}
+  public String getConfigId()
+  {
+    return configId;
+  }
 
-	public void setConfigId(String configId)
-	{
-		this.configId = configId;
-	}
-	
-	/**
-	 * This returns the expected name for the dialog that edits a job entry.
-	 * The expected name is in the org.pentaho.di.ui tree and has a class name
-	 * that is the name of the job entry with 'Dialog' added to the end.
-	 * 
-	 * e.g. if the job entry is org.pentaho.di.job.entries.zipfile.JobEntryZipFile
-	 * the dialog would be org.pentaho.di.ui.job.entries.zipfile.JobEntryZipFileDialog
-	 * 
-	 * If the dialog class for a job entry does not match this pattern it should
-	 * override this method and return the appropriate class name
-	 * 
-	 * @return full class name of the dialog
-	 */
-    public String getDialogClassName() 
-    {
-    	String className = getClass().getCanonicalName();
+  public void setConfigId(String configId)
+  {
+    this.configId = configId;
+  }
+
+  /**
+   * This returns the expected name for the dialog that edits a job entry.
+   * The expected name is in the org.pentaho.di.ui tree and has a class name
+   * that is the name of the job entry with 'Dialog' added to the end.
+   *
+   * e.g. if the job entry is org.pentaho.di.job.entries.zipfile.JobEntryZipFile
+   * the dialog would be org.pentaho.di.ui.job.entries.zipfile.JobEntryZipFileDialog
+   *
+   * If the dialog class for a job entry does not match this pattern it should
+   * override this method and return the appropriate class name
+   *
+   * @return full class name of the dialog
+   */
+  public String getDialogClassName()
+  {
+    String className = getClass().getCanonicalName();
     	className = className.replaceFirst("\\.di\\.", ".di.ui.");
-    	className += "Dialog";
-    	return className;
-    }
+    className += "Dialog";
+    return className;
+  }
 
     public String getHolderType() {
       return "JOBENTRY"; //$NON-NLS-1$
     }
-    
+
+    protected VariableSpace getVariables()
+    {
+      return variables;
+    }
 }
