@@ -12,8 +12,12 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.fileexists;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +50,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SQL job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
  *
@@ -55,7 +59,7 @@ import org.w3c.dom.Node;
 public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String filename;
-	
+
 	public JobEntryFileExists(String n)
 	{
 		super(n, ""); //$NON-NLS-1$
@@ -79,17 +83,17 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
         JobEntryFileExists je = (JobEntryFileExists) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-		
-		retval.append(super.getXML());		
+
+		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("filename",   filename)); //$NON-NLS-1$ //$NON-NLS-2$
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
 		throws KettleXMLException
 	{
@@ -117,14 +121,14 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 			throw new KettleException(Messages.getString("JobEntryFileExists.ERROR_0002_Cannot_Load_Job_From_Repository", Long.toString(id_jobentry)), dbe); //$NON-NLS-1$
 		}
 	}
-	
+
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
 	{
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename); //$NON-NLS-1$
 		}
 		catch(KettleDatabaseException dbe)
@@ -137,23 +141,23 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 	{
 		this.filename = filename;
 	}
-	
+
 	public String getFilename()
 	{
 		return filename;
 	}
-    
+
     public String getRealFilename()
     {
         return environmentSubstitute(getFilename());
     }
-	
+
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
-	
+
 		if (filename!=null)
 		{
             String realFilename = getRealFilename();
@@ -181,7 +185,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 			result.setNrErrors(1);
 			log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
 		}
-		
+
 		return result;
 	}
 
@@ -200,28 +204,11 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
     }
     return references;
   }
-  
-    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
-      if (filename != null) {
-        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.Filename_Is_Defined"), this)); //$NON-NLS-1$
-        String realFilename = getRealFilename();
-        try {
-          FileObject file = KettleVFS.getFileObject(realFilename);
-          if (file.exists() && file.isReadable()) {
-            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("JobEntryFileExists.CheckResult.File_Exists", realFilename), this)); //$NON-NLS-1$
-          } else {
-            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, Messages.getString("JobEntryFileExists.CheckResult.File_Does_Not_Exist", realFilename), this)); //$NON-NLS-1$
-          }
-          try {
-            file.close(); // Paranoia
-          } catch (IOException ignored) {}
-        } catch (IOException ex) {
-          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Received_IO_Error", filename), this)); //$NON-NLS-1$
-        }
-      } else {
-        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString("JobEntryFileExists.CheckResult.File_Name_Not_Defined"), this)); //$NON-NLS-1$
-      }
-    }
-      
-    
+
+  @Override
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+  }
+
+
 }
