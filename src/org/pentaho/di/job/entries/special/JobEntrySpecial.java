@@ -12,11 +12,12 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.special;
 import java.util.Calendar;
 import java.util.List;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -27,6 +28,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -38,8 +40,8 @@ import org.w3c.dom.Node;
 
 /**
  * This class can contain a few special job entries such as Start and Dummy.
- * 
- * @author Matt 
+ *
+ * @author Matt
  * @since 05-11-2003
  *
  */
@@ -67,7 +69,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	{
 		this(null, false, false);
 	}
-	
+
 	public JobEntrySpecial(String name, boolean start, boolean dummy)
 	{
 		super(name, "");
@@ -75,12 +77,12 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		this.dummy = dummy;
 		setJobEntryType(JobEntryType.SPECIAL);
 	}
-	
+
 	public JobEntrySpecial(JobEntryBase jeb)
 	{
 		super(jeb);
 	}
-    
+
     public Object clone()
     {
         JobEntrySpecial je = (JobEntrySpecial) super.clone();
@@ -90,9 +92,9 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(200);
-		
+
 		retval.append(super.getXML());
-		
+
 		retval.append("      ").append(XMLHandler.addTagValue("start",         start));
 		retval.append("      ").append(XMLHandler.addTagValue("dummy",         dummy));
 		retval.append("      ").append(XMLHandler.addTagValue("repeat",        repeat));
@@ -135,7 +137,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			
+
 			start = rep.getJobEntryAttributeBoolean(id_jobentry, "start");
 			dummy = rep.getJobEntryAttributeBoolean(id_jobentry, "dummy");
 			repeat = rep.getJobEntryAttributeBoolean(id_jobentry, "repeat");
@@ -152,7 +154,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 			throw new KettleException("Unable to load job entry of type 'special' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	// Save the attributes of this job entry
 	//
 	public void saveRep(Repository rep, long id_job)
@@ -188,7 +190,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	{
 		return dummy;
 	}
-	
+
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob) throws KettleJobException
 	{
 		Result result = previousResult;
@@ -359,7 +361,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	public void setIntervalSeconds(int intervalSeconds) {
 	    this.intervalSeconds = intervalSeconds;
 	}
-    
+
 	public int getIntervalMinutes() {
 		return intervalMinutes;
 	}
@@ -367,7 +369,7 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
 	public void setIntervalMinutes(int intervalMinutes) {
 		this.intervalMinutes = intervalMinutes;
 	}
-    
+
     /**
      * @param dummy the dummy to set
      */
@@ -383,4 +385,12 @@ public class JobEntrySpecial extends JobEntryBase implements Cloneable, JobEntry
     {
         this.start = start;
     }
+
+    @Override
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+    {
+
+    }
+
+
 }

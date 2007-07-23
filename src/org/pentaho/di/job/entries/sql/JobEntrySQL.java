@@ -12,11 +12,17 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.sql;
 
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,7 +47,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SQL job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
  *
@@ -70,7 +76,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		super(jeb);
 	}
-    
+
     public Object clone()
     {
         JobEntrySQL je = (JobEntrySQL) super.clone();
@@ -80,16 +86,16 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(200);
-		
+
 		retval.append(super.getXML());
-		
+
 		retval.append("      ").append(XMLHandler.addTagValue("sql",      sql));
 		retval.append("      ").append(XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
 	{
 		try
@@ -112,7 +118,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		throws KettleException
 	{
 		try
-		{			
+		{
 			super.loadRep(rep, id_jobentry, databases);
 
 			sql = rep.getJobEntryAttributeString(id_jobentry, "sql");
@@ -135,7 +141,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			throw new KettleException("Unable to load job entry of type 'sql' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	// Save the attributes of this job entry
 	//
 	public void saveRep(Repository rep, long id_job)
@@ -159,27 +165,27 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 	{
 		this.sql = sql;
 	}
-	
+
 	public String getSQL()
 	{
 		return sql;
 	}
-	
+
 	public boolean getUseVariableSubstitution()
 	{
 		return useVariableSubstitution;
 	}
-	
+
 	public void setUseVariableSubstitution(boolean subs)
 	{
 		useVariableSubstitution = subs;
 	}
-	
+
 	public void setDatabase(DatabaseMeta database)
 	{
 		this.connection = database;
 	}
-	
+
 	public DatabaseMeta getDatabase()
 	{
 		return connection;
@@ -190,7 +196,7 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 		LogWriter log = LogWriter.getInstance();
 
 		Result result = previousResult;
-		
+
 		if (connection!=null)
 		{
 			Database db = new Database(connection);
@@ -213,14 +219,14 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			finally
 			{
 				db.disconnect();
-			}	
+			}
 		}
 		else
 		{
 			result.setNrErrors(1);
 			log.logError(toString(), "No database connection is defined.");
 		}
-		
+
 		if (result.getNrErrors()==0)
 		{
 			result.setResult(true);
@@ -258,6 +264,12 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
       }
       return references;
     }
-    
-    
+
+    @Override
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+    {
+      andValidator().validate(this, "SQL", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    }
+
+
 }
