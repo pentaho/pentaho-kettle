@@ -58,11 +58,19 @@ public class JobEntryValidatorUtils
   }
 
   /**
-   * Returns a FileExistsValidator singleton.
+   * Returns a IntegerValidator singleton.
    */
   public static IntegerValidator integerValidator()
   {
     return IntegerValidator.INSTANCE;
+  }
+
+  /**
+   * Returns a LongValidator singleton.
+   */
+  public static LongValidator longValidator()
+  {
+    return LongValidator.INSTANCE;
   }
 
   /**
