@@ -22,12 +22,15 @@ public class FileExistsValidator extends AbstractFileValidator
 
   static final String VALIDATOR_NAME = "fileExists"; //$NON-NLS-1$
 
+  private static final String KEY_FAIL_IF_DOES_NOT_EXIST = "org.pentaho.di.job.entries.createfile.failIfDoesNotExist"; //$NON-NLS-1$
+
   public boolean validate(CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
       ValidatorContext context)
   {
 
     String filename = ValidatorUtils.getValueAsString(source, propertyName);
     VariableSpace variableSpace = getVariableSpace(source, propertyName, remarks, context);
+    boolean failIfDoesNotExist = getFailIfDoesNotExist(source, propertyName, remarks, context);
 
     if (null == variableSpace)
     {
@@ -39,7 +42,7 @@ public class FileExistsValidator extends AbstractFileValidator
     try
     {
       fileObject = KettleVFS.getFileObject(realFileName);
-      if (fileObject == null || (fileObject != null && !fileObject.exists()))
+      if (fileObject == null || (fileObject != null && !fileObject.exists() && failIfDoesNotExist))
       {
         JobEntryValidatorUtils.addFailureRemark(source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
             .getLevelOnFail(context, VALIDATOR_NAME));
@@ -62,6 +65,32 @@ public class FileExistsValidator extends AbstractFileValidator
   public String getName()
   {
     return VALIDATOR_NAME;
+  }
+
+  public static ValidatorContext putFailIfDoesNotExist(boolean failIfDoesNotExist)
+  {
+    ValidatorContext context = new ValidatorContext();
+    context.put(KEY_FAIL_IF_DOES_NOT_EXIST, failIfDoesNotExist);
+    return context;
+  }
+
+  protected boolean getFailIfDoesNotExist(CheckResultSourceInterface source, String propertyName,
+      List<CheckResultInterface> remarks, ValidatorContext context)
+  {
+    Object obj = context.get(KEY_FAIL_IF_DOES_NOT_EXIST);
+    if (obj instanceof Boolean)
+    {
+      return (Boolean) obj;
+    } else
+    {
+      // default is false
+      return false;
+    }
+  }
+
+  public static void putFailIfDoesNotExist(ValidatorContext context, boolean failIfDoesNotExist)
+  {
+    context.put(KEY_FAIL_IF_DOES_NOT_EXIST, failIfDoesNotExist);
   }
 
 }
