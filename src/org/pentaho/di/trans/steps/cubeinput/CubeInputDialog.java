@@ -41,9 +41,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
