@@ -12,10 +12,14 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.msgboxinfo;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -28,6 +32,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -37,7 +42,7 @@ import org.w3c.dom.Node;
 /**
  * Job entry type to display a message box.
  * It uses a piece of javascript to do this.
- * 
+ *
  * @author Samatar
  * @since 12-02-2007
  */
@@ -59,22 +64,22 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	{
 		this("", "");
 	}
-	
+
 	public JobEntryMsgBoxInfo(JobEntryBase jeb)
 	{
 		super(jeb);
 	}
-    
+
     public Object clone()
     {
         JobEntryMsgBoxInfo je = (JobEntryMsgBoxInfo) super.clone();
         return je;
     }
-	
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-	
+
 		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("bodymessage",      bodymessage));
 		retval.append("      ").append(XMLHandler.addTagValue("titremessage",     titremessage));
@@ -82,7 +87,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
 		throws KettleXMLException
 	{
@@ -113,7 +118,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 			throw new KettleException("Unable to load job entry of type 'Msgbox Info' from the repository with id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	// Save the attributes of this job entry
 	//
 	public void saveRep(Repository rep, long id_job)
@@ -122,7 +127,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "bodymessage", bodymessage);
 			rep.saveJobEntryAttribute(id_job, getID(), "titremessage", titremessage);
 
@@ -140,22 +145,22 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 	public boolean evaluate(Result result)
 	{
 		LogWriter log = LogWriter.getInstance();
-		
-			
+
+
 		try
 		{
 			// default to ok
 
 			// Try to display MSGBOX
 			boolean response = true;
-		
+
 			ThreadDialogs dialogs = GUIFactory.getThreadDialogs();
         	if( dialogs != null ) {
         		response = dialogs.threadMessageBox(
-        				getRealBodyMessage()+Const.CR, 
+        				getRealBodyMessage()+Const.CR,
         				getRealTitleMessage(), true, Const.INFO );
         	}
-        	
+
 			return response;
 
 		}
@@ -165,10 +170,10 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 			log.logError(toString(), "Couldn't display message box: "+e.toString());
 			return false;
 		}
-	
-	
+
+
 	}
-	
+
 	/**
 	 * Execute this job entry and return the result.
 	 * In this case it means, just set the result boolean in the Result class.
@@ -180,24 +185,24 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 		prev_result.setResult( evaluate(prev_result) );
 		return prev_result;
 	}
-	
+
 	public boolean resetErrorsBeforeExecution()
 	{
 		// we should be able to evaluate the errors in
 		// the previous jobentry.
 	    return false;
 	}
-	
+
 	public boolean evaluates()
 	{
 		return true;
 	}
-	
+
 	public boolean isUnconditional()
 	{
 		return false;
 	}
-    
+
 	public String getRealTitleMessage()
 	{
 		return environmentSubstitute(getTitleMessage());
@@ -223,22 +228,29 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 			bodymessage="";
 		}
 		return bodymessage;
-	
-		
+
+
 	}
 
 	public void setBodyMessage(String s)
 	{
-		
+
 		bodymessage=s;
-	
+
 	}
 
 	public void setTitleMessage(String s)
 	{
-		
+
 		titremessage=s;
-	
+
 	}
-	
+
+  @Override
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  {
+    addOkRemark(this, "bodyMessage", remarks); //$NON-NLS-1$
+    addOkRemark(this, "titleMessage", remarks); //$NON-NLS-1$
+  }
+
 }
