@@ -23,6 +23,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -428,6 +429,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
     andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+  }
+
+  public static void main(String[] args) {
+    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
+    new JobEntrySFTP().check(remarks, null);
+    System.out.printf("Remarks: %s\n", remarks);
   }
 
 }
