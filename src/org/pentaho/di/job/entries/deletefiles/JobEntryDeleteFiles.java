@@ -403,7 +403,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     if (arguments != null) {
       ResourceReference reference = null;
       for (int i=0; i<arguments.length; i++) {
-        String filename = environmentSubstitute(arguments[i]);
+        String filename = jobMeta.environmentSubstitute(arguments[i]);
         if (reference == null) {
           reference = new ResourceReference(this);
           references.add(reference);

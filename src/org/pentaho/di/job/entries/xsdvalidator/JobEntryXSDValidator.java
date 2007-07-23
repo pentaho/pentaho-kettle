@@ -298,8 +298,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if ( (!Const.isEmpty(xsdfilename)) && (!Const.isEmpty(xmlfilename)) ) {
-      String realXmlFileName = getRealxmlfilename();
-      String realXsdFileName = getRealxsdfilename();
+      String realXmlFileName = jobMeta.environmentSubstitute(xmlfilename);
+      String realXsdFileName = jobMeta.environmentSubstitute(xsdfilename);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realXmlFileName, ResourceType.FILE));
       reference.getEntries().add( new ResourceEntry(realXsdFileName, ResourceType.FILE));

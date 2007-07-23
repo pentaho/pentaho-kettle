@@ -604,6 +604,10 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         return retval.toString();
     }
 
+    public JobMeta(LogWriter log, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException
+    {
+      this(log, null, fname, rep, prompter);
+    }
     /**
      * Load the job from the XML file specified.
      * 
@@ -612,9 +616,10 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
      * @param rep The repository to bind againt, null if there is no repository available.
      * @throws KettleXMLException
      */
-    public JobMeta(LogWriter log, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException
+    public JobMeta(LogWriter log, VariableSpace parentSpace, String fname, Repository rep, OverwritePrompter prompter) throws KettleXMLException
     {
         this.log = log;
+        this.initializeVariablesFrom(parentSpace);
         try
         {
             // OK, try to load using the VFS stuff...

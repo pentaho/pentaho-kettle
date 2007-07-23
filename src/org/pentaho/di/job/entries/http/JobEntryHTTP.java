@@ -646,7 +646,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
   {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    String realUrl = environmentSubstitute(url);
+    String realUrl = jobMeta.environmentSubstitute(url);
     ResourceReference reference = new ResourceReference(this);
     reference.getEntries().add(new ResourceEntry(realUrl, ResourceType.URL));
     references.add(reference);

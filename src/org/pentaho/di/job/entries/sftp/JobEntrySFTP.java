@@ -403,7 +403,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(serverName)) {
-      String realServerName = environmentSubstitute(serverName);
+      String realServerName = jobMeta.environmentSubstitute(serverName);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realServerName, ResourceType.SERVER));
       references.add(reference);    

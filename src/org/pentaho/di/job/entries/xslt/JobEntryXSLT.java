@@ -377,8 +377,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if ( (!Const.isEmpty(xslfilename)) && (!Const.isEmpty(xmlfilename)) ) {
-      String realXmlFileName = getRealxmlfilename();
-      String realXslFileName = getRealxslfilename();
+      String realXmlFileName = jobMeta.environmentSubstitute(xmlfilename);
+      String realXslFileName = jobMeta.environmentSubstitute(xslfilename);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realXmlFileName, ResourceType.FILE));
       reference.getEntries().add( new ResourceEntry(realXslFileName, ResourceType.FILE));

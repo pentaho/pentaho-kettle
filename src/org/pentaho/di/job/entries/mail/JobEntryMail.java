@@ -1092,7 +1092,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     
     public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
       List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-      String realServername = environmentSubstitute(server);
+      String realServername = jobMeta.environmentSubstitute(server);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realServername, ResourceType.SERVER));
       references.add(reference);    

@@ -713,9 +713,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
   {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if (!Const.isEmpty(servername))
+    if (!Const.isEmpty(servername)) 
     {
-      String realServername = getRealServername();
+      String realServername = jobMeta.environmentSubstitute(servername);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add(new ResourceEntry(realServername, ResourceType.SERVER));
       references.add(reference);

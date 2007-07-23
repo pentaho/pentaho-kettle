@@ -197,7 +197,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(filename)) {
-      String realFileName = getRealFilename();
+      String realFileName = jobMeta.environmentSubstitute(filename);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.FILE));
       references.add(reference);

@@ -265,7 +265,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(hostname)) {
-      String realServername = getRealHostname();
+      String realServername = jobMeta.environmentSubstitute(hostname);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realServername, ResourceType.SERVER));
       references.add(reference);    

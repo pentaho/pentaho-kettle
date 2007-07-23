@@ -289,8 +289,8 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if ((!Const.isEmpty(filename1)) && (!Const.isEmpty(filename2)) ) {
-      String realFilename1 = getRealFilename1();
-      String realFilename2 = getRealFilename2();
+      String realFilename1 = jobMeta.environmentSubstitute(filename1);
+      String realFilename2 = jobMeta.environmentSubstitute(filename2);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realFilename1, ResourceType.FILE));
       reference.getEntries().add( new ResourceEntry(realFilename2, ResourceType.FILE));

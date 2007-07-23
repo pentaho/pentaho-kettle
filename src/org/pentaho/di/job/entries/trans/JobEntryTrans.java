@@ -836,7 +836,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
       List<ResourceReference> references = super.getResourceDependencies(jobMeta);
       if (!Const.isEmpty(filename)) {
-        String realFileName = getRealFilename();
+        // During this phase, the variable space hasn't been initialized yet - it seems
+        // to happen during the execute. As such, we need to use the job meta's resolution
+        // of the variables.
+        String realFileName = jobMeta.environmentSubstitute(filename);
         ResourceReference reference = new ResourceReference(this);
         reference.getEntries().add( new ResourceEntry(realFileName, ResourceType.ACTIONFILE));
         references.add(reference);

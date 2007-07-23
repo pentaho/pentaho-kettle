@@ -629,9 +629,9 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)
   {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
-    if (!Const.isEmpty(serverName))
+    if (!Const.isEmpty(serverName)) 
     {
-      String realServername = environmentSubstitute(serverName);
+      String realServername = jobMeta.environmentSubstitute(serverName);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add(new ResourceEntry(realServername, ResourceType.SERVER));
       references.add(reference);
