@@ -12,14 +12,19 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.ping;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,7 +46,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a ping job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since Mar-2007
  *
@@ -50,7 +55,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 {
 	private String hostname;
 	private String nbrPackets;
-	
+
 	public JobEntryPing(String n)
 	{
 		super(n, "");
@@ -75,32 +80,32 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         JobEntryPing je = (JobEntryPing) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-        
-		retval.append(super.getXML());		
+
+		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("hostname",    hostname));
 		retval.append("      ").append(XMLHandler.addTagValue("nbr_packets", nbrPackets));
 
 		// TODO: The following line may be removed 3 versions after 2.5.0
 		retval.append("      ").append(XMLHandler.addTagValue("nbrpaquets",  nbrPackets));
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
 		throws KettleXMLException
 	{
 		try
 		{
-			String nbrPaquets; 
-			
+			String nbrPaquets;
+
 			super.loadXML(entrynode, databases);
 			hostname   = XMLHandler.getTagValue(entrynode, "hostname");
 			nbrPackets = XMLHandler.getTagValue(entrynode, "nbr_packets");
-			
+
 			// TODO: The following lines may be removed 3 versions after 2.5.0
 			nbrPaquets = XMLHandler.getTagValue(entrynode, "nbrpaquets");
 			if ( nbrPackets == null && nbrPaquets != null )
@@ -122,11 +127,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 		try
 		{
 			String nbrPaquets;
-			
+
 			super.loadRep(rep, id_jobentry, databases);
 			hostname   = rep.getJobEntryAttributeString(id_jobentry, "hostname");
 			nbrPackets = rep.getJobEntryAttributeString(id_jobentry, "nbr_packets");
-			
+
 			// TODO: The following lines may be removed 3 versions after 2.5.0
 			nbrPaquets = rep.getJobEntryAttributeString(id_jobentry, "nbrpaquets");
 			if ( nbrPackets == null && nbrPaquets != null )
@@ -134,21 +139,21 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 				// if only nbrpaquets exists this means that the file was
 				// save by a version 2.5.0 ping job entry
 				nbrPackets = nbrPaquets;
-			}			
+			}
 		}
 		catch(KettleException dbe)
 		{
 			throw new KettleException("Unable to load job entry of type 'ping' exists from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
 	{
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "hostname",    hostname);
 			rep.saveJobEntryAttribute(id_job, getID(), "nbr_packets", nbrPackets);
 			// TODO: The following line may be removed 3 versions after 2.5.0
@@ -164,17 +169,17 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.hostname = hostname;
 	}
-	
+
 	public String getHostname()
 	{
 		return hostname;
 	}
-    
+
     public String getRealHostname()
     {
         return environmentSubstitute(getHostname());
     }
-	
+
 	public String getNbrPackets()
 	{
 		return nbrPackets;
@@ -184,7 +189,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return environmentSubstitute(getNbrPackets());
 	}
-	
+
 	public void setNbrPackets(String nbrPackets)
 	{
 		this.nbrPackets = nbrPackets;
@@ -194,7 +199,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     {
         LogWriter log = LogWriter.getInstance();
         Result result = previousResult;
-        
+
         result.setNrErrors(1);
         result.setResult(false);
 
@@ -261,16 +266,24 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
-    
+
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(hostname)) {
       String realServername = jobMeta.environmentSubstitute(hostname);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realServername, ResourceType.SERVER));
-      references.add(reference);    
+      references.add(reference);
     }
     return references;
   }
-  
+
+  @Override
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  {
+    andValidator().validate(this, "hostname", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+  }
+
+
+
 }
