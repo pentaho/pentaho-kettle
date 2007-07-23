@@ -86,7 +86,7 @@ public class Pan
 		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
 		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode=new StringBuffer(), true, false),
                 new CommandLineOption("version", "show the version, revision and build date", optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("jarfile", "specifies the jar filename", optionJarFilename=new StringBuffer(), true, true),
+                new CommandLineOption("jarfile", "specifies the jar filename", optionJarFilename=new StringBuffer(), false, true),
             };
 
 		if (args.size()==0 ) 
@@ -95,8 +95,16 @@ public class Pan
             System.exit(9);
 		}
 
+        LogWriter log;
+        LogWriter.setConsoleAppenderDebug();
+        // start with the default logger until we find out otherwise
+        log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+
 		// Parse the options...
-		CommandLineOption.parseArguments(args, options);
+		if( !CommandLineOption.parseArguments(args, options, log) ) {
+            log.logError("Pan", "Command line option not understood");
+            System.exit(8);
+		}
 		
 		String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
@@ -106,8 +114,6 @@ public class Pan
         if (kettleUsername!=null && kettleUsername.length()>0) optionUsername = new StringBuffer(kettleUsername);
         if (kettlePassword!=null && kettlePassword.length()>0) optionPassword = new StringBuffer(kettlePassword);
         
-        LogWriter log;
-        LogWriter.setConsoleAppenderDebug();
         
         if (Const.isEmpty(optionLogfile) && !Const.isEmpty(optionLogfileOld))
         {
@@ -116,11 +122,7 @@ public class Pan
            optionLogfile = optionLogfileOld;
         }
         
-        if (Const.isEmpty(optionLogfile))
-        {
-            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
-        }
-        else
+        if (!Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
@@ -356,6 +358,7 @@ public class Pan
 			trans=null;
 			transMeta=null;
 			System.out.println("Processing has stopped because of an error: "+e.getMessage());
+			e.printStackTrace();
 			System.exit(1);
 		}
 

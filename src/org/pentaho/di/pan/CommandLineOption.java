@@ -1,9 +1,12 @@
 
 package org.pentaho.di.pan;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogWriter;
 
 /**
  * 
@@ -160,7 +163,7 @@ public class CommandLineOption
 			for (int d = 0; d < optionDelim.length; d++)
 			{
 				int optLength = optionDelim[d].length();
-				if (arg != null && arg.length()>osLength && arg.toUpperCase().substring(osLength).startsWith(option.toUpperCase()))
+				if (arg != null && arg.length()>osLength && arg.toUpperCase().substring(osLength).equals(option.toUpperCase()))
 				{
 					// OK, this is it.
 					// Do we expect anything after this? 
@@ -213,8 +216,69 @@ public class CommandLineOption
 	 * @param args The list of arguments to parse
 	 * @param options The command line options to use
 	 */
-	public static void parseArguments(List<String> args, CommandLineOption[] options)
+	public static boolean parseArguments(List<String> args, CommandLineOption[] options, LogWriter log)
 	{
+		
+		Map<String,CommandLineOption> optionMap = new HashMap<String,CommandLineOption>();
+
+		for (int i=0;i<options.length;i++)
+		{
+			optionMap.put(options[i].option, options[i]);
+		}
+		while( args.size() > 0 )
+		{
+			// this should be an option name
+			String arg = args.get(0).trim();
+			if( arg != null && arg.length() > 0 && arg.charAt(0) == '-') 
+			{
+				// remove the leading '-'
+				String optionName = arg.substring(1);
+				// see if this matches an option
+				CommandLineOption option = optionMap.get(optionName);
+				if( option != null ) {
+					args.remove(0);
+					if( !option.yesNo )
+					{
+						if( args.size() > 0 ) 
+						{
+							String value = args.get(0);
+							option.argument.append(value);
+							args.remove(0);
+						}
+						else 
+						{
+							// we did not get a valid value
+							if( log != null ) {
+								log.logError( "Command Line Options", "Option "+optionName+" expects an argument", new Object[] {optionName});
+							}
+							return false;
+						}
+					} else {
+						option.argument.append("Y");
+					}
+				} else {
+					// this is not a valid option
+					if( log != null ) {
+						log.logError( "Command Line Options", optionName+" is not a recognized option", new Object[] {optionName});
+					}
+					return false;
+				}
+			} 
+			else if( "".equals( arg ) )
+			{
+				// just an empty string
+				args.remove(0);
+			} else {
+				// we don't understand this option
+				if( log != null ) {
+					log.logError( "Command Line Options", "Expected a recognized option but encountered "+arg, new Object[] {arg});
+				}
+				return false;
+			}
+		}
+
+		return true;
+		/*
 		for (int i=0;i<options.length;i++)
 		{
 			boolean found=false;
@@ -228,6 +292,7 @@ public class CommandLineOption
 				}
 			}
 		}
+		*/
     }
 
 	/**
