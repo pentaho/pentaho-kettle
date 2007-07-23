@@ -256,12 +256,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     return references;
   }
 
-    public static void main(String[] args) {
-    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
-    new JobEntryDeleteFile().check(remarks, null);
-    System.out.printf("Remarks: %s\n", remarks);
-  }
-
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());

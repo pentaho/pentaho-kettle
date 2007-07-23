@@ -15,6 +15,12 @@
 
 package org.pentaho.di.job.entries.deletefiles;
 
+import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +28,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileType;
-import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -39,6 +44,7 @@ import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
@@ -377,35 +383,18 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
-    LogWriter log = LogWriter.getInstance();
-    if (arguments != null) {
-      for (int i = 0; i < arguments.length; i++) {
-        FileObject fileObject = null;
-        String filename = environmentSubstitute(arguments[i]);
-        try {
-          fileObject = KettleVFS.getFileObject(filename);
-          if (null != fileObject && fileObject.exists()) {
-            // folder
-            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                "JobEntryDeleteFiles.CheckResult.Exists", filename), this)); //$NON-NLS-1$
-            if (fileObject.getType() == FileType.FOLDER) {
-              remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                  "JobEntryDeleteFiles.CheckResult.IsFolder", filename), this)); //$NON-NLS-1$
-              String wildcard = environmentSubstitute(filemasks[i]);
-              remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                  "JobEntryDeleteFiles.CheckResult.Wildcard", wildcard), this)); //$NON-NLS-1$
-            }
-          } else {
-            // already deleted
-            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-                "JobEntryDeleteFiles.FileAlreadyDeleted", filename), this)); //$NON-NLS-1$
-          }
-        } catch (IOException e) {
-          log.logError(toString(), e.getMessage());
-          remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages.getString(
-              "JobEntryDeleteFiles.CouldNotProcess", filename, e.getMessage()), this)); //$NON-NLS-1$
-        }
-      }
+    boolean res = andValidator().validate(this, "arguments", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+
+    if (res == false) {
+      return;
+    }
+
+    ValidatorContext ctx = new ValidatorContext();
+    putVariableSpace(ctx, getVariables());
+    putValidators(ctx, notNullValidator(), fileExistsValidator());
+
+    for (int i = 0; i < arguments.length; i++) {
+      andValidator().validate(this, "arguments[" + i + "]", remarks, ctx); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 
@@ -424,5 +413,30 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     }
     return references;
   }
-  
+
+  public boolean isArgFromPrevious()
+  {
+    return argFromPrevious;
+  }
+
+  public String[] getArguments()
+  {
+    return arguments;
+  }
+
+  public boolean isDeleteFolder()
+  {
+    return deleteFolder;
+  }
+
+  public String[] getFilemasks()
+  {
+    return filemasks;
+  }
+
+  public boolean isIncludeSubfolders()
+  {
+    return includeSubfolders;
+  }
+
 }
