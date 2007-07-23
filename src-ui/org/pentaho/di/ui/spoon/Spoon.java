@@ -332,20 +332,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
      * This is the main procedure for Spoon.
      * 
      * @param a Arguments are available in the "Get System Info" step.
-     */
-    public static void main(String[] a) throws KettleException
-    {
-    	EnvUtil.environmentInit();
-    	ArrayList<String> args = new ArrayList<String>();
-    	for (int i=0;i<a.length;i++) args.add(a[i]);
+	 */
+	public static void main(String[] a) throws KettleException
+	{
+		EnvUtil.environmentInit();
+		ArrayList<String> args = new ArrayList<String>();
+        for (int i=0;i<a.length;i++) args.add(a[i]);
 
-    	Display display = new Display();
-    	Spoon spoon = new Spoon(display);
-    	spoon.run(args);
+		Display display = new Display();
+		Spoon spoon = new Spoon(display);
+		spoon.run(args);
 
-    	// Kill all remaining things in this VM!
-    	System.exit(0);
-    }	
+		// Kill all remaining things in this VM!
+		System.exit(0);
+	}	
 	
     public Spoon(Display d) {
 		this(d, null);
@@ -3217,7 +3217,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 							}
 
 							// Handle last opened files...
-                            props.addLastFile(LastUsedFile.FILE_TYPE_TRANSFORMATION, meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
+                            props.addLastFile(meta.getFileType(), meta.getName(), meta.getDirectory().getPath(), true, getRepositoryName());
 							saveSettings();
 							addMenuLast();
 
@@ -5226,8 +5226,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			    new CommandLineOption("log", "The logging file to write to (deprecated)", new StringBuffer(), false, true),
             };
 
+        LogWriter log;
+        LogWriter.setConsoleAppenderDebug();
+        // start with the default logger until we find out otherwise
+        log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+
 		// Parse the options...
-		CommandLineOption.parseArguments(args, options);
+		if( !CommandLineOption.parseArguments(args, options, log) ) {
+            log.logError("Pan", "Command line option not understood");
+            System.exit(8);
+		}
 
 		String kettleRepname = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
 		String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
@@ -5903,7 +5911,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-    public boolean messageBox( String message, String text, boolean allowCancel, int type ) {
+public boolean messageBox( String message, String text, boolean allowCancel, int type ) {
 		
 		int flags = SWT.OK;
 		if( allowCancel ) 
@@ -5926,4 +5934,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		return mb.open() == SWT.OK;
 		
 	}
+
+	
 }
