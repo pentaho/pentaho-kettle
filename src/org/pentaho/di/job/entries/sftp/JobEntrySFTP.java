@@ -12,14 +12,22 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.sftp;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.net.InetAddress;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -44,7 +52,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an FTP job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
  *
@@ -59,7 +67,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	private String targetDirectory;
 	private String wildcard;
 	private boolean remove;
-	
+
 	public JobEntrySFTP(String n)
 	{
 		super(n, "");
@@ -84,13 +92,13 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
         JobEntrySFTP je = (JobEntrySFTP) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(200);
-		
+
 		retval.append(super.getXML());
-		
+
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
@@ -99,10 +107,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep) throws KettleXMLException
 	{
 		try
@@ -119,7 +127,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		}
 		catch(KettleXMLException xe)
 		{
-			throw new KettleXMLException("Unable to load job entry of type 'SFTP' from XML node", xe);			
+			throw new KettleXMLException("Unable to load job entry of type 'SFTP' from XML node", xe);
 		}
 	}
 
@@ -146,14 +154,14 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			throw new KettleException("Unable to load job entry of type 'SFTP' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
 	{
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
@@ -168,7 +176,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			throw new KettleException("Unable to save job entry of type 'SFTP' to the repository for id_job="+id_job, dbe);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the directory.
 	 */
@@ -176,7 +184,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return sftpDirectory;
 	}
-	
+
 	/**
 	 * @param directory The directory to set.
 	 */
@@ -184,7 +192,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.sftpDirectory = directory;
 	}
-	
+
 	/**
 	 * @return Returns the password.
 	 */
@@ -192,7 +200,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return password;
 	}
-	
+
 	/**
 	 * @param password The password to set.
 	 */
@@ -200,7 +208,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.password = password;
 	}
-	
+
 	/**
 	 * @return Returns the serverName.
 	 */
@@ -208,7 +216,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return serverName;
 	}
-	
+
 	/**
 	 * @param serverName The serverName to set.
 	 */
@@ -216,7 +224,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.serverName = serverName;
 	}
-	
+
 	/**
 	 * @return Returns the userName.
 	 */
@@ -224,7 +232,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return userName;
 	}
-	
+
 	/**
 	 * @param userName The userName to set.
 	 */
@@ -232,7 +240,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.userName = userName;
 	}
-	
+
 	/**
 	 * @return Returns the wildcard.
 	 */
@@ -240,7 +248,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return wildcard;
 	}
-	
+
 	/**
 	 * @param wildcard The wildcard to set.
 	 */
@@ -248,7 +256,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.wildcard = wildcard;
 	}
-	
+
 	/**
 	 * @return Returns the targetDirectory.
 	 */
@@ -256,7 +264,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return targetDirectory;
 	}
-	
+
 	/**
 	 * @param targetDirectory The targetDirectory to set.
 	 */
@@ -264,7 +272,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.targetDirectory = targetDirectory;
 	}
-	
+
 	/**
 	 * @param remove The remove to set.
 	 */
@@ -272,7 +280,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		this.remove = remove;
 	}
-	
+
 	/**
 	 * @return Returns the remove.
 	 */
@@ -280,7 +288,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return remove;
 	}
-	
+
 	public String getServerPort() {
 		return serverPort;
 	}
@@ -288,8 +296,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
 	}
-	
-	
+
+
 	public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -299,9 +307,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		long filesRetrieved = 0;
 
 		log.logDetailed(toString(), "Start of SFTP job entry");
-		
+
 		SFTPClient sftpclient = null;
-        
+
         // String substitution..
         String realServerName      = environmentSubstitute(serverName);
         String realServerPort      = environmentSubstitute(serverPort);
@@ -310,16 +318,16 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realSftpDirString   = environmentSubstitute(sftpDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realTargetDirectory = environmentSubstitute(targetDirectory);
-        
+
 		try
 		{
 			// Create sftp client to host ...
 			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
 			log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
-	
+
 			// login to ftp host ...
 			sftpclient.login(realPassword);
-			// Passwords should not appear in log files. 
+			// Passwords should not appear in log files.
 			//log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
 			// move to spool dir ...
@@ -328,46 +336,46 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 				sftpclient.chdir(realSftpDirString);
 				log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
 			}
-			
+
 			// Get all the files in the current directory...
 			String[] filelist = sftpclient.dir();
 			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote directory");
 
 			Pattern pattern = null;
-			if (!Const.isEmpty(realWildcard)) 
+			if (!Const.isEmpty(realWildcard))
 			{
 				pattern = Pattern.compile(realWildcard);
-				
+
 			}
-			
+
 			// Get the files in the list...
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
 			{
 				boolean getIt = true;
-				
+
 				// First see if the file matches the regular expression!
 				if (pattern!=null)
 				{
 					Matcher matcher = pattern.matcher(filelist[i]);
 					getIt = matcher.matches();
 				}
-				
+
 				if (getIt)
 				{
 					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
 
-					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
+					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i];
 					sftpclient.get(targetFilename, filelist[i]);
-					filesRetrieved++; 
-					
+					filesRetrieved++;
+
 					// Add to the result files...
 					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(targetFilename), parentJob.getJobname(), toString());
                     result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
 
 					log.logDetailed(toString(), "Transferred file ["+filelist[i]+"]");
-					
+
 					// Delete the file if this is needed!
-					if (remove) 
+					if (remove)
 					{
 						sftpclient.delete(filelist[i]);
 						log.logDetailed(toString(), "Deleted file ["+filelist[i]+"]");
@@ -391,7 +399,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 				// just ignore this, makes no big difference
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -399,16 +407,27 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return true;
 	}
-    
+
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(serverName)) {
       String realServerName = jobMeta.environmentSubstitute(serverName);
       ResourceReference reference = new ResourceReference(this);
       reference.getEntries().add( new ResourceEntry(realServerName, ResourceType.SERVER));
-      references.add(reference);    
+      references.add(reference);
     }
     return references;
   }
-  
+
+  @Override
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  {
+    andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator()
+        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+  }
+
 }
