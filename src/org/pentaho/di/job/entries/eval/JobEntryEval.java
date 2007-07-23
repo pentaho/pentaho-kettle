@@ -15,6 +15,11 @@
 
 package org.pentaho.di.job.entries.eval;
 
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mozilla.javascript.Context;
@@ -215,17 +220,9 @@ public class JobEntryEval extends JobEntryBase implements Cloneable, JobEntryInt
     return false;
   }
 
-  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) 
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
   {
-    if (Const.isEmpty(script)) 
-    {
-      remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, Messages
-          .getString("JobEntryEval.CheckResult.ScriptIsBlank"), this)); //$NON-NLS-1$
-      return;
-    }
-    // show the first characters of the script
-    String substr = script.substring(0, Math.min(75, script.length()));
-    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-        "JobEntryEval.CheckResult.ScriptExcerpt", substr), this)); //$NON-NLS-1$
+    andValidator().validate(this, "script", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
   }
+
 }
