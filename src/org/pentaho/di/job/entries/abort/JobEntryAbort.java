@@ -15,9 +15,10 @@
 
 package org.pentaho.di.job.entries.abort;
 
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
+
 import java.util.List;
 
-import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -161,7 +162,6 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta) {
-    remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString(
-        "JobEntryAbort.CheckRemark.MessageAbort", messageAbort), this)); //$NON-NLS-1$
+    addOkRemark(this, "messageabort", remarks); //$NON-NLS-1$
   }
 }
