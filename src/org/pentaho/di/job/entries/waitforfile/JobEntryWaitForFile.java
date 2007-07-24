@@ -12,13 +12,20 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.waitforfile;
 
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -40,9 +47,9 @@ import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.w3c.dom.Node;
 
 /**
- * This defines a 'wait for file' job entry. Its use is to wait for a file to 
+ * This defines a 'wait for file' job entry. Its use is to wait for a file to
  * appear.
- * 
+ *
  * @author Sven Boden
  * @since 10-02-2007
  *
@@ -54,10 +61,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	private String  checkCycleTime;      // cycle time in seconds
 	private boolean successOnTimeout;
 	private boolean fileSizeCheck;
-		
+
 	static private String DEFAULT_MAXIMUM_TIMEOUT  = "0";        // infinite timeout
 	static private String DEFAULT_CHECK_CYCLE_TIME = "60";       // 1 minute
-	
+
 	public JobEntryWaitForFile(String n)
 	{
 		super(n, "");
@@ -85,21 +92,21 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         JobEntryWaitForFile je = (JobEntryWaitForFile) super.clone();
         return je;
     }
-    
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(50);
-		
-		retval.append(super.getXML());		
+
+		retval.append(super.getXML());
 		retval.append("      ").append(XMLHandler.addTagValue("filename", filename));
 		retval.append("      ").append(XMLHandler.addTagValue("maximum_timeout", maximumTimeout));
 		retval.append("      ").append(XMLHandler.addTagValue("check_cycle_time", checkCycleTime));
 		retval.append("      ").append(XMLHandler.addTagValue("success_on_timeout", successOnTimeout));
 		retval.append("      ").append(XMLHandler.addTagValue("file_size_check", fileSizeCheck));
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta> databases, Repository rep)
 		throws KettleXMLException
 	{
@@ -135,14 +142,14 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 			throw new KettleException("Unable to load job entry of type 'wait for file' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
 	{
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "filename", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "maximum_timeout", maximumTimeout);
 			rep.saveJobEntryAttribute(id_job, getID(), "check_cycle_time", checkCycleTime);
@@ -159,17 +166,17 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	{
 		this.filename = filename;
 	}
-	
+
 	public String getFilename()
 	{
 		return filename;
 	}
-    
+
     public String getRealFilename()
     {
         return environmentSubstitute(getFilename());
     }
-	
+
     public Result execute(Result previousResult, int nr, Repository rep, Job parentJob)
     {
     	LogWriter log = LogWriter.getInstance();
@@ -182,15 +189,15 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     	if (filename!=null)
     	{
     		String realFilename = getRealFilename();
-    		try 
-    		{ 
+    		try
+    		{
     			FileObject fileObject = null;
 
-    			fileObject = KettleVFS.getFileObject(realFilename);    				
+    			fileObject = KettleVFS.getFileObject(realFilename);
 
-    			long iMaximumTimeout = Const.toInt(getMaximumTimeout(), 
+    			long iMaximumTimeout = Const.toInt(getMaximumTimeout(),
     					Const.toInt(DEFAULT_MAXIMUM_TIMEOUT, 0));
-    			long iCycleTime = Const.toInt(getCheckCycleTime(), 
+    			long iCycleTime = Const.toInt(getCheckCycleTime(),
     					Const.toInt(DEFAULT_CHECK_CYCLE_TIME, 0));
 
     			//
@@ -214,7 +221,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     				log.logBasic(toString(), "Waiting indefinitely for file [" +
     						realFilename + "]");
     			}
-    			else 
+    			else
     			{
     				log.logBasic(toString(), "Waiting " + iMaximumTimeout + " seconds for file [" +
     						realFilename + "]");
@@ -223,8 +230,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     			boolean continueLoop = true;
     			while ( continueLoop && !parentJob.isStopped() )
     			{
-        			fileObject = KettleVFS.getFileObject(realFilename);    				
-    				
+        			fileObject = KettleVFS.getFileObject(realFilename);
+
     				if ( fileObject.exists() )
     				{
     					// file exists, we're happy to exit
@@ -236,12 +243,12 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     				{
     					long now = System.currentTimeMillis() / 1000;
 
-    					if ( (iMaximumTimeout > 0) && 
+    					if ( (iMaximumTimeout > 0) &&
     							(now > (timeStart + iMaximumTimeout)))
-    					{													
+    					{
     						continueLoop = false;
 
-    						// file doesn't exist after timeout, either true or false						
+    						// file doesn't exist after timeout, either true or false
     						if ( isSuccessOnTimeout() )
     						{
     							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, success");
@@ -251,10 +258,10 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     						{
     							log.logBasic(toString(), "Didn't detect file [" + realFilename + "] before timeout, failure");
     							result.setResult( false );
-    						}						
+    						}
     					}
 
-    					// sleep algorithm					
+    					// sleep algorithm
     					long sleepTime = 0;
 
     					if ( iMaximumTimeout == 0 )
@@ -262,14 +269,14 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     						sleepTime = iCycleTime;
     					}
     					else
-    					{						
+    					{
     						if ( (now + iCycleTime) < (timeStart + iMaximumTimeout) )
     						{
     							sleepTime = iCycleTime;
     						}
     						else
     						{
-    							sleepTime = iCycleTime - ((now + iCycleTime) - 
+    							sleepTime = iCycleTime - ((now + iCycleTime) -
     									(timeStart + iMaximumTimeout));
     						}
     					}
@@ -280,17 +287,17 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     							if ( log.isDetailed() )
     							{
     								log.logDetailed(toString(), "Sleeping " + sleepTime + " seconds before next check for file [" +
-    										realFilename + "]");							
-    							}						   
+    										realFilename + "]");
+    							}
     							Thread.sleep(sleepTime * 1000);
     						}
     					} catch (InterruptedException e) {
     						// something strange happened
     						result.setResult( false );
-    						continueLoop = false;						
-    					}					
+    						continueLoop = false;
+    					}
     				}
-    			}			
+    			}
 
     			if ( !parentJob.isStopped() &&
     					fileObject.exists() &&
@@ -306,7 +313,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     					try {
     						if ( log.isDetailed() )
     						{
-    							log.logDetailed(toString(), "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");						    		
+    							log.logDetailed(toString(), "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing");
     						}
     						Thread.sleep(iCycleTime * 1000);
     					} catch (InterruptedException e) {
@@ -318,11 +325,11 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     					newSize = fileObject.getContent().getSize();
     					if ( log.isDetailed() )
     					{
-    						log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");						    		
-    					}					
+    						log.logDetailed(toString(), "File [" + realFilename + "] is " + newSize + " bytes long");
+    					}
     				}
     				log.logBasic(toString(), "Stopped waiting for file [" + realFilename + "] to stop growing");
-    			}			
+    			}
 
     			if ( parentJob.isStopped() )
     			{
@@ -335,18 +342,18 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     		}
     	}
     	else
-    	{			
+    	{
     		log.logError(toString(), "No filename is defined.");
     	}
 
     	return result;
     }
-			
+
 	public boolean evaluates()
 	{
 		return true;
 	}
-    
+
 	public boolean isSuccessOnTimeout() {
 		return successOnTimeout;
 	}
@@ -378,7 +385,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
 	public void setFileSizeCheck(boolean fileSizeCheck) {
 		this.fileSizeCheck = fileSizeCheck;
 	}
-  
+
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
     if (!Const.isEmpty(filename)) {
@@ -389,5 +396,13 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     }
     return references;
   }
-  
+
+  @Override
+  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+  {
+    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "maximumTimeout", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+    andValidator().validate(this, "checkCycleTime", remarks, putValidators(integerValidator())); //$NON-NLS-1$
+  }
+
 }
