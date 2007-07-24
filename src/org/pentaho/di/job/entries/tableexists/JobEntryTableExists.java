@@ -12,11 +12,16 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package org.pentaho.di.job.entries.tableexists;
+
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.util.List;
 
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,7 +46,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SQL job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
  *
@@ -69,7 +74,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 	{
 		super(jeb);
 	}
-    
+
     public Object clone()
     {
         JobEntryTableExists je = (JobEntryTableExists) super.clone();
@@ -79,21 +84,21 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(200);
-		
+
 		retval.append(super.getXML());
-		
+
 		retval.append("      ").append(XMLHandler.addTagValue("tablename",  tablename));
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
-		
+
 		return retval.toString();
 	}
-	
+
 	public void loadXML(Node entrynode, List<DatabaseMeta>  databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{
 			super.loadXML(entrynode, databases);
-			
+
 			tablename     = XMLHandler.getTagValue(entrynode, "tablename");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
@@ -110,7 +115,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			
+
 			tablename  = rep.getJobEntryAttributeString(id_jobentry, "tablename");
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
@@ -129,14 +134,14 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			throw new KettleException("Unable to load job entry of type 'table exists' from the repository for id_jobentry="+id_jobentry, dbe);
 		}
 	}
-	
+
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException
 	{
 		try
 		{
 			super.saveRep(rep, id_job);
-			
+
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
@@ -146,27 +151,27 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 		}
 	}
 
-	
+
 	public void setTablename(String tablename)
 	{
 		this.tablename = tablename;
 	}
-	
+
 	public String getTablename()
 	{
 		return tablename;
 	}
-	
+
 	public void setDatabase(DatabaseMeta database)
 	{
 		this.connection = database;
 	}
-	
+
 	public DatabaseMeta getDatabase()
 	{
 		return connection;
 	}
-	
+
 	public boolean evaluates()
 	{
 		return true;
@@ -183,7 +188,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 
 		Result result = previousResult;
 		result.setResult(false);
-		
+
 		if (connection!=null)
 		{
 			Database db = new Database(connection);
@@ -214,7 +219,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			result.setNrErrors(1);
 			log.logError(toString(), "No database connection is defined.");
 		}
-		
+
 		return result;
 	}
 
@@ -222,7 +227,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     {
         return new DatabaseMeta[] { connection, };
     }
-    
+
     public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
       List<ResourceReference> references = super.getResourceDependencies(jobMeta);
       if (connection != null) {
@@ -233,5 +238,11 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
       }
       return references;
     }
-    
+
+    @Override
+    public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
+    {
+      andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    }
+
 }
