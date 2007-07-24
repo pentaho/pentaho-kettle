@@ -1816,11 +1816,15 @@ public class Database
 			KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
 		    kdbe.setUpdateCounts(ex.getUpdateCounts());
             List exceptions = new ArrayList();
-            SQLException nextException;
-            while ( (nextException = ex.getNextException())!=null)
+            // 'seed' the loop with the root exception
+            SQLException nextException = ex;
+            do 
             {
                 exceptions.add(nextException);
-            }
+                // while current exception has next exception, add to list
+            } 
+            while ((nextException = nextException.getNextException())!=null);            
+
             kdbe.setExceptionsList(exceptions);
 		    throw kdbe;
 		}

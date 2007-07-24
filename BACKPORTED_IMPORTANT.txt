@@ -18,3 +18,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - patch to update javascript highlighting to include default keyword - Jay G - 2007-Jun-18
 - Fix for #5795 - Appending to an existing file is not working - Samatar S - 2007-Jul-2
 - Fix for #5891 - Make JNDI variable sensitive.
+- Fix for #5930 - patch for batch update bug by Jason Mosser - Sven B - 24-jun-2007
