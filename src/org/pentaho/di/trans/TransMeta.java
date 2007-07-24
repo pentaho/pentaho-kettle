@@ -4220,7 +4220,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     // Get the input & output steps!
                     // Copy to arrays:
                     String input[] = getPrevStepNames(stepMeta);
-                    String output[] = getPrevStepNames(stepMeta);
+                    String output[] = this.getNextStepNames(stepMeta);
 
                     // Check step specific info...
                     stepMeta.check(remarks, this, prev, input, output, info);
