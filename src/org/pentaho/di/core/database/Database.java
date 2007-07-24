@@ -1289,15 +1289,18 @@ public class Database implements VariableSpace
 		}
 		catch(BatchUpdateException ex)
 		{
-		    //System.out.println("Batch update exception "+ex.getMessage());
 			KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException("Error updating batch", ex);
 		    kdbe.setUpdateCounts(ex.getUpdateCounts());
             List<Exception> exceptions = new ArrayList<Exception>();
-            SQLException nextException;
-            while ( (nextException = ex.getNextException())!=null)
+            
+            // 'seed' the loop with the root exception
+            SQLException nextException = ex;
+            do 
             {
                 exceptions.add(nextException);
-            }
+                // while current exception has next exception, add to list
+            } 
+            while ((nextException = nextException.getNextException())!=null);            
             kdbe.setExceptionsList(exceptions);
 		    throw kdbe;
 		}
@@ -4209,5 +4212,4 @@ public class Database implements VariableSpace
 			throw new KettleDatabaseException("Unable to call procedure", ex);
 		}
 	}
-
 }
