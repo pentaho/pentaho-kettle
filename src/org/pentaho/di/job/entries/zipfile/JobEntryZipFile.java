@@ -17,10 +17,10 @@ package org.pentaho.di.job.entries.zipfile;
 
 import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.FileDoesNotExistValidator.putFailIfExists;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.FileDoesNotExistValidator.putFailIfExists;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;

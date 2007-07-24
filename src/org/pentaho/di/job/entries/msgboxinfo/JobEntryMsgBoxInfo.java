@@ -16,7 +16,6 @@
 package org.pentaho.di.job.entries.msgboxinfo;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResultInterface;

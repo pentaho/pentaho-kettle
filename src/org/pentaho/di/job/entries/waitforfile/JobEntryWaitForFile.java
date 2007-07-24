@@ -21,7 +21,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerV
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;

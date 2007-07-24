@@ -9,7 +9,6 @@ import org.pentaho.di.core.annotations.Job;
 import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.util.ResolverUtil;
 import org.pentaho.di.job.JobPluginMeta;
-
 import org.pentaho.di.job.entry.Messages;
 
 

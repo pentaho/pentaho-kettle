@@ -39,7 +39,8 @@ public enum JobEntryType
 	PING(Messages.getString("JobEntry.Ping.TypeDesc")),
 	DELETE_FILES(Messages.getString("JobEntry.DeleteFiles.TypeDesc")),
 	SUCCESS(Messages.getString("JobEntry.Success.TypeDesc")),
-	XSD_VALIDATOR(Messages.getString("JobEntry.XSDValidator.TypeDesc"));
+	XSD_VALIDATOR(Messages.getString("JobEntry.XSDValidator.TypeDesc")),
+	XACTION(Messages.getString("JobEntry.XAction.TypeDesc"));
 	
 	private String description;
 	

@@ -20,7 +20,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.longValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResultInterface;

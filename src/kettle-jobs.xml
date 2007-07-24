@@ -11,7 +11,7 @@
 		<image-uri>BLK.png</image-uri>
 	</job>
 	
-	<!-- Configured via Job annotation -->
+	<!-- Configured via Job annotation 
 	<job id="TRANS">
 		<type>
 			ognl:@org.pentaho.di.job.JobEntryType@TRANS
@@ -24,7 +24,7 @@
 		</tooltip>
 		<image-uri>TRN.png</image-uri>
 	</job>
-	<!-- -->
+	 -->
 	
 	<job id="JOB">
 		<type>

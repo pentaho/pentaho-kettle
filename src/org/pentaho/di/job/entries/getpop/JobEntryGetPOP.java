@@ -15,14 +15,13 @@
 
 package org.pentaho.di.job.entries.getpop;
 
+import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.getKeyLevelOnFail;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.integerValidator;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.FileExistsValidator.putVariableSpace;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
