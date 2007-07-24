@@ -413,7 +413,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
             {
                 LogWriter.getInstance().logBasic(toString(), "Getting transformation status for ["+transStatus.getTransName()+"] on server ["+slaveServer+"]");
                 SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
-                LogWriter.getInstance().logBasic(toString(), "Finished receiving transformation status for ["+transStatus.getTransName()+"] fropm server ["+slaveServer+"]");
+                LogWriter.getInstance().logBasic(toString(), "Finished receiving transformation status for ["+transStatus.getTransName()+"] from server ["+slaveServer+"]");
                 List stepStatusList = ts.getStepStatusList();
                 transStatus.setStepStatusList(stepStatusList);
                 transStatus.setLoggingString(ts.getLoggingString());
