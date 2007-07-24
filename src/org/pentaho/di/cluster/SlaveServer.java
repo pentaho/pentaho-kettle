@@ -554,7 +554,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
                     bytesRead+=line.length();
                 }
                 
-                log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse")+bytesRead+" bytes as a response from the webserver"); //$NON-NLS-1$ //$NON-NLS-2$
+                log.logBasic(toString(), Messages.getString("SlaveServer.FinishedReadingResponse"), bytesRead); //$NON-NLS-1$
+                log.logDebug(toString(), "response from the webserver: {0}", result);
             }
             catch(MalformedURLException e)
             {
