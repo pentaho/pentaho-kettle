@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -824,6 +823,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
     {
+      if (setLogfile) {
+        andValidator().validate(this, "logfile", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+      }
       if (!Const.isEmpty(filename))
       {
         andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
