@@ -16,22 +16,14 @@ import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.UUIDUtil;
 
 public class KettleVFS
 {
-    private int fileNumber;
-    
+  
     private KettleVFS()
     {
-        fileNumber=1;
     }
-    
-    private int getNextFileNumber()
-    {
-        return fileNumber++;
-    }
-    
-    private static KettleVFS kettleVFS = new KettleVFS();
     
     public static FileObject getFileObject(String vfsFilename) throws IOException
     {
@@ -162,8 +154,11 @@ public class KettleVFS
         FileObject fileObject;
         do
         {
-            String filename = directory+"/"+prefix+"_"+kettleVFS.getNextFileNumber()+suffix;
-            fileObject = getFileObject(filename);
+          // Build temporary file name using UUID to ensure uniqueness. Old mechanism would fail using Sort Rows (for example)
+          // when there multiple nodes with multiple JVMs on each node. In this case, the temp file names would end up being
+          // duplicated which would cause the sort to fail.
+          String filename = new StringBuffer(50).append(directory).append('/').append(prefix).append('_').append(UUIDUtil.getUUIDAsString()).append(suffix).toString();
+          fileObject = getFileObject(filename);
         }
         while (fileObject.exists());
         return fileObject;
