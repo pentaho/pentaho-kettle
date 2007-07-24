@@ -17,11 +17,13 @@ package org.pentaho.di.job.entries.deletefile;
 
 import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.FileExistsValidator.putFailIfDoesNotExist;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
@@ -64,8 +66,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 	public JobEntryDeleteFile(String n)
 	{
 		super(n, ""); //$NON-NLS-1$
-		filename=null;
-		failIfFileNotExists=false;
+    filename=null;
+    failIfFileNotExists=false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.DELETE_FILE);
 	}
@@ -257,6 +259,16 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace(ctx, getVariables());
     putValidators(ctx, notNullValidator(), fileExistsValidator());
+    if (isFailIfFileNotExists()) {
+      putFailIfDoesNotExist(ctx, true);
+    }
     andValidator().validate(this, "filename", remarks, ctx); //$NON-NLS-1$
+  }
+
+  public static void main(String[] args)
+  {
+    List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
+    new JobEntryDeleteFile().check(remarks, null);
+    System.out.printf("Remarks: %s\n", remarks);
   }
 }
