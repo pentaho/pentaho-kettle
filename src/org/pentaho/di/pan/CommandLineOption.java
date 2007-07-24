@@ -229,21 +229,52 @@ public class CommandLineOption
 		{
 			// this should be an option name
 			String arg = args.get(0).trim();
-			if( arg != null && arg.length() > 0 && arg.charAt(0) == '-') 
+			if( arg != null && arg.length() > 0 && (arg.charAt(0) == '-' || arg.charAt(0) == '/' ) ) 
 			{
 				// remove the leading '-'
 				String optionName = arg.substring(1);
-				// see if this matches an option
+				// see if this matches a option on its own e.g. -file
 				CommandLineOption option = optionMap.get(optionName);
-				if( option != null ) {
+				String value = null;
+				if( option == null ) 
+				{
+					// see if the option and value are in the string together e.g. -file=
+					int pos = optionName.indexOf('=');
+					if( pos != -1 ) {
+						String tmp = optionName.substring(0, pos);
+						option = optionMap.get(tmp);
+						if(option != null) {
+							value = optionName.substring(pos+1);
+						}
+					}
+					if( option == null ) 
+					{
+						pos = optionName.indexOf(':');
+						if( pos != -1 ) {
+							String tmp = optionName.substring(0, pos);
+							option = optionMap.get(tmp);
+							if(option != null) {
+								value = optionName.substring(pos+1);
+							}
+						}
+					}
+				}
+				if( option != null ) 
+				{
 					args.remove(0);
 					if( !option.yesNo )
 					{
 						if( args.size() > 0 ) 
 						{
-							String value = args.get(0);
+							if( value == null )
+							{
+								value = args.get(0);
+								args.remove(0);
+							}
 							option.argument.append(value);
-							args.remove(0);
+						}
+						else if( value != null ) {
+							option.argument.append(value);
 						}
 						else 
 						{
@@ -254,7 +285,13 @@ public class CommandLineOption
 							return false;
 						}
 					} else {
-						option.argument.append("Y");
+						if( value != null ) {
+							option.argument.append( value );
+						}
+						else 
+						{
+							option.argument.append( "Y" );
+						}
 					}
 				} else {
 					// this is not a valid option
