@@ -51,8 +51,8 @@ public class ValidatorContext {
     return map.keySet();
   }
 
-  public ValidatorContext putAll(Map t) {
-    map.putAll((Map<String, Object>) t);
+  public ValidatorContext putAll(Map<String, Object> t) {
+    map.putAll(t);
     return this;
   }
 
