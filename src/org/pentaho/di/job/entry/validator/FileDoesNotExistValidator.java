@@ -84,8 +84,8 @@ public class FileDoesNotExistValidator extends AbstractFileValidator
       return (Boolean) obj;
     } else
     {
-      // default is true
-      return true;
+      // default is false
+      return false;
     }
   }
 
