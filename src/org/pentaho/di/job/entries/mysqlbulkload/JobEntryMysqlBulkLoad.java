@@ -15,6 +15,7 @@
 
 package org.pentaho.di.job.entries.mysqlbulkload;
 
+import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
@@ -38,6 +39,7 @@ import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
@@ -641,8 +643,12 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
   @Override
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
   {
-    andValidator().validate(this, "filename", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
-    andValidator().validate(this, "tablename", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
+    ValidatorContext ctx = new ValidatorContext();
+    putVariableSpace(ctx, getVariables());
+    putValidators(ctx, notBlankValidator(), fileExistsValidator());
+    andValidator().validate(this, "filename", remarks, ctx);//$NON-NLS-1$
+
+    andValidator().validate(this, "tablename", remarks, ctx); //$NON-NLS-1$
   }
 
 }

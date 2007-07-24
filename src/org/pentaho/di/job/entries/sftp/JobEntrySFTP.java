@@ -15,6 +15,7 @@
 
 package org.pentaho.di.job.entries.sftp;
 
+import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
@@ -45,6 +46,7 @@ import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
@@ -424,8 +426,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
   {
     andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-    andValidator()
-        .validate(this, "targetDirectory", remarks, putValidators(notBlankValidator(), fileExistsValidator())); //$NON-NLS-1$
+
+    ValidatorContext ctx = new ValidatorContext();
+    putVariableSpace(ctx, getVariables());
+    putValidators(ctx, notBlankValidator(), fileExistsValidator());
+    andValidator().validate(this, "targetDirectory", remarks, ctx);//$NON-NLS-1$
+
     andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
     andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
     andValidator().validate(this, "serverPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
