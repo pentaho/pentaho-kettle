@@ -666,10 +666,12 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				java.util.Date dArg1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 				Calendar cal=Calendar.getInstance();
 			    cal.setTime(dArg1);
+			    
+			    // Patch by Ingo Klose: calendar months start at 0 in java.
 			    int iMonth = cal.get(Calendar.MONTH);
-			    if(iMonth<=3) return new Double(1);
-			    else if(iMonth<=6) return new Double(2);
-			    else if(iMonth<=9) return new Double(3);
+			    if(iMonth<=2) return new Double(1);
+			    else if(iMonth<=5) return new Double(2);
+			    else if(iMonth<=8) return new Double(3);
 			    else return new Double(4);
 			}else{
 				throw Context.reportRuntimeError("The function call quarter requires 1 argument.");
