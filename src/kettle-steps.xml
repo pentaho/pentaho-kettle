@@ -24,6 +24,17 @@
 		</tooltip>
 		<image-uri>DUM.png</image-uri>
 	</step>
+	<step id="Append">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Append")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.append.AppendMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Append")
+		</tooltip>
+		<image-uri>APP.png</image-uri>
+	</step>	
 	<step id="TableInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableInput")
