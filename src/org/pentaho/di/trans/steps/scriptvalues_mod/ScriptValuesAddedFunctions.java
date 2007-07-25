@@ -122,7 +122,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(er.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call appendToFile is not valid.");
+			throw Context.reportRuntimeError("The function call appendToFile requires arguments.");
 		}
 	}
 	
@@ -151,7 +151,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call getFiscalDate is not valid.");
+			throw Context.reportRuntimeError("The function call getFiscalDate requires 2 arguments.");
 		}
 		
 	}
@@ -176,7 +176,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return 0;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call getProcessCount is not valid.");	
+			throw Context.reportRuntimeError("The function call getProcessCount requires 1 argument.");	
 		}
 	}
 	
@@ -213,7 +213,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				}
 			break;
 			default:
-				throw Context.reportRuntimeError("The function call writeToDebug is not valid.");	
+				throw Context.reportRuntimeError("The function call writeToLog requires 1 or 2 arguments.");	
 		}
 	}
 	
@@ -234,7 +234,6 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	
 	private static boolean isNull(Object[] ArgList){
 		for(int i=0;i<ArgList.length;i++){
-			//if(ArgList[i] == null ||  ArgList[i].equals(null) || ArgList[i].equals("null") ) return true;
 			if(ArgList[i] == null ||  ArgList[i].equals(null)  ) return true;
 		}
 		return false;
@@ -242,7 +241,6 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	
 	private static boolean isNull(Object[] ArgList, int[] iArrToCheck){
 		for(int i=0;i<iArrToCheck.length;i++){
-			//if(ArgList[iArrToCheck[i]] == null ||  ArgList[iArrToCheck[i]].equals(null) || ArgList[iArrToCheck[i]].equals("null") ) return true;
 			if(ArgList[iArrToCheck[i]] == null ||  ArgList[iArrToCheck[i]].equals(null)  ) return true;
 		}
 		return false;
@@ -259,7 +257,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return null;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call abs is not valid.");
+			throw Context.reportRuntimeError("The function call abs requires 1 argument.");
 		}
 	}
 	
@@ -273,7 +271,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return null;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call ceil is not valid.");
+			throw Context.reportRuntimeError("The function call ceil requires 1 argument.");
 		}
 	}
 	
@@ -288,7 +286,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				//throw Context.reportRuntimeError(e.toString());		
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call floor is not valid.");
+			throw Context.reportRuntimeError("The function call floor requires 1 argument.");
 		}
 	}
 	
@@ -313,7 +311,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				//throw Context.reportRuntimeError(e.toString());		
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call getDayNumber is not valid.");
+			throw Context.reportRuntimeError("The function call getDayNumber requires 2 arguments.");
 		}
 	}
 	
@@ -333,7 +331,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				return null;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call isWorkingDay is not valid.");		
+			throw Context.reportRuntimeError("The function call isWorkingDay requires 1 argument.");		
 		}
 	}
 	
@@ -375,7 +373,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			}catch(Exception e){
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call fireToDB is not valid.");	
+			throw Context.reportRuntimeError("The function call fireToDB requires 2 arguments.");	
 		}
 		return oRC;
 	}
@@ -446,7 +444,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call dateDiff is not valid.");
+			throw Context.reportRuntimeError("The function call dateDiff requires 3 arguments.");
 		}
 	}
 	
@@ -468,7 +466,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call getNextWorkingDay is not valid.");
+			throw Context.reportRuntimeError("The function call getNextWorkingDay requires 1 argument.");
 		}
 	}
 	
@@ -501,7 +499,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call dateAdd is not valid.");
+			throw Context.reportRuntimeError("The function call dateAdd requires 3 arguments.");
 		}
   }
 	
@@ -523,7 +521,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     			throw Context.reportRuntimeError(e.toString());
     		}
     	}else{
-    		throw Context.reportRuntimeError("The function call fillString is not valid.");
+    		throw Context.reportRuntimeError("The function call fillString requires 2 arguments.");
     	}
     }
 	
@@ -544,7 +542,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				bRC=false;
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call isCodepage is not valid.");		
+			throw Context.reportRuntimeError("The function call isCodepage requires 2 arguments.");		
 		}
 		return Boolean.valueOf(bRC);
 	}
@@ -562,7 +560,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError("The function call ltrim requires 1 argument.");
 			 }
 	     }catch(Exception e){
-	    	 throw Context.reportRuntimeError("The function call ltrim is not valid.");
+	    	 throw Context.reportRuntimeError("The function call ltrim is not valid : " + e.getMessage());
 	     }
 	 }
 
@@ -579,7 +577,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError("The function call rtrim requires 1 argument.");
 			 }	    	 
 	     }catch(Exception e){
-	    	 throw Context.reportRuntimeError("The function call rtrim is not valid.");
+	    	 throw Context.reportRuntimeError("The function call rtrim is not valid : " + e.getMessage());
 	     }
 	 }
 	 
@@ -600,7 +598,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		 return valueToPad;
 	    	 }
 	     }catch(Exception e){
-	    	 throw Context.reportRuntimeError("The function call lpad is not valid.");
+	    	 throw Context.reportRuntimeError("The function call lpad requires 3 arguments.");
 	     }
 	     return null;
 	 }
@@ -620,7 +618,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		 return valueToPad;
 	    	 }
 	     }catch(Exception e){
-	    	 throw Context.reportRuntimeError("The function call rpad is not valid.");
+	    	 throw Context.reportRuntimeError("The function call rpad requires 3 arguments.");
 	     }
 	     return null;
 	 }
@@ -635,7 +633,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.YEAR));
 			}else{
-				throw Context.reportRuntimeError("The function call year is not valid.");
+				throw Context.reportRuntimeError("The function call year requires 1 argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -652,7 +650,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.MONTH));
 			}else{
-				throw Context.reportRuntimeError("The function call month is not valid.");
+				throw Context.reportRuntimeError("The function call month requires 1 argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -674,7 +672,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			    else if(iMonth<=9) return new Double(3);
 			    else return new Double(4);
 			}else{
-				throw Context.reportRuntimeError("The function call quarter is not valid.");
+				throw Context.reportRuntimeError("The function call quarter requires 1 argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -691,7 +689,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			    cal.setTime(dArg1);
 			    return new Double(cal.get(Calendar.WEEK_OF_YEAR));
 			}else{
-				throw Context.reportRuntimeError("The function call week is not valid.");
+				throw Context.reportRuntimeError("The function call week requires 1 argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -717,7 +715,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				throw Context.reportRuntimeError(e.toString());
 			}
 		}else{
-			throw Context.reportRuntimeError("The function call str2RegExp is not valid.");
+			throw Context.reportRuntimeError("The function call str2RegExp requires 2 arguments.");
 		}
 		return strArr;
 	}
@@ -731,7 +729,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
     				file.setLastModified(System.currentTimeMillis());
     			}
 			}else{
-				throw Context.reportRuntimeError("The function call touch is not valid.");
+				throw Context.reportRuntimeError("The function call touch requires 1 valid argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -745,7 +743,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				File file = new File(Context.toString(ArgList[0]));
 		        return Boolean.valueOf(file.isFile());
 			}else{
-				throw Context.reportRuntimeError("The function call fileExists is not valid.");
+				throw Context.reportRuntimeError("The function call fileExists requires 1 valid argument.");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError(e.toString());
@@ -756,7 +754,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		Object oRC=new Object();
 		switch(ArgList.length){
 			case 0:
-				throw  Context.reportRuntimeError("Please provide an valid String to the Function.");
+				throw  Context.reportRuntimeError("Please provide a valid string to the function call str2date.");
 			case 1:
 				try{
 					if(isNull(ArgList[0])) return null;
@@ -803,7 +801,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				}
 				break;				
 			default:
-				throw Context.reportRuntimeError("The function call str2date is not valid");
+				throw Context.reportRuntimeError("The function call str2date requires 1, 2, or 3 arguments.");
 		}
 		return oRC;
 	}
@@ -812,7 +810,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		Object oRC=new Object();
 		switch(ArgList.length){
 			case 0:
-				throw  Context.reportRuntimeError("Please provide an valid Date to the Function.");
+				throw  Context.reportRuntimeError("Please provide a valid date to the function call date2str.");
 			case 1:
 				try{
 					if(isNull(ArgList)) return null;
@@ -857,7 +855,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				}
 				break;				
 			default:
-				throw Context.reportRuntimeError("The function call date2str is not valid");
+				throw Context.reportRuntimeError("The function call date2str requires 1, 2, or 3 arguments.");
 		}
 		return oRC;
 	}
@@ -1129,7 +1127,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				for(int i=1;i<ArgList.length-1;i=i+2) objForReplace=objForReplace.replaceAll(Context.toString(ArgList[i]),Context.toString(ArgList[i+1]));
 				return objForReplace;
 			}else{
-				throw Context.reportRuntimeError("The function call replace is not valid (wrong arguments)");
+				throw Context.reportRuntimeError("The function call replace is not valid (wrong number of arguments)");
 			}
 		}catch(Exception e){
 			throw Context.reportRuntimeError("Function call replace is not valid : " + e.getMessage());
