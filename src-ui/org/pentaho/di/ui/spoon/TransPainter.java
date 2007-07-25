@@ -17,6 +17,7 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.ui.spoon.AreaOwner;
+import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -726,7 +727,20 @@ public class TransPainter
             String endMessage = null;
             StepMeta ts = (StepMeta) endObject;
             if (ts.isPartitioned()) {
-            	endMessage = "x"+ts.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().size()+Const.CR+ts.getStepPartitioningMeta().getPartitionSchema().getName();
+            	int x = 0;
+            	String name = "unknown";
+            	StepPartitioningMeta stepPartitioningMeta = ts.getStepPartitioningMeta();
+            	if( stepPartitioningMeta != null ) {
+            		PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+            		if( partitionSchema != null ) {
+            			List<String> ids = partitionSchema.getPartitionIDs();
+            			name = partitionSchema.getName();
+            			if( ids != null ) {
+            				x = ids.size();
+            			}
+            		}
+            	}
+            	endMessage = "x"+x+Const.CR+name;
             }
             if (endMessage!=null && dist >= 2 * iconsize) {
             	gc.setFont(GUIResource.getInstance().getFontTiny());
