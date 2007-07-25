@@ -251,7 +251,10 @@ public class CsvInput extends BaseStep implements StepInterface
 				}
 				
 				// OK, move on to the next field...
-				data.endBuffer++;
+				if( !newLineFound) 
+				{
+					data.endBuffer++;
+				}
 				data.startBuffer = data.endBuffer;
 			}
 		
