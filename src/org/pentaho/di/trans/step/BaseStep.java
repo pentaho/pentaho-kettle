@@ -268,7 +268,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * step partitioning information of the NEXT step
      */
-    private static StepPartitioningMeta  nextStepPartitioningMeta;
+    private StepPartitioningMeta  nextStepPartitioningMeta;
     
     /** The metadata information of the error output row.  There is only one per step so we cache it */
     private RowMetaInterface errorRowMeta = null;
@@ -785,6 +785,7 @@ public class BaseStep extends Thread implements VariableSpace
         break;
 
         case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
+        case StepPartitioningMeta.PARTITIONING_METHOD_HASH:
         	
             {
                 // Do some pre-processing on the first row...
@@ -822,9 +823,10 @@ public class BaseStep extends Thread implements VariableSpace
                 int partitionNr;
                 try
                 {
-                    partitionNr = nextStepPartitioningMeta.getPartitionNr(rowMeta.getInteger(row, partitionColumnIndex), partitionIDs.size());
+                	partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
+
                 }
-                catch (KettleValueException e)
+                catch (KettleException e)
                 {
                     throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
                 }

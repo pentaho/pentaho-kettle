@@ -5423,6 +5423,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		StepPartitioningMeta stepPartitioningMeta = stepMeta.getStepPartitioningMeta();
         if (stepPartitioningMeta==null) stepPartitioningMeta = new StepPartitioningMeta();
 
+		StepMeta before = (StepMeta) stepMeta.clone();
+
 		String[] options = StepPartitioningMeta.methodDescriptions;
         EnterSelectionDialog dialog = new EnterSelectionDialog(shell, options, "Partioning method", "Select the partitioning method");
 		String methodDescription = dialog.open(stepPartitioningMeta.getMethod());
@@ -5435,6 +5437,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
 			case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
 			case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
+			case StepPartitioningMeta.PARTITIONING_METHOD_HASH:
 				// Ask for a Partitioning Schema
 				String schemaNames[] = transMeta.getPartitionSchemasNames();
 				if (schemaNames.length == 0)
@@ -5462,7 +5465,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					}
 				}
 
-				if (method == StepPartitioningMeta.PARTITIONING_METHOD_MOD)
+				if (method == StepPartitioningMeta.PARTITIONING_METHOD_MOD || method == StepPartitioningMeta.PARTITIONING_METHOD_HASH)
 				{
 					// ask for a fieldname
                     EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
@@ -5471,6 +5474,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 				break;
 			}
+			StepMeta after = (StepMeta) stepMeta.clone();
+			addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { after },
+					new int[] { transMeta.indexOfStep(stepMeta) });
+
 			refreshGraph();
 		}
 	}

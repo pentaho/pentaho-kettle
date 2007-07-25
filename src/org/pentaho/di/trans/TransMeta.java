@@ -3226,6 +3226,10 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         for (int i = 0; i < nrSteps(); i++)
         {
             getStep(i).setChanged(false);
+            if (getStep(i).getStepPartitioningMeta() != null) 
+            {
+            	getStep(i).getStepPartitioningMeta().hasChanged(false);
+            }
         }
         for (int i = 0; i < nrDatabases(); i++)
         {
@@ -3277,6 +3281,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         {
             StepMeta stepMeta = getStep(i);
             if (stepMeta.hasChanged()) return true;
+            if (stepMeta.getStepPartitioningMeta() != null && stepMeta.getStepPartitioningMeta().hasChanged() ) return true;
         }
         return false;
     }
@@ -4220,7 +4225,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                     // Get the input & output steps!
                     // Copy to arrays:
                     String input[] = getPrevStepNames(stepMeta);
-                    String output[] = this.getNextStepNames(stepMeta);
+                    String output[] = getNextStepNames(stepMeta);
 
                     // Check step specific info...
                     stepMeta.check(remarks, this, prev, input, output, info);

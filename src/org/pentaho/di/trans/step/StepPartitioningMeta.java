@@ -5,10 +5,15 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.HashPartitioner;
+import org.pentaho.di.trans.ModPartitioner;
+import org.pentaho.di.trans.NoPartitioner;
+import org.pentaho.di.trans.Partitioner;
 import org.w3c.dom.Node;
 
 
@@ -17,9 +22,10 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public static final int PARTITIONING_METHOD_NONE    = 0;
     public static final int PARTITIONING_METHOD_MOD     = 1;
     public static final int PARTITIONING_METHOD_MIRROR  = 2;
+    public static final int PARTITIONING_METHOD_HASH  = 3;
     
-    public static final String[] methodCodes        = new String[] { "none", "Mod", "Mirror" };
-    public static final String[] methodDescriptions = new String[] { "None", "Remainder of division", "Mirror to all partitions" };
+    public static final String[] methodCodes        = new String[] { "none", "Mod", "Mirror", "Hash" };
+    public static final String[] methodDescriptions = new String[] { "None", "Remainder of division", "Mirror to all partitions", "Generate a hash code" };
 
     private int             method;
     private String          fieldName;
@@ -27,10 +33,15 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     private String          partitionSchemaName; // to allow delayed binding...
     private PartitionSchema partitionSchema;
     
+    private Partitioner partitioner;
+    
+    private boolean hasChanged = false;
+    
     public StepPartitioningMeta()
     {
         method = PARTITIONING_METHOD_NONE;
         partitionSchema = new PartitionSchema();
+        hasChanged = false;
     }
     
     /**
@@ -39,9 +50,10 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      */
     public StepPartitioningMeta(int method, String fieldName, PartitionSchema partitionSchema)
     {
-        this.method = method;
+    	setMethod( method );
         this.fieldName = fieldName;
         this.partitionSchema = partitionSchema;
+        hasChanged = false;
     }
     
     public Object clone()
@@ -64,6 +76,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public String toString() {
     	switch(method) {
     	case PARTITIONING_METHOD_MOD : return getMethodDescription()+" : "+fieldName+"@"+partitionSchema.getName();
+    	case PARTITIONING_METHOD_HASH : return getMethodDescription()+" : "+fieldName+"@"+partitionSchema.getName();
     	default: return getMethodDescription();
     	}
     }
@@ -82,6 +95,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public void setFieldName(String fieldName)
     {
         this.fieldName = fieldName;
+        hasChanged = true;
     }
 
     /**
@@ -98,6 +112,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public void setMethod(int method)
     {
         this.method = method;
+        createPartitioner(method);
+        hasChanged = true;
     }
 
     public String getXML()
@@ -116,10 +132,10 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public StepPartitioningMeta(Node partitioningMethodNode)
     {
     	this();
-        method = getMethod( XMLHandler.getTagValue(partitioningMethodNode, "method") );
+    	setMethod( getMethod( XMLHandler.getTagValue(partitioningMethodNode, "method") ) );
         fieldName = XMLHandler.getTagValue(partitioningMethodNode, "field_name");
         partitionSchemaName = XMLHandler.getTagValue(partitioningMethodNode, "schema_name");
-        
+        hasChanged = false;
         if (method!=PARTITIONING_METHOD_NONE && Const.isEmpty(partitionSchemaName)) {
         	throw new RuntimeException("bohoo!");
         }
@@ -153,7 +169,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     {
         return method!=PARTITIONING_METHOD_NONE;
     }
-
+/*
     public int getPartitionNr(Long value, int nrPartitions)
     {
         int nr = 0;
@@ -165,7 +181,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         }
         return nr;
     }
-
+*/
     /**
      * @return the partitionSchema
      */
@@ -180,6 +196,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     public void setPartitionSchema(PartitionSchema partitionSchema)
     {
         this.partitionSchema = partitionSchema;
+        hasChanged = true;
     }
     
     /**
@@ -224,22 +241,56 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_FIELDNAME", fieldName);               // The fieldname to partition on 
     }
     
+    public void createPartitioner( int method ) {
+        switch ( method ) {
+        case PARTITIONING_METHOD_MOD: partitioner = new ModPartitioner(this); break;
+        case PARTITIONING_METHOD_HASH: partitioner = new HashPartitioner(this); break;
+        case PARTITIONING_METHOD_NONE: partitioner = new NoPartitioner(this); break;
+        default: partitioner = null;
+        }
+    }
+    
     public StepPartitioningMeta(Repository rep, long id_step) throws KettleException
     {
     	this();
         partitionSchemaName = rep.getStepAttributeString(id_step, "PARTITIONING_SCHEMA");
         String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");
-        method = getMethod(methodCode);
+        setMethod( getMethod(methodCode) );
         fieldName           = rep.getStepAttributeString(id_step, "PARTITIONING_FIELDNAME");
+        hasChanged = true;
     }
-    
+    /*
     public boolean isMethodMod()
     {
         return method==PARTITIONING_METHOD_MOD;
     }
-    
+    */
     public boolean isMethodMirror()
     {
         return method==PARTITIONING_METHOD_MIRROR;
     }
+
+    public int getPartition(RowMetaInterface rowMeta, Object[] row) throws KettleException
+    {
+    	if( partitioner != null ) {
+    		return partitioner.getPartition(rowMeta, row);
+    	}
+    	return 0;
+    }
+    
+	public Partitioner getPartitioner() {
+		return partitioner;
+	}
+
+	public void setPartitioner(Partitioner partitioner) {
+		this.partitioner = partitioner;
+	}
+
+	public boolean hasChanged() {
+		return hasChanged;
+	}
+
+	public void hasChanged(boolean hasChanged) {
+		this.hasChanged = hasChanged;
+	}
 }
