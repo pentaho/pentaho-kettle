@@ -1567,7 +1567,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     	            int sels = transMeta.nrSelectedSteps();
     	            
     				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
-    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHopClick" ); //$NON-NLS-1$ //$NON-NLS-2$
+    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHop" ); //$NON-NLS-1$ //$NON-NLS-2$
     				item.setEnabled( sels == 2 );
     				
     				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
@@ -1678,7 +1678,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 					if( menu != null ) {
 					
 						menu.addMenuListener( "trans-graph-background-new-note", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-background-new-step", this, "pasteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "trans-graph-background-paste", this, "paste" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "trans-graph-background-settings", this, "settings" ); //$NON-NLS-1$ //$NON-NLS-2$
 						
@@ -1688,19 +1687,33 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	                    if( item != null ) {
 	                    		item.setEnabled( clipcontent != null );
 	                    }
+	        			String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
 
 	                    XulMenu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
 	                    if( subMenu.getItemCount() == 0 ) {
+	                        // group these by type so the menu doesn't stretch the height of the screen and to be friendly to testing tools
 	                        StepLoader steploader = StepLoader.getInstance();
-	                        final StepPlugin sp[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-	                        for (int i = 0; i < sp.length; i++)
-	                        {
-	                	        		XulMessages xulMessages = new XulMessages();
-	                	        		final String name = sp[i].getDescription();
-	                        		new MenuChoice( subMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
-	                        		menu.addMenuListener( name, this, "newStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-	                        		
-	                        }	                    	
+	                        // get a list of the categories
+	            			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale );
+	            			// get all the plugins
+	            			StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+
+        	        		XulMessages xulMessages = new XulMessages();
+	            			for( int cat=0; cat<basecat.length; cat++ ) {
+	            				// create a submenu for this category
+	            				org.pentaho.xul.swt.menu.Menu catMenu = new org.pentaho.xul.swt.menu.Menu( (org.pentaho.xul.swt.menu.Menu) subMenu, basecat[cat], basecat[cat], null);
+	            				for( int step=0; step<basesteps.length; step++ ) {
+	            					// find the steps for this category
+	            					if( basesteps[step].getCategory(locale).equalsIgnoreCase(basecat[cat])) 
+	            					{
+	            						// create a menu option for this step
+	                	        		final String name = basesteps[step].getDescription();
+	                	        		new MenuChoice( catMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
+	                	        		menu.addMenuListener( name, this, "newStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+	            					}
+	            				}
+	            			}
+	            			
 	                    }
 	                    
 	    				canvas.setMenu((Menu)menu.getNativeObject());
