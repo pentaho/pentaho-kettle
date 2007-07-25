@@ -108,6 +108,16 @@ public class WebServer
         server.join();
     }
 
+    public void stopServer() {
+      try {
+        if (server != null) {
+          server.stop();
+        }
+      } catch (Exception e) {
+        log.logError("web server error", "failed to stop webserver", e);
+      }
+    }
+    
     private void createListeners() 
     {
         SocketConnector connector = new SocketConnector();
