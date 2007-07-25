@@ -495,17 +495,15 @@ public class Trans implements VariableSpace
             // If both steps are not partitioned, we don't need to re-partition
             //
             StepPartitioningMeta nextPartitioned = stepMeta.getTargetStepPartitioningMeta();
-            if (nextPartitioned==null) {
-	            int nrNext = transMeta.findNrNextSteps(stepMeta);
-	            for (int p=0;p<nrNext;p++)
+	        int nrNext = transMeta.findNrNextSteps(stepMeta);
+	        for (int p=0;p<nrNext;p++)
+	        {
+	            StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
+	            if (nextStep.isPartitioned()) 
 	            {
-	                StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
-	                if (nextStep.isPartitioned()) 
-	                {
-	                    nextPartitioned = nextStep.getStepPartitioningMeta();
-	                }
+	                nextPartitioned = nextStep.getStepPartitioningMeta();
 	            }
-            }
+	        }
             
             stepMeta.setTargetStepPartitioningMeta(nextPartitioned);
             baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
