@@ -100,16 +100,18 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(200);
-		
+		if ((null != from_entry) && (null != to_entry))
+		{
 		retval.append("    <hop>").append(Const.CR);
-		retval.append("      ").append(XMLHandler.addTagValue("from",          from_entry!=null?from_entry.getName():""));
-		retval.append("      ").append(XMLHandler.addTagValue("to",            to_entry!=null?to_entry.getName():""));
+		retval.append("      ").append(XMLHandler.addTagValue("from",          from_entry.getName()));
+		retval.append("      ").append(XMLHandler.addTagValue("to",            to_entry.getName()));
 		retval.append("      ").append(XMLHandler.addTagValue("from_nr",       from_entry.getNr()));
 		retval.append("      ").append(XMLHandler.addTagValue("to_nr",         to_entry.getNr()));
 		retval.append("      ").append(XMLHandler.addTagValue("enabled",       enabled));
 		retval.append("      ").append(XMLHandler.addTagValue("evaluation",    evaluation));
 		retval.append("      ").append(XMLHandler.addTagValue("unconditional", unconditional));
 		retval.append("    </hop>"+Const.CR);
+		}
 		
 		return retval.toString();
 	}
