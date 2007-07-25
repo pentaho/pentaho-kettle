@@ -54,6 +54,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 {
 	private StreamLookupMeta meta;
 	private StreamLookupData data;
+	private int lookupColumnIndex = -1;
 
 	public StreamLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -205,6 +206,24 @@ public class StreamLookup extends BaseStep implements StepInterface
 	{
 		// See if we need to stop.
 		if (isStopped()) return null;
+
+		if( lookupColumnIndex == -1 ) 
+		{
+			String names[] = rowMeta.getFieldNames();
+			for( int i=0; i<names.length; i++ ) 
+			{
+				if( names[i].equals( data.lookupMeta.getValueMeta(0).getName() ) ) 
+				{
+					lookupColumnIndex = i;
+					break;
+				}
+			}
+		}
+		if( lookupColumnIndex == - 1 ) 
+		{
+			// we should not get here
+			throw new KettleStepException( "The lookup column could not be found" );
+		}
 		
 		// Copy value references to lookup table.
         Object[] lu = RowDataUtil.resizeArray(row, data.keynrs.length);
@@ -236,7 +255,8 @@ public class StreamLookup extends BaseStep implements StepInterface
 		{
 			if (meta.getKeystream().length>0)
 			{
-				add=getFromCache(data.lookupMeta, lu);
+				Object lookupData[] = new Object[] { row[ lookupColumnIndex ] };
+				add=getFromCache(data.lookupMeta, lookupData);
 			}
 			else
 			{
