@@ -12,6 +12,7 @@ import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.provider.jar.JarFileObject;
 import org.pentaho.di.core.Const;
@@ -113,8 +114,22 @@ public class PluginLoader
 								// loop thru folder
 								for (FileObject childFolder : fobj.getChildren())
 								{
-									boolean isAlsoJar = childFolder.getName().getURI().indexOf(".jar") != -1;
+									boolean isAlsoJar = childFolder.getName().getURI().endsWith(".jar");
 
+									// ignore anything that is not a folder
+									if( childFolder.getType() != FileType.FOLDER ) {
+										continue;
+									}
+
+									// ignore any subversion or CVS directories
+									if( childFolder.getName().getBaseName().equalsIgnoreCase(".svn") )
+									{
+										continue;
+									}
+									else if ( childFolder.getName().getBaseName().equalsIgnoreCase(".cvs") )
+									{
+										continue;
+									}
 									try
 									{
 										addJob(build(childFolder, isAlsoJar));
@@ -139,7 +154,7 @@ public class PluginLoader
 
 					} else
 					{
-						log.logError(PLUGIN_LOADER, fobj + " does not exist.");
+						log.logBasic(PLUGIN_LOADER, fobj + " does not exist.");
 					}
 				} catch (Exception e)
 				{
