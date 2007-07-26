@@ -842,7 +842,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     /*
      * (non-Javadoc)
      * 
-     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(org.pentaho.di.repository.Repository, boolean)
      */
     public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
@@ -1316,7 +1316,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     /*
      * (non-Javadoc)
      * 
-     * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
      */
     public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
     {
