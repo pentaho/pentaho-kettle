@@ -225,10 +225,11 @@ public class CommandLineOption
 		{
 			optionMap.put(options[i].option, options[i]);
 		}
-		while( args.size() > 0 )
+		int idx = 0;
+		while( args.size() > 0 && idx < args.size() )
 		{
-			// this should be an option name
-			String arg = args.get(0).trim();
+			// look at the next option
+			String arg = args.get(idx).trim();
 			if( arg != null && arg.length() > 0 && (arg.charAt(0) == '-' || arg.charAt(0) == '/' ) ) 
 			{
 				// remove the leading '-'
@@ -261,15 +262,15 @@ public class CommandLineOption
 				}
 				if( option != null ) 
 				{
-					args.remove(0);
+					args.remove(idx);
 					if( !option.yesNo )
 					{
-						if( args.size() > 0 ) 
+						if( idx < args.size() ) 
 						{
 							if( value == null )
 							{
-								value = args.get(0);
-								args.remove(0);
+								value = args.get(idx);
+								args.remove(idx);
 							}
 							option.argument.append(value);
 						}
@@ -295,10 +296,7 @@ public class CommandLineOption
 					}
 				} else {
 					// this is not a valid option
-					if( log != null ) {
-						log.logError( "Command Line Options", optionName+" is not a recognized option", new Object[] {optionName});
-					}
-					return false;
+					idx++;
 				}
 			} 
 			else if( "".equals( arg ) )
@@ -306,30 +304,12 @@ public class CommandLineOption
 				// just an empty string
 				args.remove(0);
 			} else {
-				// we don't understand this option
-				if( log != null ) {
-					log.logError( "Command Line Options", "Expected a recognized option but encountered "+arg, new Object[] {arg});
-				}
-				return false;
+				// we don't understand this option just ignore it
+				idx++;
 			}
 		}
 
 		return true;
-		/*
-		for (int i=0;i<options.length;i++)
-		{
-			boolean found=false;
-			for (int j=0;j<args.size() && !found;j++)
-			{
-				String argument = options[i].extractAndSetArgument((String)args.get(j));
-				if (argument!=null) 
-				{
-					found=true;
-					args.remove(j); // We covered it: remove from the list
-				}
-			}
-		}
-		*/
     }
 
 	/**
