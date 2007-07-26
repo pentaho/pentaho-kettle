@@ -329,7 +329,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	 * See wether or not the step is drawn on the canvas.
 	 * Same as isDrawn(), but needed for findMethod(StepMeta, drawstep)
 	 * called by StringSearcher.findMetaData(). Otherwise findMethod() returns
-	 * be.ibridge.kettle.trans.step.StepMeta.drawStep() instead of isDrawn().
+	 * org.pentaho.di.trans.step.StepMeta.drawStep() instead of isDrawn().
 	 * @return True if the step is drawn on the canvas.
 	 */
 	public boolean isDrawStep()
