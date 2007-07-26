@@ -91,7 +91,7 @@ public class Append extends BaseStep implements StepInterface
 	}
 
 	/**
-     * @see StepInterface#init( be.ibridge.kettle.trans.step.StepMetaInterface , be.ibridge.kettle.trans.step.StepDataInterface)
+     * @see StepInterface#init( org.pentaho.di.trans.step.StepMetaInterface , org.pentaho.di.trans.step.StepDataInterface)
      */
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
