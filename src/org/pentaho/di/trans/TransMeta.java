@@ -439,7 +439,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(org.pentaho.di.core.database.DatabaseMeta)
      */
     public void addDatabase(DatabaseMeta databaseMeta)
     {
@@ -447,7 +447,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
     
     /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
      */
     public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
     {
@@ -530,7 +530,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(int, be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(int, org.pentaho.di.core.database.DatabaseMeta)
      */
     public void addDatabase(int p, DatabaseMeta ci)
     {
@@ -1920,7 +1920,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(be.ibridge.kettle.repository.Repository, boolean)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#readDatabases(org.pentaho.di.repository.Repository, boolean)
      */
     public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
@@ -2362,7 +2362,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     }
 
     /* (non-Javadoc)
-     * @see org.pentaho.di.trans.HasDatabaseInterface#indexOfDatabase(be.ibridge.kettle.core.database.DatabaseMeta)
+     * @see org.pentaho.di.trans.HasDatabaseInterface#indexOfDatabase(org.pentaho.di.core.database.DatabaseMeta)
      */
     public int indexOfDatabase(DatabaseMeta ci)
     {
