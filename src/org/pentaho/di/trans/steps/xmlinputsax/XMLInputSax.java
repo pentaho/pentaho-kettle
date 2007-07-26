@@ -29,10 +29,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-// import org.w3c.dom.Node;
-
-// import be.ibridge.kettle.core.Const;
-
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or
  * more output streams.
