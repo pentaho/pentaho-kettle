@@ -99,13 +99,6 @@ import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.w3c.dom.Document;
 
 
-
-
-
-
-
-
-
 /**
  * This dialog displays the content of the repository in a Windows explorer like fashion.
  * The user can manipulate the objects in the repository as well as administer users, profiles, etc.
@@ -114,7 +107,6 @@ import org.w3c.dom.Document;
  * @since 18-mei-2003
  *
  */
-
 public class RepositoryExplorerDialog extends Dialog 
 {
 	private static final String STRING_DATABASES       = Messages.getString("RepositoryExplorerDialog.Tree.String.Connections"); //$NON-NLS-1$
@@ -677,21 +669,6 @@ public class RepositoryExplorerDialog extends Dialog
 				}
 				break;
 				
-			case ITEM_CATEGORY_JOB_DIRECTORY               :
-			case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY    :
-				if (level>=2)
-				{
-					// The first levels of path[] don't belong to the path to this directory!
-					String realpath[] = new String[level-1];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
-					
-					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
-
-					if (!userinfo.isReadonly()) createDirectory(ti, repdir);
-				}
-				break;
-								
 			case ITEM_CATEGORY_JOB                         :
 				{
 					// The first 3 levels of text[] don't belong to the path to this transformation!
