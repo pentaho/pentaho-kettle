@@ -117,6 +117,8 @@ public class Props implements Cloneable
     public static final String STRING_SHOW_OS_LOOK            = "ShowOSLook";
     public static final String STRING_LAST_ARGUMENT           = "LastArgument";
 
+    public static final String STRING_ARGUMENT_NAME_PREFIX    = "Argument ";
+    
     public static final String STRING_CUSTOM_PARAMETER        = "CustomParameter";
     
     public static final String STRING_PLUGIN_HISTORY          = "PluginHistory";
@@ -481,9 +483,9 @@ public class Props implements Cloneable
      */
     public static final int getArgumentNumber(ValueMetaInterface value)
     {
-        if (value!=null && value.getName().startsWith("Argument "))
+        if (value!=null && value.getName().startsWith(Props.STRING_ARGUMENT_NAME_PREFIX))
         {
-            return Const.toInt(value.getName().substring("Argument ".length()), -1);
+            return Const.toInt(value.getName().substring(Props.STRING_ARGUMENT_NAME_PREFIX.length()), -1);
         }
         return -1;
     }

@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -521,7 +522,7 @@ public class TransExecutionConfiguration implements Cloneable
         
         String[] values = new String[argNames.length];
         for (int i=0;i<argNames.length;i++) {
-        	if (argNames[i].equalsIgnoreCase("Argument "+(i+1))) {
+        	if (argNames[i].equalsIgnoreCase(Props.STRING_ARGUMENT_NAME_PREFIX+(i+1))) {
         		values[i] = arguments.get(argNames[i]);
         	}
         }
