@@ -244,6 +244,10 @@ public class RepositoryDirectory
 	        return this;
 	    }
 	    
+	    if (path.length<1) {
+	    	return this;
+	    }
+	    	    
 	    String[] directoryPath;
 	    
 	    // Skip the root directory, it doesn't really exist as such.

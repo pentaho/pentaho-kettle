@@ -327,6 +327,14 @@ public class RepositoryExplorerDialog extends Dialog
     						setTreeMenu();
     					}
     				}
+    				
+    				public void mouseDoubleClick(MouseEvent e) {
+    					if (e.button == 1) // left double click!
+    					{
+    						doDoubleClick();
+    					}
+    				}
+
     			}
     		);
     		
@@ -625,6 +633,81 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		
 		return true;
+	}
+	
+	public void doDoubleClick()
+	{
+		final TreeItem tisel[]=wTree.getSelection();
+		if (tisel.length==1 || sameCategory(tisel))
+		{
+			final TreeItem ti = tisel[0];
+			final int level = ConstUI.getTreeLevel(ti);
+			final String path[] = ConstUI.getTreeStrings(ti);
+			final String item = ti.getText();
+		
+			int cat = getItemCategory(ti);
+			
+			switch(cat)
+			{
+
+            case ITEM_CATEGORY_PARTITION :
+                {
+                	if (!userinfo.isReadonly()) editPartitionSchema(item); 
+                }
+                break;
+
+            case ITEM_CATEGORY_CLUSTER:
+                {
+                	if (!userinfo.isReadonly()) editCluster(item);
+                }
+                break;
+
+			case ITEM_CATEGORY_TRANSFORMATION              :
+				if (level>=2)
+				{
+					// The first 1 levels of path[] don't belong to the path to this transformation!
+					String realpath[] = new String[level-2];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
+					
+					// Find the directory in the directory tree...
+					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+					
+					openTransformation(item, repdir);
+
+				}
+				break;
+				
+			case ITEM_CATEGORY_JOB_DIRECTORY               :
+			case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY    :
+				if (level>=2)
+				{
+					// The first levels of path[] don't belong to the path to this directory!
+					String realpath[] = new String[level-1];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
+					
+					// Find the directory in the directory tree...
+					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+
+					if (!userinfo.isReadonly()) createDirectory(ti, repdir);
+				}
+				break;
+								
+			case ITEM_CATEGORY_JOB                         :
+				{
+					// The first 3 levels of text[] don't belong to the path to this transformation!
+					String realpath[] = new String[level-2];
+					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
+					
+					// Find the directory in the directory tree...
+					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+	
+                    openJob(item, repdir);
+ 				}
+				break;
+				
+			default: 
+			}
+		}
 	}
 	
 	public void setTreeMenu()
@@ -2531,7 +2614,7 @@ public class RepositoryExplorerDialog extends Dialog
 							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
-						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+trans[i]+".ktr"; //$NON-NLS-1$
+						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(trans[i])+".ktr"; //$NON-NLS-1$						
 						File f = new File(filename);
 						try
 						{
@@ -2552,6 +2635,15 @@ public class RepositoryExplorerDialog extends Dialog
 			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
+	}
+	
+	private String fixFileName(String filename) {
+		filename = filename.replace('/', '_'); // do something with illegal file name chars
+		if (!("/".equals(Const.FILE_SEPARATOR)))
+		{
+			filename = Const.replace(filename, Const.FILE_SEPARATOR, "_");
+		}
+		return filename;
 	}
 
 	public void exportJobs()
@@ -2584,7 +2676,7 @@ public class RepositoryExplorerDialog extends Dialog
 							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
-						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+jobs[i]+".kjb"; //$NON-NLS-1$
+						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(jobs[i])+".kjb"; //$NON-NLS-1$
 						File f = new File(filename);
 						try
 						{
@@ -2621,20 +2713,21 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void importAll()
 	{
-		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		if (dialog.open()!=null)
 		{
-			final String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-			System.out.println("Import objects from XML file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-			
+			String[] filenames = dialog.getFileNames();
+			if (filenames.length > 0)
+			{
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 			RepositoryDirectory baseDirectory = sdd.open();
 			if (baseDirectory!=null)
 			{
-				RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, filename, baseDirectory);
+						RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, dialog.getFilterPath(), filenames, baseDirectory);
 				ripd.open();
 				
 				refreshTree();
+				}
 			}
 		}
 	}

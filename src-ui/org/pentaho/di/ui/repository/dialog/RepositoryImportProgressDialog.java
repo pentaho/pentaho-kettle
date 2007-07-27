@@ -5,6 +5,8 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
+import java.util.Date;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -57,24 +59,31 @@ public class RepositoryImportProgressDialog extends Dialog
     private PropsUI props;
 
     private Repository rep;
-    private String filename;
+    private String fileDirectory;
+    private String[] filenames;
     private RepositoryDirectory baseDirectory;
     private ProgressBar wBar;
     private Label wLabel;
     private Text wLogging;
     private Button wClose;
 
+    private boolean overwrite = false;
+    private boolean askOverwrite = true;
+    private boolean makeDirectory = false;
+    private boolean askDirectory = true;
+    private int nrtrans;
+    private int nrjobs;
     /**
      * @deprecated Use CT without <i>log</i> and <i>props</i> parameters
      */
     public RepositoryImportProgressDialog(Shell parent, int style, LogWriter log, PropsUI props, Repository rep, String filename, RepositoryDirectory baseDirectory)
     {
-        this(parent, style, rep, filename, baseDirectory);
+        this(parent, style, rep, null, new String[] { filename }, baseDirectory);
         this.log = log;
         this.props = props;
     }
     
-    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String filename, RepositoryDirectory baseDirectory)
+    public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectory baseDirectory)
     {
         super(parent, style);
 
@@ -82,7 +91,8 @@ public class RepositoryImportProgressDialog extends Dialog
         this.props = PropsUI.getInstance();
         this.parent = parent;
         this.rep = rep;
-        this.filename = filename;
+        this.fileDirectory = fileDirectory;
+        this.filenames = filenames;
         this.baseDirectory = baseDirectory;
     }
 
@@ -185,16 +195,209 @@ public class RepositoryImportProgressDialog extends Dialog
         wLogging.setSelection(wLogging.getText().length()); // make it scroll
     }
 
+    private boolean importTransformation(int nrthis, Node transnode) throws KettleException
+    {
+    	//
+    	// Load transformation from XML into a directory, possibly created!
+    	//
+    	TransMeta ti = new TransMeta(transnode);
+
+    	wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(nrthis), Integer.toString(nrtrans), ti.getName()));
+
+    	// What's the directory path?
+    	String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
+    	// remove the leading root, we never don't need it.
+    	directoryPath = directoryPath.substring(1);
+
+    	RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
+    	if (targetDirectory == null)
+    	{
+    		if (askDirectory)
+    		{
+    			MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
+    					Messages.getString("RepositoryImportDialog.CreateDir.Title"),
+    					null,
+    					Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
+    					MessageDialog.QUESTION,
+    					new String[] {
+    				Messages.getString("System.Button.Yes"),
+    				Messages.getString("System.Button.No"),
+    				Messages.getString("System.Button.Cancel") },
+    				1,
+    				Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+    				!askDirectory);
+    			int answer = mb.open();
+    			makeDirectory = (answer & 0xFF) == 0;
+    			askDirectory = !mb.getToggleState();
+
+    			// Cancel?
+    			if ((answer & 0xFF) == 1)
+    				return false;
+    		}
+
+    		if (makeDirectory)
+    		{
+    			addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+    			targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
+    		}
+    		else
+    		{
+    			targetDirectory = baseDirectory;
+    		}
+    	}
+
+    	// OK, we loaded the transformation from XML and all went well...
+    	// See if the transformation already existed!
+    	long id = rep.getTransformationID(ti.getName(), targetDirectory.getID());
+    	if (id > 0 && askOverwrite)
+    	{
+    		MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
+    				Messages.getString("RepositoryImportDialog.OverwriteTrans.Title"),
+    				null,
+    				Messages.getString("RepositoryImportDialog.OverwriteTrans.Message", ti.getName()),
+    				MessageDialog.QUESTION,
+    				new String[] { Messages.getString("System.Button.Yes"),
+    			Messages.getString("System.Button.No") },
+    			1,
+    			Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+    			!askOverwrite);
+    		int answer = md.open();
+    		overwrite = (answer & 0xFF) == 0;
+    		askOverwrite = !md.getToggleState();
+    	}
+    	else {
+    		shell.getDisplay().update();
+    	}
+
+    	if (id <= 0 || overwrite)
+    	{
+    		ti.setDirectory(targetDirectory);
+
+    		try
+    		{
+    			// Keep info on who & when this transformation was created...
+    			if (  ti.getCreatedUser()==null || ti.getCreatedUser().equals("-"))
+    			{
+					ti.setCreatedDate( new Date() );   
+    				ti.setCreatedUser( rep.getUserInfo().getLogin() );
+    			}
+    			else
+    			{
+    				ti.setCreatedDate( ti.getCreatedDate() );                 
+    				ti.setCreatedUser( ti.getCreatedUser());
+    			}
+
+    			// Keep info on who & when this transformation was changed...
+    			ti.setModifiedDate( new Date() );                 
+    			ti.setModifiedUser( rep.getUserInfo().getLogin() );
+    			ti.saveRep(rep);
+    			addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(nrthis), ti.getName()));
+    		}
+    		catch (Exception e)
+    		{
+    			addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(nrthis), ti.getName(), e.toString()));
+    			addLog(Const.getStackTracker(e));
+    		}
+    	}
+    	else
+    	{
+    		addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans2.Log", ti.getName()));
+    	}
+    	return true;
+    }
+	
+	private boolean importJob(int nrthis, Node jobnode) throws KettleException
+	{
+        // Load the job from the XML node.
+                        JobMeta ji = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
+
+        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportJob.Label", Integer.toString(nrthis), Integer.toString(nrjobs), ji.getName()));
+
+        // What's the directory path?
+        String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
+
+        RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
+        if (targetDirectory == null)
+        {
+            if (askDirectory)
+            {
+                MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
+                    Messages.getString("RepositoryImportDialog.CreateDir.Title"),
+                    null,
+                    Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
+                    MessageDialog.QUESTION,
+                    new String[] {
+                                  Messages.getString("System.Button.Yes"),
+                                  Messages.getString("System.Button.No"),
+                                  Messages.getString("System.Button.Cancel") },
+                    1,
+                    Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+                    !askDirectory);
+                int answer = mb.open();
+                makeDirectory = answer == 0;
+                askDirectory = !mb.getToggleState();
+
+                // Cancel?
+                if ((answer & 0xFF) == 2)
+                    return false;
+            }
+
+            if (makeDirectory)
+            {
+                addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
+                targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
+            }
+            else
+            {
+                targetDirectory = baseDirectory;
+            }
+        }
+
+        // OK, we loaded the job from XML and all went well...
+        // See if the job already exists!
+        long id = rep.getJobID(ji.getName(), targetDirectory.getID());
+        if (id > 0 && askOverwrite)
+        {
+            MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
+                Messages.getString("RepositoryImportDialog.OverwriteJob.Title"),
+                null,
+                Messages.getString("RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
+                MessageDialog.QUESTION,
+                new String[] { Messages.getString("System.Button.Yes"),
+                              Messages.getString("System.Button.No") },
+                1,
+                Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
+                !askOverwrite);
+            int answer = md.open();
+            overwrite = (answer & 0xFF) == 0;
+            askOverwrite = !md.getToggleState();
+        }
+		else {
+			shell.getDisplay().update();
+		}
+
+        if (id <= 0 || overwrite)
+        {
+            ji.setDirectory(targetDirectory);
+            ji.saveRep(rep);
+            addLog(Messages.getString("RepositoryImportDialog.JobSaved.Log", Integer.toString(nrthis), ji.getName()));
+        }
+        else
+        {
+            addLog(Messages.getString("RepositoryImportDialog.ErrorSavingJob.Log", ji.getName()));
+        }
+        return true;
+    }
     private void importAll()
     {
         wLabel.setText(Messages.getString("RepositoryImportDialog.ImportXML.Label"));
         try
         {
-            boolean overwrite = false;
-            boolean askOverwrite = true;
-            boolean makeDirectory = false;
-            boolean askDirectory = true;
-
+			for (int ii = 0; ii < filenames.length; ++ii)
+			{
+				final String filename = ((fileDirectory != null) && (fileDirectory.length()>0)) ? 
+						fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+						log.logBasic("Repository", "Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
             addLog(Messages.getString("RepositoryImportDialog.WhichFile.Log", filename));
 
             // To where?
@@ -207,108 +410,63 @@ public class RepositoryImportProgressDialog extends Dialog
                 // HERE WE START
                 //
                 Node repnode = XMLHandler.getSubNode(doc, "repository");
-                Node transsnode = XMLHandler.getSubNode(repnode, "transformations");
-                if (transsnode != null) // Load transformations...
-                {
-                    int nrtrans = XMLHandler.countNodes(transsnode, "transformation");
+							if (null == repnode) {
+								Node firstnode = doc.getFirstChild();
+								// if top node is transformation then we have just a transformation
+								if ((null != firstnode) && firstnode.getNodeName().equals("transformation")) {
+									nrtrans = filenames.length;
 
                     wBar.setMinimum(0);
                     wBar.setMaximum(nrtrans);
-                    for (int i = 0; i < nrtrans; i++)
-                    {
-                        wBar.setSelection(i + 1);
-                        Node transnode = XMLHandler.getSubNodeByNr(transsnode, "transformation", i);
+									wBar.setSelection(ii);
 
-                        //
-                        // Load transformation from XML into a directory, possibly created!
-                        //
-                        TransMeta ti = new TransMeta(transnode);
+									askDirectory = false; // just use the specified basedirectory
+									if (!importTransformation(ii+1, firstnode))
+									{
+										return;
+									}
+									wBar.setSelection(ii+1);
+									continue;
+								}
 
-                        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportTrans.Label", Integer.toString(i + 1), Integer.toString(nrtrans), ti.getName()));
+								// if top node is job then we have a single job ...
+								if ((null != firstnode) && firstnode.getNodeName().equals("job")) {
+									nrjobs =filenames.length;
 
-                        // What's the directory path?
-                        String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
-                        // remove the leading root, we never don't need it.
-                        directoryPath = directoryPath.substring(1);
+									wBar.setMinimum(0);
+									wBar.setMaximum(nrjobs);
+									wBar.setSelection(ii);
 
-                        RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
-                        if (targetDirectory == null)
-                        {
-                            if (askDirectory)
-                            {
-                                MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
-                                    Messages.getString("RepositoryImportDialog.CreateDir.Title"),
-                                    null,
-                                    Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
-                                    MessageDialog.QUESTION,
-                                    new String[] {
-                                                  Messages.getString("System.Button.Yes"),
-                                                  Messages.getString("System.Button.No"),
-                                                  Messages.getString("System.Button.Cancel") },
-                                    1,
-                                    Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
-                                    !askDirectory);
-                                int answer = mb.open();
-                                makeDirectory = (answer & 0xFF) == 0;
-                                askDirectory = !mb.getToggleState();
+									askDirectory = false; // just use the specified basedirectory
+									if (!importJob(ii+1, firstnode)) 
+									{
+										return;
+									}
+									wBar.setSelection(ii+1);
+									continue;
+								}
+							}
 
-                                // Cancel?
-                                if ((answer & 0xFF) == 1)
-                                    return;
-                            }
+							Node transsnode = XMLHandler.getSubNode(repnode, "transformations");
+							if (transsnode != null) // Load transformations...
+							{
+								nrtrans = XMLHandler.countNodes(transsnode, "transformation");
 
-                            if (makeDirectory)
-                            {
-                                addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-                                targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
-                            }
-                            else
-                            {
-                                targetDirectory = baseDirectory;
-                            }
-                        }
-
-                        // OK, we loaded the transformation from XML and all went well...
-                        // See if the transformation already existed!
-                        long id = rep.getTransformationID(ti.getName(), targetDirectory.getID());
-                        if (id > 0 && askOverwrite)
-                        {
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
-                                Messages.getString("RepositoryImportDialog.OverwriteTrans.Title"),
-                                null,
-                                Messages.getString("RepositoryImportDialog.OverwriteTrans.Message", ti.getName()),
-                                MessageDialog.QUESTION,
-                                new String[] { Messages.getString("System.Button.Yes"),
-                                              Messages.getString("System.Button.No") },
-                                1,
-                                Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
-                                !askOverwrite);
-                            int answer = md.open();
-                            overwrite = (answer & 0xFF) == 0;
-                            askOverwrite = !md.getToggleState();
-                        }
-
-                        if (id <= 0 || overwrite)
-                        {
-                            ti.setDirectory(targetDirectory);
-
-                            try
-                            {
-                                ti.saveRep(rep);
-                                addLog(Messages.getString("RepositoryImportDialog.TransSaved.Log", Integer.toString(i), ti.getName()));
-                            }
-                            catch (Exception e)
-                            {
-                                addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans.Log", Integer.toString(i), ti.getName(), e.toString()));
-                                addLog(Const.getStackTracker(e));
-                            }
-                        }
-                        else
-                        {
-                            addLog(Messages.getString("RepositoryImportDialog.ErrorSavingTrans2.Log", ti.getName()));
-                        }
-                    }
-                }
+								wBar.setMinimum(0);
+								wBar.setMaximum(filenames.length - 1 + nrtrans);
+								for (int i = 0; i < nrtrans; i++)
+								{
+									wBar.setSelection(ii + i);
+									wBar.getDisplay().update();
+									Node transnode = XMLHandler.getSubNodeByNr(transsnode, "transformation", i);
+									if (!importTransformation(i+1, transnode))
+									{
+										return;
+									}
+									wBar.setSelection(ii + i + 1);
+									wBar.getDisplay().update();
+								}
+							}
 
                 // Ask again for the jobs...
                 overwrite = false;
@@ -317,93 +475,23 @@ public class RepositoryImportProgressDialog extends Dialog
                 Node jobsnode = XMLHandler.getSubNode(repnode, "jobs");
                 if (jobsnode != null) // Load jobs...
                 {
-                    int nrjobs = XMLHandler.countNodes(jobsnode, "job");
+								nrjobs = XMLHandler.countNodes(jobsnode, "job");
 
                     wBar.setMinimum(0);
-                    wBar.setMaximum(nrjobs);
-                    for (int i = 0; i < nrjobs; i++)
-                    {
-                        wBar.setSelection(i + 1);
-                        Node jobnode = XMLHandler.getSubNodeByNr(jobsnode, "job", i);
-
-                        // Load the job from the XML node.
-                        JobMeta ji = new JobMeta(log, jobnode, rep, SpoonFactory.getInstance());
-
-                        wLabel.setText(Messages.getString("RepositoryImportDialog.ImportJob.Label", Integer.toString(i + 1), Integer.toString(nrjobs), ji.getName()));
-
-                        // What's the directory path?
-                        String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
-
-                        RepositoryDirectory targetDirectory = baseDirectory.findDirectory(directoryPath);
-                        if (targetDirectory == null)
-                        {
-                            if (askDirectory)
-                            {
-                                MessageDialogWithToggle mb = new MessageDialogWithToggle(shell,
-                                    Messages.getString("RepositoryImportDialog.CreateDir.Title"),
-                                    null,
-                                    Messages.getString("RepositoryImportDialog.CreateDir.Message", directoryPath),
-                                    MessageDialog.QUESTION,
-                                    new String[] {
-                                                  Messages.getString("System.Button.Yes"),
-                                                  Messages.getString("System.Button.No"),
-                                                  Messages.getString("System.Button.Cancel") },
-                                    1,
-                                    Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
-                                    !askDirectory);
-                                int answer = mb.open();
-                                makeDirectory = answer == 0;
-                                askDirectory = !mb.getToggleState();
-
-                                // Cancel?
-                                if ((answer & 0xFF) == 2)
-                                    return;
-                            }
-
-                            if (makeDirectory)
-                            {
-                                addLog(Messages.getString("RepositoryImportDialog.CreateDir.Log", directoryPath, baseDirectory.toString()));
-                                targetDirectory = baseDirectory.createDirectory(rep, directoryPath);
-                            }
-                            else
-                            {
-                                targetDirectory = baseDirectory;
-                            }
-                        }
-
-                        // OK, we loaded the job from XML and all went well...
-                        // See if the job already exists!
-                        long id = rep.getJobID(ji.getName(), targetDirectory.getID());
-                        if (id > 0 && askOverwrite)
-                        {
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell,
-                                Messages.getString("RepositoryImportDialog.OverwriteJob.Title"),
-                                null,
-                                Messages.getString("RepositoryImportDialog.OverwriteJob.Message", ji.getName()),
-                                MessageDialog.QUESTION,
-                                new String[] { Messages.getString("System.Button.Yes"),
-                                              Messages.getString("System.Button.No") },
-                                1,
-                                Messages.getString("RepositoryImportDialog.DontAskAgain.Label"),
-                                !askOverwrite);
-                            int answer = md.open();
-                            overwrite = (answer & 0xFF) == 0;
-                            askOverwrite = !md.getToggleState();
-                        }
-
-                        if (id <= 0 || overwrite)
-                        {
-                            ji.setDirectory(targetDirectory);
-                            ji.saveRep(rep);
-                            addLog(Messages.getString("RepositoryImportDialog.JobSaved.Log", Integer.toString(i), ji.getName()));
-                        }
-                        else
-                        {
-                            addLog(Messages.getString("RepositoryImportDialog.ErrorSavingJob.Log", ji.getName()));
-                        }
-                    }
-                }
-                addLog(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
+								wBar.setMaximum(filenames.length - 1+ nrjobs);
+								for (int i = 0; i < nrjobs; i++)
+								{
+									wBar.setSelection(ii + i);
+									wBar.getDisplay().update();
+									Node jobnode = XMLHandler.getSubNodeByNr(jobsnode, "job", i);
+									if (!importJob(i+1, jobnode))
+									{
+										return;
+									}
+									wBar.setSelection(ii + i + 1);
+									wBar.getDisplay().update();
+								}
+							}
             }
             else
             {
@@ -413,9 +501,12 @@ public class RepositoryImportProgressDialog extends Dialog
                 mb.open();
             }
         }
+			addLog(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
+		}
         catch (KettleException e)
         {
             new ErrorDialog(shell, Messages.getString("RepositoryImportDialog.ErrorGeneral.Title"), Messages.getString("RepositoryImportDialog.ErrorGeneral.Message"), e);
         }
+		wLabel.setText(Messages.getString("RepositoryImportDialog.ImportFinished.Log"));
     }
 }
