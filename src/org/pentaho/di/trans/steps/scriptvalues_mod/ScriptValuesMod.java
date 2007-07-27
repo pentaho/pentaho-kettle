@@ -159,7 +159,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             	//
                 Scriptable jsrow = Context.toObject(row, data.scope);
                 data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
-
+                
                 for (int i = 0; i < data.fields_used.length; i++)
                 {
                 	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
@@ -176,6 +176,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                 	}
                 }
+
+                // also add the meta information for the hole row
+                Scriptable jsrowMeta = Context.toObject(rowMeta, data.scope);
+                data.scope.put("rowMeta", data.scope, jsrowMeta); //$NON-NLS-1$
 
                 // Modification for Additional Script parsing
                 //
@@ -269,7 +273,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             {
                 Scriptable jsrow = Context.toObject(row, data.scope);
                 data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
-
+                
                 for (int i = 0; i < data.fields_used.length; i++)
                 {
                     ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
@@ -286,6 +290,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 	                    data.scope.put(valueMeta.getName(), data.scope, jsarg);
                     }
                 }
+
+                // also add the meta information for the hole row
+                Scriptable jsrowMeta = Context.toObject(rowMeta, data.scope);
+                data.scope.put("rowMeta", data.scope, jsrowMeta); //$NON-NLS-1$
             }
             catch (Exception e)
             {

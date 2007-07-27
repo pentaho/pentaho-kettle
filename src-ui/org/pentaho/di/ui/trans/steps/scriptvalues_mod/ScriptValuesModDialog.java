@@ -1035,8 +1035,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			
 		try{
 			
-			RowMetaInterface row = transMeta.getPrevStepFields(stepname);
-			if (row!=null){
+			RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepname);
+			if (rowMeta!=null){
 				// Modification for Additional Script parsing
 				try{
                     if (input.getAddClasses()!=null)
@@ -1072,11 +1072,12 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				};
 				
 				try{
-	   			    Scriptable jsrow = Context.toObject(row, jsscope);
-				    jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
-				    for (int i=0;i<row.size();i++)
+					Object[] row=new Object[rowMeta.size()];
+	   			    Scriptable jsrow = Context.toObject(rowMeta, jsscope);
+				    jsscope.put("rowMeta", jsscope, jsrow); //$NON-NLS-1$
+				    for (int i=0;i<rowMeta.size();i++)
 				    {
-                        ValueMetaInterface valueMeta = row.getValueMeta(i);
+                        ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
 	  				    Object valueData = null;
                         
 					    // Set date and string values to something to simulate real thing
@@ -1088,6 +1089,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
                         if (valueMeta.isBigNumber()) valueData = new BigDecimal(0.0);
                         if (valueMeta.isBoolean()) valueData = new Boolean(true);
                         if (valueMeta.isBinary()) valueData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, };
+                        
+                        row[i]=valueData;
                         
                         if (wCompatible.getSelection()) {
                         	Value value = valueMeta.createOriginalValue(valueData);
@@ -1102,6 +1105,11 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				    // Add support for Value class (new Value())
 				    Scriptable jsval = Context.toObject(Value.class, jsscope);
 				    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
+
+				    // also add the data for the hole row
+	                Scriptable jsrowMeta = Context.toObject(row, jsscope);
+	                jsscope.put("row", jsscope, jsrowMeta); //$NON-NLS-1$
+
 				}catch(Exception ev){
 					errorMessage="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
 					retval = false;
@@ -1128,7 +1136,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 						ScriptOrFnNode tree = parseVariables(jscx, jsscope, scr, "script", 1, null); 
 						for (int i=0;i<tree.getParamAndVarCount();i++){
 							String varname = tree.getParamOrVarName(i);
-							if (!varname.equalsIgnoreCase("row") && !varname.equalsIgnoreCase("trans_Status") && row.indexOfValue(varname)<0){
+							if (!varname.equalsIgnoreCase("row") && !varname.equalsIgnoreCase("trans_Status") && rowMeta.indexOfValue(varname)<0){
 								int type=ValueMetaInterface.TYPE_STRING;
 								int length=-1, precision=-1;
 								Object result = jsscope.get(varname, jsscope);

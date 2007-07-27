@@ -1,68 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name/>
-    <directory>/</directory>
+    <name>JavaScript  process all fields per row</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
       <input/>
       <output/>
       <update/>
+      <rejected/>
       <connection/>
       <table/>
       <use_batchid>Y</use_batchid>
       <use_logfield>N</use_logfield>
-      </log>
+    </log>
     <maxdate>
       <connection/>
       <table/>
       <field/>
       <offset>0.0</offset>
       <maxdiff>0.0</maxdiff>
-      </maxdate>
+    </maxdate>
     <size_rowset>350</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
     <dependencies>
-      </dependencies>
-    </info>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user/>
+  <modified_date>2007&#47;07&#47;27 22:30:19.348</modified_date>
+  </info>
   <notepads>
     <notepad>
       <note>This transformation demonstrates how to process all fields
 of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &apos;Z&apos;.</note>
       <xloc>33</xloc>
       <yloc>28</yloc>
-      <width>336</width>
-      <heigth>36</heigth>
-      </notepad>
+      <width>362</width>
+      <heigth>40</heigth>
+    </notepad>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
       <xloc>350</xloc>
       <yloc>175</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
-      </notepad>
+      <width>279</width>
+      <heigth>40</heigth>
+    </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-07 Jens Bleuel: created</note>
+2006-08-07 Jens Bleuel: created
+2007-07-27 Jens Bleuel: changed for 3.0 API</note>
       <xloc>11</xloc>
       <yloc>567</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
-      </notepad>
-    </notepads>
+      <width>237</width>
+      <heigth>55</heigth>
+    </notepad>
+  </notepads>
+  <connection>
+    <name>MySQL local - test</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>root</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10cc9da0ce</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Generate some test rows</from><to>Java-Script</to><enabled>Y</enabled> </hop>  <hop> <from>Java-Script</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
-
+  <hop> <from>Generate some test rows</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Modified Java Script Value</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Dummy (do nothing)</name>
     <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <GUI>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>469</xloc>
       <yloc>101</yloc>
       <draw>Y</draw>
@@ -75,6 +120,11 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>FieldString1</name>
@@ -86,7 +136,7 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
         <nullif>QWERTZ</nullif>
         <length>50</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>FieldString2</name>
         <type>String</type>
@@ -97,7 +147,7 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
         <nullif>ABCDEF</nullif>
         <length>50</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>FieldNumber</name>
         <type>Number</type>
@@ -108,7 +158,7 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
         <nullif>123</nullif>
         <length>-1</length>
         <precision>-1</precision>
-        </field>
+      </field>
       <field>
         <name>FieldString3</name>
         <type>String</type>
@@ -119,10 +169,11 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
         <nullif>UZTERTZE</nullif>
         <length>50</length>
         <precision>-1</precision>
-        </field>
-      </fields>
+      </field>
+    </fields>
     <limit>10</limit>
-    <GUI>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>86</xloc>
       <yloc>101</yloc>
       <draw>Y</draw>
@@ -130,23 +181,62 @@ of a row by JavaScript. Here all &apos;E&apos; characters will be replaced by &a
     </step>
 
   <step>
-    <name>Java-Script</name>
-    <type>ScriptValue</type>
+    <name>Modified Java Script Value</name>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <script>for (var i=0;i&lt;row.size();i++) {  //loop through the actual row
-  var value=row.getValue(i);
-  //using the IDs instead of &quot;String&quot; would make it faster, see API for the IDs
-  if (value.getTypeDesc().equals(&quot;String&quot;)) { //only for String types
-    value.replace(&quot;E&quot;,&quot;Z&quot;);
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <script/>
+    <compatible>Y</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>for (var i=0;i&lt;rowMeta.size();i++) { &#47;&#47;loop through the actual row
+  &#47;&#47;using the IDs instead of &quot;String&quot; would make it faster, see API for the IDs
+  if (rowMeta.getValueMeta(i).getTypeDesc().equals(&quot;String&quot;)) { &#47;&#47;only for String types
+    row[i]=replace(row[i],&apos;E&apos;,&apos;Z&apos;);
   }
-}</script>
-    <fields>      </fields>    <GUI>
-      <xloc>262</xloc>
+}
+</jsScript_script>
+      </jsScript>      <jsScript>        <jsScript_type>-1</jsScript_type>
+        <jsScript_name>replace_Sample</jsScript_name>
+        <jsScript_script>&#47;&#47; Replaces Strings inside the given Variable.
+&#47;&#47; It is possible to make more replacements inside
+&#47;&#47; one call. The given variables must be an odd number
+&#47;&#47;
+&#47;&#47; Usage:
+&#47;&#47; replace(var, var, var);
+&#47;&#47; 1: String - The Variable with the content to replace.
+&#47;&#47; 2: String - The Value to search for.
+&#47;&#47; 3: String - The Value to replace with.
+&#47;&#47;
+&#47;&#47; replace(var, var, var, var,var,...)
+&#47;&#47; 1: String - The Variable with the content to replace.
+&#47;&#47; 2: String - The First Value to search for.
+&#47;&#47; 3: String - The First Value to replace with.
+&#47;&#47; 4: String - The Second Value to search for.
+&#47;&#47; 5: String - The Second Value to replace with.
+&#47;&#47; ...
+&#47;&#47;
+&#47;&#47; 2006-11-15
+&#47;&#47;
+var str1 = &quot;Hello World, this is a nice function&quot;;      
+var str2 = replace(str1,&quot;World&quot;, &quot;Folk&quot;);
+Alert(str2);
+var str2 = replace(str1,&quot;World&quot;, &quot;Folk&quot;, &quot;nice&quot;,&quot;beautifull&quot;);
+Alert(str2);</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>274</xloc>
       <yloc>101</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
+  <step_error_handling>
+  </step_error_handling>
 </transformation>
