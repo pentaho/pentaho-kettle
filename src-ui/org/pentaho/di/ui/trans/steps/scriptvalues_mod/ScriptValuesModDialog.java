@@ -105,7 +105,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.scriptvalues_mod.Messages;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesAddedFunctions;
-import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesHelp;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesScript;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -334,7 +333,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
         try
         {
-            scVHelp = new ScriptValuesHelp("/be/ibridge/kettle/trans/step/scriptvalues_mod/jsFunctionHelp.xml");
+            scVHelp = new ScriptValuesHelp("org/pentaho/di/ui/trans/steps/scriptvalues_mod/jsFunctionHelp.xml");
         }
         catch (Exception e)
         {
