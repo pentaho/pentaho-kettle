@@ -88,7 +88,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         "rpad", "week", "month", "year", "str2RegExp","fileExists", "touch", "isRegExp", "date2str",
         "str2date", "sendMail", "replace", "decode", "isNum","isDate", "lower", "upper", "str2num",
         "num2str", "Alert", "setEnvironmentVar", "getEnvironmentVar", "LoadScriptFile", "LoadScriptFromTab", 
-        "print", "println", "resolveIP", "trim", "substr", 
+        "print", "println", "resolveIP", "trim", "substr", "getVariable", "setVariable" 
         };
 	
 	// This is only used for reading, so no concurrency problems.
@@ -1329,5 +1329,119 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	        /* nop */
 	      };
 	    };
-	  };
+    };
+    
+	  
+  	// Setting Variable
+	public static void setVariable(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	    String sArg1 = "";
+	    String sArg2 = "";
+	    String sArg3 = "";
+		if(ArgList.length==3){
+		    try{
+				Object scmo = actualObject.get("_step_", actualObject);
+				Object scmO = Context.jsToJava(scmo, ScriptValuesMod.class);
+				if ( scmO instanceof ScriptValuesMod)
+				{
+				    ScriptValuesMod scm = (ScriptValuesMod)scmO;			
+
+  			        sArg1 = Context.toString(ArgList[0]);
+				    sArg2 = Context.toString(ArgList[1]);
+				    sArg3 = Context.toString(ArgList[2]);
+				    
+				    if ( "s".equals(sArg3) )
+				    {
+				    	// System wide properties
+                        System.setProperty(sArg1, sArg2);
+				    }
+				    else if ( "r".equals(sArg3) )
+				    {
+				    	// Upto the root... this should be the default.
+                        scm.setVariable(sArg1, sArg2);
+
+                        VariableSpace parentSpace = scm.getParentVariableSpace();
+                        while (parentSpace!=null)
+                        {                           
+                            parentSpace.setVariable(sArg1, sArg2);
+                            parentSpace = parentSpace.getParentVariableSpace();
+                        }				    
+				    }
+				    else if ( "p".equals(sArg3) )
+				    {
+				    	// Upto the parent
+                        scm.setVariable(sArg1, sArg2);
+
+                        VariableSpace parentSpace = scm.getParentVariableSpace();
+                        if ( parentSpace != null )
+                        {
+                            parentSpace.setVariable(sArg1, sArg2);
+                        }
+				    }				    
+				    else if ( "g".equals(sArg3) )
+				    {
+				    	// Upto the grand parent
+                        scm.setVariable(sArg1, sArg2);
+
+                        VariableSpace parentSpace = scm.getParentVariableSpace();
+                        if ( parentSpace != null )
+                        {
+                            parentSpace.setVariable(sArg1, sArg2);
+                            VariableSpace grandParentSpace = parentSpace.getParentVariableSpace();
+                            if ( grandParentSpace != null )
+                            {
+                            	grandParentSpace.setVariable(sArg1, sArg2);         	
+                            }
+                        }                        
+				    }
+				    else
+				    {
+				    	throw Context.reportRuntimeError("");
+				    }				    
+				}
+				else
+				{
+					// Ignore for now... if we're executing via the Test Button
+				}
+			}catch(Exception e){
+				throw Context.reportRuntimeError(e.toString());
+			}
+		}
+		else
+		{
+			throw Context.reportRuntimeError("The function call setVariable requires 3 arguments.");
+		}
+	}
+		
+	// Returning EnvironmentVar
+	public static String getVariable(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+		String sRC   = "";
+	    String sArg1 = "";
+	    String sArg2 = "";		
+		if(ArgList.length==2){
+			try{
+				Object scmO = actualObject.get("_step_", actualObject);
+				if ( scmO instanceof ScriptValuesMod)
+				{
+					ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
+
+			        sArg1 = Context.toString(ArgList[0]);
+				    sArg2 = Context.toString(ArgList[1]);
+				    return scm.getVariable(sArg1, sArg2);
+				}
+				else
+				{
+					// running via the Test button in a dialog
+					sArg2 = Context.toString(ArgList[1]);
+				    return sArg2;
+				}
+			}catch(Exception e){
+				sRC="";
+			}
+		}
+	    else
+	    {
+		    throw Context.reportRuntimeError("The function call getVariable requires 2 arguments.");
+	    }		
+		return sRC;
+	}	      
 }

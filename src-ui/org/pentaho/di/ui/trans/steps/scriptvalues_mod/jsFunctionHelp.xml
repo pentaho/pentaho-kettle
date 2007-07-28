@@ -1132,8 +1132,55 @@ Alert("From position 6 until 13 : " + str3);
          <argument id="2">var,var,var</argument>
       </Arguments>
    </jsFunction>   
-
-
- 
+   	<jsFunction name="setVariable">
+      <help>Sets the PDI Variable to the given value.</help>
+      <sample>// Set a Value as Kettle/Pentaho variable
+// 
+// Usage:
+// setVariable(var,var,var);
+// 1: String - The name of the variable to set.
+// 2: Variable - The value which should be assigned
+// 3: Type - "s"ystem, "r"oot, "p"arent, "g"randport. Upto which
+//           level the variable is set.
+//
+// 2007-07-27
+//
+var strVarName="setEnvTest";
+var strVarValue="123456";
+Alert(getVariable(strVarName, ""));
+setVariable(strVarName,strVarValue, "r");
+Alert(getVariable(strVarName, ""));
+strVarValue="654321";
+setVariable(strVarName,strVarValue, "r");
+Alert(getVariable(strVarName, ""));</sample>
+       <type>4</type>
+      <Arguments>
+         <argument id="1">var,var,var</argument>
+      </Arguments>
+   </jsFunction>  
+   	<jsFunction name="getVariable">
+      <help>Returns Value of the given PDI variable or the default.</help>
+      <sample>// Retrieves the value of a given Kettle/Pentaho Variable
+// 
+// Usage:
+// getVariable(var, var);
+// 1: String - The name of the variable to retrieve.
+// 2: String - The default if the variable doesn't exist.
+//
+// 2007-07-27
+//
+var strVarName="getVariableTest";
+var strVarValue="123456";
+Alert(getVariable(strVarName, ""));
+setVariable(strVarName,strVarValue, "r");
+Alert(getVariable(strVarName, ""));
+strVarValue="654321";
+setVariable(strVarName,strVarValue, "r");
+Alert(getVariable(strVarName, ""));</sample>
+       <type>4</type>
+      <Arguments>
+         <argument id="1">var,var</argument>
+      </Arguments>
+   </jsFunction>
    
 </jsFunctions>
