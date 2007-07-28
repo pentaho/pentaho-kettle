@@ -1395,7 +1395,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				    }
 				    else
 				    {
-				    	throw Context.reportRuntimeError("");
+				    	throw Context.reportRuntimeError("The argument type of function call setVariable should either be \"s\", \"r\", \"p\", or \"g\".");
 				    }				    
 				}
 				else
