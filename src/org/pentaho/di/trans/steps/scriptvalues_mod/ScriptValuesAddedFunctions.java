@@ -345,6 +345,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				String strDBName = Context.toString(ArgList[0]);
 				String strSQL = Context.toString(ArgList[1]);			
 				DatabaseMeta ci = DatabaseMeta.findDatabase(scm.getTransMeta().getDatabases(), strDBName);
+				ci.shareVariablesWith(scm);
 			
 				Database db=new Database(ci);
 	    		db.setQueryLimit(0);
