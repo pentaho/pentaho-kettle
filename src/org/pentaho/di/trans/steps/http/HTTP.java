@@ -34,6 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.denormaliser.Messages;
 
 
 /**
@@ -202,20 +203,25 @@ public class HTTP extends BaseStep implements StepInterface
 	    
 	    super.dispose(smi, sdi);
 	}
-
+	
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+	
 	//
 	// Run is were the action happens!
 	public void run()
 	{
-		logBasic(Messages.getString("HTTP.Log.StartingToRun")); //$NON-NLS-1$
-		
 		try
 		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("HTTP.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
@@ -226,10 +232,5 @@ public class HTTP extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
-	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }

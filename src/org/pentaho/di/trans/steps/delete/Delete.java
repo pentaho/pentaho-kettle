@@ -36,7 +36,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Delete data in a database table.
  * 
- * 
  * @author Tom
  * @since 28-March-2006
  */
@@ -284,18 +283,24 @@ public class Delete extends BaseStep implements StepInterface
 		super.dispose(smi, sdi);
 	}
 	
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+	
 	//
 	// Run is were the action happens!
 	public void run()
 	{
 		try
 		{
-			logBasic(Messages.getString("Delete.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("Delete.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
@@ -306,10 +311,5 @@ public class Delete extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
-	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
+	}	
 }

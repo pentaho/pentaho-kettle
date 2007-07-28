@@ -30,15 +30,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
-
-
 /**
  * Do nothing.  Pass all input data to the next steps.
  * 
  * @author Matt
  * @since 2-jun-2003
  */
-
 public class MappingOutput extends BaseStep implements StepInterface
 {
 	private MappingOutputMeta meta;
@@ -110,31 +107,7 @@ public class MappingOutput extends BaseStep implements StepInterface
 		    return true;
 		}
 		return false;
-	}
-	
-	//
-	// Run is were the action happens!
-	public void run()
-	{
-		try
-		{
-			logBasic(Messages.getString("MappingOutput.Log.StartingToRun")); //$NON-NLS-1$
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError(Messages.getString("MappingOutput.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
-	}
+	}	
 
     public void setConnectorSteps(StepInterface[] targetSteps, List<MappingValueRename> inputValueRenames, List<MappingValueRename> outputValueRenames)
     {
@@ -159,4 +132,29 @@ public class MappingOutput extends BaseStep implements StepInterface
         data.outputValueRenames = outputValueRenames;
         data.targetSteps = targetSteps;
     }
+    
+	//
+	// Run is were the action happens!
+	public void run()
+	{
+		try
+		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Throwable t)
+		{
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+			dispose(meta, data);
+			logSummary();
+			markStop();
+		}
+	}    
 }

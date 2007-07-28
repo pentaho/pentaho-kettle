@@ -528,12 +528,13 @@ public class GroupBy extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic(Messages.getString("GroupBy.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("GroupBy.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
@@ -541,6 +542,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		finally
 		{
             if (data.tempFile!=null) data.tempFile.delete();
+            
 			dispose(meta, data);
 			logSummary();
 			markStop();

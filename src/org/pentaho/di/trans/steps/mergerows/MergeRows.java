@@ -30,8 +30,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /**
  * Merge rows from 2 sorted streams to detect changes.
  * Use this as feed for a dimension in case you have no time stamps in your source system.
@@ -39,7 +37,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 19-dec-2005
  */
-
 public class MergeRows extends BaseStep implements StepInterface
 {
     private static final String VALUE_IDENTICAL  = "identical"; //$NON-NLS-1$ 
@@ -256,12 +253,13 @@ public class MergeRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("MergeRows.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("MergeRows.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

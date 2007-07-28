@@ -46,6 +46,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.flattener.Messages;
 
 
 /**
@@ -54,7 +55,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 
  * @author Matt
  * @since 5-April-2003
- *
  */
 public class ScriptValuesMod extends BaseStep implements StepInterface {
 	private ScriptValuesMetaMod meta;
@@ -713,22 +713,25 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 		return false;
 	}
 
-
 	//
 	// Run is were the action happens!
 	public void run()
 	{
-		try{
-			logBasic(Messages.getString("ScriptValuesMod.Log.StartingToRun")); //$NON-NLS-1$
+		try
+		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			try{
+			try
+			{
 				if (data.cx!=null) Context.exit();
-			}catch(Exception er){};
-			logError(Messages.getString("ScriptValuesMod.Log.UnexpectedeError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            logError(Messages.getString("ScriptValuesMod.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(t)); //$NON-NLS-1$
+			}
+			catch(Exception er) {};
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
 		}

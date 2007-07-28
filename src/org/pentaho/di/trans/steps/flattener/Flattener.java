@@ -130,7 +130,6 @@ public class Flattener extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-
 	
 	//
 	// Run is were the action happens!
@@ -138,12 +137,13 @@ public class Flattener extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic(Messages.getString("Flattener.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("Flattener.Log.UnexpectedErrorIn")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

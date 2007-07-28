@@ -99,7 +99,8 @@ public class FilesToResult extends BaseStep implements StepInterface
 
 			// Add all rows to rows buffer...
 			data.filenames.add(resultFile);
-		} catch (IOException e)
+		} 
+		catch (IOException e)
 		{
 			throw new KettleException(e);
 		}
@@ -135,16 +136,18 @@ public class FilesToResult extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("FilesToResult.Log.StartingToRun")); //$NON-NLS-1$
-			while (processRow(meta, data) && !isStopped())
-				;
-		} catch (Throwable t)
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
+		} 
+		catch(Throwable t)
 		{
-			logError(Messages.getString("FilesToResult.Log.UnexpectedError") + " : " + t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
-		} finally
+		} 
+		finally
 		{
 			dispose(meta, data);
 			logSummary();

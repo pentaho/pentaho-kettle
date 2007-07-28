@@ -42,19 +42,14 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-
-
-
-
+import org.pentaho.di.trans.steps.denormaliser.Messages;
 
 /**
- * Manages a slowly chaning dimension (lookup or update)
+ * Manages a slowly changing dimension (lookup or update)
  * 
  * @author Matt
  * @since 14-may-2003
- *
  */
-
 public class DimensionLookup extends BaseStep implements StepInterface
 {
 	private final static int CREATION_METHOD_AUTOINC  = 1;
@@ -1250,12 +1245,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("DimensionLookup.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("DimensionLookup.Log.UnexpectedError", t.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
