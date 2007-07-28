@@ -1507,7 +1507,30 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         }
 	}
 
-
+    public void raiseNote()
+    {
+		selrect=null; 
+		int idx = transMeta.indexOfNote(getCurrentNote());
+		if (idx>=0) 
+		{
+			transMeta.raiseNote(idx);
+			//TBD: spoon.addUndoRaise(transMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+		} 
+		redraw();
+    }
+    
+    public void lowerNote()
+    {
+		selrect=null; 
+		int idx = transMeta.indexOfNote(getCurrentNote());
+		if (idx>=0) 
+		{
+			transMeta.lowerNote(idx);
+			//TBD: spoon.addUndoLower(transMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+		} 
+		redraw();
+    }
+    
     public void newNote()
     {
         selrect = null;
@@ -1667,6 +1690,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 					
 						menu.addMenuListener( "trans-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "trans-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						canvas.setMenu((Menu)menu.getNativeObject());
 
 					}

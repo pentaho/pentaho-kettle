@@ -1270,6 +1270,10 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 					
 						menu.addMenuListener( "job-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
 						menu.addMenuListener( "job-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						
+						menu.addMenuListener( "job-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						menu.addMenuListener( "job-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+						
 						canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
@@ -1289,7 +1293,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 	                    if( item != null ) {
 	                    		item.setEnabled( clipcontent != null );
 	                    }
-
+						
 	    				canvas.setMenu((Menu)menu.getNativeObject());
 
 					}
@@ -1348,6 +1352,30 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		redraw();
 	}
 
+    public void raiseNote()
+    {
+		selrect=null; 
+		int idx = jobMeta.indexOfNote(getCurrentNote());
+		if (idx>=0) 
+		{
+			jobMeta.raiseNote(idx);
+			//spoon.addUndoRaise(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+		} 
+		redraw();
+    }
+    
+    public void lowerNote()
+    {
+		selrect=null; 
+		int idx = jobMeta.indexOfNote(getCurrentNote());
+		if (idx>=0) 
+		{
+			jobMeta.lowerNote(idx);
+			//spoon.addUndoLower(jobMeta, new NotePadMeta[] {getCurrentNote()}, new int[] {idx} );
+		} 
+		redraw();
+    }
+    
 	public void flipHop() 
 	{
 		selrect = null;
@@ -2233,6 +2261,14 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
         mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title"));
         return mb.open();
     }   
+    
+    public static int showChangedWarning(Shell shell, String name)
+    {
+    	MessageBox mb = new MessageBox(shell,  SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+    	mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", name));
+    	mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
+    	return mb.open();
+    }
     
     public static boolean editProperties(JobMeta jobMeta, Spoon spoon, Repository rep)
     {

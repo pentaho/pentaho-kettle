@@ -32,6 +32,8 @@ align="vertical" >
                     <menuitem value="edit-search-metadata" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Search"/>
                     <menuitem value="edit-set-env-vars" acceltext="CTRL-F"  accesskey="ctrl-f" label="%Spoon.Menu.Edit.Variables"/>
                     <menuitem value="edit-show-env-vars" acceltext="CTRL-L"  accesskey="ctrl-l" label="%Spoon.Menu.Edit.ShowVariables"/>
+					<menuseparator/> 
+				            <menuitem value="edit-show-arguments" acceltext="CTRL-U"  accesskey="ctrl-u" label="%Spoon.Menu.Edit.ShowArguments"/>
 					<menuseparator/>
                     <menuitem value="edit-clear-selection" acceltext="ESC"  accesskey="esc" label="%Spoon.Menu.Edit.ClearSelection"/>
                     <menuitem value="edit-select-all" acceltext="CTRL-A"  accesskey="ctrl-a" label="%Spoon.Menu.Edit.SelectAllSteps"/>

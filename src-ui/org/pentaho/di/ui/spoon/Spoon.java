@@ -653,6 +653,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
+    public void showArguments()
+    {
+
+    	RowMetaAndData allArgs = new RowMetaAndData();
+        
+
+        for (int ii = 0 ; ii < arguments.length; ++ii)
+        {          
+            allArgs.addValue(new ValueMeta(Props.STRING_ARGUMENT_NAME_PREFIX + (1+ii), ValueMetaInterface.TYPE_STRING), arguments[ii]);
+        }
+        
+        // Now ask the use for more info on these!
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, allArgs);
+        esd.setTitle(Messages.getString("Spoon.Dialog.ShowArguments.Title"));
+        esd.setMessage(Messages.getString("Spoon.Dialog.ShowArguments.Message"));
+        esd.setReadOnly(true); 
+        esd.open();
+    }
+    
 	private void fillVariables(RowMetaAndData vars)
 	{
 		TransMeta[] transMetas = getLoadedTransformations();
@@ -5028,6 +5047,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			}
 		}
+        else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) ) {
+			RepositoriesMeta repsinfo = new RepositoriesMeta(log);
+			if (repsinfo.readData())
+			{
+				repositoryMeta = repsinfo.findRepository(optionRepname.toString());
+				if (repositoryMeta != null)
+				{
+					// Define and connect to the repository...
+					setRepository(new Repository(log, repositoryMeta, userinfo));
+                } 
+            } else {
+                log.logError(APP_NAME, Messages.getString("Spoon.Log.NoRepositoriesDefined"));//"No repositories defined on this system."
+			}
+        }
 		return true;
 	}
 
@@ -5233,7 +5266,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		// Parse the options...
 		if( !CommandLineOption.parseArguments(args, options, log) ) {
-            log.logError("Pan", "Command line option not understood");
+            log.logError("Spoon", "Command line option not understood");
             System.exit(8);
 		}
 

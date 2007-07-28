@@ -95,7 +95,6 @@ public class ExecSQL extends BaseStep implements StepInterface
 			return false;
 		}
 
-		StringBuffer sql = new StringBuffer(meta.getSql());
 		
 		if (first) // we just got started
 		{
@@ -120,11 +119,11 @@ public class ExecSQL extends BaseStep implements StepInterface
 			// We replace the question marks with the values...
 			// We ignore quotes etc. to make inserts easier...
 			data.markerPositions = new ArrayList<Integer>();
-			int len = sql.length();
+            int len = data.sql.length();
 			int pos = len - 1;
 			while (pos >= 0)
 			{
-				if (sql.charAt(pos) == '?')
+				if (data.sql.charAt(pos) == '?')
 					data.markerPositions.add(new Integer(pos)); // save the
 				// marker
 				// position
@@ -132,18 +131,27 @@ public class ExecSQL extends BaseStep implements StepInterface
 			}
 		}
 
+		String sql;
+		int numMarkers = data.markerPositions.size();
+		if (numMarkers > 0) {
+			StringBuffer buf = new StringBuffer(data.sql);
 		// Replace the values in the SQL string...
-		for (int i = 0; i < data.markerPositions.size(); i++)
+			for (int i=0;i<numMarkers;i++)
 		{
 			ValueMetaAndData value = (ValueMetaAndData)row[data.argumentIndexes[data.markerPositions.size() - i - 1]];
 			int pos = ((Integer) data.markerPositions.get(i)).intValue();
-			sql.replace(pos, pos + 1, value.getValueData().toString()); // replace the '?'
+			buf.replace(pos, pos + 1, value.getValueData().toString()); // replace the '?'
 			// with the String
 			// in the row.
+			}
+			sql = buf.toString();
 		}
-
+		else 
+		{
+			sql = data.sql;
+		}
 		if (log.isRowLevel())
-			logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + sql); //$NON-NLS-1$
+			logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
 		data.result = data.db.execStatements(sql.toString());
 
 		RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
@@ -212,11 +220,20 @@ public class ExecSQL extends BaseStep implements StepInterface
 				if (log.isDetailed())
 					logDetailed(Messages.getString("ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
 
+        if (meta.isReplaceVariables()) 
+        {
+        	data.sql = environmentSubstitute(meta.getSql());
+        }
+        else
+        {
+        	data.sql = meta.getSql();
+        }
 				// If the SQL needs to be executed once, this is a starting step
 				// somewhere.
 				if (!meta.isExecutedEachInputRow())
 				{
-					data.result = data.db.execStatements(meta.getSql());
+					data.result = data.db.execStatements(data.sql);
+          if (!data.db.isAutoCommit()) data.db.commit();
 				}
 				return true;
 			} catch (KettleException e)

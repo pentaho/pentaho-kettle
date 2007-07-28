@@ -150,6 +150,8 @@
   <menupopup id="trans-graph-note">
     <menuitem value="trans-graph-note-edit" label="%SpoonGraph.PopupMenu.EditNote"/>
     <menuitem value="trans-graph-note-delete" label="%SpoonGraph.PopupMenu.DeleteNote"/>
+    <menuitem value="trans-graph-note-raise" label="%SpoonGraph.PopupMenu.RaiseNote"/>
+    <menuitem value="trans-graph-note-lower" label="%SpoonGraph.PopupMenu.LowerNote"/>
   </menupopup>
 
   <menupopup id="trans-graph-background">

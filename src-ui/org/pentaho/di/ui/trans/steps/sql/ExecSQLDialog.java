@@ -25,6 +25,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -80,7 +81,12 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
 	private FormData fdlFields, fdFields;
 
+    private Label        wlVariables;
+    private Button       wVariables;
+    private FormData     fdlVariables, fdVariables; 
+    
 	private ExecSQLMeta input;
+	private boolean changedInDialog;
 
 	public ExecSQLDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -101,6 +107,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			public void modifyText(ModifyEvent e)
 			{
+				changedInDialog = true;
 				input.setChanged();
 			}
 		};
@@ -177,6 +184,23 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdEachRow.right = new FormAttachment(100, 0);
 		wEachRow.setLayoutData(fdEachRow);
 
+		// substitute variables 
+        wlVariables = new Label(shell, SWT.RIGHT);
+        wlVariables.setText(Messages.getString("ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
+        props.setLook(wlVariables);
+        fdlVariables = new FormData();
+        fdlVariables.left = new FormAttachment(0, 0);
+        fdlVariables.right = new FormAttachment(middle, -margin);
+        fdlVariables.top  = new FormAttachment(wEachRow, margin);
+        wlVariables.setLayoutData(fdlVariables);
+        wVariables = new Button(shell, SWT.CHECK);
+        props.setLook(wVariables);
+        fdVariables = new FormData();
+        fdVariables.left = new FormAttachment(middle, 0);
+        fdVariables.top  = new FormAttachment(wEachRow, margin);
+        fdVariables.right = new FormAttachment(100, 0);
+        wVariables.setLayoutData(fdVariables);
+        //wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
 		wlFields = new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("ExecSQLDialog.Fields.Label")); //$NON-NLS-1$
 		props.setLook(wlFields);
@@ -208,14 +232,14 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlInsertField = new FormData();
 		fdlInsertField.left = new FormAttachment(wFields, margin);
 		fdlInsertField.right = new FormAttachment(middle * 2, -margin);
-		fdlInsertField.top = new FormAttachment(wEachRow, margin);
+        fdlInsertField.top  = new FormAttachment(wVariables, margin);
 		wlInsertField.setLayoutData(fdlInsertField);
 		wInsertField = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wInsertField);
 		wInsertField.addModifyListener(lsMod);
 		fdInsertField = new FormData();
 		fdInsertField.left = new FormAttachment(middle * 2, 0);
-		fdInsertField.top = new FormAttachment(wEachRow, margin);
+        fdInsertField.top  = new FormAttachment(wVariables, margin);
 		fdInsertField.right = new FormAttachment(100, 0);
 		wInsertField.setLayoutData(fdInsertField);
 
@@ -326,11 +350,12 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			public void shellClosed(ShellEvent e)
 			{
-				cancel();
+				checkCancel(e);
 			}
 		});
 
 		getData();
+		changedInDialog = false; // for prompting if dialog is simply closed
 		input.setChanged(changed);
 
 		// Set the shell size, based upon previous time...
@@ -375,6 +400,30 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.selectAll();
 	}
 
+	private void checkCancel(ShellEvent e)
+	{
+		if (changedInDialog)
+		{
+			int save = JobGraph.showChangedWarning(shell, wStepname.getText());
+			if (save == SWT.CANCEL)
+			{
+				e.doit = false;
+			}
+			else if (save == SWT.YES)
+			{
+				ok();
+			}
+			else
+			{
+				cancel();
+			}
+		}
+		else
+		{
+			cancel();
+		}
+	}
+	
 	private void cancel()
 	{
 		stepname = null;
@@ -389,11 +438,14 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		input.setSql(wSQL.getText());
 		input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
 		input.setExecutedEachInputRow(wEachRow.getSelection());
+		input.setVariableReplacementActive(wVariables.getSelection());
 
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());
 		input.setDeleteField(wDeleteField.getText());
 		input.setReadField(wReadField.getText());
+		
+    input.setVariableReplacementActive(wVariables.getSelection());
 
 		int nrargs = wFields.nrNonEmpty();
 		input.allocate(nrargs);
