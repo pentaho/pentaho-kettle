@@ -113,7 +113,7 @@ case `uname -s` in
 		;;
 	CYGWIN*)
 		./Spoon.bat
-		# exit
+		exit
 		;;
 
 	*) 
