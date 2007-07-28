@@ -423,10 +423,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             JobEntryCopy entry = getJobEntry(i);
             entry.setChanged(false);
         }
-        for (int i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hop = getJobHop(i);
-            hop.setChanged(false);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
+            hi.setChanged(false);
         }
         for (int i = 0; i < nrDatabases(); i++)
         {
@@ -584,9 +583,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         retval.append("  </entries>").append(Const.CR); //$NON-NLS-1$
 
         retval.append("  <hops>").append(Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
             retval.append(hi.getXML());
         }
         retval.append("  </hops>").append(Const.CR); //$NON-NLS-1$
@@ -655,6 +653,22 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         loadXML(jobnode, rep, prompter);
     }
 
+    public boolean isRepReference() {
+    	return isRepReference(getFilename(), this.getName());
+    }
+    
+    public boolean isFileReference() {
+    	return !isRepReference(getFilename(), this.getName());
+    }
+    
+    public static boolean isRepReference(String fileName, String transName) {
+		return Const.isEmpty(fileName) && !Const.isEmpty(transName);
+    }
+    
+    public static boolean isFileReference(String fileName, String transName) {
+		return !isRepReference(fileName, transName);
+    }
+    
     public void loadXML(Node jobnode, Repository rep, OverwritePrompter prompter ) throws KettleXMLException
     {
         Props props = null;
@@ -1350,6 +1364,28 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         notes.remove(i);
         setChanged();
     }
+    
+    public void raiseNote(int p)
+    {
+    	// if valid index and not last index
+    	if ((p >=0) && (p < notes.size()-1))
+    	{
+    		 NotePadMeta note = notes.remove(p);
+    		notes.add(note);
+            changed_notes = true;
+    	}
+    }
+    
+    public void lowerNote(int p)
+    {
+    	// if valid index and not first index
+    	if ((p >0) && (p < notes.size()))
+    	{
+    		 NotePadMeta note = notes.remove(p);
+    		notes.add(0, note);
+            changed_notes = true;
+    	}
+    }
 
     public void removeDatabase(int i)
     {
@@ -1417,10 +1453,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     public JobHopMeta findJobHop(String name)
     {
-        int i;
-        for (i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
             if (hi.toString().equalsIgnoreCase(name)) { return hi; }
         }
         return null;
@@ -1428,24 +1462,22 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     public JobHopMeta findJobHopFrom(JobEntryCopy jge)
     {
-        int i;
-        for (i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
-            if (hi!=null && jge!=null && hi.from_entry.equals(jge)) // return the first
-            { 
-                return hi; 
+    	if (jge != null) {
+    		for (JobHopMeta hi:jobhops)
+    		{
+                if (hi!=null && (hi.from_entry != null) && hi.from_entry.equals(jge)) // return the first
+                { 
+                    return hi; 
+                }
             }
-        }
+    	}
         return null;
     }
 
     public JobHopMeta findJobHop(JobEntryCopy from, JobEntryCopy to)
     {
-        int i;
-        for (i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops)
+		{
             if (hi.isEnabled())
             {
                 if (hi != null && hi.from_entry != null && hi.to_entry != null && hi.from_entry.equals(from) && hi.to_entry.equals(to)) { return hi; }
@@ -1456,10 +1488,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 
     public JobHopMeta findJobHopTo(JobEntryCopy jge)
     {
-        int i;
-        for (i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops)
+		{
             if (hi != null && hi.to_entry != null && hi.to_entry.equals(jge)) // Return the first!
             { return hi; }
         }
@@ -1479,11 +1509,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public int findNrPrevJobEntries(JobEntryCopy to, boolean info)
     {
         int count = 0;
-        int i;
 
-        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
             if (hi.isEnabled() && hi.to_entry.equals(to))
             {
                 count++;
@@ -1495,11 +1523,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public JobEntryCopy findPrevJobEntry(JobEntryCopy to, int nr, boolean info)
     {
         int count = 0;
-        int i;
 
-        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
             if (hi.isEnabled() && hi.to_entry.equals(to))
             {
                 if (count == nr) { return hi.from_entry; }
@@ -1512,11 +1538,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public int findNrNextJobEntries(JobEntryCopy from)
     {
         int count = 0;
-        int i;
-        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
-        {
-            JobHopMeta hi = getJobHop(i);
-            if (hi.isEnabled() && hi.from_entry.equals(from)) count++;
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
+            if (hi.isEnabled() && (hi.from_entry != null) && hi.from_entry.equals(from)) count++;
         }
         return count;
     }
@@ -1524,12 +1548,10 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     public JobEntryCopy findNextJobEntry(JobEntryCopy from, int cnt)
     {
         int count = 0;
-        int i;
 
-        for (i = 0; i < nrJobHops(); i++) // Look at all the hops;
-        {
-            JobHopMeta hi = getJobHop(i);
-            if (hi.isEnabled() && hi.from_entry.equals(from))
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
+            if (hi.isEnabled() && (hi.from_entry != null) && hi.from_entry.equals(from))
             {
                 if (count == cnt) { return hi.to_entry; }
                 count++;
@@ -1656,9 +1678,8 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         List<JobHopMeta> hops = new ArrayList<JobHopMeta>();
 
-        for (int i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta hi = getJobHop(i);
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
             if (hi.from_entry != null && hi.to_entry != null)
             {
                 if (hi.from_entry.getName().equalsIgnoreCase(name) || hi.to_entry.getName().equalsIgnoreCase(name))
@@ -2181,10 +2202,9 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
     {
         if (changed_hops) return true;
         
-        for (int i = 0; i < nrJobHops(); i++)
-        {
-            JobHopMeta jobHop = getJobHop(i);
-            if (jobHop.hasChanged()) return true;
+		for (JobHopMeta hi:jobhops) // Look at all the hops
+		{
+            if (hi.hasChanged()) return true;
         }
         return false;
     }
