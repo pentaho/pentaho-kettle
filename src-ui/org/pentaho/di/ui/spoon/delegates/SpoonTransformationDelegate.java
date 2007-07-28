@@ -76,16 +76,21 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		{
 			// found a transformation tab that has the same name, is it the same
 			// as the one we want to load, if not warn the user of the duplicate name
-			boolean same;
-			if (TransMeta.isRepReference(transMeta.getFilename(), transMeta.getName()))
+			// this check may produce false negatives, i.e., references that are deemed
+			// different when they in fact refer to the same entry. For example, one of
+			// the transforms may use a variable reference or an alternative but 
+			// equivalent5
+			boolean same = false;
+			if (transMeta.isRepReference() && xform.isRepReference())
 			{
-				// a repository value
+				// a repository value, check directory
 				same = transMeta.getDirectory().getPath().equals(xform.getDirectory().getPath());
 			}
-			else {
-				// a file system entry
+			else if (transMeta.isFileReference() && xform.isFileReference()){
+				// a file system entry, check file path
 				same = transMeta.getFilename().equals(xform.getFilename());
 			}
+
 			if (!same) {
 				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
 						Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
