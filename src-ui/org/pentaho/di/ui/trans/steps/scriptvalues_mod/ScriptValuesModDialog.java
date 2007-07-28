@@ -333,7 +333,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		
         try
         {
-            scVHelp = new ScriptValuesHelp("org/pentaho/di/ui/trans/steps/scriptvalues_mod/jsFunctionHelp.xml");
+            scVHelp = new ScriptValuesHelp("jsFunctionHelp.xml");
         }
         catch (Exception e)
         {
