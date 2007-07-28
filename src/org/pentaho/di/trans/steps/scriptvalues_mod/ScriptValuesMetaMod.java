@@ -70,6 +70,10 @@ import org.w3c.dom.Node;
  */
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface
 {	
+	private static final String JSSCRIPT_TAG_TYPE = "jsScript_type";
+	private static final String JSSCRIPT_TAG_NAME = "jsScript_name";
+	private static final String JSSCRIPT_TAG_SCRIPT= "jsScript_script";
+	
 	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	
@@ -258,9 +262,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				Node fnode = XMLHandler.getSubNodeByNr(scripts, "jsScript", i); //$NON-NLS-1$
 				
 				jsScripts[i] = new ScriptValuesScript(
-						Integer.parseInt(XMLHandler.getTagValue(fnode, "jsScript_type")),
-						XMLHandler.getTagValue(fnode, "jsScript_name"), 
-						XMLHandler.getTagValue(fnode, "jsScript_script") 
+						Integer.parseInt(XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_TYPE)),
+						XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_NAME), 
+						XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_SCRIPT) 
 				);
 				
 			}	
@@ -347,9 +351,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    <jsScripts>"); 
 		for (int i=0;i<jsScripts.length;i++){
 			retval.append("      <jsScript>"); //$NON-NLS-1$
-			retval.append("        ").append(XMLHandler.addTagValue("jsScript_type",  jsScripts[i].getScriptType()));
-			retval.append("        ").append(XMLHandler.addTagValue("jsScript_name",  jsScripts[i].getScriptName()));
-			retval.append("        ").append(XMLHandler.addTagValue("jsScript_script", jsScripts[i].getScript()));
+			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_TYPE,  jsScripts[i].getScriptType()));
+			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_NAME,  jsScripts[i].getScriptName()));
+			retval.append("        ").append(XMLHandler.addTagValue(JSSCRIPT_TAG_SCRIPT, jsScripts[i].getScript()));
 			retval.append("      </jsScript>"); //$NON-NLS-1$
 		}
 		retval.append("    </jsScripts>"); 
@@ -377,12 +381,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
 			compatible = rep.getStepAttributeBoolean(id_step, 0, "compatible", true); //$NON-NLS-1$
 
-            int nrScripts = rep.countNrStepAttributes(id_step, "jsScript_name"); //$NON-NLS-1$
+            int nrScripts = rep.countNrStepAttributes(id_step, JSSCRIPT_TAG_NAME); //$NON-NLS-1$
             jsScripts = new ScriptValuesScript[nrScripts];
             for (int i = 0; i < nrScripts; i++)
             {
-                jsScripts[i] = new ScriptValuesScript((int) rep.getStepAttributeInteger(id_step, i, "jsScript_type"), rep.getStepAttributeString(
-                        id_step, i, "jsScript_name"), rep.getStepAttributeString(id_step, i, "jsScript_Script"));
+                jsScripts[i] = new ScriptValuesScript((int) rep.getStepAttributeInteger(id_step, i, JSSCRIPT_TAG_TYPE), rep.getStepAttributeString(
+                        id_step, i, JSSCRIPT_TAG_NAME), rep.getStepAttributeString(id_step, i, JSSCRIPT_TAG_SCRIPT));
 
             }
 			
@@ -414,9 +418,9 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
             for (int i = 0; i < jsScripts.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "jsScript_name", jsScripts[i].getScriptName());
-                rep.saveStepAttribute(id_transformation, id_step, i, "jsScript_script", jsScripts[i].getScript());
-                rep.saveStepAttribute(id_transformation, id_step, i, "jsScript_type", jsScripts[i].getScriptType());
+                rep.saveStepAttribute(id_transformation, id_step, i, JSSCRIPT_TAG_NAME, jsScripts[i].getScriptName());
+                rep.saveStepAttribute(id_transformation, id_step, i, JSSCRIPT_TAG_SCRIPT, jsScripts[i].getScript());
+                rep.saveStepAttribute(id_transformation, id_step, i, JSSCRIPT_TAG_TYPE, jsScripts[i].getScriptType());
             }
 
             for (int i = 0; i < name.length; i++)
