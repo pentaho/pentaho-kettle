@@ -182,7 +182,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 					Repository.class, JobMeta.class };
 			Object[] paramArgs = new Object[] { spoon.getShell(), jei, spoon.getRepository(), jobMeta };
 			Constructor<?> dialogConstructor;
-			dialogClass = JobEntryLoader.getInstance().loadClass(jei.getDescription(),dialogClassName);
+			dialogClass = JobEntryLoader.getInstance().loadClass(jei.getJobEntryType().getDescription(),dialogClassName);
 			dialogConstructor = dialogClass.getConstructor(paramClasses);
 			return (JobEntryDialogInterface) dialogConstructor.newInstance(paramArgs);
 		} catch (Throwable t)
@@ -252,8 +252,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			} else
 			{
 				MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage(Messages.getString("Spoon.Diaspoon.getLog().JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
-				mb.setText(Messages.getString("Spoon.Diaspoon.getLog().JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("Spoon.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 
@@ -262,7 +262,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			if (!spoon.getShell().isDisposed())
 				new ErrorDialog(
 						spoon.getShell(),
-						Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorEditingJobEntry.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						Messages.getString("Spoon.ErrorDiaLog.ErrorEditingJobEntry.Title"), Messages.getString("Spoon.ErrorDiaspoon.getLog().ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -872,13 +872,14 @@ public class SpoonJobDelegate extends SpoonDelegate
 		{
 			// found a transformation tab that has the same name, is it the same
 			// as the one we want to load, if not warn the user of the duplicate name
-			boolean same;
-			if (TransMeta.isRepReference(jobMeta.getFilename(), jobMeta.getName()))
+			boolean same = false;
+	        
+			if (jobMeta.isRepReference() && xjob.isRepReference())
 			{
 				// a repository value
 				same = jobMeta.getDirectory().getPath().equals(xjob.getDirectory().getPath());
 			}
-			else {
+			else if (jobMeta.isFileReference() && xjob.isFileReference()){
 				// a file system entry
 				same = jobMeta.getFilename().equals(xjob.getFilename());
 			}
