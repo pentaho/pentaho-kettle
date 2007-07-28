@@ -49,6 +49,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -91,6 +92,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Listener lsbTable;
 
 	private TableInputMeta input;
+	private boolean changedInDialog;
 
 	public TableInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -111,6 +113,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			public void modifyText(ModifyEvent e) 
 			{
+				changedInDialog = false; // for prompting if dialog is simply closed
 				input.setChanged();
 			}
 		};
@@ -296,9 +299,10 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		
 		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { checkCancel(e); } } );
 		
 		getData();
+		changedInDialog = false; // for prompting if dialog is simply closed
 		input.setChanged(changed);
 
 		// Set the shell size, based upon previous time...
@@ -346,6 +350,30 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         setSQLToolTip();
 	}
 	
+	private void checkCancel(ShellEvent e)
+	{
+		if (changedInDialog)
+		{
+			int save = JobGraph.showChangedWarning(shell, wStepname.getText());
+			if (save == SWT.CANCEL)
+			{
+				e.doit = false;
+			}
+			else if (save == SWT.YES)
+			{
+				ok();
+			}
+			else
+			{
+				cancel();
+			}
+		}
+		else
+		{
+			cancel();
+		}
+	}
+
 	private void cancel()
 	{
 		stepname=null;
