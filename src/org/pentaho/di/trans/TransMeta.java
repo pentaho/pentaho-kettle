@@ -693,6 +693,30 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         changed_notes = true;
     }
 
+    
+    
+    public void raiseNote(int p)
+    {
+    	// if valid index and not last index
+    	if ((p >=0) && (p < notes.size()-1))
+    	{
+    		NotePadMeta note = notes.remove(p);
+    		notes.add(note);
+            changed_notes = true;
+    	}
+    }
+    
+    public void lowerNote(int p)
+    {
+    	// if valid index and not first index
+    	if ((p >0) && (p < notes.size()))
+    	{
+    		NotePadMeta note = notes.remove(p);
+    		notes.add(0, note);
+            changed_notes = true;
+    	}
+    }
+    
     /**
      * Removes a dependency from the transformation on a certain location.
      *
@@ -2128,9 +2152,20 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         }
     }
 
+    public boolean isRepReference() {
+    	return isRepReference(getFilename(), this.getName());
+    }
+    
+    public boolean isFileReference() {
+    	return !isRepReference(getFilename(), this.getName());
+    }
     
     public static boolean isRepReference(String exactFilename, String exactTransname) {
 		return Const.isEmpty(exactFilename) && !Const.isEmpty(exactTransname);
+    }
+    
+    public static boolean isFileReference(String exactFilename, String exactTransname) {
+		return !isRepReference(exactFilename, exactTransname);
     }
     
     /** Read a transformation with a certain name from a repository
