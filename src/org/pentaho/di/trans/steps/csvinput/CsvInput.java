@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Matt
  * @since 2007-07-05
  */
-
 public class CsvInput extends BaseStep implements StepInterface
 {
 	private CsvInputMeta meta;
@@ -323,12 +322,13 @@ public class CsvInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("CsvInput.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("CsvInput.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

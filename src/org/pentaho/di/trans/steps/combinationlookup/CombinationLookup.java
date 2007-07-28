@@ -725,20 +725,24 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	    super.dispose(smi, sdi);
 	}
 
+	public String toString()
+	{
+		return this.getClass().getName();
+	}	
+	
 	//
 	// Run is were the action happens!
-	//
 	public void run()
 	{
-		logBasic(Messages.getString("CombinationLookup.Log.StartingToRun")); //$NON-NLS-1$
-
 		try
 		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
@@ -746,13 +750,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		finally
 		{
 		    dispose(meta, data);
+		    logSummary();		    
 			markStop();
-		    logSummary();
 		}
-	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }
