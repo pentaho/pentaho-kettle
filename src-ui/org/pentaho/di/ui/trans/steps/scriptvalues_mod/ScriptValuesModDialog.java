@@ -682,7 +682,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				break;
 		}
 		StyledTextComp wScript=new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
-		if(strScript.length()>0) wScript.setText(strScript);
+		if((strScript !=null) && strScript.length()>0) wScript.setText(strScript);
 		else wScript.setText("//Script here"); 
 		item.setImage(imageInactiveScript);
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
