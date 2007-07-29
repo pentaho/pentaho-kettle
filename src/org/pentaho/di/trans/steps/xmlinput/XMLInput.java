@@ -362,23 +362,22 @@ public class XMLInput extends BaseStep implements StepInterface
 
 	//
 	// Run is were the action happens!
-	//
-	//
 	public void run()
 	{
 		try
 		{
-			logBasic("Starting to run...");
-			while (processRow(meta, data) && !isStopped())
-				;
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
 		} 
-		catch (Throwable t)
+		catch(Throwable t)
 		{
-			logError("Unexpected error : " + t.toString());
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();
-		} finally
+		} 
+		finally
 		{
 			dispose(meta, data);
 			logSummary();

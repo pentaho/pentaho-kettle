@@ -40,8 +40,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 
-
-
 /**
  * Looks up information by first reading data into a hash table (in memory)
  * 
@@ -460,12 +458,13 @@ public class StreamLookup extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic(Messages.getString("StreamLookup.Log.StartingToRun")); //$NON-NLS-1$
-			while (processRow(meta, data)  && !isStopped());
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("StreamLookup.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();

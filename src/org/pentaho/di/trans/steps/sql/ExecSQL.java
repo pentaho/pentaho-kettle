@@ -249,18 +249,17 @@ public class ExecSQL extends BaseStep implements StepInterface
 
 	//
 	// Run is were the action happens!
-	//
 	public void run()
 	{
 		try
 		{
-			logBasic(Messages.getString("ExecSQL.Log.StartingToRun")); //$NON-NLS-1$
-			while (!isStopped() && processRow(meta, data))
-				;
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
 		} 
-		catch (Throwable t)
+		catch(Throwable t)
 		{
-			logError(Messages.getString("ExecSQL.Log.UnexpectedError") + " : " + t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			logError(Const.getStackTracker(t));
 			setErrors(1);
 			stopAll();

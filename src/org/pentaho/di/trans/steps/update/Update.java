@@ -33,8 +33,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /**
  * Update data in a database table, does NOT ever perform an insert.
  * 
@@ -429,18 +427,24 @@ public class Update extends BaseStep implements StepInterface
 		super.dispose(smi, sdi);
 	}
 	
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+	
 	//
 	// Run is were the action happens!
 	public void run()
 	{
 		try
 		{
-			logBasic(Messages.getString("Update.Log.StartingToRun")); //$NON-NLS-1$
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Throwable t)
 		{
-			logError(Messages.getString("Update.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
@@ -451,10 +455,5 @@ public class Update extends BaseStep implements StepInterface
 			logSummary();
 			markStop();
 		}
-	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }
