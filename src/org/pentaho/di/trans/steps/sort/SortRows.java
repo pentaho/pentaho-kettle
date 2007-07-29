@@ -45,8 +45,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /**
  * Sort the rows in the input-streams based on certain criteria
  * 
@@ -414,34 +412,9 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-			
-	//
-	// Run is were the action happens!
-	//
-	public void run()
-	{
-		try
-		{
-			logBasic("Starting to run...");
-			while (processRow(meta, data)  && !isStopped());
-		}
-		catch(Throwable t)
-		{
-			logError("Unexpected error : "+t.toString());
-            logError(Const.getStackTracker(t));
-            setErrors(1);
-			stopAll();
-		}
-		finally
-		{
-			dispose(meta, data);
-			logSummary();
-			markStop();
-		}
-	}
-	
-	
-	/** Sort the entire vector, if it is not empty
+
+	/** 
+	 * Sort the entire vector, if it is not empty.
 	 */
 	public void quickSort(List<Object[]> elements)
 	{
@@ -470,4 +443,29 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
+	
+	//
+	// Run is were the action happens!
+	public void run()
+	{
+		try
+		{
+			logBasic(Messages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
+			
+			while (processRow(meta, data) && !isStopped());
+		}
+		catch(Throwable t)
+		{
+			logError(Messages.getString("System.Log.UnexpectedError")+" : "+t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(t));
+            setErrors(1);
+			stopAll();
+		}
+		finally
+		{
+			dispose(meta, data);
+			logSummary();
+			markStop();
+		}
+	}	
 }
