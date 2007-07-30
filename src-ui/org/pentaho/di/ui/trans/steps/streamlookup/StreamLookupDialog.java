@@ -148,9 +148,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-		// Source step line...
+		// Lookup step line...
 		wlStep=new Label(shell, SWT.RIGHT);
-		wlStep.setText(Messages.getString("StreamLookupDialog.SourceStep.Label")); //$NON-NLS-1$
+		wlStep.setText(Messages.getString("StreamLookupDialog.LookupStep.Label")); //$NON-NLS-1$
  		props.setLook(wlStep);
 		fdlStep=new FormData();
 		fdlStep.left = new FormAttachment(0, 0);
