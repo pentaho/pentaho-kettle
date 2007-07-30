@@ -133,8 +133,8 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
-        colinf[1].setAllignement(SWT.RIGHT);
-		colinf[2].setAllignement(SWT.RIGHT);
+        colinf[2].setAllignement(SWT.RIGHT);
+		colinf[3].setAllignement(SWT.RIGHT);
 		colinf[4].setAllignement(SWT.RIGHT);
 		colinf[5].setAllignement(SWT.RIGHT);
 		colinf[6].setAllignement(SWT.RIGHT);
@@ -389,7 +389,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		if (refreshBusy) return;
 		refreshBusy = true;
         
-        LogWriter.getInstance().logBasic(Spoon.APP_NAME, "Refresh");
+        LogWriter.getInstance().logDetailed(Spoon.APP_NAME, "Refresh");
         
         wTree.removeAll();
         
@@ -414,9 +414,9 @@ public class SpoonSlave extends Composite implements TabItemInterface
             
             try
             {
-                LogWriter.getInstance().logBasic(toString(), "Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), slaveServer);
+                LogWriter.getInstance().logDetailed(toString(), "Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), slaveServer);
                 SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
-                LogWriter.getInstance().logBasic(toString(), "Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), slaveServer);
+                LogWriter.getInstance().logDetailed(toString(), "Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), slaveServer);
                 List<StepStatus> stepStatusList = ts.getStepStatusList();
                 transStatus.setStepStatusList(stepStatusList);
                 transStatus.setLoggingString(ts.getLoggingString());
