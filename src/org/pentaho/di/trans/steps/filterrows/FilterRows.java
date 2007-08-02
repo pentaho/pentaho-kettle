@@ -104,7 +104,7 @@ public class FilterRows extends BaseStep implements StepInterface
 		    else
 		    {
 		        //System.out.println("Sending row to false :"+info.getSendTrueStepname()+" : "+r);
-		        putRowTo(data.outputRowMeta, r, data.trueRowSet);
+		        putRowTo(data.outputRowMeta, r, data.falseRowSet);
 		    }
 		}
 		
