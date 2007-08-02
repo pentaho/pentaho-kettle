@@ -8,6 +8,7 @@ import org.pentaho.di.core.database.DatabaseTest;
 import org.pentaho.di.core.row.RowDataUtilTest;
 import org.pentaho.di.core.row.RowTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
+import org.pentaho.di.core.row.ValueMetaTest;
 import org.pentaho.di.trans.HopTest;
 import org.pentaho.di.trans.steps.append.AppendTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
@@ -33,6 +34,7 @@ public class AllRegressionTests
         // Suggestion is to put the tests going from easy to hard functionality.
         // If the easy functionality doesn't work, chances are big the harder
         // functionality will also not work.
+        suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowSetTest.class);
         suite.addTestSuite(RowTest.class);
         suite.addTestSuite(RowDataUtilTest.class);
