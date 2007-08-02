@@ -765,66 +765,22 @@ public class ValueMeta implements ValueMetaInterface
 
     private byte[] convertStringToBinaryString(String string) throws KettleValueException
     {
-    	if( length > -1 && length < string.length() ) {
-    		// we need to truncate
-    		String tmp = string.substring(0, length);
-            if (Const.isEmpty(stringEncoding))
+        if (Const.isEmpty(stringEncoding))
+        {
+            return string.getBytes();
+        }
+        else
+        {
+            try
             {
-            	return tmp.getBytes();
+                return string.getBytes(stringEncoding);
             }
-            else
+            catch(UnsupportedEncodingException e)
             {
-                try
-                {
-                	return tmp.getBytes(stringEncoding);
-                }
-                catch(UnsupportedEncodingException e)
-                {
-                    throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+stringEncoding+"]", e);
-                }
+                throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+stringEncoding+"]", e);
             }
-    	}
-    	else {
-    		byte text[];
-            if (Const.isEmpty(stringEncoding))
-            {
-            	text = string.getBytes();
-            }
-            else
-            {
-                try
-                {
-                	text = string.getBytes(stringEncoding);
-                }
-                catch(UnsupportedEncodingException e)
-                {
-                    throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+stringEncoding+"]", e);
-                }
-            }
-        	if( length > string.length() ) 
-        	{
-        		// we need to pad this
-        		byte filler[] = " ".getBytes();
-        		int size = filler.length*length;
-        		byte bytes[] = new byte[size];
-        		if( filler.length == 1 ) {
-            		java.util.Arrays.fill( bytes, filler[0] );
-        		} 
-        		else 
-        		{
-        			// need to copy the filler array in lots of times
-        		}
-        		System.arraycopy( text, 0, bytes, 0, text.length );
-        		return bytes;
-        	}
-        	else
-        	{
-        		// do not need to pad or truncate
-        		return text;
-        	}
-    	}
+        }
     }
-
     
     /**
      * Clones the data.  Normally, we don't have to do anything here, but just for arguments and safety, 
