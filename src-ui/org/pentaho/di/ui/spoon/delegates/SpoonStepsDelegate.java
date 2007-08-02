@@ -16,6 +16,7 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepErrorMeta;
+import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.ui.trans.step.StepErrorMetaDialog;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -227,6 +228,39 @@ public class SpoonStepsDelegate extends SpoonDelegate
 					method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
 					if( method != null ) {
 						return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta, stepName } );
+					}
+				} catch (Throwable t) {
+				}
+
+			throw new KettleException(e);
+		}
+
+	}
+
+	public StepDialogInterface getPartitionerDialog(Object stepMeta, 
+				StepPartitioningMeta partitioningMeta, TransMeta transMeta) throws KettleException
+	{
+
+		String dialogClassName = partitioningMeta.getPartitioner().getDialogClassName();
+
+		Class<?> dialogClass;
+		Class<?>[] paramClasses = new Class[] { Shell.class, Object.class, StepPartitioningMeta.class, TransMeta.class };
+		Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, partitioningMeta, transMeta };
+		Constructor<?> dialogConstructor;
+		try
+		{
+			dialogClass = partitioningMeta.getClass().getClassLoader().loadClass(dialogClassName);
+			dialogConstructor = dialogClass.getConstructor(paramClasses);
+			return (StepDialogInterface) dialogConstructor.newInstance(paramArgs);
+		} catch (Exception e)
+		{
+			// try the old way for compatibility 
+			Method method = null;
+				try {
+					Class sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class};
+					method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
+					if( method != null ) {
+						return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta } );
 					}
 				} catch (Throwable t) {
 				}

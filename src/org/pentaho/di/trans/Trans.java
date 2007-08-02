@@ -506,7 +506,7 @@ public class Trans implements VariableSpace
 	        }
             
             stepMeta.setTargetStepPartitioningMeta(nextPartitioned);
-            baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
+            baseStep.setRepartitioning(StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE]);
             
             if (nextPartitioned!=null) {
             	baseStep.setRepartitioning(nextPartitioned.getMethod());

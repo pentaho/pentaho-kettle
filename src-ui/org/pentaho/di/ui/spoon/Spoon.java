@@ -26,10 +26,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -166,6 +169,7 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.HasDatabasesInterface;
+import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -5463,19 +5467,50 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		StepMeta before = (StepMeta) stepMeta.clone();
 
-		String[] options = StepPartitioningMeta.methodDescriptions;
+		Set<Entry<String,Partitioner>> plugins = StepLoader.getPartitionerList().entrySet();
+		String options[] = new String[ StepPartitioningMeta.methodDescriptions.length + plugins.size() ];
+		String codes[] = new String[ StepPartitioningMeta.methodDescriptions.length + plugins.size() ];
+		System.arraycopy( StepPartitioningMeta.methodDescriptions, 0, options, 0, StepPartitioningMeta.methodDescriptions.length);
+		System.arraycopy( StepPartitioningMeta.methodCodes, 0, codes, 0, StepPartitioningMeta.methodCodes.length);
+		
+		Iterator<Entry<String,Partitioner>> it =  plugins.iterator();
+		int idx = 0;
+		while( it.hasNext() ) {
+			Partitioner entry = it.next().getValue();
+			options[ StepPartitioningMeta.methodDescriptions.length+idx ] = entry.getDescription();
+			codes[ StepPartitioningMeta.methodCodes.length+idx ] = entry.getId();
+			idx++;
+		}
+		
+		for( int i=0; i<codes.length; i++ ) {
+			if( codes[i].equals( stepPartitioningMeta.getMethod() ) )
+			{
+				idx = i;
+				break;
+			}
+		}
+		
         EnterSelectionDialog dialog = new EnterSelectionDialog(shell, options, "Partioning method", "Select the partitioning method");
-		String methodDescription = dialog.open(stepPartitioningMeta.getMethod());
+		String methodDescription = dialog.open(idx);
 		if (methodDescription != null)
 		{
-			int method = StepPartitioningMeta.getMethod(methodDescription);
+			String method = StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE];
+			for( int i=0; i<options.length; i++ ) {
+				if( options[i].equals( methodDescription ) )
+				{
+					method = codes[i];
+				}
+			}
+			
+			int methodType = StepPartitioningMeta.getMethodType( method );
+			stepPartitioningMeta.setMethodType( methodType );
 			stepPartitioningMeta.setMethod(method);
-			switch (method)
+			switch (methodType)
 			{
             case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
 			case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
-			case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
-			case StepPartitioningMeta.PARTITIONING_METHOD_HASH:
+			case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL: 
+
 				// Ask for a Partitioning Schema
 				String schemaNames[] = transMeta.getPartitionSchemasNames();
 				if (schemaNames.length == 0)
@@ -5489,7 +5524,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				{
 					// Set the partitioning schema too.
 					PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
-					int idx = -1;
+					idx = -1;
 					if (partitionSchema != null)
 					{
 						idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
@@ -5503,12 +5538,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					}
 				}
 
-				if (method == StepPartitioningMeta.PARTITIONING_METHOD_MOD || method == StepPartitioningMeta.PARTITIONING_METHOD_HASH)
+				if (methodType == StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL )
 				{
 					// ask for a fieldname
-                    EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
-					String fieldName = stringDialog.open();
-					stepPartitioningMeta.setFieldName(fieldName);
+
+					StepDialogInterface partitionerDialog = null;
+					try {
+						partitionerDialog = delegates.steps.getPartitionerDialog(stepMeta.getStepMetaInterface(), stepPartitioningMeta, transMeta);
+						String result = partitionerDialog.open();
+					} catch (Exception e) {
+						// TODO log this
+						e.printStackTrace();
+					}
+
+//                    EnterStringDialog stringDialog = new EnterStringDialog(shell, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
+//					String fieldName = stringDialog.open();
+//					stepPartitioningMeta.setFieldName(fieldName);
 				}
 				break;
 			}

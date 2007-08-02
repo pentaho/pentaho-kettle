@@ -247,23 +247,13 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * This field tells the putRow() method to re-partition the incoming data, See also StepPartitioningMeta.PARTITIONING_METHOD_*
      */
-    private int                          repartitioning;
-
-    /**
-     * The index of the column to partition or -1 if not known yet (before first row)
-     */
-    private int                          partitionColumnIndex;
+    private String                       repartitioning;
 
     /**
      * The partitionID to rowset mapping
      */
     private Map<String,RowSet>                         partitionTargets;
     private RowMetaInterface inputRowMeta;
-
-    /**
-     * Cache for the partition IDs
-     */
-    private static List<String> partitionIDs;
 
     /**
      * step partitioning information of the NEXT step
@@ -359,8 +349,7 @@ public class BaseStep extends Thread implements VariableSpace
         rowListeners = new ArrayList<RowListener>();
         resultFiles = new Hashtable<String,ResultFile>();
 
-        repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
-        partitionColumnIndex = -1;
+        repartitioning = StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE];
         partitionTargets = new Hashtable<String,RowSet>();
 
         // tuning parameters
@@ -728,7 +717,8 @@ public class BaseStep extends Thread implements VariableSpace
         // If there are multiple steps, we need to look at the first (they should be all the same)
         // TODO: make something smart later to allow splits etc.
         //
-        switch(repartitioning)
+        int partitioningType = StepPartitioningMeta.getMethodType(repartitioning);
+        switch(partitioningType)
         {
         case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
         {
@@ -784,42 +774,15 @@ public class BaseStep extends Thread implements VariableSpace
         }
         break;
 
-        case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
-        case StepPartitioningMeta.PARTITIONING_METHOD_HASH:
+        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
         	
             {
-                // Do some pre-processing on the first row...
-                // This is only done once and should cost very little in terms of processing time.
-                //
-                if (partitionColumnIndex < 0)
-                {
+    
+            	if( nextStepPartitioningMeta == null )
+            	{
                     nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
-                    System.out.println(stepMeta.getName()+" : next partitioning schema = "+nextStepPartitioningMeta.toString());
-                    
-                    // What's the column index of the partitioning field name?
-                    //
-                    partitionColumnIndex = rowMeta.indexOfValue(nextStepPartitioningMeta.getFieldName());
-                    if (partitionColumnIndex < 0) { 
-                    	throw new KettleStepException("Unable to find partitioning field name [" + nextStepPartitioningMeta.getFieldName() + "] in the output row..." + rowMeta); 
-                    }
-    
-                    // Cache the partition IDs as well...
-                    partitionIDs = nextStepPartitioningMeta.getPartitionSchema().getPartitionIDs();
-    
-                    // OK, we also want to reach a certain rowset
-                    // In the end it doesn't matter what order the row sets are in...
-                    // AS LONG AS THEY ARE ALWAYS SORTED IN THE SAME WAY...
-                    // To establish this, the output row sets where sorted earlier on the target slave server name and the step
-                    //
-                    // We do care however, about the number of output rowsets.
-                    // The number of partitions has to be the same as the number of output rowsets.
-                    //
-                    if (partitionIDs.size()!=outputRowSets.size()) {
-                    	throw new KettleStepException("The number of partitions ("+partitionIDs.size()+") is not the same as the number of output rowsets ("+outputRowSets.size()+")");
-                    }
-                } // End of the one-time init code.
-    
-                // Here we go with the regular show
+            	}
+                
                 int partitionNr;
                 try
                 {
@@ -1907,25 +1870,9 @@ public class BaseStep extends Thread implements VariableSpace
     }
 
     /**
-     * @return the partitionColumnIndex
-     */
-    public int getPartitionColumnIndex()
-    {
-        return partitionColumnIndex;
-    }
-
-    /**
-     * @param partitionColumnIndex the partitionColumnIndex to set
-     */
-    public void setPartitionColumnIndex(int partitionColumnIndex)
-    {
-        this.partitionColumnIndex = partitionColumnIndex;
-    }
-
-    /**
      * @return the repartitioning
      */
-    public int getRepartitioning()
+    public String getRepartitioning()
     {
         return repartitioning;
     }
@@ -1933,7 +1880,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * @param repartitioning the repartitioning to set
      */
-    public void setRepartitioning(int repartitioning)
+    public void setRepartitioning(String repartitioning)
     {
         this.repartitioning = repartitioning;
     }

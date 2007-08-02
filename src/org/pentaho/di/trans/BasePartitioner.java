@@ -1,18 +1,25 @@
 package org.pentaho.di.trans;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 public abstract class BasePartitioner implements Partitioner {
 
-	protected int partitionColumnIndex = -1;
 	protected StepPartitioningMeta meta;
 	protected int nrPartitions = -1;
+	protected String id;
+	protected String description;
 	
-	public BasePartitioner( StepPartitioningMeta meta ) {
-		this.meta = meta;
+	public BasePartitioner( ) {
+	}
+	
+	public Partitioner clone() {
+		Partitioner partitioner = getInstance();
+		partitioner.setId( id );
+		partitioner.setDescription(description);
+		partitioner.setMeta(meta);
+		return partitioner;
 	}
 
 	public int getNrPartitions() {
@@ -26,16 +33,36 @@ public abstract class BasePartitioner implements Partitioner {
 	public void init(RowMetaInterface rowMeta ) throws KettleException
 	{
 
-        if (partitionColumnIndex < 0)
-        {
-            partitionColumnIndex = rowMeta.indexOfValue(meta.getFieldName());
-            if (partitionColumnIndex < 0) { 
-            	throw new KettleStepException("Unable to find partitioning field name [" + meta.getFieldName() + "] in the output row..." + rowMeta); 
-            }
-        }
         if( nrPartitions < 0 ) {
         	nrPartitions = meta.getPartitionSchema().getPartitionIDs().size();
         }
 
 	}
+
+	public StepPartitioningMeta getMeta() {
+		return meta;
+	}
+
+	public void setMeta(StepPartitioningMeta meta) {
+		this.meta = meta;
+	}
+	
+	public abstract Partitioner getInstance();
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 }

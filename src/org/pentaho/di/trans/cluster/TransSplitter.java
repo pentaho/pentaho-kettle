@@ -253,7 +253,7 @@ public class TransSplitter
         if (stepPartitionFlag.get(stepMeta)!=null) return; // already done;
         
         StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
-        if (partitioningMeta!=null && partitioningMeta.getMethod()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && partitioningMeta.getPartitionSchema()!=null)
+        if (partitioningMeta!=null && partitioningMeta.getMethodType()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && partitioningMeta.getPartitionSchema()!=null)
         {
             // Find the schemaPartitions map to use
             Map<PartitionSchema,List<String>> schemaPartitionsMap = slaveServerPartitionsMap.get(slaveServer);
@@ -668,7 +668,7 @@ public class TransSplitter
                                     				PartitionSchema targetPartitionSchema = (PartitionSchema) targetStepPartitioningMeta.getPartitionSchema().clone();
                                     				if (slave.findPartitionSchema(targetPartitionSchema.getName())==null) {
                                     					slave.getPartitionSchemas().add(targetPartitionSchema);
-                                    					source.setTargetStepPartitioningMeta(new StepPartitioningMeta(targetStepPartitioningMeta.getMethod(), targetStepPartitioningMeta.getFieldName(), targetPartitionSchema));
+                                    					source.setTargetStepPartitioningMeta( targetStepPartitioningMeta.clone() );
                                     				}
                                     				
                                     				// Set the partition schema for the target step too...
@@ -927,7 +927,7 @@ public class TransSplitter
             StepPartitioningMeta stepPartitioningMeta = stepMeta.getStepPartitioningMeta();
             
             if (stepPartitioningMeta==null) continue;
-            if (stepPartitioningMeta.getMethod()==StepPartitioningMeta.PARTITIONING_METHOD_NONE) continue;
+            if (stepPartitioningMeta.getMethodType()==StepPartitioningMeta.PARTITIONING_METHOD_NONE) continue;
             
             ClusterSchema clusterSchema = stepMeta.getClusterSchema();
             if (clusterSchema==null) continue;

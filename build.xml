@@ -15,6 +15,7 @@
 	    <tstamp/>
 	    <mkdir dir="${build}"/>
 	    <mkdir dir="${classes}"/>
+	    <mkdir dir="${classes}/META-INF"/>
 	    <mkdir dir="${classes-ui}"/>
 	    <mkdir dir="${classes-ui}/ui"/>
 	  	<mkdir dir="${testClasses}"/>
@@ -120,6 +121,8 @@
 		    	<classpath id="cp-kettle-test">
 		    		<fileset dir="${lib}" 	  		includes="kettle-engine-3.0.jar"/>
 		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
+		    		<fileset dir="${libext}" 	includes="log4j-1.2.8.jar"/>
+		    		
 			  	</classpath>
 		    </javac>
 		  </target>
@@ -137,6 +140,9 @@
 	  	    </copy>
 	    <copy todir="${classes}">
 	    	<fileset file="build_version.txt"/>
+	  	    </copy>
+	    <copy todir="${classes}/META-INF">
+	    	<fileset file="${src}/kettle-partition-plugins.xml"/>
 	  	    </copy>
 	  	
 	  </target>
@@ -483,6 +489,7 @@
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.RowTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.RowSetTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.blackbox.BlackBoxTests.java" haltonerror="false" />
 			
 		</junit>
 	</target>
@@ -642,6 +649,9 @@
 
 	  <target name="clean" depends="cleandirs"/>
 	
+	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	 	<ant antfile="build_coverage.xml" dir="." target="coverage" />
+	 </target>
 	
 	 <target name="nightly" depends="clean, zip, sourcezip, javadoc_zip, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />

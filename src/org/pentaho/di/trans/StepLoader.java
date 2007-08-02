@@ -54,12 +54,17 @@ public class StepLoader
     private String                        pluginDirectory[];
     private List<StepPlugin>              pluginList;
     private Map<String[], URLClassLoader> classLoaders;
+    private static Map<String,Partitioner>	  partitionerMap;
+    
+    private static final int PLUGIN_TYPE_STEP = 1;
+    private static final int PLUGIN_TYPE_PARTIONER = 2;
 
     private StepLoader(String pluginDirectory[])
     {
         this.pluginDirectory = pluginDirectory;
         pluginList           = new ArrayList<StepPlugin>();
         classLoaders         = new Hashtable<String[], URLClassLoader>();
+        partitionerMap		 = new Hashtable<String,Partitioner>();
     }
 
     public static final StepLoader getInstance(String pluginDirectory[])
@@ -137,8 +142,46 @@ public class StepLoader
             Document doc = db.parse(docStream);
 
             // Read the details from the XML file:
+            
+            // see if we have multiple plugins defined
+            Node plugins = XMLHandler.getSubNode(doc, "plugins"); //$NON-NLS-1$
+            if( plugins != null ) {
+            	Node plugin = plugins.getFirstChild();
+            	while( plugin != null ) {
+                	if( "plugin".equals(plugin.getNodeName() ) ) {
+                		readPluginFromResource( plugin, path, dir, type, PLUGIN_TYPE_STEP );
+                	}
+                	if( "plugin-partitioner".equals( plugin.getNodeName() ) ) {
+                		readPluginFromResource( plugin, path, dir, type, PLUGIN_TYPE_PARTIONER );
+                	}
+                	plugin = plugin.getNextSibling();
+            	}
+            }
+            
+            // see if we have multiple plugins defined
             Node plugin = XMLHandler.getSubNode(doc, "plugin"); //$NON-NLS-1$
+            if( plugin != null ) {
+            	if( "plugin".equals(plugin.getNodeName() ) ) {
+            		readPluginFromResource( plugin, path, dir, type, PLUGIN_TYPE_STEP );
+            	}
+            	if( "plugin-partitioner".equals( plugin.getNodeName() ) ) {
+            		readPluginFromResource( plugin, path, dir, type, PLUGIN_TYPE_PARTIONER );
+            	}
+            }
 
+        }
+        catch (Exception e)
+        {
+            LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
+            LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean readPluginFromResource( Node plugin, String path, String dir, int type, int pluginType ) {
+        try
+        {
             String id = XMLHandler.getTagAttribute(plugin, "id"); //$NON-NLS-1$
             String description = XMLHandler.getTagAttribute(plugin, "description"); //$NON-NLS-1$
             String iconfile = XMLHandler.getTagAttribute(plugin, "iconfile"); //$NON-NLS-1$
@@ -215,32 +258,54 @@ public class StepLoader
             String errorHelpFileFull = errorHelpfile;
             if (!Const.isEmpty(errorHelpfile)) errorHelpFileFull = (path == null) ? errorHelpfile : path+Const.FILE_SEPARATOR+errorHelpfile;
             
-            StepPlugin sp = new StepPlugin(type, new String[] { id }, description, tooltip, dir, jarfiles, iconFilename, classname, category, errorHelpFileFull);
-            
-            // Add localized information too...
-            sp.setLocalizedCategories(localizedCategories);
-            sp.setLocalizedDescriptions(localizedDescriptions);
-            sp.setLocalizedTooltips(localizedTooltips);
-            
-            
-            /*
-             * If the step plugin is not yet in the list with the specified ID, just add it.
-             * If the step plugin is already in the list, overwrite with the latest version.
-             * Note that you can overwrite standard steps with plugins and standard plugins 
-             * with user plugins in the .kettle directory.
-             */
-            if (findStepPluginWithID(id)==null)
-            {
-                pluginList.add(sp);
+            if( pluginType == PLUGIN_TYPE_STEP ) {
+                StepPlugin sp = new StepPlugin(type, new String[] { id }, description, tooltip, dir, jarfiles, iconFilename, classname, category, errorHelpFileFull);
+                
+                // Add localized information too...
+                sp.setLocalizedCategories(localizedCategories);
+                sp.setLocalizedDescriptions(localizedDescriptions);
+                sp.setLocalizedTooltips(localizedTooltips);
+                
+                
+                /*
+                 * If the step plugin is not yet in the list with the specified ID, just add it.
+                 * If the step plugin is already in the list, overwrite with the latest version.
+                 * Note that you can overwrite standard steps with plugins and standard plugins 
+                 * with user plugins in the .kettle directory.
+                 */
+                if (findStepPluginWithID(id)==null)
+                {
+                    pluginList.add(sp);
+                }
+                else
+                {
+                    int idx = pluginList.indexOf(sp);
+                    pluginList.set(idx, sp);
+                    // System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
+                }
             }
-            else
+            else if( pluginType == PLUGIN_TYPE_PARTIONER ) 
             {
-                int idx = pluginList.indexOf(sp);
-                pluginList.set(idx, sp);
-                // System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
+            	try 
+            	{
+                	Class pClass = Class.forName( classname );
+                	if( pClass != null )
+                	{
+                		Partitioner partitioner = (Partitioner) pClass.newInstance();
+                		partitioner.setId( id );
+                		partitioner.setDescription( description );
+                		partitionerMap.put( id, partitioner );
+                	}
+                	
+            	}
+            	catch( Throwable e ) 
+            	{
+                    LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
+                    LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
+            	}
             }
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             LogWriter.getInstance().logError("StepLoader", Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
             LogWriter.getInstance().logError("StepLoader", Const.getStackTracker( e )); //$NON-NLS-1$
@@ -253,6 +318,7 @@ public class StepLoader
     {
     	
     	try {
+    		// try reading plugins defined in JAR file META-INF/step_plugin.xml
         	Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/step_plugin.xml");
         	while( resources.hasMoreElements() ) 
         	{
@@ -268,6 +334,34 @@ public class StepLoader
     		e.printStackTrace();
     	}
     	
+    	try {
+    		// try reading plugins defined in JAR file META-INF/kettle-partition-plugins.xml
+        	Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/kettle-partition-plugins.xml");
+        	while( resources.hasMoreElements() ) 
+        	{
+        		URL url = resources.nextElement();
+        		Object content = url.getContent();
+        		if( content instanceof InputStream )
+        		{
+        			readPluginFromResource( (InputStream) content, null, null, StepPlugin.TYPE_NATIVE );
+        		}
+        	}
+    		// also look in /kettle-partition-plugins.xml
+        	resources = getClass().getClassLoader().getResources("kettle-partition-plugins.xml");
+        	while( resources.hasMoreElements() ) 
+        	{
+        		URL url = resources.nextElement();
+        		Object content = url.getContent();
+        		if( content instanceof InputStream )
+        		{
+        			readPluginFromResource( (InputStream) content, null, null, StepPlugin.TYPE_NATIVE );
+        		}
+        	}
+    	} catch (Exception e) {
+    		// TODO log this
+    		e.printStackTrace();
+    	}
+
         for (int dirNr = 0;dirNr<pluginDirectory.length;dirNr++)
         {
             try
@@ -797,4 +891,12 @@ public class StepLoader
     {
         return pluginList;
     }
+
+	public static Map<String,Partitioner> getPartitionerList() {
+		return partitionerMap;
+	}
+
+	public static Partitioner getPartitioner( String id ) {
+		return partitionerMap.get( id );
+	}
 }
