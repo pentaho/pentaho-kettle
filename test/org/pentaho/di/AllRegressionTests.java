@@ -3,6 +3,7 @@ package org.pentaho.di;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.pentaho.di.blackbox.BlackBoxTests;
 import org.pentaho.di.core.RowSetTest;
 import org.pentaho.di.core.database.DatabaseTest;
 import org.pentaho.di.core.row.RowDataUtilTest;
@@ -34,6 +35,8 @@ public class AllRegressionTests
         // Suggestion is to put the tests going from easy to hard functionality.
         // If the easy functionality doesn't work, chances are big the harder
         // functionality will also not work.
+
+        suite.addTestSuite( BlackBoxTests.class );
         suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowSetTest.class);
         suite.addTestSuite(RowTest.class);
