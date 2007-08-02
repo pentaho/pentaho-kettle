@@ -1,0 +1,7 @@
+datafile.0 : Error opening file 'ftp://bogus/testfiles/customer-dimension-test.csv' : org.apache.commons.vfs.FileSystemException: Could not connect to FTP server on "bogus".
+datafile.0 : org.apache.commons.vfs.FileSystemException: Could not connect to FTP server on "bogus".
+datafile.0 : Caused by: java.net.UnknownHostException: bogus
+datafile : Error initializing step [datafile]
+csv test 3 : Step [datafile.0] failed to initialize!
+csv test 3 : We failed to initialize at least one step.  Execution can not begin!
+BlackBoxTest : Unable to prepare and initialize this transformation: testfiles/blackbox/tests/trans/steps/csvinput/csvinput-error1.ktr
