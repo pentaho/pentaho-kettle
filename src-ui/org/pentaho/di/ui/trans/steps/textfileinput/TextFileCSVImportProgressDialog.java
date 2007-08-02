@@ -91,6 +91,7 @@ public class TextFileCSVImportProgressDialog
                 }
                 catch (Exception e)
                 {
+                	e.printStackTrace();
                     throw new InvocationTargetException(e, Messages.getString("TextFileCSVImportProgressDialog.Exception.ErrorScanningFile", ""+rownumber, debug, e.toString()));
                 }
             }
@@ -248,6 +249,11 @@ public class TextFileCSVImportProgressDialog
             
             Object[] r = TextFileInput.convertLineToRow(new TextFileLine(line, fileLineNumber, null), strinfo, outputRowMeta, convertRowMeta, meta.getFilePaths(transMeta)[0], rownumber, null);
 
+            if(r == null )
+            {
+            	errorFound = true;
+            	continue;
+            }
             rownumber++;
             for (int i = 0; i < nrfields && i < r.length; i++)
             {
