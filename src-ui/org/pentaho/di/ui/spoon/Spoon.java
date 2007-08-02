@@ -171,6 +171,7 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -2819,7 +2820,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	}
 
 	private String lastFileOpened = "";
-
+	public String getLastFileOpened()
+	{
+		return lastFileOpened;
+	}
+	
 	// private String lastVfsUsername="";
 	// private String lastVfsPassword="";
 
@@ -5682,7 +5687,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void splitTrans(TransMeta transMeta, boolean show, boolean post, boolean prepare, boolean start)	{
 		try
 		{
-			delegates.trans.splitTrans(transMeta, show, post, prepare, start);
+			TransSplitter.splitTrans(new SpoonTransSplitInfo(this,transMeta, show, post, prepare, start));
 		} catch (Exception e)
 		{
 			new ErrorDialog(shell, "Split transformation", "There was an error during transformation split",
