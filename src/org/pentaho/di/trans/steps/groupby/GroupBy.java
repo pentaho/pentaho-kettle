@@ -344,7 +344,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     v = new String(""); //$NON-NLS-1$
                     break; 
 				default: 
-					// TODO raise an error here beacuse we cannot continue successfully maybe the UI should validate this
+					// TODO raise an error here because we cannot continue successfully maybe the UI should validate this
 					break;
 			}
             

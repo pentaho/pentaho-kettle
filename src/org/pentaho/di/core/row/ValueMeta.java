@@ -467,7 +467,7 @@ public class ValueMeta implements ValueMetaInterface
 
     private synchronized Date convertStringToDate(String string) throws KettleValueException
     {
-        if (string==null || string.equals("")) return null;
+        if (Const.isEmpty(string)) return null;
         
         try
         {
@@ -551,6 +551,7 @@ public class ValueMeta implements ValueMetaInterface
     {
         if (dateFormat==null || dateFormatChanged)
         {
+        	// This may not become static as the class is not thread-safe!
             dateFormat = new SimpleDateFormat();
             String mask;
             if (Const.isEmpty(conversionMask))
@@ -707,8 +708,7 @@ public class ValueMeta implements ValueMetaInterface
     private Boolean convertBigNumberToBoolean(BigDecimal number)
     {
         return new Boolean( number.intValue() != 0 );
-    }
-    
+    }    
     
     private String convertBinaryStringToString(byte[] binary) throws KettleValueException
     {
@@ -2461,6 +2461,4 @@ public class ValueMeta implements ValueMetaInterface
 	public void setTrimType(int trimType) {
 		this.trimType = trimType;
 	}
-
-
 }
