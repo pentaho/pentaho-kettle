@@ -343,7 +343,9 @@ public class GroupBy extends BaseStep implements StepInterface
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
                     v = new String(""); //$NON-NLS-1$
                     break; 
-				default: break;
+				default: 
+					// TODO raise an error here beacuse we cannot continue successfully maybe the UI should validate this
+					break;
 			}
             
             if (meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_ALL)
