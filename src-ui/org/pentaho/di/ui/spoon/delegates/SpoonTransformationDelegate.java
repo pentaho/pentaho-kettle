@@ -893,10 +893,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}
 			} else if (executionConfiguration.isExecutingClustered())
 			{
-				
-				TransSplitter.splitTrans(new SpoonTransSplitInfo(spoon,transMeta,executionConfiguration.isClusterShowingTransformation(),
+
+				new TransSplitter(transMeta).splitTrans(new SpoonTransSplitInfo(spoon, executionConfiguration
+						.isClusterShowingTransformation()), spoon.getExecutionConfiguration(),
 						executionConfiguration.isClusterPosting(), executionConfiguration
-								.isClusterPreparing(), executionConfiguration.isClusterStarting()));
+								.isClusterPreparing(), executionConfiguration.isClusterStarting());
 			}
 		}
 	}

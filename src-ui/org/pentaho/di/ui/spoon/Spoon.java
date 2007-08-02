@@ -5687,7 +5687,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public void splitTrans(TransMeta transMeta, boolean show, boolean post, boolean prepare, boolean start)	{
 		try
 		{
-			TransSplitter.splitTrans(new SpoonTransSplitInfo(this,transMeta, show, post, prepare, start));
+			new TransSplitter(transMeta).splitTrans(new SpoonTransSplitInfo(this, show),this.executionConfiguration, post, prepare, start);
 		} catch (Exception e)
 		{
 			new ErrorDialog(shell, "Split transformation", "There was an error during transformation split",

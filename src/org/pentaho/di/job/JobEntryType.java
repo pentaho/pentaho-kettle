@@ -8,7 +8,7 @@ public enum JobEntryType
   // Commented out next line and reverted to TRANS by MB because currently, saved jobs have
   // TRANS instead of TRANSFORMATION. This causes getType() in JobEntryCopy to fail.
 	// TRANSFORMATION(Messages.getString("JobEntry.Trans.TypeDesc")),
-  TRANS(Messages.getString("JobEntry.Trans.TypeDesc")),
+    TRANS(Messages.getString("JobEntry.Trans.TypeDesc")),
 	JOB(Messages.getString("JobEntry.Job.TypeDesc")),
 	SHELL(Messages.getString("JobEntry.Shell.TypeDesc")),
 	MAIL(Messages.getString("JobEntry.Mail.TypeDesc")),
@@ -19,7 +19,7 @@ public enum JobEntryType
   // Commented out and reverted to EVAL by MB because currently,
   // saved jobs have EVAL instead of EVALUATION. This causes getType() in JobEntryCopy to fail.
 	// EVALUATION(Messages.getString("JobEntry.Evaluation.TypeDesc")),
-  EVAL(Messages.getString("JobEntry.Evaluation.TypeDesc")),
+    EVAL(Messages.getString("JobEntry.Evaluation.TypeDesc")),
 	SPECIAL(Messages.getString("JobEntry.Special.TypeDesc")),
     SFTP(Messages.getString("JobEntry.SFTP.TypeDesc")),
     HTTP(Messages.getString("JobEntry.HTTP.TypeDesc")),

@@ -15,6 +15,7 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransConfiguration;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransSplitInfo;
@@ -995,41 +996,36 @@ public class TransSplitter
     
     
     
-    /**
-     * Utility method to split a transformation based on rules from a TranSplitInfo object
-     * @param info
-     * @throws KettleException
-     */
-    public static void splitTrans(TransSplitInfo info) throws KettleException
+
+    public void splitTrans(TransSplitInfo info,TransExecutionConfiguration config,boolean post, boolean prepare,boolean start) throws KettleException
 	{
 		try
 		{
-			TransMeta transMeta = info.getTransMeta();
+			//TransMeta transMeta = info.getTransMeta();
 
-			if (Const.isEmpty(transMeta.getName()))
+			if (Const.isEmpty(originalTransformation.getName()))
 				throw new KettleException(
 						"The transformation needs a name to uniquely identify it by on the remote server.");
 
-			TransSplitter transSplitter = new TransSplitter(transMeta);
-			transSplitter.splitOriginalTransformation();
+			splitOriginalTransformation();
 
 			// Send the transformations to the servers...
 			//
 			// First the master...
 			//
-			TransMeta master = transSplitter.getMaster();
+			TransMeta master = getMaster();
 			SlaveServer masterServer = null;
 			List<StepMeta> masterSteps = master.getTransHopSteps(false);
 			if (masterSteps.size() > 0) // If there is something that needs to
 			// be done on the master...
 			{
-				masterServer = transSplitter.getMasterServer();
-				if (info.show())
-					info.addTransGraph(master);
-				if (info.post())
+				masterServer = getMasterServer();
+
+				info.addTransMeta(master);
+				
+				if (post)
 				{
-					String masterReply = masterServer.sendXML(new TransConfiguration(master, info
-							.getExecutionConfiguration()).getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
+					String masterReply = masterServer.sendXML(new TransConfiguration(master, config).getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
 					WebResult webResult = WebResult.fromXMLString(masterReply);
 					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
 					{
@@ -1041,16 +1037,16 @@ public class TransSplitter
 
 			// Then the slaves...
 			//
-			SlaveServer slaves[] = transSplitter.getSlaveTargets();
+			SlaveServer slaves[] = getSlaveTargets();
 			for (int i = 0; i < slaves.length; i++)
 			{
-				TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-				if (info.show())
-					info.addTransGraph(slaveTrans);
-				if (info.post())
+				TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
+				
+				info.addTransMeta(slaveTrans);
+				
+				if (post)
 				{
-					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, info
-							.getExecutionConfiguration());
+					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, config);
 					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration()
 							.getVariables();
 					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
@@ -1067,9 +1063,9 @@ public class TransSplitter
 				}
 			}
 
-			if (info.post())
+			if (post)
 			{
-				if (info.prepare())
+				if (prepare)
 				{
 					// Prepare the master...
 					if (masterSteps.size() > 0) // If there is something that
@@ -1091,7 +1087,7 @@ public class TransSplitter
 					// Prepare the slaves
 					for (int i = 0; i < slaves.length; i++)
 					{
-						TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+						TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
 						String slaveReply = slaves[i]
 								.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
 										+ slaveTrans.getName() + "&xml=Y");
@@ -1105,7 +1101,7 @@ public class TransSplitter
 					}
 				}
 
-				if (info.start())
+				if (start)
 				{
 					// Start the master...
 					if (masterSteps.size() > 0) // If there is something that
@@ -1127,7 +1123,7 @@ public class TransSplitter
 					// Start the slaves
 					for (int i = 0; i < slaves.length; i++)
 					{
-						TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+						TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
 						String slaveReply = slaves[i]
 								.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
 										+ slaveTrans.getName() + "&xml=Y");

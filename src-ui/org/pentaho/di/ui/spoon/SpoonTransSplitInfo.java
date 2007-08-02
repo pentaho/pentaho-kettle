@@ -1,22 +1,19 @@
 package org.pentaho.di.ui.spoon;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.trans.BaseTransSplitInfo;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransSplitInfo;
 
-public class SpoonTransSplitInfo extends BaseTransSplitInfo
+public class SpoonTransSplitInfo implements TransSplitInfo
 {
 	private Spoon spoon;
+	private boolean show;
 
-	public SpoonTransSplitInfo(Spoon spoon, TransMeta transMeta,boolean show,boolean post, boolean prepare, boolean start)
+	public SpoonTransSplitInfo(Spoon spoon, boolean show)
 	{
-		super(transMeta);
 		this.spoon = spoon;
 		this.show = show;
-		this.post = post;
-		this.prepare = prepare;
-		this.start = start;
 	}
 
 	public TransExecutionConfiguration getExecutionConfiguration()
@@ -24,9 +21,10 @@ public class SpoonTransSplitInfo extends BaseTransSplitInfo
 		return spoon.getExecutionConfiguration();
 	}
 
-	public void addTransGraph(TransMeta meta)
+	public void addTransMeta(TransMeta meta)
 	{
-		spoon.delegates.trans.addTransGraph(meta);
+		if (show)
+			spoon.delegates.trans.addTransGraph(meta);
 	}
 
 	public void addMonitors(SlaveServer masterServer, SlaveServer[] slaves)
