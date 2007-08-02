@@ -408,6 +408,8 @@ public class BlackBoxTests extends TestCase {
 				}
 			}
 			
+			// TODO move this code to a separate test
+/*
 			// clone it and convert it back into XML and compare it with the one we started with
 			// this tests that the clone and the conversion to and from XML are all consistent
 			TransMeta clone = (TransMeta) trans.getTransMeta().clone();
@@ -432,7 +434,7 @@ public class BlackBoxTests extends TestCase {
 				addFailure("Could not write to tmp file: " + getPath(tmpFileName));
 				log.logError("BlackBoxTest", "Could not write to tmp file: " + getPath(tmpFileName), e);
 			}
-
+*/
 		    // allocate & run the required sub-threads
 			boolean ok = trans.execute(null); 
             if (!ok)
