@@ -35,8 +35,7 @@ public class AllRegressionTests
         // Suggestion is to put the tests going from easy to hard functionality.
         // If the easy functionality doesn't work, chances are big the harder
         // functionality will also not work.
-
-        suite.addTestSuite( BlackBoxTests.class );
+        
         suite.addTestSuite(ValueMetaTest.class);
         suite.addTestSuite(RowSetTest.class);
         suite.addTestSuite(RowTest.class);
@@ -53,6 +52,8 @@ public class AllRegressionTests
         suite.addTestSuite(ValueMapperTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);        
+
+        suite.addTestSuite( BlackBoxTests.class );
         
         return suite;
     }
