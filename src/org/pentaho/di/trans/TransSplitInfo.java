@@ -4,17 +4,9 @@ import org.pentaho.di.cluster.SlaveServer;
 
 public interface TransSplitInfo
 {
-	public boolean start();
-	
-	public TransMeta getTransMeta();
 	
 	public TransExecutionConfiguration getExecutionConfiguration();
-		
-	public boolean show();
-	
-	public boolean post();
-	
-	public boolean prepare();
+			
 	
 	/**
 	 * Optional operation - used by GUI only I think (in this case spoon)
