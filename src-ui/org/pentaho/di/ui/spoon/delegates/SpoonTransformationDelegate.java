@@ -9,37 +9,31 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
-import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.undo.TransAction;
-import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
-import org.pentaho.di.ui.spoon.job.JobGraph;
-import org.pentaho.di.ui.spoon.trans.TransGraph;
-import org.pentaho.di.ui.spoon.trans.TransHistory;
-import org.pentaho.di.ui.spoon.trans.TransHistoryRefresher;
-import org.pentaho.di.ui.spoon.trans.TransLog;
-import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonTransSplitInfo;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.spoon.trans.TransGraph;
+import org.pentaho.di.ui.spoon.trans.TransHistory;
+import org.pentaho.di.ui.spoon.trans.TransHistoryRefresher;
+import org.pentaho.di.ui.spoon.trans.TransLog;
 import org.pentaho.di.ui.trans.dialog.TransExecutionConfigurationDialog;
-import org.pentaho.di.www.AddTransServlet;
-import org.pentaho.di.www.PrepareExecutionTransServlet;
-import org.pentaho.di.www.StartExecutionTransServlet;
-import org.pentaho.di.www.WebResult;
 import org.pentaho.xul.swt.tab.TabItem;
 
 public class SpoonTransformationDelegate extends SpoonDelegate
@@ -69,32 +63,37 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		String key = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
 
 		TransMeta xform = (TransMeta) transformationMap.get(key);
-		if (xform==null)
+		if (xform == null)
 		{
 			transformationMap.put(key, transMeta);
 		} else
 		{
 			// found a transformation tab that has the same name, is it the same
-			// as the one we want to load, if not warn the user of the duplicate name
-			// this check may produce false negatives, i.e., references that are deemed
-			// different when they in fact refer to the same entry. For example, one of
-			// the transforms may use a variable reference or an alternative but 
+			// as the one we want to load, if not warn the user of the duplicate
+			// name
+			// this check may produce false negatives, i.e., references that are
+			// deemed
+			// different when they in fact refer to the same entry. For example,
+			// one of
+			// the transforms may use a variable reference or an alternative but
 			// equivalent5
 			boolean same = false;
 			if (transMeta.isRepReference() && xform.isRepReference())
 			{
 				// a repository value, check directory
 				same = transMeta.getDirectory().getPath().equals(xform.getDirectory().getPath());
-			}
-			else if (transMeta.isFileReference() && xform.isFileReference()){
+			} else if (transMeta.isFileReference() && xform.isFileReference())
+			{
 				// a file system entry, check file path
 				same = transMeta.getFilename().equals(xform.getFilename());
 			}
 
-			if (!same) {
-				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION,
-						Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"), "'" + key + "'" + Const.CR
-								+ Const.CR + Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
+			if (!same)
+			{
+				ShowMessageDialog dialog = new ShowMessageDialog(spoon.getShell(), SWT.OK
+						| SWT.ICON_INFORMATION, Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Title"),
+						"'" + key + "'" + Const.CR + Const.CR
+								+ Messages.getString("Spoon.Dialog.TransAlreadyLoaded.Message"));
 				dialog.setTimeOut(6);
 				dialog.open();
 				/*
@@ -122,7 +121,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		transformationMap.remove(tabName);
 
 		// Close the associated tabs...
-		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+		TabItem graphTab = spoon.delegates.tabs.findTabItem(tabName,
+				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
 		if (graphTab != null)
 		{
 			graphTab.dispose();
@@ -131,7 +131,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 		// Logging
 		String logTabName = spoon.delegates.tabs.makeLogTabName(transMeta);
-		TabItem logTab = spoon.delegates.tabs.findTabItem(logTabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
+		TabItem logTab = spoon.delegates.tabs.findTabItem(logTabName,
+				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
 		if (logTab != null)
 		{
 			logTab.dispose();
@@ -161,7 +162,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// If yes, select that tab
 			//
 			String tabName = spoon.delegates.tabs.makeTransGraphTabName(transMeta);
-			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
+			TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
+					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_GRAPH);
 			if (tabItem == null)
 			{
 				TransGraph transGraph = new TransGraph(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
@@ -230,21 +232,22 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// if setActive is true
 		//
 		String tabName = spoon.delegates.tabs.makeLogTabName(transMeta);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
+		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
+				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_LOG);
 		if (tabItem == null)
 		{
 			TransLog transLog = new TransLog(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip", spoon.delegates.tabs
-					.makeTransGraphTabName(transMeta)));
+			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecLogTransView.Tooltip",
+					spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
 			tabItem.setControl(transLog);
 
 			// If there is an associated history window, we want to keep that
 			// one up-to-date as well.
 			//
 			TransHistory transHistory = findTransHistoryOfTransformation(transMeta);
-			TabItem historyItem = spoon.delegates.tabs.findTabItem(spoon.delegates.tabs.makeHistoryTabName(transMeta),
-					TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
+			TabItem historyItem = spoon.delegates.tabs.findTabItem(spoon.delegates.tabs
+					.makeHistoryTabName(transMeta), TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
 
 			if (transHistory != null && historyItem != null)
 			{
@@ -271,13 +274,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// If yes, select that tab
 		//
 		String tabName = spoon.delegates.tabs.makeHistoryTabName(transMeta);
-		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName, TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
+		TabItem tabItem = spoon.delegates.tabs.findTabItem(tabName,
+				TabMapEntry.OBJECT_TYPE_TRANSFORMATION_HISTORY);
 		if (tabItem == null)
 		{
 			TransHistory transHistory = new TransHistory(spoon.tabfolder.getSwtTabset(), spoon, transMeta);
 			tabItem = new TabItem(spoon.tabfolder, tabName, tabName);
-			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryTransView.Tooltip", spoon.delegates.tabs
-					.makeTransGraphTabName(transMeta)));
+			tabItem.setToolTipText(Messages.getString("Spoon.Title.ExecHistoryTransView.Tooltip",
+					spoon.delegates.tabs.makeTransGraphTabName(transMeta)));
 			tabItem.setControl(transHistory);
 
 			// If there is an associated log window that's open, find it and add
@@ -889,162 +893,12 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}
 			} else if (executionConfiguration.isExecutingClustered())
 			{
-				splitTrans(transMeta, executionConfiguration.isClusterShowingTransformation(),
+				
+				TransSplitter.splitTrans(new SpoonTransSplitInfo(spoon,transMeta,executionConfiguration.isClusterShowingTransformation(),
 						executionConfiguration.isClusterPosting(), executionConfiguration
-								.isClusterPreparing(), executionConfiguration.isClusterStarting());
+								.isClusterPreparing(), executionConfiguration.isClusterStarting()));
 			}
 		}
-	}
-
-	public void splitTrans(TransMeta transMeta, boolean show, boolean post, boolean prepare, boolean start)
-			throws KettleException
-	{
-		try
-		{
-			if (Const.isEmpty(transMeta.getName()))
-				throw new KettleException(
-						"The transformation needs a name to uniquely identify it by on the remote server.");
-
-			TransSplitter transSplitter = new TransSplitter(transMeta);
-			transSplitter.splitOriginalTransformation();
-
-			// Send the transformations to the servers...
-			//
-			// First the master...
-			//
-			TransMeta master = transSplitter.getMaster();
-			SlaveServer masterServer = null;
-			List<StepMeta> masterSteps = master.getTransHopSteps(false);
-			if (masterSteps.size() > 0) // If there is something that needs to
-			// be done on the master...
-			{
-				masterServer = transSplitter.getMasterServer();
-				if (show)
-					addTransGraph(master);
-				if (post)
-				{
-					String masterReply = masterServer.sendXML(new TransConfiguration(master, spoon
-							.getExecutionConfiguration()).getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
-					WebResult webResult = WebResult.fromXMLString(masterReply);
-					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-					{
-						throw new KettleException("An error occurred sending the master transformation: "
-								+ webResult.getMessage());
-					}
-				}
-			}
-
-			// Then the slaves...
-			//
-			SlaveServer slaves[] = transSplitter.getSlaveTargets();
-			for (int i = 0; i < slaves.length; i++) {
-				TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-				if (show)
-					addTransGraph(slaveTrans);
-				if (post) {
-					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, spoon.getExecutionConfiguration());
-					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
-					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
-					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[i].getName());
-					variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-					String slaveReply = slaves[i].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
-					WebResult webResult = WebResult.fromXMLString(slaveReply);
-					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
-						throw new KettleException("An error occurred sending a slave transformation: " + webResult.getMessage());
-					}
-				}
-			}
-
-			if (post)
-			{
-				if (prepare)
-				{
-					// Prepare the master...
-					if (masterSteps.size() > 0) // If there is something that
-					// needs to be done on the
-					// master...
-					{
-						String masterReply = masterServer
-								.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ master.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(masterReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while preparing the execution of the master transformation: "
-											+ webResult.getMessage());
-						}
-					}
-
-					// Prepare the slaves
-					for (int i = 0; i < slaves.length; i++)
-					{
-						TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-						String slaveReply = slaves[i]
-								.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ slaveTrans.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(slaveReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while preparing the execution of a slave transformation: "
-											+ webResult.getMessage());
-						}
-					}
-				}
-
-				if (start)
-				{
-					// Start the master...
-					if (masterSteps.size() > 0) // If there is something that
-					// needs to be done on the
-					// master...
-					{
-						String masterReply = masterServer
-								.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ master.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(masterReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while starting the execution of the master transformation: "
-											+ webResult.getMessage());
-						}
-					}
-
-					// Start the slaves
-					for (int i = 0; i < slaves.length; i++)
-					{
-						TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-						String slaveReply = slaves[i]
-								.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ slaveTrans.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(slaveReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while starting the execution of a slave transformation: "
-											+ webResult.getMessage());
-						}
-					}
-				}
-
-				// Now add monitors for the master and all the slave servers
-				//
-				if (masterServer != null)
-				{
-					spoon.addSpoonSlave(masterServer);
-					for (int i = 0; i < slaves.length; i++)
-					{
-						spoon.addSpoonSlave(slaves[i]);
-					}
-				}
-			}
-		} catch (Exception e)
-		{
-			throw new KettleException(e);
-		}
-
 	}
 
 }
