@@ -207,7 +207,90 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
     private byte[] formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
     {
-        return v.getBinaryString(valueData);
+    	if( v.isString() )
+    	{
+    		if( valueData instanceof String ) 
+    		{
+        		return convertStringToBinaryString( v, (String) valueData );
+    		} else {
+        		return convertStringToBinaryString( v, v.getString( valueData ) );
+    		}
+    	} else {
+            return v.getBinaryString(valueData);
+    	}
+    }
+    
+
+    private byte[] convertStringToBinaryString(ValueMetaInterface v, String string) throws KettleValueException
+    {
+    	int length = v.getLength();
+    	
+    	if( length > -1 && length < string.length() ) {
+    		// we need to truncate
+    		String tmp = string.substring(0, length);
+            if (Const.isEmpty(v.getStringEncoding()))
+            {
+            	return tmp.getBytes();
+            }
+            else
+            {
+                try
+                {
+                	return tmp.getBytes(v.getStringEncoding());
+                }
+                catch(UnsupportedEncodingException e)
+                {
+                    throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+v.getStringEncoding()+"]", e);
+                }
+            }
+    	}
+    	else {
+    		byte text[];
+            if (Const.isEmpty(v.getStringEncoding()))
+            {
+            	text = string.getBytes();
+            }
+            else
+            {
+                try
+                {
+                	text = string.getBytes(v.getStringEncoding());
+                }
+                catch(UnsupportedEncodingException e)
+                {
+                    throw new KettleValueException("Unable to convert String to Binary with specified string encoding ["+v.getStringEncoding()+"]", e);
+                }
+            }
+        	if( length > string.length() ) 
+        	{
+        		// we need to pad this
+        		byte filler[] = " ".getBytes();
+        		int size = filler.length*length;
+        		byte bytes[] = new byte[size];
+        		if( filler.length == 1 ) {
+            		java.util.Arrays.fill( bytes, filler[0] );
+        		} 
+        		else 
+        		{
+        			// need to copy the filler array in lots of times
+        		}
+        		System.arraycopy( text, 0, bytes, 0, text.length );
+        		return bytes;
+        	}
+        	else
+        	{
+        		// do not need to pad or truncate
+        		return text;
+        	}
+    	}
+    }
+
+    private byte[] getBinaryString(byte bytes[]) throws KettleStepException {
+    	return bytes;
+    }
+    
+    private byte[] getBinaryString(Object value) throws KettleStepException {
+    	return getBinaryString( value.toString() );
     }
     
     private byte[] getBinaryString(String string) throws KettleStepException {
@@ -230,7 +313,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
         {
         	byte[] str;
         	if (meta.isFastDump()) {
-        		str = getBinaryString(valueData.toString());
+        		if( valueData instanceof byte[] )
+        		{
+            		str = (byte[]) valueData;
+        		} else {
+            		str = getBinaryString(valueData.toString());
+        		}
         	}
         	else {
         		str = formatField(v, valueData);
