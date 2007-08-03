@@ -175,7 +175,6 @@ import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -191,7 +190,6 @@ import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
 import org.pentaho.di.ui.core.dialog.EnterSearchDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterStringsDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -5726,17 +5724,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		} catch (Exception e)
 		{
 			new ErrorDialog(shell, "Error", "Error sending transformation to server", e);
-		}
-	}
-
-	public void splitTrans(TransMeta transMeta, boolean show, boolean post, boolean prepare, boolean start)	{
-		try
-		{
-			new TransSplitter(transMeta).splitTrans(new SpoonTransSplitInfo(this, show),this.executionConfiguration, post, prepare, start);
-		} catch (Exception e)
-		{
-			new ErrorDialog(shell, "Split transformation", "There was an error during transformation split",
-					e);
 		}
 	}
 

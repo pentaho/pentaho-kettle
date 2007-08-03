@@ -10,25 +10,16 @@ import java.util.Set;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.trans.TransConfiguration;
-import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.TransSplitInfo;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
-import org.pentaho.di.www.AddTransServlet;
-import org.pentaho.di.www.PrepareExecutionTransServlet;
-import org.pentaho.di.www.StartExecutionTransServlet;
-import org.pentaho.di.www.WebResult;
-
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave servers in the clusters used.
@@ -991,159 +982,5 @@ public class TransSplitter
         }
         // System.out.println("We have "+(slaveServerPartitionsMap.size())+" entries in the slave server partitions map");
     }
-    
-    
-    
-    
-    
-
-    public void splitTrans(TransSplitInfo info,TransExecutionConfiguration config,boolean post, boolean prepare,boolean start) throws KettleException
-	{
-		try
-		{
-			//TransMeta transMeta = info.getTransMeta();
-
-			if (Const.isEmpty(originalTransformation.getName()))
-				throw new KettleException(
-						"The transformation needs a name to uniquely identify it by on the remote server.");
-
-			splitOriginalTransformation();
-
-			// Send the transformations to the servers...
-			//
-			// First the master...
-			//
-			TransMeta master = getMaster();
-			SlaveServer masterServer = null;
-			List<StepMeta> masterSteps = master.getTransHopSteps(false);
-			if (masterSteps.size() > 0) // If there is something that needs to
-			// be done on the master...
-			{
-				masterServer = getMasterServer();
-
-				info.addTransMeta(master);
-				
-				if (post)
-				{
-					String masterReply = masterServer.sendXML(new TransConfiguration(master, config).getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y");
-					WebResult webResult = WebResult.fromXMLString(masterReply);
-					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-					{
-						throw new KettleException("An error occurred sending the master transformation: "
-								+ webResult.getMessage());
-					}
-				}
-			}
-
-			// Then the slaves...
-			//
-			SlaveServer slaves[] = getSlaveTargets();
-			for (int i = 0; i < slaves.length; i++)
-			{
-				TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
-				
-				info.addTransMeta(slaveTrans);
-				
-				if (post)
-				{
-					TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, config);
-					Map<String, String> variables = transConfiguration.getTransExecutionConfiguration()
-							.getVariables();
-					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(i));
-					variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[i].getName());
-					variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-					String slaveReply = slaves[i].sendXML(transConfiguration.getXML(),
-							AddTransServlet.CONTEXT_PATH + "/?xml=Y");
-					WebResult webResult = WebResult.fromXMLString(slaveReply);
-					if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-					{
-						throw new KettleException("An error occurred sending a slave transformation: "
-								+ webResult.getMessage());
-					}
-				}
-			}
-
-			if (post)
-			{
-				if (prepare)
-				{
-					// Prepare the master...
-					if (masterSteps.size() > 0) // If there is something that
-					// needs to be done on the
-					// master...
-					{
-						String masterReply = masterServer
-								.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ master.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(masterReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while preparing the execution of the master transformation: "
-											+ webResult.getMessage());
-						}
-					}
-
-					// Prepare the slaves
-					for (int i = 0; i < slaves.length; i++)
-					{
-						TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
-						String slaveReply = slaves[i]
-								.getContentFromServer(PrepareExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ slaveTrans.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(slaveReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while preparing the execution of a slave transformation: "
-											+ webResult.getMessage());
-						}
-					}
-				}
-
-				if (start)
-				{
-					// Start the master...
-					if (masterSteps.size() > 0) // If there is something that
-					// needs to be done on the
-					// master...
-					{
-						String masterReply = masterServer
-								.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ master.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(masterReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while starting the execution of the master transformation: "
-											+ webResult.getMessage());
-						}
-					}
-
-					// Start the slaves
-					for (int i = 0; i < slaves.length; i++)
-					{
-						TransMeta slaveTrans = (TransMeta) getSlaveTransMap().get(slaves[i]);
-						String slaveReply = slaves[i]
-								.getContentFromServer(StartExecutionTransServlet.CONTEXT_PATH + "/?name="
-										+ slaveTrans.getName() + "&xml=Y");
-						WebResult webResult = WebResult.fromXMLString(slaveReply);
-						if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-						{
-							throw new KettleException(
-									"An error occurred while starting the execution of a slave transformation: "
-											+ webResult.getMessage());
-						}
-					}
-				}
-
-				info.addMonitors(masterServer, slaves);
-
-			}
-		} catch (Exception e)
-		{
-			throw new KettleException(e);
-		}
-
-	}
+ 
 }

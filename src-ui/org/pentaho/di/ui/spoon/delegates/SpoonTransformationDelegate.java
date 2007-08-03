@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -17,6 +18,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
 import org.pentaho.di.core.undo.TransAction;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -26,7 +28,6 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.SpoonTransSplitInfo;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
@@ -893,13 +894,61 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 				}
 			} else if (executionConfiguration.isExecutingClustered())
 			{
-
-				new TransSplitter(transMeta).splitTrans(new SpoonTransSplitInfo(spoon, executionConfiguration
-						.isClusterShowingTransformation()), spoon.getExecutionConfiguration(),
-						executionConfiguration.isClusterPosting(), executionConfiguration
-								.isClusterPreparing(), executionConfiguration.isClusterStarting());
+        splitTrans(transMeta, executionConfiguration);
 			}
 		}
 	}
+  
+  protected void splitTrans(final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException {
+    try
+    {
+      TransSplitter transSplitter = new TransSplitter(transMeta);
+      
+      transSplitter.splitOriginalTransformation();
+      
+      TransMeta master = transSplitter.getMaster();
+      SlaveServer masterServer = null;
+      List<StepMeta> masterSteps = master.getTransHopSteps(false);
+      
+      // add transgraph of transmetas if showing is true
+      SlaveServer slaves[] = transSplitter.getSlaveTargets();
+      
+      if (executionConfiguration.isClusterShowingTransformation()) {
+        if (masterSteps.size() > 0) // If there is something that needs to
+        // be done on the master...
+        {
+          masterServer = transSplitter.getMasterServer();
+          addTransGraph(master);
+        }
+  
+        // Then the slaves...
+        //
+
+        for (int i = 0; i < slaves.length; i++) {
+          TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+          addTransGraph(slaveTrans);
+        }
+      }
+      
+      Trans.executeClustered(transSplitter, executionConfiguration);
+      
+      if (executionConfiguration.isClusterPosting()) {
+        // Now add monitors for the master and all the slave servers
+        //
+        if (masterServer != null)
+        {
+          spoon.addSpoonSlave(masterServer);
+          for (int i = 0; i < slaves.length; i++)
+          {
+            spoon.addSpoonSlave(slaves[i]);
+          }
+        }
+      }
+      
+    } catch (Exception e)
+    {
+      throw new KettleException(e);
+    }
+  }
 
 }

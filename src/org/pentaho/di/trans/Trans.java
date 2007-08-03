@@ -1774,15 +1774,29 @@ public class Trans implements VariableSpace
         this.running = running;
     }
     
-    public static final TransSplitter executeClustered(TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException 
+    public static final TransSplitter executeClustered(final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException
+    {
+        if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
+  
+        TransSplitter transSplitter = new TransSplitter(transMeta);
+        transSplitter.splitOriginalTransformation();
+        executeClustered(transSplitter, executionConfiguration);
+        return transSplitter;
+    }
+    
+    /**
+     * executes an existing transSplitter, with tranformation already split.
+     * 
+     * @see SpoonTransformationDelegate
+     * 
+     * @param transSplitter
+     * @param executionConfiguration
+     * @throws KettleException
+     */
+    public static final void executeClustered(final TransSplitter transSplitter, final TransExecutionConfiguration executionConfiguration) throws KettleException 
     {
         try
         {
-            if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
-
-            TransSplitter transSplitter = new TransSplitter(transMeta);
-            transSplitter.splitOriginalTransformation();
-            
             // Send the transformations to the servers...
             //
             // First the master...
@@ -1809,36 +1823,44 @@ public class Trans implements VariableSpace
             final SlaveServer[] slaves = transSplitter.getSlaveTargets();
             final Thread[]      threads = new Thread[slaves.length];
             final Throwable[]   errors = new Throwable[slaves.length];
-            
+
             for (int i=0;i<slaves.length;i++)
             {
             	final int index = i;
             	
                 final TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                
                 if (executionConfiguration.isClusterPosting())
                 {
-                	Runnable runnable = new Runnable() {
-						public void run() {
-							try {
-			                    TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-			                    Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
-			                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(index));
-			                    variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[index].getName());
-								variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
-			                    String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
-			                    WebResult webResult = WebResult.fromXMLString(slaveReply);
-			                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-			                    {
-			                        throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
-			                    }
-							}
-							catch(Throwable t) {
-								errors[index] = t;
-							}
-						}
-					};
-					threads[i] = new Thread(runnable);
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                          try {
+                              TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
+                              Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(index));
+                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[index].getName());
+                              variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
+                              String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
+                              WebResult webResult = WebResult.fromXMLString(slaveReply);
+                              if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                              {
+                                  throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
+                              }
+                          }
+                          catch(Throwable t) {
+                              errors[index] = t;
+                          }
+                        }
+                    };
+                    threads[i] = new Thread(runnable);
                 }
+            }
+            
+            // Start the slaves
+            for (int i=0;i<threads.length;i++) {
+              if (threads[i]!=null) {
+                threads[i].start();
+              }
             }
             
             // Wait until the slaves report back...
@@ -1852,8 +1874,6 @@ public class Trans implements VariableSpace
             	}
             }
             
-            // 
-            //
             if (executionConfiguration.isClusterPosting())
             {
                 if (executionConfiguration.isClusterPreparing())
@@ -1870,6 +1890,7 @@ public class Trans implements VariableSpace
                     }
                     
                     // Prepare the slaves
+                    // WG: Should these be threaded like the above initialization?
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
@@ -1896,6 +1917,7 @@ public class Trans implements VariableSpace
                     }
                     
                     // Start the slaves
+                    // WG: Should these be threaded like the above initialization?
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
@@ -1908,8 +1930,6 @@ public class Trans implements VariableSpace
                     }
                 }
             }
-            
-            return transSplitter;
         }
         catch(Exception e)
         {
