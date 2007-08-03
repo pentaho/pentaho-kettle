@@ -394,7 +394,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a ValueMapper step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();
@@ -507,7 +507,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a  step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();
@@ -620,7 +620,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a  step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();
@@ -734,7 +734,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a  step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();
@@ -849,7 +849,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a  step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();
@@ -964,7 +964,7 @@ public class ValueMapperTest extends TestCase
         transMeta.addTransHop(hi);
 
         // 
-        // Create a blocking step
+        // Create a ValueMapper step
         //
         String valueMapperName = "valuemapper step";            
         ValueMapperMeta vm = new ValueMapperMeta();

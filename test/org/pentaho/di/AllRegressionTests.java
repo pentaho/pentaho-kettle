@@ -15,6 +15,7 @@ import org.pentaho.di.trans.steps.append.AppendTest;
 import org.pentaho.di.trans.steps.blockingstep.BlockingStepTest;
 import org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
+import org.pentaho.di.trans.steps.nullif.NullIfTest;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest;
 import org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest;
 import org.pentaho.di.trans.steps.sort.SortRowsTest;
@@ -32,16 +33,20 @@ public class AllRegressionTests
     {
         TestSuite suite = new TestSuite("Run regression tests");
 
-        // Suggestion is to put the tests going from easy to hard functionality.
-        // If the easy functionality doesn't work, chances are big the harder
-        // functionality will also not work.
+        // The testcases should be executed from easy to hard. It
+        // actually defines the debugging sequence if ever required.
+        // If some of the suites fail you should start checking/debugging
+        // the suites from the first that failed onwards.
+        //
+        // So adding testcases in the right order is important.
+        //
         
         suite.addTestSuite(ValueMetaTest.class);
-        suite.addTestSuite(RowSetTest.class);
-        suite.addTestSuite(RowTest.class);
         suite.addTestSuite(RowDataUtilTest.class);
-        suite.addTestSuite(ValueDataUtilTest.class);  
+        suite.addTestSuite(ValueDataUtilTest.class);
         suite.addTestSuite(DatabaseTest.class);
+        suite.addTestSuite(RowTest.class);
+        suite.addTestSuite(RowSetTest.class);
         suite.addTestSuite(HopTest.class);
         
         suite.addTestSuite(InjectorTest.class);
@@ -50,6 +55,7 @@ public class AllRegressionTests
         suite.addTestSuite(BlockingStepTest.class);
         suite.addTestSuite(SortRowsTest.class);
         suite.addTestSuite(ValueMapperTest.class);
+        suite.addTestSuite(NullIfTest.class);
         suite.addTestSuite(CombinationLookupTest.class);
         suite.addTestSuite(JavaScriptStringTest.class);        
 
