@@ -5,7 +5,6 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import com.emc.etl.hash.Messages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
