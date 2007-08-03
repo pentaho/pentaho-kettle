@@ -2265,8 +2265,8 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     public static int showChangedWarning(Shell shell, String name)
     {
     	MessageBox mb = new MessageBox(shell,  SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-    	mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message", name));
-    	mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
+    	mb.setMessage(Messages.getString("JobGraph.Dialog.PromptSave.Message", name));
+    	mb.setText(Messages.getString("JobGraph.Dialog.PromptSave.Title"));
     	return mb.open();
     }
     
