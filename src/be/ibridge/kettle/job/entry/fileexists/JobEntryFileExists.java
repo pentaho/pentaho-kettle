@@ -33,7 +33,9 @@ import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
-
+import org.apache.commons.vfs.FileObject;
+import be.ibridge.kettle.core.vfs.KettleVFS;
+import java.io.IOException;
 
 /**
  * This defines an SQL job entry.
@@ -144,29 +146,37 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 		LogWriter log = LogWriter.getInstance();
 		Result result = previousResult;
 		result.setResult( false );
-	
+
 		if (filename!=null)
 		{
-            String realFilename = getRealFilename(); 
-			File file = new File(realFilename);
-			if (file.exists() && file.canRead())
-			{
-				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
-				result.setResult( true );
-			}
-			else
-			{
-				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
-			}
+            String realFilename = getRealFilename();
+            try
+            {
+                FileObject file = KettleVFS.getFileObject(realFilename);
+                if (file.exists() && file.isReadable())
+                {
+                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Exists", realFilename)); //$NON-NLS-1$
+                    result.setResult( true );
+                }
+                else
+                {
+                    log.logDetailed(toString(), Messages.getString("JobEntryFileExists.File_Does_Not_Exist", realFilename)); //$NON-NLS-1$
+                }
+            }
+            catch (IOException e)
+            {
+                result.setNrErrors(1);
+                log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0004_IO_Exception", e.toString())); //$NON-NLS-1$
+            }
 		}
 		else
 		{
 			result.setNrErrors(1);
-			log.logError(toString(), "No filename is defined.");
+			log.logError(toString(), Messages.getString("JobEntryFileExists.ERROR_0005_No_Filename_Defined")); //$NON-NLS-1$
 		}
-		
+
 		return result;
-	}
+	}    
 
 	public boolean evaluates()
 	{
