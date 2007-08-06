@@ -157,7 +157,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
             
             // Take 10 sample technical keys....
             int stepsize=keys.size()/5;
-            if (stepsize<1) stepsize=1; //make shure we have no endless loop
+            if (stepsize<1) stepsize=1; //make sure we have no endless loop
             for (int i=0;i<keys.size();i+=stepsize)
             {
                 RowMetaAndData key = (RowMetaAndData) keys.get(i);
