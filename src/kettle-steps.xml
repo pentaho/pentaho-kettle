@@ -244,6 +244,17 @@
 		</tooltip>
 		<image-uri>DLU.png</image-uri>
 	</step>
+	<step id="DBLookup">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseJoin")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.databasejoin.DatabaseJoinMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@LOOKUP.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Databasejoin")
+		</tooltip>
+		<image-uri>DBJ.png</image-uri>
+	</step>
 	<step id="DimensionLookup">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DimensionUpdate")
