@@ -841,9 +841,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			return;
 
 		TransExecutionConfiguration executionConfiguration = spoon.getExecutionConfiguration();
-		executionConfiguration.setExecutingLocally(local);
-		executionConfiguration.setExecutingRemotely(remote);
-		executionConfiguration.setExecutingClustered(cluster);
+		
+		//THIS IS USELESS NOTHING WAS SELECTED YET
+		//executionConfiguration.setExecutingLocally(local);
+		//executionConfiguration.setExecutingRemotely(remote);
+		//executionConfiguration.setExecutingClustered(cluster);
 
 		Object data[] = spoon.variables.getData();
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();
@@ -883,8 +885,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			{
 				if (executionConfiguration.getRemoteServer() != null)
 				{
-					spoon.sendXMLToSlaveServer(transMeta, executionConfiguration);
-					spoon.addSpoonSlave(executionConfiguration.getRemoteServer());
+					spoon.delegates.slaves.sendXMLToSlaveServer(transMeta, executionConfiguration);
+					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
 				} else
 				{
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
