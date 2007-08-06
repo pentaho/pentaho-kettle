@@ -15,6 +15,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.ui.repository.dialog.Messages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
@@ -29,12 +30,14 @@ public class RepositoryExportProgressDialog
 {
     private Shell shell;
     private Repository rep;
+    private RepositoryDirectory dir;
     private String filename;
 
-    public RepositoryExportProgressDialog(Shell shell, Repository rep, String filename)
+    public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectory dir, String filename)
     {
         this.shell = shell;
         this.rep = rep;
+        this.dir = dir;        
         this.filename = filename;
     }
 
@@ -48,7 +51,7 @@ public class RepositoryExportProgressDialog
             {
                 try
                 {
-                    rep.exportAllObjects(monitor, filename);
+                    rep.exportAllObjects(monitor, filename, dir);
                 }
                 catch (KettleException e)
                 {

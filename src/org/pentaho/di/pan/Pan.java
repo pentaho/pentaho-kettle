@@ -260,7 +260,7 @@ public class Pan
                                         if (!Const.isEmpty(optionExprep))
                                         {
                                             System.out.println("Exporting all objects in the repository to file ["+optionExprep+"]");
-                                            rep.exportAllObjects(null, optionExprep.toString());
+                                            rep.exportAllObjects(null, optionExprep.toString(), directory);
                                             System.out.println("Finished exporting all objects in the repository to file ["+optionExprep+"]");
                                         }
 										else

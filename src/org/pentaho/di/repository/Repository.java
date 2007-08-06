@@ -5451,21 +5451,23 @@ public class Repository
         }
     }
     
-    public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException
+    public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename, RepositoryDirectory root) throws KettleException
     {
         if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
+        
+        root = ((null == root) ? getDirectoryTree() : root);
         
         StringBuffer xml = new StringBuffer(XMLHandler.getXMLHeader()); 
         xml.append("<repository>"+Const.CR+Const.CR);
 
         // Dump the transformations...
         xml.append("<transformations>"+Const.CR);
-        xml.append(exportTransformations(monitor, getDirectoryTree()));
+        xml.append(exportTransformations(monitor, root));
         xml.append("</transformations>"+Const.CR);
 
         // Now dump the jobs...
         xml.append("<jobs>"+Const.CR);
-        xml.append(exportJobs(monitor, getDirectoryTree()));
+        xml.append(exportJobs(monitor, root));
         xml.append("</jobs>"+Const.CR);
 
         xml.append("</repository>"+Const.CR+Const.CR);

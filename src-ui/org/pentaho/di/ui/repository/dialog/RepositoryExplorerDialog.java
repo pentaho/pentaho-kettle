@@ -83,6 +83,7 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
@@ -143,6 +144,7 @@ public class RepositoryExplorerDialog extends Dialog
 	private Tree      wTree;
 	private Button    wCommit;
 	private Button    wRollback;
+	private boolean   changedInDialog;
 
 	private LogWriter log;
 	private PropsUI props;
@@ -222,7 +224,7 @@ public class RepositoryExplorerDialog extends Dialog
             //
             MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
             miFileExport.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileExportAll")); //$NON-NLS-1$
-            miFileExport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(); } });
+            miFileExport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(null); } });
             
             // File import ALL
             //
@@ -532,7 +534,7 @@ public class RepositoryExplorerDialog extends Dialog
     
     
     		// Detect X or ALT-F4 or something that kills this window...
-    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { rollback(); } } );
+    		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { checkRollback(e); } } );
             
             debug="set screen size and position"; //$NON-NLS-1$
     
@@ -634,55 +636,49 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			final TreeItem ti = tisel[0];
 			final int level = ConstUI.getTreeLevel(ti);
-			final String path[] = ConstUI.getTreeStrings(ti);
-			final String item = ti.getText();
 		
 			int cat = getItemCategory(ti);
-			
-			switch(cat)
+			if ((level >= 2) &&
+					((cat == ITEM_CATEGORY_JOB_DIRECTORY) || (cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY) || 
+							(cat == ITEM_CATEGORY_JOB) || (cat == ITEM_CATEGORY_TRANSFORMATION)))
 			{
-
-            case ITEM_CATEGORY_PARTITION :
-                {
-                	if (!userinfo.isReadonly()) editPartitionSchema(item); 
-                }
-                break;
-
-            case ITEM_CATEGORY_CLUSTER:
-                {
-                	if (!userinfo.isReadonly()) editCluster(item);
-                }
-                break;
-
-			case ITEM_CATEGORY_TRANSFORMATION              :
-				if (level>=2)
+				String realpath[];
+				if ((cat == ITEM_CATEGORY_JOB_DIRECTORY) || (cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY))
 				{
-					// The first 1 levels of path[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
-					
-					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
-					
-					openTransformation(item, repdir);
-
+					// The first levels of path[] don't belong to the path to this directory!
+					realpath = new String[level - 1];
 				}
-				break;
-				
-			case ITEM_CATEGORY_JOB                         :
+				else
 				{
-					// The first 3 levels of text[] don't belong to the path to this transformation!
-					String realpath[] = new String[level-2];
-					for (int i=0;i<realpath.length;i++) realpath[i] = path[i+2];
-					
-					// Find the directory in the directory tree...
-					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
-	
-                    openJob(item, repdir);
- 				}
-				break;
+					// The first 3 levels of path[] don't belong to the path to this transformation or Job!
+					realpath = new String[level - 2];
+				}	
 				
-			default: 
+				final String path[] = ConstUI.getTreeStrings(ti);
+				for (int i = 0; i < realpath.length; i++)
+				{
+					realpath[i] = path[i + 2];
+				}
+				// Find the directory in the directory tree...
+				final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
+
+				switch (cat) {
+				case ITEM_CATEGORY_JOB_DIRECTORY:
+				case ITEM_CATEGORY_TRANSFORMATION_DIRECTORY: {
+					if (!userinfo.isReadonly())	createDirectory(ti, repdir);
+					break;
+				}
+				case ITEM_CATEGORY_TRANSFORMATION: {
+					openTransformation(ti.getText(), repdir);
+					break;
+				}
+				case ITEM_CATEGORY_JOB: {
+					openJob(ti.getText(), repdir);
+					break;
+				}
+				default:
+				}
+				
 			}
 		}
 	}
@@ -708,7 +704,7 @@ public class RepositoryExplorerDialog extends Dialog
 					// Export all
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
 					miExp.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportAll")); //$NON-NLS-1$
-					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(); } };
+					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(rep.getDirectoryTree()); } };
 					miExp.addSelectionListener( lsExp );
 
 					// Import all
@@ -721,13 +717,13 @@ public class RepositoryExplorerDialog extends Dialog
 					// Export transMeta
 					MenuItem miTrans  = new MenuItem(mTree, SWT.PUSH); 
 					miTrans.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans")); //$NON-NLS-1$
-					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(); } };
+					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(rep.getDirectoryTree()); } };
 					miTrans.addSelectionListener( lsTrans );
 
 					// Export jobs
 					MenuItem miJobs  = new MenuItem(mTree, SWT.PUSH); 
 					miJobs.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportJob")); //$NON-NLS-1$
-					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(); } };
+					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(rep.getDirectoryTree()); } };
 					miJobs.addSelectionListener( lsJobs );
 				}
 				break;
@@ -787,13 +783,13 @@ public class RepositoryExplorerDialog extends Dialog
                     miNew.setEnabled(!userinfo.isReadonly());
                     // Edit slave
                     MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
-                    miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Edit")); //$NON-NLS-1$
+                    miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Slave.Edit")); //$NON-NLS-1$
                     SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editSlaveServer(item); } };
                     miEdit.addSelectionListener( lsEdit );
                     miEdit.setEnabled(!userinfo.isReadonly());
                     // Delete slave
                     MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-                    miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Delete")); //$NON-NLS-1$
+                    miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Slave.Delete")); //$NON-NLS-1$
                     SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delSlaveServer(item); } };
                     miDel.addSelectionListener( lsDel );
                     miDel.setEnabled(!userinfo.isReadonly());
@@ -932,7 +928,32 @@ public class RepositoryExplorerDialog extends Dialog
 					// Find the directory in the directory tree...
 					final RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(realpath);
 
-					// Open transformation...
+					// Export xforms and jobs from directory
+					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
+					miExp.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportAll")); //$NON-NLS-1$
+					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(repdir); } };
+					miExp.addSelectionListener( lsExp );
+					miExp.setEnabled(!userinfo.isReadonly());
+					
+					if (cat == ITEM_CATEGORY_TRANSFORMATION_DIRECTORY)
+					{
+					// Export transMeta
+					MenuItem miTrans  = new MenuItem(mTree, SWT.PUSH); 
+					miTrans.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans")); //$NON-NLS-1$
+					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(repdir); } };
+					miTrans.addSelectionListener( lsTrans );
+					}
+					
+					if (cat == ITEM_CATEGORY_JOB_DIRECTORY)
+					{
+					// Export jobs
+					MenuItem miJobs  = new MenuItem(mTree, SWT.PUSH); 
+					miJobs.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportJob")); //$NON-NLS-1$
+					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(repdir); } };
+					miJobs.addSelectionListener( lsJobs );
+					}
+					
+					// create directory...
 					MenuItem miCreate  = new MenuItem(mTree, SWT.PUSH); 
 					miCreate.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.TransDirectory.Create")); //$NON-NLS-1$
 					miCreate.addSelectionListener( 
@@ -944,6 +965,7 @@ public class RepositoryExplorerDialog extends Dialog
 							}
 						}
 					);
+
 					if (level>2) // Can't rename or delete root directory...
 					{
 						// Rename directory
@@ -1181,6 +1203,30 @@ public class RepositoryExplorerDialog extends Dialog
 		shell.dispose();
 	}
 	
+	public void checkRollback(ShellEvent e)
+	{
+		if (changedInDialog)
+		{
+			int save = JobGraph.showChangedWarning(shell, "repository");
+			if (save == SWT.CANCEL)
+			{
+				e.doit = false;
+			}
+			else if (save == SWT.YES)
+			{
+				commit();
+			}
+			else
+			{
+				rollback();
+			}
+		}
+		else
+		{
+			rollback();
+		}
+	}
+	
 	public void commit()
 	{
 	    try
@@ -1224,12 +1270,16 @@ public class RepositoryExplorerDialog extends Dialog
             // The partition schemas...             
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setText(STRING_PARTITIONS);
+            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
+            		new DoubleClickInterface() { public void action(TreeItem treeItem) { newPartitionSchema(); } });            
     
             names = rep.getPartitionSchemaNames();          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setText(Const.NVL(names[i], ""));
+                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
+                		new DoubleClickInterface() { public void action(TreeItem treeItem) { editPartitionSchema(treeItem.getText()); } });                            
             }
             
             // The slaves...         
@@ -1248,12 +1298,16 @@ public class RepositoryExplorerDialog extends Dialog
             // The clusters ...
             tiParent = new TreeItem(tiTree, SWT.NONE); 
             tiParent.setText(STRING_CLUSTERS);
+            if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(tiParent, 
+            		new DoubleClickInterface() { public void action(TreeItem treeItem) { newCluster(); } });            
     
             names = rep.getClusterNames();          
             for (int i=0;i<names.length;i++)
             {
                 TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
                 newItem.setText(Const.NVL(names[i], ""));
+                if (!userinfo.isReadonly()) TreeItemAccelerator.addDoubleClick(newItem, 
+                		new DoubleClickInterface() { public void action(TreeItem treeItem) { editCluster(treeItem.getText()); } });                            
             }
     
 			// The transformations...				
@@ -1543,6 +1597,7 @@ public class RepositoryExplorerDialog extends Dialog
     			{
                     debug = "fromdir found: move transformation!"; //$NON-NLS-1$
     				rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
+    				changedInDialog = true;
     				retval=true;
     			}
     			else
@@ -1586,6 +1641,7 @@ public class RepositoryExplorerDialog extends Dialog
     			{
                     debug = "fromdir found: move job!"; //$NON-NLS-1$
     				rep.moveJob(jobname, fromdir.getID(), repdir.getID());
+    				changedInDialog = true;
     				retval=true;
     			}
     			else
@@ -1690,6 +1746,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					System.out.println("Renaming job ["+name+"] with ID = "+id);
 					rep.renameJob(id, newname);
+    				changedInDialog = true;
 					retval=true;
 				}
 			}
@@ -1730,6 +1787,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// System.out.println("OK, Deleting transformation ["+name+"] with ID = "+id);
 					rep.delAllFromJob(id);
+    				changedInDialog = true;
 				}
 			}
 			else
@@ -2561,7 +2619,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void exportTransformations()
+	public void exportTransformations(RepositoryDirectory root)
 	{
 		try
 		{
@@ -2570,7 +2628,7 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				String directory = dialog.getFilterPath();
 				
-				long dirids[] = rep.getDirectoryTree().getDirectoryIDs();
+				long dirids[] = ((null == root)? rep.getDirectoryTree() : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
@@ -2579,7 +2637,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<trans.length;i++)
 					{
 						TransMeta ti = new TransMeta(rep, trans[i], repdir);
-						System.out.println("Loading/Exporting transformation ["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						log.logBasic("Exporting transformation", "["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
 							
@@ -2588,7 +2646,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (!dir.exists()) 
 						{
 							dir.mkdir();
-							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logBasic("Exporting transformation", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						}
 						
 						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(trans[i])+".ktr"; //$NON-NLS-1$						
@@ -2601,7 +2659,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							System.out.println("Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logError("Exporting transformation", "Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
 						}
 					}
 				}
@@ -2623,7 +2681,7 @@ public class RepositoryExplorerDialog extends Dialog
 		return filename;
 	}
 
-	public void exportJobs()
+	public void exportJobs(RepositoryDirectory root)
 	{
 		try
 		{
@@ -2632,7 +2690,7 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				String directory = dialog.getFilterPath();
 	
-				long dirids[] = rep.getDirectoryTree().getDirectoryIDs();
+				long dirids[] = ((null == root)? rep.getDirectoryTree() : root).getDirectoryIDs();
 				for (int d=0;d<dirids.length;d++)
 				{
 					RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirids[d]);				
@@ -2641,7 +2699,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<jobs.length;i++)
 					{
 						JobMeta ji = new JobMeta(log, rep, jobs[i], repdir);
-						System.out.println("Loading/Exporting job ["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						log.logBasic("Exporting Jobs", "["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
 						
@@ -2650,7 +2708,7 @@ public class RepositoryExplorerDialog extends Dialog
 						if (!dir.exists()) 
 						{
 							dir.mkdir();
-							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logBasic("Exporting Jobs", "Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
 						}
 						
 						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+fixFileName(jobs[i])+".kjb"; //$NON-NLS-1$
@@ -2663,7 +2721,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							System.out.println("Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+							log.logError("Exporting Jobs", "Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$							
 						}
 					}
 				}
@@ -2675,15 +2733,15 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 	}
 	
-	public void exportAll()
+	public void exportAll(RepositoryDirectory dir)
 	{
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
 		if (dialog.open()!=null)
 		{
 			String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-			System.out.println("Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+			log.logBasic("Exporting All", "Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
-			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, filename);
+			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, dir, filename);
 			repd.open();
 		}
 	}
