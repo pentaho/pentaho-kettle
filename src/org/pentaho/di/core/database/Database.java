@@ -2373,8 +2373,10 @@ public class Database implements VariableSpace
                 // The (12,31) that is given back is not correct
                 if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
                 {
-                    precision=-1;
-                    length=-1;
+                	if (precision >= length) {
+                        precision=-1;
+                        length=-1;
+                  	}
                 }
             }
             else
