@@ -98,7 +98,7 @@
 		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
 		<tooltip>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Calculator")
-		</tooltip>
+		</tooltip>Database join
 		<image-uri>CLC.png</image-uri>
 	</step>
 	<step id="Constant">
@@ -244,7 +244,7 @@
 		</tooltip>
 		<image-uri>DLU.png</image-uri>
 	</step>
-	<step id="DBLookup">
+	<step id="DBJoin">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseJoin")
 		</description>
@@ -595,7 +595,7 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CallDBProcedure")
 		</tooltip>
 		<image-uri>PRC.png</image-uri>
-	</step>   
+	</step>   D
 		<step id="Denormaliser">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowDenormaliser")

@@ -127,8 +127,8 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			}
 			Object[] newRow = RowDataUtil.resizeArray(rowData, data.outputRowMeta.size());
 			int newIndex = rowMeta.size();
-			for (int i=0;i<addMeta.size();i++) {
-				newRow[newIndex++] = add[i];
+			for (int i=0;i<data.notfound.length;i++) {
+				newRow[newIndex++] = data.notfound[i];
 			}
 			putRow(data.outputRowMeta, newRow);
 		}
@@ -175,6 +175,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
         if (data.db!=null)
         {
             data.db.cancelStatement(data.pstmt);
+            setStopped(true);
         }
     }
 

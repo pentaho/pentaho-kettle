@@ -224,7 +224,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			// try the old way for compatibility 
 			Method method = null;
 				try {
-					Class sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class, String.class};
+					Class<?> sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class, String.class};
 					method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
 					if( method != null ) {
 						return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta, stepName } );
@@ -257,7 +257,7 @@ public class SpoonStepsDelegate extends SpoonDelegate
 			// try the old way for compatibility 
 			Method method = null;
 				try {
-					Class sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class};
+					Class<?> sig[] = new Class[] {Shell.class, StepMetaInterface.class, TransMeta.class};
 					method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
 					if( method != null ) {
 						return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta } );

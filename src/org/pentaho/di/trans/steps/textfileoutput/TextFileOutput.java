@@ -284,14 +284,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
         	}
     	}
     }
-
-    private byte[] getBinaryString(byte bytes[]) throws KettleStepException {
-    	return bytes;
-    }
-    
-    private byte[] getBinaryString(Object value) throws KettleStepException {
-    	return getBinaryString( value.toString() );
-    }
     
     private byte[] getBinaryString(String string) throws KettleStepException {
     	try {

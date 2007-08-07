@@ -5535,7 +5535,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 					StepDialogInterface partitionerDialog = null;
 					try {
 						partitionerDialog = delegates.steps.getPartitionerDialog(stepMeta.getStepMetaInterface(), stepPartitioningMeta, transMeta);
-						String result = partitionerDialog.open();
+						/* String result = */ partitionerDialog.open();
 					} catch (Exception e) {
 						// TODO log this
 						e.printStackTrace();

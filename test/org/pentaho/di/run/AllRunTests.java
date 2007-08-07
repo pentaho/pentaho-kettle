@@ -15,6 +15,7 @@ import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
 import org.pentaho.di.run.combinationlookup.RunCombinationLookup;
 import org.pentaho.di.run.constant.RunConstant;
+import org.pentaho.di.run.databasejoin.RunDatabaseJoin;
 import org.pentaho.di.run.databaselookup.RunDatabaseLookup;
 import org.pentaho.di.run.delete.RunDelete;
 import org.pentaho.di.run.denormaliser.RunDenormaliser;
@@ -172,6 +173,7 @@ public class AllRunTests
         suite.addTestSuite(RunTextFileOutput.class);
         suite.addTestSuite(RunUniqueRows.class);
         suite.addTestSuite(RunDatabaseLookup.class);
+        suite.addTestSuite(RunDatabaseJoin.class);
         suite.addTestSuite(RunDimensionLookup.class);
         suite.addTestSuite(RunExcelInput.class);
         suite.addTestSuite(RunCombinationLookup.class);

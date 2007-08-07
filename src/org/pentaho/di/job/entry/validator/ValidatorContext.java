@@ -64,7 +64,7 @@ public class ValidatorContext {
     return map.size();
   }
 
-  public Collection values() {
+  public Collection<Object> values() {
     return map.values();
   }
 
