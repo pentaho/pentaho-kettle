@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.laf.LAFManager;
 import org.pentaho.di.ui.util.ImageUtil;
 
 /**
@@ -25,15 +26,13 @@ import org.pentaho.di.ui.util.ImageUtil;
 public class Splash
 {
 	private Shell splash;
-	
 	 
 	public Splash(Display display)
 	{
 		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
-		
 
-		final Image kettle_image = ImageUtil.getImage(display,"kettle_splash.png");//new Image(display, display.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
-        final Image kettle_icon  = ImageUtil.getImage(display,"spoon32.png");//new Image(display, display.getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
+		final Image kettle_image = ImageUtil.getImage(display, LAFManager.getLAFProp("splash_image", "kettle_splash.png"));
+        final Image kettle_icon  = ImageUtil.getImage(display,"spoon32.png");
         
         splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
         splash.setImage(kettle_icon);

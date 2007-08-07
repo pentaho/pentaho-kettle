@@ -331,6 +331,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
+		
 		ArrayList<String> args = new ArrayList<String>();
         for (int i=0;i<a.length;i++) args.add(a[i]);
 

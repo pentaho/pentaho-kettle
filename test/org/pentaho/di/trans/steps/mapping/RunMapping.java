@@ -47,4 +47,20 @@ public class RunMapping extends TestCase
         Result newResult = timedTransRunner.getNewResult();
         assertTrue(newResult.getNrErrors()==0);
     }
+    
+    public void test_MAPPING_MULTI_OUTPUT() throws Exception
+    {
+        TimedTransRunner timedTransRunner = new TimedTransRunner(
+                "test/org/pentaho/di/trans/steps/mapping/multi_output/use filereader.ktr", 
+                LogWriter.LOG_LEVEL_ERROR, 
+                AllRunTests.getOldTargetDatabase(),
+                AllRunTests.getNewTargetDatabase(),
+                1000
+            );
+        timedTransRunner.init();
+        assertTrue( timedTransRunner.runNewEngine(true) );
+        
+        Result newResult = timedTransRunner.getNewResult();
+        assertTrue(newResult.getNrErrors()==0);
+    }
 }
