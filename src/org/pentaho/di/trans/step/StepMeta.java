@@ -225,6 +225,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
             if (sp!=null)
             {
                 stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
+                stepid=sp.getID()[0]; // revert to the default in case we loaded an alternate version
             }
             else
             {

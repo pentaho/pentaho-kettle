@@ -93,7 +93,6 @@ public class BaseStep extends Thread implements VariableSpace
       {
       TODO: port these classes
 
-            new StepPluginMeta(DatabaseJoinMeta.class, "DBJoin", Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"), "DBJ.png", CATEGORY_JOINS),
             new StepPluginMeta(XBaseInputMeta.class, "XBaseInput", Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), "XBI.png", CATEGORY_INPUT),
             new StepPluginMeta(AddXMLMeta.class, "AddXML", Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages.getString("BaseStep.TypeTooltipDesc.AddXML"), "XIN.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages.getString("BaseStep.TypeTooltipDesc.AccessOutput"), "ACO.png", CATEGORY_OUTPUT),

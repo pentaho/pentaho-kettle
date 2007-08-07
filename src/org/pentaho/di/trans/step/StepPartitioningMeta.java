@@ -163,6 +163,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
 
     public static final String getMethod(String description)
     {
+    	if (Const.isEmpty(description)) return methodCodes[PARTITIONING_METHOD_NONE];
+    	
         for (int i=0;i<methodDescriptions.length;i++)
         {
             if (methodDescriptions[i].equalsIgnoreCase(description)){

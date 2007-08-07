@@ -288,7 +288,7 @@ public class StepLoader
             {
             	try 
             	{
-                	Class pClass = Class.forName( classname );
+                	Class<?> pClass = Class.forName( classname );
                 	if( pClass != null )
                 	{
                 		Partitioner partitioner = (Partitioner) pClass.newInstance();

@@ -77,8 +77,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	
-	private String  script;
-	
 	private String  name[];
 	private String  rename[];
 	private int     type[];
@@ -156,22 +154,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     }
     
     /**
-     * @return Returns the script.
-     */
-    public String getScript()
-    {
-        return script;
-    }
-    
-    /**
-     * @param script The script to set.
-     */
-    public void setScript(String script)
-    {
-        this.script = script;
-    }
-    
-    /**
      * @return Returns the type.
      */
     public int[] getType()
@@ -243,10 +225,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	
 	private void readData(Node stepnode) throws KettleXMLException{
 		try	{
-			String slen, sprc;
-			int i, nrfields, nrscripts;
-			
-			script     = XMLHandler.getTagValue(stepnode, "script"); 
+			String script = XMLHandler.getTagValue(stepnode, "script"); 
 			String strCompatible = XMLHandler.getTagValue(stepnode, "compatible");
 			if (strCompatible==null) {
 				compatible=true;
@@ -255,26 +234,37 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				compatible = "Y".equalsIgnoreCase(strCompatible);
 			}
 			
-			Node scripts = XMLHandler.getSubNode(stepnode, "jsScripts");
-			nrscripts = XMLHandler.countNodes(scripts, "jsScript");
-			jsScripts = new ScriptValuesScript[nrscripts];
-			for (i=0;i<nrscripts;i++){
-				Node fnode = XMLHandler.getSubNodeByNr(scripts, "jsScript", i); //$NON-NLS-1$
-				
-				jsScripts[i] = new ScriptValuesScript(
-						Integer.parseInt(XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_TYPE)),
-						XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_NAME), 
-						XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_SCRIPT) 
-				);
-				
-			}	
+			// When in compatibility mode, we load the script, not the other tabs...
+			//
+			if (!Const.isEmpty(script)) {
+				jsScripts = new ScriptValuesScript[1];
+				jsScripts[0] = new ScriptValuesScript(
+						ScriptValuesScript.TRANSFORM_SCRIPT,
+						"ScriptValue", 
+						script
+						);
+			}
+			else {
+				Node scripts = XMLHandler.getSubNode(stepnode, "jsScripts");
+				int nrscripts = XMLHandler.countNodes(scripts, "jsScript");
+				jsScripts = new ScriptValuesScript[nrscripts];
+				for (int i=0;i<nrscripts;i++){
+					Node fnode = XMLHandler.getSubNodeByNr(scripts, "jsScript", i); //$NON-NLS-1$
+					
+					jsScripts[i] = new ScriptValuesScript(
+							Integer.parseInt(XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_TYPE)),
+							XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_NAME), 
+							XMLHandler.getTagValue(fnode, JSSCRIPT_TAG_SCRIPT) 
+					);
+				}
+			}
 			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
-			nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 				
 			allocate(nrfields);
 			
-			for (i=0;i<nrfields;i++)
+			for (int i=0;i<nrfields;i++)
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
@@ -282,8 +272,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 				rename   [i] = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
 				type     [i] = ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
 	
-				slen = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
-				sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
+				String slen = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
+				String sprc = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
 				length   [i]=Const.toInt(slen, -1);
 				precision[i]=Const.toInt(sprc, -1);
 			}
@@ -295,7 +285,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public void setDefault(){
-		script = ""; //$NON-NLS-1$
 		jsScripts = new ScriptValuesScript[1];
 		jsScripts[0] = new ScriptValuesScript(
 				ScriptValuesScript.TRANSFORM_SCRIPT,
@@ -344,9 +333,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     {
         StringBuffer retval = new StringBuffer(300);
 		
-		retval.append("    ").append(XMLHandler.addTagValue("script", script)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("compatible", compatible)); //$NON-NLS-1$ //$NON-NLS-2$
-        
 
 		retval.append("    <jsScripts>"); 
 		for (int i=0;i<jsScripts.length;i++){
@@ -378,18 +365,29 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     {
 		try
 		{
-			script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
+			String script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
 			compatible = rep.getStepAttributeBoolean(id_step, 0, "compatible", true); //$NON-NLS-1$
 
-            int nrScripts = rep.countNrStepAttributes(id_step, JSSCRIPT_TAG_NAME); //$NON-NLS-1$
-            jsScripts = new ScriptValuesScript[nrScripts];
-            for (int i = 0; i < nrScripts; i++)
-            {
-                jsScripts[i] = new ScriptValuesScript((int) rep.getStepAttributeInteger(id_step, i, JSSCRIPT_TAG_TYPE), rep.getStepAttributeString(
-                        id_step, i, JSSCRIPT_TAG_NAME), rep.getStepAttributeString(id_step, i, JSSCRIPT_TAG_SCRIPT));
-
-            }
-			
+			// When in compatibility mode, we load the script, not the other tabs...
+			//
+			if (!Const.isEmpty(script)) {
+				jsScripts = new ScriptValuesScript[1];
+				jsScripts[0] = new ScriptValuesScript(
+						ScriptValuesScript.TRANSFORM_SCRIPT,
+						"ScriptValue", 
+						script
+						);
+			}
+			else {
+	            int nrScripts = rep.countNrStepAttributes(id_step, JSSCRIPT_TAG_NAME); //$NON-NLS-1$
+	            jsScripts = new ScriptValuesScript[nrScripts];
+	            for (int i = 0; i < nrScripts; i++)
+	            {
+	                jsScripts[i] = new ScriptValuesScript((int) rep.getStepAttributeInteger(id_step, i, JSSCRIPT_TAG_TYPE), rep.getStepAttributeString(
+	                        id_step, i, JSSCRIPT_TAG_NAME), rep.getStepAttributeString(id_step, i, JSSCRIPT_TAG_SCRIPT));
+	
+	            }
+			}
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			allocate(nrfields);
@@ -413,7 +411,6 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "script", script); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "compatible", compatible); //$NON-NLS-1$
 
             for (int i = 0; i < jsScripts.length; i++)
