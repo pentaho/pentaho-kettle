@@ -86,7 +86,11 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
-
+	
+	private Label        wlUnspecified;
+	private Button       wUnspecified;
+	private FormData     fdlUnspecified, fdUnspecified;
+	
 	private Label        wlRemove;
 	private TableView    wRemove;
 	private FormData     fdlRemove, fdRemove;
@@ -186,6 +190,24 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		selectLayout.marginWidth  = margin;
 		selectLayout.marginHeight = margin;
 		wSelectComp.setLayout(selectLayout);
+
+		wlUnspecified=new Label(wSelectComp, SWT.RIGHT);
+		wlUnspecified.setText(Messages.getString("SelectValuesDialog.Unspecified.Label")); //$NON-NLS-1$
+ 		props.setLook(wlUnspecified);
+		fdlUnspecified=new FormData();
+		fdlUnspecified.left = new FormAttachment(0, 0);
+		fdlUnspecified.right = new FormAttachment(middle, 0);
+		fdlUnspecified.bottom = new FormAttachment(100, 0);
+		wlUnspecified.setLayoutData(fdlUnspecified);
+
+		wUnspecified=new Button(wSelectComp, SWT.CHECK);
+		props.setLook(wUnspecified);
+		fdUnspecified=new FormData();
+		fdUnspecified.left = new FormAttachment(middle, margin);
+		fdUnspecified.right = new FormAttachment(100, 0);
+		fdUnspecified.bottom = new FormAttachment(100, 0);
+		wUnspecified.setLayoutData(fdUnspecified);
+
 		
 		wlFields=new Label(wSelectComp, SWT.NONE);
 		wlFields.setText(Messages.getString("SelectValuesDialog.Fields.Label")); //$NON-NLS-1$
@@ -218,7 +240,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wGetSelect.addListener(SWT.Selection, lsGet);
 		fdGetSelect = new FormData();
 		fdGetSelect.right = new FormAttachment(100, 0);
-		fdGetSelect.top   = new FormAttachment(50, 0);
+		fdGetSelect.top   = new FormAttachment(wlFields, margin);
 		wGetSelect.setLayoutData(fdGetSelect);
 
 		wDoMapping = new Button(wSelectComp, SWT.PUSH);
@@ -235,7 +257,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		fdFields.left = new FormAttachment(0, 0);
 		fdFields.top  = new FormAttachment(wlFields, margin);
 		fdFields.right  = new FormAttachment(wGetSelect, -margin);
-		fdFields.bottom = new FormAttachment(100, 0);
+		fdFields.bottom = new FormAttachment(wUnspecified, -margin);
 		wFields.setLayoutData(fdFields);
 
 		fdSelectComp=new FormData();
@@ -489,7 +511,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			wFields.optWidth(true);
 			wTabFolder.setSelection(0);
 		}
-
+		wUnspecified.setSelection( input.isSelectingAndSortingUnspecifiedFields() );
+		
 		/*
 		 * Remove certain fields...
 		 */
@@ -564,6 +587,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			if (input.getSelectLength()   [i]<-2) input.getSelectLength()   [i]=-2;
 			if (input.getSelectPrecision()[i]<-2) input.getSelectPrecision()[i]=-2;
 		}
+		input.setSelectingAndSortingUnspecifiedFields( wUnspecified.getSelection() );
 
 		for (i=0;i<nrremove;i++)
 		{

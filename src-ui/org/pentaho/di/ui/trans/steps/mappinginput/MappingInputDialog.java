@@ -56,6 +56,9 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
     private TableView    wFields;
     private FormData     fdlFields, fdFields;
 
+	private Button       wUnspecified;
+	private FormData     fdUnspecified;
+
 	private MappingInputMeta input;
 
 	public MappingInputDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -111,7 +114,27 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 		
-        
+		// Some buttons
+		//
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+
+		// The check box to pass through and sort unspecified fields...
+		//
+		wUnspecified=new Button(shell, SWT.CHECK);
+		wUnspecified.setText(Messages.getString("MappingInputDialog.Unspecified.Label"));
+		props.setLook(wUnspecified);
+		fdUnspecified=new FormData();
+		fdUnspecified.left = new FormAttachment(0, 0);
+		fdUnspecified.right = new FormAttachment(100, 0);
+		fdUnspecified.bottom = new FormAttachment(wOK, -margin*2);
+		wUnspecified.setLayoutData(fdUnspecified);
+		
+		// The grid goes in between the step name and the check box...
+		//
         wlFields=new Label(shell, SWT.NONE);
         wlFields.setText(Messages.getString("MappingInputDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
@@ -137,23 +160,16 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
                               lsMod,
                               props
                               );
+        
+        
 
         fdFields=new FormData();
         fdFields.left  = new FormAttachment(0, 0);
         fdFields.top   = new FormAttachment(wlFields, margin);
         fdFields.right = new FormAttachment(100, 0);
-        fdFields.bottom= new FormAttachment(100, -50);
+        fdFields.bottom= new FormAttachment(wUnspecified, -margin*2);
         wFields.setLayoutData(fdFields);
         
-        
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
-
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -202,7 +218,8 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
                 if (prec>=0     ) item.setText(4, ""+prec  ); //$NON-NLS-1$
             }
         }
-        
+        wUnspecified.setSelection( input.isSelectingAndSortingUnspecifiedFields() );
+		
         wFields.setRowNums();
         wFields.optWidth(true);
         
@@ -235,6 +252,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
             input.getFieldLength()[i]    = Const.toInt(slength, -1); 
             input.getFieldPrecision()[i] = Const.toInt(sprec  , -1); 
         }
+        input.setSelectingAndSortingUnspecifiedFields( wUnspecified.getSelection() );
 
 		dispose();
 	}

@@ -15,6 +15,8 @@
 
 package org.pentaho.di.trans.steps.mappinginput;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -58,6 +61,12 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     private int    fieldLength[];
 
     private int    fieldPrecision[];
+    
+    /**
+	 * Select: flag to indicate that the non-selected fields should also be
+	 * taken along, ordered by fieldname
+	 */
+    private boolean selectingAndSortingUnspecifiedFields;
 
 	private volatile RowMetaInterface inputRowMeta;
 	private volatile List<MappingValueRename> valueRenames;
@@ -184,6 +193,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                 fieldLength[i] = Const.toInt(slength, -1);
                 fieldPrecision[i] = Const.toInt(sprecision, -1);
             }
+            
+			selectingAndSortingUnspecifiedFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fields, "select_unspecified"));
         }
         catch (Exception e)
         {
@@ -208,6 +219,9 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                 retval.append("        </field>" + Const.CR); //$NON-NLS-1$
             }
         }
+        
+        retval.append("        ").append(XMLHandler.addTagValue("select_unspecified", selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$ //$NON-NLS-2$
+		
         retval.append("      </fields>" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
@@ -215,11 +229,13 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
-        int i, nrfields = 0;
+        int nrfields = 0;
+        
+        selectingAndSortingUnspecifiedFields = false;
 
         allocate(nrfields);
 
-        for (i = 0; i < nrfields; i++)
+        for (int i = 0; i < nrfields; i++)
         {
             fieldName[i] = "field" + i; //$NON-NLS-1$
             fieldType[i] = ValueMetaInterface.TYPE_STRING;
@@ -231,35 +247,61 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     public void getFields(RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException 
     {
     	// Row should normally be empty when we get here.
-    	// That is because there is no previous step to this mapping input step.
+    	// That is because there is no previous step to this mapping input step from the viewpoint of this single sub-transformation.
+    	// From the viewpoint of the transformation that executes the mapping, it's important to know what comes out at the exit points.
+    	// For that reason we need to re-order etc, based on the input specification...
     	//
     	if (inputRowMeta!=null) {
     		// this gets set only in the parent transformation...
     		// It includes all the renames that needed to be done
     		// 
-    		row.mergeRowMeta(inputRowMeta); 
-    		
-    		/*
-    		// OK, now rename all the fields in the valueRenames list...
-    		//
-    		for (MappingValueRename valueRename : valueRenames) {
-    			ValueMetaInterface valueMeta = row.searchValueMeta(valueRename.getTargetValueName()); 
-    			if (valueMeta==null) {
-    				throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", valueRename.getTargetValueName()));
-    			}
-    			// apply the rename : change it back to the original value.
-    			//
-    			valueMeta.setName(valueRename.getSourceValueName());
+    		if (selectingAndSortingUnspecifiedFields) {
+    			// Select the specified fields from the input, re-order everything and put the other fields at the back, sorted...
+    			// 
+    			RowMetaInterface newRow = new RowMeta();
+    			
+    	    	for (int i=0;i<fieldName.length;i++) {
+    	    		int index = inputRowMeta.indexOfValue(fieldName[i]);
+    	    		if (index<0) {
+    	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
+    	    		}
+    	    		
+    	    		newRow.addValueMeta(inputRowMeta.getValueMeta(index));
+    	        }
+    	    	
+    	    	// Now get the unspecified fields.
+				// Sort the fields
+				// Add them after the specified fields...
+				//
+				List<String> extra = new ArrayList<String>();
+				for (int i=0;i<inputRowMeta.size();i++) {
+					String fieldName = inputRowMeta.getValueMeta(i).getName();
+					if (newRow.indexOfValue(fieldName)<0) {
+						extra.add(fieldName);
+					}
+				}
+				Collections.sort(extra);
+				for (String fieldName : extra) {
+					ValueMetaInterface extraValue = inputRowMeta.searchValueMeta(fieldName);
+					newRow.addValueMeta(extraValue);
+				}
+				
+				// now merge the new row...
+				// This is basically the input row meta data with the fields re-ordered.
+				//
+				row.mergeRowMeta(newRow);
     		}
-    		*/
-    		
-    		// Now, after all the mapping exercises that we did, we should validate the existence of all the spec-ed fields...
-    		//
-	    	for (int i=0;i<fieldName.length;i++) {
-	    		if (row.indexOfValue(fieldName[i])<0) {
-	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
-	    		}
-	        }
+    		else {
+        		row.mergeRowMeta(inputRowMeta); 
+        		
+        		// Validate the existence of all the specified fields...
+        		//
+    	    	for (int i=0;i<fieldName.length;i++) {
+    	    		if (row.indexOfValue(fieldName[i])<0) {
+    	    			throw new KettleStepException(Messages.getString("MappingInputMeta.Exception.UnknownField", fieldName[i]));
+    	    		}
+    	        }
+    		}
     	}
     	else {
 	    	// We'll have to work with the statically provided information
@@ -294,6 +336,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                 fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
                 fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
             }
+            
+			selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean(id_step, "select_unspecified");
         }
         catch (Exception e)
         {
@@ -315,6 +359,8 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
                     rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]); //$NON-NLS-1$
                 }
             }
+            
+			rep.saveStepAttribute(id_transformation, id_step, "field_precision", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
         }
         catch (Exception e)
         {
@@ -382,6 +428,20 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setValueRenames(List<MappingValueRename> valueRenames) {
 		this.valueRenames = valueRenames;
+	}
+
+	/**
+	 * @return the selectingAndSortingUnspecifiedFields
+	 */
+	public boolean isSelectingAndSortingUnspecifiedFields() {
+		return selectingAndSortingUnspecifiedFields;
+	}
+
+	/**
+	 * @param selectingAndSortingUnspecifiedFields the selectingAndSortingUnspecifiedFields to set
+	 */
+	public void setSelectingAndSortingUnspecifiedFields(boolean selectingAndSortingUnspecifiedFields) {
+		this.selectingAndSortingUnspecifiedFields = selectingAndSortingUnspecifiedFields;
 	}
 
 }

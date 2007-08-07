@@ -231,7 +231,7 @@ public class BaseStep extends Thread implements VariableSpace
      * This contains the first row received and will be the reference row. We used it to perform extra checking: see if
      * we don't get rows with "mixed" contents.
      */
-    private RowMetaInterface             referenceRow;
+    private RowMetaInterface             inputReferenceRow;
 
     /**
      * This field tells the putRow() method that we are in partitioned mode
@@ -1030,7 +1030,7 @@ public class BaseStep extends Thread implements VariableSpace
     	}
 	    
         // What's the current input stream?
-        RowSet in = currentInputStream();
+        RowSet inputRowSet = currentInputStream();
         
         // See if this step is receiving partitioned data...
         // In that case it might be the case that one input row set is receiving all data and
@@ -1047,7 +1047,7 @@ public class BaseStep extends Thread implements VariableSpace
     		// Timeout almost immediately if nothing is there to read.
     		// We then will switch to the next row set to read from...
     		//
-        	row = in.getRowWait(1, TimeUnit.MILLISECONDS);
+        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
         		linesRead++;
         		blockPointer++;
@@ -1057,10 +1057,10 @@ public class BaseStep extends Thread implements VariableSpace
         		// If row is still empty and the row set is done, we remove the row set from
         		// the input stream and move on to the next one...
         		//
-        		if (in.isDone()) {
-        			row = in.getRowWait(1, TimeUnit.MILLISECONDS);
+        		if (inputRowSet.isDone()) {
+        			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         			if (row==null) {
-        				inputRowSets.remove(in);
+        				inputRowSets.remove(inputRowSet);
         				if (inputRowSets.size()==0) return null; // We're completely done.
         			}
         			else {
@@ -1068,7 +1068,7 @@ public class BaseStep extends Thread implements VariableSpace
         			}
         		}
         		nextInputStream();
-            	in = currentInputStream();
+            	inputRowSet = currentInputStream();
         	}
     	}
         
@@ -1081,26 +1081,28 @@ public class BaseStep extends Thread implements VariableSpace
             if (inputRowSets.size()==0) return null; // We're done.
         	
         	nextInputStream();
-            in = currentInputStream();
-            row = getRowFrom(in);
+            inputRowSet = currentInputStream();
+            row = getRowFrom(inputRowSet);
         }
         
         // Also set the meta data on the first occurrence.
         //
-        if (inputRowMeta==null) inputRowMeta=in.getRowMeta();
-
-        // OK, before we return the row, let's see if we need to check on mixing row compositions...
-        // 
-        if (safeModeEnabled)
-        {
-            safeModeChecking(inputRowMeta); // Extra checking 
-            if (row.length<inputRowMeta.size()) {
-            	throw new KettleException("Safe mode check noticed that the length of the row data is smaller ("+row.length+") than the row metadata size ("+inputRowMeta.size()+")");
-            }
-        } 
+        if (inputRowMeta==null) {
+        	inputRowMeta=inputRowSet.getRowMeta();
+        }
         
         if ( row != null )
         {
+            // OK, before we return the row, let's see if we need to check on mixing row compositions...
+            // 
+            if (safeModeEnabled)
+            {
+                safeModeChecking(inputRowSet.getRowMeta(), inputRowMeta); // Extra checking 
+                if (row.length<inputRowMeta.size()) {
+                	throw new KettleException("Safe mode check noticed that the length of the row data is smaller ("+row.length+") than the row metadata size ("+inputRowMeta.size()+")");
+                }
+            } 
+            
             for (int i = 0; i < rowListeners.size(); i++)
             {
                 RowListener rowListener = (RowListener) rowListeners.get(i);
@@ -1116,13 +1118,15 @@ public class BaseStep extends Thread implements VariableSpace
 
     protected void safeModeChecking(RowMetaInterface row) throws KettleRowException
     {
-        // String saveDebug=debug;
-        // debug="Safe mode checking";
-        if (referenceRow == null)
+    	if (row==null) {
+    		return;
+    	}
+    	
+        if (inputReferenceRow == null)
         {
-            referenceRow = (RowMetaInterface) row.clone(); // copy it!
+            inputReferenceRow = (RowMetaInterface) row.clone(); // copy it!
             
-            // Check for double fieldnames.
+            // Check for double field names.
             // 
             String[] fieldnames = row.getFieldNames();
             Arrays.sort(fieldnames);
@@ -1136,9 +1140,8 @@ public class BaseStep extends Thread implements VariableSpace
         }
         else
         {
-            safeModeChecking(referenceRow, row);
+            safeModeChecking(inputReferenceRow, row);
         }
-        // debug=saveDebug;
     }
 
     public static void safeModeChecking(RowMetaInterface referenceRow, RowMetaInterface row) throws KettleRowException

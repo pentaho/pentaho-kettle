@@ -21,6 +21,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -96,22 +98,43 @@ public class MappingInput extends BaseStep implements StepInterface
             // --> getInputRowMeta() is not corresponding to what we're outputting.
 			// In essence, we need to rename a couple of fields...
 			//
-            data.outputRowMeta = (RowMetaInterface)getInputRowMeta().clone();
+            data.outputRowMeta = new RowMeta();
+            meta.setInputRowMeta(getInputRowMeta());
+            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
             
             // Now change the field names according to the mapping specification...
             // That means that all fields go through unchanged, unless specified.
             // 
-            //
-            for (MappingValueRename valueRename : data.valueRenames) {
-            	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
-            	if (valueMeta==null) {
-            		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+            if (meta.isSelectingAndSortingUnspecifiedFields()) {
+            	//
+            	// Create a list of the indexes to select to get the right order or fields on the output.
+            	//
+            	data.fieldNrs = new int[data.outputRowMeta.size()];
+            	for (int i=0;i<data.outputRowMeta.size();i++) {
+            		data.fieldNrs[i] = getInputRowMeta().indexOfValue(data.outputRowMeta.getValueMeta(i).getName());
             	}
-            	valueMeta.setName(valueRename.getTargetValueName());
+            }
+            else {
+                for (MappingValueRename valueRename : data.valueRenames) {
+                	ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta(valueRename.getSourceValueName());
+                	if (valueMeta==null) {
+                		throw new KettleStepException(Messages.getString("MappingInput.Exception.UnableToFindMappedValue", valueRename.getSourceValueName()));
+                	}
+                	valueMeta.setName(valueRename.getTargetValueName());
+                }
             }
 		}
 		
-		putRow(data.outputRowMeta, row);
+		if (meta.isSelectingAndSortingUnspecifiedFields()) {
+			Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+			for (int i=0;i<data.fieldNrs.length;i++) {
+				outputRowData[i] = row[data.fieldNrs[i]];
+			}
+			putRow(data.outputRowMeta, outputRowData);
+		}
+		else {
+			putRow(data.outputRowMeta, row);
+		}
 		
 		return true;
 	}

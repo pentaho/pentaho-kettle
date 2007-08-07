@@ -102,6 +102,10 @@ public class Mapping extends BaseStep implements StepInterface
 		//
         data.mappingTrans = new Trans(data.mappingTransMeta);
         
+        // Pass down the safe mode flag to the mapping...
+        //
+        data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
+        
         // We launch the transformation in the processRow when the first row is received.
         // This will allow the correct variables to be passed.
         // Otherwise the parent is the init() thread which will be gone once the init is done.

@@ -15,7 +15,10 @@
  
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -63,7 +66,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		{
 			data.firstselect=false;
 
-            // We need to create a new Metadata row to drive the output
+            // We need to create a new meta-data row to drive the output
             // We also want to know the indexes of the selected fields in the source row.
             //
 			data.fieldnrs=new int[meta.getSelectName().length];
@@ -80,24 +83,29 @@ public class SelectValues extends BaseStep implements StepInterface
 					return null;
 				}
                 
-                // Create the metadata values too...
+                // Create the meta-data values too...
+				//
                 ValueMetaInterface valueMeta = (ValueMetaInterface) rowMeta.getValueMeta( data.fieldnrs[i] ).clone();
                 
                 // Optionally change the name
+                //
                 if (!Const.isEmpty(meta.getSelectRename()[i]))
                 {
                     valueMeta.setName( meta.getSelectRename()[i] );
                 }
                 
                 // Optionally set the length and precision type
+                //
                 if (meta.getSelectLength()[i]!=-2)    valueMeta.setLength(meta.getSelectLength()[i]);
                 if (meta.getSelectPrecision()[i]!=-2) valueMeta.setPrecision(meta.getSelectPrecision()[i]);
                 
                 // Save this info
+                //
                 data.outputMeta.addValueMeta(valueMeta);
 			}
 			
 			// Check for doubles in the selected fields... AFTER renaming!!
+			//
 			int cnt[] = new int[meta.getSelectName().length];
 			for (int i=0;i<meta.getSelectName().length;i++)
 			{
@@ -116,6 +124,36 @@ public class SelectValues extends BaseStep implements StepInterface
 						return null;
 					}
 				}
+			}
+			
+			// See if we need to include (and sort) the non-specified fields as well...
+			//
+			if (meta.isSelectingAndSortingUnspecifiedFields()) {
+				// Select the unspecified fields.
+				// Sort the fields
+				// Add them after the specified fields...
+				//
+				List<String> extra = new ArrayList<String>();
+				ArrayList<Integer> unspecifiedKeyNrs = new ArrayList<Integer>(); 
+				for (int i=0;i<rowMeta.size();i++) {
+					String fieldName = rowMeta.getValueMeta(i).getName();
+					if (data.outputMeta.indexOfValue(fieldName)<0) {
+						extra.add(fieldName);
+					}
+				}
+				Collections.sort(extra);
+				for (String fieldName : extra) {
+					int index = rowMeta.indexOfValue(fieldName);
+					data.outputMeta.addValueMeta(rowMeta.getValueMeta(index));
+					unspecifiedKeyNrs.add(index);
+				}
+				
+				// Adjust the normal array of indexes to select...
+				//
+				int[] newKeys = new int[data.fieldnrs.length + unspecifiedKeyNrs.size()];
+				for (int i=0;i<data.fieldnrs.length;i++) newKeys[i] = data.fieldnrs[i]; 
+				for (int i=0;i<unspecifiedKeyNrs.size();i++) newKeys[i+data.fieldnrs.length] = unspecifiedKeyNrs.get(i);
+				data.fieldnrs = newKeys;
 			}
 		}
 

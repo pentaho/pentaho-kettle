@@ -15,6 +15,8 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,12 +56,21 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	// SELECT mode
     /** Select: Name of the selected field */
 	private String selectName[];
-	/** Select: Rename to ...  */
-	private String selectRename[]; 
-	/** Select: length of field  */
-	private int    selectLength[]; 
-	/** Select: Precision of field (for numbers)  */
-	private int    selectPrecision[]; 
+
+	/** Select: Rename to ... */
+	private String selectRename[];
+
+	/** Select: length of field */
+	private int selectLength[];
+
+	/** Select: Precision of field (for numbers) */
+	private int selectPrecision[];
+
+	/**
+	 * Select: flag to indicate that the non-selected fields should also be
+	 * taken along, ordered by fieldname
+	 */
+	private boolean selectingAndSortingUnspecifiedFields;
 	
 	// DE-SELECT mode
 	/** Names of the fields to be removed!  */
@@ -318,9 +329,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				selectName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
 				selectRename   [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
-				selectLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
+				selectLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NtagLS-1$
 				selectPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
 			}
+			selectingAndSortingUnspecifiedFields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(fields, "select_unspecified"));
 	
 			for (int i=0;i<nrremove;i++)
 			{
@@ -408,6 +420,25 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 					row.addValueMeta(v);
 				}
 			}
+			
+			if (selectingAndSortingUnspecifiedFields) {
+				// Select the unspecified fields.
+				// Sort the fields
+				// Add them after the specified fields...
+				//
+				List<String> extra = new ArrayList<String>();
+				for (int i=0;i<inputRowMeta.size();i++) {
+					String fieldName = inputRowMeta.getValueMeta(i).getName();
+					if (row.indexOfValue(fieldName)<0) {
+						extra.add(fieldName);
+					}
+				}
+				Collections.sort(extra);
+				for (String fieldName : extra) {
+					ValueMetaInterface extraValue = inputRowMeta.searchValueMeta(fieldName);
+					row.addValueMeta(extraValue);
+				}
+			}
 
             // OK, now remove all from r and re-add row:
             inputRowMeta.clear();
@@ -471,6 +502,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("precision", selectPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("      </field>"); //$NON-NLS-1$
 		}
+		retval.append("        ").append(XMLHandler.addTagValue("select_unspecified", selectingAndSortingUnspecifiedFields)); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<deleteName.length;i++)
 		{
 			retval.append("      <remove>"); //$NON-NLS-1$
@@ -510,7 +542,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
 				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
 			}
-
+			selectingAndSortingUnspecifiedFields = rep.getStepAttributeBoolean(id_step, "select_unspecified");
+			
 			for (int i=0;i<nrremove;i++)
 			{
 				deleteName[i]      =      rep.getStepAttributeString(id_step, i, "remove_name"); //$NON-NLS-1$
@@ -543,6 +576,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    selectLength[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", selectPrecision[i]); //$NON-NLS-1$
 			}
+			rep.saveStepAttribute(id_transformation, id_step, "field_precision", selectingAndSortingUnspecifiedFields); //$NON-NLS-1$
 	
 			for (int i=0;i<deleteName.length;i++)
 			{
@@ -749,5 +783,19 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	public StepDataInterface getStepData()
 	{
 		return new SelectValuesData();
+	}
+
+	/**
+	 * @return the selectingAndSortingUnspecifiedFields
+	 */
+	public boolean isSelectingAndSortingUnspecifiedFields() {
+		return selectingAndSortingUnspecifiedFields;
+	}
+
+	/**
+	 * @param selectingAndSortingUnspecifiedFields the selectingAndSortingUnspecifiedFields to set
+	 */
+	public void setSelectingAndSortingUnspecifiedFields(boolean selectingAndSortingUnspecifiedFields) {
+		this.selectingAndSortingUnspecifiedFields = selectingAndSortingUnspecifiedFields;
 	}
 }

@@ -303,5 +303,4 @@ public class RowSet implements Comparable<RowSet>
 	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
 		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
-
 }

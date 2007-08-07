@@ -39,6 +39,7 @@ public class MappingInputData extends BaseStepData implements StepDataInterface
 	public boolean linked;
 	public RowMetaInterface outputRowMeta;
 	public List<MappingValueRename> valueRenames;
+	public int[] fieldNrs;
 
     /**
 	 * 
