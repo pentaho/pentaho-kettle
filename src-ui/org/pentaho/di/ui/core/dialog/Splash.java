@@ -36,7 +36,7 @@ public class Splash
         
         splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
         splash.setImage(kettle_icon);
-        splash.setText("Pentaho Data Integration");
+        splash.setText(LAFManager.getLAFProp("splash_text", "Pentaho Data Integration"));
         
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);
