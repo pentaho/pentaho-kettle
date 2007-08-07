@@ -22,7 +22,6 @@ package org.pentaho.di.trans.steps.databasejoin;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -46,11 +45,9 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.trans.steps.databasejoin.DatabaseJoinDialog;
 import org.w3c.dom.Node;
 
 public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
@@ -558,11 +555,6 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
 		return fields;
-	}
-
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
-	{
-		return new DatabaseJoinDialog(shell, info, transMeta, name);
 	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
