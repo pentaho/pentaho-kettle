@@ -46,6 +46,8 @@ public class TransExecutionConfiguration implements Cloneable
 
     public TransExecutionConfiguration()
     {
+    	executingLocally = true;
+    	
         clusterPosting = true;
         clusterPreparing = true;
         clusterStarting = true;

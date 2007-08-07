@@ -91,15 +91,15 @@ public class EnterValueDialog extends Dialog
 	private PropsUI props;
 	
     private ValueMetaAndData valueMetaAndData;
-    private ValueMetaInterface value;
-    private Object data;
+    private ValueMetaInterface valueMeta;
+    private Object valueData;
 
 	public EnterValueDialog(Shell parent, int style, ValueMetaInterface value, Object data)
 	{
 		super(parent, style);
 		this.props = PropsUI.getInstance();
-		this.value = value;
-        this.data = data;
+		this.valueMeta = value;
+        this.valueData = data;
 	}
 
 	public ValueMetaAndData open()
@@ -263,28 +263,28 @@ public class EnterValueDialog extends Dialog
 	
 	public void getData()
 	{
-		wValueType.setText(value.getTypeDesc());
+		wValueType.setText(valueMeta.getTypeDesc());
 		try
         {
-            if (value.getString(data)!=null) wInputString.setText(value.toString());
+            if (valueMeta.getString(valueData)!=null) wInputString.setText(valueMeta.getString(valueData));
         }
         catch (KettleValueException e)
         {
-            wInputString.setText(value.toString());
+            wInputString.setText(valueMeta.toString());
         }
 		setFormats();
 		
-		if (value.isNumber())
+		if (valueMeta.isNumber())
 		{
 			wFormat.setText(Const.getNumberFormats()[0]);
 		}
-		if (value.isDate())
+		if (valueMeta.isDate())
 		{
 			wFormat.setText(Const.getDateFormats()[0]);
 		}
 		
-		wLength.setText(Integer.toString(value.getLength()));
-		wPrecision.setText(Integer.toString(value.getPrecision()));
+		wLength.setText(Integer.toString(valueMeta.getLength()));
+		wPrecision.setText(Integer.toString(valueMeta.getPrecision()));
 		
 		wInputString.setFocus();
 		wInputString.selectAll();
@@ -315,7 +315,7 @@ public class EnterValueDialog extends Dialog
 	private void cancel()
 	{
 		props.setScreen(new WindowProperty(shell));
-		value=null;
+		valueMeta=null;
 		dispose();
 	}
 	
@@ -364,7 +364,7 @@ public class EnterValueDialog extends Dialog
 	{
         try
         {
-            valueMetaAndData = getValue(value.getName()); // Keep the same name...
+            valueMetaAndData = getValue(valueMeta.getName()); // Keep the same name...
             dispose();
         }
         catch (KettleValueException e) 
@@ -381,7 +381,7 @@ public class EnterValueDialog extends Dialog
 	{
         try
         {
-    		ValueMetaAndData v = getValue(value.getName());
+    		ValueMetaAndData v = getValue(valueMeta.getName());
     		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
     
     		StringBuffer result = new StringBuffer();

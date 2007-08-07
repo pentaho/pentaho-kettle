@@ -36,7 +36,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
  */
 public class MappingData extends BaseStepData implements StepDataInterface
 {
-    public Trans trans;
+    public Trans mappingTrans;
     public MappingInput  mappingInput;
     public MappingOutput mappingOutput;
 	public List<Integer> renameFieldIndexes;
@@ -52,7 +52,7 @@ public class MappingData extends BaseStepData implements StepDataInterface
 	public MappingData()
 	{
 		super();
-        trans = null;
+        mappingTrans = null;
         wasStarted = false;
         inputRenameList = new ArrayList<MappingValueRename>();
 	}

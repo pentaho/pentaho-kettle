@@ -59,17 +59,17 @@ public class Mapping extends BaseStep implements StepInterface
 		
 		// Start the mapping/sub-transformation threads
         //
-        data.trans.startThreads();
+        data.mappingTrans.startThreads();
         
         // The transformation still runs in the background and might have some more work to do.
         // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
         //
-        data.trans.waitUntilFinished();
+        data.mappingTrans.waitUntilFinished();
         
         // Set some statistics from the mapping...
         // This will show up in Spoon, etc.
         //
-    	Result result = data.trans.getResult();
+    	Result result = data.mappingTrans.getResult();
     	setErrors(result.getNrErrors());
     	linesRead = result.getNrLinesRead();
     	linesWritten = result.getNrLinesWritten();
@@ -100,13 +100,13 @@ public class Mapping extends BaseStep implements StepInterface
 	public void prepareMappingExecution() throws KettleException {
         // Create the transformation from meta-data...
 		//
-        data.trans = new Trans(data.mappingTransMeta);
+        data.mappingTrans = new Trans(data.mappingTransMeta);
         
         // We launch the transformation in the processRow when the first row is received.
         // This will allow the correct variables to be passed.
         // Otherwise the parent is the init() thread which will be gone once the init is done.
         //
-        if (!data.trans.prepareExecution(getTransMeta().getArguments())) {
+        if (!data.mappingTrans.prepareExecution(getTransMeta().getArguments())) {
         	throw new KettleException(Messages.getString("Mapping.Exception.UnableToPrepareExecutionOfMapping"));
         }
         
@@ -147,7 +147,7 @@ public class Mapping extends BaseStep implements StepInterface
         	
         	// What step are we writing to?
         	MappingInput mappingInputTarget=null;
-    		MappingInput[] mappingInputSteps = data.trans.findMappingInput();
+    		MappingInput[] mappingInputSteps = data.mappingTrans.findMappingInput();
         	if (Const.isEmpty(inputDefinition.getOutputStepname())) {
         		// No target was specifically specified.
         		// That means we only expect one "mapping input" step in the mapping...
@@ -192,12 +192,12 @@ public class Mapping extends BaseStep implements StepInterface
         	// OK, what is the source (input) step in the mapping: it's the mapping output step...
         	// What step are we reading from here?
         	//
-        	MappingOutput mappingOutputSource = (MappingOutput) getTrans().findRunThread(outputDefinition.getInputStepname());
+        	MappingOutput mappingOutputSource = (MappingOutput) data.mappingTrans.findRunThread(outputDefinition.getInputStepname());
         	if (mappingOutputSource==null) {
         		// No source step was specified: we're reading from a single Mapping Output step.
         		// We should verify this if this is really the case...
         		//
-        		MappingOutput[] mappingOutputSteps = data.trans.findMappingOutput();
+        		MappingOutput[] mappingOutputSteps = data.mappingTrans.findMappingOutput();
         		
         		if (mappingOutputSteps.length==0) {
         			throw new KettleException(Messages.getString("MappingDialog.Exception.OneMappingOutputStepRequired"));
@@ -305,12 +305,12 @@ public class Mapping extends BaseStep implements StepInterface
         if (data.wasStarted)
         {
             // Wait until the child transformation has finished.
-            data.trans.waitUntilFinished();
+            data.mappingTrans.waitUntilFinished();
             
             // store some logging, close shop.
             try
             {
-                data.trans.endProcessing("end"); //$NON-NLS-1$
+                data.mappingTrans.endProcessing("end"); //$NON-NLS-1$
             }
             catch(KettleException e)
             {
@@ -318,7 +318,7 @@ public class Mapping extends BaseStep implements StepInterface
             }
             
             // See if there was an error in the sub-transformation, in that case, flag error etc.
-            if (data.trans.getErrors()>0)
+            if (data.mappingTrans.getErrors()>0)
             {
                 logError(Messages.getString("Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
                 setErrors(1);
@@ -333,9 +333,9 @@ public class Mapping extends BaseStep implements StepInterface
         super.stopAll();
         
         // Also stop the mapping step.
-        if ( data.trans != null  )
+        if ( data.mappingTrans != null  )
         {
-            data.trans.stopAll();
+            data.mappingTrans.stopAll();
         }
     }
 	
@@ -355,7 +355,7 @@ public class Mapping extends BaseStep implements StepInterface
             logError(Const.getStackTracker(t));
             setErrors(1);
 			stopAll();
-			if (data.trans!=null) data.trans.stopAll();
+			if (data.mappingTrans!=null) data.mappingTrans.stopAll();
 		}
 		finally
 		{
