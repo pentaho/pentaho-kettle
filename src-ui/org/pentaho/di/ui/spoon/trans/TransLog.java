@@ -309,7 +309,7 @@ public class TransLog extends Composite implements TabItemInterface
 		};
 
         
-		final Timer tim = new Timer();
+		final Timer tim = new Timer("TransLog: " + getMeta().getName());
         final StringBuffer busy = new StringBuffer("N");
 
         TimerTask timtask = new TimerTask()

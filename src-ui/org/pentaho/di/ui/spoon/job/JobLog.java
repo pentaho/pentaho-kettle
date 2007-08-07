@@ -273,7 +273,7 @@ public class JobLog extends Composite implements TabItemInterface
 			}
 		};
 		
-		final Timer tim = new Timer();
+		final Timer tim = new Timer("JobLog: " + this.getMeta().getName());
 		TimerTask timtask = 
 			new TimerTask() 
 			{

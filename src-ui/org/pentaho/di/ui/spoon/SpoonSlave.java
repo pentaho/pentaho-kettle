@@ -217,7 +217,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
 		pack();
 
 
-		timer = new Timer();
+		timer = new Timer("SpoonSlave: " + getMeta().getName());
         
         timerTask = new TimerTask()
         {
