@@ -46,7 +46,7 @@ public class StyledTextCompFind extends org.eclipse.swt.widgets.Dialog {
 	public StyledTextCompFind(Shell parent, StyledText text, String strHeader){
 		super(parent);
 		this.text = text;
-		this.strHeader = "Find";
+		this.strHeader = strHeader;
 	}
 	
 	public void open() {
