@@ -205,6 +205,14 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
           continueLoop = false;
           result.setResult(true);
         }
+        else
+        {
+        	try {
+				Thread.sleep(100);
+			} catch (Exception e) {
+				// handling this exception would be kind of silly.
+			}
+        }
       }
     } catch (Exception e)
     {
