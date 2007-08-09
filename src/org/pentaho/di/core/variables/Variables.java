@@ -21,6 +21,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.StringUtil;
 
 
@@ -69,6 +71,18 @@ public class Variables implements VariableSpace
 
 	public String getVariable(String variableName) {
 		return properties.get(variableName);
+	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) {

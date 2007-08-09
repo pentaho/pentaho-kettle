@@ -2010,6 +2010,18 @@ public class BaseStep extends Thread implements VariableSpace
 	{
 		return variables.getVariable(variableName);
 	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
+	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 
 	{

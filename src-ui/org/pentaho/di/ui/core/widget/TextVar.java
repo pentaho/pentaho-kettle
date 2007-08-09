@@ -27,7 +27,7 @@ import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * A Widget that combines a Text widget with a Variable button that will insert an Environment variable.
- * The tooltip of the text widget shows the content of the Text widdget with expanded variables.
+ * The tool tip of the text widget shows the content of the Text widget with expanded variables.
  * 
  * @author Matt
  * @since 17-may-2006

@@ -95,7 +95,7 @@ public class SortRows extends BaseStep implements StepInterface
 				
 				data.files.add(fileObject); // Remember the files!
 				OutputStream outputStream = fileObject.getContent().getOutputStream();
-				if (meta.getCompress())
+				if (data.compressFiles)
 				{
 					gzos = new GZIPOutputStream(new BufferedOutputStream(outputStream));
 					dos=new DataOutputStream(gzos);
@@ -188,7 +188,7 @@ public class SortRows extends BaseStep implements StepInterface
 					InputStream fi=fileObject.getContent().getInputStream();
 					DataInputStream di;
 					data.fis.add(fi);
-					if (meta.getCompress())
+					if (data.compressFiles)
 					{
 						GZIPInputStream gzfi = new GZIPInputStream(new BufferedInputStream(fi));
 						di =new DataInputStream(gzfi);
@@ -272,7 +272,7 @@ public class SortRows extends BaseStep implements StepInterface
 				FileObject    file = (FileObject)data.files.get(smallest);
 				DataInputStream di = (DataInputStream)data.dis.get(smallest); 
 				InputStream     fi = (InputStream)data.fis.get(smallest);
-				GZIPInputStream gzfi = (meta.getCompress()) ? (GZIPInputStream)data.gzis.get(smallest) : null;
+				GZIPInputStream gzfi = (data.compressFiles) ? (GZIPInputStream)data.gzis.get(smallest) : null;
 
 				try
 				{
@@ -398,6 +398,8 @@ public class SortRows extends BaseStep implements StepInterface
 			data.sortSize = Integer.parseInt(environmentSubstitute(meta.getSortSize()));
             data.buffer = new ArrayList<Object[]>(data.sortSize);
 
+            data.compressFiles = getBooleanValueOfVariable(meta.getCompressFilesVariable(), meta.getCompressFiles());
+            
 		    // Add init code here.
             
             if (data.sortSize>0)

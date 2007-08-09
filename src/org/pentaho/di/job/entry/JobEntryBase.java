@@ -21,12 +21,14 @@ import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.CheckResultSourceInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -411,6 +413,16 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public String getVariable(String variableName)
   {
     return variables.getVariable(variableName);
+  }
+  
+  public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+	if (!Const.isEmpty(variableName)) {
+	  String value = environmentSubstitute(variableName);
+	  if (!Const.isEmpty(value)) {
+	    return ValueMeta.convertStringToBoolean(value);
+	  }
+	}
+	return defaultValue;
   }
 
   public void initializeVariablesFrom(VariableSpace parent)

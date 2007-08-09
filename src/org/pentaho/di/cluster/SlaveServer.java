@@ -28,6 +28,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -703,6 +704,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 	public String getVariable(String variableName) 
 	{
 		return variables.getVariable(variableName);
+	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 

@@ -60,6 +60,7 @@ import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
@@ -5615,6 +5616,18 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 	public String getVariable(String variableName) 
 	{
 		return variables.getVariable(variableName);
+	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 

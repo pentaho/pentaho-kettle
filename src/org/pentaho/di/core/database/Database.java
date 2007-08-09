@@ -4119,6 +4119,18 @@ public class Database implements VariableSpace
 	{
 		return variables.getVariable(variableName);
 	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
+	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 
 	{

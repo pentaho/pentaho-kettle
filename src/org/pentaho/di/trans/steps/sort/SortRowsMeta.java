@@ -72,6 +72,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
      * CPU usage
      */
     private boolean compressFiles;
+    
+    /** The variable to use to set the compressFiles option boolean */
+    private String  compressFilesVariable;
 
     public SortRowsMeta()
     {
@@ -179,6 +182,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             sortSize = XMLHandler.getTagValue(stepnode, "sort_size");
             if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
             compressFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compress"));
+            compressFilesVariable = XMLHandler.getTagValue(stepnode, "compress_variable");
             onlyPassingUniqueRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "unique_rows") );
 
             Node fields = XMLHandler.getSubNode(stepnode, "fields");
@@ -210,6 +214,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         prefix = "out";
         sortSize = Integer.toString(Const.SORT_SIZE);
         compressFiles = false;
+        compressFilesVariable = null;
         onlyPassingUniqueRows = false;
 
         int nrfields = 0;
@@ -230,6 +235,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      " + XMLHandler.addTagValue("prefix", prefix));
         retval.append("      " + XMLHandler.addTagValue("sort_size", sortSize));
         retval.append("      " + XMLHandler.addTagValue("compress", compressFiles));
+        retval.append("      " + XMLHandler.addTagValue("compress_variable", compressFilesVariable));
         retval.append("      " + XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
 
         retval.append("    <fields>" + Const.CR);
@@ -261,6 +267,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             if (Const.isEmpty(sortSize)) sortSize = Integer.toString(Const.SORT_SIZE);
             
             compressFiles = rep.getStepAttributeBoolean(id_step, "compress");
+            compressFilesVariable = rep.getStepAttributeString(id_step, "compress_variable");
             
             onlyPassingUniqueRows = rep.getStepAttributeBoolean(id_step, "unique_rows");
 
@@ -288,6 +295,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "prefix", prefix);
             rep.saveStepAttribute(id_transformation, id_step, "sort_size", sortSize);
             rep.saveStepAttribute(id_transformation, id_step, "compress", compressFiles);
+            rep.saveStepAttribute(id_transformation, id_step, "compress_variable", compressFilesVariable);
             rep.saveStepAttribute(id_transformation, id_step, "unique_rows", onlyPassingUniqueRows);
 
             for (int i = 0; i < fieldName.length; i++)
@@ -437,7 +445,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns whether temporary files should be compressed
      */
-    public boolean getCompress()
+    public boolean getCompressFiles()
     {
         return compressFiles;
 
@@ -446,7 +454,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param compressFiles Whether to compress temporary files created during sorting
      */
-    public void setCompress(boolean compressFiles)
+    public void setCompressFiles(boolean compressFiles)
     {
         this.compressFiles = compressFiles;
     }
@@ -466,4 +474,18 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.onlyPassingUniqueRows = onlyPassingUniqueRows;
     }
+
+	/**
+	 * @return the compressFilesVariable
+	 */
+	public String getCompressFilesVariable() {
+		return compressFilesVariable;
+	}
+
+	/**
+	 * @param compressFilesVariable the compressFilesVariable to set
+	 */
+	public void setCompressFilesVariable(String compressFilesVariable) {
+		this.compressFilesVariable = compressFilesVariable;
+	}
 }

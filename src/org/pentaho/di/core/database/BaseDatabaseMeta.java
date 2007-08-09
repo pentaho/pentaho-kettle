@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1204,6 +1205,18 @@ public abstract class BaseDatabaseMeta implements Cloneable, VariableSpace
 	public String getVariable(String variableName) 
 	{
 		return variables.getVariable(variableName);
+	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 

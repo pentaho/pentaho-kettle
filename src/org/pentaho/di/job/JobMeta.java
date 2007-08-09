@@ -47,6 +47,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -2495,6 +2496,18 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
 	public String getVariable(String variableName) 
 	{
 		return variables.getVariable(variableName);
+	}
+	
+	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+		if (!Const.isEmpty(variableName))
+		{
+			String value = environmentSubstitute(variableName);
+			if (!Const.isEmpty(value))
+			{
+				return ValueMeta.convertStringToBoolean(value);
+			}
+		}
+		return defaultValue;
 	}
 
 	public void initializeVariablesFrom(VariableSpace parent) 

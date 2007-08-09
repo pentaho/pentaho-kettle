@@ -74,6 +74,18 @@ public interface VariableSpace
     String getVariable(String variableName);
     
     /**
+     * This method returns a boolean for the new variable check boxes.
+     * If the variable name is not set or the variable name is not specified, this method simply returns the default value.
+     * If not, it convert the variable value to a boolean.  "Y", "YES" and "TRUE" all convert to true. (case insensitive)
+     * @see also static method ValueMeta.convertStringToBoolean()
+     *
+     * @param variableName The variable to look up.
+     * @param defaultValue The default value to return.
+     * @return
+     */
+    boolean getBooleanValueOfVariable(String variableName, boolean defaultValue);
+    
+    /**
      * List the variables (not the values) that are currently in the
      * variable space.
      * 

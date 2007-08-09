@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.sort.Messages;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.CheckBoxVar;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -76,7 +77,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     private FormData     fdlSortSize, fdSortSize;
 
     private Label        wlCompress;
-    private Button       wCompress;
+    private CheckBoxVar  wCompress;
     private FormData     fdlCompress, fdCompress;
 
     private Label        wlUniqueRows;
@@ -241,7 +242,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdlCompress.right= new FormAttachment(middle, -margin);
         fdlCompress.top  = new FormAttachment(wSortSize, margin*2);
         wlCompress.setLayoutData(fdlCompress);
-        wCompress=new Button(shell, SWT.CHECK);
+        wCompress=new CheckBoxVar(transMeta, shell, SWT.CHECK, "");
         props.setLook(wCompress);
         fdCompress=new FormData();
         fdCompress.left  = new FormAttachment(middle, 0);
@@ -370,7 +371,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
 		wSortSize.setText(Const.NVL(input.getSortSize(), ""));
-		wCompress.setSelection(input.getCompress());
+		wCompress.setSelection(input.getCompressFiles());
+		wCompress.setVariableName(input.getCompressFilesVariable());
 		wUniqueRows.setSelection(input.isOnlyPassingUniqueRows());
         
 		Table table = wFields.table;
@@ -404,7 +406,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setDirectory( wSortDir.getText() );
         input.setSortSize( wSortSize.getText() );
         log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
-        input.setCompress(wCompress.getSelection());
+        input.setCompressFiles(wCompress.getSelection());
+        input.setCompressFilesVariable(wCompress.getVariableName());
         input.setOnlyPassingUniqueRows(wUniqueRows.getSelection());
 
 		//Table table = wFields.table;
