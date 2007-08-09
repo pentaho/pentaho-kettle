@@ -2816,5 +2816,10 @@ public class TableView extends Composite
     {
         this.sortingDescending = sortingDescending;
     }
+    
+    public Table getTable()
+    {
+    	return table;
+    }
 	
 };
