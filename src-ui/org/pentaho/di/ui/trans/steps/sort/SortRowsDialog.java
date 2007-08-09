@@ -90,7 +90,6 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private SortRowsMeta input;
 	
-	
 	public SortRowsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -296,12 +295,13 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlFields.top  = new FormAttachment(wUniqueRows, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=2;
 		final int FieldsRows=input.getFieldName().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo(Messages.getString("SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
+		ColumnInfo[] colinf=new ColumnInfo[] {
+				new ColumnInfo(Messages.getString("SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
+				new ColumnInfo(Messages.getString("SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } ),
+				new ColumnInfo(Messages.getString("SortRowsDialog.CaseInsensitive.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } ),
+			};
 		
 		wFields=new TableView(transMeta, shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -383,6 +383,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			ti.setText(0, ""+(i+1));
 			ti.setText(1, input.getFieldName()[i]);
 			ti.setText(2, input.getAscending()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+			ti.setText(3, input.getCaseSensitive()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
 		}
 
         wFields.setRowNums();
@@ -420,6 +421,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
 			input.getAscending()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
+			input.getCaseSensitive()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(3));
 		}
 		
 		dispose();

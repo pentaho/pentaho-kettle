@@ -161,6 +161,9 @@ public class CheckBoxVar extends Composite
 	}
 
 	public void setVariableName(String variableName) {
-	    wText.setText(variableName);
+	    if (variableName!=null) 
+	    	wText.setText(variableName);
+	    else 
+	    	wText.setText("");
 	}
 }

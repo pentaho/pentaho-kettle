@@ -55,6 +55,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     /** false : descending, true=ascending */
     private boolean ascending[];
 
+    /** false : case insensitive, true=case sensitive */
+    private boolean caseSensitive[];
+
     /** Directory to store the temp files */
     private String  directory;
 
@@ -154,6 +157,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
     {
         fieldName = new String[nrfields]; // order by
         ascending = new boolean[nrfields];
+        caseSensitive = new boolean[nrfields];
     }
 
     public Object clone()
@@ -168,6 +172,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval.fieldName[i] = fieldName[i];
             retval.ascending[i] = ascending[i];
+            retval.caseSensitive[i] = caseSensitive[i];
         }
 
         return retval;
@@ -196,10 +201,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 
                 fieldName[i] = XMLHandler.getTagValue(fnode, "name");
                 String asc = XMLHandler.getTagValue(fnode, "ascending");
-                if (asc.equalsIgnoreCase("Y"))
-                    ascending[i] = true;
-                else
-                    ascending[i] = false;
+                ascending[i] = "Y".equalsIgnoreCase(asc);
+                String sens = XMLHandler.getTagValue(fnode, "case_sensitive");
+                caseSensitive[i] = Const.isEmpty(sens) || "Y".equalsIgnoreCase(sens);
             }
         }
         catch (Exception e)
@@ -224,6 +228,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
         for (int i = 0; i < nrfields; i++)
         {
             fieldName[i] = "field" + i;
+            caseSensitive[i] = true;
         }
     }
 
@@ -244,6 +249,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("      <field>" + Const.CR);
             retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
             retval.append("        " + XMLHandler.addTagValue("ascending", ascending[i]));
+            retval.append("        " + XMLHandler.addTagValue("case_sensitive", caseSensitive[i]));
             retval.append("        </field>" + Const.CR);
         }
         retval.append("      </fields>" + Const.CR);
@@ -279,6 +285,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
                 ascending[i] = rep.getStepAttributeBoolean(id_step, i, "field_ascending");
+                caseSensitive[i] = rep.getStepAttributeBoolean(id_step, i, "field_case_sensitive", true);
             }
         }
         catch (Exception e)
@@ -302,6 +309,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_ascending", ascending[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_case_sensitive", caseSensitive[i]);
             }
         }
         catch (Exception e)
@@ -320,8 +328,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 ValueMetaInterface valueMeta = inputRowMeta.getValueMeta(idx);
                 valueMeta.setSortedDescending(!ascending[i]);
-                
-                // TODO: add case insensivity
+                valueMeta.setCaseInsensitive(!caseSensitive[i]);
             }
         }
         
@@ -487,5 +494,19 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public void setCompressFilesVariable(String compressFilesVariable) {
 		this.compressFilesVariable = compressFilesVariable;
+	}
+
+	/**
+	 * @return the caseSensitive
+	 */
+	public boolean[] getCaseSensitive() {
+		return caseSensitive;
+	}
+
+	/**
+	 * @param caseSensitive the caseSensitive to set
+	 */
+	public void setCaseSensitive(boolean[] caseSensitive) {
+		this.caseSensitive = caseSensitive;
 	}
 }
