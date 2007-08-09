@@ -99,6 +99,11 @@ public class Const
      * DOSCR: MS-DOS specific Cariage Return
      */
     public static final String DOSCR = "\n\r";
+    
+    /**
+     * An empty ("") String.
+     */
+    public static final String EMPTY_STRING = "";
 
 	/**
 	 * The Java runtime version
