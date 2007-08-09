@@ -20,6 +20,9 @@
 
 package org.pentaho.di.ui.job.entries.fileexists;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.VFS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -33,292 +36,309 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.fileexists.JobEntryFileExists;
+import org.pentaho.di.job.entries.fileexists.Messages;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.job.entries.fileexists.JobEntryFileExists;
-import org.pentaho.di.job.entries.fileexists.Messages;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
- * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql
- * script to be executed)
+ * This dialog allows you to edit the SQL job entry settings. (select the
+ * connection and the sql script to be executed)
  * 
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-    private static final String[] FILETYPES = new String[] {
-                                                            Messages
-                                                                .getString("JobFileExists.Filetype.Text"),
-                                                            Messages
-                                                                .getString("JobFileExists.Filetype.CSV"),
-                                                            Messages
-                                                                .getString("JobFileExists.Filetype.All") };
+	private static final String[] EXTENSIONS = new String[] { "*.txt", "*.csv", "*" };
 
-    private Label wlName;
+	private static final String[] FILETYPES = new String[] {
+			Messages.getString("JobFileExists.Filetype.Text"),
+			Messages.getString("JobFileExists.Filetype.CSV"),
+			Messages.getString("JobFileExists.Filetype.All") };
 
-    private Text wName;
+	private Label wlName;
 
-    private FormData fdlName, fdName;
+	private Text wName;
 
-    private Label wlFilename;
+	private FormData fdlName, fdName;
 
-    private Button wbFilename;
+	private Label wlFilename;
 
-    private TextVar wFilename;
+	private Button wbFilename;
 
-    private FormData fdlFilename, fdbFilename, fdFilename;
+	private TextVar wFilename;
 
-    private Button wOK, wCancel;
+	private FormData fdlFilename, fdbFilename, fdFilename;
 
-    private Listener lsOK, lsCancel;
+	private Button wOK, wCancel;
 
-    private JobEntryFileExists jobEntry;
+	private Listener lsOK, lsCancel;
 
-    private Shell shell;
+	private JobEntryFileExists jobEntry;
 
-    private SelectionAdapter lsDef;
-    
-    private boolean changed;
+	private Shell shell;
 
-    public JobEntryFileExistsDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
-    {
-        super(parent, jobEntryInt, rep, jobMeta);
-        jobEntry = (JobEntryFileExists) jobEntryInt;
-        if (this.jobEntry.getName() == null)
-            this.jobEntry.setName(Messages.getString("JobFileExists.Name.Default"));
-    }
+	private SelectionAdapter lsDef;
 
-    public JobEntryInterface open()
-    {
-        Shell parent = getParent();
-        Display display = parent.getDisplay();
+	private boolean changed;
 
-        shell = new Shell(parent, props.getJobsDialogStyle());
-        props.setLook(shell);
-        JobDialog.setShellImage(shell, jobEntry);
+	public JobEntryFileExistsDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+			JobMeta jobMeta)
+	{
+		super(parent, jobEntryInt, rep, jobMeta);
+		jobEntry = (JobEntryFileExists) jobEntryInt;
+		if (this.jobEntry.getName() == null)
+			this.jobEntry.setName(Messages.getString("JobFileExists.Name.Default"));
+	}
 
-        ModifyListener lsMod = new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                jobEntry.setChanged();
-            }
-        };
-        changed = jobEntry.hasChanged();
+	public JobEntryInterface open()
+	{
+		Shell parent = getParent();
+		Display display = parent.getDisplay();
 
-        FormLayout formLayout = new FormLayout();
-        formLayout.marginWidth = Const.FORM_MARGIN;
-        formLayout.marginHeight = Const.FORM_MARGIN;
+		shell = new Shell(parent, props.getJobsDialogStyle());
+		props.setLook(shell);
+		JobDialog.setShellImage(shell, jobEntry);
 
-        shell.setLayout(formLayout);
-        shell.setText(Messages.getString("JobFileExists.Title"));
+		ModifyListener lsMod = new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		};
+		changed = jobEntry.hasChanged();
 
-        int middle = props.getMiddlePct();
-        int margin = Const.MARGIN;
+		FormLayout formLayout = new FormLayout();
+		formLayout.marginWidth = Const.FORM_MARGIN;
+		formLayout.marginHeight = Const.FORM_MARGIN;
 
-        // Filename line
-        wlName = new Label(shell, SWT.RIGHT);
-        wlName.setText(Messages.getString("JobFileExists.Name.Label"));
-        props.setLook(wlName);
-        fdlName = new FormData();
-        fdlName.left = new FormAttachment(0, 0);
-        fdlName.right = new FormAttachment(middle, -margin);
-        fdlName.top = new FormAttachment(0, margin);
-        wlName.setLayoutData(fdlName);
-        wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wName);
-        wName.addModifyListener(lsMod);
-        fdName = new FormData();
-        fdName.left = new FormAttachment(middle, 0);
-        fdName.top = new FormAttachment(0, margin);
-        fdName.right = new FormAttachment(100, 0);
-        wName.setLayoutData(fdName);
+		shell.setLayout(formLayout);
+		shell.setText(Messages.getString("JobFileExists.Title"));
 
-        // Filename line
-        wlFilename = new Label(shell, SWT.RIGHT);
-        wlFilename.setText(Messages.getString("JobFileExists.Filename.Label"));
-        props.setLook(wlFilename);
-        fdlFilename = new FormData();
-        fdlFilename.left = new FormAttachment(0, 0);
-        fdlFilename.top = new FormAttachment(wName, margin);
-        fdlFilename.right = new FormAttachment(middle, -margin);
-        wlFilename.setLayoutData(fdlFilename);
+		int middle = props.getMiddlePct();
+		int margin = Const.MARGIN;
 
-        wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
-        props.setLook(wbFilename);
-        wbFilename.setText(Messages.getString("System.Button.Browse"));
-        fdbFilename = new FormData();
-        fdbFilename.right = new FormAttachment(100, 0);
-        fdbFilename.top = new FormAttachment(wName, 0);
-        // fdbFilename.height = 22;
-        wbFilename.setLayoutData(fdbFilename);
+		// Filename line
+		wlName = new Label(shell, SWT.RIGHT);
+		wlName.setText(Messages.getString("JobFileExists.Name.Label"));
+		props.setLook(wlName);
+		fdlName = new FormData();
+		fdlName.left = new FormAttachment(0, 0);
+		fdlName.right = new FormAttachment(middle, -margin);
+		fdlName.top = new FormAttachment(0, margin);
+		wlName.setLayoutData(fdlName);
+		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wName);
+		wName.addModifyListener(lsMod);
+		fdName = new FormData();
+		fdName.left = new FormAttachment(middle, 0);
+		fdName.top = new FormAttachment(0, margin);
+		fdName.right = new FormAttachment(100, 0);
+		wName.setLayoutData(fdName);
 
-        wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wFilename);
-        wFilename.addModifyListener(lsMod);
-        fdFilename = new FormData();
-        fdFilename.left = new FormAttachment(middle, 0);
-        fdFilename.top = new FormAttachment(wName, margin);
-        fdFilename.right = new FormAttachment(wbFilename, -margin);
-        wFilename.setLayoutData(fdFilename);
+		// Filename line
+		wlFilename = new Label(shell, SWT.RIGHT);
+		wlFilename.setText(Messages.getString("JobFileExists.Filename.Label"));
+		props.setLook(wlFilename);
+		fdlFilename = new FormData();
+		fdlFilename.left = new FormAttachment(0, 0);
+		fdlFilename.top = new FormAttachment(wName, margin);
+		fdlFilename.right = new FormAttachment(middle, -margin);
+		wlFilename.setLayoutData(fdlFilename);
 
-        // Whenever something changes, set the tooltip to the expanded version:
-        wFilename.addModifyListener(new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                wFilename.setToolTipText(jobMeta.environmentSubstitute(wFilename.getText()));
-            }
-        });
+		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
+		props.setLook(wbFilename);
+		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		fdbFilename = new FormData();
+		fdbFilename.right = new FormAttachment(100, 0);
+		fdbFilename.top = new FormAttachment(wName, 0);
+		// fdbFilename.height = 22;
+		wbFilename.setLayoutData(fdbFilename);
 
-        wbFilename.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-                dialog.setFilterExtensions(new String[] { "*.txt", "*.csv", "*" });
-                if (wFilename.getText() != null)
-                {
-                    dialog.setFileName(jobMeta.environmentSubstitute(wFilename.getText()));
-                }
-                dialog.setFilterNames(FILETYPES);
-                if (dialog.open() != null)
-                {
-                    wFilename.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
-                                      + dialog.getFileName());
-                }
-            }
-        });
+		wFilename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wFilename);
+		wFilename.addModifyListener(lsMod);
+		fdFilename = new FormData();
+		fdFilename.left = new FormAttachment(middle, 0);
+		fdFilename.top = new FormAttachment(wName, margin);
+		fdFilename.right = new FormAttachment(wbFilename, -margin);
+		wFilename.setLayoutData(fdFilename);
 
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        FormData fd = new FormData();
-        fd.right = new FormAttachment(50, -10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wOK.setLayoutData(fd);
+		// Whenever something changes, set the tooltip to the expanded version:
+		wFilename.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wFilename.setToolTipText(jobMeta.environmentSubstitute(wFilename.getText()));
+			}
+		});
 
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
-        fd = new FormData();
-        fd.left = new FormAttachment(50, 10);
-        fd.bottom = new FormAttachment(100, 0);
-        fd.width = 100;
-        wCancel.setLayoutData(fd);
+		wbFilename.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				try
+				{
+					FileObject fileName = null;
 
-        // Add listeners
-        lsCancel = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                cancel();
-            }
-        };
-        lsOK = new Listener()
-        {
-            public void handleEvent(Event e)
-            {
-                ok();
-            }
-        };
+					try
+					{
+						String curFile = wFilename.getText();
+						
+						if (curFile.trim().length()>0)
+							fileName = VFS.getManager().resolveFile(
+									jobMeta.environmentSubstitute(wFilename.getText()));
+						else
+							fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							
+					} catch (FileSystemException ex)
+					{
+						fileName = VFS.getManager().resolveFile(Const.USER_HOME_DIRECTORY);
+					}
 
-        wCancel.addListener(SWT.Selection, lsCancel);
-        wOK.addListener(SWT.Selection, lsOK);
+					
+					VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(fileName.getParent(),fileName);
+					FileObject selected = vfsFileChooser.open(shell, null,
+							EXTENSIONS, FILETYPES,
+							VfsFileChooserDialog.VFS_DIALOG_OPEN);
+					wFilename.setText(selected != null ? selected.getURL().toString() : Const.EMPTY_STRING);
+				} catch (FileSystemException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		});
 
-        lsDef = new SelectionAdapter()
-        {
-            public void widgetDefaultSelected(SelectionEvent e)
-            {
-                ok();
-            }
-        };
+		wOK = new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK"));
+		FormData fd = new FormData();
+		fd.right = new FormAttachment(50, -10);
+		fd.bottom = new FormAttachment(100, 0);
+		fd.width = 100;
+		wOK.setLayoutData(fd);
 
-        wName.addSelectionListener(lsDef);
-        wFilename.addSelectionListener(lsDef);
+		wCancel = new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		fd = new FormData();
+		fd.left = new FormAttachment(50, 10);
+		fd.bottom = new FormAttachment(100, 0);
+		fd.width = 100;
+		wCancel.setLayoutData(fd);
 
-        // Detect X or ALT-F4 or something that kills this window...
-        shell.addShellListener(new ShellAdapter()
-        {
-            public void shellClosed(ShellEvent e)
-            {
-                cancel();
-            }
-        });
+		// Add listeners
+		lsCancel = new Listener()
+		{
+			public void handleEvent(Event e)
+			{
+				cancel();
+			}
+		};
+		lsOK = new Listener()
+		{
+			public void handleEvent(Event e)
+			{
+				ok();
+			}
+		};
 
-        getData();
+		wCancel.addListener(SWT.Selection, lsCancel);
+		wOK.addListener(SWT.Selection, lsOK);
 
-        BaseStepDialog.setSize(shell);
+		lsDef = new SelectionAdapter()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				ok();
+			}
+		};
 
-        shell.open();
-        props.setDialogSize(shell, "JobFileExistsDialogSize");
-        while (!shell.isDisposed())
-        {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        return jobEntry;
-    }
+		wName.addSelectionListener(lsDef);
+		wFilename.addSelectionListener(lsDef);
 
-    public void dispose()
-    {
-        WindowProperty winprop = new WindowProperty(shell);
-        props.setScreen(winprop);
-        shell.dispose();
-    }
+		// Detect X or ALT-F4 or something that kills this window...
+		shell.addShellListener(new ShellAdapter()
+		{
+			public void shellClosed(ShellEvent e)
+			{
+				cancel();
+			}
+		});
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */
-    public void getData()
-    {
-        if (jobEntry.getName() != null)
-            wName.setText(jobEntry.getName());
-        wName.selectAll();
-        if (jobEntry.getFilename() != null)
-            wFilename.setText(jobEntry.getFilename());
-    }
+		getData();
 
-    private void cancel()
-    {
-        jobEntry.setChanged(changed);
-        jobEntry = null;
-        dispose();
-    }
+		BaseStepDialog.setSize(shell);
 
-    private void ok()
-    {
-        jobEntry.setName(wName.getText());
-        jobEntry.setFilename(wFilename.getText());
-        dispose();
-    }
+		shell.open();
+		props.setDialogSize(shell, "JobFileExistsDialogSize");
+		while (!shell.isDisposed())
+		{
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		return jobEntry;
+	}
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
+	public void dispose()
+	{
+		WindowProperty winprop = new WindowProperty(shell);
+		props.setScreen(winprop);
+		shell.dispose();
+	}
 
-    public boolean evaluates()
-    {
-        return true;
-    }
+	/**
+	 * Copy information from the meta-data input to the dialog fields.
+	 */
+	public void getData()
+	{
+		if (jobEntry.getName() != null)
+			wName.setText(jobEntry.getName());
+		wName.selectAll();
+		if (jobEntry.getFilename() != null)
+			wFilename.setText(jobEntry.getFilename());
+	}
 
-    public boolean isUnconditional()
-    {
-        return false;
-    }
+	private void cancel()
+	{
+		jobEntry.setChanged(changed);
+		jobEntry = null;
+		dispose();
+	}
+
+	private void ok()
+	{
+		jobEntry.setName(wName.getText());
+		jobEntry.setFilename(wFilename.getText());
+		dispose();
+	}
+
+	public String toString()
+	{
+		return this.getClass().getName();
+	}
+
+	public boolean evaluates()
+	{
+		return true;
+	}
+
+	public boolean isUnconditional()
+	{
+		return false;
+	}
 
 }
