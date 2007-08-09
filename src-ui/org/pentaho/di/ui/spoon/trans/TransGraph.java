@@ -973,14 +973,6 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                     transMeta.selectAll();
                     redraw();
                 }
-                if (e.character == 3) // CTRL-C
-                {
-                    spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
-                }
-                if (e.character == 22) // CTRL-V
-                {
-                    spoon.pasteSteps();
-                }
                 if (e.keyCode == SWT.ESC)
                 {
                     transMeta.unselectAll();
