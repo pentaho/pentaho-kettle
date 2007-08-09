@@ -102,7 +102,7 @@ public class StepLoader
             String id[] = pluginMeta.getId();
             String long_desc = pluginMeta.getLongDesc();
             String tooltip = pluginMeta.getTooltipDesc();
-            String iconfile = Const.IMAGE_DIRECTORY + pluginMeta.getImageFileName();;
+            String iconfile = pluginMeta.getImageFileName();;
             String classname = pluginMeta.getClassName().getName(); // TOEVOEGEN!
             String directory = null; // Not used
             String jarfiles[] = null; // Not used

@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.laf.LAFManager;
 import org.pentaho.di.ui.util.ImageUtil;
 
@@ -27,16 +28,16 @@ public class Splash
 {
 	private Shell splash;
 	 
-	public Splash(Display display)
+	public Splash(Display display) throws KettleException
 	{
 		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-		final Image kettle_image = ImageUtil.getImage(display, LAFManager.getLAFProp("splash_image", "kettle_splash.png"));
-        final Image kettle_icon  = ImageUtil.getImage(display,"spoon32.png");
+		final Image kettle_image = ImageUtil.getImage(display, LAFManager.getLAFProp("splash_image")); // "kettle_splash.png"
+        final Image kettle_icon  = ImageUtil.getImage(display, LAFManager.getLAFProp("spoon_icon")); // "spoon32.png");
         
         splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
         splash.setImage(kettle_icon);
-        splash.setText(LAFManager.getLAFProp("splash_text", "Pentaho Data Integration")); 
+        splash.setText(LAFManager.getLAFProp("splash_text")); // "Pentaho Data Integration"
         
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);

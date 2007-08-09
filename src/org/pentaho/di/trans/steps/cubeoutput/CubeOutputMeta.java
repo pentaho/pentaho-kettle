@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
  *
  */
 
-@Step(name="CubeOutput",image="COP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeoutput",description="BaseStep.TypeLongDesc.CubeOutput",
+@Step(name="CubeOutput",image="ui/images/COP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeoutput",description="BaseStep.TypeLongDesc.CubeOutput",
 		category=StepCategory.OUTPUT)
 public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 {

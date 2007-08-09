@@ -53,7 +53,7 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
-@Step(name="CubeInput",image="CIP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeinput",description="BaseStep.TypeLongDesc.CubeInput",
+@Step(name="CubeInput",image="ui/images/CIP.png",tooltip="BaseStep.TypeTooltipDesc.Cubeinput",description="BaseStep.TypeLongDesc.CubeInput",
 		category=StepCategory.INPUT)
 public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 {

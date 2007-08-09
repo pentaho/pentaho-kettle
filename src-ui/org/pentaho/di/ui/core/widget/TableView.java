@@ -2046,7 +2046,7 @@ public class TableView extends Composite
         props.setLook(button, Props.WIDGET_STYLE_TABLE);
         String buttonText = columns[colnr-1].getButtonText(); 
         if (buttonText!=null) button.setText(buttonText);
-        Image image = ImageUtil.getImage(parent.getDisplay(),"edittext.png");
+        Image image = ImageUtil.getImage(parent.getDisplay(),"ui/images/edittext.png");
         		//new Image(parent.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"edittext.png"));
 		button.setImage(image);
 	

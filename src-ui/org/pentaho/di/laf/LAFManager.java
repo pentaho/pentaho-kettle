@@ -43,12 +43,12 @@ public class LAFManager {
 		return loadProps(propFile);
 	}
 
-	protected String getProperty(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
+	protected String getProperty(String key) {
+		return properties.getProperty(key);
 	}
 
-	public static String getLAFProp(String key, String defaultValue) {
-		return getInstance().getProperty(key, defaultValue);
+	public static String getLAFProp(String key) {
+		return getInstance().getProperty(key);
 	}
 
 	public boolean exists(String filename) {

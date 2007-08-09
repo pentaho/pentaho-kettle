@@ -339,9 +339,7 @@ public class GUIResource
 					image = ImageUtil.getImage(display, filename);//new Image(display, stream);
 				} catch (Exception e)
 				{
-					log.logError("Kettle",
-							"Unable to find required step image file or image format not supported (e.g. interlaced) ["
-									+ filename + " : " + e.toString());
+					log.logError("Kettle", "Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : " + e.toString());
 					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 					GC gc = new GC(image);
 					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
@@ -357,8 +355,7 @@ public class GUIResource
 					image = new Image(display, filename);
 				} catch (Exception e)
 				{
-					log.logError("Kettle", "Unable to find required step image file ["
-							+ (Const.IMAGE_DIRECTORY + filename) + " : " + e.toString());
+					log.logError("Kettle", "Unable to find required step image file [" + filename + " : " + e.toString());
 					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 					GC gc = new GC(image);
 					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
@@ -413,22 +410,22 @@ public class GUIResource
 
 	private void loadCommonImages()
 	{
-		imageHop = ImageUtil.getImage(display, "HOP.png");
-		imageConnection = ImageUtil.getImage(display, "CNC.png");
-		imageKettleLogo = ImageUtil.getImage(display, "logo_kettle_lrg.png");
-		imageBanner = ImageUtil.getImage(display, "bg_banner.png"); 
-		imageBol = ImageUtil.getImage(display, "BOL.png");
-		imageKettle = ImageUtil.getImage(display, "kettle_logo.png");
-		imageCredits = ImageUtil.getImage(display, "credits.png");
-		imageStart = ImageUtil.getImage(display, "STR.png");
-		imageDummy = ImageUtil.getImage(display, "DUM.png");
-		imageSpoon = ImageUtil.getImage(display, "spoon32.png");
-		imageChef = ImageUtil.getImage(display, "chef.png");
-		imageSplash = ImageUtil.getImage(display, "kettle_splash.png");
-		imagePentaho = ImageUtil.getImage(display, "PentahoLogo.png");
-		imageVariable = ImageUtil.getImage(display, "variable.png");
-		imageEditOptionButton = ImageUtil.getImage(display, "edit_option.png");
-		imageResetOptionButton = ImageUtil.getImage(display, "reset_option.png");
+		imageHop = ImageUtil.getImageAsResource(display,org.pentaho.di.laf.LAFManager.getLAFProp("HOP_image")); // "ui/images/HOP.png"
+		imageConnection = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("CNC_image")); // , "ui/images/CNC.png"
+		imageKettleLogo = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Logo_lrg_image")); // , "ui/images/logo_kettle_lrg.png"
+		imageBanner = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Banner_bg_image")); // , "ui/images/bg_banner.png"
+		imageBol = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("BOL_image")); // , "ui/images/BOL.png"
+		imageKettle = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Logo_image")); // , "ui/images/kettle_logo.png"
+		imageCredits = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Credits_image")); // , "ui/images/credits.png"
+		imageStart = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("STR_image")); // , "ui/images/STR.png"
+		imageDummy = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("DUM_image")); // , "ui/images/DUM.png"
+		imageSpoon = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Spoon_image")); // , "ui/images/spoon32.png"
+		imageChef = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Chef_image")); // , "ui/images/chef.png"
+		imageSplash = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("splash_image")); // , "ui/images/kettle_splash.png"
+		imagePentaho = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
+		imageVariable = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("Variable_image")); // , "ui/images/variable.png"
+		imageEditOptionButton = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("EditOption_image")); // , "ui/images/edit_option.png"
+		imageResetOptionButton = ImageUtil.getImageAsResource(display, org.pentaho.di.laf.LAFManager.getLAFProp("ResetOption_image")); // , "ui/images/reset_option.png"
 
 		imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -441,13 +438,19 @@ public class GUIResource
 
 		// Makes transparent images "on the fly"
 		//
-		imageSpoonGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "spoongraph.png"), new RGB(255, 255, 255));
-		imageJobGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display ,"chefgraph.png"), new RGB(255, 255, 255));
-		imageLogoSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display,"kettle_logo_small.png"),
+		imageSpoonGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
+				org.pentaho.di.laf.LAFManager.getLAFProp("SpoonIcon_image")), new RGB(255, 255, 255)); // , "ui/images/spoongraph.png"
+		imageJobGraph = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				org.pentaho.di.laf.LAFManager.getLAFProp("ChefIcon_image")), // , "ui/images/chefgraph.png"
 				new RGB(255, 255, 255));
-		imageArrow = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "arrow.png"), new RGB(255, 255, 255));
-		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImage(display, "bg_banner.png"), new RGB(255, 255, 255));
-
+		imageLogoSmall = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display,
+				org.pentaho.di.laf.LAFManager.getLAFProp("Logo_sml_image")), new RGB(255, 255, 255)); // , "ui/images/kettle_logo_small.png"
+		imageArrow = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				org.pentaho.di.laf.LAFManager.getLAFProp("ArrowIcon_image")), // , "ui/images/arrow.png"
+				new RGB(255, 255, 255));
+		imageBanner = ImageUtil.makeImageTransparent(display, ImageUtil.getImageAsResource(display, 
+				org.pentaho.di.laf.LAFManager.getLAFProp("Banner_bg_image")), // , "ui/images/bg_banner.png"
+				new RGB(255, 255, 255));
 	}
 
 	/**
@@ -488,11 +491,10 @@ public class GUIResource
 				String filename = plugins[i].getIconFilename();
 				try
 				{
-					image = ImageUtil.getImage(display,filename);//new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + filename));
+					image = ImageUtil.getImage(display, filename);
 				} catch (Exception e)
 				{
-					log.logError("Kettle", "Unable to find required job entry image file ["
-							+ (Const.IMAGE_DIRECTORY + filename) + "] : " + e.toString());
+					log.logError("Kettle", "Unable to find required job entry image file [" + filename + "] : " + e.toString());
 					image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 					GC gc = new GC(image);
 					gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);

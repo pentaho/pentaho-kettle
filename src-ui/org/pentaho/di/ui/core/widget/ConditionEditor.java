@@ -130,7 +130,7 @@ public class ConditionEditor extends Composite
 	private String messageString;
     private Menu mPop;
 	
-	public ConditionEditor(Composite composite, int arg1, Condition co, Props pr, RowMetaInterface inputFields) 
+	public ConditionEditor(Composite composite, int arg1, Condition co, Props pr, RowMetaInterface inputFields)
 	{
 		super(composite, arg1 | SWT.NO_BACKGROUND | SWT.V_SCROLL | SWT.H_SCROLL);
 		
@@ -140,7 +140,7 @@ public class ConditionEditor extends Composite
 		// this.props            = pr;
 		this.fields           = inputFields;
 
-		imageAdd = ImageUtil.getImage(composite.getDisplay(),"eq_add.png");//new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));
+		imageAdd = ImageUtil.getImage(composite.getDisplay(),"ui/images/eq_add.png");//new Image(composite.getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "eq_add.png"));
 		
 		addDisposeListener(
 		    new DisposeListener()

@@ -171,6 +171,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
@@ -197,7 +198,6 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage1;
 import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
-import org.pentaho.di.ui.util.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.version.BuildVersion;
@@ -330,6 +330,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	 */
 	public static void main(String[] a) throws KettleException
 	{
+		// Do some initialisation of environment variables
 		EnvUtil.environmentInit();
 		
 		ArrayList<String> args = new ArrayList<String>();
@@ -5280,12 +5281,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-    public void createSplash() {
+    public void createSplash() throws KettleException {
 		splash = new Splash(display);
 	}
 
     public void run( ArrayList<String> args ) {
     	try {
+    		//check the -D switch... something like -Dorg.pentaho.di.laf.alt="somefile.properties"
+    		String altprop = System.getProperty("org.pentaho.di.laf.alt");
+    		if (altprop!=null) {
+    			org.pentaho.di.laf.LAFManager.getInstance().loadProps(altprop);
+    		}
 			createSplash();
 			getCommandLineArgs(args);
 			createSpoon();

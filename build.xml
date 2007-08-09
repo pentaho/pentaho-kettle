@@ -85,7 +85,7 @@
 	  	    </copy>
         <!-- embedd the UI definition files in the jar so that webstart will work -->
 	    <copy todir="${classes-ui}/ui">
-	    	<fileset dir="${ui}" includes="**/*.png **/*.xml menus.xul menubar.xul menubar.properties"/>
+	    	<fileset dir="${ui}" includes="**/*.png **/*.xml menus.xul menubar.xul **/*.properties"/>
 	  	    </copy>
 	  </target>
 	  

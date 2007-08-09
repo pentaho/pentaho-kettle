@@ -35,13 +35,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.ui.core.dialog.Messages;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.ConditionEditor;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 
@@ -72,7 +71,7 @@ public class EnterConditionDialog extends Dialog
 		this.condition = condition;
 	}
 
-	public Condition open() 
+	public Condition open()
 	{
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);

@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  * @version 3.0
  */
 
-@Step(name="FixedInput",image="TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
+@Step(name="FixedInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.FixedInput",description="BaseStep.TypeLongDesc.FixedInput",
 		category=StepCategory.INPUT)
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 {

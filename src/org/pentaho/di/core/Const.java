@@ -110,11 +110,12 @@ public class Const
      */
     public static final String USER_HOME_DIRECTORY = Const.isEmpty(System.getProperty("KETTLE_HOME"))?System.getProperty("user.home"):System.getProperty("KETTLE_HOME");
 
-	/**
+	/*
 	 * The images directory
-	 */
+	 *
 	public static final String IMAGE_DIRECTORY = "/ui/images/";
-
+    */
+    
 	/**
 	 *  Public directory containing external steps plugins
 	 */

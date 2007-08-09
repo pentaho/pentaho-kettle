@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  * @version 3.0
  */
 
-@Step(name="CsvInput",image="TFI.png",tooltip="BaseStep.TypeTooltipDesc.CsvInput",description="BaseStep.TypeLongDesc.CsvInput",
+@Step(name="CsvInput",image="ui/images/TFI.png",tooltip="BaseStep.TypeTooltipDesc.CsvInput",description="BaseStep.TypeLongDesc.CsvInput",
 		category=StepCategory.INPUT)
 public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface
 {

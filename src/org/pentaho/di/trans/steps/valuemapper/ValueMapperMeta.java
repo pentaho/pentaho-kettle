@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
  * 
  * Created on 03-apr-2006
  */
-@Step(name="ValueMapper",image="VMP.png",tooltip="BaseStep.TypeTooltipDesc.MapValues",description="BaseStep.TypeLongDesc.ValueMapper",
+@Step(name="ValueMapper",image="ui/images/VMP.png",tooltip="BaseStep.TypeTooltipDesc.MapValues",description="BaseStep.TypeLongDesc.ValueMapper",
 		category=StepCategory.TRANSFORM)
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 {

@@ -7,12 +7,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 public class ImageUtil
 {
     private static FileObject base;
-    private static final String IMAGE_DIR = Const.IMAGE_DIRECTORY.startsWith("/")?Const.IMAGE_DIRECTORY.substring(1):Const.IMAGE_DIRECTORY;
     
     static
     {
@@ -37,19 +36,36 @@ public class ImageUtil
         return image;
     }
     
-    public static Image getImage(Display display,String location)
-    {	
+    public static Image getImageAsResource(Display display, String location) {
     	try
     	{
-    		String vsfLocation = IMAGE_DIR + (location.startsWith(Const.IMAGE_DIRECTORY)?
-    				location.substring(Const.IMAGE_DIRECTORY.length()):location);
-    		
-    		return new Image(display,VFS.getManager().resolveFile(base,vsfLocation).getContent().getInputStream());
+    		return new Image(display,VFS.getManager().resolveFile(base,location).getContent().getInputStream());
     	}
     	catch(FileSystemException e)
     	{
     		e.printStackTrace();
-    		return new Image(display,ImageUtil.class.getClassLoader().getResourceAsStream(Const.IMAGE_DIRECTORY+location));
+    		return new Image(display,ImageUtil.class.getClassLoader().getResourceAsStream(location));
+    	}
+    }
+    
+    public static Image getImage(Display display,String location)
+    {	
+    	// TODO: find other instances of getImage (plugin, steps) and transition them to new model through an laf manager
+    	try
+    	{
+    		return new Image(display, KettleVFS.getInputStream(location));
+    		
+    	}
+    	catch(Exception e)
+    	{
+    		try
+    		{
+    			return new Image(display,ImageUtil.class.getClassLoader().getResourceAsStream(location));
+    		}
+    		catch(Exception npe)
+    		{
+    			throw new RuntimeException("Unable to load image with name ["+location+"]", e);
+    		}
     	}
 
     }

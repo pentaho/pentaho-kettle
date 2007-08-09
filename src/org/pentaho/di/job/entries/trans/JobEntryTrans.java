@@ -72,7 +72,7 @@ import org.w3c.dom.Node;
  * @since 1-10-2003, rewritten on 18-06-2004
  *
  */
-@org.pentaho.di.core.annotations.Job(image="TRN.png",id="TRANS",type=JobEntryType.TRANS,tooltip="JobEntry.Trans.Tooltip")
+@org.pentaho.di.core.annotations.Job(image="ui/images/TRN.png",id="TRANS",type=JobEntryType.TRANS,tooltip="JobEntry.Trans.Tooltip")
 public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface
 {
 	private String              transname;

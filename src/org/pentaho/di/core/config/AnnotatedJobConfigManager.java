@@ -3,7 +3,6 @@ package org.pentaho.di.core.config;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Inject;
 import org.pentaho.di.core.annotations.Job;
 import org.pentaho.di.core.exception.KettleConfigException;
@@ -39,7 +38,7 @@ import org.pentaho.di.job.entry.Messages;
 			if (jobId.equals("")) // default
 				jobId =  clazz.getName();
 
-			jobs.add(new JobPluginMeta(clazz, jobId, job.type(),Messages.getString(job.tooltip()),Const.IMAGE_DIRECTORY+job.image()));
+			jobs.add(new JobPluginMeta(clazz, jobId, job.type(),Messages.getString(job.tooltip()),job.image()));
 		}
 		
 		
