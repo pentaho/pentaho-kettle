@@ -180,7 +180,7 @@ public class CsvInput extends BaseStep implements StepInterface
 					// Perhaps we need to skip over an enclosed part?
 					// We always expect exactly one enclosure character
 					//
-					else if (data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
+					else if (data.enclosure != null && data.byteBuffer[data.endBuffer]==data.enclosure[0]) {
 						
 						do {
 							data.endBuffer++;
@@ -290,7 +290,12 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 				
 				data.delimiter = environmentSubstitute(meta.getDelimiter()).getBytes();
-				data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
+
+				if( meta.getEnclosure() != null ) {
+					data.enclosure = environmentSubstitute(meta.getEnclosure()).getBytes();
+				} else {
+					data.enclosure = null;
+				}
 				
 				return true;
 			} catch (IOException e) {
