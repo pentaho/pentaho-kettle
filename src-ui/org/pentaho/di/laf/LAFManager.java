@@ -35,12 +35,24 @@ public class LAFManager {
 		return propFile;
 	}
 
-	private boolean initProps() { // verify that the property
-		// file exists        
-
-		if (!(exists(propFile)))
-			return false; // load the values from the property file 
-		return loadProps(propFile);
+	private boolean initProps() { 
+		
+		// check the -D switch... something like -Dorg.pentaho.di.laf.alt="somefile.properties"
+		// 
+		String altprop = System.getProperty("org.pentaho.di.laf.alt");
+		if (altprop!=null) {
+			return loadProps(altprop);
+		}
+		else {
+			// verify that the property file exists        
+			//
+			if (!(exists(propFile))) {
+				return false; 
+			}
+			// load the values from the property file
+			//
+			return loadProps(propFile);
+		}
 	}
 
 	protected String getProperty(String key) {
