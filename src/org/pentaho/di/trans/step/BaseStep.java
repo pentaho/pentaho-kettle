@@ -1653,7 +1653,15 @@ public class BaseStep extends Thread implements VariableSpace
 
     public String toString()
     {
-        return stepname + "." + getCopy(); //$NON-NLS-1$
+    	if (!Const.isEmpty(partitionID)) {
+    		return stepname + "." + partitionID;  //$NON-NLS-1$
+    	}
+    	else if (clusterSize>1) {
+    		return stepname + "." + slaveNr+"."+getCopy(); //$NON-NLS-1$ //$NON-NLS-2$
+    	}
+    	else {
+    		return stepname + "." + getCopy(); //$NON-NLS-1$
+    	}
     }
 
     public Thread getThread()
