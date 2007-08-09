@@ -17,8 +17,8 @@
 
 package org.pentaho.di.core;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,7 +57,7 @@ public class RowSet implements Comparable<RowSet>
     public RowSet(int maxSize)
     {
       // create an empty queue 
-      queArray = new LinkedBlockingQueue<Object[]>(maxSize);
+      queArray = new ArrayBlockingQueue<Object[]>(maxSize, false);
       
       // not done putting data into this RowSet
       done = new AtomicBoolean(false);
