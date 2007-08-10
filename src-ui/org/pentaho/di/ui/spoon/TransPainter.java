@@ -346,6 +346,7 @@ public class TransPainter
         // First draw an extra indicator for remote input steps...
         //
         if (!stepMeta.getRemoteInputSteps().isEmpty()) {
+        	gc.setForeground(GUIResource.getInstance().getColorLightGray());
             gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrInput = Integer.toString(stepMeta.getRemoteInputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
@@ -371,6 +372,7 @@ public class TransPainter
         // Then draw an extra indicator for remote output steps...
         //
         if (!stepMeta.getRemoteOutputSteps().isEmpty()) {
+        	gc.setForeground(GUIResource.getInstance().getColorLightGray());
             gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrOutput = Integer.toString(stepMeta.getRemoteOutputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrOutput);

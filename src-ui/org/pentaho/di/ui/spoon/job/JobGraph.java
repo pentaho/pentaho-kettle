@@ -1864,7 +1864,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		gc.setBackground(GUIResource.getInstance().getColorLightGray());
 		gc.fillPolygon(shadow);
 		
-		gc.setForeground(GUIResource.getInstance().getColorGray());
+		gc.setForeground(GUIResource.getInstance().getColorDarkGray());
 		gc.setBackground(GUIResource.getInstance().getColorYellow());
 
 		gc.fillPolygon(noteshape);
@@ -1910,7 +1910,7 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
 		} 
 		else 
 		{
-			col = GUIResource.getInstance().getColorGray();
+			col = GUIResource.getInstance().getColorDarkGray();
 		}
 
 		gc.setForeground(col);

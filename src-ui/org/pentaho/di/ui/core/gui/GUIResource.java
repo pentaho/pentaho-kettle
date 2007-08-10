@@ -203,7 +203,6 @@ public class GUIResource
 		colorRed = new ManagedColor(display, 255, 0, 0);
 		colorGreen = new ManagedColor(display, 0, 255, 0);
 		colorBlue = new ManagedColor(display, 0, 0, 255);
-		colorGray = new ManagedColor(display, 100, 100, 100);
 		colorYellow = new ManagedColor(display, 255, 255, 0);
 		colorMagenta = new ManagedColor(display, 255, 0, 255);
 		colorOrange = new ManagedColor(display, 255, 165, 0);
@@ -211,6 +210,7 @@ public class GUIResource
 		colorWhite = new ManagedColor(display, 255, 255, 255);
 		colorDemoGray = new ManagedColor(display, 240, 240, 240);
 		colorLightGray = new ManagedColor(display, 225, 225, 225);
+		colorGray = new ManagedColor(display, 150, 150, 150);
 		colorDarkGray = new ManagedColor(display, 100, 100, 100);
 		colorBlack = new ManagedColor(display, 0, 0, 0);
 

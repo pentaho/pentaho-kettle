@@ -194,7 +194,7 @@ public class ConditionEditor extends Composite
 		red    = GUIResource.getInstance().getColorRed();
 		green  = GUIResource.getInstance().getColorGreen();
 		blue   = GUIResource.getInstance().getColorBlue();
-		gray   = GUIResource.getInstance().getColorGray();
+		gray   = GUIResource.getInstance().getColorDarkGray();
         
 		
 		widget.addPaintListener(new PaintListener() 
