@@ -4921,6 +4921,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 		WizardDialog wd = new WizardDialog(shell, wizard);
 		wd.setMinimumPageSize(700, 400);
+    wd.updateSize();
 		wd.open();
 	}
 

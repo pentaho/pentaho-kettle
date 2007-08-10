@@ -347,7 +347,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet, wGetLU }, margin, null);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };

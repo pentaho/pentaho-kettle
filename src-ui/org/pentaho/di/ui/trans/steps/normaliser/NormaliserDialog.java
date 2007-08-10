@@ -132,7 +132,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
 		final int FieldsCols=3;
 		final int FieldsRows=input.getFieldName().length;

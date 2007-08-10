@@ -123,7 +123,7 @@ public class SortedMergeDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
         
         wlFields=new Label(shell, SWT.NONE);

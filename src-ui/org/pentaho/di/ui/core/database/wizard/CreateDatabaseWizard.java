@@ -118,6 +118,7 @@ public class CreateDatabaseWizard {
                 
         WizardDialog wd = new WizardDialog(shell, wizard);
         wd.setMinimumPageSize(700,400);
+        wd.updateSize();
         wd.open();
         
         if(!wizardFinished){

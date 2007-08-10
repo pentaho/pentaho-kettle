@@ -316,7 +316,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		
 		// THE UPDATE/INSERT TABLE

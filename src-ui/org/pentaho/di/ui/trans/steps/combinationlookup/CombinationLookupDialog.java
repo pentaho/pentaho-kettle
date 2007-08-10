@@ -312,7 +312,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wCreate, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet, wCreate}, margin, null);
 
 		// Technical key field:
 		wlHashfield=new Label(shell, SWT.RIGHT);

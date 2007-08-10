@@ -284,7 +284,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, null);
 
         // Table with fields to sort and sort direction
 		wlFields=new Label(shell, SWT.NONE);

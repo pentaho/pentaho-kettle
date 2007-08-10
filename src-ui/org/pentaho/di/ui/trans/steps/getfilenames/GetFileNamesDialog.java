@@ -377,7 +377,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, wTabFolder);
 
 		// Add listeners
 		lsOK = new Listener()

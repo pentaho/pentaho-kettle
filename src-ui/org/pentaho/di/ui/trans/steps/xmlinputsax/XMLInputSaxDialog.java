@@ -606,7 +606,7 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, wTabFolder);
 
 		// Add listeners
 		lsOK = new Listener()

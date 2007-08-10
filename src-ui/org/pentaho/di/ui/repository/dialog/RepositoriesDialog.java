@@ -221,7 +221,7 @@ public class RepositoriesDialog
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel , wNorep}, Const.MARGIN, null);
 
         // Password
         wPassword = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Password"), Messages.getString("RepositoriesDialog.Label.Password"), middle, margin);

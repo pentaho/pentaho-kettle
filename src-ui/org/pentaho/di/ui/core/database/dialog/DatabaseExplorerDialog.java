@@ -231,7 +231,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 		if (!justLook) 
 		{
-			BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wRefresh, wCancel}, margin, null);
+			BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel, wRefresh}, margin, null);
 
 			// Add listeners
 			wCancel.addListener(SWT.Selection, new Listener ()

@@ -177,7 +177,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		fdOK=new FormData();
 		
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet} , margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(Messages.getString("UniqueRowsDialog.Fields.Label")); //$NON-NLS-1$

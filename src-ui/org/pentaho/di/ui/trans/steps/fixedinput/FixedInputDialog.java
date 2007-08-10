@@ -286,7 +286,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wPreview, wGet, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wPreview, wGet }, margin, null);
 
 
 		// Fields
@@ -540,6 +540,7 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
     				
     		WizardDialog wd = new WizardDialog(shell, wizard);
     		wd.setMinimumPageSize(700,375);
+        wd.updateSize();
     		wd.open();
         }
         catch(Exception e)

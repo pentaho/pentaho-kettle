@@ -201,7 +201,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet }, margin, wFields);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };

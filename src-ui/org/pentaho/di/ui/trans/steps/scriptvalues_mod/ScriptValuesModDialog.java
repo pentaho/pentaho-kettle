@@ -559,7 +559,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		setButtonPositions(new Button[] { wOK,  wVars, wTest, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel ,  wVars, wTest }, margin, null);
 
 
 		// Add listeners

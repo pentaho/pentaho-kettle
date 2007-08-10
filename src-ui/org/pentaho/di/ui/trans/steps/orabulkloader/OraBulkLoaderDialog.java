@@ -637,7 +637,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wSQL }, margin, null);
 
 		// The field Table
 		wlReturn = new Label(shell, SWT.NONE);

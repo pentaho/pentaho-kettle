@@ -484,7 +484,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wCreate, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wGet, wCreate }, margin, null);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };

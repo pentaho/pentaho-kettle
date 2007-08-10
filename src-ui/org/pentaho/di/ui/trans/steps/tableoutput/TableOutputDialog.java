@@ -560,7 +560,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wReturnField);
+		setButtonPositions(new Button[] { wOK, wCancel , wCreate }, margin, wReturnField);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };

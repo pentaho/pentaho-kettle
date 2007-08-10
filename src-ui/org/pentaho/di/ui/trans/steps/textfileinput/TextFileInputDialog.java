@@ -430,7 +430,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel, wPreview}, margin, wTabFolder);
 
 		// Add listeners
 		lsOK          = new Listener() { public void handleEvent(Event e) { ok();           } };
@@ -2789,6 +2789,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     				
     		WizardDialog wd = new WizardDialog(shell, wizard);
     		wd.setMinimumPageSize(700,375);
+        wd.updateSize();
     		wd.open();
         }
         catch(Exception e)

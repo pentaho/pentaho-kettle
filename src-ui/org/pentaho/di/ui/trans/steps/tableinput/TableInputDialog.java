@@ -161,7 +161,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel , wPreview }, margin, null);
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);

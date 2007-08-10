@@ -506,6 +506,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 
 		WizardDialog wd = new WizardDialog(spoon.getShell(), wizard);
 		wd.setMinimumPageSize(700, 400);
+    wd.updateSize();
 		wd.open();
 	}
 
