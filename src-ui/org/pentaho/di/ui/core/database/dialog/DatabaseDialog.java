@@ -1675,7 +1675,8 @@ public class DatabaseDialog extends Dialog
         }
 
         // Now put in the extra options...
-        for (int i = 0; i < wOptions.nrNonEmpty(); i++)
+        int nrNonEmptyOptions = wOptions.nrNonEmpty(); 
+        for (int i = 0; i < nrNonEmptyOptions; i++)
         {
             TableItem item = wOptions.getNonEmpty(i);
             String dbTypeStr = item.getText(1);
@@ -1702,7 +1703,9 @@ public class DatabaseDialog extends Dialog
         databaseMeta.setInitialPoolSize(Const.toInt(wInitPool.getText(), ConnectionPoolUtil.defaultInitialNrOfConnections));
         databaseMeta.setMaximumPoolSize(Const.toInt(wMaxPool.getText(), ConnectionPoolUtil.defaultMaximumNrOfConnections));
         Properties poolProperties = new Properties();
-        for (int i = 0; i < wPoolParameters.nrNonEmpty(); i++)
+        
+        int nrNonEmptyPoolParameters = wPoolParameters.nrNonEmpty(); 
+        for (int i = 0; i < nrNonEmptyPoolParameters; i++)
         {
             TableItem item = wPoolParameters.getNonEmpty(i);
             String parameterName = item.getText(1);

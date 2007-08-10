@@ -290,7 +290,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                 {
                     // Add the newly create fields.
                     //
-                    for (int i=0;i<wFields.nrNonEmpty();i++)
+                	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+                    for (int i=0;i<nrNonEmptyFields;i++)
                     {
                         TableItem item = wFields.getNonEmpty(i);
                         fields.put(item.getText(1), new Integer(1000000+i));  // The number is just to debug the origin of the fieldname
@@ -348,9 +349,10 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		stepname = wStepname.getText(); // return value
 		
-        currentMeta.allocate(wFields.nrNonEmpty());
+    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+        currentMeta.allocate(nrNonEmptyFields);
         
-        for (int i=0;i<wFields.nrNonEmpty();i++)
+        for (int i=0;i<nrNonEmptyFields;i++)
         {
             TableItem item = wFields.getNonEmpty(i);
             

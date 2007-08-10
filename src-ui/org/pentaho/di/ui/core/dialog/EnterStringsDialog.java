@@ -220,7 +220,8 @@ public class EnterStringsDialog extends Dialog
         if (readOnly)
         {
             // Loop over the input rows and find the new values...
-            for (int i=0;i<wFields.nrNonEmpty();i++)
+        	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+            for (int i=0;i<nrNonEmptyFields;i++)
             {
                 TableItem item = wFields.getNonEmpty(i);
                 String name = item.getText(1);
@@ -239,7 +240,8 @@ public class EnterStringsDialog extends Dialog
         else // Variable: re-construct the list of strings again...
         {
             strings.clear();
-            for (int i=0;i<wFields.nrNonEmpty();i++)
+        	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+        	for (int i=0;i<nrNonEmptyFields;i++)
             {
                 TableItem item = wFields.getNonEmpty(i);
                 String name = item.getText(1);

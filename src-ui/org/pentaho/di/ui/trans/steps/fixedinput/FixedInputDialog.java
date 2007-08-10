@@ -413,9 +413,10 @@ public class FixedInputDialog extends BaseStepDialog implements StepDialogInterf
 		fixedInputMeta.setLineFeedPresent(wLineFeedPresent.getSelection());
 		fixedInputMeta.setRunningInParallel(wRunningInParallel.getSelection());
 
-		fixedInputMeta.allocate(wFields.nrNonEmpty());
+    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+		fixedInputMeta.allocate(nrNonEmptyFields);
 
-		for (int i=0;i<wFields.nrNonEmpty();i++) {
+		for (int i=0;i<nrNonEmptyFields;i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			int colnr=1;
 			

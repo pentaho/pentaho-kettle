@@ -76,7 +76,19 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
     @Override
     public String toString() {
     	
-    	return getMethodDescription();
+    	String description;
+    	
+    	if (partitioner!=null) {
+    		description = partitioner.getDescription();
+    	}
+    	else {
+        	description = getMethodDescription();
+    	}
+    	if (partitionSchema!=null) {
+    		description += " / "+partitionSchema.toString();
+    	}
+    	
+    	return description;
     }
 
     /**
@@ -256,6 +268,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
         
         if (methodType!=PARTITIONING_METHOD_NONE && partitionSchema==null) {
         	String message = "Unable to set partition schema for name ["+partitionSchemaName+"], method: "+getMethodDescription()+Const.CR;
+        	message += "This is the list of available partition schema:"+Const.CR;
             for (int i=0;i<partitionSchemas.size() && partitionSchema==null;i++)
             {
                 PartitionSchema schema = partitionSchemas.get(i);

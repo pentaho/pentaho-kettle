@@ -257,7 +257,9 @@ public class PartitionSchemaDialog extends Dialog
         partitionSchema.setName(wName.getText());
         
         List<String> parts = new ArrayList<String>();
-        for (int i=0;i<wPartitions.nrNonEmpty();i++)
+
+        int nrNonEmptyPartitions = wPartitions.nrNonEmpty(); 
+        for (int i=0;i<nrNonEmptyPartitions;i++)
         {
             parts.add( wPartitions.getNonEmpty(i).getText(1) );
         }

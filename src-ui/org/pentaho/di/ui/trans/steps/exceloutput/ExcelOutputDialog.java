@@ -1114,8 +1114,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	 */
 	public void setMinimalWidth()
 	{
-		
-		for (int i=0;i<wFields.nrNonEmpty();i++)
+    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+		for (int i=0;i<nrNonEmptyFields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			

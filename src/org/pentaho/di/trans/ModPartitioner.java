@@ -1,5 +1,6 @@
 package org.pentaho.di.trans;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -51,7 +52,9 @@ public class ModPartitioner extends BasePartitioner {
 		}
 
 		public String getDescription() {
-			return "Mod partitioner";
+			String description = "Mod partitioner";
+			description+="("+Const.NVL(fieldName, "?")+")";
+			return description;
 		}
 
 		public String getXML()

@@ -350,9 +350,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setLazyConversionActive(wLazyConversion.getSelection());
 		inputMeta.setHeaderPresent(wHeaderPresent.getSelection());
 
-		inputMeta.allocate(wFields.nrNonEmpty());
+    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+    	inputMeta.allocate(nrNonEmptyFields);
 
-		for (int i=0;i<wFields.nrNonEmpty();i++) {
+		for (int i=0;i<nrNonEmptyFields;i++) {
 			TableItem item = wFields.getNonEmpty(i);
 			int colnr=1;
 			inputMeta.getFieldNames()[i] = item.getText(colnr++);

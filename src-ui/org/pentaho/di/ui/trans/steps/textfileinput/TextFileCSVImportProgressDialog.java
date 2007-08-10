@@ -555,8 +555,7 @@ public class TextFileCSVImportProgressDialog
                         }
                         catch (Exception e)
                         {
-                            log.logBasic(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getNumberFormats()[x]
-                                    + "] did not work.");
+                            if (log.isDetailed()) log.logDetailed(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getNumberFormats()[x] + "] did not work.");
                         }
                     }
                 }
@@ -575,28 +574,30 @@ public class TextFileCSVImportProgressDialog
                 {
                     message += Messages.getString("TextFileCSVImportProgressDialog.Info.WarnDateFormat");
                 }
-                for (int x = 0; x < Const.getDateFormats().length; x++)
+                if (!Const.isEmpty(minstr[i])) 
                 {
-                    if (dateFormat[i][x])
-                    {
-                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat2", Const.getDateFormats()[x]);
-                        Date mindate = minDate[i][x];
-                        Date maxdate = maxDate[i][x];
-                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMinValue", mindate.toString());
-                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMaxValue", maxdate.toString());
-
-                        daf2.applyPattern(Const.getDateFormats()[x]);
-                        try
-                        {
-                            Date md = daf2.parse(minstr[i]);
-                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateExample", Const.getDateFormats()[x], minstr[i], md.toString());
-                        }
-                        catch (Exception e)
-                        {
-                            log.logError(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getDateFormats()[x]
-                                    + "] did not work.");
-                        }
-                    }
+	                for (int x = 0; x < Const.getDateFormats().length; x++)
+	                {
+	                    if (dateFormat[i][x])
+	                    {
+	                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat2", Const.getDateFormats()[x]);
+	                        Date mindate = minDate[i][x];
+	                        Date maxdate = maxDate[i][x];
+	                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMinValue", mindate.toString());
+	                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMaxValue", maxdate.toString());
+	
+	                        daf2.applyPattern(Const.getDateFormats()[x]);
+	                        try
+	                        {
+	                            Date md = daf2.parse(minstr[i]);
+	                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateExample", Const.getDateFormats()[x], minstr[i], md.toString());
+	                        }
+	                        catch (Exception e)
+	                        {
+	                        	if (log.isDetailed()) log.logDetailed(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.getDateFormats()[x] + "] did not work.");
+	                        }
+	                    }
+	                }
                 }
                 message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateNrNullValues", ""+nrnull[i]);
                 break;

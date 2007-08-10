@@ -588,7 +588,8 @@ public class TransExecutionConfigurationDialog extends Dialog
     private void getInfoVariables()
     {
         Map<String,String> map = new HashMap<String, String>();
-        for (int i=0;i<wVariables.nrNonEmpty();i++)
+    	int nrNonEmptyVariables = wVariables.nrNonEmpty(); 
+        for (int i=0;i<nrNonEmptyVariables;i++)
         {
             TableItem tableItem = wVariables.getNonEmpty(i);
             String varName = tableItem.getText(1);
@@ -605,7 +606,8 @@ public class TransExecutionConfigurationDialog extends Dialog
     private void getInfoArguments()
     {
     	Map<String,String> map = new HashMap<String, String>();
-        for (int i=0;i<wArguments.nrNonEmpty();i++)
+    	int nrNonEmptyArguments = wArguments.nrNonEmpty(); 
+    	for (int i=0;i<nrNonEmptyArguments;i++)
         {
             TableItem tableItem = wArguments.getNonEmpty(i);
             String varName = tableItem.getText(1);

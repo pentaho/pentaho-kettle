@@ -1806,7 +1806,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             	StringBuffer tip = new StringBuffer();
             	for (AreaOwner areaOwner : areaOwners) {
             		if (areaOwner.contains(x, y)) {
-	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteInputSteps") ) {
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_INPUT_STEPS) ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
 	            			tip.append("Remote input steps:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			for (RemoteStep remoteStep : step.getRemoteInputSteps()) {
@@ -1814,14 +1814,14 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	            			}
 	            			
 	            		}
-	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("RemoteOutputSteps") ) {
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_REMOTE_OUTPUT_STEPS) ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
 	            			tip.append("Remote output steps:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			for (RemoteStep remoteStep : step.getRemoteOutputSteps()) {
 	            				tip.append(remoteStep.toString()).append(Const.CR);
 	            			}
 	            		}
-	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("start") ) {
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP) ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
 	            			tip.append("Step partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);
@@ -1829,7 +1829,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 	            				tip.append(Const.CR).append(Const.CR).append("TARGET: "+step.getTargetStepPartitioningMeta().toString()).append(Const.CR);
 	            			}
 	            		}
-	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals("end") ) {
+	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_NEXT) ) {
 	            			StepMeta step = (StepMeta) areaOwner.getParent();
 	            			tip.append("Target partitioning:").append(Const.CR).append("-----------------------").append(Const.CR);
 	            			tip.append(step.getStepPartitioningMeta().toString()).append(Const.CR);

@@ -407,7 +407,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
-
+ 		wTabFolder.setSimple(false);
+ 		
  		addFilesTab();
 		addContentTab();
         addErrorTab();
@@ -2377,10 +2378,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                                 TableItem item = new TableItem(table, SWT.NONE);
                                 item.setText(1, field);
                                 item.setText(2, "String"); // The default type is String...
-                                
-                                // Copy it...
-                                getInfo(meta);
                             }
+
+                            // Copy it...
+                            getInfo(meta);
                         }
                     }
 

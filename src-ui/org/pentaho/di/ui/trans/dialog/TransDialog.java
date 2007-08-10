@@ -1361,7 +1361,9 @@ public class TransDialog extends Dialog
             PartitionSchema partitionSchema = (PartitionSchema)schemas.get(previousSchemaIndex);
             partitionSchema.setName(wSchemaName.getText());
             java.util.List<String> ids = new ArrayList<String>();
-            for (int i=0;i<wPartitions.nrNonEmpty();i++)
+            
+            int nrNonEmptyPartitions = wPartitions.nrNonEmpty();
+            for (int i=0;i<nrNonEmptyPartitions;i++)
             {
                 ids.add( wPartitions.getNonEmpty(i).getText(1) );
             }
@@ -1583,7 +1585,8 @@ public class TransDialog extends Dialog
 		
 		transMeta.removeAllDependencies();
 		
-		for (i=0;i<wFields.nrNonEmpty();i++)
+    	int nrNonEmptyFields = wFields.nrNonEmpty(); 
+		for (i=0;i<nrNonEmptyFields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			

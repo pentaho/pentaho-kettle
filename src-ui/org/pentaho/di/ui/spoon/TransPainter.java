@@ -30,7 +30,12 @@ import org.pentaho.di.ui.core.PropsUI;
 
 public class TransPainter
 {
-    private PropsUI        props;
+    public static final String STRING_PARTITIONING_CURRENT_STEP = "PartitioningCurrentStep"; // $NON-NLS-1$
+    public static final String STRING_PARTITIONING_CURRENT_NEXT = "PartitioningNextStep";    // $NON-NLS-1$
+	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
+	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
+    
+	private PropsUI      props;
     private int          shadowsize;
     private Point        area;
     private TransMeta    transMeta;
@@ -343,10 +348,13 @@ public class TransPainter
 
         Point screen = real2screen(x, y, offset);
 
+        // REMOTE STEPS
+        
         // First draw an extra indicator for remote input steps...
         //
         if (!stepMeta.getRemoteInputSteps().isEmpty()) {
-        	gc.setForeground(GUIResource.getInstance().getColorLightGray());
+        	gc.setForeground(GUIResource.getInstance().getColorGray());
+        	gc.setBackground(GUIResource.getInstance().getColorBackground());
             gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrInput = Integer.toString(stepMeta.getRemoteInputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
@@ -366,13 +374,14 @@ public class TransPainter
          	drawArrow(gc, screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y, Math.toRadians(15), 15, 1.8, null, null );
          	
             // Add to the list of areas...
-            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteInputSteps"));
+            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_INPUT_STEPS));
         }
 
         // Then draw an extra indicator for remote output steps...
         //
         if (!stepMeta.getRemoteOutputSteps().isEmpty()) {
-        	gc.setForeground(GUIResource.getInstance().getColorLightGray());
+        	gc.setForeground(GUIResource.getInstance().getColorGray());
+        	gc.setBackground(GUIResource.getInstance().getColorBackground());
             gc.setFont(GUIResource.getInstance().getFontGraph());
         	String nrOutput = Integer.toString(stepMeta.getRemoteOutputSteps().size());
         	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrOutput);
@@ -393,7 +402,42 @@ public class TransPainter
          	drawArrow(gc, screen.x+2*iconsize/3, screen.y, screen.x+iconsize+iconsize/2, point.y+textExtent.y/2, Math.toRadians(15), 15, 1.8, null, null );
 
          	// Add to the list of areas...
-            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, "RemoteOutputSteps"));
+            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_REMOTE_OUTPUT_STEPS));
+        }
+        
+        // PARTITIONING
+
+        // If this step is partitioned, we're drawing a small symbol indicating this...
+        //
+        if (stepMeta.isPartitioned()) {
+        	gc.setForeground(GUIResource.getInstance().getColorRed());
+        	gc.setBackground(GUIResource.getInstance().getColorBackground());
+            gc.setFont(GUIResource.getInstance().getFontGraph());
+            
+            PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+            if (partitionSchema!=null) {
+	            
+	        	String nrInput = "Px"+Integer.toString(partitionSchema.getPartitionIDs().size());
+	        	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
+	        	textExtent.x+=2; // add a tiny little bit of a margin
+	        	textExtent.y+=2;
+	        	
+	        	// Draw it a 2 icons above the step icon.
+	        	// Draw it an icon and a half to the left
+	        	//
+	        	Point point = new Point(screen.x-iconsize-iconsize/2, screen.y-iconsize-iconsize);
+	        	gc.drawRectangle(point.x, point.y, textExtent.x, textExtent.y);
+	        	gc.drawText(nrInput, point.x+1, point.y+1);
+	        	
+	        	// Now we draw an arrow from the cube to the step...
+	        	// 
+	        	gc.drawLine(point.x+textExtent.x, point.y+textExtent.y/2, screen.x-iconsize/2, point.y+textExtent.y/2);
+	         	gc.drawLine(screen.x-iconsize/2, point.y+textExtent.y/2, screen.x+iconsize/3, screen.y);
+	         	
+	            // Add to the list of areas...
+	         	//
+	            areaOwners.add(new AreaOwner(point.x, point.y, textExtent.x, textExtent.y, stepMeta, STRING_PARTITIONING_CURRENT_STEP));
+            }
         }
         
         String name = stepMeta.getName();
@@ -722,7 +766,7 @@ public class TransPainter
 	            gc.setForeground(GUIResource.getInstance().getColorLightGray());
 	            gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
 	            
-	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, fs, "start"));
+	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, fs, STRING_PARTITIONING_CURRENT_STEP));
 	        }
         }
         if (endObject!=null && endObject instanceof StepMeta) {
@@ -732,8 +776,8 @@ public class TransPainter
             	int x = 0;
             	String name = "unknown";
             	StepPartitioningMeta stepPartitioningMeta = ts.getStepPartitioningMeta();
-            	if( stepPartitioningMeta != null ) {
             		PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+            		if( stepPartitioningMeta != null ) {
             		if( partitionSchema != null ) {
             			List<String> ids = partitionSchema.getPartitionIDs();
             			name = partitionSchema.getName();
@@ -754,7 +798,7 @@ public class TransPainter
                 gc.drawText(endMessage, mx-textExtent.x/3, my-textExtent.y/2, true);
                 gc.setForeground(GUIResource.getInstance().getColorLightGray());
                 gc.drawRectangle(mx-textExtent.x/3-2, my-textExtent.y/2-2, textExtent.x+4, textExtent.y+4);
-	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, ts, "end"));
+	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, ts, STRING_PARTITIONING_CURRENT_NEXT));
             }
         }
     }
