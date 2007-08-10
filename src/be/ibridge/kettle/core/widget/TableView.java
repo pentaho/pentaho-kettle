@@ -21,6 +21,7 @@ package be.ibridge.kettle.core.widget;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -2188,37 +2189,39 @@ public class TableView extends Composite
 		}
 	}
 	
-	/* Count non-empty rows in the table...
-	 * 
+	private List nonEmptyIndexes;
+	
+	/**
+	 * Count non-empty rows in the table...
+	 * IMPORTANT: always call this method before calling getNonEmpty(int selnr): for performance reasons we cache the row indexes.
+	 * @return the number of rows/table-items that are not empty
 	 */
 	public int nrNonEmpty()
 	{
-		int retval=0;
+		nonEmptyIndexes = new ArrayList();
 		
 		// Count only non-empty rows
 		for (int i=0;i<table.getItemCount();i++)
 		{
-			if (!isEmpty(i,-1)) retval++;
-		}
-		
-		return retval;
-	}
-
-	public TableItem getNonEmpty(int selnr)
-	{
-		int nr=0;
-		
-		// Count only non-empty rows
-		for (int i=0;i<table.getItemCount();i++)
-		{
-			if (!isEmpty(i,-1)) 
-			{ 
-				if (selnr==nr) return table.getItem(i);
-				nr++;
+			if (!isEmpty(i,-1)) {
+				nonEmptyIndexes.add(new Integer(i));
 			}
 		}
 		
-		return null;
+		return nonEmptyIndexes.size();
+	}
+
+	/**
+	 * Return the row/table-item on the specified index.
+	 * IMPORTANT: the indexes of the non-empty rows are populated with a call to nrNonEmpty().  Make sure to call that first.
+	 * 
+	 * @param index the index of the non-empty row/table-item
+	 * @return the requested non-empty row/table-item
+	 */
+	public TableItem getNonEmpty(int index)
+	{
+		int nonEmptyIndex = ((Integer)nonEmptyIndexes.get(index)).intValue();
+		return table.getItem(nonEmptyIndex );
 	}
 	
 	public int indexOfString(String str, int column)

@@ -1584,7 +1584,8 @@ public class TransDialog extends Dialog
 		
 		transMeta.removeAllDependencies();
 		
-		for (i=0;i<wFields.nrNonEmpty();i++)
+		int nrNonEmptyFields = wFields.nrNonEmpty();
+		for (i=0;i<nrNonEmptyFields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			
