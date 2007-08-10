@@ -917,7 +917,6 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		retval.append("    ").append(XMLHandler.addTagValue("database",   getDatabaseName()));
 		retval.append("    ").append(XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
 		retval.append("    ").append(XMLHandler.addTagValue("username",   getUsername()));
-        
         retval.append("    ").append(XMLHandler.addTagValue("password",         Encr.encryptPasswordIfNotUsingVariables(getPassword())));	
 		retval.append("    ").append(XMLHandler.addTagValue("servername",       getServername()));
 		retval.append("    ").append(XMLHandler.addTagValue("data_tablespace",  getDataTablespace()));

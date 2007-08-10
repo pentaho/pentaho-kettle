@@ -33,6 +33,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -103,7 +104,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
-		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+		retval.append("      ").append(XMLHandler.addTagValue("password",     Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("localdirectory", localDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
@@ -120,7 +121,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			serverName      = XMLHandler.getTagValue(entrynode, "servername");
 			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
-			password        = XMLHandler.getTagValue(entrynode, "password");
+			password        = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "password") );
 			sftpDirectory   = XMLHandler.getTagValue(entrynode, "sftpdirectory");
 			localDirectory  = XMLHandler.getTagValue(entrynode, "localdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
@@ -145,7 +146,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
             if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
+			password        = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 			sftpDirectory   = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
 			localDirectory  = rep.getJobEntryAttributeString(id_jobentry, "localdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
@@ -167,7 +168,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getID(), "password",        Encr.encryptPasswordIfNotUsingVariables(password));
 			rep.saveJobEntryAttribute(id_job, getID(), "sftpdirectory",    sftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "localdirectory", localDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);

@@ -146,7 +146,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
             if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
+		    password        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
+		    
 			sftpDirectory   = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
 			targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
@@ -168,7 +169,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "servername",      serverName);
 			rep.saveJobEntryAttribute(id_job, getID(), "serverport",      serverPort);
 			rep.saveJobEntryAttribute(id_job, getID(), "username",        userName);
-			rep.saveJobEntryAttribute(id_job, getID(), "password",        password);
+			rep.saveJobEntryAttribute(id_job, getID(), "password",        Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
 			rep.saveJobEntryAttribute(id_job, getID(), "sftpdirectory",    sftpDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory);
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);

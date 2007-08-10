@@ -25,6 +25,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
@@ -468,7 +469,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
-			password = XMLHandler.getTagValue(stepnode, "file", "password");
+			password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "file", "password") );
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 
 			templateEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
@@ -645,7 +646,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
 		retval.append("      "+XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      "+XMLHandler.addTagValue("protect_sheet",   protectsheet));
-		retval.append("      "+XMLHandler.addTagValue("password",  password));
+		retval.append("      "+XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("      </file>"+Const.CR);
 		
@@ -678,18 +679,18 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		try
 		{
-			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
-			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
-            encoding        =      rep.getStepAttributeString (id_step, "encoding");
+			headerEnabled    =      rep.getStepAttributeBoolean(id_step, "header");
+			footerEnabled    =      rep.getStepAttributeBoolean(id_step, "footer");   
+            encoding         =      rep.getStepAttributeString (id_step, "encoding");
             
-			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
-			extension       =      rep.getStepAttributeString (id_step, "file_extention");
-			splitEvery      = (int)rep.getStepAttributeInteger(id_step, "file_split");
-			stepNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
-			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
-			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			protectsheet        =      rep.getStepAttributeBoolean(id_step, "protect_sheet");
-			password       =      rep.getStepAttributeString (id_step, "password");
+			fileName         =      rep.getStepAttributeString (id_step, "file_name");  
+			extension        =      rep.getStepAttributeString (id_step, "file_extention");
+			splitEvery       = (int)rep.getStepAttributeInteger(id_step, "file_split");
+			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
+			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
+			timeInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+			protectsheet     =      rep.getStepAttributeBoolean(id_step, "protect_sheet");
+			password         = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );
 
 			templateEnabled       =      rep.getStepAttributeBoolean(id_step, "template_enabled");
 			templateAppend        =      rep.getStepAttributeBoolean(id_step, "template_append");
@@ -730,7 +731,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);
-			rep.saveStepAttribute(id_transformation, id_step, "password",   password);
+			rep.saveStepAttribute(id_transformation, id_step, "password",  Encr.encryptPasswordIfNotUsingVariables(password) );
 			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "template_append",   templateAppend);
 			rep.saveStepAttribute(id_transformation, id_step, "template_filename", templateFileName);

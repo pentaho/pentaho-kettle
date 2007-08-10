@@ -55,6 +55,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -146,7 +147,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("servername", servername)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("username", username)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("password", password)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password))); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("usessl", usessl)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("sslport", sslport)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("outputdirectory", outputdirectory)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -165,7 +166,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       super.loadXML(entrynode, databases);
       servername = XMLHandler.getTagValue(entrynode, "servername"); //$NON-NLS-1$
       username = XMLHandler.getTagValue(entrynode, "username"); //$NON-NLS-1$
-      password = XMLHandler.getTagValue(entrynode, "password"); //$NON-NLS-1$
+      password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "password"));
       usessl = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "usessl")); //$NON-NLS-1$ //$NON-NLS-2$
       sslport = XMLHandler.getTagValue(entrynode, "sslport"); //$NON-NLS-1$
       outputdirectory = XMLHandler.getTagValue(entrynode, "outputdirectory"); //$NON-NLS-1$
@@ -186,7 +187,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       super.loadRep(rep, id_jobentry, databases);
       servername = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
       username = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
-      password = rep.getJobEntryAttributeString(id_jobentry, "password"); //$NON-NLS-1$
+      password = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
+
       usessl = rep.getJobEntryAttributeBoolean(id_jobentry, "usessl"); //$NON-NLS-1$
       int intSSLPort = (int) rep.getJobEntryAttributeInteger(id_jobentry, "sslport"); //$NON-NLS-1$
       sslport = rep.getJobEntryAttributeString(id_jobentry, "sslport"); // backward compatible. //$NON-NLS-1$
@@ -213,7 +215,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
       rep.saveJobEntryAttribute(id_job, getID(), "servername", servername); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "username", username); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "password", password); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "usessl", usessl); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "sslport", sslport); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "outputdirectory", outputdirectory); //$NON-NLS-1$
@@ -225,7 +227,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     {
       throw new KettleException(Messages.getString("JobEntryGetPOP.UnableToSaveToRepo", String.valueOf(id_job)), dbe); //$NON-NLS-1$
     }
-
   }
 
   public String getSSLPort()
@@ -693,11 +694,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
   public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
   {
-
     andValidator().validate(this, "serverName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-
     andValidator().validate(this, "userName", remarks, putValidators(notBlankValidator())); //$NON-NLS-1$
-
     andValidator().validate(this, "password", remarks, putValidators(notNullValidator())); //$NON-NLS-1$
 
     ValidatorContext ctx = new ValidatorContext();
@@ -706,7 +704,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     andValidator().validate(this, "outputDirectory", remarks, ctx);//$NON-NLS-1$
 
     andValidator().validate(this, "SSLPort", remarks, putValidators(integerValidator())); //$NON-NLS-1$
-
   }
 
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta)

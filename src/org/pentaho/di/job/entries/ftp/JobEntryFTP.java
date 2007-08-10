@@ -135,8 +135,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
     retval.append("      ").append(XMLHandler.addTagValue("servername", serverName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("username", userName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append( //$NON-NLS-1$
-        XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword()))); //$NON-NLS-1$
+    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(getPassword()))); //$NON-NLS-1$ //$NON-NLS-2$ 
     retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("wildcard", wildcard)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -186,7 +185,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
       super.loadRep(rep, id_jobentry, databases);
       serverName = rep.getJobEntryAttributeString(id_jobentry, "servername"); //$NON-NLS-1$
       userName = rep.getJobEntryAttributeString(id_jobentry, "username"); //$NON-NLS-1$
-      password = rep.getJobEntryAttributeString(id_jobentry, "password"); //$NON-NLS-1$
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") ); //$NON-NLS-1$
       ftpDirectory = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory"); //$NON-NLS-1$
       targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory"); //$NON-NLS-1$
       wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard"); //$NON-NLS-1$
@@ -217,7 +216,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 
       rep.saveJobEntryAttribute(id_job, getID(), "servername", serverName); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "username", userName); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getID(), "password", password); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password)); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "ftpdirectory", ftpDirectory); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "targetdirectory", targetDirectory); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getID(), "wildcard", wildcard); //$NON-NLS-1$

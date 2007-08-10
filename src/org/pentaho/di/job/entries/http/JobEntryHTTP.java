@@ -145,11 +145,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("run_every_row", runForEveryRow));
 
     retval.append("      ").append(XMLHandler.addTagValue("username", username));
-    if (password != null && password.length() > 0)
-    {
-      retval.append("      ")
-          .append(XMLHandler.addTagValue("password", "Encrypted: " + Encr.encryptPassword(password)));
-    }
+    retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
 
     retval.append("      ").append(XMLHandler.addTagValue("proxy_host", proxyHostname));
     retval.append("      ").append(XMLHandler.addTagValue("proxy_port", proxyPort));
@@ -175,12 +171,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       runForEveryRow = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "run_every_row"));
 
       username = XMLHandler.getTagValue(entrynode, "username");
-      password = XMLHandler.getTagValue(entrynode, "password");
-      if (password != null && password.startsWith("Encrypted: "))
-      {
-        password = Encr.decryptPassword(password.substring(11));
-      }
-
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(entrynode, "password"));
+      
       proxyHostname = XMLHandler.getTagValue(entrynode, "proxy_host");
       proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port");
       nonProxyHosts = XMLHandler.getTagValue(entrynode, "non_proxy_hosts");
@@ -207,11 +199,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       runForEveryRow = rep.getJobEntryAttributeBoolean(id_jobentry, "run_every_row");
 
       username = rep.getJobEntryAttributeString(id_jobentry, "username");
-      password = rep.getJobEntryAttributeString(id_jobentry, "password");
-      if (password != null && password.startsWith("Encrypted: "))
-      {
-        password = Encr.decryptPassword(password.substring(11));
-      }
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
 
       proxyHostname = rep.getJobEntryAttributeString(id_jobentry, "proxy_host");
       int intPort = (int) rep.getJobEntryAttributeInteger(id_jobentry, "proxy_port");
@@ -245,10 +233,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getID(), "run_every_row", runForEveryRow);
 
       rep.saveJobEntryAttribute(id_job, getID(), "username", username);
-      if (password != null && password.length() > 0)
-      {
-        rep.saveJobEntryAttribute(id_job, getID(), "password", "Encrypted: " + Encr.encryptPassword(password));
-      }
+      rep.saveJobEntryAttribute(id_job, getID(), "password", Encr.encryptPasswordIfNotUsingVariables(password));
 
       rep.saveJobEntryAttribute(id_job, getID(), "proxy_host", proxyHostname);
       rep.saveJobEntryAttribute(id_job, getID(), "proxy_port", proxyPort);
