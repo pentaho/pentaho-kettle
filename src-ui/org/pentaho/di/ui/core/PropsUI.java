@@ -57,6 +57,8 @@ public class PropsUI extends Props
 		
 	protected List<LastUsedFile> lastUsedFiles;
 
+  protected String overriddenFileName;
+  
 	private Hashtable<String,WindowProperty> screens;
 	
     private static final String STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING = "ShowCopyOrDistributeWarning";
@@ -346,6 +348,20 @@ public class PropsUI extends Props
 		return retval;
 	}
 	
+  public String getFilename() 
+  {
+    if (this.filename == null) {
+      String s = System.getProperty("org.pentaho.di.ui.PropsUIFile"); //$NON-NLS-1$
+      if (s != null) {
+        return s;
+      } else {
+        return super.getFilename();
+      }
+    } else {
+      return this.filename;
+    }
+  }
+  
 	public String[] getLastDirs()
 	{
         String retval[] = new String[lastUsedFiles.size()];
