@@ -41,12 +41,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
 /*
  * Created on 02-jun-2003
- * 
  */
-
 public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** order by which fields? */
@@ -234,25 +231,25 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(256);
 
-        retval.append("      " + XMLHandler.addTagValue("directory", directory));
-        retval.append("      " + XMLHandler.addTagValue("prefix", prefix));
-        retval.append("      " + XMLHandler.addTagValue("sort_size", sortSize));
-        retval.append("      " + XMLHandler.addTagValue("compress", compressFiles));
-        retval.append("      " + XMLHandler.addTagValue("compress_variable", compressFilesVariable));
-        retval.append("      " + XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
+        retval.append("      ").append(XMLHandler.addTagValue("directory", directory));
+        retval.append("      ").append(XMLHandler.addTagValue("prefix", prefix));
+        retval.append("      ").append(XMLHandler.addTagValue("sort_size", sortSize));
+        retval.append("      ").append(XMLHandler.addTagValue("compress", compressFiles));
+        retval.append("      ").append(XMLHandler.addTagValue("compress_variable", compressFilesVariable));
+        retval.append("      ").append(XMLHandler.addTagValue("unique_rows", onlyPassingUniqueRows));
 
-        retval.append("    <fields>" + Const.CR);
+        retval.append("    <fields>").append(Const.CR);
         for (int i = 0; i < fieldName.length; i++)
         {
-            retval.append("      <field>" + Const.CR);
-            retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
-            retval.append("        " + XMLHandler.addTagValue("ascending", ascending[i]));
-            retval.append("        " + XMLHandler.addTagValue("case_sensitive", caseSensitive[i]));
-            retval.append("        </field>" + Const.CR);
+            retval.append("      <field>").append(Const.CR);
+            retval.append("        ").append(XMLHandler.addTagValue("name", fieldName[i]));
+            retval.append("        ").append(XMLHandler.addTagValue("ascending", ascending[i]));
+            retval.append("        ").append(XMLHandler.addTagValue("case_sensitive", caseSensitive[i]));
+            retval.append("      </field>").append(Const.CR);
         }
-        retval.append("      </fields>" + Const.CR);
+        retval.append("    </fields>").append(Const.CR);
 
         return retval.toString();
     }
