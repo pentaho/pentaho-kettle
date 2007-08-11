@@ -40,7 +40,8 @@ public enum JobEntryType
 	DELETE_FILES(Messages.getString("JobEntry.DeleteFiles.TypeDesc")),
 	SUCCESS(Messages.getString("JobEntry.Success.TypeDesc")),
 	XSD_VALIDATOR(Messages.getString("JobEntry.XSDValidator.TypeDesc")),
-	XACTION(Messages.getString("JobEntry.XAction.TypeDesc"));
+	XACTION(Messages.getString("JobEntry.XAction.TypeDesc")),
+	WRITE_TO_LOG(Messages.getString("JobEntry.WriteToLog.TypeDesc"));
 	
 	private String description;
 	

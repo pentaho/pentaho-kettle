@@ -362,4 +362,16 @@
 		</tooltip>
 		<image-uri>ui/images/XSD.png</image-uri>
 	</job>
+	<job id="WRITE_TO_LOG">
+		<type>
+			ognl:@org.pentaho.di.job.JobEntryType@WRITE_TO_LOG
+		</type>
+		<class-name>
+			org.pentaho.di.job.entries.writetolog.JobEntryWriteToLog
+		</class-name>
+		<tooltip>
+			ognl:@org.pentaho.di.job.entry.Messages@getString("JobEntry.WriteToLog.Tooltip")
+		</tooltip>
+		<image-uri>ui/images/WTL.png</image-uri>
+	</job>
 </jobs>
