@@ -2,6 +2,9 @@ package org.pentaho.di.trans.steps.excelinput;
 
 import jxl.Cell;
 
+/**
+ * Represent 1 row in a an Excel sheet.
+ */
 public class ExcelInputRow {
 
 	public final String sheetName;
@@ -13,5 +16,4 @@ public class ExcelInputRow {
 		this.rownr = rownr;
 		this.cells = cells;
 	}
-
 }

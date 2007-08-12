@@ -62,7 +62,6 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  * 
  * @author Matt
  * @since 19-NOV-2003
- * 
  */
 public class ExcelInput extends BaseStep implements StepInterface
 {
@@ -368,7 +367,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		if (meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit())
 		{
-			// The close of the workbook is in dispose()
+			// The close of the openFile is in dispose()
 			if (log.isDetailed()) logDetailed("Row limit of [" + meta.getRowLimit() + "] reached: stop processing.");
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
@@ -453,7 +452,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			// First, see if a file has been opened?
 			if (data.workbook == null)
 			{
-				// Open a new workbook..
+				// Open a new openFile..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = KettleVFS.getFilename( data.file );
 				
@@ -461,7 +460,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				resultFile.setComment("File was read by an Excel input step");
 				addResultFile(resultFile);
 				
-				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
+				if (log.isDetailed()) logDetailed("Opening openFile #" + data.filenr + " : " + data.filename);
                 WorkbookSettings ws = new WorkbookSettings();
                 if (!Const.isEmpty(meta.getEncoding()))
                 {
@@ -596,7 +595,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// whould be plain wrong!)
 		data.previousRow = null;
 
-		// Close the workbook!
+		// Close the openFile!
 		data.workbook.close();
 		data.workbook = null; // marker to open again.
 		data.errorHandler.close();

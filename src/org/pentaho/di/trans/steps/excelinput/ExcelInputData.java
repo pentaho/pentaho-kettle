@@ -66,7 +66,7 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	public FileObject file;
 
 	/**
-	 * The workbook that's being processed...
+	 * The openFile that's being processed...
 	 */
 	public Workbook workbook;
 

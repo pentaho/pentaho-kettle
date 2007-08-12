@@ -50,8 +50,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
-
+/**
+ * Meta data for the Excel step.
+ */
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static final String NO = "N";
@@ -463,18 +464,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			startsWithHeader          = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
-			String nempty   = XMLHandler.getTagValue(stepnode, "noempty");
-			ignoreEmptyRows         = YES.equalsIgnoreCase(nempty) || nempty==null;
-			String soempty  = XMLHandler.getTagValue(stepnode, "stoponempty");
-			stopOnEmpty     = YES.equalsIgnoreCase(soempty) || nempty==null;
+			startsWithHeader    = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+			String nempty       = XMLHandler.getTagValue(stepnode, "noempty");
+			ignoreEmptyRows     = YES.equalsIgnoreCase(nempty) || nempty==null;
+			String soempty      = XMLHandler.getTagValue(stepnode, "stoponempty");
+			stopOnEmpty         = YES.equalsIgnoreCase(soempty) || nempty==null;
 			sheetRowNumberField = XMLHandler.getTagValue(stepnode, "sheetrownumfield");
-			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
-			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownumfield");			
-			rowLimit           = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
-            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
-			sheetField      = XMLHandler.getTagValue(stepnode, "sheetfield");
-			fileField       = XMLHandler.getTagValue(stepnode, "filefield");
+			rowNumberField      = XMLHandler.getTagValue(stepnode, "rownum_field");
+			rowNumberField      = XMLHandler.getTagValue(stepnode, "rownumfield");			
+			rowLimit            = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
+            encoding            = XMLHandler.getTagValue(stepnode, "encoding");
+			sheetField          = XMLHandler.getTagValue(stepnode, "sheetfield");
+			fileField           = XMLHandler.getTagValue(stepnode, "filefield");
 
             acceptingFilenames = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames"));
             acceptingField = XMLHandler.getTagValue(stepnode, "accept_field");
@@ -655,84 +656,84 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(1024);
 
-		retval.append("    "+XMLHandler.addTagValue("header",          startsWithHeader));
-		retval.append("    "+XMLHandler.addTagValue("noempty",         ignoreEmptyRows));
-		retval.append("    "+XMLHandler.addTagValue("stoponempty",     stopOnEmpty));
-		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
-		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
-		retval.append("    "+XMLHandler.addTagValue("sheetrownumfield", sheetRowNumberField));		
-		retval.append("    "+XMLHandler.addTagValue("rownumfield",     rowNumberField));
-		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
-		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
-		retval.append("    "+XMLHandler.addTagValue("limit",           rowLimit));
-        retval.append("    "+XMLHandler.addTagValue("encoding",        encoding));
+		retval.append("    ").append(XMLHandler.addTagValue("header",          startsWithHeader));
+		retval.append("    ").append(XMLHandler.addTagValue("noempty",         ignoreEmptyRows));
+		retval.append("    ").append(XMLHandler.addTagValue("stoponempty",     stopOnEmpty));
+		retval.append("    ").append(XMLHandler.addTagValue("filefield",       fileField));
+		retval.append("    ").append(XMLHandler.addTagValue("sheetfield",      sheetField));
+		retval.append("    ").append(XMLHandler.addTagValue("sheetrownumfield", sheetRowNumberField));		
+		retval.append("    ").append(XMLHandler.addTagValue("rownumfield",     rowNumberField));
+		retval.append("    ").append(XMLHandler.addTagValue("sheetfield",      sheetField));
+		retval.append("    ").append(XMLHandler.addTagValue("filefield",       fileField));
+		retval.append("    ").append(XMLHandler.addTagValue("limit",           rowLimit));
+        retval.append("    ").append(XMLHandler.addTagValue("encoding",        encoding));
 
-        retval.append("    " + XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
-        retval.append("    " + XMLHandler.addTagValue("accept_field", acceptingField));
-        retval.append("    " + XMLHandler.addTagValue("accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ));
+        retval.append("    ").append(XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
+        retval.append("    ").append(XMLHandler.addTagValue("accept_field", acceptingField));
+        retval.append("    ").append(XMLHandler.addTagValue("accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ));
 
 		/*
 		 * Describe the files to read
 		 */
-		retval.append("    <file>"+Const.CR);
+		retval.append("    <file>").append(Const.CR);
 		for (int i=0;i<fileName.length;i++)
 		{
-			retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
-			retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
-			retval.append("      "+XMLHandler.addTagValue("file_required", fileRequired[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("name",     fileName[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("filemask", fileMask[i]));
+			retval.append("      ").append(XMLHandler.addTagValue("file_required", fileRequired[i]));
 		}
-		retval.append("      </file>"+Const.CR);
+		retval.append("    </file>").append(Const.CR);
 
 		/*
 		 * Describe the fields to read
 		 */
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>").append(Const.CR);
 		for (int i=0;i<field.length;i++)
 		{
-			retval.append("      <field>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name",      field[i].getName()) );
-			retval.append("        "+XMLHandler.addTagValue("type",      field[i].getTypeDesc()) );
-			retval.append("        "+XMLHandler.addTagValue("length",    field[i].getLength()) );
-			retval.append("        "+XMLHandler.addTagValue("precision", field[i].getPrecision()));
-			retval.append("        "+XMLHandler.addTagValue("trim_type", field[i].getTrimTypeCode() ) );
-			retval.append("        "+XMLHandler.addTagValue("repeat",    field[i].isRepeated()) );
+			retval.append("      <field>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name",      field[i].getName()) );
+			retval.append("        ").append(XMLHandler.addTagValue("type",      field[i].getTypeDesc()) );
+			retval.append("        ").append(XMLHandler.addTagValue("length",    field[i].getLength()) );
+			retval.append("        ").append(XMLHandler.addTagValue("precision", field[i].getPrecision()));
+			retval.append("        ").append(XMLHandler.addTagValue("trim_type", field[i].getTrimTypeCode() ) );
+			retval.append("        ").append(XMLHandler.addTagValue("repeat",    field[i].isRepeated()) );
 
-            retval.append("        " + XMLHandler.addTagValue("format", field[i].getFormat()));
-            retval.append("        " + XMLHandler.addTagValue("currency", field[i].getCurrencySymbol()));
-            retval.append("        " + XMLHandler.addTagValue("decimal", field[i].getDecimalSymbol()));
-            retval.append("        " + XMLHandler.addTagValue("group", field[i].getGroupSymbol()));
+            retval.append("        ").append(XMLHandler.addTagValue("format", field[i].getFormat()));
+            retval.append("        ").append(XMLHandler.addTagValue("currency", field[i].getCurrencySymbol()));
+            retval.append("        ").append(XMLHandler.addTagValue("decimal", field[i].getDecimalSymbol()));
+            retval.append("        ").append(XMLHandler.addTagValue("group", field[i].getGroupSymbol()));
 
-			retval.append("        </field>"+Const.CR);
+			retval.append("      </field>").append(Const.CR);
 		}
-		retval.append("      </fields>"+Const.CR);
+		retval.append("    </fields>").append(Const.CR);
 
 		/*
 		 * Describe the sheets to load... 
 		 */
-		retval.append("    <sheets>"+Const.CR);
+		retval.append("    <sheets>").append(Const.CR);
 		for (int i=0;i<sheetName.length;i++)
 		{
-			retval.append("      <sheet>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name",      sheetName[i]));
-			retval.append("        "+XMLHandler.addTagValue("startrow",  startRow[i]));
-			retval.append("        "+XMLHandler.addTagValue("startcol",  startColumn[i]));
-			retval.append("        </sheet>"+Const.CR);
+			retval.append("      <sheet>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("name",      sheetName[i]));
+			retval.append("        ").append(XMLHandler.addTagValue("startrow",  startRow[i]));
+			retval.append("        ").append(XMLHandler.addTagValue("startcol",  startColumn[i]));
+			retval.append("        </sheet>").append(Const.CR);
 		}
-		retval.append("      </sheets>"+Const.CR);
+		retval.append("    </sheets>").append(Const.CR);
 		
         // ERROR HANDLING
-        retval.append("    " + XMLHandler.addTagValue("strict_types", strictTypes));
-        retval.append("    " + XMLHandler.addTagValue("error_ignored", errorIgnored));
-        retval.append("    " + XMLHandler.addTagValue("error_line_skipped", errorLineSkipped));
+        retval.append("    ").append(XMLHandler.addTagValue("strict_types", strictTypes));
+        retval.append("    ").append(XMLHandler.addTagValue("error_ignored", errorIgnored));
+        retval.append("    ").append(XMLHandler.addTagValue("error_line_skipped", errorLineSkipped));
         
-        retval.append("    " + XMLHandler.addTagValue("bad_line_files_destination_directory", warningFilesDestinationDirectory));
-        retval.append("    " + XMLHandler.addTagValue("bad_line_files_extension", warningFilesExtension));
-        retval.append("    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory));
-        retval.append("    " + XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension));
-        retval.append("    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory));
-        retval.append("    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension));
+        retval.append("    ").append(XMLHandler.addTagValue("bad_line_files_destination_directory", warningFilesDestinationDirectory));
+        retval.append("    ").append(XMLHandler.addTagValue("bad_line_files_extension", warningFilesExtension));
+        retval.append("    ").append(XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory));
+        retval.append("    ").append(XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension));
+        retval.append("    ").append(XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory));
+        retval.append("    ").append(XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension));
 		
 		return retval.toString();
 	}
@@ -765,8 +766,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
             // System.out.println("Counted "+nrfiles+" files to read and "+nrsheets+" sheets, "+nrfields+" fields.");
 			for (int i=0;i<nrfiles;i++)
 			{
-				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
-				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
+				fileName[i]     =      rep.getStepAttributeString (id_step, i, "file_name");
+				fileMask[i]     =      rep.getStepAttributeString (id_step, i, "file_mask");
 				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
                 if(!YES.equalsIgnoreCase(fileRequired[i]))
                 	fileRequired[i] = NO;
@@ -774,9 +775,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i=0;i<nrsheets;i++)
 			{
-				sheetName[i] =      rep.getStepAttributeString (id_step, i, "sheet_name"      );
-				startRow[i]  = (int)rep.getStepAttributeInteger(id_step, i, "sheet_startrow"  );
-				startColumn[i]  = (int)rep.getStepAttributeInteger(id_step, i, "sheet_startcol"  );
+				sheetName[i]   =      rep.getStepAttributeString (id_step, i, "sheet_name"      );
+				startRow[i]    = (int)rep.getStepAttributeInteger(id_step, i, "sheet_startrow"  );
+				startColumn[i] = (int)rep.getStepAttributeInteger(id_step, i, "sheet_startcol"  );
 			}
 
 			for (int i=0;i<nrfields;i++)
@@ -882,22 +883,24 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	
   public final static int getTrimTypeByCode(String tt)
 	{
-		if (tt==null) return 0;
-		
-		for (int i=0;i<type_trim_code.length;i++)
-		{
-			if (type_trim_code[i].equalsIgnoreCase(tt)) return i;
+		if (tt!=null) 
+		{		
+		    for (int i=0;i<type_trim_code.length;i++)
+		    {
+			    if (type_trim_code[i].equalsIgnoreCase(tt)) return i;
+		    }
 		}
 		return 0;
 	}
   
 	public final static int getTrimTypeByDesc(String tt)
 	{
-		if (tt==null) return 0;
-		
-		for (int i=0;i<type_trim_desc.length;i++)
-		{
-			if (type_trim_desc[i].equalsIgnoreCase(tt)) return i;
+		if (tt!=null)
+		{		
+		    for (int i=0;i<type_trim_desc.length;i++)
+		    {
+			    if (type_trim_desc[i].equalsIgnoreCase(tt)) return i;
+		    }
 		}
 		return 0;
 	}

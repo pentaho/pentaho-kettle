@@ -424,7 +424,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 
             } else {
 								
-				// create the workbook from the template
+				// create the openFile from the template
 				Workbook tmpWorkbook=Workbook.getWorkbook(
 						new File(environmentSubstitute(meta.getTemplateFileName())));
 				data.workbook = Workbook.createWorkbook(file.getContent().getOutputStream(), tmpWorkbook);
@@ -488,7 +488,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-            logError("Unable to close workbook file : "+e.toString());
+            logError("Unable to close openFile file : "+e.toString());
 		}
 
 		return retval;
