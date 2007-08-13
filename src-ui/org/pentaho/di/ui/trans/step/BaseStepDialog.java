@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
- 
 /*
  * Created on 2-jul-2003
  *
@@ -33,7 +32,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -50,8 +48,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -61,556 +57,621 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.Messages;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.trans.step.Messages;
 
-public class BaseStepDialog extends Dialog
-{
-    protected static VariableSpace variables = new Variables();
-    
-	protected LogWriter    log;
-	protected String       stepname;
-		
-	protected Label        wlStepname;
-	protected Text         wStepname;
-	protected FormData     fdlStepname, fdStepname;
+public class BaseStepDialog extends Dialog {
+  protected static VariableSpace variables = new Variables();
 
-	protected Button wOK, wGet, wPreview, wSQL, wCreate, wCancel;
-	protected FormData fdOK, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
-	protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
+  protected LogWriter log;
 
-	protected TransMeta transMeta;
-	protected Shell  shell;
-	
-	protected SelectionAdapter lsDef;
-	protected Listener lsResize;
-	protected boolean changed, backupChanged;
-	protected BaseStepMeta baseStepMeta;
-	protected PropsUI props;
-    protected Repository repository;   
+  protected String stepname;
 
-	protected StepMeta stepMeta;
-	
-	public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname)
-	{
-		super(parent, SWT.NONE);
-		
-		this.log=LogWriter.getInstance();
-		this.transMeta=transMeta;
-		this.stepname=stepname;
-		this.stepMeta = transMeta.findStep(stepname);
-		this.baseStepMeta=baseStepMeta;
-		this.backupChanged=baseStepMeta.hasChanged();
-		this.props = PropsUI.getInstance();
-	}
+  protected Label wlStepname;
 
-	public BaseStepDialog(Shell parent, int nr, BaseStepMeta in, TransMeta tr)
-	{
-		this(parent, in, tr, null);
-	}
-    
-    public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface)
-    {
-        try
-        {
-            String id = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
-            if (id!=null)
-            {
-                shell.setImage((Image) GUIResource.getInstance().getImagesSteps().get(id));
+  protected Text wStepname;
+
+  protected FormData fdlStepname, fdStepname;
+
+  protected Button wOK, wGet, wPreview, wSQL, wCreate, wCancel;
+
+  protected FormData fdOK, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
+
+  protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
+
+  protected TransMeta transMeta;
+
+  protected Shell shell;
+
+  protected SelectionAdapter lsDef;
+
+  protected Listener lsResize;
+
+  protected boolean changed, backupChanged;
+
+  protected BaseStepMeta baseStepMeta;
+
+  protected PropsUI props;
+
+  protected Repository repository;
+
+  protected StepMeta stepMeta;
+
+  protected static final int BUTTON_ALIGNMENT_CENTER = 0;
+
+  protected static final int BUTTON_ALIGNMENT_LEFT = 1;
+
+  protected static final int BUTTON_ALIGNMENT_RIGHT = 2;
+
+  public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname) {
+    super(parent, SWT.NONE);
+
+    this.log = LogWriter.getInstance();
+    this.transMeta = transMeta;
+    this.stepname = stepname;
+    this.stepMeta = transMeta.findStep(stepname);
+    this.baseStepMeta = baseStepMeta;
+    this.backupChanged = baseStepMeta.hasChanged();
+    this.props = PropsUI.getInstance();
+  }
+
+  public BaseStepDialog(Shell parent, int nr, BaseStepMeta in, TransMeta tr) {
+    this(parent, in, tr, null);
+  }
+
+  public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface) {
+    try {
+      String id = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
+      if (id != null) {
+        shell.setImage(GUIResource.getInstance().getImagesSteps().get(id));
+      }
+    } catch (Throwable e) {
+    }
+  }
+
+  public void dispose() {
+    WindowProperty winprop = new WindowProperty(shell);
+    props.setScreen(winprop);
+    shell.dispose();
+  }
+
+  /**
+   * Set the shell size, based upon the previous time the geometry was saved in the Properties file.
+   */
+  public void setSize() {
+    setSize(shell);
+  }
+
+  protected void setButtonPositions(Button buttons[], int margin, Control lastControl) {
+    BaseStepDialog.positionBottomButtons(shell, buttons, margin, lastControl);
+  }
+
+  /**
+   * Position the specified buttons at the bottom of the parent composite.
+   * Also, make the buttons all the same width: the width of the largest button.
+   * <P>
+   * The default alignment for buttons in the system will be used. This is set as a system
+   * property with the key <code>org.pentaho.di.buttonPosition</code> and has the valid values
+   * of <code>left, center, right</code> with <code>center</code> being the default.
+   * 
+   * @param buttons The buttons to position.
+   * @param margin The margin between the buttons in pixels
+   */
+  public static final void positionBottomButtons(Composite composite, Button buttons[], int margin, Control lastControl) {
+    // Determine the largest button in the array
+    Rectangle largest = null;
+    for (int i = 0; i < buttons.length; i++) {
+      buttons[i].pack(true);
+      Rectangle r = buttons[i].getBounds();
+      if (largest == null || r.width > largest.width)
+        largest = r;
+
+      // Also, set the tooltip the same as the name if we don't have one...
+      if (buttons[i].getToolTipText() == null) {
+        buttons[i].setToolTipText(Const.replace(buttons[i].getText(), "&", "")); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+    }
+
+    // Make buttons a bit larger... (nicer)
+    largest.width += 10;
+    if ((largest.width % 2) == 1)
+      largest.width++;
+
+    // Compute the left side of the 1st button (based on the system button alignment)
+    switch (getButtonAlignment()) {
+      case BUTTON_ALIGNMENT_CENTER:
+        centerButtons(buttons, largest.width, margin, lastControl);
+        break;
+      case BUTTON_ALIGNMENT_LEFT:
+        leftAlignButtons(buttons, largest.width, margin, lastControl);
+        break;
+      case BUTTON_ALIGNMENT_RIGHT:
+        rightAlignButtons(buttons, largest.width, margin, lastControl);
+        break;
+    }
+  }
+
+  /**
+   * Returns the default alignment for the buttons. This is set in the 
+   * system properties with the key <code>org.pentaho.di.buttonPosition</code>.
+   * The valid values are:<UL>
+   * <LI><code>left</code>
+   * <LI><code>center</code>
+   * <LI><code>right</code>
+   * </UL>
+   * NOTE: if the alignment is not provided or contains an invalid value, <code>center</code>
+   * will be used as a default
+   * @return a constant which indicates the button alignment
+   */
+  protected static int getButtonAlignment() {
+    String buttonAlign = System.getProperty("org.pentaho.di.buttonPosition", "center").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
+    if ("center".equals(buttonAlign)) { //$NON-NLS-1$
+      return BUTTON_ALIGNMENT_CENTER;
+    } else if ("left".equals(buttonAlign)) { //$NON-NLS-1$
+      return BUTTON_ALIGNMENT_LEFT;
+    } else {
+      return BUTTON_ALIGNMENT_RIGHT;
+    }
+  }
+
+  /**
+   * Creats a default FormData object with the top / bottom / and left set (this is done to 
+   * cut down on repetative code lines
+   * @param button the button to which this form data will be applied
+   * @param width the width of the button
+   * @param margin the margin between buttons
+   * @param lastControl the last control above the buttons
+   * @return the newly created FormData object
+   */
+  private static FormData createDefaultFormData(Button button, int width, int margin, Control lastControl) {
+    FormData formData = new FormData();
+    if (lastControl != null) {
+      formData.top = new FormAttachment(lastControl, margin * 3);
+    } else {
+      formData.bottom = new FormAttachment(100, 0);
+    }
+    formData.right = new FormAttachment(button, width + margin);
+    return formData;
+  }
+
+  /**
+   * Aligns the buttons as left-aligned on the dialog
+   * @param buttons the array of buttons to align
+   * @param width the standardized width of all the buttons  
+   * @param margin the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative
+   *   to the bottom of the controls on the dialog
+   */
+  protected static void leftAlignButtons(Button[] buttons, int width, int margin, Control lastControl) {
+    for (int i = 0; i < buttons.length; ++i) {
+      FormData formData = createDefaultFormData(buttons[i], width, margin, lastControl);
+
+      // Set the left side of the buttons (either offset from the edge, or relative to the previous button)
+      if (i == 0) {
+        formData.left = new FormAttachment(0, margin);
+      } else {
+        formData.left = new FormAttachment(buttons[i - 1], margin);
+      }
+
+      // Apply the layout data
+      buttons[i].setLayoutData(formData);
+    }
+  }
+
+  /**
+   * Aligns the buttons as right-aligned on the dialog
+   * @param buttons the array of buttons to align
+   * @param width the standardized width of all the buttons  
+   * @param margin the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative
+   *   to the bottom of the controls on the dialog
+   */
+  protected static void rightAlignButtons(Button[] buttons, int width, int margin, Control lastControl) {
+    for (int i = buttons.length - 1; i >= 0; --i) {
+      FormData formData = createDefaultFormData(buttons[i], width, margin, lastControl);
+
+      // Set the right side of the buttons (either offset from the edge, or relative to the previous button)
+      if (i == buttons.length - 1) {
+        formData.left = new FormAttachment(100, -(width + margin));
+      } else {
+        formData.left = new FormAttachment(buttons[i + 1], -(2 * (width + margin)) - margin);
+      }
+
+      // Apply the layout data
+      buttons[i].setLayoutData(formData);
+    }
+  }
+
+  protected static String toString(FormData fd) {
+    return "left=[" + fd.left + "] - right=[" + fd.right + "] - top=[" + fd.top + "] - bottom=[" + fd.bottom + "]";
+  }
+
+  /**
+   * Aligns the buttons as centered on the dialog
+   * @param buttons the array of buttons to align
+   * @param width the standardized width of all the buttons  
+   * @param margin the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative
+   *   to the bottom of the controls on the dialog
+   */
+  protected static void centerButtons(Button[] buttons, int width, int margin, Control lastControl) {
+    // Setup the middle button
+    int middleButtonIndex = buttons.length / 2;
+    FormData formData = createDefaultFormData(buttons[middleButtonIndex], width, margin, lastControl);
+
+    // See if we have an even or odd number of buttons...
+    int leftOffset = 0;
+    if (buttons.length % 2 == 0) {
+      // Even number of buttons - the middle is between buttons. The "middle" button is 
+      // actually to the right of middle
+      leftOffset = margin;
+    } else {
+      // Odd number of buttons - tht middle is in the middle of the button
+      leftOffset = -(width + margin) / 2;
+    }
+    formData.left = new FormAttachment(50, leftOffset);
+    buttons[middleButtonIndex].setLayoutData(formData);
+
+    // Do the buttons to the right of the middle
+    for (int i = middleButtonIndex + 1; i < buttons.length; ++i) {
+      formData = createDefaultFormData(buttons[i], width, margin, lastControl);
+      formData.left = new FormAttachment(buttons[i - 1], margin);
+      buttons[i].setLayoutData(formData);
+    }
+
+    // Do the buttons to the left of the middle
+    for (int i = middleButtonIndex - 1; i >= 0; --i) {
+      formData = createDefaultFormData(buttons[i], width, margin, lastControl);
+      formData.left = new FormAttachment(buttons[i + 1], -(2 * (width + margin)) - margin);
+      buttons[i].setLayoutData(formData);
+    }
+  }
+
+  public static final ModifyListener getModifyListenerTooltipText(final Text textField) {
+    return new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        // maybe replace this with extra arguments
+        textField.setToolTipText(variables.environmentSubstitute(textField.getText()));
+      }
+    };
+  }
+
+  public void addDatabases(CCombo wConnection) {
+    for (int i = 0; i < transMeta.nrDatabases(); i++) {
+      DatabaseMeta ci = transMeta.getDatabase(i);
+      wConnection.add(ci.getName());
+    }
+  }
+
+  public void selectDatabase(CCombo wConnection, String name) {
+    int idx = wConnection.indexOf(name);
+    if (idx >= 0) {
+      wConnection.select(idx);
+    }
+  }
+
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
+    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
+        SWT.PUSH), new Button(parent, SWT.PUSH));
+  }
+
+  public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+      final Button wbnConnection, final Button wbeConnection) {
+    final CCombo wConnection;
+    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
+
+    wConnection = new CCombo(parent, SWT.BORDER | SWT.READ_ONLY);
+    props.setLook(wConnection);
+
+    addDatabases(wConnection);
+
+    wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
+    props.setLook(wlConnection);
+    fdlConnection = new FormData();
+    fdlConnection.left = new FormAttachment(0, 0);
+    fdlConnection.right = new FormAttachment(middle, -margin);
+    if (previous != null)
+      fdlConnection.top = new FormAttachment(previous, margin);
+    else
+      fdlConnection.top = new FormAttachment(0, 0);
+    wlConnection.setLayoutData(fdlConnection);
+
+    // 
+    // NEW button
+    //
+    wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+    wbnConnection.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        DatabaseMeta databaseMeta = new DatabaseMeta();
+        databaseMeta.shareVariablesWith(transMeta);
+        DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+        if (cid.open() != null) {
+          transMeta.addDatabase(databaseMeta);
+          wConnection.removeAll();
+          addDatabases(wConnection);
+          selectDatabase(wConnection, databaseMeta.getName());
+        }
+      }
+    });
+    fdbConnection = new FormData();
+    fdbConnection.right = new FormAttachment(100, 0);
+    if (previous != null)
+      fdbConnection.top = new FormAttachment(previous, margin);
+    else
+      fdbConnection.top = new FormAttachment(0, 0);
+    wbnConnection.setLayoutData(fdbConnection);
+
+    //
+    // Edit button
+    //
+    wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+    wbeConnection.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+        if (databaseMeta != null) {
+          databaseMeta.shareVariablesWith(transMeta);
+          DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
+          if (cid.open() != null) {
+            wConnection.removeAll();
+            addDatabases(wConnection);
+            selectDatabase(wConnection, databaseMeta.getName());
+          }
+        }
+      }
+    });
+    fdeConnection = new FormData();
+    fdeConnection.right = new FormAttachment(wbnConnection, -margin);
+    if (previous != null)
+      fdeConnection.top = new FormAttachment(previous, margin);
+    else
+      fdeConnection.top = new FormAttachment(0, 0);
+    wbeConnection.setLayoutData(fdeConnection);
+
+    //
+    // what's left of the line: combo box
+    //
+    fdConnection = new FormData();
+    fdConnection.left = new FormAttachment(middle, 0);
+    if (previous != null)
+      fdConnection.top = new FormAttachment(previous, margin);
+    else
+      fdConnection.top = new FormAttachment(0, 0);
+    fdConnection.right = new FormAttachment(wbeConnection, -margin);
+    wConnection.setLayoutData(fdConnection);
+
+    return wConnection;
+  }
+
+  public void storeScreenSize() {
+    props.setScreen(new WindowProperty(shell));
+  }
+
+  public String toString() {
+    return this.getClass().getName();
+  }
+
+  /**
+   * @return Returns the repository.
+   */
+  public Repository getRepository() {
+    return repository;
+  }
+
+  /**
+   * @param repository The repository to set.
+   */
+  public void setRepository(Repository repository) {
+    this.repository = repository;
+  }
+
+  public static void setMinimalShellHeight(Shell shell, Control[] controls, int margin, int extra) {
+    int height = 0;
+
+    for (int i = 0; i < controls.length; i++) {
+      Rectangle bounds = controls[i].getBounds();
+      height += bounds.height + margin;
+    }
+    height += extra;
+    shell.setSize(shell.getBounds().width, height);
+  }
+
+  public static void setSize(Shell shell) {
+    setSize(shell, -1, -1, true);
+  }
+
+  public static void setSize(Shell shell, int minWidth, int minHeight, boolean packIt) {
+    PropsUI props = PropsUI.getInstance();
+
+    WindowProperty winprop = props.getScreen(shell.getText());
+    if (winprop != null) {
+      winprop.setShell(shell, minWidth, minHeight);
+    } else {
+      if (packIt)
+        shell.pack();
+      else
+        shell.layout();
+
+      // OK, sometimes this produces dialogs that are waay too big.
+      // Try to limit this a bit, m'kay?
+      // Use the same algorithm by cheating :-)
+      //
+      winprop = new WindowProperty(shell);
+      winprop.setShell(shell, minWidth, minHeight);
+
+      // Now, as this is the first time it gets opened, try to put it in the middle of the screen...
+      Rectangle shellBounds = shell.getBounds();
+      Rectangle dispBounds = shell.getDisplay().getPrimaryMonitor().getBounds();
+
+      int middleX = (dispBounds.width - shellBounds.width) / 2;
+      int middleY = (dispBounds.height - shellBounds.height) / 2;
+
+      shell.setLocation(middleX, middleY);
+    }
+  }
+
+  public static final void setTraverseOrder(final Control[] controls) {
+    for (int i = 0; i < controls.length; i++) {
+      final int controlNr = i;
+      if (i < controls.length - 1) {
+        controls[i].addTraverseListener(new TraverseListener() {
+          public void keyTraversed(TraverseEvent te) {
+            te.doit = false;
+            // set focus on the next control.
+            // What is the next control?
+            int thisOne = controlNr + 1;
+            while (!controls[thisOne].isEnabled()) {
+              thisOne++;
+              if (thisOne >= controls.length)
+                thisOne = 0;
+              if (thisOne == controlNr)
+                return; // already tried all others, time to quit.
             }
-        }
-        catch(Throwable e)
-        {
-        }
-    }
-
-	public void dispose()
-	{
-		WindowProperty winprop = new WindowProperty(shell);
-		props.setScreen(winprop);
-		shell.dispose();
-	}
-	
-	/**
-	 * Set the shell size, based upon the previous time the geometry was saved in the Properties file.
-	 */
-	public void setSize()
-	{
-		setSize(shell);
-	}
-
-	protected void setButtonPositions(Button buttons[], int margin, Control lastControl)
-	{
-		BaseStepDialog.positionBottomButtons(shell, buttons, margin, lastControl);
-	}
-
-	/**
-	 * Position the specified buttons at the bottom of the parent composite.
-	 * Also, make the buttons all the same width: the width of the largest button.
-	 * @param buttons The buttons to position.
-	 * @param margin The margin between the buttons in pixels
-	 */
-	public static final void positionBottomButtons(Composite composite, Button buttons[], int margin, Control lastControl)
-	{
-		// Determine the largest button in the array
-		Rectangle largest = null;
-		for (int i=0;i<buttons.length;i++)
-		{
-			buttons[i].pack(true);
-			Rectangle r = buttons[i].getBounds();
-			if (largest==null || r.width > largest.width) largest = r;
-			
-			// Also, set the tooltip the same as the name if we don't have one...
-			if (buttons[i].getToolTipText()==null)
-			{
-				buttons[i].setToolTipText( Const.replace(buttons[i].getText(), "&", "")); //$NON-NLS-1$ //$NON-NLS-2$
-			} 
-		}
-		
-		// Make buttons a bit larger... (nicer)
-		largest.width+=10;
-		if ( (largest.width % 2) == 1 ) largest.width++;
-				
-		int middle_left  = 0;
-		int middle_right = 0;
-		int middle = buttons.length / 2;
-		if ( (buttons.length % 2) != 0 ) 
-		{
-			// odd number of buttons... the center of the middle 
-			// button will be on the center of the parent
-			middle_left  = middle;
-			middle_right = middle;
-
-			FormData fd1 = new FormData();	
-			fd1.left   = new FormAttachment(50, -(largest.width + margin)/2);
-			fd1.right  = new FormAttachment(50, (largest.width + margin)/2);
-			if (lastControl!=null) fd1.top = new FormAttachment(lastControl, margin*3);
-			if (lastControl==null) fd1.bottom = new FormAttachment(100, 0);
-
-			buttons[middle].setLayoutData(fd1);					
-		}
-		else
-		{
-			// Even number of buttons
-			middle_left  = middle - 1;
-			middle_right = middle;
-
-			FormData fd1 = new FormData();	
-			fd1.left   = new FormAttachment(50, -(largest.width + margin) - margin);
-			fd1.right  = new FormAttachment(50, -margin);
-			if (lastControl!=null) fd1.top = new FormAttachment(lastControl, margin*3);
-			if (lastControl==null) fd1.bottom = new FormAttachment(100, 0);
-			buttons[middle_left].setLayoutData(fd1);			
-
-			FormData fd2 = new FormData();	
-			fd2.left     = new FormAttachment(buttons[middle_left], margin);
-			fd2.right    = new FormAttachment(buttons[middle_right], largest.width + margin); // 2
-			if (lastControl!=null) fd2.top = new FormAttachment(lastControl, margin*3);
-			if (lastControl==null) fd2.bottom = new FormAttachment(100, 0);
-			buttons[middle_right].setLayoutData(fd2);							
-		}
-		
-		for ( int ydx = middle_right+1; ydx < buttons.length; ydx++ )
-		{
-			// Do the buttons to the right of the middle button
-			FormData fd = new FormData();
-			fd.left = new FormAttachment(buttons[ydx-1], margin);
-			fd.right = new FormAttachment(buttons[ydx], largest.width + margin);
-			if (lastControl!=null) fd.top = new FormAttachment(lastControl, margin*3);
-			if (lastControl==null) fd.bottom = new FormAttachment(100, 0);
-			
-			buttons[ydx].setLayoutData(fd);							
-		}
-	
-		for ( int zdx = middle_left-1; zdx >= 0; zdx-- )
-		{
-			// Do the buttons to the left of the middle button
-			FormData fd = new FormData();
-			fd.left = new FormAttachment(buttons[zdx+1], -(2 * (largest.width + margin)) - margin);
-			fd.right = new FormAttachment(buttons[zdx], largest.width + margin);
-			if (lastControl!=null) fd.top = new FormAttachment(lastControl, margin*3);
-			if (lastControl==null) fd.bottom = new FormAttachment(100, 0);
-			
-			buttons[zdx].setLayoutData(fd);							
-
-		}
-	}		
-    
-    public static final ModifyListener getModifyListenerTooltipText(final Text textField)
-    {
-        return new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-            	// maybe replace this with extra arguments
-                textField.setToolTipText(variables.environmentSubstitute( textField.getText() ) );
+            controls[thisOne].setFocus();
+          }
+        });
+      } else // Link last item to first.
+      {
+        controls[i].addTraverseListener(new TraverseListener() {
+          public void keyTraversed(TraverseEvent te) {
+            te.doit = false;
+            // set focus on the next control.
+            // set focus on the next control.
+            // What is the next control : 0
+            int thisOne = 0;
+            while (!controls[thisOne].isEnabled()) {
+              thisOne++;
+              if (thisOne >= controls.length)
+                return; // already tried all others, time to quit.
             }
-        };
+            controls[thisOne].setFocus();
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * Gets unused fields from previous steps and inserts them as rows into a table view.
+   * @param r
+   * @param fields
+   * @param i
+   * @param js the column in the table view to match with the names of the fields, checks for existance if >0 
+   * @param nameColumn
+   * @param j
+   * @param lengthColumn
+   * @param listener
+   */
+  public static final void getFieldsFromPrevious(TransMeta transMeta, StepMeta stepMeta, TableView tableView,
+      int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn,
+      TableItemInsertListener listener) {
+    try {
+      RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+      if (row != null) {
+        getFieldsFromPrevious(row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn,
+            listener);
+      }
+    } catch (KettleException ke) {
+      new ErrorDialog(
+          tableView.getShell(),
+          Messages.getString("BaseStepDialog.FailedToGetFields.Title"), Messages.getString("BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+  }
+
+  /**
+   * Gets unused fields from previous steps and inserts them as rows into a table view.
+   * @param row the input fields
+   * @param tableView the table view to modify
+   * @param keyColumn the column in the table view to match with the names of the fields, checks for existance if >0 
+   * @param nameColumn the column numbers in which the name should end up in
+   * @param dataTypeColumn the target column numbers in which the data type should end up in
+   * @param lengthColumn the length column where the length should end up in (if >0)
+   * @param precisionColumn the length column where the precision should end up in (if >0)
+   * @param listener A listener that you can use to do custom modifications to the inserted table item, based on a value from the provided row
+   */
+  public static final void getFieldsFromPrevious(RowMetaInterface row, TableView tableView, int keyColumn,
+      int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn, TableItemInsertListener listener) {
+    if (row == null || row.size() == 0)
+      return; // nothing to do
+
+    Table table = tableView.table;
+
+    // get a list of all the non-empty keys (names)
+    //
+    List<String> keys = new ArrayList<String>();
+    for (int i = 0; i < table.getItemCount(); i++) {
+      TableItem tableItem = table.getItem(i);
+      String key = tableItem.getText(keyColumn);
+      if (!Const.isEmpty(key) && keys.indexOf(key) < 0)
+        keys.add(key);
     }
 
-	
-	public void addDatabases(CCombo wConnection)
-	{
-		for (int i=0;i<transMeta.nrDatabases();i++)
-		{
-			DatabaseMeta ci = transMeta.getDatabase(i);
-			wConnection.add(ci.getName());
-		}
-	}
-	
-	public void selectDatabase(CCombo wConnection, String name)
-	{
-		int idx = wConnection.indexOf(name);
-		if (idx>=0)
-		{
-			wConnection.select(idx);
-		}
-	}
-    
-    public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin)
-    {
-        return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
+    int choice = 0;
+
+    if (keys.size() > 0) {
+      // Ask what we should do with the existing data in the step.
+      //
+      MessageDialog md = new MessageDialog(tableView.getShell(), Messages
+          .getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
+          null, Messages.getString("BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size()), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
+          MessageDialog.WARNING, new String[] { Messages.getString("BaseStepDialog.AddNew"), //$NON-NLS-1$
+              Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
+              Messages.getString("BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
+      int idx = md.open();
+      choice = idx & 0xFF;
     }
 
-	public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection, final Button wbnConnection, final Button wbeConnection)
-	{
-		final CCombo       wConnection;
-		final FormData     fdlConnection, fdbConnection, fdeConnection, fdConnection;
+    if (choice == 3 || choice == 255 /* 255 = escape pressed */)
+      return; // Cancel clicked
 
-		wConnection=new CCombo(parent, SWT.BORDER | SWT.READ_ONLY);
- 		props.setLook(wConnection);
-
-		addDatabases(wConnection);
-
-		wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
- 		props.setLook(wlConnection);
-		fdlConnection=new FormData();
-		fdlConnection.left = new FormAttachment(0, 0);
-		fdlConnection.right= new FormAttachment(middle, -margin);
-		if (previous!=null) fdlConnection.top  = new FormAttachment(previous, margin);
-		else                fdlConnection.top  = new FormAttachment(0, 0);
-		wlConnection.setLayoutData(fdlConnection);
-
-		// 
-		// NEW button
-		//
-		wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
-		wbnConnection.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				DatabaseMeta databaseMeta = new DatabaseMeta();
-				databaseMeta.shareVariablesWith(transMeta);
-				DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-				if (cid.open()!=null)
-				{
-					transMeta.addDatabase(databaseMeta);
-					wConnection.removeAll();
-					addDatabases(wConnection);
-					selectDatabase(wConnection, databaseMeta.getName());
-				}
-			}
-		});
-		fdbConnection=new FormData();
-		fdbConnection.right= new FormAttachment(100, 0);
-		if (previous!=null) fdbConnection.top  = new FormAttachment(previous, margin);
-		else                fdbConnection.top  = new FormAttachment(0,0);
-		wbnConnection.setLayoutData(fdbConnection);
-
-		//
-		// Edit button
-		//
-		wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
-		wbeConnection.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
-				if (databaseMeta!=null)
-				{
-					databaseMeta.shareVariablesWith(transMeta);
-					DatabaseDialog cid = new DatabaseDialog(shell, databaseMeta);
-					if (cid.open()!=null)
-					{
-						wConnection.removeAll();
-						addDatabases(wConnection);
-						selectDatabase(wConnection, databaseMeta.getName());
-					}
-				}
-			}
-		});
-		fdeConnection=new FormData();
-		fdeConnection.right= new FormAttachment(wbnConnection, -margin);
-		if (previous!=null) fdeConnection.top  = new FormAttachment(previous, margin);
-		else                fdeConnection.top  = new FormAttachment(0, 0);
-		wbeConnection.setLayoutData(fdeConnection);
-
-		//
-		// what's left of the line: combo box
-		//
-		fdConnection=new FormData();
-		fdConnection.left = new FormAttachment(middle, 0);
-		if (previous!=null) fdConnection.top  = new FormAttachment(previous, margin);
-		else                fdConnection.top  = new FormAttachment(0, 0);
-		fdConnection.right= new FormAttachment(wbeConnection, -margin);
-		wConnection.setLayoutData(fdConnection);
-
-		return wConnection;
-	}
-    
-	public void storeScreenSize()
-	{
-		props.setScreen(new WindowProperty(shell));
-	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
-    /**
-     * @return Returns the repository.
-     */
-    public Repository getRepository()
-    {
-        return repository;
+    if (choice == 2) {
+      tableView.clearAll(false);
     }
 
-    /**
-     * @param repository The repository to set.
-     */
-    public void setRepository(Repository repository)
-    {
-        this.repository = repository;
-    }
+    for (int i = 0; i < row.size(); i++) {
+      ValueMetaInterface v = row.getValueMeta(i);
 
-    public static void setMinimalShellHeight(Shell shell, Control[] controls, int margin, int extra)
-    {
-        int height = 0;
-        
-        for (int i=0;i<controls.length;i++)
-        {
-            Rectangle bounds = controls[i].getBounds();
-            height+=bounds.height+margin;
-        }
-        height+=extra;
-        shell.setSize(shell.getBounds().width, height);
-    }
+      boolean add = true;
 
-	public static void setSize(Shell shell)
-	{
-		setSize(shell, -1, -1, true);
-	}
+      if (choice == 0) // hang on, see if it's not yet in the table view
+      {
+        if (keys.indexOf(v.getName()) >= 0)
+          add = false;
+      }
 
-	public static void setSize(Shell shell, int minWidth, int minHeight, boolean packIt)
-	{
-		PropsUI props = PropsUI.getInstance();
-		
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) 
-		{
-			winprop.setShell(shell, minWidth, minHeight);
-		}
-		else
-		{
-			if (packIt) shell.pack(); else shell.layout();
-			
-			// OK, sometimes this produces dialogs that are waay too big.
-			// Try to limit this a bit, m'kay?
-			// Use the same algorithm by cheating :-)
-			//
-			winprop = new WindowProperty(shell);
-			winprop.setShell(shell, minWidth, minHeight);
-			
-			// Now, as this is the first time it gets opened, try to put it in the middle of the screen...
-			Rectangle shellBounds = shell.getBounds();
-			Rectangle dispBounds = shell.getDisplay().getPrimaryMonitor().getBounds();
-			
-			int middleX = (dispBounds.width - shellBounds.width)/2;
-			int middleY = (dispBounds.height - shellBounds.height)/2;
-			
-			shell.setLocation(middleX, middleY);
-		}
-	}
+      if (add) {
+        TableItem tableItem = new TableItem(table, SWT.NONE);
 
-    public static final void setTraverseOrder(final Control[] controls)
-    {
-        for (int i=0;i<controls.length;i++)
-        {
-            final int controlNr = i;
-            if (i<controls.length-1)
-            {
-                controls[i].addTraverseListener(new TraverseListener()
-                    {
-                        public void keyTraversed(TraverseEvent te)
-                        {
-                            te.doit=false;
-                            // set focus on the next control.
-                            // What is the next control?
-                            int thisOne = controlNr+1;
-                            while (!controls[thisOne].isEnabled())
-                            {
-                                thisOne++;
-                                if (thisOne>=controls.length) thisOne=0;
-                                if (thisOne==controlNr) return; // already tried all others, time to quit.
-                            }
-                            controls[thisOne].setFocus();
-                        }
-                    }
-                );
-            }
-            else // Link last item to first.
-            {
-                controls[i].addTraverseListener(new TraverseListener()
-                    {
-                        public void keyTraversed(TraverseEvent te)
-                        {
-                            te.doit=false;
-                            // set focus on the next control.
-                            // set focus on the next control.
-                            // What is the next control : 0
-                            int thisOne = 0;
-                            while (!controls[thisOne].isEnabled())
-                            {
-                                thisOne++;
-                                if (thisOne>=controls.length) return; // already tried all others, time to quit.
-                            }
-                            controls[thisOne].setFocus();
-                        }
-                    }
-                );            
-            }
+        for (int c = 0; c < nameColumn.length; c++) {
+          tableItem.setText(nameColumn[c], Const.NVL(v.getName(), "")); //$NON-NLS-1$
         }
-    }
-    
-    /**
-     * Gets unused fields from previous steps and inserts them as rows into a table view.
-     * @param r
-     * @param fields
-     * @param i
-     * @param js the column in the table view to match with the names of the fields, checks for existance if >0 
-     * @param nameColumn
-     * @param j
-     * @param lengthColumn
-     * @param listener
-     */
-    public static final void getFieldsFromPrevious(TransMeta transMeta, StepMeta stepMeta, TableView tableView, int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn, TableItemInsertListener listener)
-    {
-        try
-        {
-            RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
-            if (row!=null)
-            {
-                getFieldsFromPrevious(row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, listener);
-            }
+        for (int c = 0; c < dataTypeColumn.length; c++) {
+          tableItem.setText(dataTypeColumn[c], v.getTypeDesc());
         }
-        catch(KettleException ke)
-        {
-            new ErrorDialog(tableView.getShell(), Messages.getString("BaseStepDialog.FailedToGetFields.Title"), Messages.getString("BaseStepDialog.FailedToGetFields.Message", stepMeta.getName()), ke); //$NON-NLS-1$ //$NON-NLS-2$
+        if (lengthColumn > 0) {
+          if (v.getLength() >= 0)
+            tableItem.setText(lengthColumn, Integer.toString(v.getLength()));
         }
-    }
-    
-    /**
-     * Gets unused fields from previous steps and inserts them as rows into a table view.
-     * @param row the input fields
-     * @param tableView the table view to modify
-     * @param keyColumn the column in the table view to match with the names of the fields, checks for existance if >0 
-     * @param nameColumn the column numbers in which the name should end up in
-     * @param dataTypeColumn the target column numbers in which the data type should end up in
-     * @param lengthColumn the length column where the length should end up in (if >0)
-     * @param precisionColumn the length column where the precision should end up in (if >0)
-     * @param listener A listener that you can use to do custom modifications to the inserted table item, based on a value from the provided row
-     */
-    public static final void getFieldsFromPrevious(RowMetaInterface row, TableView tableView, int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn, TableItemInsertListener listener)
-    {
-        if (row==null || row.size()==0) return; // nothing to do
-        
-        Table table = tableView.table;
-        
-        // get a list of all the non-empty keys (names)
-        //
-        List<String> keys = new ArrayList<String>();
-        for (int i=0;i<table.getItemCount();i++)
-        {
-            TableItem tableItem = table.getItem(i);
-            String key = tableItem.getText(keyColumn);
-            if (!Const.isEmpty(key) && keys.indexOf(key)<0) keys.add(key);
+        if (precisionColumn > 0) {
+          if (v.getPrecision() >= 0)
+            tableItem.setText(precisionColumn, Integer.toString(v.getPrecision()));
         }
-        
-        int choice = 0;
-        
-        if (keys.size()>0)
-        {
-            // Ask what we should do with the existing data in the step.
-            //
-            MessageDialog md = new MessageDialog(tableView.getShell(), 
-                    Messages.getString("BaseStepDialog.GetFieldsChoice.Title"),//"Warning!" 
-                    null,
-                    Messages.getString("BaseStepDialog.GetFieldsChoice.Message", ""+keys.size(), ""+row.size()),
-                    MessageDialog.WARNING,
-                    new String[] { Messages.getString("BaseStepDialog.AddNew"), Messages.getString("BaseStepDialog.Add"), Messages.getString("BaseStepDialog.ClearAndAdd"), Messages.getString("BaseStepDialog.Cancel"), },   
-                    0
-                );
-            int idx = md.open();
-            choice = idx&0xFF;
-        }
-        
-        if (choice==3 || choice == 255 /* 255 = escape pressed */) return; // Cancel clicked
 
-        if (choice==2)
-        {
-            tableView.clearAll(false);
+        if (listener != null) {
+          if (!listener.tableItemInserted(tableItem, v)) {
+            tableItem.dispose(); // remove it again
+          }
         }
-        
-        for (int i=0;i<row.size();i++)
-        {
-            ValueMetaInterface v = row.getValueMeta(i);
-            
-            boolean add = true;
-            
-            if (choice==0) // hang on, see if it's not yet in the table view
-            {
-                if (keys.indexOf(v.getName())>=0) add=false; 
-            }
-            
-            if (add)
-            {
-                TableItem tableItem = new TableItem(table, SWT.NONE);
-                
-                for (int c=0;c<nameColumn.length;c++)
-                {
-                    tableItem.setText(nameColumn[c], Const.NVL(v.getName(), ""));
-                }
-                for (int c=0;c<dataTypeColumn.length;c++)
-                {
-                    tableItem.setText(dataTypeColumn[c], v.getTypeDesc());
-                }
-                if (lengthColumn>0)
-                {
-                    if (v.getLength()>=0) tableItem.setText(lengthColumn, Integer.toString(v.getLength()) );
-                }
-                if (precisionColumn>0)
-                {
-                    if (v.getPrecision()>=0) tableItem.setText(precisionColumn, Integer.toString(v.getPrecision()) );
-                }
-                
-                if (listener!=null)
-                {
-                    if (!listener.tableItemInserted(tableItem, v))
-                    {
-                        tableItem.dispose(); // remove it again
-                    }
-                }
-            }
-        }
-        tableView.removeEmptyRows();
-        tableView.setRowNums();
-        tableView.optWidth(true);
+      }
     }
+    tableView.removeEmptyRows();
+    tableView.setRowNums();
+    tableView.optWidth(true);
+  }
 }
