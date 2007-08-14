@@ -103,12 +103,19 @@ public class BaseStepDialog extends Dialog {
   protected Repository repository;
 
   protected StepMeta stepMeta;
-
+  
   protected static final int BUTTON_ALIGNMENT_CENTER = 0;
 
   protected static final int BUTTON_ALIGNMENT_LEFT = 1;
 
   protected static final int BUTTON_ALIGNMENT_RIGHT = 2;
+
+  protected static int buttonAlignment = BUTTON_ALIGNMENT_CENTER;
+  
+  static {
+    // Get the button alignment
+    buttonAlignment = getButtonAlignment();
+  }
 
   public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname) {
     super(parent, SWT.NONE);
@@ -185,7 +192,7 @@ public class BaseStepDialog extends Dialog {
       largest.width++;
 
     // Compute the left side of the 1st button (based on the system button alignment)
-    switch (getButtonAlignment()) {
+    switch (buttonAlignment) {
       case BUTTON_ALIGNMENT_CENTER:
         centerButtons(buttons, largest.width, margin, lastControl);
         break;
@@ -287,10 +294,6 @@ public class BaseStepDialog extends Dialog {
       // Apply the layout data
       buttons[i].setLayoutData(formData);
     }
-  }
-
-  protected static String toString(FormData fd) {
-    return "left=[" + fd.left + "] - right=[" + fd.right + "] - top=[" + fd.top + "] - bottom=[" + fd.bottom + "]";
   }
 
   /**
