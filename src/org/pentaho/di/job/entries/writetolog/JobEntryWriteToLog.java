@@ -158,38 +158,38 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 					
 			loglevel=loglevel+1;
 			
-			if (loglevel==log.LOG_LEVEL_ERROR)
+			if (loglevel==LogWriter.LOG_LEVEL_ERROR)
 			{
 				// Output message to log
 				// Log level = ERREUR	
 				log.logError(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 			}
-			else if (loglevel==log.LOG_LEVEL_MINIMAL)
+			else if (loglevel==LogWriter.LOG_LEVEL_MINIMAL)
 			{
 				// Output message to log
 				// Log level = MINIMAL	
 				log.logMinimal(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 			}
-			else if (loglevel==log.LOG_LEVEL_BASIC)
+			else if (loglevel==LogWriter.LOG_LEVEL_BASIC)
 			{
 				// Output message to log
 				// Log level = BASIC	
 				log.logBasic(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 			}
-			else if (loglevel==log.LOG_LEVEL_DETAILED)
+			else if (loglevel==LogWriter.LOG_LEVEL_DETAILED)
 			{
 				// Output message to log
 				// Log level = DETAILED	
 				log.logDetailed(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 			}
-			else if (loglevel==log.LOG_LEVEL_DEBUG)
+			else if (loglevel==LogWriter.LOG_LEVEL_DEBUG)
 			{
 				// Output message to log
 				// Log level = DEBUG	
 				log.logDebug(Const.CR + getRealLogSubject()+ Const.CR, getRealLogMessage()+ Const.CR);
 				
 			}
-			else if (loglevel==log.LOG_LEVEL_ROWLEVEL)
+			else if (loglevel==LogWriter.LOG_LEVEL_ROWLEVEL)
 			{
 				// Output message to log
 				// Log level = ROWLEVEL	
