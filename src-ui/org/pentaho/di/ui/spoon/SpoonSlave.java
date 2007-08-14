@@ -16,10 +16,12 @@
 package org.pentaho.di.ui.spoon;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -42,11 +44,14 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -533,7 +538,95 @@ public class SpoonSlave extends Composite implements TabItemInterface
     }
     
     public EngineMetaInterface getMeta() {
-    	return null;
+    	return new EngineMetaInterface() {
+		
+			public boolean showReplaceWarning(Repository rep) {
+				return false;
+			}
+		
+			public void setModifiedUser(String user) {
+			}
+		
+			public void setModifiedDate(Date date) {
+			}
+		
+			public void setInternalKettleVariables() {
+			}
+		
+			public void setID(long id) {
+			}
+		
+			public void setFilename(String filename) {
+			}
+		
+			public void setCreatedUser(String createduser) {
+			}
+		
+			public void setCreatedDate(Date date) {
+			}
+		
+			public boolean saveSharedObjects() {
+				return false;
+			}
+		
+			public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException {
+			}
+		
+			public void nameFromFilename() {
+			}
+		
+			public String getXML() {
+				return null;
+			}
+		
+			public String getName() {
+				return slaveServer.getName();
+			}
+		
+			public String getModifiedUser() {
+				return null;
+			}
+		
+			public Date getModifiedDate() {
+				return null;
+			}
+		
+			public String[] getFilterNames() {
+				return null;
+			}
+		
+			public String[] getFilterExtensions() {
+				return null;
+			}
+		
+			public String getFilename() {
+				return null;
+			}
+		
+			public String getFileType() {
+				return null;
+			}
+		
+			public RepositoryDirectory getDirectory() {
+				return null;
+			}
+		
+			public String getDefaultExtension() {
+				return null;
+			}
+		
+			public String getCreatedUser() {
+				return null;
+			}
+		
+			public Date getCreatedDate() {
+				return null;
+			}
+		
+			public void clearChanged() {
+			}
+		
+		};
     }
 
 }

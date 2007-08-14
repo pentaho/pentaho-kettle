@@ -255,7 +255,7 @@ public class TransSplitter
                 if (partitionsList!=null) 
                 {
                     // We found a list of partitions, now let's create a new partition schema with this data.
-                    String targetSchemaName = partitionSchema.getName() + " (slave)";
+                    String targetSchemaName = createSlavePartitionSchemaName(partitionSchema.getName());
                     PartitionSchema targetSchema = slave.findPartitionSchema(targetSchemaName);
                     if (targetSchema==null)
                     {
@@ -269,7 +269,11 @@ public class TransSplitter
         stepPartitionFlag.put(stepMeta, "Y"); // is done.
     }
 
-    /**
+    private String createSlavePartitionSchemaName(String name) {
+		return name + " (slave)";
+	}
+
+	/**
      * @return the master
      */
     public TransMeta getMaster()
@@ -418,10 +422,7 @@ public class TransSplitter
                                     StepMeta previous = slave.findStep(previousStep.getName());
                                     if (previous==null)
                                     {
-                                        previous = (StepMeta) previousStep.clone();
-                                        previous.setLocation(previousStep.getLocation().x, previousStep.getLocation().y);
-    
-                                        slave.addStep(previous);
+                                        previous = addSlaveCopy(slave, previousStep);
                                     }
                                     
                                     // Default: we send/receive to/from copy 0 of the remote step.
@@ -506,9 +507,7 @@ public class TransSplitter
                                     StepMeta slaveStep = slave.findStep(referenceStep.getName());
                                     if (slaveStep==null)
                                     {
-                                        slaveStep = (StepMeta) referenceStep.clone();
-                                        slaveStep.setLocation(referenceStep.getLocation().x, referenceStep.getLocation().y);
-                                        slave.addStep(slaveStep);
+                                        slaveStep = addSlaveCopy(slave, referenceStep);
                                     }
                                     
                                     RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), referenceStep.getName(), 0, slaveStep.getName(), 0, slaveServer.getName());
@@ -538,15 +537,13 @@ public class TransSplitter
                                     StepMeta target = slave.findStep(referenceStep.getName());
                                     if (target==null)
                                     {
-                                        target = (StepMeta) referenceStep.clone();
-                                        slave.addStep(target);
+                                        target = addSlaveCopy(slave, referenceStep);
                                     }
                                     
                                     StepMeta source = slave.findStep(previousStep.getName());
                                     if (source==null)
                                     {
-                                        source = (StepMeta) previousStep.clone();
-                                        slave.addStep(source);
+                                        source = addSlaveCopy(slave, previousStep);
                                     }
                                     
                                     TransHopMeta slaveHop = new TransHopMeta(source, target);
@@ -708,7 +705,7 @@ public class TransSplitter
                             {
                                 // SLAVE
                                 TransMeta slave = getSlaveTransformation(referenceClusterSchema, slaveServer);
-                                slave.addStep((StepMeta) referenceStep.clone());
+                                addSlaveCopy(slave, referenceStep);
                             }
                         }
                     }
@@ -813,9 +810,7 @@ public class TransSplitter
                                     StepMeta slaveStep = slave.findStep(originalStep.getName());
                                     if (slaveStep==null)
                                     {
-                                        slaveStep = (StepMeta) originalStep.clone();
-                                        slaveStep.setLocation(originalStep.getLocation().x+(SPLIT/2), originalStep.getLocation().y);
-                                        slave.addStep(slaveStep);
+                                        slaveStep = addSlaveCopy(slave, originalStep);
                                     }
                                     
                                     // And a hop from the 
@@ -897,8 +892,29 @@ public class TransSplitter
         }
     }
 
+    /**
+     * Create a copy of a step from the original transformation for use in the a slave transformation.
+     * If the step is partitioned, the partitioning will be changed to "schemaName (slave)" 
+     * 
+     * @param stepMeta The step to copy / clone.
+     * @return a copy of the specified step for use in a slave transformation.
+     */
+    private StepMeta addSlaveCopy(TransMeta transMeta, StepMeta stepMeta) {
+		StepMeta copy = (StepMeta) stepMeta.clone();
+		if (copy.isPartitioned()) {
+			StepPartitioningMeta stepPartitioningMeta = copy.getStepPartitioningMeta();
+			PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+			String slavePartitionSchemaName = createSlavePartitionSchemaName(partitionSchema.getName());
+			PartitionSchema slaveSchema = transMeta.findPartitionSchema(slavePartitionSchemaName);
+			if (slaveSchema!=null) {
+				stepPartitioningMeta.setPartitionSchema(slaveSchema);
+			}
+		}
+		transMeta.addStep(copy);
+		return copy;
+	}
 
-    private void findUsedOriginalSteps()
+	private void findUsedOriginalSteps()
     {
         List<StepMeta> transHopSteps = originalTransformation.getTransHopSteps(false);
         referenceSteps = transHopSteps.toArray(new StepMeta[transHopSteps.size()]);

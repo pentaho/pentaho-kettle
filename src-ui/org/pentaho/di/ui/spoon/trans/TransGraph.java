@@ -324,6 +324,21 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                             selected_note = null;
                             editNote(ni);
                         }
+                        else
+                        {
+                        	// See if the double click was in one of the area's...
+                        	//
+                        	for (AreaOwner areaOwner : areaOwners) {
+                        		if (areaOwner.contains(real.x, real.y)) {
+            	            		if ( areaOwner.getParent() instanceof StepMeta && areaOwner.getOwner().equals(TransPainter.STRING_PARTITIONING_CURRENT_STEP) ) {
+            	            			StepMeta step = (StepMeta) areaOwner.getParent();
+            	            			spoon.editPartitioning(transMeta, step);
+            	            			break;
+            	            		}
+                        		}
+                        	}
+
+                        }
                     }
                 }
             }

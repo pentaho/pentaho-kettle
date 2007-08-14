@@ -53,7 +53,9 @@ public class ModPartitioner extends BasePartitioner {
 
 		public String getDescription() {
 			String description = "Mod partitioner";
-			description+="("+Const.NVL(fieldName, "?")+")";
+			if (!Const.isEmpty(fieldName)) {
+				description+="(" + fieldName + ")";
+			}
 			return description;
 		}
 

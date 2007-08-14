@@ -749,6 +749,7 @@ public class TransPainter
         // Show message at the start/end of the arrow
         // Only show this message when the length is sufficiently long
         //
+        /*
         if (startObject!=null && startObject instanceof StepMeta) {
         	String startMessage = null;
         	StepMeta fs = (StepMeta) startObject;
@@ -801,6 +802,7 @@ public class TransPainter
 	            areaOwners.add(new AreaOwner(mx-textExtent.x/3, my-textExtent.y/2, textExtent.x+4, textExtent.y+4, ts, STRING_PARTITIONING_CURRENT_NEXT));
             }
         }
+        */
     }
 
 }

@@ -38,8 +38,8 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
          <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
          <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
@@ -130,6 +130,7 @@
     <description/>
     </mapping>      </output>
           <parameters>       <variablemapping><variable>FILENAME</variable><input>${Internal.Transformation.Filename.Directory}&#47;testfile.txt</input></variablemapping>
+       <variablemapping><variable>COMPRESS_FILES</variable><input>Y</input></variablemapping>
     </parameters>
     </mappings>
      <cluster_schema/>

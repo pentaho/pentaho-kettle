@@ -39,8 +39,8 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
          <slaveserver><name>localhost:8082</name><hostname>localhost</hostname><port>8082</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
+         <slaveserver><name>localhost:8080:Master</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
          <slaveserver><name>localhost:8081</name><hostname>localhost</hostname><port>8081</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>localhost:8080</name><hostname>localhost</hostname><port>8080</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
          <slaveserver><name>localhost:8084</name><hostname>localhost</hostname><port>8084</port><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
@@ -66,7 +66,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Mapping input specification</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Mapping input specification 2</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Mapping input specification 3</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Mapping output specification</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Mapping input specification</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Mapping input specification 2</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Mapping input specification 3</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Dummy (do nothing)</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Mapping output specification</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Dummy (do nothing)</name>
     <type>Dummy</type>
@@ -216,8 +216,84 @@
       </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>585</xloc>
+      <xloc>786</xloc>
       <yloc>233</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sort rows</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size>5000</sort_size>
+      <compress>N</compress>
+      <compress_variable>${COMPRESS_FILES}</compress_variable>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>id</name>
+        <ascending>Y</ascending>
+        </field>
+      <field>
+        <name>name</name>
+        <ascending>Y</ascending>
+        </field>
+      <field>
+        <name>firstname</name>
+        <ascending>Y</ascending>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>586</xloc>
+      <yloc>233</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sort rows 2</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size>5000</sort_size>
+      <compress>N</compress>
+      <compress_variable>${COMPRESS_FILES}</compress_variable>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>id</name>
+        <ascending>Y</ascending>
+        </field>
+      <field>
+        <name>name</name>
+        <ascending>Y</ascending>
+        </field>
+      <field>
+        <name>firstname</name>
+        <ascending>Y</ascending>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>625</xloc>
+      <yloc>337</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

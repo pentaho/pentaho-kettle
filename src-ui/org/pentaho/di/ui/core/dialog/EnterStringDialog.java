@@ -59,18 +59,6 @@ public class EnterStringDialog extends Dialog
 	private String shellText;
 	private String lineText;
 	private PropsUI props;
-	
-    /**
-     * @deprecated Use CT without <i>props</i> parameter
-     */
-	public EnterStringDialog(Shell parent, PropsUI props, String string, String shellText, String lineText)
-	{
-		super(parent, SWT.NONE);
-		this.props      = props;
-		this.string     = string;
-		this.shellText  = shellText;
-		this.lineText   = lineText;
-	}
 
     public EnterStringDialog(Shell parent, String string, String shellText, String lineText)
     {
