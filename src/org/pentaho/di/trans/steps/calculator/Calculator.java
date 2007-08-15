@@ -99,7 +99,7 @@ public class Calculator extends BaseStep implements StepInterface
                     if (data.fieldIndexes[i].indexName<0)
                     {
                         // Nope: throw an exception
-                        throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+" for calculation #"+(i+1));
+                        throw new KettleStepException("Unable to find the specified fieldname '"+function.getFieldName()+"' for calculation #"+(i+1));
                     }
                 }
                 else
