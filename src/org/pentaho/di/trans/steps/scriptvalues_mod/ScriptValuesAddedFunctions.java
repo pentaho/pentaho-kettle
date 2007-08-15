@@ -56,6 +56,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
@@ -1140,11 +1144,19 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	// Implementation of the JS AlertBox
 	public static String Alert(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		
-		SpoonInterface spoon = SpoonFactory.getInstance();
+		final SpoonInterface spoon = SpoonFactory.getInstance();
 		if( ArgList.length==1 && spoon != null ) 
 		{
-			String strMessage = Context.toString(ArgList[0]);
-			spoon.messageBox(strMessage, "Alert", false, Const.INFO);
+			final String strMessage = Context.toString(ArgList[0]);
+			Display display = Display.getDefault();
+			
+			display.syncExec(new Runnable() {
+			
+				public void run() {
+					spoon.messageBox(strMessage, "Alert", false, Const.INFO);
+				}
+			
+			});
 		}
 		
 		return "";
