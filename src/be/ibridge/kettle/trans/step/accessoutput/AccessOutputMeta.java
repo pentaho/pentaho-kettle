@@ -48,7 +48,6 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.JetFormat;
 import com.healthmarketscience.jackcess.Table;
 
 
