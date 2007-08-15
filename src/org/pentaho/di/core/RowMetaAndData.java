@@ -25,7 +25,7 @@ public class RowMetaAndData implements Cloneable
      * @param rowMeta
      * @param data
      */
-    public RowMetaAndData(RowMetaInterface rowMeta, Object[] data)
+    public RowMetaAndData(RowMetaInterface rowMeta, Object... data)
     {
         this.rowMeta = rowMeta;
         this.data = data;
