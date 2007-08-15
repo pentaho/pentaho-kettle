@@ -214,10 +214,13 @@ public class Props implements Cloneable
 	
 	protected Props(int t)
 	{
-		properties = new Properties();
 		type=t;
         filename=getFilename();
-        
+        init();
+	}
+
+	protected void init() {
+		properties = new Properties();
         pluginHistory = new ArrayList<ObjectUsageCount>();
 
         loadProps();
@@ -225,18 +228,13 @@ public class Props implements Cloneable
         
         loadPluginHistory();
 	}
-
+	
 	protected Props(String filename)
     {
         properties = new Properties();
         this.type=TYPE_PROPERTIES_EMPTY;
         this.filename=filename;
-        
-        pluginHistory = new ArrayList<ObjectUsageCount>();
-
-        loadProps();
-        
-        loadPluginHistory();
+        init();
     }
     
     public String toString()
@@ -320,7 +318,7 @@ public class Props implements Cloneable
 		return true;
 	}
 
-    private void addDefaultEntries()
+    protected void addDefaultEntries()
     {
         if (!properties.containsKey("JobDialogStyle"))
             properties.setProperty("JobDialogStyle", "RESIZE,MAX,MIN");
@@ -586,7 +584,7 @@ public class Props implements Cloneable
      * Load the plugin history from the properties file
      *
      */
-    private void loadPluginHistory()
+    protected void loadPluginHistory()
     {
         pluginHistory = new ArrayList<ObjectUsageCount>();
         int i=0;

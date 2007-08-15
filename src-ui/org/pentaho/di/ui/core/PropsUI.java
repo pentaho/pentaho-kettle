@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -38,6 +39,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -53,7 +55,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 public class PropsUI extends Props
 {
 	
-	private Display display;
+	private static Display display;
 		
 	protected List<LastUsedFile> lastUsedFiles;
 
@@ -74,11 +76,12 @@ public class PropsUI extends Props
 	 * @param display The Display
 	 * @param t The type of properties file.
 	 */
-	public static final void init(Display display, int t)
+	public static final void init(Display d, int t)
 	{
 		if (props==null)
 		{
-			props = new PropsUI(display, t);
+        	display = d;
+			props = new PropsUI(t);
             
             // Also init the colors and fonts to use...
             GUIResource.getInstance();
@@ -94,11 +97,12 @@ public class PropsUI extends Props
      * @param display The Display
      * @param filename the filename to use 
      */
-    public static final void init(Display display, String filename)
+    public static final void init(Display d, String filename)
     {
         if (props==null)
         {
-            props = new PropsUI(display, filename);
+        	display = d;
+            props = new PropsUI(filename);
             
             // Also init the colors and fonts to use...
             GUIResource.getInstance();
@@ -125,26 +129,31 @@ public class PropsUI extends Props
 		throw new RuntimeException("Properties, Kettle systems settings, not initialised!");
 	}
 	
-	private PropsUI(Display dis, int t)
+	private PropsUI(int t)
 	{
 		super(t);
-		
-		display=dis;
-		setDefault();
+	}
+
+    private PropsUI(String filename)
+    {
+    	super(filename);
+    }
+    
+	protected void init() {
+		properties = new Properties();
+        pluginHistory = new ArrayList<ObjectUsageCount>();
+
+        setDefault();
+        loadProps();
+        addDefaultEntries();
+        
+        loadPluginHistory();
+
 		loadScreens();
         loadLastUsedFiles();
 
 	}
 
-    private PropsUI(Display dis, String filename)
-    {
-    	super(filename);
-        display=dis;
-		setDefault();
-        loadScreens();
-        loadLastUsedFiles();
-    }
-    
 	public void setDefault()
 	{
 		FontData fd;
@@ -929,7 +938,7 @@ public class PropsUI extends Props
     /**
      * @return Returns the display.
      */
-    public Display getDisplay()
+    public static Display getDisplay()
     {
         return display;
     }
@@ -937,9 +946,9 @@ public class PropsUI extends Props
     /**
      * @param display The display to set.
      */
-    public void setDisplay(Display display)
+    public static void setDisplay(Display d)
     {
-        this.display = display;
+        display = d;
     }
     
     public void setDefaultPreviewSize(int size)
