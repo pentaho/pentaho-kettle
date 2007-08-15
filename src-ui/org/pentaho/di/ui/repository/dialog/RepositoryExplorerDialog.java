@@ -110,6 +110,45 @@ import org.w3c.dom.Document;
  */
 public class RepositoryExplorerDialog extends Dialog 
 {
+    public interface RepositoryExplorerCallback {
+    	/**
+    	 * request that specified object be opened in 'Spoon' display
+    	 * @param object
+    	 * @return boolean indicating if repository explorer dialog should close
+    	 */
+    	boolean open(RepositoryObjectReference object);
+    }
+    
+    /**
+     * capture a reference to an object in the repository
+     * @author jgoldman
+     *
+     */
+    public class RepositoryObjectReference {
+    	private String              type;   // Type of object
+    	private RepositoryDirectory directory;    // The directory to which it belongs.
+    	private String              name;   // name of object being referenced	
+    	
+    	public RepositoryObjectReference(String type, RepositoryDirectory dir, String name) {
+    		this.type = type;
+    		this.directory = dir;
+    		this.name = name;
+    	}
+    	
+		public RepositoryDirectory getDirectory()
+		{
+			return directory;
+		}
+		public String getName()
+		{
+			return name;
+		}
+		public String getType()
+		{
+			return type;
+		}
+    }
+    
 	private static final String STRING_DATABASES       = Messages.getString("RepositoryExplorerDialog.Tree.String.Connections"); //$NON-NLS-1$
     private static final String STRING_PARTITIONS      = Messages.getString("RepositoryExplorerDialog.Tree.String.Partitions"); //$NON-NLS-1$
     private static final String STRING_SLAVES          = Messages.getString("RepositoryExplorerDialog.Tree.String.Slaves"); //$NON-NLS-1$
@@ -139,7 +178,7 @@ public class RepositoryExplorerDialog extends Dialog
     private static final int    ITEM_CATEGORY_SLAVE                       = 17;
     private static final int    ITEM_CATEGORY_CLUSTERS_ROOT               = 18;
     private static final int    ITEM_CATEGORY_CLUSTER                     = 19;
-	
+    
 	private Shell     shell;
 	private Tree      wTree;
 	private Button    wCommit;
@@ -150,10 +189,6 @@ public class RepositoryExplorerDialog extends Dialog
 	private PropsUI props;
 	private Repository     rep;
 	private UserInfo       userinfo;
-
-	private String              objectName;   // Return this object to do something with it...
-	private RepositoryDirectory objectDir;    // The directory to which it belongs. 
-	private String              objectType;   // Type of return object
 	
 	private Color dircolor;
 	
@@ -167,13 +202,11 @@ public class RepositoryExplorerDialog extends Dialog
     private TreeColumn changedColumn;
     private TreeColumn descriptionColumn;
     
-    /** @deprecated */
-    public RepositoryExplorerDialog(Shell par, PropsUI pr, int style, LogWriter l, Repository rep, UserInfo ui)
-    {
-        this(par, style, rep, ui);
-    }
-
-	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui)
+    private RepositoryExplorerCallback callback;
+    
+    private RepositoryObjectReference lastOpened;
+    
+	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui)
 	{
 		super(par, style);
 		this.props=PropsUI.getInstance();
@@ -181,14 +214,19 @@ public class RepositoryExplorerDialog extends Dialog
 		this.rep=rep;
 		this.userinfo=ui;
 
-		objectName = null;
         sortColumn = 0;
         ascending = false;
 	}
     
+	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback)
+	{
+		this(par, style, rep, ui);
+		this.callback = callback;
+	}
+	
     private static final String STRING_REPOSITORY_EXPLORER_TREE_NAME = "Repository Exporer Tree Name";
 
-	public String open() 
+	public RepositoryObjectReference open() 
 	{
         debug="opening repository explorer"; //$NON-NLS-1$
         
@@ -196,9 +234,10 @@ public class RepositoryExplorerDialog extends Dialog
         {
     		dircolor = GUIResource.getInstance().getColorDirectory();
     		
-            debug="open new shell"; //$NON-NLS-1$
+            debug="open new independent shell"; //$NON-NLS-1$
             Shell parent = getParent();
-    		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+    		Display display = parent.getDisplay();
+    		shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     		props.setLook(shell);
 			shell.setImage(GUIResource.getInstance().getImageConnection());
     		shell.setText(Messages.getString("RepositoryExplorerDialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -543,7 +582,6 @@ public class RepositoryExplorerDialog extends Dialog
     		setSort(0); // refreshes too.
     
     		shell.open();
-    		Display display = parent.getDisplay();
     		while (!shell.isDisposed()) 
     		{
     			if (!display.readAndDispatch()) display.sleep();
@@ -553,7 +591,7 @@ public class RepositoryExplorerDialog extends Dialog
         {
             new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
-		return objectName;
+		return lastOpened;
 
 	}
 	
@@ -1386,19 +1424,29 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void openTransformation(String name, RepositoryDirectory repdir)
 	{
-		objectName =  name;
-		objectDir  =  repdir;
-		objectType =  STRING_TRANSFORMATIONS;
-		commit();
+		lastOpened = new RepositoryObjectReference(STRING_TRANSFORMATIONS, repdir, name);
+		if (callback != null) {
+			if (callback.open(lastOpened))			{
+				commit();
+			}
+		}
+		else {
+			commit();
+		}
 	}
 
-    public void openJob(String name, RepositoryDirectory repdir)
-    {
-        objectName =  name;
-        objectDir  =  repdir;
-        objectType =  STRING_JOBS;
-        commit();
-    }
+	public void openJob(String name, RepositoryDirectory repdir)
+	{
+		lastOpened = new RepositoryObjectReference(STRING_JOBS, repdir, name);
+		if (callback != null) {
+			if (callback.open(lastOpened)) {
+				commit();
+			}
+		}
+		else {
+			commit();
+		}
+	}
 
 	public boolean delSelectedTransformations()
 	{
@@ -2765,16 +2813,6 @@ public class RepositoryExplorerDialog extends Dialog
 				}
 			}
 		}
-	}
-
-	public String getObjectType()
-	{
-		return objectType;
-	}
-	
-	public RepositoryDirectory getObjectDirectory()
-	{
-		return objectDir;
 	}
 	
 	private int getItemCategory(TreeItem ti)

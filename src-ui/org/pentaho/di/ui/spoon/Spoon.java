@@ -180,6 +180,8 @@ import org.pentaho.di.ui.job.dialog.JobSaveProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoriesDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryExplorerCallback;
+import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog.RepositoryObjectReference;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.dialog.UserDialog;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
@@ -694,9 +696,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				String varName = list.get(i);
 				String varValue = sp.getProperty(varName, "");
-                if (variables.getRowMeta().indexOfValue(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
+                if (vars.getRowMeta().indexOfValue(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
 				{
-					variables.addValue(new ValueMeta(varName, ValueMetaInterface.TYPE_STRING), varValue);
+                	vars.addValue(new ValueMeta(varName, ValueMetaInterface.TYPE_STRING), varValue);
 				}
 			}
 		}
@@ -710,15 +712,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			{
 				String varName = list.get(i);
 				String varValue = sp.getProperty(varName, "");
-                if (variables.getRowMeta().indexOfValue(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
+                if (vars.getRowMeta().indexOfValue(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
 				{
-					variables.addValue(new ValueMeta(varName, ValueMetaInterface.TYPE_STRING), varValue);
+                	vars.addValue(new ValueMeta(varName, ValueMetaInterface.TYPE_STRING), varValue);
 				}
 			}
 		}
 	}
 
-	public void getVariables()
+	public void setVariables()
 	{
 		fillVariables(variables);
 
@@ -2650,59 +2652,68 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		if (rep != null)
 		{
-            RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, rep.getUserInfo());
-			String objname = erd.open();
-			if (objname != null)
-			{
-				String object_type = erd.getObjectType();
-				RepositoryDirectory repdir = erd.getObjectDirectory();
+      RepositoryExplorerCallback cb = new RepositoryExplorerDialog.RepositoryExplorerCallback() {
 
-				// Try to open the selected transformation.
-				if (object_type.equals(RepositoryExplorerDialog.STRING_TRANSFORMATIONS))
+				public boolean open(RepositoryObjectReference objectToOpen)
 				{
-					try
+					String objname = objectToOpen.getName();
+					if (objname != null)
 					{
-                        TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objname, repdir);
-						TransMeta transMeta = progressDialog.open();
-						transMeta.clearChanged();
-						transMeta.setFilename(objname);
-						addTransGraph(transMeta);
-						refreshTree();
-						refreshGraph();
-                    }
-                    catch(Exception e)
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
-						mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
-						mb.open();
+						String object_type = objectToOpen.getType();
+						RepositoryDirectory repdir = objectToOpen.getDirectory();
+
+						// Try to open the selected transformation.
+						if (object_type.equals(RepositoryExplorerDialog.STRING_TRANSFORMATIONS))
+						{
+							try
+							{
+		                        TransLoadProgressDialog progressDialog = new TransLoadProgressDialog(shell, rep, objname, repdir);
+								TransMeta transMeta = progressDialog.open();
+								transMeta.clearChanged();
+								transMeta.setFilename(objname);
+								addTransGraph(transMeta);
+								refreshTree();
+								refreshGraph();
+		                    }
+		                    catch(Exception e)
+							{
+								MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+		                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
+								mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
+								mb.open();
+							}
+		                }
+		                else
+						// Try to open the selected job.
+						if (object_type.equals(RepositoryExplorerDialog.STRING_JOBS))
+						{
+							try
+							{
+		                        JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objname, repdir);
+								JobMeta jobMeta = progressDialog.open();
+								jobMeta.clearChanged();
+								jobMeta.setFilename(objname);
+								jobMeta.setArguments(arguments);
+		                        delegates.jobs.addJobGraph(jobMeta);
+								refreshTree();
+								refreshGraph();
+		                    }
+		                    catch(Exception e)
+							{
+								MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+		                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
+								mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
+								mb.open();
+							}
+						}
 					}
-                }
-                else
-				// Try to open the selected job.
-				if (object_type.equals(RepositoryExplorerDialog.STRING_JOBS))
-				{
-					try
-					{
-                        JobLoadProgressDialog progressDialog = new JobLoadProgressDialog(shell, rep, objname, repdir);
-						JobMeta jobMeta = progressDialog.open();
-						jobMeta.clearChanged();
-						jobMeta.setFilename(objname);
-						jobMeta.setArguments(arguments);
-                        delegates.jobs.addJobGraph(jobMeta);
-						refreshTree();
-						refreshGraph();
-                    }
-                    catch(Exception e)
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
-						mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
-						mb.open();
-					}
+					return false; // do not close explorer
 				}
+    	};
+        	
+      RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, rep.getUserInfo(), cb);
+			erd.open();
 
-			}
 		}
 	}
 
