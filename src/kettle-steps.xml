@@ -24,6 +24,7 @@
 		</tooltip>
 		<image-uri>ui/images/DUM.png</image-uri>
 	</step>
+	
 	<step id="Append">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Append")
@@ -35,6 +36,7 @@
 		</tooltip>
 		<image-uri>ui/images/APP.png</image-uri>
 	</step>	
+	
 	<step id="TableInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TableInput")
@@ -46,6 +48,7 @@
 		</tooltip>
 		<image-uri>ui/images/TIP.png</image-uri>
 	</step>
+	
 	<step id="SocketReader">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SocketReader")
@@ -57,6 +60,7 @@
 		</tooltip>
 		<image-uri>ui/images/SKR.png</image-uri>
 	</step>
+	
 	<step id="SocketWriter">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SocketWriter")
@@ -68,6 +72,7 @@
 		</tooltip>
 		<image-uri>ui/images/SKW.png</image-uri>
 	</step>
+	
 	<step id="SelectValues">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SelectValues")
@@ -79,6 +84,7 @@
 		</tooltip>
 		<image-uri>ui/images/SEL.png</image-uri>
 	</step>
+	
 	<step id="TextFileInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TextFileInput")
@@ -90,6 +96,7 @@
 		</tooltip>
 		<image-uri>ui/images/TFI.png</image-uri>
 	</step>
+	
 	<step id="Calculator">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Caculator")
@@ -101,6 +108,7 @@
 		</tooltip>Database join
 		<image-uri>ui/images/CLC.png</image-uri>
 	</step>
+	
 	<step id="Constant">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddConstants")
@@ -112,6 +120,7 @@
 		</tooltip>
 		<image-uri>ui/images/CST.png</image-uri>
 	</step>
+	
 	<step id="Abort">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Abort")
@@ -123,6 +132,7 @@
 		</tooltip>
 		<image-uri>ui/images/ABR.png</image-uri>
 	</step>
+	
 	<step id="Sequence">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddSequence")
@@ -134,6 +144,7 @@
 		</tooltip>
 		<image-uri>ui/images/SEQ.png</image-uri>
 	</step>
+	
 	<step id="TableOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Output")
@@ -145,6 +156,7 @@
 		</tooltip>
 		<image-uri>ui/images/TOP.png</image-uri>
 	</step>
+	
 	<step id="SortRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortRows")
@@ -156,6 +168,7 @@
 		</tooltip>
 		<image-uri>ui/images/SRT.png</image-uri>
 	</step>
+	
 	<step id="OraBulkLoader">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.OraBulkLoader")
@@ -167,6 +180,7 @@
 		</tooltip>
 		<image-uri>ui/images/OBL.png</image-uri>
 	</step>
+	
 	<step id="Injector">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Injector")
@@ -178,6 +192,7 @@
 		</tooltip>
 		<image-uri>ui/images/INJ.png</image-uri>
 	</step>
+	
 	<step id="FilterRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilterRows")
@@ -189,6 +204,7 @@
 		</tooltip>
 		<image-uri>ui/images/FLT.png</image-uri>
 	</step>
+	
 	<step id="TextFileOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.TextFileOutput")
@@ -200,6 +216,7 @@
 		</tooltip>
 		<image-uri>ui/images/TFO.png</image-uri>
 	</step>
+	
 	<step id="SystemInfo">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetSystemInfo")
@@ -211,6 +228,7 @@
 		</tooltip>
 		<image-uri>ui/images/SYS.png</image-uri>
 	</step>
+	
 	<step id="StreamLookup">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.StreamLookup")
@@ -222,6 +240,7 @@
 		</tooltip>
 		<image-uri>ui/images/SLU.png</image-uri>
 	</step>
+	
 	<step id="Unique">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.UniqueRows")
@@ -233,6 +252,7 @@
 		</tooltip>
 		<image-uri>ui/images/UNQ.png</image-uri>
 	</step>
+	
 	<step id="DBLookup">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseLookup")
@@ -244,6 +264,7 @@
 		</tooltip>
 		<image-uri>ui/images/DLU.png</image-uri>
 	</step>
+	
 	<step id="DBJoin">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DatabaseJoin")
@@ -255,6 +276,7 @@
 		</tooltip>
 		<image-uri>ui/images/DBJ.png</image-uri>
 	</step>
+	
 	<step id="DimensionLookup">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.DimensionUpdate")
@@ -266,6 +288,7 @@
 		</tooltip>
 		<image-uri>ui/images/DIM.png</image-uri>
 	</step>
+	
 	<step id="ExcelInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcelInput")
@@ -288,6 +311,7 @@
 		</tooltip>
 		<image-uri>ui/images/CMB.png</image-uri>
 	</step>
+	
 	<step id="ScriptValueMod,ScriptValue">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.JavaScriptMod")
@@ -299,6 +323,7 @@
 		</tooltip>
 		<image-uri>ui/images/SCR_mod.png</image-uri>
 	</step>
+	
 	<step id="JoinRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.JoinRows")
@@ -310,6 +335,7 @@
 		</tooltip>
 		<image-uri>ui/images/JRW.png</image-uri>
 	</step>
+	
 	<step id="Update">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Update")
@@ -321,6 +347,7 @@
 		</tooltip>
 		<image-uri>ui/images/UPD.png</image-uri>
 	</step>
+	
 	<step id="InsertUpdate">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.InsertOrUpdate")
@@ -332,6 +359,7 @@
 		</tooltip>
 		<image-uri>ui/images/INU.png</image-uri>
 	</step>
+	
 	<step id="Delete">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.Delete")
@@ -343,6 +371,7 @@
 		</tooltip>
 		<image-uri>ui/images/Delete.png</image-uri>
 	</step>
+	
 	<step id="MappingInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingInput")
@@ -354,6 +383,7 @@
 		</tooltip>
 		<image-uri>ui/images/MPI.png</image-uri>
 	</step>
+	
 	<step id="Mapping">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingSubTransformation")
@@ -365,6 +395,7 @@
 		</tooltip>
 		<image-uri>ui/images/MAP.png</image-uri>
 	</step>
+	
 	<step id="MappingOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MappingOutput")
@@ -376,6 +407,7 @@
 		</tooltip>
 		<image-uri>ui/images/MPO.png</image-uri>
 	</step>
+	
 	<step id="SetVariable">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SetVariable")
@@ -387,6 +419,7 @@
 		</tooltip>
 		<image-uri>ui/images/SVA.png</image-uri>
 	</step>
+	
 	<step id="GetVariable">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetVariable")
@@ -398,6 +431,7 @@
 		</tooltip>
 		<image-uri>ui/images/GVA.png</image-uri>
 	</step>
+	
 	<step id="NullIf">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.NullIf")
@@ -409,6 +443,7 @@
 		</tooltip>
 		<image-uri>ui/images/NUI.png</image-uri>
 	</step>
+	
 	<step id="ExecSQL">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcuteSQL")
@@ -420,6 +455,7 @@
 		</tooltip>
 		<image-uri>ui/images/SQL.png</image-uri>
 	</step>
+	
 	<step id="RowsFromResult">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetRows")
@@ -431,6 +467,7 @@
 		</tooltip>
 		<image-uri>ui/images/FCH.png</image-uri>
 	</step>
+	
 	<step id="RowsToResult">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CopyRows")
@@ -442,6 +479,7 @@
 		</tooltip>
 		<image-uri>ui/images/TCH.png</image-uri>
 	</step>
+	
 	<step id="BlockingStep">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.BlockingStep")
@@ -453,6 +491,7 @@
 		</tooltip>
 		<image-uri>ui/images/BLK.png</image-uri>
 	</step>
+	
 	<step id="HTTP">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.HTTP")
@@ -464,6 +503,7 @@
 		</tooltip>
 		<image-uri>ui/images/WEB.png</image-uri>
 	</step>
+	
 	<step id="MergeRows">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MergeRows")
@@ -475,6 +515,7 @@
 		</tooltip>
 		<image-uri>ui/images/MRG.png</image-uri>
 	</step>
+	
 	<step id="GetFileNames">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GetFileNames")
@@ -486,6 +527,7 @@
 		</tooltip>
 		<image-uri>ui/images/GFN.png</image-uri>
 	</step>
+	
 	<step id="FilesFromResult">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilesFromResult")
@@ -497,6 +539,7 @@
 		</tooltip>
 		<image-uri>ui/images/FFR.png</image-uri>
 	</step>
+	
 	<step id="FilesToResult">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.FilesToResult")
@@ -508,6 +551,7 @@
 		</tooltip>
 		<image-uri>ui/images/FTR.png</image-uri>
 	</step>
+	
 	<step id="GroupBy">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.GroupBy")
@@ -519,6 +563,7 @@
 		</tooltip>
 		<image-uri>ui/images/GRP.png</image-uri>
 	</step>
+	
 	<step id="MergeJoin">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.MergeJoin")
@@ -530,6 +575,7 @@
 		</tooltip>
 		<image-uri>ui/images/MJOIN.png</image-uri>
 	</step>
+	
 	<step id="SortedMerge">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.SortedMerge")
@@ -541,6 +587,7 @@
 		</tooltip>
 		<image-uri>ui/images/SMG.png</image-uri>
 	</step>
+	
 	<step id="XMLInput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInput")
@@ -552,6 +599,7 @@
 		</tooltip>
 		<image-uri>ui/images/XIN.png</image-uri>
 	</step>
+	
 	<step id="XMLInputSax">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLInputSax")
@@ -563,6 +611,7 @@
 		</tooltip>
 		<image-uri>ui/images/XIS.png</image-uri>
 	</step>
+	
 	<step id="XMLOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XMLOutput")
@@ -574,6 +623,7 @@
 		</tooltip>
 		<image-uri>ui/images/XOU.png</image-uri>
 	</step>
+	
 	<step id="ExcelOutput">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.ExcelOutput")
@@ -585,6 +635,7 @@
 		</tooltip>
 		<image-uri>ui/images/XLO.png</image-uri>
 	</step>
+	
 	<step id="DBProc">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.CallDBProcedure")
@@ -595,8 +646,9 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.CallDBProcedure")
 		</tooltip>
 		<image-uri>ui/images/PRC.png</image-uri>
-	</step>   D
-		<step id="Denormaliser">
+	</step>  
+	
+    <step id="Denormaliser">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowDenormaliser")
 		</description>
@@ -606,8 +658,9 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RowsDenormalises")
 		</tooltip>
 		<image-uri>ui/images/UNP.png</image-uri>
-	</step>   
-	    <step id="Normaliser">
+	</step>
+	   
+	<step id="Normaliser">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowNormaliser")
 		</description>
@@ -618,7 +671,8 @@
 		</tooltip>
 		<image-uri>ui/images/NRM.png</image-uri>
 	</step> 
-	    <step id="Flattener,Flatterner">
+	
+	<step id="Flattener,Flatterner">
 		<description>
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RowFalttener")
 		</description>
@@ -628,5 +682,17 @@
 			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.Rowflattener")
 		</tooltip>
 		<image-uri>ui/images/FLA.png</image-uri>
+	</step> 
+	
+	<step id="XBaseInput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.XBaseInput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.xbaseinput.XBaseInputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@INPUT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.XBaseinput")
+		</tooltip>
+		<image-uri>ui/images/XBI.png</image-uri>
 	</step> 
 </steps>
