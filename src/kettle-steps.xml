@@ -695,4 +695,17 @@
 		</tooltip>
 		<image-uri>ui/images/XBI.png</image-uri>
 	</step> 
+
+	<step id="AccessOutput">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AccessOutput")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@OUTPUT.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AccessOutput")
+		</tooltip>
+		<image-uri>ui/images/ACO.png</image-uri>
+	</step> 
+	
 </steps>

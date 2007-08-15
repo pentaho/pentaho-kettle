@@ -27,45 +27,50 @@ public class KettleVFS
     
     public static FileObject getFileObject(String vfsFilename) throws IOException
     {
-        FileSystemManager fsManager = VFS.getManager();
-        
-        // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
-        // In that case, VFS doesn't parse the file correctly.
-        // We need to put file: in front of it to make it work.
-        // However, how are we going to verify this?
-        // 
-        // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
-        // If not, we are going to assume it's a file.
-        //
-        boolean relativeFilename=true;
-        String[] schemes = VFS.getManager().getSchemes();
-        for (int i=0;i<schemes.length && relativeFilename;i++)
-        {
-            if (vfsFilename.startsWith(schemes[i]+":")) relativeFilename=false;
-        }
-        
-        String filename;
-        if (vfsFilename.startsWith("\\\\"))
-        {
-            File file = new File(vfsFilename);
-            filename = file.toURI().toString();
-        }
-        else
-        {
-            if (relativeFilename)
-            {
-                File file = new File(vfsFilename);
-                filename = file.getAbsolutePath();
-            }
-            else
-            {
-                filename = vfsFilename;
-            }
-        }
-        
-        FileObject fileObject = fsManager.resolveFile( filename );
-        
-        return fileObject;
+    	try {
+	        FileSystemManager fsManager = VFS.getManager();
+	        
+	        // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
+	        // In that case, VFS doesn't parse the file correctly.
+	        // We need to put file: in front of it to make it work.
+	        // However, how are we going to verify this?
+	        // 
+	        // We are going to see if the filename starts with one of the known protocols like file: zip: ram: smb: jar: etc.
+	        // If not, we are going to assume it's a file.
+	        //
+	        boolean relativeFilename=true;
+	        String[] schemes = VFS.getManager().getSchemes();
+	        for (int i=0;i<schemes.length && relativeFilename;i++)
+	        {
+	            if (vfsFilename.startsWith(schemes[i]+":")) relativeFilename=false;
+	        }
+	        
+	        String filename;
+	        if (vfsFilename.startsWith("\\\\"))
+	        {
+	            File file = new File(vfsFilename);
+	            filename = file.toURI().toString();
+	        }
+	        else
+	        {
+	            if (relativeFilename)
+	            {
+	                File file = new File(vfsFilename);
+	                filename = file.getAbsolutePath();
+	            }
+	            else
+	            {
+	                filename = vfsFilename;
+	            }
+	        }
+	        
+	        FileObject fileObject = fsManager.resolveFile( filename );
+	        
+	        return fileObject;
+    	}
+    	catch(IOException e) {
+    		throw new IOException("Unable to get VFS File object for filename '"+vfsFilename+"' : "+e.toString());
+    	}
     }
     
     /**
