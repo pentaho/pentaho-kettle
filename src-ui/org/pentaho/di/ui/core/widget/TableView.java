@@ -2696,7 +2696,7 @@ public class TableView extends Composite
 		}
 	}
 	
-	public void add(String string[])
+	public void add(String... string)
 	{
 		TableItem item = new TableItem(table, SWT.NONE);
 		for (int i=0;i<string.length && i+1<table.getColumnCount();i++)
