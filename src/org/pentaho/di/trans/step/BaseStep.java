@@ -699,6 +699,10 @@ public class BaseStep extends Thread implements VariableSpace
 	    if (outputRowSets.size() == 0)
 	    {
 	        // No more output rowsets!
+	    	// Still update the nr of lines written.
+	    	//
+	    	linesWritten++;
+	    	
 	        return; // we're done here!
 	    }
 
