@@ -11,6 +11,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.run.abort.RunAbort;
+import org.pentaho.di.run.accessoutput.RunAccessOutput;
 import org.pentaho.di.run.addsequence.RunAddSequence;
 import org.pentaho.di.run.calculator.RunCalculator;
 import org.pentaho.di.run.combinationlookup.RunCombinationLookup;
@@ -188,6 +189,7 @@ public class AllRunTests
         suite.addTestSuite(RunSortedMerge.class);
         suite.addTestSuite(RunExcelOutput.class);
         suite.addTestSuite(RunDenormaliser.class);
+        suite.addTestSuite(RunAccessOutput.class);
         
         //$JUnit-END$
         return suite;
