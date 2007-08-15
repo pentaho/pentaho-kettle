@@ -834,24 +834,22 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		}
 	}
 
-	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster,
-			boolean preview, Date replayDate) throws KettleException
-	{
+	public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview,
+			Date replayDate) throws KettleException {
 		if (transMeta == null)
 			return;
 
 		TransExecutionConfiguration executionConfiguration = spoon.getExecutionConfiguration();
-		
-		//THIS IS USELESS NOTHING WAS SELECTED YET
-		//executionConfiguration.setExecutingLocally(local);
-		//executionConfiguration.setExecutingRemotely(remote);
-		//executionConfiguration.setExecutingClustered(cluster);
+
+		// THIS IS USELESS NOTHING WAS SELECTED YET
+		// executionConfiguration.setExecutingLocally(local);
+		// executionConfiguration.setExecutingRemotely(remote);
+		// executionConfiguration.setExecutingClustered(cluster);
 
 		Object data[] = spoon.variables.getData();
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();
 		Map<String, String> variableMap = new HashMap<String, String>();
-		for (int idx = 0; idx < fields.length; idx++)
-		{
+		for (int idx = 0; idx < fields.length; idx++) {
 			variableMap.put(fields[idx], data[idx].toString());
 		}
 
@@ -865,38 +863,29 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// executionConfiguration.setSafeModeEnabled( transLog!=null &&
 		// transLog.isSafeModeChecked() );
 
-		TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(),
-				executionConfiguration, transMeta);
-		if (dialog.open())
-		{
+		TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, transMeta);
+		if (dialog.open()) {
 			addTransLog(transMeta, !executionConfiguration.isLocalPreviewing());
 			TransLog transLog = spoon.getActiveTransLog();
 
-			if (executionConfiguration.isExecutingLocally())
-			{
-				if (executionConfiguration.isLocalPreviewing())
-				{
+			if (executionConfiguration.isExecutingLocally()) {
+				if (executionConfiguration.isLocalPreviewing()) {
 					transLog.preview(executionConfiguration);
-				} else
-				{
+				} else {
 					transLog.start(executionConfiguration);
 				}
-			} else if (executionConfiguration.isExecutingRemotely())
-			{
-				if (executionConfiguration.getRemoteServer() != null)
-				{
+			} else if (executionConfiguration.isExecutingRemotely()) {
+				if (executionConfiguration.getRemoteServer() != null) {
 					spoon.delegates.slaves.sendXMLToSlaveServer(transMeta, executionConfiguration);
 					spoon.delegates.slaves.addSpoonSlave(executionConfiguration.getRemoteServer());
-				} else
-				{
+				} else {
 					MessageBox mb = new MessageBox(spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION);
 					mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message"));
 					mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
 					mb.open();
 				}
-			} else if (executionConfiguration.isExecutingClustered())
-			{
-        splitTrans(transMeta, executionConfiguration);
+			} else if (executionConfiguration.isExecutingClustered()) {
+				splitTrans(transMeta, executionConfiguration);
 			}
 		}
 	}

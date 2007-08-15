@@ -66,7 +66,15 @@ public class TransExecutionConfiguration implements Cloneable
     {
         try
         {
-            return super.clone();
+            TransExecutionConfiguration configuration = (TransExecutionConfiguration) super.clone();
+            
+            configuration.arguments = new HashMap<String, String>();
+            configuration.arguments.putAll(arguments);
+            
+            configuration.variables = new HashMap<String, String>();
+            configuration.variables.putAll(variables);
+            
+            return configuration;
         }
         catch(CloneNotSupportedException e)
         {

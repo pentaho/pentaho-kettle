@@ -1836,8 +1836,12 @@ public class Trans implements VariableSpace
                     Runnable runnable = new Runnable() {
                         public void run() {
                           try {
-                              TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, executionConfiguration);
-                              Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                              // Create a copy for local use...  We get race-conditions otherwise...
+                              //
+                              TransExecutionConfiguration slaveTransExecutionConfiguration = (TransExecutionConfiguration)executionConfiguration.clone();
+                              TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, slaveTransExecutionConfiguration);
+                              
+                              Map<String, String> variables = slaveTransExecutionConfiguration.getVariables();
                               variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(index));
                               variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[index].getName());
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
