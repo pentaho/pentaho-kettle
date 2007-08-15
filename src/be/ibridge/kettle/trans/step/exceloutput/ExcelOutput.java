@@ -478,8 +478,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		try
 		{
 			data.workbook.write();
-            data.workbook.close();
-            data.formats.clear();
+                        data.workbook.close();
+                        data.formats.clear();
+
+                        // Fix for PDI-48: call gc to release file handle.
+                        System.gc();
 
             
 			retval=true;

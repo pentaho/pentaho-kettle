@@ -22,3 +22,4 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - Fix for fileexists - backport of VFS functioniality in fileexists job entry - Sven B - 8-Aug-2007
 - Fix for performance problem when using text files with very large number of fields (>1000): TableView fix with index caching. Bug #6008, Matt C. 10-Aug-2007
 - Fixes for VFS and Access Output, backported from version 3.0
+- PDI-48: Excel output doesn't release file handle - Sven B - 15-Aug-2007
