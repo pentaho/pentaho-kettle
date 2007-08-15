@@ -708,4 +708,15 @@
 		<image-uri>ui/images/ACO.png</image-uri>
 	</step> 
 	
+	<step id="RegexEval">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.RegexEval")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.regexeval.RegexEvalMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@SCRIPTING.getName()</category>
+		<tooltip>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.RegexEval")
+		</tooltip>
+		<image-uri>ui/images/RGE.png</image-uri>
+	</step>
 </steps>
