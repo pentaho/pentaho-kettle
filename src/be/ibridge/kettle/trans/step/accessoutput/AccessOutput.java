@@ -19,10 +19,14 @@ package be.ibridge.kettle.trans.step.accessoutput;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.vfs.FileObject;
+
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.vfs.KettleVFS;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -100,7 +104,7 @@ public class AccessOutput extends BaseStep implements StepInterface
             // First open or create the table
             try
             {
-                String realTablename = StringUtil.environmentSubstitute(meta.getTablename());
+            	String realTablename = StringUtil.environmentSubstitute(meta.getTablename());
                 data.table = data.db.getTable(realTablename);
                 if (data.table==null)
                 {
@@ -174,8 +178,9 @@ public class AccessOutput extends BaseStep implements StepInterface
 		{
 			try
 			{
-                String realFilename = StringUtil.environmentSubstitute(meta.getFilename());
-                File file = new File(realFilename);
+				String realFilename = StringUtil.environmentSubstitute(meta.getFilename());
+                FileObject fileObject = KettleVFS.getFileObject(realFilename);
+                File file = new File(KettleVFS.getFilename(fileObject));
                 
                 // First open or create the access file
                 if (!file.exists())
@@ -194,6 +199,11 @@ public class AccessOutput extends BaseStep implements StepInterface
                 {
                     data.db = Database.open(file);
                 }
+                
+                // Add the filename to the result object...
+                //
+    			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString());
+    			addResultFile(resultFile);
                 
 				return true;
 			}
@@ -215,7 +225,7 @@ public class AccessOutput extends BaseStep implements StepInterface
 		try
 		{
             // Put the last records in the table as well!
-            data.table.addRows(data.rows);
+            if (data.table!=null) data.table.addRows(data.rows);
             
             // Just for good measure.
             data.rows.clear();

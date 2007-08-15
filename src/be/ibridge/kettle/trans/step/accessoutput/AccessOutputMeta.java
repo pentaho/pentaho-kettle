@@ -48,6 +48,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.JetFormat;
 import com.healthmarketscience.jackcess.Table;
 
 
@@ -405,33 +406,40 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
                 if (length<3)
                 {
                     column.setType(DataType.BYTE);
+                    length = 1;
                 }
                 else
                 {
                     if (length<5)
                     {
                         column.setType(DataType.INT);
+                        length = 2;
                     }
                     else
                     {
                         column.setType(DataType.LONG);
+                        length = 4;
                     }
                 }
                 break;
             case Value.VALUE_TYPE_NUMBER:
                 column.setType(DataType.DOUBLE);
+                length = 8;
                 break;
             case Value.VALUE_TYPE_DATE:
                 column.setType(DataType.SHORT_DATE_TIME);
+                length = 8;
                 break;
             case Value.VALUE_TYPE_STRING:
                 if (length<255)
                 {
                     column.setType(DataType.TEXT);
+                    length*=2;
                 }
                 else
                 {
                     column.setType(DataType.MEMO);
+                    length*=2;
                 }
                 break;
             case Value.VALUE_TYPE_BINARY:
@@ -439,9 +447,11 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
                 break;
             case Value.VALUE_TYPE_BOOLEAN:
                 column.setType(DataType.BOOLEAN);
+                length=0;
                 break;
             case Value.VALUE_TYPE_BIGNUMBER:
                 column.setType(DataType.NUMERIC);
+                length=17;
                 break;
             default: break;
             }
