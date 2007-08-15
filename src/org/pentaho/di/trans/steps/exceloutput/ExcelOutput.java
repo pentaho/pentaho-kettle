@@ -483,6 +483,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
             data.workbook.close();
             data.formats.clear();
 
+            // Explicitly call garbage collect to have file handle
+            // released. Bug tracker: PDI-48
+			System.gc();
             
 			retval=true;
 		}
