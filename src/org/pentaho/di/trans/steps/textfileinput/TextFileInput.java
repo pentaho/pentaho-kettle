@@ -1151,6 +1151,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 			setErrors(1);
 			return false;
 		}
+		finally
+		{
+			// This is for bug #5797 : it tries to assure that the file handle
+			// is actually freed/garbarge collected.
+			System.gc();
+		}
 
 		return !data.isLastFile;
 	}
@@ -1382,6 +1388,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 		data = (TextFileInputData) sdi;
 
 		super.dispose(smi, sdi);
+		
+		// This is for bug #5797 : it tries to assure that the file handle
+		// is actually freed/garbarge collected.
+		System.gc();
 	}
 
 	//
