@@ -73,6 +73,7 @@ public class JobEntryJobRunner implements Runnable
 		{
 			log.logError(toString(), "An error occurred executing this job entry : "+e.getMessage());
 			result.setNrErrors(1);
+                        result.setResult(false);
 		}
 		finished=true;
 	}
