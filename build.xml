@@ -380,6 +380,10 @@
 		<copy todir="${webstart}/lib">
 			<fileset dir="${lib}" includes="**/*.jar"/>
 		</copy>
+		
+		<copy todir="${webstart}/ui">
+			<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>
+		</copy>
 	
 		<copy todir="${webstart}/plugins">
 			<fileset dir="${plugins}" includes="**/*"/>
