@@ -2864,7 +2864,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 
 		VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(rootFile, initialFile);
-      FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN);
+      FileObject selectedFile = vfsFileChooser.open(shell, null, Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
       if (selectedFile != null) {
 			lastFileOpened = selectedFile.getName().getFriendlyURI();
 			openFile(selectedFile.getName().getFriendlyURI(), false);

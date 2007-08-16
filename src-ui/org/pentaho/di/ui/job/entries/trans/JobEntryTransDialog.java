@@ -675,8 +675,11 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 				{
 					VfsFileChooserDialog dialog = new VfsFileChooserDialog(fileName.getParent(), fileName);
 					FileObject lroot = dialog.open(shell, null, new String[] { "*.ktr;*.xml", "*.xml", "*" }, //$NON-NLS-1$
-							FILE_FILTERNAMES, VfsFileChooserDialog.VFS_DIALOG_OPEN); //$NON-NLS-1$
+							FILE_FILTERNAMES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE); //$NON-NLS-1$
 
+					if (lroot == null) {
+					  return;
+					}
 					String selected = lroot.getURL().toString();
 
 					wFilename.setText(lroot != null ? selected : Const.EMPTY_STRING);

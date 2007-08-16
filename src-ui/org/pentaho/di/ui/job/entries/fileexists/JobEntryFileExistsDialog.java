@@ -215,7 +215,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 					VfsFileChooserDialog vfsFileChooser = new VfsFileChooserDialog(fileName.getParent(),fileName);
 					FileObject selected = vfsFileChooser.open(shell, null,
 							EXTENSIONS, FILETYPES,
-							VfsFileChooserDialog.VFS_DIALOG_OPEN);
+							VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
 					wFilename.setText(selected != null ? selected.getURL().toString() : Const.EMPTY_STRING);
 				} catch (FileSystemException ex)
 				{
