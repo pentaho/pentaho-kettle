@@ -20,6 +20,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -30,16 +31,19 @@ import java.util.List;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.zipfile.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -70,6 +74,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 	private boolean optionenclosed;
 	public int outdumpvalue;
 	public int iffileexists;
+	private boolean addfiletoresult ;
 
 	private DatabaseMeta connection;
 
@@ -88,6 +93,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		optionenclosed=false;
 		iffileexists=2;
 		connection=null;
+		addfiletoresult = false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.MYSQL_BULK_FILE);
 	}
@@ -125,6 +131,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("highpriority",  highpriority));
 		retval.append("      ").append(XMLHandler.addTagValue("outdumpvalue",  outdumpvalue));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists",  iffileexists));
+		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 		retval.append("      ").append(XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 
 		return retval.toString();
@@ -149,6 +156,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
 			connection    = DatabaseMeta.findDatabase(databases, dbname);
+			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 		}
 		catch(KettleException e)
 		{
@@ -176,6 +184,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 			outdumpvalue=(int) rep.getJobEntryAttributeInteger(id_jobentry, "outdumpvalue");
 
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
+			
+			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
@@ -214,6 +224,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
 			rep.saveJobEntryAttribute(id_job, getID(), "outdumpvalue", outdumpvalue);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
 
 
@@ -436,8 +448,16 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 								PreparedStatement ps= db.prepareSQL(FILEBulkFile);
 								ps.execute();
 
-								// Everything is OK...we can deconnect now
+								// Everything is OK...we can disconnect now
 								db.disconnect();
+								
+								if (isAddFileToResult())
+								{
+									// Add filename to output files
+				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getName(), toString());
+				                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+								}
+								
 								result.setResult(true);
 
 
@@ -448,7 +468,11 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 								result.setNrErrors(1);
 								log.logError(toString(), Messages.getString("JobMysqlBulkFile.Error.Label") + " "+je.getMessage());
 							}
-
+							catch (IOException e)
+							{
+				       			log.logError(toString(), Messages.getString("JobMysqlBulkFile.Error.Label") + e.getMessage());
+								result.setNrErrors(1);
+							}
 
 
 						}
@@ -612,6 +636,16 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 		return environmentSubstitute(getListColumn());
 	}
 
+	public void setAddFileToResult(boolean addfiletoresultin)
+	{
+		this.addfiletoresult = addfiletoresultin;
+	}
+
+	public boolean isAddFileToResult()
+	{
+		return addfiletoresult;
+	}
+	
 	private String MysqlString(String listcolumns)
 	{
 		/* handle forbiden char like '
