@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.window.DefaultToolTip;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -124,6 +126,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     private Shell            shell;
 
     private Canvas           canvas;
+    
+    private DefaultToolTip   toolTip;
     
     // private Props            props;
 
@@ -237,6 +241,13 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         
         canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 
+        toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
+        toolTip.setHideOnMouseDown(true);
+        toolTip.setRespectMonitorBounds(true);
+        toolTip.setRespectDisplayBounds(true);
+        // toolTip.setShift(new org.eclipse.swt.graphics.Point(-3,-3));
+        
+        
         iconsize = spoon.props.getIconSize();
 
         clearSettings();
@@ -1782,7 +1793,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
     {
     	// if (Const.isLinux()) return; // TODO wait for SWT fix that reduces flickering
     	
-        String newTip=null;
+        String newTip = null;
+        Image  tipImage = null;
         
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
@@ -1801,11 +1813,25 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             }
             
             // Add the steps description
+            //
             StepPlugin stepPlugin = StepLoader.getInstance().getStepPlugin(stepMeta.getStepMetaInterface());
             if (stepPlugin!=null)
             {
                 newTip+=Const.CR+Const.CR+stepPlugin.getTooltip(LanguageChoice.getInstance().getDefaultLocale().toString());
             }
+            
+            // Add the partitioning info
+            //
+            if (stepMeta.isPartitioned()) {
+            	newTip+=Const.CR+Const.CR+stepMeta.getStepPartitioningMeta().toString();
+            }
+            // Add the partitioning info
+            //
+            if (stepMeta.getTargetStepPartitioningMeta()!=null) {
+            	newTip+=Const.CR+Const.CR+"--> "+stepMeta.getTargetStepPartitioningMeta().toString();
+            }
+            
+            tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);
         }
         else
         {
@@ -1814,10 +1840,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             {
                 // Set the tooltip for the hop:
                 newTip = hi.toString();
+                tipImage = GUIResource.getInstance().getImageHop();
             }
             else
             {
             	// check the area owner list...
+            	//
             	StringBuffer tip = new StringBuffer();
             	for (AreaOwner areaOwner : areaOwners) {
             		if (areaOwner.contains(x, y)) {
@@ -1860,10 +1888,20 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             }
         }
         
-        if (newTip==null || !newTip.equalsIgnoreCase(getToolTipText()))
-        {
-            canvas.setToolTipText(newTip);
-        }
+    	if (newTip==null) {
+    		toolTip.hide();
+    	}
+    	else if (!newTip.equalsIgnoreCase(getToolTipText())) {
+    		if (tipImage!=null) {
+    			toolTip.setImage(tipImage);
+    		}
+    		else {
+    			toolTip.setImage(GUIResource.getInstance().getImageSpoon());
+    		}
+            toolTip.setText(newTip);
+            toolTip.hide();
+            toolTip.show(new org.eclipse.swt.graphics.Point(x,y));
+    	}
     }
 
     public void delSelected(StepMeta stMeta)
