@@ -65,9 +65,12 @@ public class LAFManager {
 
 	public boolean exists(String filename) {
 		try {
-			boolean flag = new File(filename).exists();
-			System.out.println("testing" + flag);
-			return (new File(filename)).exists();
+			ClassLoader classLoader = this.getClass().getClassLoader();
+			URL fileURL = classLoader.getResource(filename);
+			if (fileURL==null) {
+				return new File(filename).exists();
+			}
+			return true;
 		} catch (Exception e) {
 			return false;
 		}
