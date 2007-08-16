@@ -3,7 +3,7 @@ package org.pentaho.di.core.gui;
 public class GUIFactory {
 
 	private static SpoonInterface spoonInstance;
-	private static ThreadDialogs threadDialogs;
+	private static ThreadDialogs threadDialogs = new RuntimeThreadDialogs(); // default to the runtime one
 	
 	public static SpoonInterface getInstance() {
 		return spoonInstance;
