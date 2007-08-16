@@ -50,6 +50,7 @@ public class JobEntryJobRunner implements Runnable
 		catch(KettleException e)
 		{
 			log.logError(toString(), "An error occurred executing this job entry : "+e.getMessage());
+			result.setResult(false);
 			result.setNrErrors(1);
 		}
 		finished=true;
