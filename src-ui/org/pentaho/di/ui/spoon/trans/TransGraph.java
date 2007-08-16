@@ -1791,9 +1791,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     private void setToolTip(int x, int y)
     {
-    	// if (Const.isLinux()) return; // TODO wait for SWT fix that reduces flickering
-    	
-        String newTip = null;
+    	String newTip = null;
         Image  tipImage = null;
         
         final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
@@ -1823,12 +1821,12 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
             // Add the partitioning info
             //
             if (stepMeta.isPartitioned()) {
-            	newTip+=Const.CR+Const.CR+stepMeta.getStepPartitioningMeta().toString();
+            	newTip+=Const.CR+Const.CR+Messages.getString("SpoonGraph.Step.Tooltip.CurrentPartitioning")+stepMeta.getStepPartitioningMeta().toString();
             }
             // Add the partitioning info
             //
             if (stepMeta.getTargetStepPartitioningMeta()!=null) {
-            	newTip+=Const.CR+Const.CR+"--> "+stepMeta.getTargetStepPartitioningMeta().toString();
+            	newTip+=Const.CR+Const.CR+Messages.getString("SpoonGraph.Step.Tooltip.NextPartitioning")+stepMeta.getTargetStepPartitioningMeta().toString();
             }
             
             tipImage = GUIResource.getInstance().getImagesSteps().get(stepPlugin.getID()[0]);

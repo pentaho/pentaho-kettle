@@ -24,7 +24,14 @@ public class ModPartitioner extends BasePartitioner {
 		partitioner.setId( getId() );
 		partitioner.setDescription( getDescription() );
 		return partitioner;
-
+	}
+	
+	public ModPartitioner clone()
+	{
+		ModPartitioner modPartitioner = (ModPartitioner) super.clone();
+		modPartitioner.fieldName = fieldName;
+		
+		return modPartitioner;
 	}
 
 	public String getDialogClassName()

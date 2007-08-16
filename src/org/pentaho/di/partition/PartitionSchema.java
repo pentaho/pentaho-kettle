@@ -305,8 +305,10 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     	int nrPartitionsPerSlave = Const.toInt( space.environmentSubstitute(numberOfPartitionsPerSlave), 1);
     	int totalNumberOfPartitions = nrSlaves * nrPartitionsPerSlave;
     	for (int partitionNumber=0 ; partitionNumber < totalNumberOfPartitions ; partitionNumber++) {
-    		partitionIDs.add("P"+partitionNumber);
+    		partitionIDs.add("PDyn"+partitionNumber);
     	}
-
+    	
+    	dynamicallyDefined=false;
+    	numberOfPartitionsPerSlave=null;
 	}
 }

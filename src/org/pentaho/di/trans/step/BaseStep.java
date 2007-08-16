@@ -672,8 +672,9 @@ public class BaseStep extends Thread implements VariableSpace
         		
         		// Set the current slave target name on all the current output steps (local)
         		//
-        		for (RowSet rowSet : outputRowSets) {
-        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME));
+        		for (int c=0;c<outputRowSets.size();c++) {
+        			RowSet rowSet = outputRowSets.get(c);
+        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME)+"."+c);
         		}
         		
         		// 
@@ -685,8 +686,6 @@ public class BaseStep extends Thread implements VariableSpace
 						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
 					}
         		}
-        		
-        		
         		
         		// Since we want to have all the row sets ordered in the same way in all the steps in a cluster, 
         		// we're going to sort the output row sets by the target step in the row set.
@@ -1266,8 +1265,9 @@ public class BaseStep extends Thread implements VariableSpace
      */
     public void dispatch()
     {
-        if (transMeta == null) // for preview reasons, no dispatching is done!
-        { return; }
+        if (transMeta == null) { // for preview reasons, no dispatching is done!
+        	return; 
+        }
 
         StepMeta stepMeta = transMeta.findStep(stepname);
 
