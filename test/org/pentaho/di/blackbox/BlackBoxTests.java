@@ -134,7 +134,7 @@ public class BlackBoxTests extends TestCase {
 		log.removeAppender(stringAppender);
 		
 		if( !ok ) {
-			String logStr = stringAppender.toString();
+			String logStr = stringAppender.getBuffer().toString();
 			
 			String tmpFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+"-log.txt";
 			File logFile = new File( tmpFileName );
