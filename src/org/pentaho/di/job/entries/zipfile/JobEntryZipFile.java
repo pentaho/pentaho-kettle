@@ -222,7 +222,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 		File tempFile = null;
 		File fileZip =null;
 		boolean renameOk = false;
-
+		
 		if (realZipfilename!=null)
 		{
             FileObject fileObject = null;
@@ -523,7 +523,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 							}
 						}
 					}
-					if (addfiletoresult)
+					if (isAddFileToResult())
 					{
 						// Add zip filename to output files
 	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realZipfilename), parentJob.getName(), toString());
@@ -558,6 +558,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 			log.logError(toString(), Messages.getString("JobZipFiles.No_ZipFile_Defined.Label"));
 		}
 
+		
 		return result;
 	}
 
