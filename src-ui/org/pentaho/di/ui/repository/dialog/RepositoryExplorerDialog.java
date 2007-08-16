@@ -69,6 +69,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
@@ -205,22 +206,24 @@ public class RepositoryExplorerDialog extends Dialog
     private RepositoryExplorerCallback callback;
     
     private RepositoryObjectReference lastOpened;
+	private VariableSpace variableSpace;
     
-	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui)
+	private RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, VariableSpace variableSpace)
 	{
 		super(par, style);
 		this.props=PropsUI.getInstance();
 		this.log=LogWriter.getInstance();
 		this.rep=rep;
 		this.userinfo=ui;
+		this.variableSpace = variableSpace;
 
         sortColumn = 0;
         ascending = false;
 	}
     
-	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback)
+	public RepositoryExplorerDialog(Shell par, int style, Repository rep, UserInfo ui, RepositoryExplorerCallback callback, VariableSpace variableSpace)
 	{
-		this(par, style, rep, ui);
+		this(par, style, rep, ui, variableSpace);
 		this.callback = callback;
 	}
 	
@@ -2985,7 +2988,7 @@ public class RepositoryExplorerDialog extends Dialog
         try
         {
             PartitionSchema partitionSchema = new PartitionSchema();
-            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases());
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases(), variableSpace);
             if (dd.open())
             {
                 // See if this slave server already exists...
@@ -3032,7 +3035,7 @@ public class RepositoryExplorerDialog extends Dialog
             long id = rep.getPartitionSchemaID(partitionSchemaName);
             PartitionSchema partitionSchema = new PartitionSchema(rep, id);
 
-            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases());
+            PartitionSchemaDialog dd = new PartitionSchemaDialog(shell, partitionSchema, rep.getDatabases(), variableSpace);
             if (dd.open())
             {
                 rep.lockRepository();

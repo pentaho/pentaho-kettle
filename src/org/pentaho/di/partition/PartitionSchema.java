@@ -7,8 +7,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceHolderInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
 
@@ -18,7 +20,7 @@ import org.w3c.dom.Node;
  * 
  * @author Matt
  */
-public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface
+public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, ResourceHolderInterface
 {
     public static final String XML_TAG = "partitionschema";
 
@@ -28,6 +30,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     private boolean shared;
     
     private long id;
+    
+    private boolean dynamicallyDefined;
+    private String  numberOfPartitionsPerSlave;
 
     public PartitionSchema()
     {
@@ -55,7 +60,11 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     public void replaceMeta(PartitionSchema partitionSchema)
     {
         this.name = partitionSchema.name;
-        this.partitionIDs = partitionSchema.partitionIDs;
+        this.partitionIDs = new ArrayList<String>();
+        this.partitionIDs.addAll(partitionSchema.partitionIDs);
+        
+        this.dynamicallyDefined = partitionSchema.dynamicallyDefined;
+        this.numberOfPartitionsPerSlave = partitionSchema.numberOfPartitionsPerSlave;
         
         // this.shared = partitionSchema.shared;
         this.setId(partitionSchema.id);
@@ -122,6 +131,10 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
             xml.append("            ").append(XMLHandler.addTagValue("id", partitionIDs.get(i)));
             xml.append("          </partition>");
         }
+
+        xml.append("          ").append(XMLHandler.addTagValue("dynamic", dynamicallyDefined));
+        xml.append("          ").append(XMLHandler.addTagValue("partitions_per_slave", numberOfPartitionsPerSlave));
+        
         xml.append("        </").append(XML_TAG).append(">").append(Const.CR);
         return xml.toString();
     }
@@ -137,6 +150,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
             Node partitionNode = XMLHandler.getSubNodeByNr(partitionSchemaNode, "partition", i);
             partitionIDs.add( XMLHandler.getTagValue(partitionNode, "id") );
         }
+        
+        dynamicallyDefined = "Y".equalsIgnoreCase(XMLHandler.getTagValue(partitionSchemaNode, "dynamic"));
+        numberOfPartitionsPerSlave = XMLHandler.getTagValue(partitionSchemaNode, "partitions_per_slave");
     }
 
     
@@ -191,6 +207,9 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
         {
             partitionIDs.add( rep.getPartition(pids[i]).getString("PARTITION_ID", null) );
         }
+        
+        dynamicallyDefined = row.getBoolean("DYNAMIC_DEFINITION", false);
+        numberOfPartitionsPerSlave = row.getString("PARTITIONS_PER_SLAVE", null);
     }
 
 
@@ -219,10 +238,75 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     }
 
     /**
+     * @return the id
+     */
+    public long getID()
+    {
+        return id;
+    }
+
+
+    /**
      * @param id the id to set
      */
     public void setId(long id)
     {
         this.id = id;
     }
+
+	public String getDescription() {
+		return null;
+	}
+
+	public String getHolderType() {
+		return "PARTITION_SCHEMA"; // $NON-NLS-1 $
+	}
+
+	public String getTypeId() {
+		return null;
+	}
+
+	/**
+	 * @return the dynamicallyDefined
+	 */
+	public boolean isDynamicallyDefined() {
+		return dynamicallyDefined;
+	}
+
+	/**
+	 * @param dynamicallyDefined the dynamicallyDefined to set
+	 */
+	public void setDynamicallyDefined(boolean dynamicallyDefined) {
+		this.dynamicallyDefined = dynamicallyDefined;
+	}
+
+	/**
+	 * @return the numberOfStepCopiesPerSlave
+	 */
+	public String getNumberOfPartitionsPerSlave() {
+		return numberOfPartitionsPerSlave;
+	}
+
+	/**
+	 * @param numberOfPartitionsPerSlave the number of partitions per slave to set...
+	 */
+	public void setNumberOfPartitionsPerSlave(String numberOfPartitionsPerSlave) {
+		this.numberOfPartitionsPerSlave = numberOfPartitionsPerSlave;
+	}
+
+	public void expandPartitionsDynamically(int nrSlaves, VariableSpace space) {
+    	// Let's change the partition list...
+    	//
+    	partitionIDs.clear();
+    	
+    	// What's the number of partitions to create per slave server?
+    	// --> defaults to 1
+    	//
+    	int nrPartitionsPerSlave = Const.toInt( space.environmentSubstitute(numberOfPartitionsPerSlave), 1);
+    	int totalNumberOfPartitions = nrSlaves * nrPartitionsPerSlave;
+    	for (int partitionNumber=0 ; partitionNumber < totalNumberOfPartitions ; partitionNumber++) {
+    		partitionIDs.add("P"+partitionNumber);
+    	}
+
+	}
 }

@@ -29,6 +29,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.ui.partition.dialog.Messages;
@@ -37,6 +38,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 
 
@@ -60,6 +62,10 @@ public class PartitionSchemaDialog extends Dialog
     // Name
 	private Text     wName;
 
+	// Dynamic definition?
+	private Button   wDynamic;
+	private TextVar  wNumber;
+	
     // Partitions
     private TableView wPartitions;
     
@@ -76,13 +82,16 @@ public class PartitionSchemaDialog extends Dialog
     private boolean ok;
 
     private List<DatabaseMeta> databases;
+
+	private VariableSpace variableSpace;
     
-	public PartitionSchemaDialog(Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases)
+	public PartitionSchemaDialog(Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases, VariableSpace variableSpace)
 	{
 		super(par, SWT.NONE);
 		this.partitionSchema=(PartitionSchema) partitionSchema.clone();
         this.originalSchema=partitionSchema;
         this.databases = databases;
+        this.variableSpace = variableSpace;
         
 		props=PropsUI.getInstance();
         ok=false;
@@ -131,24 +140,64 @@ public class PartitionSchemaDialog extends Dialog
 		// The rest stays above the buttons, so we added those first...
         
         // What's the schema name??
+		//
         Label wlName = new Label(shell, SWT.RIGHT); 
         props.setLook(wlName);
         wlName.setText(Messages.getString("PartitionSchemaDialog.PartitionName.Label"));
-        FormData fdlServiceURL = new FormData();
-        fdlServiceURL.top   = new FormAttachment(0, 0);
-        fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlServiceURL.right = new FormAttachment(middle, 0);
-        wlName.setLayoutData(fdlServiceURL);
+        FormData fdlName = new FormData();
+        fdlName.top   = new FormAttachment(0, 0);
+        fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlName.right = new FormAttachment(middle, 0);
+        wlName.setLayoutData(fdlName);
 
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wName);
         wName.addModifyListener(lsMod);
-        FormData fdServiceURL = new FormData();
-        fdServiceURL.top  = new FormAttachment(0, 0);
-        fdServiceURL.left = new FormAttachment(middle, margin); // To the right of the label
-        fdServiceURL.right= new FormAttachment(95, 0);
-        wName.setLayoutData(fdServiceURL);
+        FormData fdName = new FormData();
+        fdName.top  = new FormAttachment(0, 0);
+        fdName.left = new FormAttachment(middle, margin); // To the right of the label
+        fdName.right= new FormAttachment(95, 0);
+        wName.setLayoutData(fdName);
 
+        // is the schema defined dynamically using the number of slave servers in the used cluster.
+        //
+        Label wlDynamic = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlDynamic);
+        wlDynamic.setText(Messages.getString("PartitionSchemaDialog.Dynamic.Label"));
+        FormData fdlDynamic = new FormData();
+        fdlDynamic.top   = new FormAttachment(wName, margin);
+        fdlDynamic.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlDynamic.right = new FormAttachment(middle, 0);
+        wlDynamic.setLayoutData(fdlDynamic);
+
+        wDynamic = new Button(shell, SWT.CHECK );
+        props.setLook(wDynamic);
+        wDynamic.setToolTipText(Messages.getString("PartitionSchemaDialog.Dynamic.Tooltip"));
+        FormData fdDynamic = new FormData();
+        fdDynamic.top  = new FormAttachment(wName, margin);
+        fdDynamic.left = new FormAttachment(middle, margin); // To the right of the label
+        fdDynamic.right= new FormAttachment(95, 0);
+        wDynamic.setLayoutData(fdDynamic);
+
+        // The number of partitions per cluster schema
+        //
+        Label wlNumber = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlNumber);
+        wlNumber.setText(Messages.getString("PartitionSchemaDialog.Number.Label"));
+        FormData fdlNumber = new FormData();
+        fdlNumber.top   = new FormAttachment(wDynamic, margin);
+        fdlNumber.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlNumber.right = new FormAttachment(middle, 0);
+        wlNumber.setLayoutData(fdlNumber);
+
+        wNumber = new TextVar(variableSpace, shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE, Messages.getString("PartitionSchemaDialog.Number.Tooltip") );
+        props.setLook(wNumber);
+        FormData fdNumber = new FormData();
+        fdNumber.top  = new FormAttachment(wDynamic, margin);
+        fdNumber.left = new FormAttachment(middle, margin); // To the right of the label
+        fdNumber.right= new FormAttachment(95, 0);
+        wNumber.setLayoutData(fdNumber);
+        
         // Schema list:
         Label wlPartitions = new Label(shell, SWT.RIGHT);
         wlPartitions.setText(Messages.getString("PartitionSchemaDialog.Partitions.Label"));
@@ -156,7 +205,7 @@ public class PartitionSchemaDialog extends Dialog
         FormData fdlPartitions=new FormData();
         fdlPartitions.left  = new FormAttachment(0, 0);
         fdlPartitions.right = new FormAttachment(middle, 0);
-        fdlPartitions.top   = new FormAttachment(wName, margin);
+        fdlPartitions.top   = new FormAttachment(wNumber, margin);
         wlPartitions.setLayoutData(fdlPartitions);
         
         ColumnInfo[] partitionColumns=new ColumnInfo[] 
@@ -176,7 +225,7 @@ public class PartitionSchemaDialog extends Dialog
         FormData fdPartitions=new FormData();
         fdPartitions.left   = new FormAttachment(middle, margin);
         fdPartitions.right  = new FormAttachment(100, 0);
-        fdPartitions.top    = new FormAttachment(wName, margin);
+        fdPartitions.top    = new FormAttachment(wNumber, margin);
         fdPartitions.bottom = new FormAttachment(wOK, -margin*2);
         wPartitions.setLayoutData(fdPartitions);
         
@@ -216,6 +265,9 @@ public class PartitionSchemaDialog extends Dialog
 
         refreshPartitions();
         
+        wDynamic.setSelection( partitionSchema.isDynamicallyDefined() );
+        wNumber.setText( Const.NVL(partitionSchema.getNumberOfPartitionsPerSlave(), "") );
+        
 		wName.setFocus();
 	}
     
@@ -242,8 +294,10 @@ public class PartitionSchemaDialog extends Dialog
 	public void ok()
 	{
         getInfo();
-        originalSchema.setName(partitionSchema.getName());
-        originalSchema.setPartitionIDs(partitionSchema.getPartitionIDs());
+        originalSchema.setName( partitionSchema.getName() );
+        originalSchema.setPartitionIDs( partitionSchema.getPartitionIDs() );
+        originalSchema.setDynamicallyDefined( wDynamic.getSelection() );
+        originalSchema.setNumberOfPartitionsPerSlave( wNumber.getText() );
         originalSchema.setChanged();
 
         ok=true;
@@ -251,7 +305,8 @@ public class PartitionSchemaDialog extends Dialog
         dispose();
 	}
     
-    // Get dialog info in securityService
+    // Get dialog info in partition schema meta-data
+	// 
 	private void getInfo()
     {
         partitionSchema.setName(wName.getText());

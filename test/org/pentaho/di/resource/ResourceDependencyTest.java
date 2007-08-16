@@ -107,7 +107,7 @@ public class ResourceDependencyTest extends TestCase {
    * Private method for displaying what's coming back from the dependency call.
    * @param resourceReferences
    */
-  private void printResourceReferences(List<ResourceReference> resourceReferences) {
+  protected void printResourceReferences(List<ResourceReference> resourceReferences) {
     for (int i=0; i<resourceReferences.size(); i++) {
       ResourceReference genRef = resourceReferences.get(i);
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();

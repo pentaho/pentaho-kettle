@@ -83,7 +83,7 @@ public class Repository
          };
     
     public static final int REQUIRED_MAJOR_VERSION = 2;
-    public static final int REQUIRED_MINOR_VERSION = 5;
+    public static final int REQUIRED_MINOR_VERSION = 90;
     
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
@@ -1447,6 +1447,8 @@ public class Repository
 
         table.addValue(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER), new Long(id));
         table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
+        table.addValue(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
+        table.addValue(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
 
         database.prepareInsert(table.getRowMeta(), "R_PARTITION_SCHEMA");
         database.setValuesInsert(table);
@@ -1460,6 +1462,8 @@ public class Repository
     {
         RowMetaAndData table = new RowMetaAndData();
         table.addValue(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING), partitionSchema.getName());
+        table.addValue(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN), partitionSchema.isDynamicallyDefined());
+        table.addValue(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING), partitionSchema.getNumberOfPartitionsPerSlave());
         updateTableRow("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", table, partitionSchema.getId());
     }
 
@@ -4068,6 +4072,8 @@ public class Repository
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValueMeta(new ValueMeta("ID_PARTITION_SCHEMA", ValueMetaInterface.TYPE_INTEGER, KEY, 0));
         table.addValueMeta(new ValueMeta("NAME", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValueMeta(new ValueMeta("DYNAMIC_DEFINITION", ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+        table.addValueMeta(new ValueMeta("PARTITIONS_PER_SLAVE", ValueMetaInterface.TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_PARTITION_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)

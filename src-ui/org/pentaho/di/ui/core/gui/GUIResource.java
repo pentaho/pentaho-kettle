@@ -182,7 +182,7 @@ public class GUIResource
 	{
 		if (guiResource != null)
 			return guiResource;
-		guiResource = new GUIResource(PropsUI.getInstance().getDisplay());
+		guiResource = new GUIResource(PropsUI.getDisplay());
 		return guiResource;
 	}
 
