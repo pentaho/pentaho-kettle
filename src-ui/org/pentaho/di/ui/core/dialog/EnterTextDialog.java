@@ -36,6 +36,7 @@ import org.pentaho.di.core.DescriptionInterface;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.ui.core.dialog.Messages;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -62,6 +63,7 @@ public class EnterTextDialog extends Dialog
     private String text;
     private boolean fixed;
     private boolean readonly, modal, singleLine;
+    private String origText;
 
     /**
      * @deprecated Use version without <i>props</i> parameter
@@ -208,8 +210,9 @@ public class EnterTextDialog extends Dialog
         wDesc.addSelectionListener(lsDef);
 
         // Detect [X] or ALT-F4 or something that kills this window...
-        shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+        shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { checkCancel(e); } } );
 
+        origText = text;
         getData();
 
         BaseStepDialog.setSize(shell);
@@ -234,6 +237,30 @@ public class EnterTextDialog extends Dialog
             wDesc.setText(text);
     }
 
+    public void checkCancel(ShellEvent e) {
+   	 String newText = wDesc.getText();
+		if (!newText.equals(origText))
+		{
+			int save = JobGraph.showChangedWarning(shell, title);
+			if (save == SWT.CANCEL)
+			{
+				e.doit = false;
+			}
+			else if (save == SWT.YES)
+			{
+				ok();
+			}
+			else
+			{
+				cancel();
+			}
+		}
+		else
+		{
+			cancel();
+		}
+    }
+    
     private void cancel()
     {
         text = null;
