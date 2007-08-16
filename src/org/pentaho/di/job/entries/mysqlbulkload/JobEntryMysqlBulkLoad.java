@@ -22,21 +22,25 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobEntryType;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.zipfile.Messages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
@@ -67,6 +71,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	private String listattribut;
 	private boolean localinfile;
 	public int prorityvalue;
+	private boolean addfiletoresult;
 
 	private DatabaseMeta connection;
 
@@ -86,6 +91,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		listattribut=null;
 		localinfile=true;
 		connection=null;
+		addfiletoresult = false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.MYSQL_BULK_LOAD);
 	}
@@ -127,6 +133,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 		retval.append("      ").append(XMLHandler.addTagValue("localinfile",     localinfile));
 
 		retval.append("      ").append(XMLHandler.addTagValue("prorityvalue",    prorityvalue));
+		
+		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 
 		retval.append("      ").append(XMLHandler.addTagValue("connection",      connection==null?null:connection.getName()));
 
@@ -153,6 +161,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			localinfile     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "localinfile"));
 			prorityvalue    = Const.toInt(XMLHandler.getTagValue(entrynode, "prorityvalue"), -1);
 			String dbname   = XMLHandler.getTagValue(entrynode, "connection");
+			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			connection      = DatabaseMeta.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
@@ -180,6 +189,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			listattribut    =      rep.getJobEntryAttributeString(id_jobentry,  "listattribut");
 			localinfile     =      rep.getJobEntryAttributeBoolean(id_jobentry, "localinfile");
 			prorityvalue    =(int) rep.getJobEntryAttributeInteger(id_jobentry, "prorityvalue");
+			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
@@ -218,6 +228,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 			rep.saveJobEntryAttribute(id_job, getID(), "listattribut",   listattribut);
 			rep.saveJobEntryAttribute(id_job, getID(), "localinfile",    localinfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "prorityvalue",   prorityvalue);
+			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
@@ -408,6 +419,14 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
 								// Everything is OK...we can deconnect now
 								db.disconnect();
+								
+								if (isAddFileToResult())
+								{
+									// Add zip filename to output files
+				                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realFilename), parentJob.getName(), toString());
+				                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+								}
+								
 								result.setResult(true);
 							}
 							catch(KettleDatabaseException je)
@@ -415,6 +434,11 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								db.disconnect();
 								result.setNrErrors(1);
 								log.logError(toString(), "An error occurred executing this job entry : "+je.getMessage());
+							}
+							catch (IOException e)
+							{
+				       			log.logError(toString(), "An error occurred executing this job entry : " + e.getMessage());
+								result.setNrErrors(1);
 							}
 						}
 						else
@@ -599,6 +623,16 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 	public String getRealListattribut()
 	{
 		return environmentSubstitute(getListattribut());
+	}
+	
+	public void setAddFileToResult(boolean addfiletoresultin)
+	{
+		this.addfiletoresult = addfiletoresultin;
+	}
+
+	public boolean isAddFileToResult()
+	{
+		return addfiletoresult;
 	}
 
 	private String MysqlString(String listcolumns)
