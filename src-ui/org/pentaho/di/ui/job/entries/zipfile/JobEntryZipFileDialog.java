@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -59,9 +60,9 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     private FormData     fdlName, fdName;
 
 	private Label        wlZipFilename;
-	private Button       wbZipFilename;
+	private Button       wbZipFilename,wbSourceDirectory,wbMovetoDirectory;
 	private TextVar      wZipFilename;
-	private FormData     fdlZipFilename, fdbZipFilename, fdZipFilename;
+	private FormData     fdlZipFilename, fdbZipFilename, fdZipFilename,fdbSourceDirectory,fdbMovetoDirectory;
 	
  
 	private Button wOK, wCancel;
@@ -173,15 +174,62 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlSourceDirectory.top = new FormAttachment(wName, margin);
 		fdlSourceDirectory.right = new FormAttachment(middle, -margin);
 		wlSourceDirectory.setLayoutData(fdlSourceDirectory);
-		wSourceDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.SourceDir.Tooltip"));
+
+		
+		wbSourceDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbSourceDirectory);
+		wbSourceDirectory.setText(Messages.getString("System.Button.Browse"));
+		fdbSourceDirectory=new FormData();
+		fdbSourceDirectory.right= new FormAttachment(100, 0);
+		fdbSourceDirectory.top  = new FormAttachment(wName, 0);
+		wbSourceDirectory.setLayoutData(fdbSourceDirectory);
+		
+		
+		wSourceDirectory=new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSourceDirectory);
 		wSourceDirectory.addModifyListener(lsMod);
-		fdSourceDirectory = new FormData();
+		fdSourceDirectory=new FormData();
 		fdSourceDirectory.left = new FormAttachment(middle, 0);
-		fdSourceDirectory.top = new FormAttachment(wName, margin);
-		fdSourceDirectory.right = new FormAttachment(100, 0);
+		fdSourceDirectory.top  = new FormAttachment(wName, margin);
+		fdSourceDirectory.right= new FormAttachment(wbSourceDirectory, -margin);
 		wSourceDirectory.setLayoutData(fdSourceDirectory);
+
+		// Whenever something changes, set the tooltip to the expanded version:
+		wSourceDirectory.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wSourceDirectory.setToolTipText(jobMeta.environmentSubstitute( wSourceDirectory.getText() ) );
+				}
+			}
+		);
+
+		wbSourceDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wSourceDirectory.getText()!=null)
+					{
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wSourceDirectory.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wSourceDirectory.setText(dir);
+			        }
+					
+				}
+			}
+		);
+
+		
 		
 		// Wildcard line
 		wlWildcard = new Label(shell, SWT.RIGHT);
@@ -384,19 +432,66 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 		fdlMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
 		fdlMovetoDirectory.right = new FormAttachment(middle, -margin);
 		wlMovetoDirectory.setLayoutData(fdlMovetoDirectory);
+		
+		
+		wbMovetoDirectory=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbMovetoDirectory);
+		wbMovetoDirectory.setText(Messages.getString("System.Button.Browse"));
+		fdbMovetoDirectory=new FormData();
+		fdbMovetoDirectory.right= new FormAttachment(100, 0);
+		fdbMovetoDirectory.top  = new FormAttachment(wAfterZip, 0);
+		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
+		
+		
 		wMovetoDirectory = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, Messages
-			.getString("JobZipFiles.MovetoDirectory.Tooltip"));
+		.getString("JobZipFiles.MovetoDirectory.Tooltip"));
 		props.setLook(wMovetoDirectory);
 		wMovetoDirectory.addModifyListener(lsMod);
-		fdMovetoDirectory = new FormData();
+		fdMovetoDirectory=new FormData();
 		fdMovetoDirectory.left = new FormAttachment(middle, 0);
-		fdMovetoDirectory.top = new FormAttachment(wAfterZip, margin);
-		fdMovetoDirectory.right = new FormAttachment(100, 0);
+		fdMovetoDirectory.top  = new FormAttachment(wAfterZip, margin);
+		fdMovetoDirectory.right= new FormAttachment(wbMovetoDirectory, -margin);
 		wMovetoDirectory.setLayoutData(fdMovetoDirectory);
+
+		// Whenever something changes, set the tooltip to the expanded version:
+		wMovetoDirectory.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wMovetoDirectory.setToolTipText(jobMeta.environmentSubstitute( wMovetoDirectory.getText() ) );
+				}
+			}
+		);
+
+		wbMovetoDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog mdialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wMovetoDirectory.getText()!=null)
+					{
+						mdialog.setFilterPath(jobMeta.environmentSubstitute(wMovetoDirectory.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = mdialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wMovetoDirectory.setText(dir);
+			        }
+					
+				}
+			}
+		);
+
 		
 		
 		
-		  // fileresult grouping?
+	 // fileresult grouping?
       // ////////////////////////
       // START OF LOGGING GROUP///
       // /
@@ -489,9 +584,17 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
 
 		jobEntry.setChanged();
 		if (wAfterZip.getSelectionIndex()==2)
+		{
+			wlMovetoDirectory.setEnabled(true);
 			wMovetoDirectory.setEnabled(true);
+			wbMovetoDirectory.setEnabled(true);
+		}
 		else
+		{
+			wlMovetoDirectory.setEnabled(false);
 			wMovetoDirectory.setEnabled(false);
+			wbMovetoDirectory.setEnabled(false);
+		}
 	}
 
     public void dispose()
