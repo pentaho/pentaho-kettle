@@ -2110,7 +2110,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			if (selection instanceof StepMeta) delegates.steps.editStep((TransMeta) parent, (StepMeta) selection);
 			if (selection instanceof JobEntryCopy) editJobEntry((JobMeta) parent, (JobEntryCopy) selection);
 			if (selection instanceof TransHopMeta) editHop((TransMeta) parent, (TransHopMeta) selection);
-			if (selection instanceof PartitionSchema) editPartitionSchema((HasDatabasesInterface) parent, (PartitionSchema) selection);
+			if (selection instanceof PartitionSchema) editPartitionSchema((TransMeta) parent, (PartitionSchema) selection);
 			if (selection instanceof ClusterSchema)	editClusterSchema((TransMeta) parent, (ClusterSchema) selection);
 			if (selection instanceof SlaveServer) editSlaveServer((SlaveServer) selection);
 		}
@@ -2711,7 +2711,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 				}
 			};
 
-			RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, rep.getUserInfo(), cb);
+			RepositoryExplorerDialog erd = new RepositoryExplorerDialog(shell, SWT.NONE, rep, rep.getUserInfo(), cb, Variables.getADefaultVariableSpace());
 			erd.open();
 
 		}
@@ -5620,7 +5620,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	{
 		PartitionSchema partitionSchema = new PartitionSchema();
 
-        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases());
+        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases(), transMeta);
 		if (dialog.open())
 		{
 			transMeta.getPartitionSchemas().add(partitionSchema);
@@ -5628,9 +5628,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-    private void editPartitionSchema(HasDatabasesInterface hasDatabasesInterface, PartitionSchema partitionSchema)
+    private void editPartitionSchema(TransMeta transMeta, PartitionSchema partitionSchema)
 	{
-        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, hasDatabasesInterface.getDatabases());
+        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases(), transMeta);
 		if (dialog.open())
 		{
 			refreshTree();
@@ -5999,28 +5999,38 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	}
 
-public boolean messageBox( String message, String text, boolean allowCancel, int type ) {
+	public boolean messageBox( final String message, final String text, final boolean allowCancel, final int type ) {
 		
-		int flags = SWT.OK;
-		if( allowCancel ) 
-		{
-			flags |= SWT.CANCEL;
-		}
-		switch( type ) 
-		{
-		case Const.INFO: flags |= SWT.ICON_INFORMATION; break;
-		case Const.ERROR: flags |= SWT.ICON_ERROR; break;
-		case Const.WARNING: flags |= SWT.ICON_WARNING; break;
-		}
+		final StringBuffer answer = new StringBuffer("N");
 		
-		Shell shell = new Shell(display);
-		MessageBox mb = new MessageBox(shell, flags );
-		// Set the Body Message
-		mb.setMessage( message );
-		// Set the title Message
-		mb.setText( text );
-		return mb.open() == SWT.OK;
+		display.syncExec(new Runnable() {
 		
+			public void run() {
+				int flags = SWT.OK;
+				if( allowCancel ) 
+				{
+					flags |= SWT.CANCEL;
+				}
+				switch( type ) 
+				{
+				case Const.INFO: flags |= SWT.ICON_INFORMATION; break;
+				case Const.ERROR: flags |= SWT.ICON_ERROR; break;
+				case Const.WARNING: flags |= SWT.ICON_WARNING; break;
+				}
+				
+				Shell shell = new Shell(display);
+				MessageBox mb = new MessageBox(shell, flags );
+				// Set the Body Message
+				mb.setMessage( message );
+				// Set the title Message
+				mb.setText( text );
+				if (mb.open() == SWT.OK) {
+					answer.setCharAt(0, 'Y');
+				}
+			}
+		});
+		
+		return "Y".equalsIgnoreCase(answer.toString());
 	}
 
 	
