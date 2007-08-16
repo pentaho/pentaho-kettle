@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -179,6 +180,16 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
     private Button wbTable;
     private Button wbListColumns;
 
+	//  Add File to result
+    
+	private Group wFileResult;
+    private FormData fdFileResult;
+    
+    
+	private Label        wlAddFileToResult;
+	private Button       wAddFileToResult;
+	private FormData     fdlAddFileToResult, fdAddFileToResult;
+	
 
     public JobEntryMysqlBulkFileDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -623,6 +634,58 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		fdIfFileExists.top = new FormAttachment(wLimitlines, margin);
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
+		
+		 // fileresult grouping?
+	     // ////////////////////////
+	     // START OF LOGGING GROUP///
+	     // /
+	    wFileResult = new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wFileResult);
+	    wFileResult.setText(Messages.getString("JobMysqlBulkFile.FileResult.Group.Label"));
+
+	    FormLayout groupLayout = new FormLayout();
+	    groupLayout.marginWidth = 10;
+	    groupLayout.marginHeight = 10;
+
+	    wFileResult.setLayout(groupLayout);
+	      
+	      
+	  	//Add file to result
+		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
+		wlAddFileToResult.setText(Messages.getString("JobMysqlBulkFile.AddFileToResult.Label"));
+		props.setLook(wlAddFileToResult);
+		fdlAddFileToResult = new FormData();
+		fdlAddFileToResult.left = new FormAttachment(0, 0);
+		fdlAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
+		fdlAddFileToResult.right = new FormAttachment(middle, -margin);
+		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
+		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
+		props.setLook(wAddFileToResult);
+		wAddFileToResult.setToolTipText(Messages.getString("JobMysqlBulkFile.AddFileToResult.Tooltip"));
+		fdAddFileToResult = new FormData();
+		fdAddFileToResult.left = new FormAttachment(middle, 0);
+		fdAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
+		fdAddFileToResult.right = new FormAttachment(100, 0);
+		wAddFileToResult.setLayoutData(fdAddFileToResult);
+		wAddFileToResult.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+	      
+	      
+	     fdFileResult = new FormData();
+	     fdFileResult.left = new FormAttachment(0, margin);
+	     fdFileResult.top = new FormAttachment(wIfFileExists, margin);
+	     fdFileResult.right = new FormAttachment(100, -margin);
+	     wFileResult.setLayoutData(fdFileResult);
+	     // ///////////////////////////////////////////////////////////
+	     // / END OF LOGGING GROUP
+	     // ///////////////////////////////////////////////////////////
+
+			
 
 
 
@@ -786,6 +849,9 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 		{
 			wConnection.setText(jobEntry.getDatabase().getName());
 		}
+		
+		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
+		
 		wName.selectAll();
 	}
 
@@ -815,6 +881,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
 		jobEntry.setHighPriority(wHighPriority.getSelection());
 		jobEntry.iffileexists = wIfFileExists.getSelectionIndex();
+		
+		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 
 		dispose();
 	}
