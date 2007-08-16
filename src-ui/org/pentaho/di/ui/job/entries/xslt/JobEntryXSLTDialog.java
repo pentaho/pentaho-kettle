@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -90,6 +91,16 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	private SelectionAdapter lsDef;
 	
 	private boolean changed;
+	
+	//  Add File to result
+    
+	private Group wFileResult;
+    private FormData fdFileResult;
+    
+    
+	private Label        wlAddFileToResult;
+	private Button       wAddFileToResult;
+	private FormData     fdlAddFileToResult, fdAddFileToResult;
 
     public JobEntryXSLTDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -318,12 +329,64 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		wIfFileExists.setLayoutData(fdIfFileExists);
 
 
+		 // fileresult grouping?
+	     // ////////////////////////
+	     // START OF LOGGING GROUP///
+	     // /
+	    wFileResult = new Group(shell, SWT.SHADOW_NONE);
+	    props.setLook(wFileResult);
+	    wFileResult.setText(Messages.getString("JobEntryXSLT.FileResult.Group.Label"));
+
+	    FormLayout groupLayout = new FormLayout();
+	    groupLayout.marginWidth = 10;
+	    groupLayout.marginHeight = 10;
+
+	    wFileResult.setLayout(groupLayout);
+	      
+	      
+	  	//Add file to result
+		wlAddFileToResult = new Label(wFileResult, SWT.RIGHT);
+		wlAddFileToResult.setText(Messages.getString("JobEntryXSLT.AddFileToResult.Label"));
+		props.setLook(wlAddFileToResult);
+		fdlAddFileToResult = new FormData();
+		fdlAddFileToResult.left = new FormAttachment(0, 0);
+		fdlAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
+		fdlAddFileToResult.right = new FormAttachment(middle, -margin);
+		wlAddFileToResult.setLayoutData(fdlAddFileToResult);
+		wAddFileToResult = new Button(wFileResult, SWT.CHECK);
+		props.setLook(wAddFileToResult);
+		wAddFileToResult.setToolTipText(Messages.getString("JobEntryXSLT.AddFileToResult.Tooltip"));
+		fdAddFileToResult = new FormData();
+		fdAddFileToResult.left = new FormAttachment(middle, 0);
+		fdAddFileToResult.top = new FormAttachment(wIfFileExists, margin);
+		fdAddFileToResult.right = new FormAttachment(100, 0);
+		wAddFileToResult.setLayoutData(fdAddFileToResult);
+		wAddFileToResult.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				jobEntry.setChanged();
+			}
+		});
+	      
+	      
+	     fdFileResult = new FormData();
+	     fdFileResult.left = new FormAttachment(0, margin);
+	     fdFileResult.top = new FormAttachment(wIfFileExists, margin);
+	     //fdFileResult.bottom = new FormAttachment(wOK, -margin);
+	     fdFileResult.right = new FormAttachment(100, -margin);
+	     wFileResult.setLayoutData(fdFileResult);
+	     // ///////////////////////////////////////////////////////////
+	     // / END OF FileResult GROUP
+	     // ///////////////////////////////////////////////////////////
+
+
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(Messages.getString("System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wIfFileExists);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFileResult);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -380,6 +443,8 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		{
 			wIfFileExists.select(2); // NOTHING
 		}
+		
+		wAddFileToResult.setSelection(jobEntry.isAddFileToResult());
 
 	}
 
@@ -397,6 +462,8 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		jobEntry.setxslFilename(wxslFilename.getText());
 		jobEntry.setoutputFilename(wOutputFilename.getText());
 		jobEntry.iffileexists = wIfFileExists.getSelectionIndex();
+		
+		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 
 		dispose();
 	}
