@@ -40,6 +40,7 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -73,6 +74,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	private String xslfilename;
 	private String outputfilename;
 	public int iffileexists;
+	private boolean addfiletoresult;
 
 
 	public JobEntryXSLT(String n)
@@ -82,6 +84,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
      	xslfilename=null;
 		outputfilename=null;
 		iffileexists=1;
+		addfiletoresult = false;
 		setID(-1L);
 		setJobEntryType(JobEntryType.XSLT);
 	}
@@ -111,6 +114,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("xslfilename", xslfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("outputfilename", outputfilename));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists",  iffileexists));
+		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
 
 
 		return retval.toString();
@@ -126,6 +130,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			xslfilename = XMLHandler.getTagValue(entrynode, "xslfilename");
 			outputfilename = XMLHandler.getTagValue(entrynode, "outputfilename");
 			iffileexists = Const.toInt(XMLHandler.getTagValue(entrynode, "iffileexists"), -1);
+			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 
 		}
 		catch(KettleXMLException xe)
@@ -144,6 +149,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			xslfilename = rep.getJobEntryAttributeString(id_jobentry, "xslfilename");
 			outputfilename = rep.getJobEntryAttributeString(id_jobentry, "outputfilename");
 			iffileexists=(int) rep.getJobEntryAttributeInteger(id_jobentry, "iffileexists");
+			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 		}
 		catch(KettleException dbe)
 		{
@@ -162,6 +168,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getID(), "xslfilename", xslfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "outputfilename", outputfilename);
 			rep.saveJobEntryAttribute(id_job, getID(), "iffileexists", iffileexists);
+			rep.saveJobEntryAttribute(id_job, getID(), "addfiletoresult", addfiletoresult);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -280,6 +287,13 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
 						// Apply the xsl file to the source file and write the result to the output file
 						xformer.transform(source, resultat);
+						
+						if (isAddFileToResult())
+						{
+							// Add zip filename to output files
+		                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(realoutputfilename), parentJob.getName(), toString());
+		                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+						}
 
 						// Everything is OK
 						result.setResult( true );
@@ -381,6 +395,17 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	{
 		return xslfilename;
 	}
+	
+	public void setAddFileToResult(boolean addfiletoresultin)
+	{
+		this.addfiletoresult = addfiletoresultin;
+	}
+
+	public boolean isAddFileToResult()
+	{
+		return addfiletoresult;
+	}
+
 
   public List<ResourceReference> getResourceDependencies(JobMeta jobMeta) {
     List<ResourceReference> references = super.getResourceDependencies(jobMeta);
