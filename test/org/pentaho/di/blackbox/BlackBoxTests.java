@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.Log4jStringAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.GlobalMessages;
@@ -92,7 +93,9 @@ public class BlackBoxTests extends TestCase {
 		System.out.println("Running: "+getPath(transFile));
 		LogWriter log;
         log=LogWriter.getInstance( LogWriter.LOG_LEVEL_ERROR );
-        log.startStringCapture();
+        Log4jStringAppender stringAppender = LogWriter.createStringAppender();
+        log.addAppender(stringAppender);
+
         boolean ok = false;
         int failsIn = failures;
 		// create a path to the expected output
@@ -128,9 +131,11 @@ public class BlackBoxTests extends TestCase {
 			// we're going to trap these so that we can continue with the other black box tests
 			System.err.println( failure.getMessage() );
 		}
-		log.endStringCapture();
+		log.removeAppender(stringAppender);
+		
 		if( !ok ) {
-			String logStr = log.getString();
+			String logStr = stringAppender.toString();
+			
 			String tmpFileName = transFile.getAbsolutePath().substring(0, transFile.getAbsolutePath().length()-4)+"-log.txt";
 			File logFile = new File( tmpFileName );
 			writeLog( logFile, logStr );
