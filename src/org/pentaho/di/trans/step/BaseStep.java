@@ -370,7 +370,7 @@ public class BaseStep extends Thread implements VariableSpace
     {
         sdi.setStatus(StepDataInterface.STATUS_INIT);
 
-        String slaveNr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
+        String slaveNr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
         String clusterSize = getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
         if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize))
         {
@@ -694,7 +694,7 @@ public class BaseStep extends Thread implements VariableSpace
         		//
         		for (int c=0;c<outputRowSets.size();c++) {
         			RowSet rowSet = outputRowSets.get(c);
-        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME));
+        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
         		}
         		
         		// 
@@ -1604,7 +1604,23 @@ public class BaseStep extends Thread implements VariableSpace
         if (!Const.isEmpty(partitionID))
         {
             setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
-        }        
+        }
+        else if (stepMeta.isPartitioned() && transMeta.getSlaveStepCopyPartitionDistribution()!=null) 
+        {
+        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
+        	String stepName = stepname;
+        	int stepCopyNr = stepcopy;
+        	
+        	// Look up the partition nr...
+        	// Set the partition ID (string) as well as the partition nr [0..size[
+        	//
+        	int partitionNr = transMeta.getSlaveStepCopyPartitionDistribution().getPartition(slaveServerName, stepName, stepCopyNr);
+        	if (partitionNr>=0) {
+        		String partID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
+        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, Integer.toString(partitionNr));
+        	}
+        }
     }
 
     public void markStop()

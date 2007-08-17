@@ -70,12 +70,13 @@ public class EnvUtil
         // Place-holders if you will.
         // 
         System.getProperties().put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, "1");
-        System.getProperties().put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, "0");
-        System.getProperties().put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, "slave-trans-name");
+        System.getProperties().put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER, "0");
+        System.getProperties().put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, "slave-trans-name");
 
         System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_COPYNR, "0");
         System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_NAME, "step-name");
         System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, "partition-id");
+        System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, "0");
         System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, "1");
         System.getProperties().put(Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, "0");
 	}

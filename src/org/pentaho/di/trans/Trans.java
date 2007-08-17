@@ -512,18 +512,6 @@ public class Trans implements VariableSpace
             if (nextPartitioned!=null) {
             	baseStep.setRepartitioning(nextPartitioned.getMethod());
             }
-
-            // We want to cache the target rowsets for doing the re-partitioning
-            // This is needed to speed up things.
-            //
-            if (stepMeta.isPartitioned())
-            {
-            	List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-                if (partitionIDs!=null && partitionIDs.size()>0)
-                {
-                    baseStep.setPartitionID(partitionIDs.get(sid.copy));
-                }
-            }
         }
 
         preparing=false;
@@ -1842,8 +1830,8 @@ public class Trans implements VariableSpace
                               TransConfiguration transConfiguration = new TransConfiguration(slaveTrans, slaveTransExecutionConfiguration);
                               
                               Map<String, String> variables = slaveTransExecutionConfiguration.getVariables();
-                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER, Integer.toString(index));
-                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME, slaves[index].getName());
+                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER, Integer.toString(index));
+                              variables.put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, slaves[index].getName());
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                               String slaveReply = slaves[index].sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                               WebResult webResult = WebResult.fromXMLString(slaveReply);

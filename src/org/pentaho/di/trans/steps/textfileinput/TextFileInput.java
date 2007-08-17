@@ -1336,7 +1336,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				return false;
 			}
             
-            String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER);
+            String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
             if (!Const.isEmpty(nr))
             {
                 // TODO: add metadata to configure this.

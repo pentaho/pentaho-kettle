@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
@@ -70,13 +72,18 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	
 	private int targetStepCopyNr;
 	
-	
+	private int bufferSize;
+	private boolean compressingStreams;
+
+	private BufferedOutputStream bufferedOutputStream;
+
+	private GZIPOutputStream gzipOutputStream;
 
 	/**
 	 * @param hostname
 	 * @param port
 	 */
-	public RemoteStep(String hostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String targetSlaveServerName) {
+	public RemoteStep(String hostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
 		super();
 		this.hostname = hostname;
 		this.port = port;
@@ -84,6 +91,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		this.sourceStepCopyNr = sourceStepCopyNr;
 		this.targetStep = targetStep;
 		this.targetStepCopyNr = targetStepCopyNr;
+		this.bufferSize = bufferSize;
+		this.compressingStreams = compressingStreams;
 		
 		this.targetSlaveServerName = targetSlaveServerName;
 		
@@ -108,6 +117,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		xml.append(XMLHandler.addTagValue("hostname", hostname, false));
 		xml.append(XMLHandler.addTagValue("port", port, false));
+		xml.append(XMLHandler.addTagValue("buffer_size", bufferSize, false));
+		xml.append(XMLHandler.addTagValue("compressed_streams", compressingStreams, false));
 
 		xml.append(XMLHandler.addTagValue("source_step_name", sourceStep, false));
 		xml.append(XMLHandler.addTagValue("source_step_copy", sourceStepCopyNr, false));
@@ -116,6 +127,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 		xml.append(XMLHandler.addTagValue("target_slave_server_name", targetSlaveServerName, false));
 
+
+		
 		xml.append(XMLHandler.closeTag(XML_TAG));
 		return xml.toString();
 	}
@@ -124,7 +137,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		hostname = XMLHandler.getTagValue(node, "hostname");
 		port     = XMLHandler.getTagValue(node, "port");
-		
+		bufferSize = Integer.parseInt(XMLHandler.getTagValue(node, "buffer_size"));
+		compressingStreams = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "compressed_streams") );
+
 		sourceStep       = XMLHandler.getTagValue(node, "source_step_name");
 		sourceStepCopyNr = Integer.parseInt(XMLHandler.getTagValue(node, "source_step_copy"));
 		targetStep       = XMLHandler.getTagValue(node, "target_step_name");
@@ -214,8 +229,17 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		System.out.println("Server socket accepted for port ["+ port +"]");
 		
-        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), 5000));
-		first=true;
+		if (compressingStreams) {
+			gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
+			bufferedOutputStream = new BufferedOutputStream(gzipOutputStream, bufferSize);
+			
+		}
+		else {
+			gzipOutputStream = null;
+			bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream(), bufferSize);
+		}
+        outputStream = new DataOutputStream(bufferedOutputStream);
+        first=true;
 		
 		// Create an output row set: to be added to BaseStep.outputRowSets
 		//
@@ -245,6 +269,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						sendRow(rowSet.getRowMeta(), rowData);
 						synchronized(rowSet) { rowData = baseStep.getRowFrom(rowSet); }
 					}
+					
+					// Just to make sure...
+					//
+					if (gzipOutputStream!=null) gzipOutputStream.flush();
+					bufferedOutputStream.flush();
+					outputStream.flush();
 					
 				} catch (Exception e) {
 					LogWriter.getInstance().logError(baseStep.toString(), "Error writing to remote step", e);
@@ -316,7 +346,16 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         	try {
 				socket = new Socket(realHostname, portNumber);
 				connected=true;
-		        inputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream(), 5000));
+				
+                if (compressingStreams)
+                {
+                    inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(socket.getInputStream()), bufferSize));
+                }
+                else
+                {
+                    inputStream  = new DataInputStream(new BufferedInputStream(socket.getInputStream(), bufferSize));
+                }
+
 		        lastException=null;
         	}
         	catch(Exception e) {
@@ -465,5 +504,33 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 */
 	public void setTargetStepCopyNr(int targetStepCopyNr) {
 		this.targetStepCopyNr = targetStepCopyNr;
+	}
+
+	/**
+	 * @return the bufferSize
+	 */
+	public int getBufferSize() {
+		return bufferSize;
+	}
+
+	/**
+	 * @param bufferSize the bufferSize to set
+	 */
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
+	}
+
+	/**
+	 * @return the compressingStreams
+	 */
+	public boolean isCompressingStreams() {
+		return compressingStreams;
+	}
+
+	/**
+	 * @param compressingStreams the compressingStreams to set
+	 */
+	public void setCompressingStreams(boolean compressingStreams) {
+		this.compressingStreams = compressingStreams;
 	}
 }

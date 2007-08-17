@@ -373,11 +373,14 @@ public class Const
     /** The step partition ID */
     public static final String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX+".Step.Partition.ID";
 
+    /** The step partition number */
+    public static final String INTERNAL_VARIABLE_STEP_PARTITION_NR = INTERNAL_VARIABLE_PREFIX+".Step.Partition.Number";
+
     /** The slave transformation number */
-    public static final String INTERNAL_VARIABLE_SLAVE_TRANS_NUMBER = INTERNAL_VARIABLE_PREFIX+".Slave.Transformation.Number";
+    public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER = INTERNAL_VARIABLE_PREFIX+".Slave.Transformation.Number";
 
     /** The slave transformation name */
-    public static final String INTERNAL_VARIABLE_SLAVE_TRANS_NAME = INTERNAL_VARIABLE_PREFIX+".Slave.Transformation.Name";
+    public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NAME = INTERNAL_VARIABLE_PREFIX+".Slave.Server.Name";
 
     /** The size of the cluster : number of slaves */
     public static final String INTERNAL_VARIABLE_CLUSTER_SIZE = INTERNAL_VARIABLE_PREFIX+".Cluster.Size";

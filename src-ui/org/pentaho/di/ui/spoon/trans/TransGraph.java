@@ -242,7 +242,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         canvas = new Canvas(this, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
 
         toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
-        toolTip.setHideOnMouseDown(true);
+        // toolTip.setHideOnMouseDown(true);
         toolTip.setRespectMonitorBounds(true);
         toolTip.setRespectDisplayBounds(true);
         // toolTip.setShift(new org.eclipse.swt.graphics.Point(-3,-3));
@@ -364,8 +364,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 Point real = screen2real(e.x, e.y);
                 lastclick = new Point(real.x, real.y);
 
-                // Clear the tooltip!
-                setToolTipText(null);
+                // Hide the tooltip!
+                toolTip.hide();
 
                 // Set the pop-up menu
                 if (e.button==3)
@@ -1055,8 +1055,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 {
                     Point real = screen2real(lastMove.x, lastMove.y);
 
-                    // Clear the tooltip!
-                    setToolTipText(null);
+                    // Hide the tooltip!
+                    toolTip.hide();
 
                     // Set the pop-up menu
                     StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);

@@ -845,6 +845,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		// executionConfiguration.setExecutingLocally(local);
 		// executionConfiguration.setExecutingRemotely(remote);
 		// executionConfiguration.setExecutingClustered(cluster);
+		
+		if (transMeta.isUsingAtLeastOneClusterSchema()) {
+			executionConfiguration.setExecutingLocally(false);
+			executionConfiguration.setExecutingClustered(true);
+		}
 
 		Object data[] = spoon.variables.getData();
 		String fields[] = spoon.variables.getRowMeta().getFieldNames();

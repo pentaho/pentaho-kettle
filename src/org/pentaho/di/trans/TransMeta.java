@@ -5785,4 +5785,11 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 	public void setSlaveStepCopyPartitionDistribution(SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution) {
 		this.slaveStepCopyPartitionDistribution = slaveStepCopyPartitionDistribution;
 	}
+	
+	public boolean isUsingAtLeastOneClusterSchema() {
+		for (StepMeta stepMeta : steps) {
+			if (stepMeta.getClusterSchema()!=null) return true;
+		}
+		return false;
+	}
 }
