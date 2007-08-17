@@ -362,9 +362,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
   {
-    return new ArrayList<SQLStatement>();
+	return getSQLStatements(repository, null);
   }
 
+  public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException
+  {
+    return new ArrayList<SQLStatement>();
+  }  
+  
   public String getFilename()
   {
     return null;

@@ -91,6 +91,7 @@ public interface JobEntryInterface
 	public boolean isSpecial();
     
     public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException;
+    public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException;
     
     /**
      * Get the name of the class that implements the dialog for this job entry

@@ -622,20 +622,31 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     public List<SQLStatement> getSQLStatements(Repository repository) throws KettleException
     {
-        JobMeta jobMeta = getJobMeta(repository);
+        return getSQLStatements(repository, null);
+    }
+
+    public List<SQLStatement> getSQLStatements(Repository repository, VariableSpace space) throws KettleException
+    {
+        JobMeta jobMeta = getJobMeta(repository, space);
 
         return jobMeta.getSQLStatements(repository, null);
     }
-
-    private JobMeta getJobMeta(Repository rep) throws KettleException
-    {
+    
+    
+    private JobMeta getJobMeta(Repository rep, VariableSpace space) throws KettleException
+    {   	
         if (rep!=null && getDirectory()!=null)
         {
-            return new JobMeta(LogWriter.getInstance(), rep, getJobName(), getDirectory());
+            return new JobMeta(LogWriter.getInstance(), 
+            		           rep, 
+            		           (space != null ? space.environmentSubstitute(getJobName()): getJobName()), 
+            		           getDirectory());
         }
         else
         {
-            return new JobMeta(LogWriter.getInstance(), getFilename(), rep, null);
+            return new JobMeta(LogWriter.getInstance(), 
+            		           (space != null ? space.environmentSubstitute(getFilename()) : getFilename()), 
+            		           rep, null);
         }
     }
 
@@ -680,7 +691,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			//
 			// First load the job meta data...
 			//
-			JobMeta jobMeta = getJobMeta(null);
+			JobMeta jobMeta = getJobMeta(null, null);
 
 			// Also go down into the job and export the files there. (going down recursively)
 			//
@@ -735,7 +746,4 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     {
       return logfile;
     }
-
-
-
 }

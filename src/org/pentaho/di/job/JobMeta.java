@@ -2016,7 +2016,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
         {
             JobEntryCopy copy = getJobEntry(i);
             if (monitor != null) monitor.subTask(Messages.getString("JobMeta.Monitor.GettingSQLForJobEntryCopy") + copy + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-            List<SQLStatement> list = copy.getEntry().getSQLStatements(repository);
+            List<SQLStatement> list = copy.getEntry().getSQLStatements(repository, this);
             stats.addAll(list);
             if (monitor != null) monitor.worked(1);
         }
