@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -32,14 +34,17 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -185,6 +190,17 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         
     private boolean  gotEncodings = false;
     
+	private CTabFolder   wTabFolder;
+	private Composite    wGeneralComp,wContentComp,wAttachedComp,wMessageComp;	
+	private CTabItem     wGeneralTab,wContentTab,wAttachedTab,wMessageTab;
+	private FormData	 fdGeneralComp,fdContentComp,fdAttachedComp,fdMessageComp;
+	private FormData     fdTabFolder;
+	
+	private Group wDestinationGroup,wServerGroup,wAuthentificationGroup,wMessageSettingsGroup,
+			wMessageGroup,wResultFilesGroup;
+	private FormData fdDestinationGroup,fdServerGroup,fdAuthentificationGroup,
+		fdMessageSettingsGroup,fdMessageGroup,fdResultFilesGroup;
+    
     public JobEntryMailDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -229,9 +245,46 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdName.left = new FormAttachment(0, 0);
         fdName.right = new FormAttachment(100, 0);
         wName.setLayoutData(fdName);
+        
+        
+        
+        wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+ 		
+ 		//////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+		
+		
+		
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(Messages.getString("JobMail.Tab.General.Label"));
+		
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+
+		FormLayout generalLayout = new FormLayout();
+		generalLayout.marginWidth  = 3;
+		generalLayout.marginHeight = 3;
+		wGeneralComp.setLayout(generalLayout);
+		
+		
+		// ////////////////////////
+		// START OF Destination Settings GROUP
+		// ////////////////////////
+
+		wDestinationGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wDestinationGroup);
+		wDestinationGroup.setText(Messages.getString("JobMail.Group.DestinationAddress.Label"));
+		
+		FormLayout destinationgroupLayout = new FormLayout();
+		destinationgroupLayout.marginWidth = 10;
+		destinationgroupLayout.marginHeight = 10;
+		wDestinationGroup.setLayout(destinationgroupLayout);
+        
 
         // Destination line
-        wDestination = new LabelTextVar(jobMeta, shell, Messages
+        wDestination = new LabelTextVar(jobMeta, wDestinationGroup, Messages
             .getString("JobMail.DestinationAddress.Label"), Messages
             .getString("JobMail.DestinationAddress.Tooltip"));
         wDestination.addModifyListener(lsMod);
@@ -243,7 +296,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
 
 		// Destination Cc
-		wDestinationCc = new LabelTextVar(jobMeta, shell, Messages
+		wDestinationCc = new LabelTextVar(jobMeta, wDestinationGroup, Messages
 			.getString("JobMail.DestinationAddressCc.Label"), Messages
 			.getString("JobMail.DestinationAddressCc.Tooltip"));
 		wDestinationCc.addModifyListener(lsMod);
@@ -254,7 +307,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		wDestinationCc.setLayoutData(fdDestinationCc);
 
 		// Destination BCc
-		wDestinationBCc = new LabelTextVar(jobMeta, shell, Messages
+		wDestinationBCc = new LabelTextVar(jobMeta, wDestinationGroup, Messages
 			.getString("JobMail.DestinationAddressBCc.Label"), Messages
 			.getString("JobMail.DestinationAddressBCc.Tooltip"));
 		wDestinationBCc.addModifyListener(lsMod);
@@ -265,18 +318,106 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		wDestinationBCc.setLayoutData(fdDestinationBCc);
 
 
-        // Server line
-        wServer = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.SMTPServer.Label"), Messages
+    	fdDestinationGroup = new FormData();
+    	fdDestinationGroup.left = new FormAttachment(0, margin);
+    	fdDestinationGroup.top = new FormAttachment(wName, margin);
+    	fdDestinationGroup.right = new FormAttachment(100, -margin);
+		wDestinationGroup.setLayoutData(fdDestinationGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF DESTINATION ADDRESS  GROUP
+		// ///////////////////////////////////////////////////////////
+
+        // Reply line
+        wReply = new LabelTextVar(jobMeta, wGeneralComp, Messages.getString("JobMail.ReplyAddress.Label"), Messages
+            .getString("JobMail.ReplyAddress.Tooltip"));
+        wReply.addModifyListener(lsMod);
+        fdReply = new FormData();
+        fdReply.left = new FormAttachment(0, 0);
+        fdReply.top = new FormAttachment(wDestinationGroup, 2*margin);
+        fdReply.right = new FormAttachment(100, 0);
+        wReply.setLayoutData(fdReply);
+
+        // Contact line
+        wPerson = new LabelTextVar(jobMeta, wGeneralComp, Messages.getString("JobMail.ContactPerson.Label"),
+            Messages.getString("JobMail.ContactPerson.Tooltip"));
+        wPerson.addModifyListener(lsMod);
+        fdPerson = new FormData();
+        fdPerson.left = new FormAttachment(0, 0);
+        fdPerson.top = new FormAttachment(wReply, margin);
+        fdPerson.right = new FormAttachment(100, 0);
+        wPerson.setLayoutData(fdPerson);
+
+        // Phone line
+        wPhone = new LabelTextVar(jobMeta, wGeneralComp, Messages.getString("JobMail.ContactPhone.Label"), Messages
+            .getString("JobMail.ContactPhone.Tooltip"));
+        wPhone.addModifyListener(lsMod);
+        fdPhone = new FormData();
+        fdPhone.left = new FormAttachment(0, 0);
+        fdPhone.top = new FormAttachment(wReply, margin);
+        fdPhone.right = new FormAttachment(100, 0);
+        wPhone.setLayoutData(fdPhone);    
+     
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(500, -margin);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+		
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+ 		props.setLook(wGeneralComp);
+ 		
+ 		
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+        
+ 		//////////////////////////////////////
+		// START OF SERVER TAB   ///
+		/////////////////////////////////////
+		
+		
+		
+		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
+		wContentTab.setText("Server");
+
+		FormLayout contentLayout = new FormLayout ();
+		contentLayout.marginWidth  = 3;
+		contentLayout.marginHeight = 3;
+		
+		wContentComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wContentComp);
+ 		wContentComp.setLayout(contentLayout);
+ 		
+		// ////////////////////////
+		// START OF SERVER  GROUP
+		/////////////////////////// 
+
+		wServerGroup = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wServerGroup);
+		wServerGroup.setText(Messages.getString("JobMail.Group.SMTPServer.Label"));
+		
+		FormLayout servergroupLayout = new FormLayout();
+		servergroupLayout.marginWidth = 10;
+		servergroupLayout.marginHeight = 10;
+		wServerGroup.setLayout(servergroupLayout);
+        
+ 		
+ 		  // Server line
+        wServer = new LabelTextVar(jobMeta, wServerGroup, Messages.getString("JobMail.SMTPServer.Label"), Messages
             .getString("JobMail.SMTPServer.Tooltip"));
         wServer.addModifyListener(lsMod);
         fdServer = new FormData();
         fdServer.left = new FormAttachment(0, 0);
-        fdServer.top = new FormAttachment(wDestinationBCc, margin);
+        fdServer.top = new FormAttachment(0, margin);
         fdServer.right = new FormAttachment(100, 0);
         wServer.setLayoutData(fdServer);
 
         // Port line
-        wPort = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.Port.Label"), Messages
+        wPort = new LabelTextVar(jobMeta, wServerGroup, Messages.getString("JobMail.Port.Label"), Messages
             .getString("JobMail.Port.Tooltip"));
         wPort.addModifyListener(lsMod);
         fdPort = new FormData();
@@ -284,21 +425,45 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdPort.top = new FormAttachment(wServer, margin);
         fdPort.right = new FormAttachment(100, 0);
         wPort.setLayoutData(fdPort);
+        
+    	fdServerGroup = new FormData();
+    	fdServerGroup.left = new FormAttachment(0, margin);
+    	fdServerGroup.top = new FormAttachment(wName, margin);
+    	fdServerGroup.right = new FormAttachment(100, -margin);
+		wServerGroup.setLayoutData(fdServerGroup);
+		
+		// //////////////////////////////////////
+		// / END OF SERVER ADDRESS  GROUP
+		// ///////////////////////////////////////
 
-        // Include Files?
-        wlUseAuth = new Label(shell, SWT.RIGHT);
+		// ////////////////////////////////////
+		// START OF AUTHENTIFICATION  GROUP
+		////////////////////////////////////// 
+
+		wAuthentificationGroup = new Group(wContentComp, SWT.SHADOW_NONE);
+		props.setLook(wAuthentificationGroup);
+		wAuthentificationGroup.setText(Messages.getString("JobMail.Group.Authentification.Label"));
+		
+		FormLayout authentificationgroupLayout = new FormLayout();
+		authentificationgroupLayout.marginWidth = 10;
+		authentificationgroupLayout.marginHeight = 10;
+		wAuthentificationGroup.setLayout(authentificationgroupLayout);
+		
+		
+        // Authentication?
+        wlUseAuth = new Label(wAuthentificationGroup, SWT.RIGHT);
         wlUseAuth.setText(Messages.getString("JobMail.UseAuthentication.Label"));
         props.setLook(wlUseAuth);
         fdlUseAuth = new FormData();
         fdlUseAuth.left = new FormAttachment(0, 0);
-        fdlUseAuth.top = new FormAttachment(wPort, margin);
+        fdlUseAuth.top = new FormAttachment(wServerGroup, 2*margin);
         fdlUseAuth.right = new FormAttachment(middle, -margin);
         wlUseAuth.setLayoutData(fdlUseAuth);
-        wUseAuth = new Button(shell, SWT.CHECK);
+        wUseAuth = new Button(wAuthentificationGroup, SWT.CHECK);
         props.setLook(wUseAuth);
         fdUseAuth = new FormData();
         fdUseAuth.left = new FormAttachment(middle, margin);
-        fdUseAuth.top = new FormAttachment(wPort, margin);
+        fdUseAuth.top = new FormAttachment(wServerGroup, 2*margin);
         fdUseAuth.right = new FormAttachment(100, 0);
         wUseAuth.setLayoutData(fdUseAuth);
         wUseAuth.addSelectionListener(new SelectionAdapter()
@@ -311,7 +476,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         });
 
         // AuthUser line
-        wAuthUser = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.AuthenticationUser.Label"),
+        wAuthUser = new LabelTextVar(jobMeta, wAuthentificationGroup, Messages.getString("JobMail.AuthenticationUser.Label"),
             Messages.getString("JobMail.AuthenticationUser.Tooltip"));
         wAuthUser.addModifyListener(lsMod);
         fdAuthUser = new FormData();
@@ -321,7 +486,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wAuthUser.setLayoutData(fdAuthUser);
 
         // AuthPass line
-        wAuthPass = new LabelTextVar(jobMeta, shell, Messages
+        wAuthPass = new LabelTextVar(jobMeta, wAuthentificationGroup, Messages
             .getString("JobMail.AuthenticationPassword.Label"), Messages
             .getString("JobMail.AuthenticationPassword.Tooltip"));
         wAuthPass.setEchoChar('*');
@@ -333,7 +498,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         wAuthPass.setLayoutData(fdAuthPass);
 
         // Use authentication?
-        wlUseSecAuth = new Label(shell, SWT.RIGHT);
+        wlUseSecAuth = new Label(wAuthentificationGroup, SWT.RIGHT);
         wlUseSecAuth.setText(Messages.getString("JobMail.UseSecAuthentication.Label"));
         props.setLook(wlUseSecAuth);
         fdlUseSecAuth = new FormData();
@@ -341,7 +506,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdlUseSecAuth.top = new FormAttachment(wAuthPass, margin);
         fdlUseSecAuth.right = new FormAttachment(middle, -margin);
         wlUseSecAuth.setLayoutData(fdlUseSecAuth);
-        wUseSecAuth = new Button(shell, SWT.CHECK);
+        wUseSecAuth = new Button(wAuthentificationGroup, SWT.CHECK);
         props.setLook(wUseSecAuth);
         fdUseSecAuth = new FormData();
         fdUseSecAuth.left = new FormAttachment(middle, margin);
@@ -356,41 +521,77 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
                 setFlags();
             }
         });
+ 		
+      	fdAuthentificationGroup = new FormData();
+      	fdAuthentificationGroup.left = new FormAttachment(0, margin);
+      	fdAuthentificationGroup.top = new FormAttachment(wServerGroup, margin);
+      	fdAuthentificationGroup.right = new FormAttachment(100, -margin);
+      	fdAuthentificationGroup.bottom = new FormAttachment(100, -margin);
+      	wAuthentificationGroup.setLayoutData(fdAuthentificationGroup);
+		
+		// //////////////////////////////////////
+		// / END OF AUTHENTIFICATION GROUP
+		// ///////////////////////////////////////
+ 		
+		fdContentComp = new FormData();
+ 		fdContentComp.left  = new FormAttachment(0, 0);
+ 		fdContentComp.top   = new FormAttachment(0, 0);
+ 		fdContentComp.right = new FormAttachment(100, 0);
+ 		fdContentComp.bottom= new FormAttachment(100, 0);
+ 		wContentComp.setLayoutData(wContentComp);
 
-        // Reply line
-        wReply = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ReplyAddress.Label"), Messages
-            .getString("JobMail.ReplyAddress.Tooltip"));
-        wReply.addModifyListener(lsMod);
-        fdReply = new FormData();
-        fdReply.left = new FormAttachment(0, 0);
-        fdReply.top = new FormAttachment(wUseSecAuth, margin);
-        fdReply.right = new FormAttachment(100, 0);
-        wReply.setLayoutData(fdReply);
+		wContentComp.layout();
+		wContentTab.setControl(wContentComp);
 
-        // Subject line
-        wSubject = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.Subject.Label"), Messages
-            .getString("JobMail.Subject.Tooltip"));
-        wSubject.addModifyListener(lsMod);
-        fdSubject = new FormData();
-        fdSubject.left = new FormAttachment(0, 0);
-        fdSubject.top = new FormAttachment(wReply, margin);
-        fdSubject.right = new FormAttachment(100, 0);
-        wSubject.setLayoutData(fdSubject);
 
+		/////////////////////////////////////////////////////////////
+		/// END OF SERVER TAB
+		/////////////////////////////////////////////////////////////
+ 		
+		//////////////////////////////////////
+		// START OF MESSAGE          TAB   ///
+		/////////////////////////////////////
+		
+		
+		
+		wMessageTab=new CTabItem(wTabFolder, SWT.NONE);
+		wMessageTab.setText(Messages.getString("JobMail.Tab.Message.Label"));
+
+		FormLayout messageLayout = new FormLayout ();
+		messageLayout.marginWidth  = 3;
+		messageLayout.marginHeight = 3;
+		
+		wMessageComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wMessageComp);
+ 		wMessageComp.setLayout(contentLayout);
+		
+		// ////////////////////////////////////
+		// START OF MESSAGE SETTINGS  GROUP
+		////////////////////////////////////// 
+
+		wMessageSettingsGroup = new Group(wMessageComp, SWT.SHADOW_NONE);
+		props.setLook(wMessageSettingsGroup);
+		wMessageSettingsGroup.setText(Messages.getString("JobMail.Group.MessageSettings.Label"));
+		
+		FormLayout messagesettingsgroupLayout = new FormLayout();
+		messagesettingsgroupLayout.marginWidth = 10;
+		messagesettingsgroupLayout.marginHeight = 10;
+		wMessageSettingsGroup.setLayout(messagesettingsgroupLayout);
+        
         // Add date to logfile name?
-        wlAddDate = new Label(shell, SWT.RIGHT);
+        wlAddDate = new Label(wMessageSettingsGroup, SWT.RIGHT);
         wlAddDate.setText(Messages.getString("JobMail.IncludeDate.Label"));
         props.setLook(wlAddDate);
         fdlAddDate = new FormData();
         fdlAddDate.left = new FormAttachment(0, 0);
-        fdlAddDate.top = new FormAttachment(wSubject, margin);
+        fdlAddDate.top = new FormAttachment(0, 2*margin);
         fdlAddDate.right = new FormAttachment(middle, -margin);
         wlAddDate.setLayoutData(fdlAddDate);
-        wAddDate = new Button(shell, SWT.CHECK);
+        wAddDate = new Button(wMessageSettingsGroup, SWT.CHECK);
         props.setLook(wAddDate);
         fdAddDate = new FormData();
         fdAddDate.left = new FormAttachment(middle, margin);
-        fdAddDate.top = new FormAttachment(wSubject, margin);
+        fdAddDate.top = new FormAttachment(0, 2*margin);
         fdAddDate.right = new FormAttachment(100, 0);
         wAddDate.setLayoutData(fdAddDate);
         wAddDate.addSelectionListener(new SelectionAdapter()
@@ -401,133 +602,20 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
             }
         });
 
-        // Include Files?
-        wlIncludeFiles = new Label(shell, SWT.RIGHT);
-        wlIncludeFiles.setText(Messages.getString("JobMail.AttachFiles.Label"));
-        props.setLook(wlIncludeFiles);
-        fdlIncludeFiles = new FormData();
-        fdlIncludeFiles.left = new FormAttachment(0, 0);
-        fdlIncludeFiles.top = new FormAttachment(wAddDate, margin);
-        fdlIncludeFiles.right = new FormAttachment(middle, -margin);
-        wlIncludeFiles.setLayoutData(fdlIncludeFiles);
-        wIncludeFiles = new Button(shell, SWT.CHECK);
-        props.setLook(wIncludeFiles);
-        fdIncludeFiles = new FormData();
-        fdIncludeFiles.left = new FormAttachment(middle, margin);
-        fdIncludeFiles.top = new FormAttachment(wAddDate, margin);
-        fdIncludeFiles.right = new FormAttachment(100, 0);
-        wIncludeFiles.setLayoutData(fdIncludeFiles);
-        wIncludeFiles.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                jobEntry.setChanged();
-                setFlags();
-            }
-        });
-
-        // Include Files?
-        wlTypes = new Label(shell, SWT.RIGHT);
-        wlTypes.setText(Messages.getString("JobMail.SelectFileTypes.Label"));
-        props.setLook(wlTypes);
-        fdlTypes = new FormData();
-        fdlTypes.left = new FormAttachment(0, 0);
-        fdlTypes.top = new FormAttachment(wIncludeFiles, margin);
-        fdlTypes.right = new FormAttachment(middle, -margin);
-        wlTypes.setLayoutData(fdlTypes);
-        wTypes = new List(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        props.setLook(wTypes);
-        fdTypes = new FormData();
-        fdTypes.left = new FormAttachment(middle, margin);
-        fdTypes.top = new FormAttachment(wIncludeFiles, margin);
-        fdTypes.bottom = new FormAttachment(wIncludeFiles, margin + 150);
-        fdTypes.right = new FormAttachment(100, 0);
-        wTypes.setLayoutData(fdTypes);
-        for (int i = 0; i < ResultFile.getAllTypeDesc().length; i++)
-        {
-            wTypes.add(ResultFile.getAllTypeDesc()[i]);
-        }
-
-        // Zip Files?
-        wlZipFiles = new Label(shell, SWT.RIGHT);
-        wlZipFiles.setText(Messages.getString("JobMail.ZipFiles.Label"));
-        props.setLook(wlZipFiles);
-        fdlZipFiles = new FormData();
-        fdlZipFiles.left = new FormAttachment(0, 0);
-        fdlZipFiles.top = new FormAttachment(wTypes, margin);
-        fdlZipFiles.right = new FormAttachment(middle, -margin);
-        wlZipFiles.setLayoutData(fdlZipFiles);
-        wZipFiles = new Button(shell, SWT.CHECK);
-        props.setLook(wZipFiles);
-        fdZipFiles = new FormData();
-        fdZipFiles.left = new FormAttachment(middle, margin);
-        fdZipFiles.top = new FormAttachment(wTypes, margin);
-        fdZipFiles.right = new FormAttachment(100, 0);
-        wZipFiles.setLayoutData(fdZipFiles);
-        wZipFiles.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                jobEntry.setChanged();
-                setFlags();
-            }
-        });
-
-        // ZipFilename line
-        wZipFilename = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ZipFilename.Label"),
-            Messages.getString("JobMail.ZipFilename.Tooltip"));
-        wZipFilename.addModifyListener(lsMod);
-        fdZipFilename = new FormData();
-        fdZipFilename.left = new FormAttachment(0, 0);
-        fdZipFilename.top = new FormAttachment(wZipFiles, margin);
-        fdZipFilename.right = new FormAttachment(100, 0);
-        wZipFilename.setLayoutData(fdZipFilename);
-
-        // ZipFilename line
-        wPerson = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ContactPerson.Label"),
-            Messages.getString("JobMail.ContactPerson.Tooltip"));
-        wPerson.addModifyListener(lsMod);
-        fdPerson = new FormData();
-        fdPerson.left = new FormAttachment(0, 0);
-        fdPerson.top = new FormAttachment(wZipFilename, margin);
-        fdPerson.right = new FormAttachment(100, 0);
-        wPerson.setLayoutData(fdPerson);
-
-        // Phone line
-        wPhone = new LabelTextVar(jobMeta, shell, Messages.getString("JobMail.ContactPhone.Label"), Messages
-            .getString("JobMail.ContactPhone.Tooltip"));
-        wPhone.addModifyListener(lsMod);
-        fdPhone = new FormData();
-        fdPhone.left = new FormAttachment(0, 0);
-        fdPhone.top = new FormAttachment(wPerson, margin);
-        fdPhone.right = new FormAttachment(100, 0);
-        wPhone.setLayoutData(fdPhone);
-
-        // Some buttons
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(Messages.getString("System.Button.OK"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("System.Button.Cancel"));
-
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
-
-        
-
-        
         // Only send the comment in the mail body
-        wlOnlyComment = new Label(shell, SWT.RIGHT);
+        wlOnlyComment = new Label(wMessageSettingsGroup, SWT.RIGHT);
         wlOnlyComment.setText(Messages.getString("JobMail.OnlyCommentInBody.Label"));
         props.setLook(wlOnlyComment);
         fdlOnlyComment = new FormData();
         fdlOnlyComment.left = new FormAttachment(0, 0);
-        fdlOnlyComment.bottom = new FormAttachment(wOK, -margin * 2);
+        fdlOnlyComment.top = new FormAttachment(wAddDate, margin);
         fdlOnlyComment.right = new FormAttachment(middle, -margin);
         wlOnlyComment.setLayoutData(fdlOnlyComment);
-        wOnlyComment = new Button(shell, SWT.CHECK);
+        wOnlyComment = new Button(wMessageSettingsGroup, SWT.CHECK);
         props.setLook(wOnlyComment);
         fdOnlyComment = new FormData();
         fdOnlyComment.left = new FormAttachment(middle, margin);
-        fdOnlyComment.bottom = new FormAttachment(wOK, -margin * 2);
+        fdOnlyComment.top = new FormAttachment(wAddDate, margin );
         fdOnlyComment.right = new FormAttachment(100, 0);
         wOnlyComment.setLayoutData(fdOnlyComment);
         wOnlyComment.addSelectionListener(new SelectionAdapter()
@@ -539,24 +627,49 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         });
         
         
-       
-
+        // HTML format ?
+        wlUseHTML = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlUseHTML.setText(Messages.getString("JobMail.UseHTMLInBody.Label"));
+        props.setLook(wlUseHTML);
+        fdlUseHTML = new FormData();
+        fdlUseHTML.left = new FormAttachment(0, 0);
+        fdlUseHTML.top = new FormAttachment(wOnlyComment, margin );
+        fdlUseHTML.right = new FormAttachment(middle, -margin);
+        wlUseHTML.setLayoutData(fdlUseHTML);
+        wUseHTML = new Button(wMessageSettingsGroup, SWT.CHECK);
+        props.setLook(wUseHTML);
+        fdUseHTML = new FormData();
+        fdUseHTML.left = new FormAttachment(middle, margin);
+        fdUseHTML.top = new FormAttachment(wOnlyComment, margin );
+        fdUseHTML.right = new FormAttachment(100, 0);
+        wUseHTML.setLayoutData(fdUseHTML);
+        wUseHTML.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	SetEnabledEncoding();
+            	jobEntry.setChanged();
+            }
+        });
+           
+        
+        
         // Encoding
-        wlEncoding=new Label(shell, SWT.RIGHT);
+        wlEncoding=new Label(wMessageSettingsGroup, SWT.RIGHT);
         wlEncoding.setText(Messages.getString("JobMail.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
-        fdlEncoding.bottom  = new FormAttachment(wOnlyComment, -margin);
+        fdlEncoding.top  = new FormAttachment(wUseHTML, margin);
         fdlEncoding.right= new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
-        wEncoding=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding=new CCombo(wMessageSettingsGroup, SWT.BORDER | SWT.READ_ONLY);
         wEncoding.setEditable(true);
         props.setLook(wEncoding);
         wEncoding.addModifyListener(lsMod);
         fdEncoding=new FormData();
         fdEncoding.left = new FormAttachment(middle, margin);
-        fdEncoding.bottom  = new FormAttachment(wOnlyComment,-margin);
+        fdEncoding.top  = new FormAttachment(wUseHTML,margin);
         fdEncoding.right= new FormAttachment(100, 0);
         wEncoding.setLayoutData(fdEncoding);
         wEncoding.addFocusListener(new FocusListener()
@@ -575,56 +688,254 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
                 }
             }
         );
+
+        fdMessageSettingsGroup = new FormData();
+    	fdMessageSettingsGroup.left = new FormAttachment(0, margin);
+      	fdMessageSettingsGroup.top = new FormAttachment(wName, margin);
+      	fdMessageSettingsGroup.right = new FormAttachment(100, -margin);
+      	wMessageSettingsGroup.setLayoutData(fdMessageSettingsGroup);
+		
+		// //////////////////////////////////////
+		// / END OF MESSAGE SETTINGS  GROUP
+		// ///////////////////////////////////////
+      	
+      	
+      	
+    	// ////////////////////////////////////
+		// START OF MESSAGE   GROUP
+		////////////////////////////////////// 
+
+		wMessageGroup = new Group(wMessageComp, SWT.SHADOW_NONE);
+		props.setLook(wMessageGroup);
+		wMessageGroup.setText(Messages.getString("JobMail.Group.Message.Label"));
+		
+		FormLayout messagegroupLayout = new FormLayout();
+		messagegroupLayout.marginWidth = 10;
+		messagegroupLayout.marginHeight = 10;
+		wMessageGroup.setLayout(messagegroupLayout);
         
-        
-        // HTML format ?
-        wlUseHTML = new Label(shell, SWT.RIGHT);
-        wlUseHTML.setText(Messages.getString("JobMail.UseHTMLInBody.Label"));
-        props.setLook(wlUseHTML);
-        fdlUseHTML = new FormData();
-        fdlUseHTML.left = new FormAttachment(0, 0);
-        fdlUseHTML.bottom = new FormAttachment(wEncoding, -margin );
-        fdlUseHTML.right = new FormAttachment(middle, -margin);
-        wlUseHTML.setLayoutData(fdlUseHTML);
-        wUseHTML = new Button(shell, SWT.CHECK);
-        props.setLook(wUseHTML);
-        fdUseHTML = new FormData();
-        fdUseHTML.left = new FormAttachment(middle, margin);
-        fdUseHTML.bottom = new FormAttachment(wEncoding, -margin );
-        fdUseHTML.right = new FormAttachment(100, 0);
-        wUseHTML.setLayoutData(fdUseHTML);
-        wUseHTML.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-            	SetEnabledEncoding();
-            	jobEntry.setChanged();
-            }
-        });
-           
-        
+        // Subject line
+        wSubject = new LabelTextVar(jobMeta, wMessageGroup, Messages.getString("JobMail.Subject.Label"), Messages
+            .getString("JobMail.Subject.Tooltip"));
+        wSubject.addModifyListener(lsMod);
+        fdSubject = new FormData();
+        fdSubject.left = new FormAttachment(0, 0);
+        fdSubject.top = new FormAttachment(wMessageSettingsGroup, margin);
+        fdSubject.right = new FormAttachment(100, 0);
+        wSubject.setLayoutData(fdSubject);
+ 		
         // Comment line
-        wlComment = new Label(shell, SWT.RIGHT);
+        wlComment = new Label(wMessageGroup, SWT.RIGHT);
         wlComment.setText(Messages.getString("JobMail.Comment.Label"));
         props.setLook(wlComment);
         fdlComment = new FormData();
         fdlComment.left = new FormAttachment(0, 0);
-        fdlComment.top = new FormAttachment(wPhone, margin);
+        fdlComment.top = new FormAttachment(wSubject, 2*margin);
         fdlComment.right = new FormAttachment(middle, margin);
         wlComment.setLayoutData(fdlComment);
 
-        wComment = new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        wComment = new Text(wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         props.setLook(wComment);
         wComment.addModifyListener(lsMod);
         fdComment = new FormData();
         fdComment.left = new FormAttachment(middle, margin);
-        fdComment.top = new FormAttachment(wPhone, margin);
+        fdComment.top = new FormAttachment(wSubject, 2*margin);
         fdComment.right = new FormAttachment(100, 0);
-        fdComment.bottom = new FormAttachment(wUseHTML, -margin);
+        fdComment.bottom = new FormAttachment(100, -margin);
         wComment.setLayoutData(fdComment);
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
         wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
+        
+        fdMessageGroup = new FormData();
+        fdMessageGroup.left = new FormAttachment(0, margin);
+    	fdMessageGroup.top = new FormAttachment(wMessageSettingsGroup, margin);
+    	fdMessageGroup.bottom = new FormAttachment(100, -margin);
+      	fdMessageGroup.right = new FormAttachment(100, -margin);
+      	wMessageGroup.setLayoutData(fdMessageGroup);
+		
+		// //////////////////////////////////////
+		// / END OF MESSAGE   GROUP
+		// ///////////////////////////////////////
+ 		
+		fdMessageComp = new FormData();
+		fdMessageComp.left  = new FormAttachment(0, 0);
+		fdMessageComp.top   = new FormAttachment(0, 0);
+		fdMessageComp.right = new FormAttachment(100, 0);
+		fdMessageComp.bottom= new FormAttachment(100, 0);
+		wMessageComp.setLayoutData(wMessageComp);
 
+		wMessageComp.layout();
+		wMessageTab.setControl(wMessageComp);
+
+
+		/////////////////////////////////////////////////////////////
+		/// END OF MESSAGE TAB
+		/////////////////////////////////////////////////////////////
+ 		
+ 		
+		
+		//////////////////////////////////////
+		// START OF ATTACHED FILES   TAB   ///
+		/////////////////////////////////////
+		
+		
+		
+		wAttachedTab=new CTabItem(wTabFolder, SWT.NONE);
+		wAttachedTab.setText(Messages.getString("JobMail.Tab.AttachedFiles.Label"));
+
+		FormLayout attachedLayout = new FormLayout ();
+		attachedLayout.marginWidth  = 3;
+		attachedLayout.marginHeight = 3;
+		
+		wAttachedComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wAttachedComp);
+ 		wAttachedComp.setLayout(attachedLayout);
+		
+ 		// ////////////////////////////////////
+		// START OF Result File   GROUP
+		////////////////////////////////////// 
+
+		wResultFilesGroup = new Group(wAttachedComp, SWT.SHADOW_NONE);
+		props.setLook(wResultFilesGroup);
+		wResultFilesGroup.setText(Messages.getString("JobMail.Group.AddPreviousFiles.Label"));
+		
+		FormLayout resultfilesgroupLayout = new FormLayout();
+		resultfilesgroupLayout.marginWidth = 10;
+		resultfilesgroupLayout.marginHeight = 10;
+		wResultFilesGroup.setLayout(resultfilesgroupLayout);
+		
+		
+ 		 // Include Files?
+        wlIncludeFiles = new Label(wResultFilesGroup, SWT.RIGHT);
+        wlIncludeFiles.setText(Messages.getString("JobMail.AttachFiles.Label"));
+        props.setLook(wlIncludeFiles);
+        fdlIncludeFiles = new FormData();
+        fdlIncludeFiles.left = new FormAttachment(0, 0);
+        fdlIncludeFiles.top = new FormAttachment(0, margin);
+        fdlIncludeFiles.right = new FormAttachment(middle, -margin);
+        wlIncludeFiles.setLayoutData(fdlIncludeFiles);
+        wIncludeFiles = new Button(wResultFilesGroup, SWT.CHECK);
+        props.setLook(wIncludeFiles);
+        fdIncludeFiles = new FormData();
+        fdIncludeFiles.left = new FormAttachment(middle, margin);
+        fdIncludeFiles.top = new FormAttachment(0, margin);
+        fdIncludeFiles.right = new FormAttachment(100, 0);
+        wIncludeFiles.setLayoutData(fdIncludeFiles);
+        wIncludeFiles.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+                setFlags();
+            }
+        });
+
+        // Include Files?
+        wlTypes = new Label(wResultFilesGroup, SWT.RIGHT);
+        wlTypes.setText(Messages.getString("JobMail.SelectFileTypes.Label"));
+        props.setLook(wlTypes);
+        fdlTypes = new FormData();
+        fdlTypes.left = new FormAttachment(0, 0);
+        fdlTypes.top = new FormAttachment(wIncludeFiles, margin);
+        fdlTypes.right = new FormAttachment(middle, -margin);
+        wlTypes.setLayoutData(fdlTypes);
+        wTypes = new List(wResultFilesGroup, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        props.setLook(wTypes);
+        fdTypes = new FormData();
+        fdTypes.left = new FormAttachment(middle, margin);
+        fdTypes.top = new FormAttachment(wIncludeFiles, margin);
+        fdTypes.bottom = new FormAttachment(wIncludeFiles, margin + 150);
+        fdTypes.right = new FormAttachment(100, 0);
+        wTypes.setLayoutData(fdTypes);
+        for (int i = 0; i < ResultFile.getAllTypeDesc().length; i++)
+        {
+            wTypes.add(ResultFile.getAllTypeDesc()[i]);
+        }
+
+        // Zip Files?
+        wlZipFiles = new Label(wResultFilesGroup, SWT.RIGHT);
+        wlZipFiles.setText(Messages.getString("JobMail.ZipFiles.Label"));
+        props.setLook(wlZipFiles);
+        fdlZipFiles = new FormData();
+        fdlZipFiles.left = new FormAttachment(0, 0);
+        fdlZipFiles.top = new FormAttachment(wTypes, margin);
+        fdlZipFiles.right = new FormAttachment(middle, -margin);
+        wlZipFiles.setLayoutData(fdlZipFiles);
+        wZipFiles = new Button(wResultFilesGroup, SWT.CHECK);
+        props.setLook(wZipFiles);
+        fdZipFiles = new FormData();
+        fdZipFiles.left = new FormAttachment(middle, margin);
+        fdZipFiles.top = new FormAttachment(wTypes, margin);
+        fdZipFiles.right = new FormAttachment(100, 0);
+        wZipFiles.setLayoutData(fdZipFiles);
+        wZipFiles.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                jobEntry.setChanged();
+                setFlags();
+            }
+        });
+
+        // ZipFilename line
+        wZipFilename = new LabelTextVar(jobMeta, wResultFilesGroup, Messages.getString("JobMail.ZipFilename.Label"),
+            Messages.getString("JobMail.ZipFilename.Tooltip"));
+        wZipFilename.addModifyListener(lsMod);
+        fdZipFilename = new FormData();
+        fdZipFilename.left = new FormAttachment(0, 0);
+        fdZipFilename.top = new FormAttachment(wZipFiles, margin);
+        fdZipFilename.right = new FormAttachment(100, 0);
+        wZipFilename.setLayoutData(fdZipFilename);
+		
+        fdResultFilesGroup = new FormData();
+        fdResultFilesGroup.left = new FormAttachment(0, margin);
+        fdResultFilesGroup.top = new FormAttachment(0, margin);
+    	fdResultFilesGroup.bottom = new FormAttachment(100, -margin);
+    	fdResultFilesGroup.right = new FormAttachment(100, -margin);
+      	wResultFilesGroup.setLayoutData(fdResultFilesGroup);
+		
+		// //////////////////////////////////////
+		// / END OF RESULT FILES   GROUP
+		// ///////////////////////////////////////
+		
+		fdAttachedComp = new FormData();
+		fdAttachedComp.left  = new FormAttachment(0, 0);
+		fdAttachedComp.top   = new FormAttachment(0, 0);
+		fdAttachedComp.right = new FormAttachment(100, 0);
+		fdAttachedComp.bottom= new FormAttachment(100, 0);
+		wAttachedComp.setLayoutData(wAttachedComp);
+
+		wAttachedComp.layout();
+		wAttachedTab.setControl(wAttachedComp);
+
+
+		/////////////////////////////////////////////////////////////
+		/// END OF FILES TAB
+		/////////////////////////////////////////////////////////////
+ 		
+		
+		
+		
+		
+		
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+
+ 		
+        // Some buttons
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK"));
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel"));
+
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
+        //setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
+
+        
         // Add listeners
         lsCancel = new Listener()
         {
@@ -684,6 +995,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
         shell.open();
         props.setDialogSize(shell, "JobMailDialogSize");
+        wTabFolder.setSelection(0);
         while (!shell.isDisposed())
         {
             if (!display.readAndDispatch())
