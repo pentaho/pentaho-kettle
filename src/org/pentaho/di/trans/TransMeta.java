@@ -207,6 +207,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
     
     private VariableSpace       variables = new Variables();
     
+    /** The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment. */
+    private SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -355,6 +358,8 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
         partitionSchemas = new ArrayList<PartitionSchema>();
         slaveServers = new ArrayList<SlaveServer>();
         clusterSchemas = new ArrayList<ClusterSchema>();
+        
+        slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
         
         name = null;
 		description=null;
@@ -2577,6 +2582,9 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             }
         }
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_STEP_ERROR_HANDLING)).append(Const.CR);
+        
+        // The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment.
+        retval.append("   ").append(slaveStepCopyPartitionDistribution.getXML());
 
         retval.append("</").append(XML_TAG+">").append(Const.CR); //$NON-NLS-1$
 
@@ -3043,6 +3051,14 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             if (modDate!=null)
             {
                 modifiedDate = XMLHandler.stringToDate(modDate);
+            }
+            
+            Node partitionDistNode = XMLHandler.getSubNode(transnode, SlaveStepCopyPartitionDistribution.XML_TAG);
+            if (partitionDistNode!=null) {
+            	slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(partitionDistNode);
+            }
+            else {
+            	slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution(); // leave empty
             }
             
             log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
@@ -5754,5 +5770,19 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
 		}
 		
 		return filename;
+	}
+
+	/**
+	 * @return the slaveStepCopyPartitionDistribution
+	 */
+	public SlaveStepCopyPartitionDistribution getSlaveStepCopyPartitionDistribution() {
+		return slaveStepCopyPartitionDistribution;
+	}
+
+	/**
+	 * @param slaveStepCopyPartitionDistribution the slaveStepCopyPartitionDistribution to set
+	 */
+	public void setSlaveStepCopyPartitionDistribution(SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution) {
+		this.slaveStepCopyPartitionDistribution = slaveStepCopyPartitionDistribution;
 	}
 }

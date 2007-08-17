@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -52,6 +51,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
@@ -275,6 +275,8 @@ public class BaseStep extends Thread implements VariableSpace
 
 	private boolean remoteInputStepsInitialized;
 
+	private Hashtable<Integer, RowSet> partitionNrRowSetMap;
+
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
@@ -406,6 +408,7 @@ public class BaseStep extends Thread implements VariableSpace
 	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 	        	try {
 	        		copy.openServerSocket(this);
+	        		logBasic("Opened a server socket connection to "+copy);
 	        	}
 	        	catch(Exception e) {
 	            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
@@ -432,10 +435,27 @@ public class BaseStep extends Thread implements VariableSpace
         try
         {
         	remoteInputSteps = new ArrayList<RemoteStep>();
-	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
-	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
-	        	remoteInputSteps.add(copy);
-	        }
+        	
+        	if (stepMeta.isPartitioned() && stepMeta.getClusterSchema()!=null) {
+        		// If the step is partitioned and clustered, we only want to take one remote input step per copy.
+        		// This is the place to make that elimination...
+        		//
+    	        for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
+    	        	RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
+    	        	if (i==stepcopy) {
+	    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
+	    	        	remoteInputSteps.add(copy);
+    	        	}
+    	        }
+
+        	}
+        	else {
+    	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
+    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
+    	        	remoteInputSteps.add(copy);
+    	        }
+        	}
+        	
         }
         catch(Exception e) {
         	log.logError(toString(), "Unable to initialize remote input steps during step initialisation", e);
@@ -674,22 +694,19 @@ public class BaseStep extends Thread implements VariableSpace
         		//
         		for (int c=0;c<outputRowSets.size();c++) {
         			RowSet rowSet = outputRowSets.get(c);
-        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME)+"."+c);
+        			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_TRANS_NAME));
         		}
         		
         		// 
         		for (RemoteStep remoteStep : remoteOutputSteps) {
         			try {
 						RowSet rowSet = remoteStep.openWriterSocket(this);
+						logBasic("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
 					} catch (IOException e) {
 						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
 					}
         		}
-        		
-        		// Since we want to have all the row sets ordered in the same way in all the steps in a cluster, 
-        		// we're going to sort the output row sets by the target step in the row set.
-        		Collections.sort(outputRowSets);
         		
         		remoteOutputStepsInitialized = true;
         	}
@@ -715,8 +732,7 @@ public class BaseStep extends Thread implements VariableSpace
         // Repartitioning happens when the current step is not partitioned, but the next one is.
         // That means we need to look up the partitioning information in the next step..
         // If there are multiple steps, we need to look at the first (they should be all the same)
-        // TODO: make something smart later to allow splits etc.
-        //
+        // 
         int partitioningType = StepPartitioningMeta.getMethodType(repartitioning);
         switch(partitioningType)
         {
@@ -775,14 +791,12 @@ public class BaseStep extends Thread implements VariableSpace
         break;
 
         case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-        	
             {
-    
             	if( nextStepPartitioningMeta == null )
             	{
                     nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
             	}
-                
+            	
                 int partitionNr;
                 try
                 {
@@ -793,10 +807,41 @@ public class BaseStep extends Thread implements VariableSpace
                 {
                     throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
                 }
-    
-                // Put the row forward to the next step according to the partition rule.
-                //
-                RowSet rs = outputRowSets.get(partitionNr);
+
+                RowSet rs = null;
+                
+        		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
+        		// We want to pre-calculate what rowset we're sending data to for which partition...
+                // It is only valid in clustering / partitioning situations.
+                // When doing a local partitioning, it is much simpler.
+        		//
+                if (transMeta.getSlaveStepCopyPartitionDistribution()!=null) {
+                	// This next block is only performed once for speed...
+                	//
+	                if (partitionNrRowSetMap==null) {
+	        			partitionNrRowSetMap = new Hashtable<Integer, RowSet>(); 
+		        		SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
+		        		for (RowSet outputRowSet : outputRowSets) {
+		        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), outputRowSet.getDestinationStepName(), outputRowSet.getDestinationStepCopy());
+		        			if (partNr==-1) {
+		        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", step="+outputRowSet.getDestinationStepName()+", copy="+outputRowSet.getDestinationStepCopy());
+		        			}
+		        			partitionNrRowSetMap.put(partNr, outputRowSet);
+		        		}
+	                }
+                
+	                // OK, now get the target partition based on the partition nr...
+	                // Hashing on an integer is very fast.
+                	// TODO: see if we can turn this Map into an array for even better speed...
+                	//
+	                rs = partitionNrRowSetMap.get(partitionNr);
+                }
+                else {
+                	// Local partitioning...
+	                // Put the row forward to the next step according to the partition rule.
+	                //
+	                rs = outputRowSets.get(partitionNr);
+                }
                 
                 if (rs==null) {
                 	logBasic("Target rowset is not available for target partition, partitionNr="+partitionNr);
@@ -1005,10 +1050,13 @@ public class BaseStep extends Thread implements VariableSpace
         if (!remoteInputSteps.isEmpty()) {
         	if (!remoteInputStepsInitialized) {
         		// Loop over the remote steps and open client sockets to them 
+        		// Just be careful in case we're dealing with a partitioned clustered step.
+        		// A partitioned clustered step has only one. (see dispatch())
         		// 
         		for (RemoteStep remoteStep : remoteInputSteps) {
         			try {
 						RowSet rowSet = remoteStep.openReaderSocket(this);
+						logBasic("Opened a reader socket to remote step: "+remoteStep);
 						inputRowSets.add(rowSet);
 					} catch (Exception e) {
 						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
@@ -1046,7 +1094,7 @@ public class BaseStep extends Thread implements VariableSpace
     	while (row==null && !isStopped()) {
         	// Get a row from the input in row set ...
     		// Timeout almost immediately if nothing is there to read.
-    		// We then will switch to the next row set to read from...
+    		// We will then switch to the next row set to read from...
     		//
         	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         	if (row!=null) {
@@ -1177,7 +1225,7 @@ public class BaseStep extends Thread implements VariableSpace
     public Object[] getRowFrom(RowSet rowSet) {
         
         Object[] rowData = rowSet.getRow();
-        while (!rowSet.isDone() && rowData==null && !stopped.get())
+        while (rowData==null && !rowSet.isDone() && !stopped.get())
         {
         	rowData=rowSet.getRow();
         }
@@ -1457,6 +1505,10 @@ public class BaseStep extends Thread implements VariableSpace
                 	}
                 }
             }
+        }
+        
+        if (stepMeta.getTargetStepPartitioningMeta()!=null) {
+        	nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
         }
 
         logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$

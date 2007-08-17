@@ -10,9 +10,11 @@ import java.util.Set;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RemoteStep;
@@ -41,6 +43,9 @@ public class TransSplitter
     private Map<SlaveServer,Map<PartitionSchema,List<String>>> slaveServerPartitionsMap;
     private Map<TransMeta,Map<StepMeta,String>> slaveStepPartitionFlag;
 
+    /** Decide in advance which step / copy in which slave server is going to server which partition.  It's not a guessing game. */
+    private SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
+    
     public TransSplitter()
     {
         clear();
@@ -510,7 +515,7 @@ public class TransSplitter
                                         slaveStep = addSlaveCopy(slave, referenceStep);
                                     }
                                     
-                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), referenceStep.getName(), 0, slaveStep.getName(), 0, slaveServer.getName());
+                                    RemoteStep remoteSlaveStep = new RemoteStep(slaveServer.getHostname(), Integer.toString(port), previous.getName(), 0, referenceStep.getName(), 0, slaveServer.getName());
                                     slaveStep.getRemoteInputSteps().add(remoteSlaveStep);
                                 	
                                     // Verify the partitioning for this slave step.
@@ -613,9 +618,13 @@ public class TransSplitter
                                     	// This leads to Nx(N-1) extra data paths.
                                     	//
                                     	// Let's see if we can find them...
+                                    	//
+
+                            			int partitionNr = 0; // Keep track of the partition nr over the slaves.
+
                                     	for (int partSlaveNr=0;partSlaveNr<referenceClusterSchema.getSlaveServers().size();partSlaveNr++) {
                                     		SlaveServer partSlaveServer = referenceClusterSchema.getSlaveServers().get(partSlaveNr);
-                                    		if (!partSlaveServer.isMaster() && !slaveServer.equals(partSlaveServer)) {
+                                    		if (!partSlaveServer.isMaster()) {
                                     			
                                     			// It's running in 1 or more copies depending on the number of partitions
                                     			// Get the number of target partitions...
@@ -634,7 +643,7 @@ public class TransSplitter
 	                                    			List<String> sourcePartitionsList = partitionsMap.get(sourcePartitionSchema);
 	                                    			nrOfSourcePartitions = sourcePartitionsList.size();
                                     			}
-                                    			
+
                                     			// We can't just specify 0 as the target/source copy number. At runtime we could have multiple copies of a step running for multiple partitions.
                                     			// Those ports will have to be allocated too.
                                     			//
@@ -656,19 +665,28 @@ public class TransSplitter
                                     			for (int sourceCopyNr=0;sourceCopyNr<nrOfSourcePartitions;sourceCopyNr++) {
                                         			for (int targetCopyNr=0;targetCopyNr<nrOfTargetPartitions;targetCopyNr++) {
                                     				
-                                        				// We hit only get the remote steps, NOT the local ones.
-                                        				// That's why it's OK to generate all combinations.
-                                        				//
-		                                    			int outPort = getPort(referenceClusterSchema, slaveServer, partSlaveServer+"-"+source.getName()+"."+sourceCopyNr+" --> "+target.getName()+"."+targetCopyNr);
-		                                    			RemoteStep remoteOutputStep = new RemoteStep( partSlaveServer.getHostname(), Integer.toString(outPort), source.getName(), sourceCopyNr, target.getName(), targetCopyNr, partSlaveServer.getName()+"."+targetCopyNr );
-		                                    			source.getRemoteOutputSteps().add(remoteOutputStep);
-		
-		                                    			// OK, so the source step is sending rows out on the reserved ports
-		                                    			// What we need to do now is link all the OTHER slaves up to them.
+                                            			if (!slaveServer.equals(partSlaveServer)) {
+	                                        				// We hit only get the remote steps, NOT the local ones.
+	                                        				// That's why it's OK to generate all combinations.
+	                                        				//
+			                                    			int outPort = getPort(referenceClusterSchema, slaveServer, partSlaveServer+"-"+source.getName()+"."+sourceCopyNr+" --> "+target.getName()+"."+targetCopyNr);
+			                                    			RemoteStep remoteOutputStep = new RemoteStep( partSlaveServer.getHostname(), Integer.toString(outPort), source.getName(), sourceCopyNr, target.getName(), targetCopyNr, partSlaveServer.getName());
+			                                    			source.getRemoteOutputSteps().add(remoteOutputStep);
+			
+			                                    			// OK, so the source step is sending rows out on the reserved ports
+			                                    			// What we need to do now is link all the OTHER slaves up to them.
+			                                    			//
+			                                    			int inPort = getPort(referenceClusterSchema, partSlaveServer, slaveServer+"-"+source.getName()+"."+sourceCopyNr+" --> "+target.getName()+"."+targetCopyNr);
+			                                    			RemoteStep remoteInputStep = new RemoteStep( partSlaveServer.getHostname(), Integer.toString(inPort), source.getName(), sourceCopyNr, target.getName(), targetCopyNr, slaveServer.getName() );
+			                                    			target.getRemoteInputSteps().add(remoteInputStep);
+                                            			}
+		                                    			// OK, save the partition number for the target step in the partition distribution...
 		                                    			//
-		                                    			int inPort = getPort(referenceClusterSchema, partSlaveServer, slaveServer+"-"+source.getName()+"."+sourceCopyNr+" --> "+target.getName()+"."+targetCopyNr);
-		                                    			RemoteStep remoteInputStep = new RemoteStep( partSlaveServer.getHostname(), Integer.toString(inPort), source.getName(), sourceCopyNr, target.getName(), targetCopyNr, slaveServer.getName() );
-		                                    			target.getRemoteInputSteps().add(remoteInputStep);
+		                                    			slaveStepCopyPartitionDistribution.addPartition(partSlaveServer.getName(), target.getName(), targetCopyNr, partitionNr);
+		                                    			
+		                                    			// Increase the partition number, make sure each remote step copy gets one partition to handle
+		                                    			//
+		                                    			partitionNr++;
                                         			}
                                     			}
 	                                    			
@@ -919,10 +937,22 @@ public class TransSplitter
                 }
             }
             
+            // Get a hold of all the slave transformations & the master...
+            // Assign the SAME slave-step-copy-partition distribution to all of them.
+            // That way the slave transformations can figure out where to send data.
+            // 
+            // Also clear the changed flag.
+            //
             for (TransMeta transMeta : slaveTransMap.values()) {
+            	transMeta.setSlaveStepCopyPartitionDistribution(slaveStepCopyPartitionDistribution);
             	transMeta.clearChanged();
             }
+        	master.setSlaveStepCopyPartitionDistribution(slaveStepCopyPartitionDistribution);
             master.clearChanged();
+            
+            System.out.println("distribution:"+Const.CR+slaveStepCopyPartitionDistribution.getXML());
+            
+            // We're absolutely done here...
         }
         catch(Exception e)
         {

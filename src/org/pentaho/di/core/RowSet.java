@@ -111,7 +111,7 @@ public class RowSet implements Comparable<RowSet>
     	
     }
     
-    // default getRow with wait time = 1ms
+    // default getRow with wait time = 100ms
     //
     public Object[] getRow(){
     	return getRowWait(Const.TIMEOUT_GET_MILLIS, TimeUnit.MILLISECONDS);

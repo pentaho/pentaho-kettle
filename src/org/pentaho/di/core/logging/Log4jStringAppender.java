@@ -21,6 +21,10 @@ public class Log4jStringAppender implements Appender
         buffer = new StringBuffer();
     }
     
+    public String toString() {
+    	return buffer.toString();
+    }
+    
     public void addFilter(Filter filter)
     {
         this.filter = filter;

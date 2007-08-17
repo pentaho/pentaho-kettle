@@ -58,12 +58,12 @@ public class Const
 	/**
 	 * Sleep time waiting when buffer is empty
 	 */
-	public static final int TIMEOUT_GET_MILLIS = 100;
+	public static final int TIMEOUT_GET_MILLIS = 50;
 
 	/**
 	 * Sleep time waiting when buffer is full
 	 */
-	public static final int TIMEOUT_PUT_MILLIS = 100; // luxury problem!
+	public static final int TIMEOUT_PUT_MILLIS = 50; // luxury problem!
 
 	/**
 	 * print update every ... lines
