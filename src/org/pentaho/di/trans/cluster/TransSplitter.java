@@ -280,7 +280,7 @@ public class TransSplitter
         stepPartitionFlag.put(stepMeta, "Y"); // is done.
     }
 
-    private String createSlavePartitionSchemaName(String name) {
+    public static String createSlavePartitionSchemaName(String name) {
 		return name + " (slave)";
 	}
 
@@ -941,6 +941,10 @@ public class TransSplitter
                     }
                 }
             }
+            
+            // Also add the original list of partition schemas to the slave step copy partition distribution...
+            //
+            slaveStepCopyPartitionDistribution.setOriginalPartitionSchemas(originalTransformation.getPartitionSchemas());
             
             // Get a hold of all the slave transformations & the master...
             // Assign the SAME slave-step-copy-partition distribution to all of them.

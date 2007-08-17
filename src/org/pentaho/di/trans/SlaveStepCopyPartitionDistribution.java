@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.partition.PartitionSchema;
 import org.w3c.dom.Node;
 
 /**
@@ -63,7 +64,8 @@ public class SlaveStepCopyPartitionDistribution {
 	public static final String XML_TAG = "slave-step-copy-partition-distribution";
 	
 	private Map<SlaveStepCopy, Integer> distribution;
-	
+	private List<PartitionSchema> originalPartitionSchemas;
+
 	public SlaveStepCopyPartitionDistribution() {
 		distribution = new Hashtable<SlaveStepCopy, Integer>();
 	}
@@ -101,6 +103,14 @@ public class SlaveStepCopyPartitionDistribution {
 			
 			xml.append(XMLHandler.closeTag("entry") ).append(Const.CR);
 		}
+		
+		if (originalPartitionSchemas!=null) {
+			xml.append("  ").append(XMLHandler.openTag("original-partition-schemas") );
+			for (PartitionSchema partitionSchema : originalPartitionSchemas) {
+				xml.append(partitionSchema.getXML());
+			}
+			xml.append("  ").append(XMLHandler.closeTag("original-partition-schemas") );
+		}
 
 		xml.append( XMLHandler.closeTag(XML_TAG) ).append(Const.CR);
 
@@ -118,12 +128,36 @@ public class SlaveStepCopyPartitionDistribution {
 			int stepCopyNr = Const.toInt( XMLHandler.getTagValue(entryNode, "stepcopy"), -1);
 			int partitionNr = Const.toInt( XMLHandler.getTagValue(entryNode, "partition"), -1);
 			
-			System.out.println("Read SlaveStepCopyPartitionDistribution entry: slave="+slaveServerName+", step="+stepName+", copy="+stepCopyNr+", partition="+partitionNr);
 			addPartition(slaveServerName, stepName, stepCopyNr, partitionNr);
+		}
+		
+		Node originalPartitionSchemasNode = XMLHandler.getSubNode(node, "original-partition-schemas");
+		if (originalPartitionSchemasNode!=null) {
+			originalPartitionSchemas = new ArrayList<PartitionSchema>();
+			int nrSchemas = XMLHandler.countNodes(originalPartitionSchemasNode, PartitionSchema.XML_TAG);
+			for (int i=0;i<nrSchemas;i++) {
+				Node schemaNode = XMLHandler.getSubNodeByNr(originalPartitionSchemasNode, PartitionSchema.XML_TAG, i);
+				PartitionSchema originalPartitionSchema = new PartitionSchema(schemaNode);
+				originalPartitionSchemas.add(originalPartitionSchema);
+			}
 		}
 	}
 	
 	public Map<SlaveStepCopy, Integer> getDistribution() {
 		return distribution;
+	}
+
+	/**
+	 * @return the originalPartitionSchemas
+	 */
+	public List<PartitionSchema> getOriginalPartitionSchemas() {
+		return originalPartitionSchemas;
+	}
+
+	/**
+	 * @param originalPartitionSchemas the originalPartitionSchemas to set
+	 */
+	public void setOriginalPartitionSchemas(List<PartitionSchema> originalPartitionSchemas) {
+		this.originalPartitionSchemas = originalPartitionSchemas;
 	}
 }

@@ -21,6 +21,7 @@
 package org.pentaho.di.trans.step;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -51,12 +52,14 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.StepLoader;
 import org.pentaho.di.trans.StepPlugin;
 import org.pentaho.di.trans.StepPluginMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.cluster.TransSplitter;
 
 public class BaseStep extends Thread implements VariableSpace
 {
@@ -370,8 +373,8 @@ public class BaseStep extends Thread implements VariableSpace
     {
         sdi.setStatus(StepDataInterface.STATUS_INIT);
 
-        String slaveNr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
-        String clusterSize = getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
+        String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
+        String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
         if (!Const.isEmpty(slaveNr) && !Const.isEmpty(clusterSize))
         {
             this.slaveNr = Integer.parseInt(slaveNr);
@@ -385,6 +388,55 @@ public class BaseStep extends Thread implements VariableSpace
             this.clusterSize = 0;
         }
 
+        // Also set the internal variable for the partition
+        //
+    	SlaveStepCopyPartitionDistribution partitionDistribution = transMeta.getSlaveStepCopyPartitionDistribution();
+    	
+        if (stepMeta.isPartitioned() && partitionDistribution!=null) 
+        {
+        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
+        	String stepName = stepname;
+        	int stepCopyNr = stepcopy;
+        	
+        	// Look up the partition nr...
+        	// Set the partition ID (string) as well as the partition nr [0..size[
+        	//
+        	int partitionNr = partitionDistribution.getPartition(slaveServerName, stepName, stepCopyNr);
+        	if (partitionNr>=0) {
+        		String partitionNrString = new DecimalFormat("000").format(partitionNr);
+        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
+        		
+        		if (partitionDistribution.getOriginalPartitionSchemas()!=null) {
+	        		// What is the partition schema name?
+	        		//
+	        		String partitionSchemaName = stepMeta.getStepPartitioningMeta().getPartitionSchema().getName();
+	
+	        		// Search the original partition schema in the distribution...
+	        		//
+	        		for (PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas()) {
+	        			String slavePartitionSchemaName = TransSplitter.createSlavePartitionSchemaName(originalPartitionSchema.getName());
+	        			if (slavePartitionSchemaName.equals(partitionSchemaName)) {
+	        				PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
+	        				
+	        				// This is the one...
+	        				//
+	        				if (schema.isDynamicallyDefined()) {
+	        					schema.expandPartitionsDynamically(this.clusterSize, this);
+	        				}
+	        				
+	    	        		String partID = schema.getPartitionIDs().get(partitionNr);
+	    	        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
+	        				break;
+	        			}
+	        		}
+        		}	
+        	}
+        }
+        else if (!Const.isEmpty(partitionID))
+        {
+            setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+        }
+        
         // Set a unique step number across all slave servers
         //
         //   slaveNr * nrCopies + copyNr
@@ -1604,28 +1656,6 @@ public class BaseStep extends Thread implements VariableSpace
     {
         setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
         setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
-
-        // Also set the internal variable for the partition
-        if (!Const.isEmpty(partitionID))
-        {
-            setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
-        }
-        else if (stepMeta.isPartitioned() && transMeta.getSlaveStepCopyPartitionDistribution()!=null) 
-        {
-        	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
-        	String stepName = stepname;
-        	int stepCopyNr = stepcopy;
-        	
-        	// Look up the partition nr...
-        	// Set the partition ID (string) as well as the partition nr [0..size[
-        	//
-        	int partitionNr = transMeta.getSlaveStepCopyPartitionDistribution().getPartition(slaveServerName, stepName, stepCopyNr);
-        	if (partitionNr>=0) {
-        		String partID = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs().get(partitionNr);
-        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partID);
-        		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, Integer.toString(partitionNr));
-        	}
-        }
     }
 
     public void markStop()

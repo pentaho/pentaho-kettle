@@ -310,14 +310,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
-
-					// Give that message a second to sink in.
-					//
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
-						// Ignore
-					}
 					
 					// Close the socket, we've got everything...
 					//
@@ -329,6 +321,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						baseStep.stopAll();
 					}
 
+					// Give that message a few seconds to sink in.
+					//
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						// Ignore
+					}
+					
 					// Now we can close the server socket...
 					// All data has been received on the other end.
 					//
@@ -363,14 +363,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		} catch (IOException e) {
 			throw new KettleException("Unable to get confirmation back from the remote step that all data was read: "+e.toString(), e);
 		}
-		finally  {
-			try {
-				socket.shutdownInput();
-			} catch (IOException e) {
-				throw new KettleException("Unable to shut down confirmation input stream: "+e.toString(), e);
-			}
-		}
-		
+
 		// We're done here, on with the regular program.
 	}
 	

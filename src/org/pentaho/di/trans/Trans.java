@@ -1788,9 +1788,15 @@ public class Trans implements VariableSpace
         {
             // Send the transformations to the servers...
             //
-            // First the master...
-            //
+            // First the master and the slaves...
+        	//
             TransMeta master = transSplitter.getMaster();
+            final SlaveServer[] slaves = transSplitter.getSlaveTargets();
+            final Thread[]      threads = new Thread[slaves.length];
+            final Throwable[]   errors = new Throwable[slaves.length];
+            //
+            // Send them all on their way...
+            //
             SlaveServer masterServer = null;
             List<StepMeta> masterSteps = master.getTransHopSteps(false);
             if (masterSteps.size()>0) // If there is something that needs to be done on the master...
@@ -1798,7 +1804,11 @@ public class Trans implements VariableSpace
                 masterServer = transSplitter.getMasterServer();
                 if (executionConfiguration.isClusterPosting())
                 {
-                    String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
+                	TransConfiguration transConfiguration = new TransConfiguration(master, executionConfiguration);
+                	Map<String, String> variables = transConfiguration.getTransExecutionConfiguration().getVariables();
+                    variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
+
+                    String masterReply = masterServer.sendXML(transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH+"/?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -1809,10 +1819,6 @@ public class Trans implements VariableSpace
             
             // Then the slaves...
             //
-            final SlaveServer[] slaves = transSplitter.getSlaveTargets();
-            final Thread[]      threads = new Thread[slaves.length];
-            final Throwable[]   errors = new Throwable[slaves.length];
-
             for (int i=0;i<slaves.length;i++)
             {
             	final int index = i;

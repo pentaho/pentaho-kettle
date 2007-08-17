@@ -78,6 +78,7 @@ public class AddTransServlet extends HttpServlet
             // System.out.println(xml);
             TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
             TransMeta transMeta = transConfiguration.getTransMeta();
+            transMeta.injectVariables(transConfiguration.getTransExecutionConfiguration().getVariables());
             
             // Create the transformation and store in the list...
             //
