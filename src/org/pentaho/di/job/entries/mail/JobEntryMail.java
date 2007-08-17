@@ -605,7 +605,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     Properties props = new Properties();
     if (Const.isEmpty(server))
     {
-      log.logError(toString(), "Unable to send the mail because the mail-server (SMTP host) is not specified");
+      log.logError(toString(), Messages.getString("JobMail.Error.HostNotSpecified"));    
+      
+      
       result.setNrErrors(1L);
       result.setResult(false);
       return result;
@@ -615,6 +617,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     if (usingSecureAuthentication)
     {
       protocol = "smtps";
+      // required to get rid of a SSL exception :
+      //  nested exception is:
+  	  //  javax.net.ssl.SSLException: Unsupported record version Unknown-50.49
+      props.put("mail.smtps.quitwait", "false");
     }
 
     props.put("mail." + protocol + ".host", environmentSubstitute(server));
@@ -657,7 +663,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         msg.setFrom(new InternetAddress(email_address));
       } else
       {
-        throw new MessagingException("reply e-mail address is not filled in");
+    	    
+        throw new MessagingException(Messages.getString("JobMail.Error.ReplyEmailNotFilled"));
       }
 
       // Split the mail-address: space separated
