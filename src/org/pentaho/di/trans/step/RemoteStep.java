@@ -11,12 +11,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -40,13 +38,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 	private static final long TIMEOUT_IN_SECONDS = 30;
 	
-	private static LogWriter log = LogWriter.getInstance();
-
 	/** The target or source slave server with which we're exchanging data */
 	private String targetSlaveServerName;
 	
-	/** The target or source hostname */
+	/** The target or source host name */
 	private String hostname;
+	
+	/** The remote host name */
+	private String remoteHostname;
 
 	/** The target or source port number for the data socket */
 	private String port;
@@ -83,9 +82,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 * @param hostname
 	 * @param port
 	 */
-	public RemoteStep(String hostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
+	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
 		super();
 		this.hostname = hostname;
+		this.remoteHostname = remoteHostname;
 		this.port = port;
 		this.sourceStep = sourceStep;
 		this.sourceStepCopyNr = sourceStepCopyNr;
@@ -116,6 +116,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		xml.append(XMLHandler.openTag(XML_TAG));
 		
 		xml.append(XMLHandler.addTagValue("hostname", hostname, false));
+		xml.append(XMLHandler.addTagValue("remote_hostname", remoteHostname, false));
 		xml.append(XMLHandler.addTagValue("port", port, false));
 		xml.append(XMLHandler.addTagValue("buffer_size", bufferSize, false));
 		xml.append(XMLHandler.addTagValue("compressed_streams", compressingStreams, false));
@@ -136,6 +137,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	public RemoteStep(Node node) {
 		
 		hostname = XMLHandler.getTagValue(node, "hostname");
+		remoteHostname = XMLHandler.getTagValue(node, "remote_hostname");
 		port     = XMLHandler.getTagValue(node, "port");
 		bufferSize = Integer.parseInt(XMLHandler.getTagValue(node, "buffer_size"));
 		compressingStreams = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "compressed_streams") );
@@ -227,7 +229,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		this.baseStep = baseStep;
 		socket = serverSocket.accept();
 		
-		System.out.println("Server socket accepted for port ["+ port +"]");
+		baseStep.logDetailed("Server socket accepted for port ["+ port +"]");
 		
 		if (compressingStreams) {
 			gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
@@ -239,6 +241,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 			bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream(), bufferSize);
 		}
         outputStream = new DataOutputStream(bufferedOutputStream);
+		inputStream = new DataInputStream(socket.getInputStream()); // for the confirmation message
         first=true;
 		
 		// Create an output row set: to be added to BaseStep.outputRowSets
@@ -277,23 +280,62 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					outputStream.flush();
 					
 				} catch (Exception e) {
-					LogWriter.getInstance().logError(baseStep.toString(), "Error writing to remote step", e);
-					LogWriter.getInstance().logError(baseStep.toString(), Const.getStackTracker(e));
+					baseStep.logError("Error writing to remote step", e);
 					baseStep.setErrors(1);
 					baseStep.stopAll();
 				}
 				finally {
+
+					// shut down the output stream, we've send everything...
+					//
 					try {
-						socket.close();
+						socket.shutdownOutput();
 					} catch (IOException e) {
-						LogWriter.getInstance().logError(baseStep.toString(), "Error closing client socket to remote step", e);
+						baseStep.logError("Error closing output socket to remote step", e);
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
+					
+					// OK, closing the sockets just like that is causing us harm.
+					// The problem is that there still might be bytes traveling across the network.
+					// That is a serious synchronization issue to solve.
+					// Not closing the server socket is not an option since we're not going to be able to open another, nor run another transformation.
+					// 
+					// So, the only option left, besides waiting a really long time is to check for a message back that all was received on the other end.
+					// 
+					try {
+						readForRemoteConfirmation();
+					} catch (KettleException ke) {
+						baseStep.logError("Error reading remote confirmation", ke);
+						baseStep.setErrors(1);
+						baseStep.stopAll();
+					}
+
+					// Give that message a second to sink in.
+					//
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						// Ignore
+					}
+					
+					// Close the socket, we've got everything...
+					//
+					try {
+						socket.close();
+					} catch (IOException e) {
+						baseStep.logError("Error closing client socket to remote step", e);
+						baseStep.setErrors(1);
+						baseStep.stopAll();
+					}
+
+					// Now we can close the server socket...
+					// All data has been received on the other end.
+					//
 					try {
 						serverSocket.close();
 					} catch (IOException e) {
-						LogWriter.getInstance().logError(baseStep.toString(), "Error closing client socket to remote step", e);
+						baseStep.logError("Error closing client socket to remote step", e);
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
@@ -308,6 +350,47 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		// Return the rowSet to be added to the output row set of baseStep 
 		//
 		return rowSet;
+	}
+	
+	private void readForRemoteConfirmation() throws KettleException {
+		
+		// We opened a new input stream to the remote step
+		// This step will send confirmation once all the data has been read...
+		//
+		try {
+			long nrLinesReceived = inputStream.readLong();
+			baseStep.logDetailed("Remote step says it has received "+nrLinesReceived+" rows of data.");
+		} catch (IOException e) {
+			throw new KettleException("Unable to get confirmation back from the remote step that all data was read: "+e.toString(), e);
+		}
+		finally  {
+			try {
+				socket.shutdownInput();
+			} catch (IOException e) {
+				throw new KettleException("Unable to shut down confirmation input stream: "+e.toString(), e);
+			}
+		}
+		
+		// We're done here, on with the regular program.
+	}
+	
+	private void sendRemoteConfirmation() throws KettleException {
+		// send confirmation now that all the data has been read...
+		//
+		try {
+			outputStream.writeLong(baseStep.linesOutput);
+			baseStep.logDetailed("Send confirmation message to remote step: we received "+baseStep.linesOutput+" rows of data.");
+			outputStream.flush();
+		} catch (IOException e) {
+			throw new KettleException("Unable to get confirmation back from the remote step that all data was read: "+e.toString(), e);
+		}
+		finally  {
+			try {
+				socket.shutdownOutput();
+			} catch (IOException e) {
+				throw new KettleException("Unable to close confirmation output stream: "+e.toString(), e);
+			}
+		}
 	}
 	
 	private void sendRow(RowMetaInterface rowMeta, Object[] rowData) throws KettleFileException {
@@ -356,15 +439,17 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
                     inputStream  = new DataInputStream(new BufferedInputStream(socket.getInputStream(), bufferSize));
                 }
 
+                outputStream = new DataOutputStream(socket.getOutputStream()); // To send the confirmation message on.
+                		
 		        lastException=null;
         	}
         	catch(Exception e) {
                 lastException=new KettleException("Unable to open socket to server "+realHostname+" port "+portNumber, e);
         	}
-	        if (lastException!=null) // Sleep for a second
+	        if (lastException!=null) // Sleep for a while
 	        {
 	            try {
-					Thread.sleep(1000);
+					Thread.sleep(250);
 				} catch (InterruptedException e) {
 					throw new KettleException("Interrupted while trying to connect to server socket: "+e.toString());
 				}
@@ -374,8 +459,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         // See if all was OK...
         if (lastException!=null)
         {
-            log.logError(toString(), "Error initialising step: "+lastException.toString());
-            log.logError(toString(), Const.getStackTracker(lastException));
+        	baseStep.logError("Error initialising step: "+lastException.toString());
             throw lastException;
         }
         else
@@ -405,26 +489,37 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Nothing, we're simply done reading...
 					//
 				} catch (Exception e) {
-					LogWriter.getInstance().logError(baseStep.toString(), "Error reading from client socket to remote step", e);
-					LogWriter.getInstance().logError(baseStep.toString(), Const.getStackTracker(e));
+					baseStep.logError("Error reading from client socket to remote step", e);
 					baseStep.setErrors(1);
 					baseStep.stopAll();
 				}
 				finally {
+					// OK, we've read all data
+					// Now we to signal the remote step that we've read everything.
+					//
+					try {
+						sendRemoteConfirmation();
+					} catch (KettleException e) {
+						baseStep.logError("Error handling remote confirmation server socket", e);
+						baseStep.setErrors(1);
+						baseStep.stopAll();
+					}
+										
 					try {
 						inputStream.close();
 					} catch (IOException e) {
-						LogWriter.getInstance().logError(baseStep.toString(), "Error closing input stream, used for reading from remote step", e);
+						baseStep.logError("Error closing input stream, used for reading from remote step", e);
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
 					try {
 						socket.close();
 					} catch (IOException e) {
-						LogWriter.getInstance().logError(baseStep.toString(), "Error closing client socket connection to remote step", e);
+						baseStep.logError("Error closing client socket connection to remote step", e);
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
+
 				}
 				// signal baseStep that nothing else comes from this step.
 				//
@@ -532,5 +627,19 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 */
 	public void setCompressingStreams(boolean compressingStreams) {
 		this.compressingStreams = compressingStreams;
+	}
+
+	/**
+	 * @return the remoteHostname
+	 */
+	public String getRemoteHostname() {
+		return remoteHostname;
+	}
+
+	/**
+	 * @param remoteHostname the remoteHostname to set
+	 */
+	public void setRemoteHostname(String remoteHostname) {
+		this.remoteHostname = remoteHostname;
 	}
 }

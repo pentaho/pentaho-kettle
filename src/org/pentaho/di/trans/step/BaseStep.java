@@ -408,7 +408,7 @@ public class BaseStep extends Thread implements VariableSpace
 	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 	        	try {
 	        		copy.openServerSocket(this);
-	        		logBasic("Opened a server socket connection to "+copy);
+	        		logDetailed("Opened a server socket connection to "+copy);
 	        	}
 	        	catch(Exception e) {
 	            	log.logError(toString(), "Unable to open server socket during step initialisation: "+copy.toString(), e);
@@ -701,7 +701,7 @@ public class BaseStep extends Thread implements VariableSpace
         		for (RemoteStep remoteStep : remoteOutputSteps) {
         			try {
 						RowSet rowSet = remoteStep.openWriterSocket(this);
-						logBasic("Opened a writer socket to remote step: "+remoteStep);
+						logDetailed("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
 					} catch (IOException e) {
 						throw new KettleStepException("Error opening writer socket to remote step '"+remoteStep+"'", e);
@@ -1056,7 +1056,7 @@ public class BaseStep extends Thread implements VariableSpace
         		for (RemoteStep remoteStep : remoteInputSteps) {
         			try {
 						RowSet rowSet = remoteStep.openReaderSocket(this);
-						logBasic("Opened a reader socket to remote step: "+remoteStep);
+						logDetailed("Opened a reader socket to remote step: "+remoteStep);
 						inputRowSets.add(rowSet);
 					} catch (Exception e) {
 						throw new KettleStepException("Error opening reader socket to remote step '"+remoteStep+"'", e);
@@ -1527,6 +1527,11 @@ public class BaseStep extends Thread implements VariableSpace
     public void logError(String s)
     {
         log.println(LogWriter.LOG_LEVEL_ERROR, stepname + "." + stepcopy, s); //$NON-NLS-1$
+    }
+
+    public void logError(String s, Throwable e)
+    {
+    	log.logError(stepname + "." + stepcopy, s, e); //$NON-NLS-1$
     }
 
     public void logDetailed(String s)
