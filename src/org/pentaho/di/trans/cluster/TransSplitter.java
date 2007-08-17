@@ -491,10 +491,9 @@ public class TransSplitter
                             for (int s=0;s<nrSlaves;s++)
                             {
                                 SlaveServer slaveServer = (SlaveServer) referenceClusterSchema.getSlaveServers().get(s);
-
                                 if (!slaveServer.isMaster())
                                 {
-                                    // MASTER : add remote output step to the previous step
+                                	// MASTER : add remote output step to the previous step
                                 	//
                                     StepMeta previous = master.findStep(previousStep.getName());
                                     if (previous==null) {
