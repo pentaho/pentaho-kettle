@@ -396,10 +396,11 @@ public class Condition implements Cloneable, XMLInterface
                 {
                     fieldMeta = rowMeta.getValueMeta(left_fieldnr);
                     field = r[left_fieldnr];
-                    if (field==null)
-                    {
-                        throw new KettleException("Unable to find field ["+left_valuename+"] in the input row!");
-                    }
+// JIRA PDI-38
+//                  if (field==null)
+//                  {
+//                      throw new KettleException("Unable to find field ["+left_valuename+"] in the input row!");
+//                  }
                 }
 				
 			    // Get fieldnrs right exact
@@ -409,16 +410,17 @@ public class Condition implements Cloneable, XMLInterface
                 {
                     fieldMeta2 = rowMeta.getValueMeta(right_fieldnr);
                     field2 = r[right_fieldnr];
-                    if (field2==null)
-                    {
-                        throw new KettleException("Unable to find field ["+right_valuename+"] in the input row!");
-                    }
+//                  JIRA PDI-38                    
+//                  if (field2==null)
+//                  {
+//                      throw new KettleException("Unable to find field ["+right_valuename+"] in the input row!");
+//                  }
                 }
                 
-                if (field==null)
-                {
-                    throw new KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
-                }
+//              if (field==null)
+//              {
+//                  throw new KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
+//              }
 
                 if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
                 {
