@@ -25,4 +25,6 @@ The following bug where fixes backported from the 3.0.0-M1 series:
 - PDI-48: Excel output doesn't release file handle - Sven B - 15-Aug-2007
 - PDI-53: Subjob failing does not automatically fail job (e.g. on missing start in subjob) - Sven B - 16-Aug-2007
 - Fixup for #5797 : make text input release its file handle on failure - Sven B - 16-Aug-2007
-- PDI-50: Str2num in Javascript steps fails on leading spaces. when using str2num with 1 argument the argument is left trimmed - Sven B - 18-Aug-2007          
+- PDI-50: Str2num in Javascript steps fails on leading spaces. when using str2num with 1 argument the argument is left trimmed - Sven B - 18-Aug-2007    
+- Fix for PDI-64 : When you send an email with a google account (SSL), PDI raise an exception  
+      
