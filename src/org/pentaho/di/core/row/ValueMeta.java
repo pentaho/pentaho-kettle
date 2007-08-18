@@ -2221,7 +2221,9 @@ public class ValueMeta implements ValueMetaInterface
     {
         // null handling and conversion of value to null
         //
-        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(ifNull))
+    	String nullCmp = Const.rightPad(new StringBuffer(Const.NVL(nullif, "")), pol.length());
+    	
+        if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
         {
             if (ifNull!=null && ifNull.length()!=0)
             {
