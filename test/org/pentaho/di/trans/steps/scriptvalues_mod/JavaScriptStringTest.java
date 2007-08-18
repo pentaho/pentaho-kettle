@@ -43,7 +43,12 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 /**
  * Test class for the Modified Javascript step. Things tested:
- * ltrim(), rtrim(), trim(), lpad(), rpad(), upper(), lower().
+ * ltrim(), rtrim(), trim(), lpad(), rpad(), upper(), lower(),
+ * isNum(), str2num(), num2str().
+ * 
+ * Still to do:
+ * - Use multiple arguments in str2num/num2str (tests only with 1 argument)
+ * - Defined error handling
  *
  * @author Sven Boden
  */
@@ -119,7 +124,31 @@ public class JavaScriptStringTest extends TestCase
 		
 		return list;
 	}	
-	
+
+	/*
+	 * Bug PDI-50 information: Str2num in Javascript steps fails on leading spaces.
+	 *                         Fix was to left trim strings in str2num.
+	 */
+	public List<RowMetaAndData> createData3()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
+		
+		RowMetaInterface rm = createRowMetaInterface1();
+		
+		Object[] r1 = new Object[] { "3.5a" }; 
+		Object[] r2 = new Object[] { "3.a" };
+		Object[] r3 = new Object[] { "2.0" };
+		Object[] r4 = new Object[] { "1.12" };
+		Object[] r5 = new Object[] { "  5.3" };   /* Data for bug JIRA PDI-50 */
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		
+		return list;
+	}		
 	
 	/**
 	 * Create the meta data for the results (ltrim/rtrim/trim).
@@ -198,6 +227,28 @@ public class JavaScriptStringTest extends TestCase
 		
 		return rm;
 	}	
+
+	/**
+	 * Create the meta data for the results (isnum/num2str/str2num).
+	 */
+	public RowMetaInterface createRowMetaInterfaceResult3()
+	{
+		RowMetaInterface rm = new RowMeta();
+	
+		ValueMetaInterface valuesMeta[] = {
+			    new ValueMeta("string",   ValueMeta.TYPE_STRING),
+			    new ValueMeta("numb1",    ValueMeta.TYPE_NUMBER),
+			    new ValueMeta("bool1",    ValueMeta.TYPE_BOOLEAN),
+			    new ValueMeta("str1",     ValueMeta.TYPE_STRING),
+	    };
+
+		for (int i=0; i < valuesMeta.length; i++ )
+		{
+			rm.addValueMeta(valuesMeta[i]);
+		}
+		
+		return rm;
+	}	
 	
 	/**
 	 * Create result data for test case 2: lpad/rpad/upper/lower.
@@ -228,7 +279,30 @@ public class JavaScriptStringTest extends TestCase
 		
 		return list;
 	}	
+
+	/**
+	 * Create result data for test case 3: isNum, num2str, str2num.
+	 */
+	public List<RowMetaAndData> createResultData3()
+	{
+		List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();	
 		
+		RowMetaInterface rm = createRowMetaInterfaceResult3();
+		
+		Object[] r1 = new Object[] { "3.5a",   3.5D, false, "3.5"  };
+		Object[] r2 = new Object[] { "3.a",    3.0D, false, "3"    };
+		Object[] r3 = new Object[] { "2.0",    2.0D, true,  "2"    };
+		Object[] r4 = new Object[] { "1.12",  1.12D, true,  "1.12" };
+		Object[] r5 = new Object[] { "  5.3",  5.3D, true,  "5.3"  };
+		
+		list.add(new RowMetaAndData(rm, r1));
+		list.add(new RowMetaAndData(rm, r2));
+		list.add(new RowMetaAndData(rm, r3));
+		list.add(new RowMetaAndData(rm, r4));
+		list.add(new RowMetaAndData(rm, r5));
+		
+		return list;
+	}		
 	
 	/**
 	 *  Check the 2 lists comparing the rows in order.
@@ -493,5 +567,110 @@ public class JavaScriptStringTest extends TestCase
                 
         List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
         checkRows(resultRows2, goldenImageRows);
-    }            
+    }
+    
+	/**
+	 * Test case for javascript functionality: isNum(), str2num(), num2str().
+	 */
+    public void testStringsNum() throws Exception
+    {
+        EnvUtil.environmentInit();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("test javascript numerical");
+    	
+        StepLoader steploader = StepLoader.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = steploader.getStepPluginID(im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);                       
+
+        // 
+        // Create a javascript step
+        //
+        String javaScriptStepname = "javascript step";            
+        ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
+        
+        ScriptValuesScript[] js = new ScriptValuesScript[] {new ScriptValuesScript(ScriptValuesScript.TRANSFORM_SCRIPT,
+        		                                              "script",
+        		                                              "var numb1 = str2num(string.getString());\n" +
+        		                                              "var bool1 = isNum(string.getString());\n" +
+        		                                              "var str1  = num2str(numb1);\n") };
+        svm.setJSScripts(js);
+        svm.setName(new String[] { "numb1", "bool1", "str1" });
+        svm.setRename(new String[] { "", "", "" });
+        svm.setType(new int[] { ValueMetaInterface.TYPE_NUMBER,
+        		                ValueMetaInterface.TYPE_BOOLEAN,
+        		                ValueMetaInterface.TYPE_STRING});        
+        svm.setLength(new int[] { -1, -1, -1 });
+        svm.setPrecision(new int[] { -1, -1, -1 });
+        svm.setCompatible(true);
+
+        String javaScriptStepPid = steploader.getStepPluginID(svm);
+        StepMeta javaScriptStep = new StepMeta(javaScriptStepPid, javaScriptStepname, (StepMetaInterface)svm);
+        transMeta.addStep(javaScriptStep);            
+
+        TransHopMeta hi1 = new TransHopMeta(injectorStep, javaScriptStep);
+        transMeta.addTransHop(hi1);        
+        
+        // 
+        // Create a dummy step 
+        //
+        String dummyStepname = "dummy step";            
+        DummyTransMeta dm = new DummyTransMeta();
+
+        String dummyPid = steploader.getStepPluginID(dm);
+        StepMeta dummyStep = new StepMeta(dummyPid, dummyStepname, (StepMetaInterface)dm);
+        transMeta.addStep(dummyStep);                              
+
+        TransHopMeta hi2 = new TransHopMeta(javaScriptStep, dummyStep);
+        transMeta.addTransHop(hi2);        
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si;
+
+        si = trans.getStepInterface(javaScriptStepname, 0);
+        RowStepCollector javaScriptRc = new RowStepCollector();
+        si.addRowListener(javaScriptRc);
+               
+        si = trans.getStepInterface(dummyStepname, 0);
+        RowStepCollector dummyRc = new RowStepCollector();
+        si.addRowListener(dummyRc);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createData3();
+        Iterator<RowMetaAndData> it = inputList.iterator();
+        while ( it.hasNext() )
+        {
+        	RowMetaAndData rm = (RowMetaAndData)it.next();
+        	rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+
+        trans.waitUntilFinished();   
+        
+        List<RowMetaAndData> goldenImageRows = createResultData3();
+        List<RowMetaAndData> resultRows1 = javaScriptRc.getRowsWritten();
+        checkRows(resultRows1, goldenImageRows);
+                
+        List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
+        checkRows(resultRows2, goldenImageRows);
+    }    
 }
