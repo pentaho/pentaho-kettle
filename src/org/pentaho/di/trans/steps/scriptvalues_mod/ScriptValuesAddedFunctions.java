@@ -1029,7 +1029,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					if(ArgList[0].equals(null)) return null;
 					String sArg1 = Context.toString(ArgList[0]);
 					DecimalFormat formatter = new DecimalFormat();
-					dRC= (formatter.parse(sArg1)).doubleValue(); 
+					dRC= (formatter.parse(Const.ltrim(sArg1))).doubleValue(); 
 				}catch(Exception e){
 					throw Context.reportRuntimeError("Could not convert the given String : " + e.getMessage());
 				}
@@ -1042,7 +1042,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					String sArg2 = Context.toString(ArgList[1]);
 					if(sArg1.equals("null") || sArg2.equals("null")) return null;
 					DecimalFormat formatter = new DecimalFormat(sArg2);
-					dRC= (formatter.parse(sArg1)).doubleValue();
+					dRC= (formatter.parse(Const.ltrim(sArg1))).doubleValue();
 					return new Double(dRC);
 				}catch(Exception e){
 					throw Context.reportRuntimeError("Could not convert the String with the given format :" + e.getMessage());
@@ -1058,7 +1058,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					if(sArg3.length() == 2){
 						DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale(sArg3.toLowerCase()));
 						DecimalFormat formatter = new DecimalFormat(sArg2, dfs);
-						dRC= (formatter.parse(sArg1)).doubleValue(); 
+						dRC= (formatter.parse(Const.ltrim(sArg1))).doubleValue(); 
 						return new Double(dRC);
 					}
 				}catch(Exception e){
