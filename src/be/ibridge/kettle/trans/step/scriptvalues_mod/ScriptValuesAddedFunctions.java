@@ -1021,7 +1021,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					if(ArgList[0].equals(null)) return null;
 					String sArg1 = Context.toString(ArgList[0]);
 					DecimalFormat formatter = new DecimalFormat();
-					dRC= (formatter.parse(sArg1)).doubleValue(); 
+					dRC= (formatter.parse(Const.ltrim(sArg1))).doubleValue(); 
 				}catch(Exception e){
 					throw Context.reportRuntimeError("Could not convert the given String.");
 				}
