@@ -545,6 +545,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
         if (usingSecureAuthentication)
         {
             protocol="smtps";
+			// required to get rid of a SSL exception :
+			//  nested exception is:
+			//  javax.net.ssl.SSLException: Unsupported record version Unknown
+			props.put("mail.smtps.quitwait", "false");
         }
         
 		props.put("mail."+protocol+".host", StringUtil.environmentSubstitute(server));
