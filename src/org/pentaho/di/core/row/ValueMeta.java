@@ -2253,7 +2253,7 @@ public class ValueMeta implements ValueMetaInterface
 			}
 		}
 
-    	String nullCmp = Const.rightPad(new StringBuffer(Const.NVL(nullif, "")), pol.length());
+    	String nullCmp = Const.rightPad(new StringBuffer(null_value), pol.length());
     	
         if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
         {
