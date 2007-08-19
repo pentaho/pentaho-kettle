@@ -2221,6 +2221,38 @@ public class ValueMeta implements ValueMetaInterface
     {
         // null handling and conversion of value to null
         //
+		String null_value = nullif;
+		if (null_value == null)
+		{
+			switch (convertMeta.getType())
+			{
+			case Value.VALUE_TYPE_BOOLEAN:
+				null_value = Const.NULL_BOOLEAN;
+				break;
+			case Value.VALUE_TYPE_STRING:
+				null_value = Const.NULL_STRING;
+				break;
+			case Value.VALUE_TYPE_BIGNUMBER:
+				null_value = Const.NULL_BIGNUMBER;
+				break;
+			case Value.VALUE_TYPE_NUMBER:
+				null_value = Const.NULL_NUMBER;
+				break;
+			case Value.VALUE_TYPE_INTEGER:
+				null_value = Const.NULL_INTEGER;
+				break;
+			case Value.VALUE_TYPE_DATE:
+				null_value = Const.NULL_DATE;
+				break;
+			case Value.VALUE_TYPE_BINARY:
+				null_value = Const.NULL_BINARY;
+				break;				
+			default:
+				null_value = Const.NULL_NONE;
+				break;
+			}
+		}
+
     	String nullCmp = Const.rightPad(new StringBuffer(Const.NVL(nullif, "")), pol.length());
     	
         if (Const.isEmpty(pol) || pol.equalsIgnoreCase(nullCmp))
@@ -2231,7 +2263,7 @@ public class ValueMeta implements ValueMetaInterface
             }
         }
         
-        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullif)) 
+        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(nullCmp)) 
         {
             return null;
         }
