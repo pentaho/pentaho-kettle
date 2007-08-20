@@ -43,6 +43,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.cluster.TransSplitter;
@@ -497,25 +498,32 @@ public class Trans implements VariableSpace
             // If both steps are partitioned on a different method or schema, we need to re-partition as well.
             // If both steps are not partitioned, we don't need to re-partition
             //
-            StepPartitioningMeta thisPartitioned = stepMeta.getTargetStepPartitioningMeta();
-            StepPartitioningMeta nextPartitioned = stepMeta.getTargetStepPartitioningMeta();
-	        int nrNext = transMeta.findNrNextSteps(stepMeta);
+            boolean isThisPartitioned = stepMeta.isPartitioned();
+            PartitionSchema thisPartitionSchema = null;
+            if (isThisPartitioned) thisPartitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+            
+            boolean isNextPartitioned = false;
+            StepPartitioningMeta nextStepPartitioningMeta = null;
+            PartitionSchema nextPartitionSchema = null;
+
+            int nrNext = transMeta.findNrNextSteps(stepMeta);
 	        for (int p=0;p<nrNext;p++)
 	        {
 	            StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
 	            if (nextStep.isPartitioned()) 
 	            {
-	                nextPartitioned = nextStep.getStepPartitioningMeta();
+	            	isNextPartitioned = true;
+	            	nextStepPartitioningMeta = nextStep.getStepPartitioningMeta(); 
+	                nextPartitionSchema = nextStepPartitioningMeta.getPartitionSchema();
 	            }
 	        }
             
-            stepMeta.setTargetStepPartitioningMeta(nextPartitioned);
             baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
             
         	// If the next step is partitioned differently, set re-partitioning, when running locally.
         	//
-            if ( nextPartitioned!=null && (thisPartitioned==null || !thisPartitioned.equals(nextPartitioned)) ) {
-            	baseStep.setRepartitioning(nextPartitioned.getMethodType());
+            if ( (!isThisPartitioned && isNextPartitioned ) || (isThisPartitioned && isNextPartitioned && !thisPartitionSchema.equals(nextPartitionSchema)) ) {
+            	baseStep.setRepartitioning(nextStepPartitioningMeta.getMethodType());
             }
         }
 
@@ -631,6 +639,8 @@ public class Trans implements VariableSpace
     	// Close all open server sockets.
     	// We can only close these after all processing has been confirmed to be finished.
     	//
+    	if (steps==null) return;
+    	
     	for (StepMetaDataCombi combi : steps) {
 				combi.step.cleanup();
     	}
@@ -2188,9 +2198,9 @@ public class Trans implements VariableSpace
         // The name of the directory in the repository
         variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, transMeta.getDirectory()!=null?transMeta.getDirectory().getPath():"");
         
-        // Here we don't undefine the job specific parameters, as it may come in handy.
+        // Here we don't clear the definition of the job specific parameters, as they may come in handy.
         // A transformation can be called from a job and may inherit the job internal variables
-        // but the other around can't.
+        // but the other around is not possible.
         
     }    
     

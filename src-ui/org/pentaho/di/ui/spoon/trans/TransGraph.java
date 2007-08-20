@@ -70,12 +70,10 @@ import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -94,6 +92,8 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.StepFieldsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.spoon.AreaOwner;
 import org.pentaho.di.ui.spoon.Messages;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -245,8 +245,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         // toolTip.setHideOnMouseDown(true);
         toolTip.setRespectMonitorBounds(true);
         toolTip.setRespectDisplayBounds(true);
+        toolTip.setPopupDelay(500);
         // toolTip.setShift(new org.eclipse.swt.graphics.Point(-3,-3));
-        
         
         iconsize = spoon.props.getIconSize();
 
@@ -599,6 +599,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             public void mouseMove(MouseEvent e)
             {
+				canvas.setFocus(); // give the focus to the canvas, that way clicks are effective immediately.
+
                 boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
                 // Remember the last position of the mouse for paste with keyboard
@@ -1595,178 +1597,184 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
      */
     private void setMenu(int x, int y)
     {
-    	
-        currentMouseX = x;
-        currentMouseY = y;
-
-        final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
-        if (stepMeta != null) // We clicked on a Step!
-        {
-        		setCurrentStep( stepMeta );
-        		
-        		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
-    			if( menu != null ) {
-    	            int sels = transMeta.nrSelectedSteps();
-    	            
-    				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
-    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-    				item.setEnabled( sels == 2 );
-    				
-    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
-	            	item.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
-
-				XulMenu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
-				if( aMenu != null ) {
-					aMenu.setEnabled( sels > 1 );
-				}
-
-				menu.addMenuListener( "trans-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-top", this, "alligntop" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-bottom", this, "allignbottom" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-horz", this, "distributehorizontal" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-vert", this, "distributevertical" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-align-snap", this, "snaptogrid" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-				item = menu.getMenuItemById( "trans-graph-entry-data-movement-distribute" ); //$NON-NLS-1$
-				item.setChecked( stepMeta.isDistributes() );
-				item = menu.getMenuItemById( "trans-graph-entry-data-movement-copy" ); //$NON-NLS-1$
-				item.setChecked( !stepMeta.isDistributes() );
-
-				item = menu.getMenuItemById( "trans-graph-entry-hide" ); //$NON-NLS-1$
-				item.setEnabled( stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta) );
-				
-				item = menu.getMenuItemById( "trans-graph-entry-detach" ); //$NON-NLS-1$
-				item.setEnabled( transMeta.isStepUsedInTransHops(stepMeta) );
-				
-				item = menu.getMenuItemById( "trans-graph-entry-errors" ); //$NON-NLS-1$
-				item.setEnabled( stepMeta.supportsErrorHandling() );
-				
-				menu.addMenuListener( "trans-graph-entry-newhop", this, "newHopChoice" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-edit", this, "editStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-edit-description", this, "editDescription" ); //$NON-NLS-1$ //$NON-NLS-2$
-				
-				menu.addMenuListener( "trans-graph-entry-data-movement-distribute", this, "setDistributes" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-data-movement-copy", this, "setCopies" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-copies", this, "copies" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-copy", this, "copyStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-duplicate", this, "dupeStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-delete", this, "delSelected" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-hide", this, "hideStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-detach", this, "detachStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-inputs", this, "fieldsBefore" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-outputs", this, "fieldsAfter" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-verify", this, "checkSelectedSteps" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-mapping", this, "generateMappingToThisStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-partitioning", this, "partitioning" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-clustering", this, "clustering" ); //$NON-NLS-1$ //$NON-NLS-2$
-				menu.addMenuListener( "trans-graph-entry-errors", this, "errorHandling" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-				canvas.setMenu((Menu)menu.getNativeObject());
-    			}
-    			
-        }
-        else
-        {
-            final TransHopMeta hi = findHop(x, y);
-            if (hi != null) // We clicked on a HOP!
-            {
-            	
-            		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
-    				if( menu != null ) {
-    					setCurrentHop( hi );
-    				
-    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
-    					if( item != null ) {
-    						if (hi.isEnabled()) {
-    							item.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
-    						} else {
-    							item.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
-    						}
-    					}
-
-    					menu.addMenuListener( "trans-graph-hop-edit", this, "editHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-    					menu.addMenuListener( "trans-graph-hop-flip", this, "flipHopDirection" ); //$NON-NLS-1$ //$NON-NLS-2$
-    					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-    					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-    					canvas.setMenu((Menu)menu.getNativeObject());
-
-    				}
-
-            }
-            else
-            {
-            	
-				// Clicked on the background: maybe we hit a note?
-				final NotePadMeta ni = transMeta.getNote(x, y);
-				setCurrentNote( ni );
-				if (ni!=null)
-				{
-
-					XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-note" ); //$NON-NLS-1$
-					if( menu != null ) {
-					
-						menu.addMenuListener( "trans-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						canvas.setMenu((Menu)menu.getNativeObject());
-
+    	try
+    	{
+	    	currentMouseX = x;
+	        currentMouseY = y;
+	
+	        final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
+	        if (stepMeta != null) // We clicked on a Step!
+	        {
+	        		setCurrentStep( stepMeta );
+	        		
+	        		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-entry" ); //$NON-NLS-1$
+	    			if( menu != null ) {
+	    	            int sels = transMeta.nrSelectedSteps();
+	    	            
+	    				XulMenuChoice item  = menu.getMenuItemById( "trans-graph-entry-newhop" ); //$NON-NLS-1$
+	    				menu.addMenuListener( "trans-graph-entry-newhop", this, TransGraph.class, "newHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+	    				item.setEnabled( sels == 2 );
+	    				
+	    				item = menu.getMenuItemById( "trans-graph-entry-align-snap" ); //$NON-NLS-1$
+		            	item.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME");
+	
+					XulMenu aMenu = menu.getMenuById( "trans-graph-entry-align" ); //$NON-NLS-1$
+					if( aMenu != null ) {
+						aMenu.setEnabled( sels > 1 );
 					}
-				}
-                else
-                {
-
-                	XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-background" ); //$NON-NLS-1$
-					if( menu != null ) {
+	
+					menu.addMenuListener( "trans-graph-entry-align-left", this, "allignleft" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-right", this, "allignright" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-top", this, "alligntop" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-bottom", this, "allignbottom" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-horz", this, "distributehorizontal" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-vert", this, "distributevertical" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-align-snap", this, "snaptogrid" ); //$NON-NLS-1$ //$NON-NLS-2$
+	
+					item = menu.getMenuItemById( "trans-graph-entry-data-movement-distribute" ); //$NON-NLS-1$
+					item.setChecked( stepMeta.isDistributes() );
+					item = menu.getMenuItemById( "trans-graph-entry-data-movement-copy" ); //$NON-NLS-1$
+					item.setChecked( !stepMeta.isDistributes() );
+	
+					item = menu.getMenuItemById( "trans-graph-entry-hide" ); //$NON-NLS-1$
+					item.setEnabled( stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta) );
 					
-						menu.addMenuListener( "trans-graph-background-new-note", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-background-paste", this, "paste" ); //$NON-NLS-1$ //$NON-NLS-2$
-						menu.addMenuListener( "trans-graph-background-settings", this, "settings" ); //$NON-NLS-1$ //$NON-NLS-2$
+					item = menu.getMenuItemById( "trans-graph-entry-detach" ); //$NON-NLS-1$
+					item.setEnabled( transMeta.isStepUsedInTransHops(stepMeta) );
+					
+					item = menu.getMenuItemById( "trans-graph-entry-errors" ); //$NON-NLS-1$
+					item.setEnabled( stepMeta.supportsErrorHandling() );
+					
+					menu.addMenuListener( "trans-graph-entry-newhop", this, "newHopChoice" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-edit", this, "editStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-edit-description", this, "editDescription" ); //$NON-NLS-1$ //$NON-NLS-2$
+					
+					menu.addMenuListener( "trans-graph-entry-data-movement-distribute", this, "setDistributes" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-data-movement-copy", this, "setCopies" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-copies", this, "copies" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-copy", this, "copyStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-duplicate", this, "dupeStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-delete", this, "delSelected" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-hide", this, "hideStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-detach", this, "detachStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-inputs", this, "fieldsBefore" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-outputs", this, "fieldsAfter" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-verify", this, "checkSelectedSteps" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-mapping", this, "generateMappingToThisStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-partitioning", this, "partitioning" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-clustering", this, "clustering" ); //$NON-NLS-1$ //$NON-NLS-2$
+					menu.addMenuListener( "trans-graph-entry-errors", this, "errorHandling" ); //$NON-NLS-1$ //$NON-NLS-2$
+	
+					canvas.setMenu((Menu)menu.getNativeObject());
+	    			}
+	    			
+	        }
+	        else
+	        {
+	            final TransHopMeta hi = findHop(x, y);
+	            if (hi != null) // We clicked on a HOP!
+	            {
+	            	
+	            		XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-hop" ); //$NON-NLS-1$
+	    				if( menu != null ) {
+	    					setCurrentHop( hi );
+	    				
+	    					XulMenuChoice item  = menu.getMenuItemById( "trans-graph-hop-enabled" ); //$NON-NLS-1$
+	    					if( item != null ) {
+	    						if (hi.isEnabled()) {
+	    							item.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
+	    						} else {
+	    							item.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
+	    						}
+	    					}
+	
+	    					menu.addMenuListener( "trans-graph-hop-edit", this, "editHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+	    					menu.addMenuListener( "trans-graph-hop-flip", this, "flipHopDirection" ); //$NON-NLS-1$ //$NON-NLS-2$
+	    					menu.addMenuListener( "trans-graph-hop-enabled", this, "enableHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+	    					menu.addMenuListener( "trans-graph-hop-delete", this, "deleteHop" ); //$NON-NLS-1$ //$NON-NLS-2$
+	
+	    					canvas.setMenu((Menu)menu.getNativeObject());
+	
+	    				}
+	
+	            }
+	            else
+	            {
+	            	
+					// Clicked on the background: maybe we hit a note?
+					final NotePadMeta ni = transMeta.getNote(x, y);
+					setCurrentNote( ni );
+					if (ni!=null)
+					{
+	
+						XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-note" ); //$NON-NLS-1$
+						if( menu != null ) {
 						
-						
-	                    final String clipcontent = spoon.fromClipboard();
-	                    XulMenuChoice item  = menu.getMenuItemById( "trans-graph-background-paste" ); //$NON-NLS-1$
-	                    if( item != null ) {
-	                    		item.setEnabled( clipcontent != null );
-	                    }
-	        			String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-
-	                    XulMenu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
-	                    if( subMenu.getItemCount() == 0 ) {
-	                        // group these by type so the menu doesn't stretch the height of the screen and to be friendly to testing tools
-	                        StepLoader steploader = StepLoader.getInstance();
-	                        // get a list of the categories
-	            			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale );
-	            			// get all the plugins
-	            			StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
-
-        	        		XulMessages xulMessages = new XulMessages();
-	            			for( int cat=0; cat<basecat.length; cat++ ) {
-	            				// create a submenu for this category
-	            				org.pentaho.xul.swt.menu.Menu catMenu = new org.pentaho.xul.swt.menu.Menu( (org.pentaho.xul.swt.menu.Menu) subMenu, basecat[cat], basecat[cat], null);
-	            				for( int step=0; step<basesteps.length; step++ ) {
-	            					// find the steps for this category
-	            					if( basesteps[step].getCategory(locale).equalsIgnoreCase(basecat[cat])) 
-	            					{
-	            						// create a menu option for this step
-	                	        		final String name = basesteps[step].getDescription();
-	                	        		new MenuChoice( catMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
-	                	        		menu.addMenuListener( name, this, "newStep" ); //$NON-NLS-1$ //$NON-NLS-2$
-	            					}
-	            				}
-	            			}
-	            			
-	                    }
-	                    
-	    				canvas.setMenu((Menu)menu.getNativeObject());
-
+							menu.addMenuListener( "trans-graph-note-edit", this, "editNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+							menu.addMenuListener( "trans-graph-note-delete", this, "deleteNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+							menu.addMenuListener( "trans-graph-note-raise", this, "raiseNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+							menu.addMenuListener( "trans-graph-note-lower", this, "lowerNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+							canvas.setMenu((Menu)menu.getNativeObject());
+	
+						}
 					}
-
-                }
-            }
-        }
+	                else
+	                {
+	
+	                	XulPopupMenu menu = (XulPopupMenu) menuMap.get( "trans-graph-background" ); //$NON-NLS-1$
+						if( menu != null ) {
+						
+							menu.addMenuListener( "trans-graph-background-new-note", this, "newNote" ); //$NON-NLS-1$ //$NON-NLS-2$
+							menu.addMenuListener( "trans-graph-background-paste", this, "paste" ); //$NON-NLS-1$ //$NON-NLS-2$
+							menu.addMenuListener( "trans-graph-background-settings", this, "settings" ); //$NON-NLS-1$ //$NON-NLS-2$
+							
+							
+		                    final String clipcontent = spoon.fromClipboard();
+		                    XulMenuChoice item  = menu.getMenuItemById( "trans-graph-background-paste" ); //$NON-NLS-1$
+		                    if( item != null ) {
+		                    		item.setEnabled( clipcontent != null );
+		                    }
+		        			String locale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
+	
+		                    XulMenu subMenu = menu.getMenuById( "trans-graph-background-new-step" );
+		                    if( subMenu.getItemCount() == 0 ) {
+		                        // group these by type so the menu doesn't stretch the height of the screen and to be friendly to testing tools
+		                        StepLoader steploader = StepLoader.getInstance();
+		                        // get a list of the categories
+		            			String basecat[] = steploader.getCategories(StepPlugin.TYPE_ALL, locale );
+		            			// get all the plugins
+		            			StepPlugin basesteps[] = steploader.getStepsWithType(StepPlugin.TYPE_ALL);
+	
+	        	        		XulMessages xulMessages = new XulMessages();
+		            			for( int cat=0; cat<basecat.length; cat++ ) {
+		            				// create a submenu for this category
+		            				org.pentaho.xul.swt.menu.Menu catMenu = new org.pentaho.xul.swt.menu.Menu( (org.pentaho.xul.swt.menu.Menu) subMenu, basecat[cat], basecat[cat], null);
+		            				for( int step=0; step<basesteps.length; step++ ) {
+		            					// find the steps for this category
+		            					if( basesteps[step].getCategory(locale).equalsIgnoreCase(basecat[cat])) 
+		            					{
+		            						// create a menu option for this step
+		                	        		final String name = basesteps[step].getDescription();
+		                	        		new MenuChoice( catMenu, name, name, null, null, MenuChoice.TYPE_PLAIN, xulMessages);
+		                	        		menu.addMenuListener( name, this, "newStep" ); //$NON-NLS-1$ //$NON-NLS-2$
+		            					}
+		            				}
+		            			}
+		            			
+		                    }
+		                    
+		    				canvas.setMenu((Menu)menu.getNativeObject());
+	
+						}
+	
+	                }
+	            }
+	        }
+    	}
+    	catch(Throwable t) {
+    		// TODO: fix this: log somehow, is IGNORED for now.
+    		t.printStackTrace();
+    	}
     }
 
     private boolean checkNumberOfCopies(TransMeta transMeta, StepMeta stepMeta)

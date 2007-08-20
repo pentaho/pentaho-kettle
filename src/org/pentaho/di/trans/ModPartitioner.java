@@ -5,6 +5,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
@@ -53,7 +54,6 @@ public class ModPartitioner extends BasePartitioner {
 
 	        long value;
 	        
-	        /*
 	        ValueMetaInterface valueMeta = rowMeta.getValueMeta(partitionColumnIndex);
 	        Object valueData = row[partitionColumnIndex];
 	        
@@ -69,9 +69,10 @@ public class ModPartitioner extends BasePartitioner {
 	        default: 
 	        	value = valueMeta.hashCode(valueData);
 	        }
-	        */
 	        
+	        /*
 	        value = rowMeta.getInteger(row, partitionColumnIndex);
+	        */
             
             int targetLocation = (int)(value % nrPartitions);
 

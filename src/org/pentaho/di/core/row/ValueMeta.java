@@ -2055,7 +2055,15 @@ public class ValueMeta implements ValueMetaInterface
         if (data==null) return true;
         if (isString()) {
         	if (isStorageNormal() && ((String)data).length()==0) return true;
-        	if (isStorageBinaryString() && ((byte[])data).length==0) return true;
+        	if (isStorageBinaryString()) {
+        		try{
+        			if ( ((byte[])data).length==0 ) return true;
+        		}
+        		catch(ClassCastException e)
+        		{
+        			throw e;
+        		}
+        	}
         }
         return false;
     }
@@ -2181,6 +2189,7 @@ public class ValueMeta implements ValueMetaInterface
         
         // If the data types are not the same, the first one is the driver...
         // The second data type is converted to the first one.
+        //
         return compare(data1, convertData(meta2, data2));
     }
 

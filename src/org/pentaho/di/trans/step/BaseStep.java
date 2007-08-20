@@ -766,11 +766,17 @@ public class BaseStep extends Thread implements VariableSpace
         		for (int c=0;c<outputRowSets.size();c++) {
         			RowSet rowSet = outputRowSets.get(c);
         			rowSet.setRemoteSlaveServerName(getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME));
+        			if (getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME)==null) {
+        				throw new KettleStepException("Variable '"+Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME+"' is not defined.");
+        			}
         		}
         		
         		// 
         		for (RemoteStep remoteStep : remoteOutputSteps) {
         			try {
+        				if (remoteStep.getTargetSlaveServerName()==null) {
+            				throw new KettleStepException("The target slave server name is not defined for remote output step: "+remoteStep);
+        				}
 						RowSet rowSet = remoteStep.openWriterSocket();
 						logDetailed("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
@@ -788,7 +794,7 @@ public class BaseStep extends Thread implements VariableSpace
 	        // No more output rowsets!
 	    	// Still update the nr of lines written.
 	    	//
-	    	linesWritten++;
+	    	// linesWritten++;
 	    	
 	        return; // we're done here!
 	    }

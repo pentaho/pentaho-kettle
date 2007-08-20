@@ -276,7 +276,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// Send that row to the remote step
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
+						baseStep.linesRead--; // It's too confusing to count these twice
 						sendRow(rowSet.getRowMeta(), rowData);
+						if (baseStep.log.isDebug()) baseStep.logDebug("Sent row to remote step: "+rowSet.getRowMeta().getString(rowData));
 						rowData = baseStep.getRowFrom(rowSet);
 					}
 					
@@ -295,7 +297,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 					// shut down the output stream, we've send everything...
 					//
-					/*
 					try {
 						socket.shutdownOutput();
 					} catch (IOException e) {
@@ -303,7 +304,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
-					*/
 					
 					// OK, closing the sockets just like that is causing us harm.
 					// The problem is that there still might be bytes traveling across the network.
@@ -406,7 +406,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);
 		
 		
-		int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
+		final int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
 		String realHostname = baseStep.environmentSubstitute(hostname);
 
 		// Connect to the server socket (started during BaseStep.init())
@@ -479,6 +479,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
 						baseStep.linesInput++;
+
+						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowSet.getRowMeta().getString(rowData));
+
 						baseStep.putRowTo(rowMeta, rowData, rowSet);
 						rowData = rowMeta.readData(inputStream);
 					}
@@ -486,6 +489,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				catch(KettleEOFException e) {
 					// Nothing, we're simply done reading...
 					//
+					if (baseStep.log.isDebug()) baseStep.logDebug("Finished reading from remote step on server "+hostname+" port "+portNumber);
+
 				} catch (Exception e) {
 					baseStep.logError("Error reading from client socket to remote step", e);
 					baseStep.setErrors(1);
