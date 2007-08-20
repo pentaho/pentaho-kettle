@@ -113,7 +113,9 @@ import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 import be.ibridge.kettle.trans.step.orabulkloader.OraBulkLoaderMeta;
+import be.ibridge.kettle.trans.step.accessinput.AccessInputMeta;
 import be.ibridge.kettle.trans.step.regexeval.RegexEvalMeta;
+
 
 public class BaseStep extends Thread
 {
@@ -261,16 +263,22 @@ public class BaseStep extends Thread
             new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
                     .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_LOOKUP),
             new StepPluginMeta(WebServiceMeta.class, "WebServiceLookup", Messages.getString("BaseStep.TypeLongDesc.WebServiceLookup"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_EXPERIMENTAL),
+                    .getString("BaseStep.TypeTooltipDesc.WebServiceLookup"), "WSL.png", CATEGORY_LOOKUP),
             new StepPluginMeta(FormulaMeta.class, "Formula", Messages.getString("BaseStep.TypeLongDesc.Formula"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_EXPERIMENTAL),
+                    .getString("BaseStep.TypeTooltipDesc.Formula"), "FRM.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(AbortMeta.class, "Abort", Messages.getString("BaseStep.TypeLongDesc.Abort"), Messages
                     .getString("BaseStep.TypeTooltipDesc.Abort"), "ABR.png", CATEGORY_TRANSFORM),
             new StepPluginMeta(OraBulkLoaderMeta.class, "OraBulkLoader", Messages.getString("BaseStep.TypeLongDesc.OraBulkLoader"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_EXPERIMENTAL),    
-            new StepPluginMeta(RegexEvalMeta.class, "RegexEval", Messages.getString("BaseStep.TypeLongDesc.RegexEval"), Messages
-                      .getString("BaseStep.TypeTooltipDesc.RegexEval"), "RGE.png", CATEGORY_EXPERIMENTAL),  
-                    
+                    .getString("BaseStep.TypeTooltipDesc.OraBulkLoader"), "OBL.png", CATEGORY_TRANSFORM),        
+	
+			new StepPluginMeta(AccessInputMeta.class, "AccessInput", Messages.getString("BaseStep.TypeLongDesc.AccessInput"), Messages
+					.getString("BaseStep.TypeTooltipDesc.AccessInput"), "ACI.png", CATEGORY_INPUT), 
+	
+
+			new StepPluginMeta(RegexEvalMeta.class, "RegexEval", Messages.getString("BaseStep.TypeLongDesc.RegexEval"), Messages
+			.getString("BaseStep.TypeTooltipDesc.RegexEval"), "RGE.png", CATEGORY_SCRIPTING), 
+		
+
         };
 
     public static final String category_order[] =
@@ -1248,12 +1256,12 @@ public class BaseStep extends Thread
      * This version of getRow() only takes data from certain rowsets We select these rowsets that have name = step
      * Otherwise it's the same as the other one.
      */
-    public synchronized Row getRowFrom(String from) throws KettleRowException
+    public synchronized Row getRowFrom(String from)
     {
         output_rowset_nr = findInputRowSetNumber(from, 0, stepname, 0);
         if (output_rowset_nr < 0) // No rowset found: normally it can't happen: we deleted the rowset because it was
                                     // finished
-        { throw new KettleRowException("Couldn't find hop '" + from + "' to read from"); }
+        { return null; }
 
         return getRowFrom(output_rowset_nr);
     }
