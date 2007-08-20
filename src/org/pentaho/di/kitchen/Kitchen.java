@@ -172,7 +172,7 @@ public class Kitchen
 			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{
 				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
-				if (optionRepname!=null && !"Y".equalsIgnoreCase(optionNorep.toString()))
+				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
 					log.logDebug(STRING_KITCHEN, "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);

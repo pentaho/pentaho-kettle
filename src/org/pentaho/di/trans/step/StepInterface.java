@@ -206,4 +206,9 @@ public interface StepInterface
      * @return the steps partition ID
      */
     public String getPartitionID();
+
+    /**
+     * Call this method typically, after ALL the slave transformations in a clustered run have finished.
+     */
+	public void cleanup();
 }

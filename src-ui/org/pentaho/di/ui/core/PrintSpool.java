@@ -77,7 +77,7 @@ public class PrintSpool
 	
 	public void dispose()
 	{
-		printer.dispose();
+		if (printer!=null) printer.dispose();
 	}
 	
 	public int getDepth()

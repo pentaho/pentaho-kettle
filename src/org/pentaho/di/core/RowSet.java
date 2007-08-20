@@ -273,6 +273,13 @@ public class RowSet implements Comparable<RowSet>
     	synchronized(destinationStepCopy){
     		str.append(destinationStepCopy);
     	}
+    	if (!Const.isEmpty(remoteSlaveServerName)) {
+        	synchronized(remoteSlaveServerName){
+        		str.append(" (");
+        		str.append(remoteSlaveServerName);
+        		str.append(")");
+        	}
+    	}
         return str.toString();
     }
 

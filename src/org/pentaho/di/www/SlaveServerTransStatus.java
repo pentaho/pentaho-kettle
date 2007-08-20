@@ -9,7 +9,6 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepStatus;
@@ -112,9 +111,7 @@ public class SlaveServerTransStatus
     public static SlaveServerTransStatus fromXML(String xml) throws KettleXMLException
     {
         Document document = XMLHandler.loadXMLString(xml);
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "Loaded XML document into DOM");
         SlaveServerTransStatus status = new SlaveServerTransStatus(XMLHandler.getSubNode(document, XML_TAG));
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "Constructed new object");
         return status;
     }
 

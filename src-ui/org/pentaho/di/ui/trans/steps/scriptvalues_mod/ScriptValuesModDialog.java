@@ -201,7 +201,6 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	 */
 	public class ScriptValuesModDummy implements StepInterface
 	{
-
 		public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 			return false;
 		}
@@ -311,6 +310,9 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 
 		public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException {
+		}
+
+		public void cleanup() {
 		}	
 	}
 	
@@ -683,7 +685,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		StyledTextComp wScript=new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
 		if((strScript !=null) && strScript.length()>0) wScript.setText(strScript);
-		else wScript.setText("//Script here"); 
+		else wScript.setText("//Script here"+Const.CR+Const.CR); 
 		item.setImage(imageInactiveScript);
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		

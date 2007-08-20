@@ -898,7 +898,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
   protected void splitTrans(final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration) throws KettleException {
     try
     {
-      TransSplitter transSplitter = new TransSplitter(transMeta);
+      final TransSplitter transSplitter = new TransSplitter(transMeta);
       
       transSplitter.splitOriginalTransformation();
       
@@ -941,7 +941,16 @@ public class SpoonTransformationDelegate extends SpoonDelegate
         }
       }
       
-    } catch (Exception e)
+      // OK, we should also start monitoring of the cluster in the background.
+      // Stop them all if one goes bad.
+      // Also clean up afterwards, close sockets, etc.
+      // 
+      // Launch in a separate thread to prevent GUI blocking...
+      //
+      new Thread(new Runnable() { public void run() { Trans.monitorClusteredTransformation(transMeta.toString(), transSplitter, null); } }).start();
+	
+    } 
+    catch (Exception e)
     {
       throw new KettleException(e);
     }

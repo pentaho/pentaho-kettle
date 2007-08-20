@@ -21,6 +21,7 @@
 package org.pentaho.di.trans.step;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,7 +279,10 @@ public class BaseStep extends Thread implements VariableSpace
 
 	private boolean remoteInputStepsInitialized;
 
-	private Hashtable<Integer, RowSet> partitionNrRowSetMap;
+	private RowSet[] partitionNrRowSetList;
+	
+    /** A list of server sockets that need to be closed during transformation cleanup. */
+    private List<ServerSocket> serverSockets;
 
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -354,6 +358,8 @@ public class BaseStep extends Thread implements VariableSpace
         repartitioning = StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE];
         partitionTargets = new Hashtable<String,RowSet>();
 
+        serverSockets = new ArrayList<ServerSocket>();
+        
         // tuning parameters
 	    // putTimeOut = 10; //s
 	    // getTimeOut = 500; //s
@@ -492,6 +498,11 @@ public class BaseStep extends Thread implements VariableSpace
         		// If the step is partitioned and clustered, we only want to take one remote input step per copy.
         		// This is the place to make that elimination...
         		//
+        		RemoteStep remoteStep = (RemoteStep) stepMeta.getRemoteInputSteps().get(stepcopy).clone();
+        		remoteInputSteps.add( remoteStep );
+        		logBasic("added remote input step : "+remoteStep);
+        		
+        		/*
     	        for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
     	        	RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
     	        	if (i==stepcopy) {
@@ -499,7 +510,7 @@ public class BaseStep extends Thread implements VariableSpace
 	    	        	remoteInputSteps.add(copy);
     	        	}
     	        }
-
+    	        */
         	}
         	else {
     	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
@@ -520,6 +531,18 @@ public class BaseStep extends Thread implements VariableSpace
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
         sdi.setStatus(StepDataInterface.STATUS_DISPOSED);
+    }
+
+    public void cleanup()
+    {
+		for (ServerSocket serverSocket : serverSockets)
+		{
+	    	try {
+	    		serverSocket.close();
+	    	} catch (IOException e) {
+	    		log.logError(toString(), "Cleanup: Unable to close server socket ("+serverSocket.getLocalPort()+")", e);
+	    	}
+		}
     }
 
     public long getProcessed()
@@ -717,7 +740,8 @@ public class BaseStep extends Thread implements VariableSpace
         	}
         }
 
-        // call all rowlisteners...
+        // call all row listeners...
+        //
         for (int i = 0; i < rowListeners.size(); i++)
         {
             RowListener rowListener = (RowListener) rowListeners.get(i);
@@ -725,6 +749,7 @@ public class BaseStep extends Thread implements VariableSpace
         }
 
         // Keep adding to terminator_rows buffer...
+        //
         if (terminator && terminator_rows != null)
         {
             try
@@ -752,7 +777,7 @@ public class BaseStep extends Thread implements VariableSpace
         		// 
         		for (RemoteStep remoteStep : remoteOutputSteps) {
         			try {
-						RowSet rowSet = remoteStep.openWriterSocket(this);
+						RowSet rowSet = remoteStep.openWriterSocket();
 						logDetailed("Opened a writer socket to remote step: "+remoteStep);
 						outputRowSets.add(rowSet);
 					} catch (IOException e) {
@@ -813,7 +838,9 @@ public class BaseStep extends Thread implements VariableSpace
                 }
             }
             else
-            // Copy the row to all output rowsets!
+            	
+            // Copy the row to all output rowsets
+            //
             {
                 // Copy to the row in the other output rowsets...
                 for (int i = 1; i < outputRowSets.size(); i++) // start at 1
@@ -834,6 +861,7 @@ public class BaseStep extends Thread implements VariableSpace
                 }
 
                 // set row in first output rowset
+                //
                 RowSet rs = outputRowSets.get(0);
                 while (!rs.putRow(rowMeta, row) && !isStopped()) 
                 	;
@@ -846,21 +874,29 @@ public class BaseStep extends Thread implements VariableSpace
             {
             	if( nextStepPartitioningMeta == null )
             	{
-                    nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
+            		// Look up the partitioning of the next step.
+            		// This is the case for non-clustered partitioning...
+            		//
+            		StepMeta[] nextSteps = transMeta.getNextSteps(stepMeta);
+                    if (nextSteps.length>0) {
+                    	nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
+                    }
+                    
+                    // TODO: throw exception if we're not partitioning yet. 
+                    // For now it throws a NP Exception.
             	}
             	
                 int partitionNr;
                 try
                 {
                 	partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
-
                 }
                 catch (KettleException e)
                 {
                     throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
                 }
 
-                RowSet rs = null;
+                RowSet selectedRowSet = null;
                 
         		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
         		// We want to pre-calculate what rowset we're sending data to for which partition...
@@ -870,15 +906,21 @@ public class BaseStep extends Thread implements VariableSpace
                 if (transMeta.getSlaveStepCopyPartitionDistribution()!=null) {
                 	// This next block is only performed once for speed...
                 	//
-	                if (partitionNrRowSetMap==null) {
-	        			partitionNrRowSetMap = new Hashtable<Integer, RowSet>(); 
+	                if (partitionNrRowSetList==null) {
+	        			partitionNrRowSetList = new RowSet[outputRowSets.size()];
 		        		SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
+		        		
+		                for (SlaveStepCopyPartitionDistribution.SlaveStepCopy slaveStepCopy : distribution.getDistribution().keySet()) {
+		                	int partition = distribution.getPartition(slaveStepCopy.getSlaveServerName(), slaveStepCopy.getStepName(), slaveStepCopy.getStepCopyNr());
+		                	System.out.println("slave step copy: slaveServer="+slaveStepCopy.getSlaveServerName()+", stepname="+slaveStepCopy.getStepName()+", copynr="+slaveStepCopy.getStepCopyNr()+" ---> partition="+partition);
+		                }
+		        		
 		        		for (RowSet outputRowSet : outputRowSets) {
 		        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), outputRowSet.getDestinationStepName(), outputRowSet.getDestinationStepCopy());
 		        			if (partNr==-1) {
 		        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", step="+outputRowSet.getDestinationStepName()+", copy="+outputRowSet.getDestinationStepCopy());
 		        			}
-		        			partitionNrRowSetMap.put(partNr, outputRowSet);
+		        			partitionNrRowSetList[partNr] = outputRowSet;
 		        		}
 	                }
                 
@@ -886,22 +928,22 @@ public class BaseStep extends Thread implements VariableSpace
 	                // Hashing on an integer is very fast.
                 	// TODO: see if we can turn this Map into an array for even better speed...
                 	//
-	                rs = partitionNrRowSetMap.get(partitionNr);
+	                selectedRowSet = partitionNrRowSetList[partitionNr];
                 }
                 else {
                 	// Local partitioning...
 	                // Put the row forward to the next step according to the partition rule.
 	                //
-	                rs = outputRowSets.get(partitionNr);
+	                selectedRowSet = outputRowSets.get(partitionNr);
                 }
                 
-                if (rs==null) {
+                if (selectedRowSet==null) {
                 	logBasic("Target rowset is not available for target partition, partitionNr="+partitionNr);
                 }
                 
                 // logBasic("Putting row to partition #"+partitionNr);
                 
-                while (!rs.putRow(rowMeta, row) && !isStopped()) 
+                while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) 
                 	;
                 linesWritten++;
             }
@@ -2186,6 +2228,20 @@ public class BaseStep extends Thread implements VariableSpace
 	 */
 	public int getUniqueStepCountAcrossSlaves() {
 		return uniqueStepCountAcrossSlaves;
+	}
+
+	/**
+	 * @return the serverSockets
+	 */
+	public List<ServerSocket> getServerSockets() {
+		return serverSockets;
+	}
+
+	/**
+	 * @param serverSockets the serverSockets to set
+	 */
+	public void setServerSockets(List<ServerSocket> serverSockets) {
+		this.serverSockets = serverSockets;
 	}
 
 

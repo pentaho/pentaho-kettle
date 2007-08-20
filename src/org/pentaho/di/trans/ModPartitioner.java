@@ -51,9 +51,29 @@ public class ModPartitioner extends BasePartitioner {
 	            }
 	        }
 
-            Long value = rowMeta.getInteger(row, partitionColumnIndex);
+	        long value;
+	        
+	        /*
+	        ValueMetaInterface valueMeta = rowMeta.getValueMeta(partitionColumnIndex);
+	        Object valueData = row[partitionColumnIndex];
+	        
+	        switch(valueMeta.getType()) {
+	        case ValueMetaInterface.TYPE_INTEGER: 
+	        	Long longValue = rowMeta.getInteger(row, partitionColumnIndex); 
+	        	if (longValue==null) {
+	        		value = valueMeta.hashCode(valueData);
+	        	}
+	        	else {
+	        		value = longValue.longValue();
+	        	}
+	        default: 
+	        	value = valueMeta.hashCode(valueData);
+	        }
+	        */
+	        
+	        value = rowMeta.getInteger(row, partitionColumnIndex);
             
-            int targetLocation = (int)(value.longValue() % nrPartitions);
+            int targetLocation = (int)(value % nrPartitions);
 
 			return targetLocation;
 		}

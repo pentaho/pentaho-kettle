@@ -34,6 +34,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
 import org.pentaho.di.www.SlaveServerStatus;
@@ -626,6 +627,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         return WebResult.fromXMLString(xml);
     }
 
+    public WebResult cleanupTransformation(String transName) throws Exception
+    {
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+transName+"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        return WebResult.fromXMLString(xml);
+    }
+    
     public static SlaveServer findSlaveServer(List<SlaveServer> slaveServers, String name)
     {
         for (SlaveServer slaveServer : slaveServers)

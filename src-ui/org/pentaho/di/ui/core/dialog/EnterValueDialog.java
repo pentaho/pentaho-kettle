@@ -37,16 +37,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.Messages;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -324,38 +321,19 @@ public class EnterValueDialog extends Dialog
 		int valtype = ValueMeta.getType(wValueType.getText()); 
 		ValueMetaAndData val = new ValueMetaAndData(valuename, wInputString.getText());
 
-        val.getValueMeta().setType( valtype );
-        val.getValueMeta().setConversionMask( wFormat.getText() );
-        val.getValueMeta().setLength( Const.toInt( wLength.getText(), -1) );
-        val.getValueMeta().setPrecision( Const.toInt( wPrecision.getText(), -1) );
-
-		switch(valtype)
-		{
-        case ValueMetaInterface.TYPE_NUMBER: 
-            val.setValueData( val.getValueMeta().getNumber(val.getValueData()) );
-			break;
-        case ValueMetaInterface.TYPE_DATE:
-            val.setValueData( val.getValueMeta().getDate(val.getValueData()) );
-			break;
-        case ValueMetaInterface.TYPE_STRING  : 
-			break;
-        case ValueMetaInterface.TYPE_BOOLEAN :
-			val.setValueData( ValueDataUtil.trim(wInputString.getText()) );
-			val.setValueData( val.getValueMeta().getBoolean(val.getValueData()) );
-			break;
-        case ValueMetaInterface.TYPE_INTEGER : 
-            val.setValueData( ValueDataUtil.trim(wInputString.getText()) );
-            val.setValueData( val.getValueMeta().getInteger(val.getValueData()) );
-			break;
-        case ValueMetaInterface.TYPE_BIGNUMBER: 
-            val.setValueData( ValueDataUtil.trim(wInputString.getText()) );
-            val.setValueData( val.getValueMeta().getBigNumber(val.getValueData()) );
-            break;
-        case ValueMetaInterface.TYPE_BINARY: 
-            val.setValueData( val.getValueMeta().getBinary(val.getValueData()) );
-            break;
-		default: break;
-		}
+		ValueMetaInterface valueMeta = val.getValueMeta(); 
+		Object valueData = val.getValueData();
+		
+		valueMeta.setType( valtype );
+		valueMeta.setConversionMask( wFormat.getText() );
+		valueMeta.setLength( Const.toInt( wLength.getText(), -1) );
+		valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1) );
+        
+        ValueMetaInterface stringValueMeta = (ValueMetaInterface) valueMeta.clone();
+        stringValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+        
+        Object targetData = valueMeta.convertData(stringValueMeta, valueData);
+        val.setValueData(targetData);
 		
 		return val;
 	}

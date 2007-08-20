@@ -59,6 +59,48 @@ public class SlaveStepCopyPartitionDistribution {
 			if (cmp!=0) return cmp;
 			return stepCopyNr-o.stepCopyNr;
 		}
+
+		/**
+		 * @return the slaveServerName
+		 */
+		public String getSlaveServerName() {
+			return slaveServerName;
+		}
+
+		/**
+		 * @param slaveServerName the slaveServerName to set
+		 */
+		public void setSlaveServerName(String slaveServerName) {
+			this.slaveServerName = slaveServerName;
+		}
+
+		/**
+		 * @return the stepName
+		 */
+		public String getStepName() {
+			return stepName;
+		}
+
+		/**
+		 * @param stepName the stepName to set
+		 */
+		public void setStepName(String stepName) {
+			this.stepName = stepName;
+		}
+
+		/**
+		 * @return the stepCopyNr
+		 */
+		public int getStepCopyNr() {
+			return stepCopyNr;
+		}
+
+		/**
+		 * @param stepCopyNr the stepCopyNr to set
+		 */
+		public void setStepCopyNr(int stepCopyNr) {
+			this.stepCopyNr = stepCopyNr;
+		}
 	}
 
 	public static final String XML_TAG = "slave-step-copy-partition-distribution";
@@ -72,6 +114,31 @@ public class SlaveStepCopyPartitionDistribution {
 	
 	public void addPartition(String slaveServerName, String stepName, int stepCopyNr, int partitionNr) {
 		distribution.put(new SlaveStepCopy(slaveServerName, stepName, stepCopyNr), partitionNr);
+	}
+	
+	/**
+	 * Add a partition number to the distribution if it doesn't already exist.
+	 * 
+	 * @param slaveServerName
+	 * @param stepName
+	 * @param stepCopyNr
+	 * @return The found or created partition number
+	 */
+	public int addPartition(String slaveServerName, String stepName, int stepCopyNr) {
+		Integer partitionNr = distribution.get(new SlaveStepCopy(slaveServerName, stepName, stepCopyNr));
+		if (partitionNr==null) {
+			// Not found: add it.
+			//
+			int nr = 0;
+			for (SlaveStepCopy slaveStepCopy : distribution.keySet()) {
+				if (slaveStepCopy.stepName.equals(stepName)) {
+					nr++;
+				}
+			}
+			partitionNr=new Integer(nr);
+			addPartition(slaveServerName, stepName, stepCopyNr, nr);
+		}
+		return partitionNr.intValue();
 	}
 	
 	private int getPartition(SlaveStepCopy slaveStepCopy) {

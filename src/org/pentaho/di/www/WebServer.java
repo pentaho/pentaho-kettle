@@ -90,8 +90,12 @@ public class WebServer
         // Stop transformation
         Context stopTrans = new Context(contexts, StopTransServlet.CONTEXT_PATH, Context.SESSIONS);
         stopTrans.addServlet(new ServletHolder(new StopTransServlet(transformationMap)), "/*");
-        
-        // Add trans
+
+        // Transformation cleanup
+        Context cleanupTrans = new Context(contexts, CleanupTransServlet.CONTEXT_PATH, Context.SESSIONS);
+        cleanupTrans.addServlet(new ServletHolder(new CleanupTransServlet(transformationMap)), "/*");
+
+        // Add transformation
         Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
         addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap)), "/*");
 
