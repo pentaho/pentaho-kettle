@@ -52,18 +52,20 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.accessinput.AccessInputField;
+import org.pentaho.di.trans.steps.accessinput.AccessInputMeta;
+import org.pentaho.di.trans.steps.accessinput.Messages;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -73,11 +75,9 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.di.trans.steps.accessinput.AccessInputMeta;
-import org.pentaho.di.trans.steps.accessinput.AccessInputField;
-import org.pentaho.di.trans.steps.accessinput.Messages;
-import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
@@ -944,19 +944,17 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     			Table t=d.getTable(transMeta.environmentSubstitute(meta.getTableName()));
     			
     			// Get the list of columns
-    			List col = t.getColumns();
+    			List<Column> col = t.getColumns();
     			
-    			log.logBasic("Nbr Columns ", ""+col.size());
+    			log.logDetailed("Nbr Columns ", ""+col.size());
 
-    			Iterator iter = col.iterator();
-    			Map row;
-    			row = t.getNextRow();
+    			Map<String, Object> row = t.getNextRow();
     			
-    			iter = row.keySet().iterator();
+    			Iterator<String> columnNameIterator = row.keySet().iterator();
 
-    			while (iter.hasNext()) 
+    			while (columnNameIterator.hasNext()) 
     			{
-    				String fieldName = (String) iter.next();
+    				String fieldName = columnNameIterator.next();
     				Object obj = row.get(fieldName);
     				
 					// Get Column Name
@@ -1285,7 +1283,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	private void getTableName()
 	{
 
-		Database d = null;
+		Database accessDatabase = null;
 		
 		try
 		{
@@ -1298,37 +1296,36 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			if (fileInputList.nrOfFiles()>0) //(files != null && files.length > 0)
 			{
 				// Let's check the first file
-				log.logBasic("Le fichier ", KettleVFS.getFilename(fileInputList.getFile(0)) + " traité...");
+				log.logBasic("Le fichier ", KettleVFS.getFilename(fileInputList.getFile(0)) + " traitï¿½...");
 				 
 				// Check the first file
-			     if (fileInputList.getFile(0).exists())
-		          {
-		              
-				      // Open the file (only first file) in readOnly ...
-						
-					  d = Database.open(new File(KettleVFS.getFilename(fileInputList.getFile(0))));	
-						
-					  // Get user tables
-					  Set settables= d.getTableNames();
-					  
-					  // Get system tables
-					  Table systablenames= d.getSystemCatalog();
-					  
-					  String[] tablenames =  (String[]) settables.toArray(new String[settables.size()])  ;
-	
-						
-						EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, Messages.getString("AccessInputDialog.Dialog.SelectATable.Title"), Messages.getString("AccessInputDialog.Dialog.SelectATable.Message"));
-					    String tablename = dialog.open();
-					    if (tablename!=null)
-					    {
-					        wTable.setText(tablename);
-					    }
-		          }
-			     else
-			     {
-			    	 // The file not exists !
-			    	 throw new KettleException(Messages.getString("AccessInputMeta.Exception.FileDoesNotExist", KettleVFS.getFilename(fileInputList.getFile(0))));
-			     }
+			     if (fileInputList.getFile(0).exists()) {
+					// Open the file (only first file) in readOnly ...
+					//
+					accessDatabase = Database.open(new File(KettleVFS.getFilename(fileInputList.getFile(0))));
+
+					// Get user tables
+					//
+					Set<String> settables = accessDatabase.getTableNames();
+
+					// Get system tables
+					//
+					// Table systablenames= accessDatabase.getSystemCatalog();
+
+					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
+
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, tablenames, Messages
+							.getString("AccessInputDialog.Dialog.SelectATable.Title"), Messages
+							.getString("AccessInputDialog.Dialog.SelectATable.Message"));
+					String tablename = dialog.open();
+					if (tablename != null) {
+						wTable.setText(tablename);
+					}
+				} else {
+					// The file not exists !
+					throw new KettleException(Messages.getString("AccessInputMeta.Exception.FileDoesNotExist", KettleVFS
+							.getFilename(fileInputList.getFile(0))));
+				}
 	          
 				
 			}
@@ -1353,7 +1350,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 	        // Don't forget to close the bugger.
 	        try
 	        {
-	            if (d!=null) d.close();
+	            if (accessDatabase!=null) accessDatabase.close();
 	        }
 	        catch(Exception e)
 	        {}
