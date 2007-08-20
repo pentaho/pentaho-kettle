@@ -248,7 +248,7 @@ public class BaseStep extends Thread implements VariableSpace
     /**
      * This field tells the putRow() method to re-partition the incoming data, See also StepPartitioningMeta.PARTITIONING_METHOD_*
      */
-    private String                       repartitioning;
+    private int                          repartitioning;
 
     /**
      * The partitionID to rowset mapping
@@ -355,7 +355,7 @@ public class BaseStep extends Thread implements VariableSpace
         rowListeners = new ArrayList<RowListener>();
         resultFiles = new Hashtable<String,ResultFile>();
 
-        repartitioning = StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE];
+        repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
         partitionTargets = new Hashtable<String,RowSet>();
 
         serverSockets = new ArrayList<ServerSocket>();
@@ -401,13 +401,13 @@ public class BaseStep extends Thread implements VariableSpace
         if (stepMeta.isPartitioned() && partitionDistribution!=null) 
         {
         	String slaveServerName = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME);
-        	String stepName = stepname;
         	int stepCopyNr = stepcopy;
         	
         	// Look up the partition nr...
         	// Set the partition ID (string) as well as the partition nr [0..size[
         	//
-        	int partitionNr = partitionDistribution.getPartition(slaveServerName, stepName, stepCopyNr);
+        	PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+        	int partitionNr = partitionDistribution.getPartition(slaveServerName, partitionSchema.getName(), stepCopyNr);
         	if (partitionNr>=0) {
         		String partitionNrString = new DecimalFormat("000").format(partitionNr);
         		setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString);
@@ -494,23 +494,17 @@ public class BaseStep extends Thread implements VariableSpace
         {
         	remoteInputSteps = new ArrayList<RemoteStep>();
         	
-        	if (stepMeta.isPartitioned() && stepMeta.getClusterSchema()!=null) {
+        	if (stepMeta.isPartitioned() && getClusterSize()>1) {
         		// If the step is partitioned and clustered, we only want to take one remote input step per copy.
-        		// This is the place to make that elimination...
+        		// This is where we make that selection...
         		//
-        		RemoteStep remoteStep = (RemoteStep) stepMeta.getRemoteInputSteps().get(stepcopy).clone();
-        		remoteInputSteps.add( remoteStep );
-        		logBasic("added remote input step : "+remoteStep);
-        		
-        		/*
-    	        for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
+        		for (int i=0;i<stepMeta.getRemoteInputSteps().size();i++) {
     	        	RemoteStep remoteStep = stepMeta.getRemoteInputSteps().get(i);
     	        	if (i==stepcopy) {
 	    	        	RemoteStep copy = (RemoteStep) remoteStep.clone();
 	    	        	remoteInputSteps.add(copy);
     	        	}
     	        }
-    	        */
         	}
         	else {
     	        for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
@@ -810,8 +804,7 @@ public class BaseStep extends Thread implements VariableSpace
         // That means we need to look up the partitioning information in the next step..
         // If there are multiple steps, we need to look at the first (they should be all the same)
         // 
-        int partitioningType = StepPartitioningMeta.getMethodType(repartitioning);
-        switch(partitioningType)
+        switch(repartitioning)
         {
         case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
         {
@@ -910,23 +903,25 @@ public class BaseStep extends Thread implements VariableSpace
 	        			partitionNrRowSetList = new RowSet[outputRowSets.size()];
 		        		SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
 		        		
-		                for (SlaveStepCopyPartitionDistribution.SlaveStepCopy slaveStepCopy : distribution.getDistribution().keySet()) {
-		                	int partition = distribution.getPartition(slaveStepCopy.getSlaveServerName(), slaveStepCopy.getStepName(), slaveStepCopy.getStepCopyNr());
-		                	System.out.println("slave step copy: slaveServer="+slaveStepCopy.getSlaveServerName()+", stepname="+slaveStepCopy.getStepName()+", copynr="+slaveStepCopy.getStepCopyNr()+" ---> partition="+partition);
-		                }
+		        		String nextPartitionSchemaName = TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta.getPartitionSchema().getName() );
 		        		
 		        		for (RowSet outputRowSet : outputRowSets) {
-		        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), outputRowSet.getDestinationStepName(), outputRowSet.getDestinationStepCopy());
-		        			if (partNr==-1) {
-		        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", step="+outputRowSet.getDestinationStepName()+", copy="+outputRowSet.getDestinationStepCopy());
+		        			try
+		        			{
+			        			int partNr = distribution.getPartition(outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet.getDestinationStepCopy());
+			        			if (partNr==-1) {
+			        				throw new KettleStepException("Unable to find partition using rowset data, slave="+outputRowSet.getRemoteSlaveServerName()+", partition schema="+nextStepPartitioningMeta.getPartitionSchema().getName()+", copy="+outputRowSet.getDestinationStepCopy());
+			        			}
+			        			partitionNrRowSetList[partNr] = outputRowSet;
 		        			}
-		        			partitionNrRowSetList[partNr] = outputRowSet;
+		        			catch(NullPointerException e) {
+		        				throw(e);
+		        			}
 		        		}
 	                }
                 
 	                // OK, now get the target partition based on the partition nr...
-	                // Hashing on an integer is very fast.
-                	// TODO: see if we can turn this Map into an array for even better speed...
+	                // This should be very fast
                 	//
 	                selectedRowSet = partitionNrRowSetList[partitionNr];
                 }
@@ -2027,17 +2022,17 @@ public class BaseStep extends Thread implements VariableSpace
     }
 
     /**
-     * @return the repartitioning
+     * @return the repartitioning type
      */
-    public String getRepartitioning()
+    public int getRepartitioning()
     {
         return repartitioning;
     }
 
     /**
-     * @param repartitioning the repartitioning to set
+     * @param repartitioning the repartitioning type to set
      */
-    public void setRepartitioning(String repartitioning)
+    public void setRepartitioning(int repartitioning)
     {
         this.repartitioning = repartitioning;
     }

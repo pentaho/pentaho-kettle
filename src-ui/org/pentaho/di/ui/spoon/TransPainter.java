@@ -417,7 +417,15 @@ public class TransPainter
             PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
             if (partitionSchema!=null) {
 	            
-	        	String nrInput = "Px"+Integer.toString(partitionSchema.getPartitionIDs().size());
+            	String nrInput;
+            	
+            	if (partitionSchema.isDynamicallyDefined()) {
+            		nrInput = "Dx"+partitionSchema.getNumberOfPartitionsPerSlave();
+            	}
+            	else {
+            		nrInput = "Px"+Integer.toString(partitionSchema.getPartitionIDs().size());
+            	}
+	        	
 	        	org.eclipse.swt.graphics.Point textExtent = gc.textExtent(nrInput);
 	        	textExtent.x+=2; // add a tiny little bit of a margin
 	        	textExtent.y+=2;

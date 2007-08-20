@@ -498,6 +498,7 @@ public class Trans implements VariableSpace
             // If both steps are partitioned on a different method or schema, we need to re-partition as well.
             // If both steps are not partitioned, we don't need to re-partition
             //
+            StepPartitioningMeta thisPartitioned = stepMeta.getTargetStepPartitioningMeta();
             StepPartitioningMeta nextPartitioned = stepMeta.getTargetStepPartitioningMeta();
 	        int nrNext = transMeta.findNrNextSteps(stepMeta);
 	        for (int p=0;p<nrNext;p++)
@@ -510,10 +511,12 @@ public class Trans implements VariableSpace
 	        }
             
             stepMeta.setTargetStepPartitioningMeta(nextPartitioned);
-            baseStep.setRepartitioning(StepPartitioningMeta.methodCodes[StepPartitioningMeta.PARTITIONING_METHOD_NONE]);
+            baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
             
-            if (nextPartitioned!=null) {
-            	baseStep.setRepartitioning(nextPartitioned.getMethod());
+        	// If the next step is partitioned differently, set re-partitioning, when running locally.
+        	//
+            if ( nextPartitioned!=null && (thisPartitioned==null || !thisPartitioned.equals(nextPartitioned)) ) {
+            	baseStep.setRepartitioning(nextPartitioned.getMethodType());
             }
         }
 

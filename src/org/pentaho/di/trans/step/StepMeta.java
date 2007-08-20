@@ -360,9 +360,15 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		copies=c;
 	}
 	
+	/**
+	 * Get the number of copies to start of a step.
+	 * This takes into account the partitioning logic.
+	 * @return the number of step copies to start.
+	 */
 	public int getCopies()
 	{
-        // If the step is partitioned, that's going to determine the number of copies, nothing else...
+		// If the step is partitioned, that's going to determine the number of copies, nothing else...
+		//
         if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
         {
             List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();

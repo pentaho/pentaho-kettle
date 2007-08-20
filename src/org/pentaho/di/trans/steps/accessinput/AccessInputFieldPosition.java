@@ -1,9 +1,6 @@
 package org.pentaho.di.trans.steps.accessinput;
 
-import java.util.ArrayList;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 
 public class AccessInputFieldPosition implements Cloneable
@@ -175,24 +172,5 @@ public class AccessInputFieldPosition implements Cloneable
     public void setElementNr(int elementNr)
     {
         this.elementNr = elementNr;
-    }
-    
-    /**
-     * Encode the path to an XML element or attribute
-     * @param path An ArrayList of AccessInput
-     * @return the path encoded
-     */
-    public static final String encodePath(ArrayList path)
-    {
-        String encoded = "";
-        for (int p=0;p<path.size();p++) 
-        {
-            AccessInput pos = (AccessInput)path.get(p); 
-            String elementName = pos.toString();
-            if (p>0) encoded+=AccessInputField.POSITION_MARKER;
-            encoded+=elementName;
-        }
-        
-        return encoded;
     }
 }

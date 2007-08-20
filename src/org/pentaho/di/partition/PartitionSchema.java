@@ -311,4 +311,29 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     	dynamicallyDefined=false;
     	numberOfPartitionsPerSlave=null;
 	}
+
+	/**
+	    Slaves don't need ALL the partitions, they just need a few.<br>
+	    So we should only retain those partitions that are of interest to the slave server.<br>
+	    Divide the number of partitions (6) through the number of slaves (2)<br>
+	    That gives you 0, 1, 2, 3, 4, 5<br>
+		Slave 0 : 0, 2, 4<br>
+		Slave 1 : 1, 3, 5<br>
+		--> slaveNumber == partitionNr % slaveCount<br>
+		
+	 * @param slaveCount
+	 * @param slaveNumber
+	 */
+	public void retainPartitionsForSlaveServer(int slaveCount, int slaveNumber) {
+		List<String> ids = new ArrayList<String>();
+		int partitionCount = partitionIDs.size();
+		
+		for (int i=0;i<partitionCount;i++) {
+			if ( slaveNumber==( i % slaveCount ) ) {
+				ids.add( partitionIDs.get(i) );
+			}
+		}
+		partitionIDs.clear();
+		partitionIDs.addAll(ids);
+	}
 }

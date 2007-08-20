@@ -50,10 +50,10 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat     daf;
 	public DateFormatSymbols    dafs;
 	
-	public List       files;
-	public boolean    last_file;
-	public FileObject file;
-	public int        filenr;
+	public List<FileObject>     files;
+	public boolean              last_file;
+	public FileObject           file;
+	public int                  filenr;
 	
 	public FileInputStream     fr;
 	public BufferedInputStream is;

@@ -24,38 +24,38 @@ public class SlaveStepCopyPartitionDistribution {
 	
 	public class SlaveStepCopy implements Comparable<SlaveStepCopy> {
 		private String slaveServerName;
-		private String stepName;
+		private String partitionSchemaName;
 		private int    stepCopyNr;
 		
 		/**
 		 * @param slaveServerName
-		 * @param stepName
+		 * @param partitionSchemaName
 		 * @param stepCopyNr
 		 */
-		public SlaveStepCopy(String slaveServerName, String stepName, int stepCopyNr) {
+		public SlaveStepCopy(String slaveServerName, String partitionSchemaName, int stepCopyNr) {
 			super();
 			this.slaveServerName = slaveServerName;
-			this.stepName = stepName;
+			this.partitionSchemaName = partitionSchemaName;
 			this.stepCopyNr = stepCopyNr;
 		}
 		
 		public String toString() {
-			return slaveServerName+"/"+stepName+"."+stepCopyNr;
+			return slaveServerName+"/"+partitionSchemaName+"."+stepCopyNr;
 		}
 		
 		public boolean equals(Object obj) {
 			SlaveStepCopy copy = (SlaveStepCopy) obj;
-			return slaveServerName.equals(copy.slaveServerName) && stepName.equals(copy.stepName) && stepCopyNr==stepCopyNr;
+			return slaveServerName.equals(copy.slaveServerName) && partitionSchemaName.equals(copy.partitionSchemaName) && stepCopyNr==stepCopyNr;
 		}
 		
 		public int hashCode() {
-			return slaveServerName.hashCode() ^ stepName.hashCode() ^ new Integer(stepCopyNr).hashCode();
+			return slaveServerName.hashCode() ^ partitionSchemaName.hashCode() ^ new Integer(stepCopyNr).hashCode();
 		}
 
 		public int compareTo(SlaveStepCopy o) {
 			int cmp = slaveServerName.compareTo(o.slaveServerName);
 			if (cmp!=0) return cmp;
-			cmp = stepName.compareTo(o.stepName);
+			cmp = partitionSchemaName.compareTo(o.partitionSchemaName);
 			if (cmp!=0) return cmp;
 			return stepCopyNr-o.stepCopyNr;
 		}
@@ -75,17 +75,17 @@ public class SlaveStepCopyPartitionDistribution {
 		}
 
 		/**
-		 * @return the stepName
+		 * @return the partition schema name
 		 */
-		public String getStepName() {
-			return stepName;
+		public String getPartitionSchemaName() {
+			return partitionSchemaName;
 		}
 
 		/**
-		 * @param stepName the stepName to set
+		 * @param partitionSchemaName the partition schema name to set
 		 */
-		public void setStepName(String stepName) {
-			this.stepName = stepName;
+		public void setStepName(String partitionSchemaName) {
+			this.partitionSchemaName = partitionSchemaName;
 		}
 
 		/**
@@ -112,31 +112,38 @@ public class SlaveStepCopyPartitionDistribution {
 		distribution = new Hashtable<SlaveStepCopy, Integer>();
 	}
 	
-	public void addPartition(String slaveServerName, String stepName, int stepCopyNr, int partitionNr) {
-		distribution.put(new SlaveStepCopy(slaveServerName, stepName, stepCopyNr), partitionNr);
+	/**
+	 * Add a partition number to the distribution for re-use at runtime.
+	 * @param slaveServerName
+	 * @param partitionSchemaName
+	 * @param stepCopyNr
+	 * @param partitionNr
+	 */
+	public void addPartition(String slaveServerName, String partitionSchemaName, int stepCopyNr, int partitionNr) {
+		distribution.put(new SlaveStepCopy(slaveServerName, partitionSchemaName, stepCopyNr), partitionNr);
 	}
 	
 	/**
 	 * Add a partition number to the distribution if it doesn't already exist.
 	 * 
 	 * @param slaveServerName
-	 * @param stepName
+	 * @param partitionSchemaName
 	 * @param stepCopyNr
 	 * @return The found or created partition number
 	 */
-	public int addPartition(String slaveServerName, String stepName, int stepCopyNr) {
-		Integer partitionNr = distribution.get(new SlaveStepCopy(slaveServerName, stepName, stepCopyNr));
+	public int addPartition(String slaveServerName, String partitionSchemaName, int stepCopyNr) {
+		Integer partitionNr = distribution.get(new SlaveStepCopy(slaveServerName, partitionSchemaName, stepCopyNr));
 		if (partitionNr==null) {
 			// Not found: add it.
 			//
 			int nr = 0;
 			for (SlaveStepCopy slaveStepCopy : distribution.keySet()) {
-				if (slaveStepCopy.stepName.equals(stepName)) {
+				if (slaveStepCopy.partitionSchemaName.equals(partitionSchemaName)) {
 					nr++;
 				}
 			}
 			partitionNr=new Integer(nr);
-			addPartition(slaveServerName, stepName, stepCopyNr, nr);
+			addPartition(slaveServerName, partitionSchemaName, stepCopyNr, nr);
 		}
 		return partitionNr.intValue();
 	}
@@ -147,8 +154,8 @@ public class SlaveStepCopyPartitionDistribution {
 		return integer;
 	}
 	
-	public int getPartition(String slaveServerName, String stepName, int stepCopyNr) {
-		return getPartition(new SlaveStepCopy(slaveServerName, stepName, stepCopyNr));
+	public int getPartition(String slaveServerName, String partitionSchemaName, int stepCopyNr) {
+		return getPartition(new SlaveStepCopy(slaveServerName, partitionSchemaName, stepCopyNr));
 	}
 	
 	public String getXML() {
@@ -164,7 +171,7 @@ public class SlaveStepCopyPartitionDistribution {
 			
 			xml.append("  ").append(XMLHandler.openTag("entry") );
 			xml.append("  ").append(XMLHandler.addTagValue("slavename", copy.slaveServerName, false) );
-			xml.append("  ").append(XMLHandler.addTagValue("stepname", copy.stepName, false) );
+			xml.append("  ").append(XMLHandler.addTagValue("partition_schema_name", copy.partitionSchemaName, false) );
 			xml.append("  ").append(XMLHandler.addTagValue("stepcopy", copy.stepCopyNr, false) );
 			xml.append("  ").append(XMLHandler.addTagValue("partition", partition, false) );
 			
@@ -191,11 +198,11 @@ public class SlaveStepCopyPartitionDistribution {
 		for (int i=0;i<nrEntries;i++) {
 			Node entryNode = XMLHandler.getSubNodeByNr(node, "entry", i);
 			String slaveServerName = XMLHandler.getTagValue(entryNode, "slavename");
-			String stepName = XMLHandler.getTagValue(entryNode, "stepname");
+			String partitionSchemaName = XMLHandler.getTagValue(entryNode, "partition_schema_name");
 			int stepCopyNr = Const.toInt( XMLHandler.getTagValue(entryNode, "stepcopy"), -1);
 			int partitionNr = Const.toInt( XMLHandler.getTagValue(entryNode, "partition"), -1);
 			
-			addPartition(slaveServerName, stepName, stepCopyNr, partitionNr);
+			addPartition(slaveServerName, partitionSchemaName, stepCopyNr, partitionNr);
 		}
 		
 		Node originalPartitionSchemasNode = XMLHandler.getSubNode(node, "original-partition-schemas");

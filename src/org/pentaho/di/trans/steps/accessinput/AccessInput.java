@@ -151,13 +151,12 @@ public class AccessInput extends BaseStep implements StepInterface
 			Table t=d.getTable(environmentSubstitute(meta.getTableName()));
 
 			
-			Map rw;
+			Map<String,Object> rw;
 			
 			
 			// Fetch all rows from the table 
 			while (((meta.getRowLimit()>0 &&  data.rownr<meta.getRowLimit()) || meta.getRowLimit()==0)  && ((rw = t.getNextRow()) != null))  
 			{
-			
 				// Create new row				
 				outputRowData = buildEmptyRow();
 						

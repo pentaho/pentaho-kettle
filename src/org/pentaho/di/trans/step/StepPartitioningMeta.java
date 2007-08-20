@@ -18,16 +18,15 @@ import org.w3c.dom.Node;
 
 public class StepPartitioningMeta implements XMLInterface, Cloneable
 {
-    public static final int PARTITIONING_METHOD_NONE    = 0;
-    public static final int PARTITIONING_METHOD_MIRROR  = 1;
+    public static final int PARTITIONING_METHOD_NONE     = 0;
+    public static final int PARTITIONING_METHOD_MIRROR   = 1;
     public static final int PARTITIONING_METHOD_SPECIAL  = 2;
     
-    public static final String[] methodCodes        = new String[] { "none", "Mirror" };
+    public static final String[] methodCodes        = new String[] { "none", "Mirror", };
     public static final String[] methodDescriptions = new String[] { "None", "Mirror to all partitions" };
 
     private int				methodType;
-    private String             method;
-//    private String          fieldName;
+    private String          method;
 
     private String          partitionSchemaName; // to allow delayed binding...
     private PartitionSchema partitionSchema;
@@ -69,6 +68,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable
      */
     @Override
     public boolean equals(Object obj) {
+    	if (obj==null) return false;
     	StepPartitioningMeta meta = (StepPartitioningMeta) obj;
     	return partitionSchemaName.equalsIgnoreCase(meta.partitionSchemaName);
     }
