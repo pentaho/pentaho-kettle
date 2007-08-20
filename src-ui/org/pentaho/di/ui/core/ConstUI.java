@@ -64,6 +64,11 @@ public class ConstUI
 	 * The minimal size of a note on a graphical view (width & height)
 	 */
 	public static final int NOTE_MIN_SIZE = 20;
+	
+	/**
+	 * Offset between pointer and tooltip position.
+	 */
+	public static final int TOOLTIP_OFFSET = 5;
 
 	/**
 	 * The default red-component of the background color

@@ -611,7 +611,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 
-                if (last_button==0) setToolTip(real.x, real.y);
+                if (last_button==0) setToolTip(real.x + ConstUI.TOOLTIP_OFFSET, 
+                		                       real.y + ConstUI.TOOLTIP_OFFSET);
                 
                 // 
                 // First see if the icon we clicked on was selected.
