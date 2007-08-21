@@ -59,8 +59,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	private static final String YES = "Y";
 
-	public final static String trimTypeCode[] = { "none", "left", "right", "both" };
-
 	public final static String trimTypeDesc[] = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"),
 			Messages.getString("TextFileInputMeta.TrimType.Right"), Messages.getString("TextFileInputMeta.TrimType.Both") };
 
@@ -1209,9 +1207,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		if (tt == null) return 0;
 
-		for (int i = 0; i < trimTypeCode.length; i++)
+		for (int i = 0; i < Const.trimTypeCode.length; i++)
 		{
-			if (trimTypeCode[i].equalsIgnoreCase(tt)) return i;
+			if (Const.trimTypeCode[i].equalsIgnoreCase(tt)) return i;
 		}
 		return 0;
 	}
@@ -1231,8 +1229,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public final static String getTrimTypeCode(int i)
 	{
-		if (i < 0 || i >= trimTypeCode.length) return trimTypeCode[0];
-		return trimTypeCode[i];
+		if (i < 0 || i >= Const.trimTypeCode.length) return Const.trimTypeCode[0];
+		return Const.trimTypeCode[i];
 	}
 
 	public final static String getTrimTypeDesc(int i)
