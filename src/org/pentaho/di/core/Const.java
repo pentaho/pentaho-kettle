@@ -39,6 +39,7 @@ import java.util.Locale;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
@@ -530,22 +531,6 @@ public class Const
 	}
 
 	/**
-	 * Right trim: remove spaces to the right of a string
-	 * @param str The string to right trim
-	 * @return The trimmed string.
-	 */
-	public static final String rtrim(String str)
-	{
-		if (str==null) return null;
-		
-		int max = str.length();
-		while (max > 0 && isSpace(str.charAt(max - 1)))
-			max--;
-
-		return str.substring(0, max);
-	}
-
-	/**
 	 * Determines whether or not a character is considered a space.
 	 * A character is considered a space in Kettle if it is a space, a tab, a newline or a cariage return.
 	 * @param c The character to verify if it is a space.
@@ -555,21 +540,25 @@ public class Const
 	{
 		return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 	}
-
+	
 	/**
 	 * Left trim: remove spaces to the left of a String.
 	 * @param str The String to left trim
 	 * @return The left trimmed String
 	 */
-	public static final String ltrim(String str)
-	{
-        if (str==null) return null;
-		int from = 0;
-		while (from < str.length() && isSpace(str.charAt(from)))
-			from++;
+    public static String ltrim(String source) {
+        return source.replaceAll("^\\s+", "");
+    }
 
-		return str.substring(from);
-	}
+    /**
+	 * Right trim: remove spaces to the right of a string
+	 * @param str The string to right trim
+	 * @return The trimmed string.
+	 */
+    public static String rtrim(String source) {
+        return source.replaceAll("\\s+$", "");
+    }
+
 
 	/**
 	 * Trims a string: removes the leading and trailing spaces of a String.
@@ -578,18 +567,7 @@ public class Const
 	 */
 	public static final String trim(String str)
 	{
-		int max = str.length() - 1;
-		int min = 0;	
-
-		while (min <= max && isSpace(str.charAt(min)))
-			min++;
-		while (max >= 0 && isSpace(str.charAt(max)))
-			max--;
-
-		if (max < min)
-			return "";
-
-		return str.substring(min, max + 1);
+		return rtrim(ltrim(str));
 	}
 
 	/**
@@ -1730,4 +1708,21 @@ public class Const
     {
         return new Date().getTime()*1000;
     }
+    
+    public static String trimToType(String string,int trimType)
+    {
+    	switch(trimType)
+    	{
+    	case ValueMetaInterface.TRIM_TYPE_BOTH:
+    		return trim(string);
+    	case ValueMetaInterface.TRIM_TYPE_LEFT:
+    		return ltrim(string);
+    	case ValueMetaInterface.TRIM_TYPE_RIGHT:
+    		return rtrim(string);
+    	case ValueMetaInterface.TRIM_TYPE_NONE:default:
+    		return string;
+    	}
+    }
+    
+    
 }
