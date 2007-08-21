@@ -69,7 +69,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	{
 		meta=(TextFileOutputMeta)smi;
 		data=(TextFileOutputData)sdi;
-	
+
 		boolean result=true;
 		boolean bEndedLineWrote=false;
 		Object[] r=getRow();       // This also waits for a row to be finished.
@@ -188,7 +188,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 						data.writer.write(data.binarySeparator);
 	
 					ValueMetaInterface v = rowMeta.getValueMeta(data.fieldnrs[i]);
-					
 					Object valueData = r[data.fieldnrs[i]];
 					writeField(v, valueData);
 				}
@@ -208,14 +207,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
     private byte[] formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
     {
-    	if( v.isString() )
-    	{
-    		if( valueData instanceof String ) 
-    		{
-        		return convertStringToBinaryString( v, valueData.toString() );
-    		} else {
-        		return convertStringToBinaryString( v, v.getString( valueData ) );
-    		}
+    	if( v.isString())
+    	{    	
+    		String svalue = (valueData instanceof String)?(String)valueData:v.getString(valueData);
+    		return convertStringToBinaryString(v,Const.trimToType(svalue, v.getTrimType()));
     	} else {
             return v.getBinaryString(valueData);
     	}
@@ -225,7 +220,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     private byte[] convertStringToBinaryString(ValueMetaInterface v, String string) throws KettleValueException
     {
     	int length = v.getLength();
-    	
+    	   	
     	if( length > -1 && length < string.length() ) {
     		// we need to truncate
     		String tmp = string.substring(0, length);
@@ -247,7 +242,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
     	}
     	else {
     		byte text[];
-    		string = v.getLength()==-1?string.trim():string;
             if (Const.isEmpty(v.getStringEncoding()))
             {
             	text = string.getBytes();
@@ -301,7 +295,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
     	}
     }
     
-    
     private void writeField(ValueMetaInterface v, Object valueData) throws KettleStepException
     {
         try
@@ -312,8 +305,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         		{
             		str = (byte[]) valueData;
         		} else {
-        			String lvalue = valueData.toString();
-            		str = getBinaryString(v.getLength()==-1?lvalue.trim():lvalue);
+            		str = getBinaryString(valueData.toString());
         		}
         	}
         	else {
