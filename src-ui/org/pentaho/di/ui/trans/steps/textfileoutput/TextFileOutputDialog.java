@@ -59,10 +59,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.Messages;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
@@ -71,6 +70,8 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
 public class TextFileOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -828,7 +829,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
-		final int FieldsCols=9;
+		final int FieldsCols=10;
 		final int FieldsRows=input.getOutputFields().length;
 		
 		// Prepare a list of possible formats...
@@ -848,7 +849,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		colinf[5]=new ColumnInfo(Messages.getString("TextFileOutputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[6]=new ColumnInfo(Messages.getString("TextFileOutputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[7]=new ColumnInfo(Messages.getString("TextFileOutputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NullColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true );
+		colinf[9]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NullColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1032,7 +1034,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddPartnr.setSelection(input.isPartNrInFilename());
 		wPad.setSelection(input.isPadded());
 		wFastDump.setSelection(input.isFastDump());
-		
+				
 		log.logDebug(toString(), "getting fields info...");
 		
 		for (int i=0;i<input.getOutputFields().length;i++)
@@ -1048,7 +1050,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			if (field.getCurrencySymbol()!=null) item.setText(6, field.getCurrencySymbol());
 			if (field.getDecimalSymbol()!=null) item.setText(7, field.getDecimalSymbol());
 			if (field.getGroupingSymbol()!=null) item.setText(8, field.getGroupingSymbol());
-			if (field.getNullString()!=null) item.setText(9, field.getNullString());
+			String trim = field.getTrimTypeDesc();
+			if (trim != null) item.setText(9, trim);
+			if (field.getNullString()!=null) item.setText(10, field.getNullString());
+			
+			
 		}
 		
 		wFields.optWidth(true);
@@ -1108,8 +1114,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			field.setCurrencySymbol( item.getText(6) );
 			field.setDecimalSymbol( item.getText(7) );
 			field.setGroupingSymbol( item.getText(8) );
-			field.setNullString( item.getText(9) );
-			
+			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(9)));
+			field.setNullString( item.getText(10) );
 			tfoi.getOutputFields()[i]  = field;
 		}
 	}
@@ -1185,6 +1191,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			
 			item.setText(4, "");
 			item.setText(5, "");
+			item.setText(9,Const.trimTypeCode[3]);
 			
 			int type = ValueMeta.getType(item.getText(2));
 			switch(type)
@@ -1196,6 +1203,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			default: break;
 			}
 		}
+		
+		for (int i=0;i<input.getOutputFields().length;i++)
+			input.getOutputFields()[i].setTrimType(ValueMetaInterface.TRIM_TYPE_BOTH);
+				
 		wFields.optWidth(true);
 	}
 
