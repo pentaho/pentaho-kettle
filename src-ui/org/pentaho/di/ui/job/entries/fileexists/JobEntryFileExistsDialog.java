@@ -63,12 +63,12 @@ import org.pentaho.vfs.ui.VfsFileChooserDialog;
  */
 public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntryDialogInterface
 {
-	private static final String[] EXTENSIONS = new String[] { "*.txt", "*.csv", "*" };
+	private static final String[] EXTENSIONS = new String[] { "*.txt", "*.csv", "*" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	private static final String[] FILETYPES = new String[] {
-			Messages.getString("JobFileExists.Filetype.Text"),
-			Messages.getString("JobFileExists.Filetype.CSV"),
-			Messages.getString("JobFileExists.Filetype.All") };
+			Messages.getString("JobFileExists.Filetype.Text"), //$NON-NLS-1$
+			Messages.getString("JobFileExists.Filetype.CSV"), //$NON-NLS-1$
+			Messages.getString("JobFileExists.Filetype.All") }; //$NON-NLS-1$
 
 	private Label wlName;
 
@@ -102,7 +102,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		super(parent, jobEntryInt, rep, jobMeta);
 		jobEntry = (JobEntryFileExists) jobEntryInt;
 		if (this.jobEntry.getName() == null)
-			this.jobEntry.setName(Messages.getString("JobFileExists.Name.Default"));
+			this.jobEntry.setName(Messages.getString("JobFileExists.Name.Default")); //$NON-NLS-1$
 	}
 
 	public JobEntryInterface open()
@@ -128,14 +128,14 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("JobFileExists.Title"));
+		shell.setText(Messages.getString("JobFileExists.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlName = new Label(shell, SWT.RIGHT);
-		wlName.setText(Messages.getString("JobFileExists.Name.Label"));
+		wlName.setText(Messages.getString("JobFileExists.Name.Label")); //$NON-NLS-1$
 		props.setLook(wlName);
 		fdlName = new FormData();
 		fdlName.left = new FormAttachment(0, 0);
@@ -153,7 +153,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 
 		// Filename line
 		wlFilename = new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("JobFileExists.Filename.Label"));
+		wlFilename.setText(Messages.getString("JobFileExists.Filename.Label")); //$NON-NLS-1$
 		props.setLook(wlFilename);
 		fdlFilename = new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -163,7 +163,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 
 		wbFilename = new Button(shell, SWT.PUSH | SWT.CENTER);
 		props.setLook(wbFilename);
-		wbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbFilename.setText(Messages.getString("System.Button.Browse")); //$NON-NLS-1$
 		fdbFilename = new FormData();
 		fdbFilename.right = new FormAttachment(100, 0);
 		fdbFilename.top = new FormAttachment(wName, 0);
@@ -225,7 +225,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		});
 
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK"));
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		FormData fd = new FormData();
 		fd.right = new FormAttachment(50, -10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -233,7 +233,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		wOK.setLayoutData(fd);
 
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel"));
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.left = new FormAttachment(50, 10);
 		fd.bottom = new FormAttachment(100, 0);
@@ -284,7 +284,7 @@ public class JobEntryFileExistsDialog extends JobEntryDialog implements JobEntry
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
-		props.setDialogSize(shell, "JobFileExistsDialogSize");
+		props.setDialogSize(shell, "JobFileExistsDialogSize"); //$NON-NLS-1$
 		while (!shell.isDisposed())
 		{
 			if (!display.readAndDispatch())
