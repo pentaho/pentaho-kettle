@@ -1,10 +1,11 @@
 package org.pentaho.di.core.dnd;
 
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogWriter;
-import org.pentaho.di.core.util.Base64;
+
 
 public class XMLTransfer extends ByteArrayTransfer
 {
@@ -28,7 +29,7 @@ public class XMLTransfer extends ByteArrayTransfer
 
         try
         {
-            byte[] buffer = Base64.encodeBytes(((DragAndDropContainer) object).getXML().getBytes()).getBytes();
+            byte[] buffer = Base64.encodeBase64(((DragAndDropContainer) object).getXML().getBytes());
 
             super.javaToNative(buffer, transferData);
         }
@@ -59,7 +60,7 @@ public class XMLTransfer extends ByteArrayTransfer
             try
             {
                 byte[] buffer = (byte[]) super.nativeToJava(transferData);
-                String xml = new String(Base64.decode(new String(buffer)));
+                String xml = new String(Base64.decodeBase64(new String(buffer).getBytes()));
                 return new DragAndDropContainer(xml);
             }
             catch (Exception e)

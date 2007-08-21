@@ -50,6 +50,10 @@ import org.pentaho.di.core.logging.LogWriter;
  * @author rob@iharder.net
  * @version 2.1
  */
+
+/**
+ * @deprecated
+ */
 public class Base64
 {
     
@@ -1450,5 +1454,29 @@ public class Base64
         
     }   // end inner class OutputStream
     
+    public static void main( String[] args )
+    {
+      String src = "12345asdf;lkj/////.xmvaslfjqporiuASDFLJOWIUERQWERTYUIKPASD;L+_)(*(*^^%^&$&%##$!67890";
+      byte[] encoded0 = org.apache.commons.codec.binary.Base64.encodeBase64( src.getBytes() );
+      byte[] decoded0 = org.apache.commons.codec.binary.Base64.decodeBase64( encoded0 );
+      
+      String strEncoded1 = Base64.encodeBytes( src.getBytes() );
+      byte[] decoded1 = Base64.decode( strEncoded1 );
+      byte[] encoded1 = strEncoded1.getBytes();
+
+      assert decoded0.length == decoded1.length;
+      for ( int ii=0; ii<decoded0.length; ++ii )
+      {
+        assert decoded0[ ii ] == decoded1[ ii ];
+      }
+      
+      assert encoded0.length == encoded1.length;
+      for ( int ii=0; ii<encoded0.length; ++ii )
+      {
+        assert encoded0[ ii ] == encoded1[ ii ];
+      }
+      
+      System.out.println( "done" );
+    }
     
 }   // end class Base64

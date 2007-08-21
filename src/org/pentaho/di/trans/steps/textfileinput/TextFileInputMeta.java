@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -37,7 +38,6 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.Base64;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -766,7 +766,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				filterBytes = filterString.getBytes();
 				filterPrefix = STRING_BASE64_PREFIX;
 			}
-			String filterEncoded = filterPrefix + Base64.encodeBytes(filterBytes);
+			String filterEncoded = filterPrefix + Base64.encodeBase64(filterBytes);
 
 			retval.append("      <filter>").append(Const.CR);
 			retval.append("        ").append(XMLHandler.addTagValue("filter_string", filterEncoded, false));
@@ -903,7 +903,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 					String filterString = XMLHandler.getTagValue(fnode, "filter_string");
 					if (filterString != null && filterString.startsWith(STRING_BASE64_PREFIX))
 					{
-						filter[i].setFilterString(new String(Base64.decode(filterString.substring(STRING_BASE64_PREFIX.length()))));
+						filter[i].setFilterString(new String(Base64.decodeBase64(filterString.substring(STRING_BASE64_PREFIX.length()).getBytes())));
 					}
 					else
 					{

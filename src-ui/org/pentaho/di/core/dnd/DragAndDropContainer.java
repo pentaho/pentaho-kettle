@@ -5,9 +5,9 @@ package org.pentaho.di.core.dnd;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.Base64;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Document;
@@ -119,10 +119,11 @@ public class DragAndDropContainer implements XMLInterface
 			
 			xml.append("<DragAndDrop>").append(Const.CR);
 			xml.append("  ").append(XMLHandler.addTagValue("DragType", getTypeCode()));
-			xml.append("  ").append(XMLHandler.addTagValue("Data", Base64.encodeBytes(data.getBytes(Const.XML_ENCODING))));
+			xml.append("  ").append(XMLHandler.addTagValue("Data", 
+			    new String( Base64.encodeBase64(data.getBytes(Const.XML_ENCODING)))));
 			xml.append("</DragAndDrop>").append(Const.CR);
-			
-			return xml.toString();
+
+      return xml.toString();
 		}
 		catch(UnsupportedEncodingException e)
 		{
@@ -142,7 +143,7 @@ public class DragAndDropContainer implements XMLInterface
 			Node dnd = XMLHandler.getSubNode(doc, "DragAndDrop"); 
 			
 			type = getType( XMLHandler.getTagValue(dnd, "DragType") );
-			data = new String( Base64.decode( XMLHandler.getTagValue(dnd, "Data") ), Const.XML_ENCODING );
+      data = new String( Base64.decodeBase64( XMLHandler.getTagValue(dnd, "Data").getBytes() ), Const.XML_ENCODING );
 		}
 		catch(Exception e)
 		{
