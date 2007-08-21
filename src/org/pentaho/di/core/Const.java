@@ -419,6 +419,12 @@ public class Const
 	 * The default undo level for Kettle
 	 */
 	public static final int MAX_UNDO = 100;
+	
+	/**
+	 * The trim types
+	 */
+	public final static String trimTypeCode[] = { "none", "left", "right", "both" };
+
 
     /** 
      *  rounds double f to any number of places after decimal point
