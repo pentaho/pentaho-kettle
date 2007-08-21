@@ -393,8 +393,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			//Needed to do this because if the line ended withn the separator a ArrayIndexOutOfBoundsException was thrown
 			//because pos was equal to len
 			String separator = inf.getSeparator();
-			if (line.endsWith(separator))
+			if (separator!=null && line.endsWith(separator)) {
 				line = line.substring(0,line.length()-separator.length());
+			}
 			
 			if (inf.getFileType().equalsIgnoreCase("CSV"))
 			{
