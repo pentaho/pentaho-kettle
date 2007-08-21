@@ -300,6 +300,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
 	private static final String FILE_WELCOME_PAGE = Messages.getString("Spoon.Title.STRING_DOCUMENT_WELCOME"); // "docs/English/welcome/kettle_document_map.html";
 
+  private static final String UNDO_MENUITEM = "edit-undo"; //$NON-NLS-1$
+  private static final String REDO_MENUITEM = "edit-redo"; //$NON-NLS-1$
+  private static final String UNDO_UNAVAILABLE = Messages.getString("Spoon.Menu.Undo.NotAvailable"); //"Undo : not available \tCTRL-Z" //$NON-NLS-1$
+  private static final String REDO_UNAVAILABLE = Messages.getString("Spoon.Menu.Redo.NotAvailable");//"Redo : not available \tCTRL-Y" //$NON-NLS-1$S
+
 	public KeyAdapter defKeys;
 	public KeyAdapter modKeys;
 
@@ -4237,8 +4242,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		menuBar.setEnableById("file-close", enableTransMenu || enableJobMenu);
 		menuBar.setEnableById("file-print", enableTransMenu || enableJobMenu);
 
-		menuBar.setEnableById("edit-undo", enableTransMenu || enableJobMenu);
-		menuBar.setEnableById("edit-redo", enableTransMenu || enableJobMenu);
+    // Disable the undo and redo menus if there is no active transformation or active job
+    // DO NOT ENABLE them otherwise ... leave that to the undo/redo settings
+    if (!enableTransMenu && !enableJobMenu) {
+		  menuBar.setEnableById(UNDO_MENUITEM, false);
+		  menuBar.setEnableById(REDO_MENUITEM, false);
+    }
 
 		menuBar.setEnableById("edit-clear-selection", enableTransMenu);
 		menuBar.setEnableById("edit-select-all", enableTransMenu);
@@ -4572,34 +4581,24 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 		}
 	}
 
-	public void setUndoMenu(UndoInterface undoInterface)
+  /**
+   * Sets the text and enabled settings for the undo and redo menu items
+   * @param undoInterface the object which holds the undo/redo information
+   */
+  public void setUndoMenu(UndoInterface undoInterface)
 	{
-        if (shell.isDisposed()) return;
+    if (shell.isDisposed()) return;
 
 		TransAction prev = undoInterface != null ? undoInterface.viewThisUndo() : null;
 		TransAction next = undoInterface != null ? undoInterface.viewNextUndo() : null;
-
-		if (prev != null)
-		{
-			menuBar.setEnableById("edit-undo", true);
-            menuBar.setTextById( "edit-undo",  Messages.getString("Spoon.Menu.Undo.Available", prev.toString() ) );
-        } 
-        else            
-		{
-			menuBar.setEnableById("edit-redo", false);
-        		menuBar.setTextById( "edit-redo", Messages.getString("Spoon.Menu.Undo.NotAvailable"));//"Undo : not available \tCTRL-Z"
-		}
-
-		if (next != null)
-		{
-			menuBar.setEnableById("edit-redo", true);
-        		menuBar.setTextById( "edit-redo", Messages.getString("Spoon.Menu.Redo.Available",next.toString()));//"Redo : "+next.toString()+" \tCTRL-Y"
-        } 
-        else            
-		{
-			menuBar.setEnableById("edit-redo", false);
-        		menuBar.setTextById( "edit-redo", Messages.getString("Spoon.Menu.Redo.NotAvailable"));//"Redo : not available \tCTRL-Y"          
-		}
+    
+    // Set the menubar text
+    menuBar.setTextById(UNDO_MENUITEM, prev == null ? UNDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Undo.Available", prev.toString())); //$NON-NLS-1$
+    menuBar.setTextById(REDO_MENUITEM, next == null ? REDO_UNAVAILABLE : Messages.getString("Spoon.Menu.Redo.Available", next.toString())); //$NON-NLS-1$
+    
+    // Set the enabled flags
+    menuBar.setEnableById(UNDO_MENUITEM, prev != null);
+    menuBar.setEnableById(REDO_MENUITEM, next != null);
 	}
 
 
