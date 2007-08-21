@@ -378,7 +378,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return strings.toArray(new String[strings.size()]);
 	}
     
-
+	
 	public static final String[] convertLineToStrings(String line, TextFileInputMeta inf) throws KettleException
 	{
 		String[] strings = new String[inf.getInputFields().length];
@@ -389,14 +389,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			if (line == null) return null;
-			
-			//Needed to do this because if the line ended withn the separator a ArrayIndexOutOfBoundsException was thrown
-			//because pos was equal to len
-			String separator = inf.getSeparator();
-			if (separator!=null && line.endsWith(separator)) {
-				line = line.substring(0,line.length()-separator.length());
-			}
-			
+
 			if (inf.getFileType().equalsIgnoreCase("CSV"))
 			{
 				// Split string in pieces, only for CSV!
@@ -560,10 +553,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 					pos = next + 1;
 					fieldnr++;
 				}
-				if ( pos == length )
+				if ( pos == length && (line.endsWith(inf.getSeparator()) && fieldnr<strings.length))
 				{
 					if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of line empty field found: []");
-					strings[fieldnr]= "";
+					strings[fieldnr]= Const.EMPTY_STRING;
                     fieldnr++;
 				}
 			}
