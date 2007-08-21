@@ -96,6 +96,31 @@ public class XMLHandler
 		}
 		return null;
 	}
+	
+	/**
+	 * Get the value of a tag in a node
+	 * @param n The node to look in
+	 * @param tag The tag to look for
+	 * @return The value of the tag or null if nothing was found.
+	 */
+	public static final String getTagValueWithAttribute(Node n, String tag,String attribute)
+	{
+		NodeList children;
+		Node childnode;
+		
+		if (n==null) return null;
+		
+		children=n.getChildNodes();
+		for (int i=0;i<children.getLength();i++)
+		{
+			childnode=children.item(i);
+			if (childnode.getNodeName().equalsIgnoreCase(tag) && childnode.getAttributes().getNamedItem(attribute)!=null)
+			{
+				if (childnode.getFirstChild()!=null) return childnode.getFirstChild().getNodeValue();		
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Search a node for a certain tag, in that subnode search for a certain subtag.
@@ -655,7 +680,7 @@ public class XMLHandler
 	 * @param cr true if a cariage return is desired after the ending tag.
 	 * @return The XML String for the tag.
 	 */
-	public static final String addTagValue(String tag, String val, boolean cr)
+	public static final String addTagValue(String tag, String val, boolean cr,String... attributes)
 	{
 		StringBuffer value;
         
@@ -663,6 +688,10 @@ public class XMLHandler
 		{
             value = new StringBuffer("<");
             value.append(tag);
+            
+            for (int i=0;i<attributes.length;i+=2)
+        	   value.append(" ").append(attributes[i]).append("=\"").append(attributes[i+1]).append("\" ");
+           
             value.append('>');
             
             appendReplacedChars(value, val);
@@ -675,6 +704,10 @@ public class XMLHandler
 		{
 			value = new StringBuffer("<");
             value.append(tag);
+            
+            for (int i=0;i<attributes.length;i+=2)
+         	   value.append(" ").append(attributes[i]).append("=\"").append(attributes[i+1]).append("\" ");
+            
             value.append("/>");
 		}
         
@@ -954,6 +987,6 @@ public class XMLHandler
     {
         return "</"+tag+">";
     }
-
+    
 }
 	
