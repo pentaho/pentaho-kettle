@@ -8,13 +8,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -52,8 +49,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	private ServerSocket serverSocket;
 	private Socket socket;
 	
-	private boolean first;
-
 	private DataOutputStream outputStream;
 
     public AtomicBoolean stopped = new AtomicBoolean(false);
@@ -72,10 +67,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	
 	private int bufferSize;
 	private boolean compressingStreams;
-
-	private BufferedOutputStream bufferedOutputStream;
-
-	private GZIPOutputStream gzipOutputStream;
 
 	/**
 	 * @param hostname
@@ -235,22 +226,18 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
 		socket = serverSocket.accept();
 		
-		baseStep.logDetailed("Server socket accepted for port ["+ port +"]");
+		baseStep.logBasic("Server socket accepted for port ["+ port +"], reading from server "+targetSlaveServerName);
 		
 		if (compressingStreams) {
-			gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
-			bufferedOutputStream = new BufferedOutputStream(gzipOutputStream, bufferSize);
-			
+	        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
+			// outputStream = new DataOutputStream( new GZIPOutputStream(socket.getOutputStream()) );
 		}
 		else {
-			gzipOutputStream = null;
-			bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream(), bufferSize);
+	        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
 		}
-        outputStream = new DataOutputStream(bufferedOutputStream);
         
 		// inputStream = new DataInputStream(socket.getInputStream()); // for the confirmation message
-        first=true;
-		
+        
 		// Create an output row set: to be added to BaseStep.outputRowSets
 		//
 		final RowSet rowSet = new RowSet(baseStep.getTransMeta().getSizeRowset());
@@ -272,20 +259,27 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// get a row of data...
 					//
 					Object[] rowData = baseStep.getRowFrom(rowSet); 
+					if (rowData!=null) {
+						rowSet.getRowMeta().writeMeta(outputStream);
+					}
 					
 					// Send that row to the remote step
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
 						baseStep.linesRead--; // It's too confusing to count these twice
-						sendRow(rowSet.getRowMeta(), rowData);
-						if (baseStep.log.isDebug()) baseStep.logDebug("Sent row to remote step: "+rowSet.getRowMeta().getString(rowData));
+						baseStep.linesWritten--; // It's too confusing to count these twice
+						
+						// Write the row to the remote step via the output stream....
+						//
+						rowSet.getRowMeta().writeData(outputStream, rowData);
+						baseStep.linesOutput++;
+
+						if (baseStep.log.isDebug()) baseStep.logDebug("Sent row to port "+port+" : "+rowSet.getRowMeta().getString(rowData));
 						rowData = baseStep.getRowFrom(rowSet);
 					}
 					
 					// Just to make sure...
 					//
-					if (gzipOutputStream!=null) gzipOutputStream.flush();
-					bufferedOutputStream.flush();
 					outputStream.flush();
 					
 				} catch (Exception e) {
@@ -298,7 +292,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// shut down the output stream, we've send everything...
 					//
 					try {
-						socket.shutdownOutput();
+						socket.close();
 					} catch (IOException e) {
 						baseStep.logError("Error closing output socket to remote step", e);
 						baseStep.setErrors(1);
@@ -326,6 +320,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					// This will send all the remaining data to the client too.
 					// And cause an EOF over there.
 					//
+					/*
 					try {
 						socket.close();
 					} catch (IOException e) {
@@ -333,7 +328,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						baseStep.setErrors(1);
 						baseStep.stopAll();
 					}
-					
+					*/
 					// Now we can't close the server socket.
 					// This would immediately kill all the remaining data on the client side.
 					// The close of the server socket will happen when all the transformation in the cluster have finished.
@@ -387,24 +382,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	}
 	*/
 	
-	private void sendRow(RowMetaInterface rowMeta, Object[] rowData) throws KettleFileException {
-		if (first) {
-			rowMeta.writeMeta(outputStream);
-			first=false;
-		}
-		rowMeta.writeData(outputStream, rowData);
-
-		baseStep.linesOutput++;
-	}
-	
 	public RowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
 		this.baseStep = baseStep;
 		
 		final RowSet rowSet = new RowSet(baseStep.getTransMeta().getSizeRowset());
 		
-		// TODO: verify the case with multiple step copies running on the slaves
+		// Make sure we handle the case with multiple step copies running on a slave...
+		//
 		rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);
-		
 		
 		final int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
 		String realHostname = baseStep.environmentSubstitute(hostname);
@@ -426,7 +411,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				
                 if (compressingStreams)
                 {
-                    inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(socket.getInputStream()), bufferSize));
+                    inputStream  = new DataInputStream(new BufferedInputStream(socket.getInputStream(), bufferSize));
+                    // inputStream  = new DataInputStream( new GZIPInputStream(socket.getInputStream()) );
                 }
                 else
                 {
@@ -470,19 +456,25 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         //
         Runnable runnable = new Runnable() {
 			public void run() {
-				// First read the row meta data from the socket...
 				try {
+					// First read the row meta data from the socket...
+					//
 					RowMetaInterface rowMeta = new RowMeta(inputStream);
+					
+					// And a first row of data...
+					//
 					Object[] rowData = rowMeta.readData(inputStream);
 					
 					// Now get the data itself, row by row...
 					//
 					while (rowData!=null && !baseStep.isStopped()) {
 						baseStep.linesInput++;
+						baseStep.linesRead--;
 
 						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowSet.getRowMeta().getString(rowData));
 
 						baseStep.putRowTo(rowMeta, rowData, rowSet);
+						baseStep.linesWritten--;
 						rowData = rowMeta.readData(inputStream);
 					}
 				}
@@ -497,10 +489,6 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					baseStep.stopAll();
 				}
 				finally {
-					// signal baseStep that nothing else comes from this step.
-					//
-					rowSet.setDone(); 
-
 					// OK, we've read all data
 					// Now we need to signal the remote step that we've read everything.
 					//
@@ -529,6 +517,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					}
 
 				}
+				
+				// signal baseStep that nothing else comes from this step.
+				//
+				rowSet.setDone(); 
 			}
 		};
 		new Thread(runnable).start();

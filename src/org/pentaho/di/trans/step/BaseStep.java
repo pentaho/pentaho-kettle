@@ -284,6 +284,11 @@ public class BaseStep extends Thread implements VariableSpace
     /** A list of server sockets that need to be closed during transformation cleanup. */
     private List<ServerSocket> serverSockets;
 
+    private static int NR_OF_ROWS_IN_BLOCK = 100;
+
+    private int blockPointer;
+    
+
     /**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
@@ -371,6 +376,8 @@ public class BaseStep extends Thread implements VariableSpace
 	    
 	    //worker = Executors.newFixedThreadPool(10);
 	    checkTransRunning = false;
+	    
+	    blockPointer = 0; 
         
         dispatch();
     }
@@ -794,7 +801,7 @@ public class BaseStep extends Thread implements VariableSpace
 	        // No more output rowsets!
 	    	// Still update the nr of lines written.
 	    	//
-	    	// linesWritten++;
+	    	linesWritten++;
 	    	
 	        return; // we're done here!
 	    }
@@ -947,6 +954,13 @@ public class BaseStep extends Thread implements VariableSpace
                 while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) 
                 	;
                 linesWritten++;
+                
+                if (log.isRowLevel())
+					try {
+						logRowlevel("Partitioned #"+partitionNr+" to "+selectedRowSet+", row="+rowMeta.getString(row));
+					} catch (KettleValueException e) {
+						throw new KettleStepException(e);
+					}
             }
             break;
         case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
@@ -1114,9 +1128,6 @@ public class BaseStep extends Thread implements VariableSpace
     	}
     }
 
-    private static int NR_OF_ROWS_IN_BLOCK = 100;
-    private int blockPointer;
-    
     /**
      * In case of getRow, we receive data from previous steps through the input rowset. In case we split the stream, we
      * have to copy the data to the alternate splits: rowsets 1 through n.
@@ -1204,7 +1215,7 @@ public class BaseStep extends Thread implements VariableSpace
         		if (inputRowSet.isDone()) {
         			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
         			if (row==null) {
-        				inputRowSets.remove(inputRowSet);
+        				inputRowSets.remove(currentInputRowSetNr);
         				if (inputRowSets.size()==0) return null; // We're completely done.
         			}
         			else {
@@ -1324,7 +1335,13 @@ public class BaseStep extends Thread implements VariableSpace
         {
         	rowData=rowSet.getRow();
         }
-
+        
+        if (rowData==null && rowSet.isDone()) {
+        	// Try one more time to get a row to make sure we don't get a race-condition between the get and the isDone()
+        	//
+        	rowData = rowSet.getRow();
+        }
+        
         if (stopped.get())
         {
             if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$

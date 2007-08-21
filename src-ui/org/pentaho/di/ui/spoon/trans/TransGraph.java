@@ -245,8 +245,8 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         // toolTip.setHideOnMouseDown(true);
         toolTip.setRespectMonitorBounds(true);
         toolTip.setRespectDisplayBounds(true);
-        toolTip.setPopupDelay(500);
-        // toolTip.setShift(new org.eclipse.swt.graphics.Point(-3,-3));
+        toolTip.setPopupDelay(350);
+        toolTip.setShift(new org.eclipse.swt.graphics.Point(ConstUI.TOOLTIP_OFFSET,ConstUI.TOOLTIP_OFFSET));
         
         iconsize = spoon.props.getIconSize();
 
@@ -599,9 +599,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
         {
             public void mouseMove(MouseEvent e)
             {
-				canvas.setFocus(); // give the focus to the canvas, that way clicks are effective immediately.
-
-                boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+				boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
                 // Remember the last position of the mouse for paste with keyboard
                 lastMove = new Point(e.x, e.y);
@@ -613,8 +611,7 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 
-                if (last_button==0) setToolTip(real.x + ConstUI.TOOLTIP_OFFSET, 
-                		                       real.y + ConstUI.TOOLTIP_OFFSET);
+                if (last_button==0) setToolTip(real.x, real.y);
                 
                 // 
                 // First see if the icon we clicked on was selected.

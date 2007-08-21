@@ -76,7 +76,11 @@ public class RowSet implements Comparable<RowSet>
 		String comp   = rowSet.remoteSlaveServerName+"."+rowSet.destinationStepName+"."+rowSet.destinationStepCopy.intValue();
 		
 		return target.compareTo(comp);
-	}   
+	} 
+	
+	public boolean equals(RowSet rowSet) {
+		return compareTo(rowSet) == 0;
+	}
 
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
