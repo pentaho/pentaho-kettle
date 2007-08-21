@@ -1686,7 +1686,7 @@ public class TransDialog extends Dialog
 		DatabaseMeta ci = transMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			RowMetaInterface r = Database.getTransLogrecordFields(wBatch.getSelection(), wLogfield.getSelection());
+			RowMetaInterface r = Database.getTransLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
 			if (r!=null && r.size()>0)
 			{
 				String tablename = wLogtable.getText();

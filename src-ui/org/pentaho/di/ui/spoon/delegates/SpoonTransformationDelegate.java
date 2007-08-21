@@ -13,10 +13,12 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -947,7 +949,24 @@ public class SpoonTransformationDelegate extends SpoonDelegate
       // 
       // Launch in a separate thread to prevent GUI blocking...
       //
-      new Thread(new Runnable() { public void run() { Trans.monitorClusteredTransformation(transMeta.toString(), transSplitter, null); } }).start();
+      new Thread(new Runnable() {
+				public void run() {
+					Trans.monitorClusteredTransformation(transMeta.toString(), transSplitter, null);
+					Result result = Trans.getClusteredTransformationResult(transMeta.toString(), transSplitter, null);
+					LogWriter log = LogWriter.getInstance();
+					log.logBasic(transMeta.toString(), "-----------------------------------------------------");
+					log.logBasic(transMeta.toString(), "Got result back from clustered transformation:");
+					log.logBasic(transMeta.toString(), "-----------------------------------------------------");
+					log.logBasic(transMeta.toString(), "Errors : "+result.getNrErrors());
+					log.logBasic(transMeta.toString(), "Input : "+result.getNrLinesInput());
+					log.logBasic(transMeta.toString(), "Output : "+result.getNrLinesOutput());
+					log.logBasic(transMeta.toString(), "Updated : "+result.getNrLinesUpdated());
+					log.logBasic(transMeta.toString(), "Read : "+result.getNrLinesRead());
+					log.logBasic(transMeta.toString(), "Written : "+result.getNrLinesWritten());
+					log.logBasic(transMeta.toString(), "Rejected : "+result.getNrLinesRejected());
+					log.logBasic(transMeta.toString(), "-----------------------------------------------------");
+				}
+			}).start();
 	
     } 
     catch (Exception e)

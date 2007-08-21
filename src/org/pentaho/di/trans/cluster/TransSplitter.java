@@ -227,7 +227,12 @@ public class TransSplitter
             transMeta.addNote(masterNote);
         }
         
-        transMeta.setClusterSchemas(originalTransformation.getClusterSchemas());
+        // Copy the cluster schemas
+        //
+        for (ClusterSchema schema : originalTransformation.getClusterSchemas()) {
+            transMeta.getClusterSchemas().add((ClusterSchema) schema.clone());
+        }
+        
         transMeta.setDatabases(originalTransformation.getDatabases());
 
         // Feedback
@@ -239,7 +244,19 @@ public class TransSplitter
 
         // Unique connections
         transMeta.setUsingUniqueConnections(originalTransformation.isUsingUniqueConnections());
+        
+        // Also set the logging details...
+        transMeta.setReadStep( originalTransformation.getReadStep() );
+        transMeta.setWriteStep( originalTransformation.getWriteStep() );
+        transMeta.setInputStep( originalTransformation.getInputStep() );
+        transMeta.setOutputStep( originalTransformation.getOutputStep() );
+        transMeta.setRejectedStep( originalTransformation.getRejectedStep() );
 
+        transMeta.setLogConnection( originalTransformation.getLogConnection() );
+        transMeta.setLogTable( originalTransformation.getLogTable() );
+        transMeta.setBatchIdUsed( originalTransformation.isBatchIdUsed() );
+        transMeta.setLogfieldUsed( originalTransformation.isLogfieldUsed() );
+        
         return transMeta;
     }
     

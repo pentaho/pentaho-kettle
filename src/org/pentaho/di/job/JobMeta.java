@@ -2029,7 +2029,7 @@ public class JobMeta implements Cloneable, Comparable<JobMeta>, XMLInterface, Un
             try
             {
                 db.connect();
-                RowMetaInterface fields = Database.getJobLogrecordFields(useBatchId, logfieldUsed);
+                RowMetaInterface fields = Database.getJobLogrecordFields(false, useBatchId, logfieldUsed);
                 String sql = db.getDDL(logTable, fields);
                 if (sql != null && sql.length() > 0)
                 {

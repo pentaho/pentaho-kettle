@@ -64,11 +64,11 @@ public class SpeedTest
     private static void populateMetaAndData(int i, Object[] rowString10, RowMetaInterface metaString10, Object[] rowMixed10, RowMetaInterface metaMixed10)
     {
         rowString10[i]      = StringUtil.generateRandomString(20, "", "", false);
-        ValueMetaInterface meta = new ValueMeta("String"+(i+1), ValueMetaInterface.TYPE_STRING, 20);
+        ValueMetaInterface meta = new ValueMeta("String"+(i+1), ValueMetaInterface.TYPE_STRING, 20, 0);
         metaString10.addValueMeta(meta);
 
         rowMixed10[i*5 + 0] = StringUtil.generateRandomString(20, "", "", false);
-        ValueMetaInterface meta0 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_STRING, 20);
+        ValueMetaInterface meta0 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_STRING, 20, 0);
         metaMixed10.addValueMeta(meta0);
 
         rowMixed10[i*5 + 1] = new Date();
@@ -80,7 +80,7 @@ public class SpeedTest
         metaMixed10.addValueMeta(meta2);
 
         rowMixed10[i*5 + 3] = new Long( (long)(Math.random() * 1000000) );
-        ValueMetaInterface meta3 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_INTEGER, 8);
+        ValueMetaInterface meta3 = new ValueMeta("String"+(i*5+1), ValueMetaInterface.TYPE_INTEGER, 8, 0);
         metaMixed10.addValueMeta(meta3);
         
         rowMixed10[i*5 + 4] = new Boolean( Math.random() > 0.5 ? true : false );

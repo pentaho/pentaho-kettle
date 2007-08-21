@@ -4150,7 +4150,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
             try
             {
                 db.connect();
-                RowMetaInterface fields = Database.getTransLogrecordFields(useBatchId, logfieldUsed);
+                RowMetaInterface fields = Database.getTransLogrecordFields(false, useBatchId, logfieldUsed);
                 String sql = db.getDDL(logTable, fields);
                 if (sql != null && sql.length() > 0)
                 {
@@ -4383,7 +4383,7 @@ public class TransMeta implements XMLInterface, Comparator<TransMeta>, Comparabl
                                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", getLogTable() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
-                                RowMetaInterface fields = Database.getTransLogrecordFields(isBatchIdUsed(), isLogfieldUsed());
+                                RowMetaInterface fields = Database.getTransLogrecordFields(false, isBatchIdUsed(), isLogfieldUsed());
                                 String sql = logdb.getDDL(getLogTable(), fields);
                                 if (sql == null || sql.length() == 0)
                                 {

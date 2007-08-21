@@ -540,7 +540,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     //
                     long errors = Trans.monitorClusteredTransformation(toString(), transSplitter, parentJob);
                     
-                    result.setNrErrors(errors);
+                    Result clusterResult = Trans.getClusteredTransformationResult(toString(), transSplitter, parentJob); 
+                    result.clear();
+                    result.add(clusterResult);
+                    
+                    result.setNrErrors(result.getNrErrors()+errors);
 
                 }
                 else // Local execution...

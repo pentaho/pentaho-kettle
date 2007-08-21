@@ -142,7 +142,7 @@ public class RowTest extends TestCase
         RowMetaInterface rowMeta = new RowMeta();
 
         // A string object, indexed.
-        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30);
+        ValueMetaInterface meta1 = new ValueMeta("stringValue", ValueMetaInterface.TYPE_STRING, 30, 0);
         meta1.setIndex(colors);
         meta1.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
         rowMeta.addValueMeta(meta1);

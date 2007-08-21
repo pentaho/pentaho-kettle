@@ -2153,6 +2153,72 @@ public class Trans implements VariableSpace
         
         return errors;
     }
+    
+    public static final Result getClusteredTransformationResult(String logSubject, TransSplitter transSplitter, Job parentJob)
+    {
+    	Result result = new Result();
+        //
+        // See if the remote transformations have finished.
+        // We could just look at the master, but I doubt that that is enough in all situations.
+        //
+        SlaveServer[] slaveServers = transSplitter.getSlaveTargets(); // <-- ask these guys
+        TransMeta[] slaves = transSplitter.getSlaves();
+
+        SlaveServer masterServer;
+		try {
+			masterServer = transSplitter.getMasterServer();
+		} catch (KettleException e) {
+			log.logError(logSubject, "Error getting the master server", e);
+			masterServer = null;
+			result.setNrErrors(result.getNrErrors()+1);
+		}
+        TransMeta master = transSplitter.getMaster();
+        
+        
+        // Slaves first...
+        //
+        for (int s=0;s<slaveServers.length;s++)
+        {
+            try
+            {
+            	// Get the detailed status of the slave transformation...
+            	//
+            	SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName());
+            	Result transResult = transStatus.getResult(slaves[s]);
+            	
+            	result.add(transResult);
+            }
+            catch(Exception e)
+            {
+    			result.setNrErrors(result.getNrErrors()+1);
+                log.logError(logSubject, "Unable to contact slave server '"+slaveServers[s].getName()+"' to get result of slave transformation : "+e.toString());
+            }
+        }
+
+        // Clean up  the master too
+        //
+        if (master!=null && master.nrSteps()>0)
+        {
+            try
+            {
+            	// Get the detailed status of the slave transformation...
+            	//
+            	SlaveServerTransStatus transStatus = masterServer.getTransStatus(master.getName());
+            	Result transResult = transStatus.getResult(master);
+            	
+            	result.add(transResult);
+            }
+            catch(Exception e)
+            {
+            	result.setNrErrors(result.getNrErrors()+1);
+                log.logError(logSubject, "Unable to contact master server '"+masterServer.getName()+"' to get result of master transformation : "+e.toString());
+            }
+        }
+        
+        
+        return result;
+    }
+
 
     /**
      * @return true if the transformation was prepared for execution succesfully.

@@ -807,7 +807,7 @@ public class JobDialog extends Dialog
 		DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			RowMetaInterface r = Database.getJobLogrecordFields(wBatch.getSelection(), wLogfield.getSelection());
+			RowMetaInterface r = Database.getJobLogrecordFields(false, wBatch.getSelection(), wLogfield.getSelection());
 			if (r!=null && r.size()>0)
 			{
 				String tablename = wLogtable.getText();

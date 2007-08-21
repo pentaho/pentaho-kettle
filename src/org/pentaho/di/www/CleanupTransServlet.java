@@ -67,6 +67,7 @@ public class CleanupTransServlet extends HttpServlet
             if (trans!=null)
             {
                 trans.cleanup();
+                trans.endProcessing("end");
 
                 String message = "Transformation '"+transName+"' was cleaned up.";
                 if (useXML)

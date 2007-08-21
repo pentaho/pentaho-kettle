@@ -3360,57 +3360,68 @@ public class Database implements VariableSpace
 		return par;
 	}
 
-	public static final RowMetaInterface getTransLogrecordFields(boolean use_batchid, boolean use_logfield)
+	public static final RowMetaInterface getTransLogrecordFields(boolean update, boolean use_batchid, boolean use_logfield)
 	{
         RowMetaInterface r = new RowMeta();
 		ValueMetaInterface v;
 		
-		if (use_batchid)
+		if (use_batchid && !update)
 		{
-			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8);   r.addValueMeta(v);
+			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8, 0);   r.addValueMeta(v);
 		}
 		
-		v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50); r.addValueMeta(v);
-		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15); r.addValueMeta(v);
-		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10); r.addValueMeta(v);
-		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
-		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
-		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
-		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
-		v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE   );     r.addValueMeta(v);
+		if (!update) 
+		{
+			v=new ValueMeta("TRANSNAME",       ValueMetaInterface.TYPE_STRING , 50, 0); r.addValueMeta(v);
+		}
+		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING , 15, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
+		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
+		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
+		v=new ValueMeta("DEPDATE",         ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
+		v=new ValueMeta("REPLAYDATE",      ValueMetaInterface.TYPE_DATE      );     r.addValueMeta(v);
 
 		if (use_logfield)
 		{
-			v=new ValueMeta("LOG_FIELD",   ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH);   
+			v=new ValueMeta("LOG_FIELD",   ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH, 0);   
 			r.addValueMeta(v);
+		}
+		
+		if (use_batchid && update)
+		{
+			v=new ValueMeta("ID_BATCH", ValueMetaInterface.TYPE_INTEGER, 8, 0);   r.addValueMeta(v);
 		}
 
 		return r;
 	}
 
-	public static final RowMetaInterface getJobLogrecordFields(boolean use_jobid, boolean use_logfield)
+	public static final RowMetaInterface getJobLogrecordFields(boolean update, boolean use_jobid, boolean use_logfield)
 	{
         RowMetaInterface r = new RowMeta();
 		ValueMetaInterface v;
 
-		if (use_jobid)
+		if (use_jobid && !update)
 		{
-			v=new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, 8); r.addValueMeta(v);
+			v=new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, 8, 0); r.addValueMeta(v);
 		}
 		
-		v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING, 50);    r.addValueMeta(v);
-		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING, 15);    r.addValueMeta(v);
-		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
-		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
-		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10,0); r.addValueMeta(v);
+		if (!update) 
+		{
+			v=new ValueMeta("JOBNAME",         ValueMetaInterface.TYPE_STRING, 50, 0);    r.addValueMeta(v);
+		}
+		v=new ValueMeta("STATUS",          ValueMetaInterface.TYPE_STRING,  15, 0);    r.addValueMeta(v);
+		v=new ValueMeta("LINES_READ",      ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_WRITTEN",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_UPDATED",   ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_INPUT",     ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("LINES_OUTPUT",    ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
+		v=new ValueMeta("ERRORS",          ValueMetaInterface.TYPE_INTEGER, 10, 0); r.addValueMeta(v);
 		v=new ValueMeta("STARTDATE",       ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
 		v=new ValueMeta("ENDDATE",         ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
 		v=new ValueMeta("LOGDATE",         ValueMetaInterface.TYPE_DATE  );        r.addValueMeta(v);
@@ -3419,8 +3430,13 @@ public class Database implements VariableSpace
 
 		if (use_logfield)
 		{
-			v=new ValueMeta("LOG_FIELD", ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH);   
+			v=new ValueMeta("LOG_FIELD", ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH, 0);   
 			r.addValueMeta(v);
+		}
+
+		if (use_jobid && update)
+		{
+			v=new ValueMeta("ID_JOB", ValueMetaInterface.TYPE_INTEGER, 8, 0); r.addValueMeta(v);
 		}
 
 		return r;
@@ -3449,8 +3465,8 @@ public class Database implements VariableSpace
             if (job) sql+="ID_JOB=?"; else sql+="ID_BATCH=?";
 
             RowMetaInterface rowMeta;
-            if (job) rowMeta = getJobLogrecordFields(use_id, true);
-            else     rowMeta = getTransLogrecordFields(use_id, true);
+            if (job) rowMeta = getJobLogrecordFields(true, use_id, true);
+            else     rowMeta = getTransLogrecordFields(true, use_id, true);
             
             Object[] data = new Object[] {
                     status,

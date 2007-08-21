@@ -8,9 +8,11 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -206,5 +208,36 @@ public class SlaveServerTransStatus
             errors+=stepStatus.getErrors();
         }
         return errors;
+    }
+    
+    public Result getResult(TransMeta transMeta)
+    {
+    	Result result = new Result();
+    	
+    	for (StepStatus stepStatus : stepStatusList) {
+    		
+			result.setNrErrors(result.getNrErrors()+stepStatus.getErrors());
+			
+			if (transMeta.getReadStep()    !=null && stepStatus.getStepname().equals(transMeta.getReadStep().getName())) {
+				result.setNrLinesRead(result.getNrLinesRead()+ stepStatus.getLinesRead());
+			}
+			if (transMeta.getInputStep()   !=null && stepStatus.getStepname().equals(transMeta.getInputStep().getName())) {
+				result.setNrLinesInput(result.getNrLinesInput() + stepStatus.getLinesInput());
+			}
+			if (transMeta.getWriteStep()   !=null && stepStatus.getStepname().equals(transMeta.getWriteStep().getName())) {
+				result.setNrLinesWritten(result.getNrLinesWritten()+stepStatus.getLinesWritten());
+			}
+			if (transMeta.getOutputStep()  !=null && stepStatus.getStepname().equals(transMeta.getOutputStep().getName())) {
+				result.setNrLinesOutput(result.getNrLinesOutput()+stepStatus.getLinesOutput());
+			}
+			if (transMeta.getUpdateStep()  !=null && stepStatus.getStepname().equals(transMeta.getUpdateStep().getName())) {
+				result.setNrLinesUpdated(result.getNrLinesUpdated()+stepStatus.getLinesUpdated());
+			}
+            if (transMeta.getRejectedStep()!=null && stepStatus.getStepname().equals(transMeta.getRejectedStep().getName())) {
+            	result.setNrLinesRejected(result.getNrLinesRejected()+stepStatus.getLinesRejected());
+            }
+    	}
+    	
+    	return result;
     }
 }
