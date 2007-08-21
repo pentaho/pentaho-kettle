@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleEOFException;
@@ -67,6 +69,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	
 	private int bufferSize;
 	private boolean compressingStreams;
+	
+	private GZIPOutputStream gzipOutputStream;
 
 	/**
 	 * @param hostname
@@ -229,8 +233,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		baseStep.logBasic("Server socket accepted for port ["+ port +"], reading from server "+targetSlaveServerName);
 		
 		if (compressingStreams) {
-	        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
-			// outputStream = new DataOutputStream( new GZIPOutputStream(socket.getOutputStream()) );
+			gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
+	        outputStream = new DataOutputStream(new BufferedOutputStream(gzipOutputStream, bufferSize));
 		}
 		else {
 	        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
@@ -278,9 +282,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 						rowData = baseStep.getRowFrom(rowSet);
 					}
 					
-					// Just to make sure...
-					//
-					outputStream.flush();
+					if (compressingStreams) {
+						outputStream.flush();
+						gzipOutputStream.finish();
+					}
+					else {
+						outputStream.flush();
+					}
 					
 				} catch (Exception e) {
 					baseStep.logError("Error writing to remote step", e);
@@ -411,8 +419,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				
                 if (compressingStreams)
                 {
-                    inputStream  = new DataInputStream(new BufferedInputStream(socket.getInputStream(), bufferSize));
-                    // inputStream  = new DataInputStream( new GZIPInputStream(socket.getInputStream()) );
+                    inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(socket.getInputStream()), bufferSize));
                 }
                 else
                 {
