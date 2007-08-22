@@ -16,6 +16,7 @@
  
 package org.pentaho.di.ui.spoon.job;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +62,10 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.gui.GUIPositionInterface;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.JobEntryType;
@@ -77,18 +76,19 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.spoon.job.Messages;
-import org.pentaho.di.ui.spoon.job.XulMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.gui.XulHelper;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TransPainter;
+import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.xul.menu.XulMenu;
 import org.pentaho.xul.menu.XulMenuChoice;
 import org.pentaho.xul.menu.XulPopupMenu;
@@ -926,15 +926,23 @@ public class JobGraph extends Composite implements Redrawable, TabItemInterface
     {
         JobEntryCopy[] copies = jobMeta.getSelectedEntries();
         int nrsels = copies.length;
-        
         if (nrsels==0) return;
         
-        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-        mb.setText(Messages.getString("Chef.Dialog.DeletionConfirm.Title"));
-        mb.setMessage(Messages.getString("Chef.Dialog.DeletionConfirm.Message", Integer.toString(nrsels)));
+        // Load the list of steps
+        List<String> stepList = new ArrayList<String>();
+        for (int i = 0; i < copies.length; ++i) {
+          stepList.add(copies[i].toString());
+        }
+        
+        // Display the delete confirmation message box
+        MessageBox mb = new DeleteMessageBox(shell,
+            Messages.getString("Chef.Dialog.DeletionConfirm.Message"), //$NON-NLS-1$
+            stepList
+            );
         int answer = mb.open();
         if (answer==SWT.YES)
         {
+            // Perform the delete
             for (int i=0;i<copies.length;i++)
             {
                 spoon.deleteJobEntryCopies(jobMeta, copies[i]);

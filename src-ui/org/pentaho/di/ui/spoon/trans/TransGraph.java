@@ -100,6 +100,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TransPainter;
 import org.pentaho.di.ui.spoon.XulMessages;
+import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.xul.menu.XulMenu;
@@ -1913,41 +1914,40 @@ public class TransGraph extends Composite implements Redrawable, TabItemInterfac
 
     public void delSelected(StepMeta stMeta)
     {
-        int nrsels = transMeta.nrSelectedSteps();
-        if (nrsels == 0)
+        if (transMeta.nrSelectedSteps() == 0)
         {
             spoon.delStep(transMeta, stMeta);
+            return;
         }
-        else
-        {
-            if (stMeta != null && !stMeta.isSelected()) nrsels++;
 
-            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-            mb.setText(Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Title")); //$NON-NLS-1$
-            String message = Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Message") + nrsels + Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps2.Message") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-            for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
-            {
-                StepMeta stepMeta = transMeta.getStep(i);
-                if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
-                {
-                    message += "  --> " + stepMeta.getName() + Const.CR; //$NON-NLS-1$
-                }
-            }
+          // Get the list of steps that would be deleted
+          List<String> stepList = new ArrayList<String>();
+          for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
+          {
+              StepMeta stepMeta = transMeta.getStep(i);
+              if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
+              {
+                  stepList.add(stepMeta.getName());
+              }
+          }
 
-            mb.setMessage(message);
-            int result = mb.open();
-            if (result == SWT.YES)
-            {
-                for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
-                {
-                    StepMeta stepMeta = transMeta.getStep(i);
-                    if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
-                    {
-                        spoon.delStep(transMeta, stepMeta);
-                    }
-                }
-            }
-        }
+          // Create and display the delete confirmation dialog
+          MessageBox mb = new DeleteMessageBox(shell, 
+              Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Message"), //$NON-NLS-1$
+              stepList);
+          int result = mb.open();
+          if (result == SWT.YES)
+          {
+              // Delete the steps
+              for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
+              {
+                  StepMeta stepMeta = transMeta.getStep(i);
+                  if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
+                  {
+                      spoon.delStep(transMeta, stepMeta);
+                  }
+              }
+          }
     }
 
     public void editDescription(StepMeta stepMeta)

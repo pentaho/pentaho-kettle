@@ -40,7 +40,6 @@ import java.util.Locale;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.job.entries.xact.Messages;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
