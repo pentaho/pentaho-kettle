@@ -289,7 +289,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		jsScripts[0] = new ScriptValuesScript(
 				ScriptValuesScript.TRANSFORM_SCRIPT,
 				"Script 1",
-				"//Script here"
+				"//Script here"+Const.CR+Const.CR
 		);
 		
 		int nrfields=0;

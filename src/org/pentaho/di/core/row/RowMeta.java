@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.compatibility.Row;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -700,5 +702,19 @@ public class RowMeta implements RowMetaInterface
             throw new RuntimeException("Error de-serializing row of data from byte array", e);
         }
     }
+
+	public static Row createOriginalRow(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+		Row row = new Row();
+		
+		for (int i=0;i<rowMeta.size();i++) {
+			ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
+			Object valueData = rowData[i];
+			
+			Value value = valueMeta.createOriginalValue(valueData);
+			row.addValue(value);
+		}
+		
+		return row;
+	}
 
 }

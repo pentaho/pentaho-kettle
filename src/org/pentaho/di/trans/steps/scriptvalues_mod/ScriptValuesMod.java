@@ -32,11 +32,13 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -154,11 +156,23 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
             try
             {
-                // add these now (they will be re-added later) to make compilation succeed
+            	// add these now (they will be re-added later) to make compilation succeed
             	//
-                Scriptable jsrow = Context.toObject(row, data.scope);
-                data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
                 
+                // Add the old style row object for compatibility reasons...
+                //
+                if (meta.isCompatible()) {
+                	Row v2Row = RowMeta.createOriginalRow(rowMeta, row);
+                	Scriptable jsV2Row = Context.toObject(v2Row, data.scope);
+                    data.scope.put("row", data.scope, jsV2Row); //$NON-NLS-1$
+                }
+                else {
+	                Scriptable jsrow = Context.toObject(row, data.scope);
+	                data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
+                }
+
+                // Add the used fields...
+                //
                 for (int i = 0; i < data.fields_used.length; i++)
                 {
                 	ValueMetaInterface valueMeta = rowMeta.getValueMeta(data.fields_used[i]);
@@ -177,9 +191,10 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
                 }
 
                 // also add the meta information for the hole row
+                //
                 Scriptable jsrowMeta = Context.toObject(rowMeta, data.scope);
                 data.scope.put("rowMeta", data.scope, jsrowMeta); //$NON-NLS-1$
-
+                
                 // Modification for Additional Script parsing
                 //
                 try
@@ -270,8 +285,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
             try
             {
-                Scriptable jsrow = Context.toObject(row, data.scope);
-                data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
+            	if (meta.isCompatible()) {
+                	Row v2Row = RowMeta.createOriginalRow(rowMeta, row);
+                	Scriptable jsV2Row = Context.toObject(v2Row, data.scope);
+                    data.scope.put("row", data.scope, jsV2Row); //$NON-NLS-1$
+            	}
+            	else {
+	                Scriptable jsrow = Context.toObject(row, data.scope);
+	                data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
+            	}
                 
                 for (int i = 0; i < data.fields_used.length; i++)
                 {

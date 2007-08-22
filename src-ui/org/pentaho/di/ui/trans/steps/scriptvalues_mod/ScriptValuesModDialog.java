@@ -88,11 +88,13 @@ import org.mozilla.javascript.ScriptOrFnNode;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.tools.ToolErrorReporter;
+import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -1075,8 +1077,8 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				
 				try{
 					Object[] row=new Object[rowMeta.size()];
-	   			    Scriptable jsrow = Context.toObject(rowMeta, jsscope);
-				    jsscope.put("rowMeta", jsscope, jsrow); //$NON-NLS-1$
+	   			    Scriptable jsRowMeta = Context.toObject(rowMeta, jsscope);
+				    jsscope.put("rowMeta", jsscope, jsRowMeta); //$NON-NLS-1$
 				    for (int i=0;i<rowMeta.size();i++)
 				    {
                         ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
@@ -1108,9 +1110,17 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				    Scriptable jsval = Context.toObject(Value.class, jsscope);
 				    jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
 
-				    // also add the data for the hole row
-	                Scriptable jsrowMeta = Context.toObject(row, jsscope);
-	                jsscope.put("row", jsscope, jsrowMeta); //$NON-NLS-1$
+	                // Add the old style row object for compatibility reasons...
+	                //
+	                if (wCompatible.getSelection()) {
+	                	Row v2Row = RowMeta.createOriginalRow(rowMeta, row);
+	                	Scriptable jsV2Row = Context.toObject(v2Row, jsscope);
+	                    jsscope.put("row", jsscope, jsV2Row); //$NON-NLS-1$
+	                }
+	                else {
+		                Scriptable jsRow = Context.toObject(row, jsscope);
+		                jsscope.put("row", jsscope, jsRow); //$NON-NLS-1$
+	                }
 
 				}catch(Exception ev){
 					errorMessage="Couldn't add Input fields to Script! Error:"+Const.CR+ev.toString(); //$NON-NLS-1$
