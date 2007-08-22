@@ -729,4 +729,16 @@
 		</tooltip>
 		<image-uri>ui/images/ACI.png</image-uri>
 	</step>
+	
+	<step id="AddXML">
+		<description>
+			ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeLongDesc.AddXML")
+		</description>
+		<class-name>org.pentaho.di.trans.steps.addxml.AddXMLMeta</class-name>
+		<category>ognl:@org.pentaho.di.trans.step.StepCategory@TRANSFORM.getName()</category>
+		<tooltip>ognl:@org.pentaho.di.trans.step.Messages@getString("BaseStep.TypeTooltipDesc.AddXML")
+		</tooltip>
+		<image-uri>ui/images/XIN.png</image-uri>
+	</step>
+	
 </steps>
